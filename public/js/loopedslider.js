@@ -44,7 +44,7 @@
 		slides: '.slides',
 		pagination: '.pagination',
 		containerClick: true, // Click container for next slide
-		autoStart: 0, // Set to positive number for auto start and interval time
+		autoStart: 100, // Set to positive number for auto start and interval time
 		restart: 0, // Set to positive number for restart and restart time
 		slidespeed: 300, // Speed of slide animation
 		fadespeed: 300, // Speed of fade animation
@@ -159,7 +159,7 @@
 			if(t===s+1){t=1;}
 			if(t===0){t=s;}
 			$(pagination,obj).parent().siblings().removeClass('active');
-			$(pagination+'[rel="' + (t) + '"]',obj).parent().addClass('active');
+			$('a[rel="' + (t) + '"]').parent().addClass('active');
 		};
 		
 		function autoHeight(t) {

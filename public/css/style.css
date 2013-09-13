@@ -284,3 +284,7 @@ textarea{
 #loopedCarousel .previous{background:url(../images/button-1.gif) top left no-repeat; width:26px; height:105px; display:block; float:left; text-decoration:none; margin-left:-43px; position:relative}
 #loopedCarousel .next{background:url(../images/button-2.gif) top left no-repeat; text-decoration:none; width:26px; height:105px; display:block; float:right; margin-left:884px; position:relative; }
 
+
+
+.btn {color:#fff; background:#f07726; padding:0px 18px 0px 18px; line-height:32px; font-size:13px; font-weight:bold; display:block; text-decoration:none; border-style: solid; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; display:inline; cursor:pointer;}
+.btn:hover{text-decoration:none; background:#0b799e }
