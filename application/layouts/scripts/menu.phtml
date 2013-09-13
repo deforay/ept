@@ -12,7 +12,7 @@
                 <ul class="sf-menu">
                     <li class="m"><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>" class="current">&nbsp;</a></li>
                       <?php if(Zend_Auth::getInstance()->hasIdentity()){ ?>
-                    <li><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>">My Account</a>
+                    <li><a href="javascript:void(0);">My Account</a>
                     	<ul>
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"user-info"),null,true) ?>">My Information</a></li>
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">Laboratory Information</a></li>
@@ -20,7 +20,7 @@
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"password"),null,true) ?>">Change Password</a></li>                                
                			</ul>
                     </li>
-                    <li><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>">My PT</a>
+                    <li><a href="javascript:void(0);">My PT</a>
                         <ul>
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"dashboard"),null,true) ?>">Overview</a></li>
                             
