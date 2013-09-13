@@ -1,0 +1,38 @@
+<header>
+    <div class="main">
+        <h1><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>">e-PT</a></h1>
+        <?php if(Zend_Auth::getInstance()->hasIdentity()){ ?>
+      	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"logout"),null,true) ?>" class="button1">logout</a>
+  		<?php }?>
+        <div class="inside">
+        <?php if(!Zend_Auth::getInstance()->hasIdentity()){ ?>
+        	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>" class="button">Client Login</a>
+        <?php }?>
+            <nav>
+                <ul class="sf-menu">
+                    <li class="m"><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>" class="current">&nbsp;</a></li>
+                      <?php if(Zend_Auth::getInstance()->hasIdentity()){ ?>
+                    <li><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>">My Account</a>
+                    	<ul>
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"user-info"),null,true) ?>">My Information</a></li>
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">Laboratory Information</a></li>
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"scheme"),null,true) ?>">Scheme Information</a></li>
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"password"),null,true) ?>">Change Password</a></li>                                
+               			</ul>
+                    </li>
+                    <li><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>">My PT</a>
+                        <ul>
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"dashboard"),null,true) ?>">Overview</a></li>
+                            
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"report"),null,true) ?>">Report</a></li>
+                            
+                        </ul>
+                    </li>
+                    
+                    <li><a href="<?php echo $this->url(array("controller"=>"provider","action"=>"contact"),null,true) ?>">contacts</a></li>
+                    <?php }?>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>

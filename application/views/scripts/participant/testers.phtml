@@ -1,0 +1,31 @@
+<div id="view-content">
+<span class="txt" style="margin-left:5em">Participant/Laboratory Information</span>
+	<br>
+			<table style="width: 95%;margin: auto;">
+				<thead>
+					<tr>
+					<th>Participant ID</th>
+					<th>Particpant Name</th>
+					
+					<th>Particpant Mobile</th>
+					<th>Participant e-mail</th>
+					<th>Group</th>
+					<th>Edit</th>
+					</tr>
+				</thead>
+				
+			<?php $i_count = 0; foreach($this->rsUsersProfile as $tester){ ?>
+				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">					
+					<td><?php echo $tester['PARTICIPANTID']; ?></td>
+					<td align="left"><?php echo $tester['PARTICIPANTFNAME'] . ' ' . $tester['PARTICIPANTLNAME'] ;?></td>
+					
+					<td><?php echo $tester['PARTICIPANTMOBILE']; ?></td>
+					<td><?php echo $tester['PARTICIPANTMOBILE']; ?></td>
+					
+					<td><?php echo $tester['TESTGROUP']; ?></td>
+					<td style="text-decoration : underline;"><a href="<?php  echo $this->url(array("controller"=>"Participant","action"=>"testeredit","psid"=>$tester['ParticipantSystemID']),null,true,false); ?>">Edit</a></td>
+									
+				</tr>	
+				<?php }?>								
+			</table>				
+</div>
