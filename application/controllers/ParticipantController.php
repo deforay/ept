@@ -29,8 +29,8 @@ class ParticipantController extends Zend_Controller_Action
     	$stmt->execute();
     	$this->view->rsOverview = $stmt->fetchAll();
     	
-    	//$stmt = $db->prepare("call SHIPMENT_CURRENT(?)");
-    	//$stmt->execute(array( $authNameSpace->UserID));
+    	$stmt = $db->prepare("call SHIPMENT_CURRENT(?)");
+    	$stmt->execute(array( $authNameSpace->UserID));
     	$this->view->rsShipCurr = array();// $stmt->fetchAll();
     	 
     	$stmt = $db->prepare("call SHIPMENT_DEFAULTED()");

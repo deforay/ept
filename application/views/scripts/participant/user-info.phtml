@@ -1,4 +1,4 @@
-<form name="userInfo" id="userInfo" method="post"   action="<?php echo $this->url(array("controller"=>"Participant","action"=>"user-Info"),null,true) ?>">
+<form name="userInfo" id="userInfo" method="post"   action="<?php echo $this->url(array("controller"=>"participant","action"=>"user-Info"),null,true) ?>">
 <input type="hidden" id ="hdAction" name="hdAction" value="" />
 <div id="view-content">
 	
@@ -47,8 +47,8 @@
 			<br>
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
 				
-					<input name="submitbtn" class="btn" type="submit" id="submit" tabindex="7" value="Submit"  /> 
-					<input name="reset" class="btn" type="submit" id="reset" tabindex="8" value="Cancel" /> 
+					<input name="submitbtn" class="button button-rounded button-primary" type="submit" id="submit" tabindex="7" value="Submit"  /> 
+					<input name="reset" class="button button-rounded button-caution" type="reset" id="reset" tabindex="8" value="Cancel" /> 
 					
 				
 			</div>

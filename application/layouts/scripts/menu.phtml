@@ -6,7 +6,7 @@
   		<?php }?>
         <div class="inside">
         <?php if(!Zend_Auth::getInstance()->hasIdentity()){ ?>
-        	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>" class="button">Client Login</a>
+        	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>" class="da-button">Client Login</a>
         <?php }?>
             <nav>
                 <ul class="sf-menu">

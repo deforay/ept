@@ -20,8 +20,35 @@
             </div>     
         </div>
     </div>   
-</footer>    
+</footer>
+
+ <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+ <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.validate.js"); ?>"></script> 
+
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/cufon-yui.js");?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/cufon-replace.js");?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/Myriad_Pro_400.font.js");?>" ></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/Myriad_Pro_600.font.js");?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/Myriad_Pro_700.font.js");?>" ></script>
+
+   
+<script src="<?php echo $this->baseUrl("js/loopedslider.js"); ?>" type="text/javascript"></script>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/hoverIntent.js");?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/superfish.js"); ?>"></script>
+
 <script type="text/javascript">
+$(document).ready(function() {
+   $('ul.sf-menu').superfish();
+});
+</script>  
+<script src="<?php echo $this->baseUrl("js/imagepreloader.js")?>" type="text/javascript"></script>
+<script type="text/javascript">
+	preloadImages([
+		"<?php echo $this->baseUrl("images/bg_link.png"); ?>", 
+		"<?php echo $this->baseUrl("images/button-1-act.png"); ?>", 
+		"<?php echo $this->baseUrl("images/button-2-act.png"); ?>"]);
+
 	$(function(){
 		$('#loopedSlider').loopedSlider({
 			autoStart: 5000,

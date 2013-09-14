@@ -36,6 +36,13 @@
           <actionMethod actionName="index"/>
           <actionMethod actionName="contact"/>
         </controllerFile>
+        <controllerFile controllerName="Captcha">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="checkCaptcha"/>
+        </controllerFile>
+        <controllerFile controllerName="Common">
+          <actionMethod actionName="index"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory enabled="false"/>
       <layoutsDirectory>
@@ -106,6 +113,15 @@
           <viewControllerScriptsDirectory forControllerName="Participant">
             <viewScriptFile forActionName="schemeinfo"/>
           </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Captcha">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Common">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Captcha">
+            <viewScriptFile forActionName="checkCaptcha"/>
+          </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
         <viewFiltersDirectory enabled="false"/>
@@ -141,6 +157,13 @@
       <testApplicationDirectory>
         <testApplicationControllerDirectory>
           <testApplicationControllerFile forControllerName="Index"/>
+          <testApplicationControllerFile forControllerName="Captcha">
+            <testApplicationActionMethod forActionName="index"/>
+            <testApplicationActionMethod forActionName="checkCaptcha"/>
+          </testApplicationControllerFile>
+          <testApplicationControllerFile forControllerName="Common">
+            <testApplicationActionMethod forActionName="index"/>
+          </testApplicationControllerFile>
         </testApplicationControllerDirectory>
       </testApplicationDirectory>
       <testLibraryDirectory/>

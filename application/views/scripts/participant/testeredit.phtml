@@ -1,4 +1,4 @@
-<form name="participantEdit" id="participantEdit" method="post"   action="<?php echo $this->url(array("controller"=>"Participant","action"=>"testeredit"),null,true) ?>">
+<form name="participantEdit" id="participantEdit" method="post"   action="<?php echo $this->url(array("controller"=>"participant","action"=>"testeredit"),null,true) ?>">
 <div id="view-content">
 <span class="txt" style="margin-left:5em">Participant/Laboratory Information</span>
 
@@ -48,9 +48,9 @@
 			<br>
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 				<p>
-					<input name="submitbtn" class="css_btn_class" type="submit" id="submit" tabindex="7" value="Submit"  /> 
+					<input name="submitbtn" class="button button-rounded button-primary" type="submit" id="submit" tabindex="7" value="Submit"  /> 
 					&nbsp;&nbsp;&nbsp;
-					<input name="reset" class="css_btn_class" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_testers()" /> 
+					<input name="reset" class="button button-rounded button-caution" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_testers()" /> 
 					
 				</p>
 			</div>	

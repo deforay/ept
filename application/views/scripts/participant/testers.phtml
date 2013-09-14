@@ -23,7 +23,7 @@
 					<td><?php echo $tester['PARTICIPANTMOBILE']; ?></td>
 					
 					<td><?php echo $tester['TESTGROUP']; ?></td>
-					<td style="text-decoration : underline;"><a href="<?php  echo $this->url(array("controller"=>"Participant","action"=>"testeredit","psid"=>$tester['ParticipantSystemID']),null,true,false); ?>">Edit</a></td>
+					<td style="text-decoration : underline;"><a href="<?php  echo $this->url(array("controller"=>"participant","action"=>"testeredit","psid"=>$tester['ParticipantSystemID']),null,true,false); ?>">Edit</a></td>
 									
 				</tr>	
 				<?php }?>								
