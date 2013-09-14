@@ -112,7 +112,7 @@
 		// override these in your code to change the default behavior and style
 		$.blockUI.defaults = {
 			// message displayed when blocking (use null for no message)
-			message:  '<h1>Please wait...</h1>',
+			message:  '<h1 style="font-size:20px;padding:10px;font-family:Helvetica,Arial,sans-serif;"><img src="/images/loading.gif" /><br/>Please wait...</h1>',
 
 			title: null,		// title string; only used when theme == true
 			draggable: true,	// only used when theme == true (requires jquery-ui.js to be loaded)
@@ -130,7 +130,7 @@
 				left:		'35%',
 				textAlign:	'center',
 				color:		'#000',
-				border:		'3px solid #aaa',
+				border:		'0',
 				backgroundColor:'#fff',
 				cursor:		'wait'
 			},
@@ -144,9 +144,9 @@
 
 			// styles for the overlay
 			overlayCSS:  {
-				backgroundColor:	'#000',
-				opacity:			0.6,
-				cursor:				'wait'
+				backgroundColor: '#000',
+				opacity:          0.6,
+				cursor:          'wait'
 			},
 
 			// style to replace wait cursor before unblocking to correct issue

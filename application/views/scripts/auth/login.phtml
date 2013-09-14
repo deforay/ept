@@ -4,111 +4,113 @@
 <!--[if IE 8 ]>    <html lang="en" class="no-js ie8 lt8"> <![endif]-->
 <!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
-<?php // from http://tympanus.net/Tutorials/LoginRegistrationForm/ ?>
+    <?php // from http://tympanus.net/Tutorials/LoginRegistrationForm/ ?>
     <head>
         <meta charset="UTF-8" />
         <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">  -->
         <title>Login for Proficiency Testing</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-        <meta name="description" content="Login and Registration Form with HTML5 and CSS3" />
+        <meta name="description" content="e-PT Login" />
         <meta name="keywords" content="html5, css3, form, switch, animation, :target, pseudo-class" />
         <meta name="author" content="Codrops" />
-        
-        <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl("css/loginDemo.css");?>" />
+
+        <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl("css/loginDemo.css"); ?>" />
         <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl("css/loginStyle2.css"); ?>" />
-		<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl("css/loginAnimate-custom.css"); ?>" />
-		
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-		
-		
+        <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl("css/loginAnimate-custom.css"); ?>" />
+        <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl("css/buttons.css"); ?>" />
+	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+
     </head>
     <style>
-#para1
-{
-	width: 10%;
-	font-size: 2em;
-	cursor: pointer;
-	background: rgb(61, 157, 179);
-	padding: 8px 5px;
-	font-family: 'BebasNeueRegular','Arial bold',Arial,sans-serif;
-	color: #fff;
-	font-size: 34px;
-	border: 1px solid rgb(28, 108, 122);
-	margin-bottom: 10px;
-	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	-webkit-box-shadow: 0px 1px 6px 4px rgba(0, 0, 0, 0.07) inset,
-	 0px 0px 0px 3px rgb(254, 254, 254),
-	 0px 5px 3px 3px rgb(210, 210, 210);
-	-moz-box-shadow: 0px 1px 6px 4px rgba(0, 0, 0, 0.07) inset,
-	 0px 0px 0px 3px rgb(254, 254, 254),
-	 0px 5px 3px 3px rgb(210, 210, 210);
-	box-shadow: 0px 1px 6px 4px rgba(0, 0, 0, 0.07) inset,
-	 0px 0px 0px 3px rgb(254, 254, 254),
-	 0px 5px 3px 3px rgb(210, 210, 210);
-	-webkit-transition: all 0.2s linear;
-	-moz-transition: all 0.2s linear;
-	-o-transition: all 0.2s linear;
-	transition: all 0.2s linear;
-}
-</style>
+        #para1
+        {
+            width: 10%;
+            font-size: 2em;
+            cursor: pointer;
+            background: rgb(61, 157, 179);
+            padding: 8px 5px;
+            font-family: 'BebasNeueRegular','Arial bold',Arial,sans-serif;
+            color: #fff;
+            font-size: 34px;
+            border: 1px solid rgb(28, 108, 122);
+            margin-bottom: 10px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            -webkit-box-shadow: 0px 1px 6px 4px rgba(0, 0, 0, 0.07) inset,
+                0px 0px 0px 3px rgb(254, 254, 254),
+                0px 5px 3px 3px rgb(210, 210, 210);
+            -moz-box-shadow: 0px 1px 6px 4px rgba(0, 0, 0, 0.07) inset,
+                0px 0px 0px 3px rgb(254, 254, 254),
+                0px 5px 3px 3px rgb(210, 210, 210);
+            box-shadow: 0px 1px 6px 4px rgba(0, 0, 0, 0.07) inset,
+                0px 0px 0px 3px rgb(254, 254, 254),
+                0px 5px 3px 3px rgb(210, 210, 210);
+            -webkit-transition: all 0.2s linear;
+            -moz-transition: all 0.2s linear;
+            -o-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+        }
+    </style>
     <body>
-               <div class="container">
-         
+        <div class="container">
+
             <header>
-                <h1>Login -- <span> Proficiency Testing</span></h1>
-				
+                <h1>Login - <span> Proficiency Testing</span></h1>
+
             </header>
-          <section>				
+            <section>				
                 <div id="container_demo" >
                     <!-- hidden anchor to stop jump http://www.css3create.com/Astuce-Empecher-le-scroll-avec-l-utilisation-de-target#wrap4  -->
                     <a class="hiddenanchor" id="toregister"></a>
                     <a class="hiddenanchor" id="tologin"></a>
                     <div id="wrapper">
                         <div id="login" class="animate form">
-                            <form  action="<?php echo $this->url(array("controller"=>"Auth","action"=>"login"),null,true) ?>" method="post" autocomplete="on"> 
+                            <form  action="<?php echo $this->url(array("controller" => "Auth", "action" => "login"), null, true) ?>" method="post" autocomplete="off" id="loginForm"> 
                                 <h1>Log in</h1> 
                                 <p align="left"> 
-                                     <label for="username" class="uname" data-icon="u"> Your email or username </label> 
-                                    <input id="username" name="username" required="required" type="text" placeholder="myusername or mymail@mail.com"/>
+                                    <label for="username" class="uname" data-icon="u"> Your email or username </label> 
+                                    <input id="username" name="username" class="isRequired" title="Please enter your email or username" type="text" placeholder="myusername or mymail@mail.com"/>
                                 </p>
                                 <p align="left"> 
                                     <label for="password" class="youpasswd" data-icon="p"> Your password </label>
-                                    <input id="password" name="password" required="required" type="password" placeholder="eg. X8df!90EO" /> 
+                                    <input id="password" name="password" class="isRequired" title="Please enter your password" type="password" placeholder="eg. X8df!90EO" /> 
                                 </p>
-								
-								<p>
-									<table border="0" style="margin-top: 10px;margin:0 auto;clear: both;">
-										<tbody>
-											<tr>
-												<td rowspan="2">
-													<div style="float:left;margin:5px;">
-														<img id="capChaw" src="/captcha/<?php echo rand(); ?>" />
-													</div>
-												</td>
-												<td style="padding-top:7px;padding-bottom:3px;" align="center">
-													<a href="javascript:getCaptcha('capChaw');" class="button button-primary" style="width:134px;"><i class="icon-refresh icon-white"></i> Get New Image</a>
-												</td>
-											</tr>
-											<tr>
-												<td style="padding-top:3px;">
-													<input type="text" style="margin:0;width:150px;height:25px;padding:3px;" id="challengeResponse" placeholder="Enter text from image" class="isRequired" title="Please enter the text from the image." maxlength="40">
-										
-												</td>
-											</tr>
-										</tbody>
-									</table>
-								</p>
-                                <p class="login button"> 
-                                
-                                    <input type="submit" value="Login" /> 
-								</p>
+
+                                <p>
+                                <table border="0" style="margin-top: 10px;margin:0 auto;clear: both;">
+                                    <tbody>
+                                        <tr>
+                                            <td rowspan="2">
+                                                <div style="float:left;margin:5px;">
+                                                    <img id="capChaw" src="/captcha/<?php echo rand(); ?>" />
+                                                </div>
+                                            </td>
+					    <td style="padding-top:3px;">
+                                                <input type="text" style="margin:0;width:160px;height:25px;padding:3px;margin-top:3px" id="challengeResponse" placeholder="Enter text from image on left" class="isRequired" title="Please enter the text from the image." maxlength="40">
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:0;" align="center">
+                                                <button onclick="getCaptcha('capChaw');return false;" class="button button-rounded button-primary" ><i class="icon-refresh icon-white"></i> Get New Image</button>
+                                            </td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </p>
+                                <p class=""> 
+                                    <input type="button" class="button button-rounded button-primary" value="Login" onclick="validateLogin();return false;"/> 
+                                </p>
                                 <p class="change_link">
-									Not Participating in PT?
-									<a href="#toregister" class="to_register">Contact us</a>
-								</p>
+                                    Not Participating in PT?
+                                    <a href="#toregister" class="to_register">Contact us</a>
+                                </p>
                             </form>
                         </div>
 
@@ -131,33 +133,59 @@
                                     <label for="passwordsignup_confirm" class="youpasswd" data-icon="p">Please confirm your password </label>
                                     <input id="passwordsignup_confirm" name="passwordsignup_confirm" required="required" type="password" placeholder="eg. X8df!90EO"/>
                                 </p>
-                                <p class="signin button"> 
-									<input type="submit" value="Sign up"/> 
-								</p>
+                                <p class=""> 
+                                    <input type="button" class="button button-rounded button-primary" value="Sign up"/> 
+                                </p>
                                 <p class="change_link">  
-									Already a member ?
-									<a href="#tologin" class="to_register"> Go and log in </a>
-								</p>
+                                    Already a member ?
+                                    <a href="#tologin" class="to_register"> Go and log in </a>
+                                </p>
                             </form>
                         </div>
-						
+
                     </div>
                 </div> 
-                 
-            </section>
-      </div>
-			   <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
-			   <script type="text/javascript">
-				    function getCaptcha(captchaDivId){
-						$.blockUI();
-						var d = new Date();
-						var randstr = 'r-'+d.getFullYear()+d.getSeconds()+d.getMilliseconds()+Math.random();
-						$("#"+captchaDivId).attr("src" , '/captcha/'+randstr);		
-						$("#"+captchaDivId).load(function(){
-							$.unblockUI();
-						});
-					}
 
-			   </script>
+            </section>
+        </div>
+        <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
+        <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
+        <script type="text/javascript">
+            function getCaptcha(captchaDivId){
+                $.blockUI();
+                var d = new Date();
+                var randstr = 'r-'+d.getFullYear()+d.getSeconds()+d.getMilliseconds()+Math.random();
+                $("#"+captchaDivId).attr("src" , '/captcha/'+randstr);		
+                $("#"+captchaDivId).load(function(){
+                    $.unblockUI();
+                });
+            }
+	    
+            function validateLogin(){
+                flag = deforayValidator.init({
+                    formId: 'loginForm'
+                });
+                if(flag){
+                    challenge_field=document.getElementById("challengeResponse").value;
+                    if(challenge_field !="" ){
+                        $.post("<?php echo $this->url(array(), 'checkCaptchaRoute', true); ?>", { challenge_field:challenge_field, format: "html"},
+                        function(data){
+                            if(data == 'fail'){
+                                alert("Text you entered from the image is incorrect. Please try again");
+                                getCaptcha('capChaw');
+                                document.getElementById("challengeResponse").value="";
+                                return false;
+                            }else{
+				$.blockUI();
+                                document.getElementById('loginForm').submit();
+                            }
+                        });
+                    }else{
+                        alert("Please enter the text from the image to proceed.");
+                    }
+                }
+            }	    
+
+        </script>
     </body>
 </html>
