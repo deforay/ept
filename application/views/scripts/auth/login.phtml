@@ -17,6 +17,10 @@
         <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl("css/loginDemo.css");?>" />
         <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl("css/loginStyle2.css"); ?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl("css/loginAnimate-custom.css"); ?>" />
+		
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		
+		
     </head>
     <style>
 #para1
@@ -76,7 +80,26 @@
                                 </p>
 								
 								<p>
-									<img id="capChaw" src="/captcha/874743913" />
+									<table border="0" style="margin-top: 10px;margin:0 auto;clear: both;">
+										<tbody>
+											<tr>
+												<td rowspan="2">
+													<div style="float:left;margin:5px;">
+														<img id="capChaw" src="/captcha/<?php echo rand(); ?>" />
+													</div>
+												</td>
+												<td style="padding-top:7px;padding-bottom:3px;" align="center">
+													<a href="javascript:getCaptcha('capChaw');" class="button button-primary" style="width:134px;"><i class="icon-refresh icon-white"></i> Get New Image</a>
+												</td>
+											</tr>
+											<tr>
+												<td style="padding-top:3px;">
+													<input type="text" style="margin:0;width:150px;height:25px;padding:3px;" id="challengeResponse" placeholder="Enter text from image" class="isRequired" title="Please enter the text from the image." maxlength="40">
+										
+												</td>
+											</tr>
+										</tbody>
+									</table>
 								</p>
                                 <p class="login button"> 
                                 
@@ -123,5 +146,18 @@
                  
             </section>
       </div>
+			   <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
+			   <script type="text/javascript">
+				    function getCaptcha(captchaDivId){
+						$.blockUI();
+						var d = new Date();
+						var randstr = 'r-'+d.getFullYear()+d.getSeconds()+d.getMilliseconds()+Math.random();
+						$("#"+captchaDivId).attr("src" , '/captcha/'+randstr);		
+						$("#"+captchaDivId).load(function(){
+							$.unblockUI();
+						});
+					}
+
+			   </script>
     </body>
 </html>
