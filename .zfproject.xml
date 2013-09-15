@@ -53,6 +53,7 @@
       <modelsDirectory>
         <dbTableDirectory>
           <dbTableFile dbTableName="ResponseDtsDb"/>
+          <dbTableFile dbTableName="Users"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>

@@ -65,15 +65,13 @@ class ParticipantController extends Zend_Controller_Action
 
     public function userInfoAction()
     {
-    	if(!$this->_request->isPost()){
-        $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
-		$dbParticipant = new Application_Model_UsersProfile();
-		$this->view->rsUser = $dbParticipant->getUserInfo($authNameSpace->UserID);
+	$userService = new Application_Service_Users();
+    	if($this->_request->isPost()){
+	    $params = $this->_request->getPost();
+	    $userService->updateUser($params);  
     	}
-    	else{
-    	//	$data = $this->_request->getParams();
-    	//	 Zend_Debug::dump ($data);
-    	}	  	
+	// whether it is a GET or POST request, we always show the user info
+	$this->view->rsUser = $userService->getUserInfo();	  	
     }
 
     public function testersAction()

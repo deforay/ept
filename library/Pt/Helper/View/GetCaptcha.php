@@ -59,10 +59,10 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
         // Use milliseconds instead of seconds
         srand(microtime() * 100);
         
-        //
-        //if(APPLICATION_ENV == "development"){
-        //    $captcha_config['code'] = "zaq";
-        //}
+        // if it is development environment, then let us keep it simple
+        if(APPLICATION_ENV == "development"){
+            $captcha_config['code'] = "zaq";
+        }
         
         // Generate CAPTCHA code if not set by user
         if (empty($captcha_config['code'])) {
