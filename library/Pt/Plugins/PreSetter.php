@@ -3,7 +3,7 @@
 class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
 
     public function preDispatch(Zend_Controller_Request_Abstract $request) {
-//        $layout = Zend_Layout::getMvcInstance();
+        $layout = Zend_Layout::getMvcInstance();
 
         if ($request->getModuleName() == 'default'  && $request->getControllerName() != 'auth' && $request->getControllerName() != 'index' && $request->getControllerName() != 'captcha') {
             if(!Zend_Auth::getInstance()->hasIdentity()){
@@ -11,6 +11,13 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
                 $request->setDispatched(false);
                 return;
             }
+        }else  if ($request->getModuleName() == 'admin'  && $request->getControllerName() != 'login' && $request->getControllerName() != 'index' && $request->getControllerName() != 'captcha') {
+            if(!Zend_Auth::getInstance()->hasIdentity()){
+                $request->setModuleName('admin')->setControllerName('login')->setActionName('index');
+                $request->setDispatched(false);
+                return;
+            }
+            $layout->setLayout('admin');
         }
     }
 

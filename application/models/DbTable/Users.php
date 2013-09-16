@@ -19,8 +19,8 @@ class Application_Model_DbTable_Users extends Zend_Db_Table_Abstract {
         $data = array(
             'UserFName' => $params['fname'],
             'UserLName' => $params['lname'],
-            'UserPhoneNumber' => $params['phone1'],
-            'UserCellNumber' => $params['phone2'],
+            'UserPhoneNumber' => $params['phone2'],
+            'UserCellNumber' => $params['phone1'],
             'UserSecondaryemail' => $params['semail']
         );
 
