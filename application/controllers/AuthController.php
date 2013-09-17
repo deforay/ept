@@ -6,7 +6,7 @@ class AuthController extends Zend_Controller_Action
     public function init()
     {
         /* Initialize action controller here */
-    	$this->_helper->layout()->disableLayout();
+    	//$this->_helper->layout()->disableLayout();
     }
 
     public function indexAction()
@@ -31,36 +31,22 @@ class AuthController extends Zend_Controller_Action
     		
 			//echo "hi";
     		if($res->isValid()){
-    			//echo "validated";
-    			//die;
-    			//$db = Zend_Registry::get(‘dbAdapter’);
-    			
-    			$stmt = $db->prepare("call USER_ONE(?)");
-    			$stmt->execute(array("app0@cdc.gov"));
-    			$rs = $stmt->fetch();
-    			//print_r($rs);
-    			//die;
-    			//Zend_Debug::dump($stmt);
-    			//die;
-    			// echo "login done";
-    			/*
-				$login = new Application_Model_DbTable_User();
-    			$rs = $login->getUserInfo($params['UserID']);
-    		
-				*/ 		
+
+    			$rs = $adapter->getResultRowObject();
     			
     			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
     			$authNameSpace->UserID = $params['username'];
     		
-	    		$authNameSpace->UserSystemID = $rs['UserSystemId'];
-	    		$authNameSpace->UserFName = $rs['UserFname'];
-	    		$authNameSpace->UserLName = $rs['UserLName'];
-	    		$authNameSpace->UserPhoneNumber = $rs['UserPhoneNumber'];
-	    		$authNameSpace->UserEmail = $rs['UserEmail'];
+	    		$authNameSpace->UserSystemID = $rs->UserSystemId;
+	    		$authNameSpace->UserFName = $rs->UserFname;
+	    		$authNameSpace->UserLName = $rs->UserLName;
+	    		$authNameSpace->UserPhoneNumber = $rs->UserPhoneNumber;
+	    		$authNameSpace->UserEmail = $rs->UserEmail;
+	    		$authNameSpace->ForcePasswordReset = $rs->force_password_reset;
 	    		// PT Provider Dependent Configuration 
-	    		$authNameSpace->UserFld1 = $rs['UserFld1'];
-	    		$authNameSpace->UserFld2 = $rs['UserFld2'];
-	    		$authNameSpace->UserFld3 = $rs['UserFld3'];
+	    		$authNameSpace->UserFld1 = $rs->UserFld1;
+	    		$authNameSpace->UserFld2 = $rs->UserFld2;
+	    		$authNameSpace->UserFld3 = $rs->UserFld3;
 	    		
 	    		/*
 	    		http://randomitstuff.com/2010/05/04/setting-up-database-configuration-in-zend-framework/
@@ -72,12 +58,13 @@ class AuthController extends Zend_Controller_Action
     		
     		}else
     		{
-    			echo "Sorry";
-    			$this->view->messages = $res->getMessages();
-    			$messages = $res->getMessages();
-    			foreach($messages as $message){	
-    				echo $message . "<br/>";
-    			}
+    			$sessionAlert = new Zend_Session_Namespace('alertSpace');
+				$sessionAlert->message = "Sorry. Unable to log you in. Please check your login credentials";
+				$sessionAlert->status = "failure";
+    			//$messages = $res->getMessages();
+    			//foreach($messages as $message){	
+    			//	echo $message . "<br/>";
+    			//}
     		}
     	
     }
@@ -85,13 +72,26 @@ class AuthController extends Zend_Controller_Action
 
     public function logoutAction()
     {
-         Zend_Auth::getInstance()->clearIdentity();
+        Zend_Auth::getInstance()->clearIdentity();
         Zend_Session::destroy();
         $this->_redirect('/index/index');
     }
 
+    public function resetPasswordAction()
+    {
+		if($this->getRequest()->isPost()){
+			$email = $this->getRequest()->getPost('registeredEmail');
+			$userService = new Application_Service_Users();
+			$userService->resetPassword($email);
+			$this->_redirect('/auth/login');
+		}		
+        
+    }
+
 
 }
+
+
 
 
 

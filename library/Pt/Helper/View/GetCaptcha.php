@@ -80,7 +80,6 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
 
         $captchaSession = new Zend_Session_Namespace("DACAPTCHA");
         $captchaSession->code = $captcha_config['code'];
-error_log($captcha_config['code']);
 
         if (!function_exists('hex2rgb')) {
 

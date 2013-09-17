@@ -10,29 +10,52 @@
 
 
 		
-<form name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>">
+<form name="contactForm" id="contactForm" method="post" action="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>">
 
-    <table style="width: 60%;margin: auto;" cellspacing="15" cellpadding="15">
+    <table style="width: 50%;margin: auto;" cellspacing="15" cellpadding="15">
 		<tr>
 			<td colspan="2">
-				<h1 class="txt" style="text-align: center;">Login - <span> Proficiency Testing</span></h1>
+				<h1 class="txt" style="text-align: center;">Contact Us</span></h1>
 			</td>
 		</tr>
         <tr> 
             <th>
-				<label for="username" class="uname" data-icon="u"> Your email or username </label>
+				<label for="name" class="name" data-icon="u"> Your Name <span class="mandatory">*</span> </label>
 			</th>
             <td>
-				<input id="username" name="username" class="isRequired" title="Please enter your email or username" type="text" placeholder="myusername or mymail@mail.com"/>
+				<input id="name" name="name" class="isRequired" title="Please enter your name" type="text" placeholder="your name"/>
 			</td>
         </tr>
         <tr>
-			<th>
-				<label for="password" class="youpasswd" data-icon="p"> Your password </label>
+            <th>
+				<label for="email" class="email" data-icon="u"> Your Email <span class="mandatory">*</span> </label>
 			</th>
-			<td>
-				<input id="password" name="password" class="isRequired" title="Please enter your password" type="password" placeholder="eg. X8df!90EO" />
-				
+            <td>
+				<input id="email" name="email" class="isRequired isEmail" title="Please enter your email" type="text" placeholder="your email"/>
+			</td>
+        </tr>
+        <tr>
+            <th>
+				<label for="phone" class="phone" data-icon="u"> Your Phone/Mobile <span class="mandatory">*</span></label>
+			</th>
+            <td>
+				<input id="phone" name="phone" class="isRequired" title="Please enter your contact number" type="text" placeholder="your contact number"/>
+			</td>
+        </tr>
+        <tr>
+            <th>
+				<label for="agency" class="agency" data-icon="u"> Lab/Agency Name </label>
+			</th>
+            <td>
+				<input id="agency" name="agency" class="" title="Please enter your lab/agency name" type="text" placeholder="your lab/agency name"/>
+			</td>
+        </tr>
+        <tr>
+            <th>
+				<label for="additionalInfo" class="additionalInfo" data-icon="u"> Additional Info <span class="mandatory">*</span> </label>
+			</th>
+            <td>
+				<textarea id="additionalInfo" name="additionalInfo" class="isRequired" title="Please enter some more information" type="text" placeholder="additional information"></textarea>
 			</td>
         </tr>
 		<tr>
@@ -58,10 +81,8 @@
 		</tr>
 		<tr>
 			<td colspan="2" align="center">
-				<button class="button button-rounded button-primary" onclick="validateLogin();return false;">Login</button>
-				<a href="/auth/reset-password" style="font-size:0.8em;color:red;">Forgot Password ?</a>
-				<br/><br/>
-				<a href="/contact-us" style="">Don't have a login ? Click here to contact us</a>
+				<button class="button button-rounded button-primary" onclick="validateContactUs();return false;">Contact Us</button>
+				
 			</td>
 		</tr>
 
@@ -83,9 +104,9 @@
                 });
             }
 	    
-            function validateLogin(){
+            function validateContactUs(){
                 flag = deforayValidator.init({
-                    formId: 'loginForm'
+                    formId: 'contactForm'
                 });
                 if(flag){
                     challenge_field=document.getElementById("challengeResponse").value;
@@ -98,8 +119,14 @@
                                 document.getElementById("challengeResponse").value="";
                                 return false;
                             }else{
-				$.blockUI();
-                                document.getElementById('loginForm').submit();
+								$.blockUI();
+                                $.post( "<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>",
+									   { name: $("#name").val(), email: $("#email").val(),phone: $("#phone").val(),agency: $("#agency").val(),additionalInfo: $("#additionalInfo").val(), format : "html" })
+								.done(function( data ) {
+								 $.unblockUI();
+								  alert( data );
+								  
+								});
                             }
                         });
                     }else{

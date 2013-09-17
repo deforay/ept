@@ -42,6 +42,10 @@
         </controllerFile>
         <controllerFile controllerName="Common">
           <actionMethod actionName="index"/>
+          <actionMethod actionName="sendMail"/>
+        </controllerFile>
+        <controllerFile controllerName="ContactUs">
+          <actionMethod actionName="index"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory enabled="false"/>
@@ -54,6 +58,7 @@
         <dbTableDirectory>
           <dbTableFile dbTableName="ResponseDtsDb"/>
           <dbTableFile dbTableName="Users"/>
+          <dbTableFile dbTableName="GlobalConfig"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>
@@ -63,6 +68,9 @@
           <configsDirectory enabled="false"/>
           <controllersDirectory>
             <controllerFile controllerName="Login">
+              <actionMethod actionName="index"/>
+            </controllerFile>
+            <controllerFile controllerName="Index">
               <actionMethod actionName="index"/>
             </controllerFile>
           </controllersDirectory>
@@ -76,6 +84,34 @@
           <viewsDirectory>
             <viewScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Login">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Index">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+            </viewScriptsDirectory>
+            <viewHelpersDirectory/>
+            <viewFiltersDirectory/>
+          </viewsDirectory>
+        </moduleDirectory>
+        <moduleDirectory moduleName="user">
+          <apisDirectory enabled="false"/>
+          <configsDirectory enabled="false"/>
+          <controllersDirectory>
+            <controllerFile controllerName="Index">
+              <actionMethod actionName="index"/>
+            </controllerFile>
+          </controllersDirectory>
+          <formsDirectory enabled="false"/>
+          <layoutsDirectory enabled="false">
+            <layoutScriptsDirectory enabled="false"/>
+          </layoutsDirectory>
+          <modelsDirectory>
+            <dbTableDirectory enabled="false"/>
+          </modelsDirectory>
+          <viewsDirectory>
+            <viewScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Index">
                 <viewScriptFile forActionName="index"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
@@ -149,6 +185,12 @@
           <viewControllerScriptsDirectory forControllerName="Captcha">
             <viewScriptFile forActionName="checkCaptcha"/>
           </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Common">
+            <viewScriptFile forActionName="sendMail"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ContactUs">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
         <viewFiltersDirectory enabled="false"/>
@@ -190,12 +232,26 @@
           </testApplicationControllerFile>
           <testApplicationControllerFile forControllerName="Common">
             <testApplicationActionMethod forActionName="index"/>
+            <testApplicationActionMethod forActionName="sendMail"/>
+          </testApplicationControllerFile>
+          <testApplicationControllerFile forControllerName="ContactUs">
+            <testApplicationActionMethod forActionName="index"/>
           </testApplicationControllerFile>
         </testApplicationControllerDirectory>
         <testApplicationModulesDirectory>
           <testApplicationModuleDirectory forModuleName="admin">
             <testApplicationControllerDirectory>
               <testApplicationControllerFile forControllerName="Login">
+                <testApplicationActionMethod forActionName="index"/>
+              </testApplicationControllerFile>
+              <testApplicationControllerFile forControllerName="Index">
+                <testApplicationActionMethod forActionName="index"/>
+              </testApplicationControllerFile>
+            </testApplicationControllerDirectory>
+          </testApplicationModuleDirectory>
+          <testApplicationModuleDirectory forModuleName="user">
+            <testApplicationControllerDirectory>
+              <testApplicationControllerFile forControllerName="Index">
                 <testApplicationActionMethod forActionName="index"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>

@@ -1,7 +1,3 @@
-/* Getting the new tags to behave */
-article, aside, audio, canvas, command, datalist, details, embed, figcaption, figure, footer, header, hgroup, keygen, meter, nav, output, progress, section, source, video{ display: block; }
-mark, rp, rt, ruby, summary, time{ display: inline }
-
 * { margin:0; padding:0;}
 html, body { height:100%;  min-width:950px;}	
 body { 
@@ -62,7 +58,7 @@ section ul.list1 li a.current { text-decoration:none; color:#fff;  background:#f
 
 
 /*header*/
-header {font-size:0.75em; color:#FFFFFF; background:#fff; height:185px; position:relative; z-index:900000}
+header {font-size:0.75em; color:#FFFFFF; background:#fff; height:185px; position:relative; z-index: 999}
 header .indent{ top:95px; right:3px; position:absolute; padding:0; width:191px}
 header .inside{background:url(../images/bg_m.png) top left no-repeat; top:135px; left:0; width:950px; position: absolute; padding:0; margin:0; z-index:90000}
 header .nav{position:relative; padding:0; margin:0; z-index:9000000}
@@ -283,3 +279,9 @@ textarea{
 .but1{ position:absolute; left:0; top:48px; }
 #loopedCarousel .previous{background:url(../images/button-1.gif) top left no-repeat; width:26px; height:105px; display:block; float:left; text-decoration:none; margin-left:-43px; position:relative}
 #loopedCarousel .next{background:url(../images/button-2.gif) top left no-repeat; text-decoration:none; width:26px; height:105px; display:block; float:right; margin-left:884px; position:relative; }
+
+
+button, input, select, textarea {
+  font-family : inherit;
+  font-size   : 100%;
+}

@@ -23,6 +23,7 @@
 </footer>
 
  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+ <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.formalize.min.js"); ?>"></script> 
  <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.validate.js"); ?>"></script> 
 
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/cufon-yui.js");?>"></script>
@@ -56,6 +57,22 @@ $(document).ready(function() {
 			autoStart: 5000,
 			restart: 5000
 		});
+		
+		
+
+   
+      <?php
+      $alertMsg = new Zend_Session_Namespace('alertSpace');
+      if(isset($alertMsg->message) && $alertMsg->message != ""){
+      ?>
+        alert("<?php echo $alertMsg->message;?>");
+      <?php
+		$alertMsg->message="";
+        unset($alertMsg->message);        
+      }
+      ?>
+      		
+		
 	});
 </script>
 <script type="text/javascript"> Cufon.now(); </script>

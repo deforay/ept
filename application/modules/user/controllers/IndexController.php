@@ -1,6 +1,6 @@
 <?php
 
-class CommonController extends Zend_Controller_Action
+class User_IndexController extends Zend_Controller_Action
 {
 
     public function init()
@@ -13,13 +13,6 @@ class CommonController extends Zend_Controller_Action
         // action body
     }
 
-    public function sendMailAction()
-    {
-        
-    }
-
 
 }
-
-
 
