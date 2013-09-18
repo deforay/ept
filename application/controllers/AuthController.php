@@ -53,7 +53,7 @@ class AuthController extends Zend_Controller_Action
 	    		*/
     			//print_r($authNameSpace->UserFName);
     			//die;
-    			$this->_redirect('/index/index');
+    			$this->_redirect('/participant/dashboard');
     		
     		}else
     		{

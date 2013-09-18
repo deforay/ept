@@ -19,15 +19,15 @@
                         </div>
                     </div>
                    
-                       <div class="grid_8 alpha">
+                       <div class="grid_10 alpha">
                         
                            <div class="tail container">
                               <img alt="" src="<?php echo $this->baseUrl("images/manicon.PNG"); ?>" width="50" height="50" class="img-left" />
-                              <span class="txt">User Information</span>
-                              <br>
-                        	  	<h3>  <font color="#df7a18"> User Name : </font> <?php echo( ($this->authNameSpace->UserFName ) . "  " . ($this->authNameSpace->UserLName ) );?> <br>
-                        		  <font color="#df7a18"> e-mail : </font> <?php echo( $this->authNameSpace->UserEmail);?> <a href="#" class="link">modify</a> <br>
-                        		   <?php echo  $this->authNameSpace->UserFld1; ?> ,  <?php echo $this->authNameSpace->UserFld2;  ?> </h3>
+                              <span class="txt">User Information <a href="#" class="link" style="font-size:10px;text-transform: lowercase;">modify</a> </span>
+                              <br /><br />
+                        	  	<h3 style="width:700px;">
+									<font color="#df7a18"> Your Name : </font> <?php echo( ($this->authNameSpace->UserFName ) . "  " . ($this->authNameSpace->UserLName ) );?> <br/>
+                        		  <font color="#df7a18"> Your Email : </font> <?php echo( $this->authNameSpace->UserEmail);?> 
                         
                               <br class="clear" />          
                           </div>

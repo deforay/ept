@@ -26,4 +26,3 @@ class Application_Service_Participants {
 	}
 
 }
-

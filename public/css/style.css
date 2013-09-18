@@ -37,7 +37,7 @@ section ul.list li a:hover { text-decoration:none; color:#f07700; }
 
 section ul.list1{margin:0; padding:0; list-style:none;}
 section ul.list1 li{ margin-bottom:6px; overflow:hidden }
-section ul.list1 li a{color:#434343; text-decoration:none; font-size:18px; line-height:33px; background:#fff; padding:0px 15px 0px 15px; display:block; border-style: solid; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; position:relative } 
+section ul.list1 li a{color:#434343; text-decoration:none; font-size:18px; line-height:33px; background:#fff; padding:0px 15px 0px 15px; display:block; border-style: none; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; position:relative } 
 section ul.list1 li a:hover { text-decoration:none; color:#fff;  background:#f07d2c; }
 section ul.list1 li a.current { text-decoration:none; color:#fff;  background:#f07d2c; } 
 

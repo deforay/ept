@@ -31,7 +31,7 @@ class ParticipantController extends Zend_Controller_Action
     	
     	$stmt = $db->prepare("call SHIPMENT_CURRENT(?)");
     	$stmt->execute(array( $authNameSpace->UserID));
-    	$this->view->rsShipCurr = array();// $stmt->fetchAll();
+    	$this->view->rsShipCurr = $stmt->fetchAll();
     	 
     	$stmt = $db->prepare("call SHIPMENT_DEFAULTED()");
     	$stmt->execute();
@@ -82,7 +82,7 @@ class ParticipantController extends Zend_Controller_Action
 
     public function schemeAction()
     {
-        // action body
+        
     }
 
     public function passwordAction()
