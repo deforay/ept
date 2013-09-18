@@ -59,6 +59,7 @@
           <dbTableFile dbTableName="ResponseDtsDb"/>
           <dbTableFile dbTableName="Users"/>
           <dbTableFile dbTableName="GlobalConfig"/>
+          <dbTableFile dbTableName="Participants"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>

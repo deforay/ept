@@ -76,18 +76,8 @@ class ParticipantController extends Zend_Controller_Action
 
     public function testersAction()
     {
-        // action body
-        // get all tester/participant for current user
-    	$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
-    	$this->view->authNameSpace = $authNameSpace;
-    	
-    	$dbUsersProfile = new Application_Model_UsersProfile();
-    	$this->view->rsUsersProfile = $dbUsersProfile->getUsersParticipant($authNameSpace->UserSystemID);
-    	
-    	
-    	
-    	// Zend_Debug::dump ($this->view->rsUsersProfile);
-    	//die;
+    	$dbUsersProfile = new Application_Service_Participants();
+    	$this->view->rsUsersProfile = $dbUsersProfile->getUsersParticipants();
     }
 
     public function schemeAction()
@@ -109,24 +99,15 @@ class ParticipantController extends Zend_Controller_Action
     {
         // action body
         // Get
-    	$dbParticipant = new Application_Model_UsersProfile();
-    	if(!$this->_request->isPost())
+    	$dbParticipant = new Application_Service_Participants();
+    	if($this->getRequest()->isPost())
     	{
-    		// Display the data
-    	$params = $this->getRequest()->getParams();
-    	//Zend_Debug::dump($params);
-    	
-    	$this->view->rsParticipant = $dbParticipant->getParticipant($params['psid']);
-    	//Zend_Debug::dump($this->view->rsParticipant);
+    		$data = $this->getRequest()->getPost();
+    		$dbParticipant->updateParticipant($data);
+    		$this->_redirect('/participant/testers');	    	
     	}
     	else {
-    		$data = $this->_request->getParams();
-    		$dbParticipant->saveParticipant($data);
-    		//Zend_Debug::dump($data);
-    		//echo "data Saved"; 
-    		//die;
-    		$this->_forward('testers', 'Participant',null,array('msg'=>'Saved'));
-    		
+	    	$this->view->rsParticipant = $dbParticipant->getParticipantDetails($this->_getParam('psid'));    		
     	}
     	
     	

@@ -50,6 +50,6 @@ class Application_Service_Users {
 			$sessionAlert->status = "failure";
 		}
 	}
-
+	
 }
 

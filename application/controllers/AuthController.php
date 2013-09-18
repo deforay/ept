@@ -36,8 +36,7 @@ class AuthController extends Zend_Controller_Action
     			
     			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
     			$authNameSpace->UserID = $params['username'];
-    		
-	    		$authNameSpace->UserSystemID = $rs->UserSystemId;
+	    		$authNameSpace->UserSystemID = $rs->UserSystemID;
 	    		$authNameSpace->UserFName = $rs->UserFname;
 	    		$authNameSpace->UserLName = $rs->UserLName;
 	    		$authNameSpace->UserPhoneNumber = $rs->UserPhoneNumber;

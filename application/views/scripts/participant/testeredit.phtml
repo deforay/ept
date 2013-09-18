@@ -15,32 +15,32 @@
 					<td><?php echo $this->rsParticipant['ParticipantSystemID']; ?></td>
 				</tr>
 				<tr align="left"  class="dark">
-					<td>Lab or Participant ID</td>
-					<td><input id="pid" type="text" id="pid" name="pid" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantID']; ?>" required /></td>
+					<td>Lab or Participant ID <span class="mandatory">*</span></td>
+					<td><input type="text" id="pid" name="pid" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantID']; ?>" class="isRequired" title="Please enter the Participant's ID here" /></td>
 				</tr>
 				<tr align="left" class="light">
-					<td>Participant First Name</td>
-					<td><input id="pfname" type="text" id="pfname" name="pfname" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantFName']; ?>" required/></td>
+					<td>Participant First Name <span class="mandatory">*</span></td>
+					<td><input type="text" id="pfname" name="pfname" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantFName']; ?>" class="isRequired"  title="Please enter the Participant's First Name here"/></td>
 				</tr>
 				<tr align="left" class="dark">
 					<td>Participant Last Name</td>
-					<td><input id="plname" type="text" id="plname" name="plname" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantLName']; ?>" /></td>
+					<td><input type="text" id="plname" name="plname" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantLName']; ?>" title="Please enter the Participant's Last Name here" /></td>
 				</tr>
 				<tr align="left" class="light">
 					<td>Participant e-mail Address</td>
-					<td><input id="pemail" type="text" id="pemail" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipanteMail']; ?>" /></td>
+					<td><input type="text" id="pemail" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipanteMail']; ?>" title="Please enter the Participant's Email here" /></td>
 				</tr>
 				<tr align="left" class="dark">
 					<td>Participant Phone Number</td>
-					<td><input id="pphone1" type="text" id="pphone1" name="pphone1" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantPhone']; ?>" /></td>
+					<td><input type="text" id="pphone1" name="pphone1" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantPhone']; ?>" title="Please enter the Participant's Phone here" /></td>
 				</tr>
 				<tr align="left" class="light">
-					<td>Participant Cell Number</td>
-					<td><input id="pphone2" type="text" id="pphone2" name="pphone2" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantMobile']; ?>" required /></td>
+					<td>Participant Cell/Mobile Number <span class="mandatory">*</span></td>
+					<td><input type="text" id="pphone2" name="pphone2" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantMobile']; ?>" class="isRequired" title="Please enter the Participant's Mobile Number here" /></td>
 				</tr>
 				<tr align="left" class="dark">
 					<td>Participant Affiliation</td>
-					<td><input id="UserFld1" type="text" id="UserFld1" name="UserFld1" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantAffiliation']; ?>" /></td>
+					<td><input type="text" id="partAff" name="partAff" size="50" maxlength="45" value="<?php echo $this->rsParticipant['ParticipantAffiliation']; ?>"  title="Please enter the Participant's Affiliation here"/></td>
 				</tr>
 				
 				
@@ -48,7 +48,7 @@
 			<br>
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 				<p>
-					<input name="submitbtn" class="button button-rounded button-primary" type="submit" id="submit" tabindex="7" value="Submit"  /> 
+					<input name="submitbtn" class="button button-rounded button-primary" type="submit"  onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
 					&nbsp;&nbsp;&nbsp;
 					<input name="reset" class="button button-rounded button-caution" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_testers()" /> 
 					
@@ -65,35 +65,14 @@ function goto_testers(){
 	window.history.back();
 }
 
-$("#participantEdit").validate({
 
-	  invalidHandler: function(event, validator) {
-
-		  var errors = validator.numberOfInvalids();
-		    if (errors) {
-		      var message = errors == 1
-		        ? 'You missed 1 field. It has been highlighted'
-		        : 'You missed ' + errors + ' fields. They have been highlighted';
-		    //  $("div.error span").html(message);
-		      $("#error").text(message).show().css("color", "red").fadeOut(4000);
-		    } 
-		    },
-	rules: {
-		pfname: {required: true, minlength: 4},
-		pid : {required: true, minlength: 4},
-		pphone2: {required: true, minlength: 6 },
-		pemail: { required: false, email:true },
-		
-	},
-	messages: {
-		
-		pfname:	"<br>First Name is required (minimum four characters)",
-		pid:	"<br>Tester/Lab Id is required (minimum four characters)",
-		pphone2:	"<br>Cellphone number is required",
-		pemail:	"<br>Provide correct e-mail"			
-	} 
-	});
-
-
-
+    function validateNow(){
+        flag = deforayValidator.init({
+            formId: 'participantEdit'
+        });
+        if(flag){
+            //$.blockUI();
+            document.getElementById('participantEdit').submit();
+        }
+    }	 
 </script>
