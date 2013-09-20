@@ -37,10 +37,11 @@ section ul.list li a:hover { text-decoration:none; color:#f07700; }
 
 section ul.list1{margin:0; padding:0; list-style:none;}
 section ul.list1 li{ margin-bottom:6px; overflow:hidden }
-section ul.list1 li a{color:#434343; text-decoration:none; font-size:18px; line-height:33px; background:#fff; padding:0px 15px 0px 15px; display:block; border-style: none; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; position:relative } 
+section ul.list1 li a{color:#434343; text-decoration:none; font-size:18px; line-height:33px; background:#fff; padding:0px 15px 0px 15px; display:block; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; position:relative } 
 section ul.list1 li a:hover { text-decoration:none; color:#fff;  background:#f07d2c; }
 section ul.list1 li a.current { text-decoration:none; color:#fff;  background:#f07d2c; } 
 
+nav ul { border-style: none !important;}
 
 .link{color:#e67403; background:url(../images/marker2.gif) center right no-repeat; padding-right:13px; text-decoration:none; font-weight:bold; font-family:Arial, Helvetica, sans-serif; font-size:12px }
 .link:hover{text-decoration:underline }

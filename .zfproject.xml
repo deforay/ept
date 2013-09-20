@@ -47,6 +47,14 @@
         <controllerFile controllerName="ContactUs">
           <actionMethod actionName="index"/>
         </controllerFile>
+        <controllerFile controllerName="Eid">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="response"/>
+        </controllerFile>
+        <controllerFile controllerName="Vl">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="response"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory enabled="false"/>
       <layoutsDirectory>
@@ -60,6 +68,9 @@
           <dbTableFile dbTableName="Users"/>
           <dbTableFile dbTableName="GlobalConfig"/>
           <dbTableFile dbTableName="Participants"/>
+          <dbTableFile dbTableName="EidDetectionAssay"/>
+          <dbTableFile dbTableName="EidExtractionAssay"/>
+          <dbTableFile dbTableName="VlAssay"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>
@@ -192,6 +203,18 @@
           <viewControllerScriptsDirectory forControllerName="ContactUs">
             <viewScriptFile forActionName="index"/>
           </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Eid">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Eid">
+            <viewScriptFile forActionName="response"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Vl">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Vl">
+            <viewScriptFile forActionName="response"/>
+          </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
         <viewFiltersDirectory enabled="false"/>
@@ -237,6 +260,14 @@
           </testApplicationControllerFile>
           <testApplicationControllerFile forControllerName="ContactUs">
             <testApplicationActionMethod forActionName="index"/>
+          </testApplicationControllerFile>
+          <testApplicationControllerFile forControllerName="Eid">
+            <testApplicationActionMethod forActionName="index"/>
+            <testApplicationActionMethod forActionName="response"/>
+          </testApplicationControllerFile>
+          <testApplicationControllerFile forControllerName="Vl">
+            <testApplicationActionMethod forActionName="index"/>
+            <testApplicationActionMethod forActionName="response"/>
           </testApplicationControllerFile>
         </testApplicationControllerDirectory>
         <testApplicationModulesDirectory>

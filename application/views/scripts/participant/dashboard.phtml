@@ -1,6 +1,5 @@
 <section id="content">
     <div class="main">
-    
             <div class="container_24">
             	<div class="container">
                     <div class="grid_8 alpha">
@@ -12,23 +11,21 @@
                                     <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">Participant</a></li>
                                     <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"scheme"),null,true) ?>">Schemes</a></li>
                                     <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"report"),null,true) ?>">Report</a></li>
-                                    
                                 </ul>
                             </div>
                            </div>
                         </div>
                     </div>
-                   
                        <div class="grid_10 alpha">
                         
                            <div class="tail container">
                               <img alt="" src="<?php echo $this->baseUrl("images/manicon.PNG"); ?>" width="50" height="50" class="img-left" />
                               <span class="txt">User Information <a href="#" class="link" style="font-size:10px;text-transform: lowercase;">modify</a> </span>
-                              <br /><br />
-                        	  	<h3 style="width:700px;">
-									<font color="#df7a18"> Your Name : </font> <?php echo( ($this->authNameSpace->UserFName ) . "  " . ($this->authNameSpace->UserLName ) );?> <br/>
-                        		  <font color="#df7a18"> Your Email : </font> <?php echo( $this->authNameSpace->UserEmail);?> 
-                        
+                              
+							  <div style="margin-left: 60px;">
+                        	  	<h3 style="width:700px;"><font color="#df7a18"> Your Name : </font> <?php echo( ($this->authNameSpace->UserFName ) . "  " . ($this->authNameSpace->UserLName ) );?> <br/>
+                        		 <font color="#df7a18"> Your Email : </font> <?php echo( $this->authNameSpace->UserEmail);?> 
+                        </div>
                               <br class="clear" />          
                           </div>
                          
@@ -86,7 +83,7 @@
 					<td><?php echo $curr['SCHEME']; ?></td>
 					<td align="left"><?php echo $curr['FNAME'] . ' ' . $curr['LNAME'] ;?></td>
 					<td><?php echo $curr['LASTDATERESPONSE']; ?></td>
-					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>"DTS","action"=>"response","sid"=>$curr['SHIPID'],"pid"=>$curr['PARTICIPANTID'],"eid"=>$curr['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $curr['RESPONSE']; ?></a></td>
+					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($curr['SCHEME']),"action"=>"response","sid"=>$curr['SHIPID'],"pid"=>$curr['PARTICIPANTID'],"eid"=>$curr['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $curr['RESPONSE']; ?></a></td>
 					<td><?php echo $curr['RESPONSEDATE']; ?></td>
 				</tr>
 				<?php } ?>
@@ -156,7 +153,7 @@
 					<td><?php echo $all['SCHEME']; ?></td>
 					<td align="left"><?php echo $all['FNAME'] . ' ' . $all['LNAME'] ;?></td>
 					<td><?php echo $all['RESPONSEDATE']; ?></td>
-					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>"DTS","action"=>"response","sid"=>$all['SHIPID'],"pid"=>$all['PARTICIPANTID'],"eid"=>$all['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $all['RESPONSE']; ?></a></td>
+					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($curr['SCHEME']),"action"=>"response","sid"=>$all['SHIPID'],"pid"=>$all['PARTICIPANTID'],"eid"=>$all['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $all['RESPONSE']; ?></a></td>
 					<td style="text-decoration : underline;"><a href="#"><?php echo $all['REPORT']; ?></a></td>					
 				</tr>	
 				<?php }?>		
