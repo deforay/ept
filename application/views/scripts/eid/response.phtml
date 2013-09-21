@@ -1,23 +1,14 @@
 <?php date_default_timezone_set('America/New_York');?>
-<form name="DTSResponse" id="DTSResponse" method="post"   action="<?php echo $this->url(array("controller"=>"DTS","action"=>"response"),null,true) ?>">
+<form name="eidResponseForm" id="eidResponseForm" method="post"   action="<?php echo $this->url(array("controller"=>"eid","action"=>"response"),null,true) ?>">
 
-<input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['LastDateResponse'];?>" />
+<input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response'];?>" />
 <input type="hidden" id ="hdshipId" name="hdshipId" value="<?php echo $this->shipId;?>" />
 
 
 <input type="hidden" id ="hdparticipantId" name="hdparticipantId" value="<?php echo $this->participantId;?>" />
 <input type="hidden" id ="hdeID" name="hdeID" value="<?php echo $this->eID;?>" />
-<?php $count =0;  
-foreach($this->allSamples as $sample){ 
-$count++;  ?>
-<input type="hidden" id ="<?php echo $count . "_hdSampleId"; ?>" name="<?php echo $count . "_hdSampleId"; ?>" value="<?php echo $sample['DTSSampleID'];?>" />	 
-<?php } ?>
-
-<?php 
-//  $dt= DateTime::createFromFormat('Y-m-d',$this->shipment["ShipmentReceiptDate"]); echo $dt->format('d-M-Y'); 
 
 
-?>
 <div id="view-content">
 <h2 align="CENTER"> Early Infant Diagnosis </h2>
 <br>
@@ -33,25 +24,25 @@ $count++;  ?>
 <table>
 	<tr class="dark">
 		<td>Shipment Date</td>
-		<td><?php echo $this->shipment['ShipmentDate'];?></td>
+		<td><?php echo $this->shipment['shipment_date'];?></td>
 		<td>Last Response Date <?php  ?></td>
-		<td><?php echo $this->shipment['LastDateResponse'];?> </td>
+		<td><?php echo $this->shipment['lastdate_response'];?> </td>
 	</tr>
 	
 	
 	
 	<tr class ="light">
 		<td>Shipment Receipt Date</td>
-		<td><input id="receipt_date" type="text" id="receipt_date" name="receipt_date" size="11" maxlength="11" value="<?php  echo $this->shipment["ShipmentReceiptDate"];  ?>" required/></td>
+		<td><input id="receipt_date" type="text" id="receipt_date" name="receipt_date" size="11" maxlength="11" value="<?php  echo $this->shipment["shipment_receipt_date"];  ?>" required/></td>
 		<td>Testing Date</td> 
-		<td><input id="test_date" type="text" id="test_date" name="test_date" size="11" maxlength="11" value="<?php  echo $this->shipment["ShipmentTestDate"]; ?>"  required/></td>
+		<td><input id="test_date" type="text" id="test_date" name="test_date" size="11" maxlength="11" value="<?php  echo $this->shipment["shipment_test_date"]; ?>"  required/></td>
 	</tr>
 	
 	<tr class ="dark">
 		<td>Extraction Assay:</td>
 		<td>
 			<select id="extractionAssay" name="extractionAssay">
-			<option>--Select--</option>
+			<option value="">--Select--</option>
 			<?php
 			foreach($this->extractionAssay as $eAssay){
 				?>
@@ -64,7 +55,7 @@ $count++;  ?>
 		<td>Detection Assay:</td> 
 		<td>
 			<select id="detectionAssay" name="detectionAssay">
-				<option>--Select--</option>
+				<option value="">--Select--</option>
 				<?php
 				foreach($this->detectionAssay as $dAssay){
 					?>
@@ -75,7 +66,12 @@ $count++;  ?>
 			</select>
 		</td>
 	</tr>
-	
+	<tr>
+		<td>Sample Rehydration Date</td>
+		<td><input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" /></td>
+		<td></td>
+		<td></td>
+	</tr>
 </table>
 
 <table style="width: max-content;" border="1">
@@ -87,138 +83,37 @@ $count++;  ?>
 		<th>IC/QS Values</th>		
 	</tr>
 </thead>
-	<tr align="CENTER" class="light" >
-		<th>Kit Negative Control</th>
-		<td  class="dark" >
-			<select name="testkit1" id="testkit1"  style="width: 200px"  >
-				<option>--Select--</option>
-				<option value="Positive">Positive (HIV Detected)</option>
-				<option value="Negative">Negative (HIV Not Detected)</option>
-				<option value="Equivocal">Equivocal</option>
-			</select>
-		</td>
-		<td><input type="text"/></td>
-        <td><input type="text" /></td>
-    </tr>
-	<tr align="CENTER" class="light" >
-		<th>Kit Positive Control</th>
-		<td  class="dark" >
-			<select name="testkit1" id="testkit1"  style="width: 200px"  >
-				<option>--Select--</option>
-				<option value="Positive">Positive (HIV Detected)</option>
-				<option value="Negative">Negative (HIV Not Detected)</option>
-				<option value="Equivocal">Equivocal</option>
-			</select>
-		</td>
-		<td><input type="text"/></td>
-        <td><input type="text" /></td>
-    </tr>
-	<tr align="CENTER" class="light" >
-		<th>PT Provider Negative Control</th>
-		<td  class="dark" >
-			<select name="testkit1" id="testkit1"  style="width: 200px"  >
-				<option>--Select--</option>
-				<option value="Positive">Positive (HIV Detected)</option>
-				<option value="Negative">Negative (HIV Not Detected)</option>
-				<option value="Equivocal">Equivocal</option>
-			</select>
-		</td>
-		<td><input type="text"/></td>
-        <td><input type="text" /></td>
-    </tr>
-	<tr align="CENTER" class="light" >
-		<th>PT Provider Positive Control</th>
-		<td  class="dark" >
-			<select name="testkit1" id="testkit1"  style="width: 200px"  >
-				<option>--Select--</option>
-				<option value="Positive">Positive (HIV Detected)</option>
-				<option value="Negative">Negative (HIV Not Detected)</option>
-				<option value="Equivocal">Equivocal</option>
-			</select>
-		</td>
-		<td><input type="text"/></td>
-        <td><input type="text" /></td>
-    </tr>
-	<tr align="CENTER" class="light" >
-		<th>In-House Negative Control</th>
-		<td  class="dark" >
-			<select name="testkit1" id="testkit1"  style="width: 200px"  >
-				<option>--Select--</option>
-				<option value="Positive">Positive (HIV Detected)</option>
-				<option value="Negative">Negative (HIV Not Detected)</option>
-				<option value="Equivocal">Equivocal</option>
-			</select>
-		</td>
-		<td><input type="text"/></td>
-        <td><input type="text" /></td>
-    </tr>
-	<tr align="CENTER" class="light" >
-		<th>In-House Positive Control</th>
-		<td  class="dark" >
-			<select name="testkit1" id="testkit1"  style="width: 200px"  >
-				<option>--Select--</option>
-				<option value="Positive">Positive (HIV Detected)</option>
-				<option value="Negative">Negative (HIV Not Detected)</option>
-				<option value="Equivocal">Equivocal</option>
-			</select>
-		</td>
-		<td><input type="text"/></td>
-        <td><input type="text" /></td>
-    </tr>
+
+<?php $count =0;  
+foreach($this->allSamples as $sample){ 
+$count++;  ?>
+
 
 	<tr align="CENTER" class="light" >
-		<th>2013-I-A-01</th>
-		<td  class="dark" >
-			<select name="testkit1" id="testkit1"  style="width: 200px"  >
-				<option>--Select--</option>
+		<th>
+			<?php echo $sample['eid_sample_label']; ?>
+			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['eid_sample_id'];?>" />
+		</th>
+		<td class="dark" >
+			<select name="result[]" id="result<?php echo $count; ?>"  style="width: 200px"  >
+				<option value="">--Select--</option>
 				<option value="Positive">Positive (HIV Detected)</option>
 				<option value="Negative">Negative (HIV Not Detected)</option>
 				<option value="Equivocal">Equivocal</option>
 			</select>
 		</td>
-		<td><input type="text"/></td>
-        <td><input type="text" /></td>
-    </tr>
-	<tr align="CENTER" class="light" >
-		<th>2013-I-A-02</th>
-		<td  class="dark" >
-			<select name="testkit1" id="testkit1"  style="width: 200px"  >
-				<option>--Select--</option>
-				<option value="Positive">Positive (HIV Detected)</option>
-				<option value="Negative">Negative (HIV Not Detected)</option>
-				<option value="Equivocal">Equivocal</option>
-			</select>
+		<td>
+			<input type="text" name="hivCtOd[]" />
 		</td>
-		<td><input type="text"/></td>
-        <td><input type="text" /></td>
-    </tr>
-	<tr align="CENTER" class="light" >
-		<th>2013-I-A-03</th>
-		<td  class="dark" >
-			<select name="testkit1" id="testkit1"  style="width: 200px"  >
-				<option>--Select--</option>
-				<option value="Positive">Positive (HIV Detected)</option>
-				<option value="Negative">Negative (HIV Not Detected)</option>
-				<option value="Equivocal">Equivocal</option>
-			</select>
+        <td>
+			<input type="text" name="icQs[]" />
 		</td>
-		<td><input type="text"/></td>
-        <td><input type="text" /></td>
     </tr>
-	<tr align="CENTER" class="light" >
-		<th>2013-I-A-04</th>
-		<td  class="dark" >
-			<select name="testkit1" id="testkit1"  style="width: 200px"  >
-				<option>--Select--</option>
-				<option value="Positive">Positive (HIV Detected)</option>
-				<option value="Negative">Negative (HIV Not Detected)</option>
-				<option value="Equivocal">Equivocal</option>
-			</select>
-		</td>
-		<td><input type="text"/></td>
-        <td><input type="text" /></td>
-    </tr>
-	
+
+
+<?php } ?>
+
+
 </table>
 <br>
 <table>
@@ -227,19 +122,19 @@ $count++;  ?>
 	<td>
 		<select name="supervisorApproval" id="supervisorApproval" class="required">
 			<option>--Select--</option>
-			<option value="YES" <?php if($this->shipment['supervisorApproval'] == 'YES') echo " selected "; ?>>YES</option>
-			<option value="NO" <?php if($this->shipment['supervisorApproval'] == 'NO') echo " selected "; ?>>NO</option>
+			<option value="YES" <?php if($this->shipment['supervisor_approval'] == 'YES') echo " selected "; ?>>YES</option>
+			<option value="NO" <?php if($this->shipment['supervisor_approval'] == 'NO') echo " selected "; ?>>NO</option>
 		</select>
 	</td>
 	<th><label id ="labSupervisor">Supervisor Name</label></th> 
-	<td><input name="participantSupervisor" id="participantSupervisor" type="text"size="10" maxlength="10" value="<?php echo $this->shipment['ParticipantSupervisor'] ; ?>"/></td>
+	<td><input name="participantSupervisor" id="participantSupervisor" type="text"size="10" maxlength="10" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
 	
 </tr>
 <tr>
 
 <th>Comments </th>
 <td colspan="3">
-<textarea name="userCommnets" id="userCommnets" size="120" maxlength="40"><?php echo $this->shipment['UserComment'] ; ?></textarea>
+<textarea name="userCommnets" id="userCommnets" size="120" maxlength="40"><?php echo $this->shipment['user_comment'] ; ?></textarea>
 
 </td>
 </tr>
