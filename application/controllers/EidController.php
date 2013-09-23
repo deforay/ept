@@ -21,11 +21,10 @@ class EidController extends Zend_Controller_Action
         $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
         $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
         
-        $dtsResponseDb = new Application_Model_DTSResponse();
     	if($this->getRequest()->isPost())
     	{
 
-    		$data = $this->_request->getParams();
+    		$data = $this->getRequest()->getPost();
            
             $schemeService->updateEidResults($data);
     		
@@ -49,7 +48,7 @@ class EidController extends Zend_Controller_Action
             $this->view->participantId = $pID;
             $this->view->eID = $eID;
     
-            $isEditable = $dtsResponseDb->IsgetDTSResponseEditable($eID);
+            $isEditable = true;
     	}
     }
 

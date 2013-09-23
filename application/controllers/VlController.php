@@ -15,46 +15,40 @@ class VlController extends Zend_Controller_Action
 
     public function responseAction()
     {
+        
         $schemeService = new Application_Service_Schemes();
         
         $this->view->vlAssay = $schemeService->getVlAssay();
         
-        $dtsResponseDb = new Application_Model_DTSResponse();
-    	if(!$this->_request->isPost())
+    	if($this->getRequest()->isPost())
     	{
-    	$sID= $this->getRequest()->getParam('sid');
-    	$pID= $this->getRequest()->getParam('pid');
-    	$eID =$this->getRequest()->getParam('eid');
-    
-    	$this->view->participant = $dtsResponseDb->getParticipantInfo($pID);
-    	$response =$dtsResponseDb->getDTSResponse($sID,$pID);
-    	$this->view->allSamples = $response;
-    	
-    	//echo $dtsResponse->getDTSResponse(3, 4);
-    	//echo "sID = " . $sID;
-    	//echo "<br>pID = " . $pID;
-    	
-    	
-    	$this->view->shipment = $dtsResponseDb->getDTSShipment( $sID,$pID);
-    	//Zend_Debug::dump($this->view->shipment);
-    	$this->view->allTestKits = $dtsResponseDb->getAllTestKit();
-    	$this->view->result = $dtsResponseDb->getPossibleResult('DTS', 'DTS_TEST');
-    	//Zend_debug::dump($this->view->shipment );
-    	$this->view->fresult = $dtsResponseDb->getPossibleResult('DTS', 'DTS_FINAL');
-    	$this->view->shipId = $sID;
-    	$this->view->participantId = $pID;
-    	$this->view->eID = $eID;
 
-    	$isEditable = $dtsResponseDb->IsgetDTSResponseEditable($eID);
-    	}
-    	else{
-    		$data = $this->_request->getParams();
-    		$dtsResponseDb->saveResponse($data);
-    		//Zend_Debug::dump($data);
-    		//echo "data Saved"; 
-    		$this->_forward('dashboard', 'Participant',null,array('msg'=>'Saved'));
+    		$data = $this->getRequest()->getPost();
+           
+           // Zend_Debug::dump($data);die;
+           
+            $schemeService->updateVlResults($data);
     		
-    		//die;
+    		
+    		
+    		$this->_redirect("/participant/dashboard");
+    		
+    		//die;            
+        }else{
+            $sID= $this->getRequest()->getParam('sid');
+            $pID= $this->getRequest()->getParam('pid');
+            $eID =$this->getRequest()->getParam('eid');
+        
+            $participantService = new Application_Service_Participants();
+            $this->view->participant = $participantService->getParticipantDetails($pID);
+            //Zend_Debug::dump($schemeService->getVlSamples($sID,$pID));
+            $this->view->allSamples =$schemeService->getVlSamples($sID,$pID);
+            $this->view->shipment = $schemeService->getShipmentVl( $sID,$pID);
+            $this->view->shipId = $sID;
+            $this->view->participantId = $pID;
+            $this->view->eID = $eID;
+    
+            $isEditable = true;
     	}
     }
 

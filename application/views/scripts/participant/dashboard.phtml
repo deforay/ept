@@ -153,7 +153,7 @@
 					<td><?php echo $all['SCHEME']; ?></td>
 					<td align="left"><?php echo $all['FNAME'] . ' ' . $all['LNAME'] ;?></td>
 					<td><?php echo $all['RESPONSEDATE']; ?></td>
-					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($curr['SCHEME']),"action"=>"response","sid"=>$all['SHIPID'],"pid"=>$all['PARTICIPANTID'],"eid"=>$all['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $all['RESPONSE']; ?></a></td>
+					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($all['SCHEME']),"action"=>"response","sid"=>$all['SHIPID'],"pid"=>$all['PARTICIPANTID'],"eid"=>$all['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $all['RESPONSE']; ?></a></td>
 					<td style="text-decoration : underline;"><a href="#"><?php echo $all['REPORT']; ?></a></td>					
 				</tr>	
 				<?php }?>		
