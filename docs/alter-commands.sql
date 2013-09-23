@@ -321,7 +321,7 @@ END$$
 
 
 CREATE TABLE IF NOT EXISTS `response_result_eid` (
-  `shipment_id` varchar(45) NOT NULL,
+  `eid_shipment_id` varchar(45) NOT NULL,
   `participant_id` varchar(45) NOT NULL,
   `eid_sample_id` varchar(45) NOT NULL,
   `reported_result` varchar(45) DEFAULT NULL,
@@ -334,3 +334,13 @@ CREATE TABLE IF NOT EXISTS `response_result_eid` (
   `updated_on` datetime DEFAULT NULL,
   PRIMARY KEY (`shipment_id`,`participant_id`,`eid_sample_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- By Amit on 23 Sep 2013
+
+ALTER TABLE  `shipment_eid` ADD  `extraction_assay` INT NULL AFTER  `shipment_test_report_date` ,
+ADD  `detection_assay` INT NULL AFTER  `extraction_assay`;
+
+
+ALTER TABLE  `reference_result_eid` CHANGE  `hiv_ct_od`  `reference_hiv_ct_od` VARCHAR( 45 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ,
+CHANGE  `ic_qs`  `reference_ic_qs` VARCHAR( 45 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;

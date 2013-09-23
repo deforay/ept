@@ -26,10 +26,12 @@ class EidController extends Zend_Controller_Action
     	{
 
     		$data = $this->_request->getParams();
-    		//$dtsResponseDb->saveResponse($data);
-    		Zend_Debug::dump($data);
-    		//echo "data Saved"; 
-    		$this->_forward('dashboard', 'Participant',null,array('msg'=>'Saved'));
+           
+            $schemeService->updateEidResults($data);
+    		
+    		// Zend_Debug::dump($data);die;
+    		
+    		$this->_redirect("/participant/dashboard");
     		
     		//die;            
         }else{
@@ -39,9 +41,8 @@ class EidController extends Zend_Controller_Action
         
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);
-            
+            //Zend_Debug::dump($schemeService->getEidSamples($sID,$pID));
             $this->view->allSamples =$schemeService->getEidSamples($sID,$pID);
-            
             
             $this->view->shipment = $schemeService->getShipmentEid( $sID,$pID);
             $this->view->shipId = $sID;

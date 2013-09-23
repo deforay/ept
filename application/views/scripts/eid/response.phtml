@@ -24,18 +24,15 @@
 <table>
 	<tr class="dark">
 		<td>Shipment Date</td>
-		<td><?php echo $this->shipment['shipment_date'];?></td>
+		<td><?php echo $this->dateFormat($this->shipment['shipment_date']);?></td>
 		<td>Last Response Date <?php  ?></td>
-		<td><?php echo $this->shipment['lastdate_response'];?> </td>
+		<td><?php echo $this->dateFormat($this->shipment['lastdate_response']);?> </td>
 	</tr>
-	
-	
-	
 	<tr class ="light">
 		<td>Shipment Receipt Date</td>
-		<td><input id="receipt_date" type="text" id="receipt_date" name="receipt_date" size="11" maxlength="11" value="<?php  echo $this->shipment["shipment_receipt_date"];  ?>" required/></td>
+		<td><input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" value="<?php  echo $this->dateFormat($this->shipment["shipment_receipt_date"]);  ?>"  class="datepicker isRequired" readonly="readonly"/></td>
 		<td>Testing Date</td> 
-		<td><input id="test_date" type="text" id="test_date" name="test_date" size="11" maxlength="11" value="<?php  echo $this->shipment["shipment_test_date"]; ?>"  required/></td>
+		<td><input type="text" id="testDate" name="testDate" size="11" maxlength="11" value="<?php  echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="datepicker isRequired" readonly="readonly"/></td>
 	</tr>
 	
 	<tr class ="dark">
@@ -46,7 +43,7 @@
 			<?php
 			foreach($this->extractionAssay as $eAssay){
 				?>
-				<option value="<?php echo $eAssay['id']; ?>"><?php echo $eAssay['name']; ?></option>	
+				<option value="<?php echo $eAssay['id']; ?>" <?php echo ($this->shipment['extraction_assay'] == $eAssay['id']) ? "selected='selected'" : "" ?>><?php echo $eAssay['name']; ?></option>	
 				<?php
 			}
 			?>
@@ -59,7 +56,7 @@
 				<?php
 				foreach($this->detectionAssay as $dAssay){
 					?>
-					<option value="<?php echo $dAssay['id']; ?>"><?php echo $dAssay['name']; ?></option>	
+					<option value="<?php echo $dAssay['id']; ?>" <?php echo ($this->shipment['detection_assay'] == $dAssay['id']) ? "selected='selected'" : "" ?>><?php echo $dAssay['name']; ?></option>	
 					<?php
 				}
 				?>				
@@ -68,7 +65,7 @@
 	</tr>
 	<tr>
 		<td>Sample Rehydration Date</td>
-		<td><input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" /></td>
+		<td><input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" class="datepicker" readonly="readonly" value="<?php  echo $this->dateFormat($this->shipment["sample_rehydration_date"]); ?>"  /></td>
 		<td></td>
 		<td></td>
 	</tr>
@@ -86,7 +83,8 @@
 
 <?php $count =0;  
 foreach($this->allSamples as $sample){ 
-$count++;  ?>
+$count++;
+?>
 
 
 	<tr align="CENTER" class="light" >
@@ -95,18 +93,18 @@ $count++;  ?>
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['eid_sample_id'];?>" />
 		</th>
 		<td class="dark" >
-			<select name="result[]" id="result<?php echo $count; ?>"  style="width: 200px"  >
+			<select name="result[]" id="result<?php echo $count; ?>"  style="width: 200px"   class="isRequired" title="Please select the result for <?php echo $sample['eid_sample_label']; ?>">
 				<option value="">--Select--</option>
-				<option value="Positive">Positive (HIV Detected)</option>
-				<option value="Negative">Negative (HIV Not Detected)</option>
-				<option value="Equivocal">Equivocal</option>
+				<option value="Positive" <?php echo ($sample['reported_result'] == "Positive") ? "selected='selected'" : ""; ?>>Positive (HIV Detected)</option>
+				<option value="Negative" <?php echo ($sample['reported_result'] == "Negative") ? "selected='selected'" : ""; ?>>Negative (HIV Not Detected)</option>
+				<option value="Equivocal" <?php echo ($sample['reported_result'] == "Equivocal") ? "selected='selected'" : ""; ?>>Equivocal</option>
 			</select>
 		</td>
 		<td>
-			<input type="text" name="hivCtOd[]" />
+			<input type="text" name="hivCtOd[]" class="isRequired" value="<?php echo $sample['hiv_ct_od']; ?>" title="Please enter the HIV CT/OD for <?php echo $sample['eid_sample_label']; ?>" />
 		</td>
         <td>
-			<input type="text" name="icQs[]" />
+			<input type="text" name="icQs[]" class="isRequired"  value="<?php echo $sample['ic_qs']; ?>" title="Please enter the IC/QS Values for <?php echo $sample['eid_sample_label']; ?>" />
 		</td>
     </tr>
 
@@ -120,7 +118,7 @@ $count++;  ?>
 <tr>
 	<th>Supervisor Review</th>
 	<td>
-		<select name="supervisorApproval" id="supervisorApproval" class="required">
+		<select name="supervisorApproval" id="supervisorApproval" class="isRequired" title="Please select if Supervisor Approval was conducted or not">
 			<option>--Select--</option>
 			<option value="YES" <?php if($this->shipment['supervisor_approval'] == 'YES') echo " selected "; ?>>YES</option>
 			<option value="NO" <?php if($this->shipment['supervisor_approval'] == 'NO') echo " selected "; ?>>NO</option>
@@ -134,7 +132,7 @@ $count++;  ?>
 
 <th>Comments </th>
 <td colspan="3">
-<textarea name="userCommnets" id="userCommnets" size="120" maxlength="40"><?php echo $this->shipment['user_comment'] ; ?></textarea>
+<textarea name="userComments" id="userComments" size="120" maxlength="40"><?php echo $this->shipment['user_comment'] ; ?></textarea>
 
 </td>
 </tr>
@@ -144,7 +142,7 @@ $count++;  ?>
 	<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 				<p>
 					
-					<input name="submitbtn" class="css_btn_class" type="submit" id="submit" tabindex="7" value="Submit"  /> 
+					<input name="submitbtn" class="css_btn_class" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
 					&nbsp;&nbsp;&nbsp;
 					<input name="cancel" class="css_btn_class" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" /> 
 					
@@ -167,129 +165,26 @@ textarea:focus { outline: 1px solid blue; }
  
 <script>
 
-function goto_dashboard(){
-	window.history.back();
-}	 
+	function goto_dashboard(){
+		window.history.back();
+	}
+
+	function validateNow(){
+
+        flag = deforayValidator.init({
+            formId: 'eidResponseForm'
+        });
+        if(flag){
+            $.blockUI();
+            document.getElementById('eidResponseForm').submit();
+        }		
+	}
 
 
 	$(function() {
-  	    $("#receipt_date" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-	    $("#test_date" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-	    $("#exp_date1" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-	    $("#exp_date2" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-	    $("#exp_date3" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-	    $("#reh_date" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-	    
-		});
+  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+	});
 
-	$('#DTSResponse').submit(function() {
-		//  alert( $('#DTSResponse').valid());
-		  
-		});
-	
-	
-	jQuery.validator.addMethod("notEqual", function(value, element, param) {
-		 return this.optional(element) || value != $(param).val();
-		}, "This has to be different...");
-	
-	$("#DTSResponse").validate({
-
-		
-		/* if you want without rule :
-		  invalidHandler: function(event, validator) {
-
-			  var errors = validator.numberOfInvalids();
-			    if (errors) {
-			      var message = errors == 1
-			        ? 'You missed 1 field. It has been highlighted'
-			        : 'You missed ' + errors + ' fields. They have been highlighted';
-			      $("div.error span").html(message);
-			      $("#error").text(message).show().css("color", "red").fadeOut(4000);
-			    } else {
-			     // $("div.error").hide();
-			    }
-	 
-			  	  
-		}
-		*/
-		  invalidHandler: function(event, validator) {
-
-			  var errors = validator.numberOfInvalids();
-			    if (errors) {
-			      var message = errors == 1
-			        ? 'You missed 1 field. It has been highlighted'
-			        : 'You missed ' + errors + ' fields. They have been highlighted';
-			    //  $("div.error span").html(message);
-			      $("#error").text(message).show().css("color", "red").fadeOut(4000);
-			    } 
-			    },
-		rules: {
-			receipt_date: {required: true,date:true},
-			test_date : {required: true,date:true},
-			reh_date: {required: true,date:true},
-			testkit1: { required: true },
-			testkit2: { required: true },
-			testkit3: { required: true },	
-			
-			lot_no1: {
-				required: true,
-				minlength: 2
-			},
-			lot_no2: {
-				required: true,
-				minlength: 2
-			},
-			lot_no3: {
-				required: true,
-				minlength: 2
-			},
-			exp_date1: {
-				required: true,
-				date: true	
-			},
-			exp_date2: {required: true,date: true},
-			exp_date3: {required: true,date: true},
-			
-			testresultf_1:"required",testresultf_2:"required",testresultf_3:"required",
-			
-			supervisorApproval : "required"
-		},
-		messages: {
-			test_date: "<br>Please Enter Date",
-			receipt_date: "<br>Please Enter Date",
-			reh_date: "<br>Please Enter Date", 
-			exp_date1:	{required: "<br>Please Expiry Date", date:"<br>Please Provide Date"},
-			exp_date2:	"<br>Please Expiry Date",
-			exp_date3:	"<br>Please Expiry Date",
-			lot_no1: {
-				required: "Please Lot No 1 ",
-				minlength: "Lot No must consist of at least 2 char"
-			},
-			lot_no2: {
-				required: "Please Lot No 1 ",
-				minlength: "Lot No must consist of at least 2 char"
-			},
-			lot_no3: {
-				required: "Please Lot No 1 ",
-				minlength: "Lot No must consist of at least 2 char"
-			},
-			
-			rehydration_date: {required: true,date:true},
-			
-			testkit1 : "<br>Required Kit Name ",
-			testkit2 : "<br>Required Kit Name ",
-			testkit3 : "<br>Required Kit Name ",
-
-			testresultf_1:	"<br>Final Result Required",
-			testresultf_2:	"<br>Final Result Required",
-			testresultf_3:	"<br>Final Result Required",
-			testresultf_4:	"<br>Final Result Required",
-			testresultf_5:	"<br>Final Result Required",
-			testresultf_6:	"<br>Final Result Required",
-			supervisorApproval :"<br> Required Field"
-				
-		} 
-		});
 	
 	$('#supervisorApproval').change(function() {
 		

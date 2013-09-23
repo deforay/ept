@@ -72,6 +72,7 @@
           <dbTableFile dbTableName="EidExtractionAssay"/>
           <dbTableFile dbTableName="VlAssay"/>
           <dbTableFile dbTableName="ShipmentEid"/>
+          <dbTableFile dbTableName="ResponseEid"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>

@@ -11,7 +11,7 @@ class Pt_Commons_General {
      * Used to format date from dd-mmm-yyyy to yyyy-mm-dd for storing in database
      *
      */
-    public function dateFormat($date) {
+    public static function dateFormat($date) {
         if (!isset($date) || $date == null || $date == "" || $date == "0000-00-00") {
             return "0000-00-00";
         } else {
@@ -32,7 +32,7 @@ class Pt_Commons_General {
         }
     }
 
-    public function humanDateFormat($date) {
+    public static function humanDateFormat($date) {
 
         if ($date == null || $date == "" || $date == "0000-00-00") {
             return "";
