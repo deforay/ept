@@ -21,7 +21,7 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
                                     'hiv_ct_od'=>$params['hivCtOd'][$key],
                                     'ic_qs'=>$params['icQs'][$key],
                                     'created_by' => $authNameSpace->UserID,
-                                    'created_by' => new Zend_Db_Expr('now()')
+                                    'created_on' => new Zend_Db_Expr('now()')
                                    ));                
             }else{
                 $this->update(array(

@@ -11,6 +11,7 @@ class Application_Model_DbTable_ShipmentEid extends Zend_Db_Table_Abstract
     }
     
     public function updateShipmentEid($params,$shipmentId, $participantId){
+        $params['evaluation_status'] = '11111110';
         return $this->update($params,"eid_shipment_id = $shipmentId and participant_id = '".$participantId."'");
     }
 

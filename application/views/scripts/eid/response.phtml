@@ -170,14 +170,18 @@ textarea:focus { outline: 1px solid blue; }
 	}
 
 	function validateNow(){
-
-        flag = deforayValidator.init({
-            formId: 'eidResponseForm'
-        });
-        if(flag){
-            $.blockUI();
-            document.getElementById('eidResponseForm').submit();
-        }		
+		
+		if(moment($("#receiptDate").val(), "DD-MMM-YYYY").isAfter($("#testDate").val(), "DD-MMM-YYYY")){
+			alert('Testing Date has to come after the Shipment Receipt Date');
+		}else{
+			flag = deforayValidator.init({
+				formId: 'eidResponseForm'
+			});
+			if(flag){
+				$.blockUI();
+				document.getElementById('eidResponseForm').submit();
+			}
+		}
 	}
 
 

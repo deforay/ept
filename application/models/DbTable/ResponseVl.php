@@ -19,7 +19,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                                     'vl_sample_id'=>$sampleId,
                                     'reported_viral_load'=>$params['vlResult'][$key],
                                     'created_by' => $authNameSpace->UserID,
-                                    'created_by' => new Zend_Db_Expr('now()')
+                                    'created_on' => new Zend_Db_Expr('now()')
                                    ));                
             }else{
                 $this->update(array(

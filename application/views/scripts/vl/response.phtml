@@ -119,7 +119,7 @@ $count++;
 <tr>
 	<th>Supervisor Review</th>
 	<td>
-		<select name="supervisorApproval" id="supervisorApproval" class="required">
+		<select name="supervisorApproval" id="supervisorApproval" class="isRequired">
 			<option>--Select--</option>
 			<option value="YES" <?php if($this->shipment['supervisor_approval'] == 'YES') echo " selected "; ?>>YES</option>
 			<option value="NO" <?php if($this->shipment['supervisor_approval'] == 'NO') echo " selected "; ?>>NO</option>
@@ -143,7 +143,7 @@ $count++;
 	<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 				<p>
 					
-					<input name="submitbtn" class="css_btn_class" type="submit" id="submit" tabindex="7" value="Submit"  /> 
+					<input name="submitbtn" class="css_btn_class" type="submit" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
 					&nbsp;&nbsp;&nbsp;
 					<input name="cancel" class="css_btn_class" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" /> 
 					
@@ -173,6 +173,21 @@ textarea:focus { outline: 1px solid blue; }
 	$(function() {
   	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 	});
+	
+	function validateNow(){
+		
+		if(moment($("#receiptDate").val(), "DD-MMM-YYYY").isAfter($("#testDate").val(), "DD-MMM-YYYY")){
+			alert('Testing Date has to come after the Shipment Receipt Date');
+		}else{
+			flag = deforayValidator.init({
+				formId: 'vlResponseForm'
+			});
+			if(flag){
+				$.blockUI();
+				document.getElementById('vlResponseForm').submit();
+			}
+		}
+	}	
 
 	
 	$('#supervisorApproval').change(function() {		
