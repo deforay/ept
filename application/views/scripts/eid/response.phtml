@@ -119,7 +119,7 @@ $count++;
 	<th>Supervisor Review</th>
 	<td>
 		<select name="supervisorApproval" id="supervisorApproval" class="isRequired" title="Please select if Supervisor Approval was conducted or not">
-			<option>--Select--</option>
+			<option value="">--Select--</option>
 			<option value="YES" <?php if($this->shipment['supervisor_approval'] == 'YES') echo " selected "; ?>>YES</option>
 			<option value="NO" <?php if($this->shipment['supervisor_approval'] == 'NO') echo " selected "; ?>>NO</option>
 		</select>

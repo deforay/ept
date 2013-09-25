@@ -27,12 +27,12 @@ class DtsController extends Zend_Controller_Action
     	$this->view->allSamples = $response;
     	
     	//echo $dtsResponse->getDTSResponse(3, 4);
-    	echo "sID = " . $sID;
-    	echo "<br>pID = " . $pID;
+    	//echo "sID = " . $sID;
+    	//echo "<br>pID = " . $pID;
     	
     	
     	$this->view->shipment = $dtsResponseDb->getDTSShipment( $sID,$pID);
-    	Zend_Debug::dump($this->view->shipment);
+    	//Zend_Debug::dump($this->view->shipment);
     	$this->view->allTestKits = $dtsResponseDb->getAllTestKit();
     	$this->view->result = $dtsResponseDb->getPossibleResult('DTS', 'DTS_TEST');
     	//Zend_debug::dump($this->view->shipment );
