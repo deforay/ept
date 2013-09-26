@@ -1,4 +1,111 @@
-<br /><br />
-<div id="view-content">
-	<p>View script for controller <b>Login</b> and script/action name <b>index</b></p>
-</div>
+<style>
+	td{
+		padding:5px !important;
+	}
+	th{
+		text-align: right;
+	}
+</style>
+
+
+
+		
+<form name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("module"=>"admin","controller" => "login", "action" => "index"), null, true) ?>">
+
+    <table style="width: 60%;margin: auto;" cellspacing="15" cellpadding="15">
+		<tr>
+			<td colspan="2">
+				<h1 class="txt" style="text-align: center;">Admin Login</h1>
+			</td>
+		</tr>
+        <tr> 
+            <th>
+				<label for="username" class="uname" data-icon="u"> Your email or username </label>
+			</th>
+            <td>
+				<input id="username" name="username" class="isRequired" title="Please enter your email or username" type="text" placeholder="myusername or mymail@mail.com"/>
+			</td>
+        </tr>
+        <tr>
+			<th>
+				<label for="password" class="youpasswd" data-icon="p"> Your password </label>
+			</th>
+			<td>
+				<input id="password" name="password" class="isRequired" title="Please enter your password" type="password" placeholder="eg. X8df!90EO" />
+				
+			</td>
+        </tr>
+		<tr>
+			<td colspan="2">
+				<table border="0" style="width:50%;margin-top: 10px;margin:0 auto;clear: both;">
+					<tbody>
+						<tr>
+							<td>
+								<div style="float:left;margin:5px;">
+									<img id="capChaw" src="/captcha/<?php echo rand(); ?>" />
+								</div>
+							</td>
+							<td style="padding-top:3px;" align="center">
+								<input type="text" style="margin:0;width:200px;padding:3px;margin-top:8px" id="challengeResponse" placeholder="Enter text from image on left" class="isRequired" title="Please enter the text from the image." maxlength="40">
+									<br/>
+								<button onclick="getCaptcha('capChaw');return false;" class="button button-rounded button-small" style="font-size:12px;margin:5px;"><i class="icon-refresh icon-white"></i> Get New Image</button>
+							</td>
+							
+						</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center">
+				<button class="button button-rounded button-primary" onclick="validateLogin();return false;">Login</button>
+				<a href="/auth/reset-password" style="font-size:0.8em;color:red;">Forgot Password ?</a>
+				<br/><br/>
+				<a href="/contact-us" style="">Don't have a login ? Click here to contact us</a>
+			</td>
+		</tr>
+
+    </table>
+
+</form>
+
+        <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
+        <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
+        <script type="text/javascript">
+			$("#tableCss").remove();
+            function getCaptcha(captchaDivId){
+                $.blockUI();
+                var d = new Date();
+                var randstr = 'r-'+d.getFullYear()+d.getSeconds()+d.getMilliseconds()+Math.random();
+                $("#"+captchaDivId).attr("src" , '/captcha/'+randstr);		
+                $("#"+captchaDivId).load(function(){
+                    $.unblockUI();
+                });
+            }
+	    
+            function validateLogin(){
+                flag = deforayValidator.init({
+                    formId: 'loginForm'
+                });
+                if(flag){
+                    challenge_field=document.getElementById("challengeResponse").value;
+                    if(challenge_field !="" ){
+                        $.post("<?php echo $this->url(array(), 'checkCaptchaRoute', true); ?>", { challenge_field:challenge_field, format: "html"},
+                        function(data){
+                            if(data == 'fail'){
+                                alert("Text you entered from the image is incorrect. Please try again");
+                                getCaptcha('capChaw');
+                                document.getElementById("challengeResponse").value="";
+                                return false;
+                            }else{
+				$.blockUI();
+                                document.getElementById('loginForm').submit();
+                            }
+                        });
+                    }else{
+                        alert("Please enter the text from the image to proceed.");
+                    }
+                }
+            }	    
+
+        </script>

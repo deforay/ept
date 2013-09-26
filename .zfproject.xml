@@ -43,6 +43,7 @@
         <controllerFile controllerName="Common">
           <actionMethod actionName="index"/>
           <actionMethod actionName="sendMail"/>
+          <actionMethod actionName="checkDuplicate"/>
         </controllerFile>
         <controllerFile controllerName="ContactUs">
           <actionMethod actionName="index"/>
@@ -85,9 +86,15 @@
           <controllersDirectory>
             <controllerFile controllerName="Login">
               <actionMethod actionName="index"/>
+              <actionMethod actionName="logOut"/>
             </controllerFile>
             <controllerFile controllerName="Index">
               <actionMethod actionName="index"/>
+            </controllerFile>
+            <controllerFile controllerName="Users">
+              <actionMethod actionName="index"/>
+              <actionMethod actionName="add"/>
+              <actionMethod actionName="edit"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -104,6 +111,18 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Index">
                 <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Login">
+                <viewScriptFile forActionName="logOUt"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Users">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Users">
+                <viewScriptFile forActionName="add"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Users">
+                <viewScriptFile forActionName="edit"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -219,6 +238,9 @@
           <viewControllerScriptsDirectory forControllerName="Vl">
             <viewScriptFile forActionName="response"/>
           </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Common">
+            <viewScriptFile forActionName="checkDuplicate"/>
+          </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
         <viewFiltersDirectory enabled="false"/>
@@ -261,6 +283,7 @@
           <testApplicationControllerFile forControllerName="Common">
             <testApplicationActionMethod forActionName="index"/>
             <testApplicationActionMethod forActionName="sendMail"/>
+            <testApplicationActionMethod forActionName="checkDuplicate"/>
           </testApplicationControllerFile>
           <testApplicationControllerFile forControllerName="ContactUs">
             <testApplicationActionMethod forActionName="index"/>
@@ -279,9 +302,15 @@
             <testApplicationControllerDirectory>
               <testApplicationControllerFile forControllerName="Login">
                 <testApplicationActionMethod forActionName="index"/>
+                <testApplicationActionMethod forActionName="logOUt"/>
               </testApplicationControllerFile>
               <testApplicationControllerFile forControllerName="Index">
                 <testApplicationActionMethod forActionName="index"/>
+              </testApplicationControllerFile>
+              <testApplicationControllerFile forControllerName="Users">
+                <testApplicationActionMethod forActionName="index"/>
+                <testApplicationActionMethod forActionName="add"/>
+                <testApplicationActionMethod forActionName="edit"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>
           </testApplicationModuleDirectory>

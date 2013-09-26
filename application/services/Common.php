@@ -98,6 +98,35 @@ class Application_Service_Common {
 			return "Sorry, unable to send your message now. Please try again later;";
 		}
 		
+    }
+    public function checkDuplicate($params) {
+        $session = new Zend_Session_Namespace('credo');
+        $tableName = $params['tableName'];
+        $fieldName = $params['fieldName'];
+        $value = trim($params['value']);
+        $fnct = $params['fnct'];
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        if ($fnct == '' || $fnct == 'null') {
+            $sql = $db->select()->from($tableName)->where($fieldName . "=" . "'$value'");
+            $result = $db->fetchAll($sql);
+            $data = count($result);
+            
+        } else {
+            $table = explode("##", $fnct);
+            // first trying $table[1] without quotes. If this does not work, then in catch we try with single quotes
+            try {
+                
+				$sql = $db->select()->from($tableName)->where($fieldName . "=" . "'$value'")->where($table[0] . "!=" . $table[1]);
+				$result = $db->fetchAll($sql);
+				$data = count($result);
+                
+            } catch (Exception $e) {
+                $sql = $db->select()->from($tableName)->where($fieldName . "=" . "'$value'")->where($table[0] . "!='" . $table[1] . "'");
+                $result = $db->fetchAll($sql);
+                $data = count($result);
+            }
+        }
+        return $data;
     }	
 
 }

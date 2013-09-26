@@ -1,6 +1,6 @@
 <?php
 
-class Admin_LoginControllerTest extends Zend_Test_PHPUnit_ControllerTestCase
+class Admin_UsersControllerTest extends Zend_Test_PHPUnit_ControllerTestCase
 {
 
     public function setUp()
@@ -11,7 +11,7 @@ class Admin_LoginControllerTest extends Zend_Test_PHPUnit_ControllerTestCase
 
     public function testIndexAction()
     {
-        $params = array('action' => 'index', 'controller' => 'Login', 'module' => 'admin');
+        $params = array('action' => 'index', 'controller' => 'Users', 'module' => 'admin');
         $urlParams = $this->urlizeOptions($params);
         $url = $this->url($urlParams);
         $this->dispatch($url);
@@ -26,9 +26,26 @@ class Admin_LoginControllerTest extends Zend_Test_PHPUnit_ControllerTestCase
             );
     }
 
-    public function testLogOUtAction()
+    public function testAddAction()
     {
-        $params = array('action' => 'logOUt', 'controller' => 'Login', 'module' => 'admin');
+        $params = array('action' => 'add', 'controller' => 'Users', 'module' => 'admin');
+        $urlParams = $this->urlizeOptions($params);
+        $url = $this->url($urlParams);
+        $this->dispatch($url);
+        
+        // assertions
+        $this->assertModule($urlParams['module']);
+        $this->assertController($urlParams['controller']);
+        $this->assertAction($urlParams['action']);
+        $this->assertQueryContentContains(
+            'div#view-content p',
+            'View script for controller <b>' . $params['controller'] . '</b> and script/action name <b>' . $params['action'] . '</b>'
+            );
+    }
+
+    public function testEditAction()
+    {
+        $params = array('action' => 'edit', 'controller' => 'Users', 'module' => 'admin');
         $urlParams = $this->urlizeOptions($params);
         $url = $this->url($urlParams);
         $this->dispatch($url);
@@ -45,6 +62,8 @@ class Admin_LoginControllerTest extends Zend_Test_PHPUnit_ControllerTestCase
 
 
 }
+
+
 
 
 

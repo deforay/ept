@@ -3,12 +3,17 @@
 class Application_Service_Users {
 
     public function addUser($params){
-        // TO DO : Add User
+		$userDb = new Application_Model_DbTable_Users();
+        return $userDb->addUser($params);
     }
     
     public function updateUser($params){
         $userDb = new Application_Model_DbTable_Users();
         return $userDb->updateUser($params);
+    }
+    public function getAllUsers($params){
+        $userDb = new Application_Model_DbTable_Users();
+        return $userDb->getAllUsers($params);
     }
     
     public function getUserInfo($userId = null){
@@ -19,6 +24,15 @@ class Application_Service_Users {
             $userId = $authNameSpace->UserID;
         }
 		return $userDb->getUserDetails($userId);
+    }    
+    public function getUserInfoBySystemId($userSystemId = null){
+
+		$userDb = new Application_Model_DbTable_Users();
+        if($userSystemId == null){
+            $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+            $userSystemId = $authNameSpace->UserSystemID;
+        }
+		return $userDb->getUserDetailsBySystemId($userSystemId);
     }
 	
 	public function resetPassword($email){

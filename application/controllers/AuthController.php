@@ -11,7 +11,7 @@ class AuthController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        // action body
+        $this->_redirect('/auth/login');
     }
 
     public function loginAction()
@@ -31,6 +31,8 @@ class AuthController extends Zend_Controller_Action
     		
 			//echo "hi";
     		if($res->isValid()){
+				
+				Zend_Session::rememberMe(18000); // asking the session to be active for 5 hours
 
     			$rs = $adapter->getResultRowObject();
     			
@@ -47,12 +49,6 @@ class AuthController extends Zend_Controller_Action
 	    		$authNameSpace->UserFld2 = $rs->UserFld2;
 	    		$authNameSpace->UserFld3 = $rs->UserFld3;
 	    		
-	    		/*
-	    		http://randomitstuff.com/2010/05/04/setting-up-database-configuration-in-zend-framework/
-	    		
-	    		*/
-    			//print_r($authNameSpace->UserFName);
-    			//die;
     			$this->_redirect('/participant/dashboard');
     		
     		}else
@@ -60,10 +56,6 @@ class AuthController extends Zend_Controller_Action
     			$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry. Unable to log you in. Please check your login credentials";
 				$sessionAlert->status = "failure";
-    			//$messages = $res->getMessages();
-    			//foreach($messages as $message){	
-    			//	echo $message . "<br/>";
-    			//}
     		}
     	
     }

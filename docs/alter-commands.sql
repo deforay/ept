@@ -677,3 +677,28 @@ CREATE TABLE IF NOT EXISTS `shipment_vl` (
   `created_by_admin` varchar(255) DEFAULT NULL,  
   PRIMARY KEY (`vl_shipment_id`,`participant_id`)
 ) ENGINE=InnoDB;
+
+
+-- By Amit on Sep 25 2013
+
+CREATE TABLE IF NOT EXISTS `admin` (
+  `admin_id` int(11) NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `primary_email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `secondary_email` varchar(255) NOT NULL,
+  `phone` varchar(255) NOT NULL,
+  `force_password_reset` int(11) NOT NULL,
+  PRIMARY KEY (`admin_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+
+-- By Amit on Sep 26 2013
+
+ALTER TABLE  `users` ADD  `status` VARCHAR( 255 ) NOT NULL;
+ALTER TABLE  `eanalyze`.`users` DROP PRIMARY KEY , ADD PRIMARY KEY (  `UserSystemID` );
+ALTER TABLE  `users` CHANGE  `UserSystemID`  `UserSystemID` INT NOT NULL;
+ALTER TABLE  `users` CHANGE  `UserSystemID`  `UserSystemID` INT( 11 ) NOT NULL AUTO_INCREMENT;
+ALTER TABLE  `users` CHANGE  `force_password_reset`  `force_password_reset` INT( 1 ) NOT NULL DEFAULT  '0';
+ALTER TABLE  `users` CHANGE  `status`  `status` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  'inactive';

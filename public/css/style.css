@@ -286,3 +286,12 @@ button, input, select, textarea {
   font-family : inherit;
   font-size   : 100%;
 }
+
+
+.mandatory{
+	color:red;
+}
+
+.fg-toolbar{
+	padding:5px;
+}
