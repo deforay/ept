@@ -72,7 +72,7 @@ class AuthController extends Zend_Controller_Action
     {
 		if($this->getRequest()->isPost()){
 			$email = $this->getRequest()->getPost('registeredEmail');
-			$userService = new Application_Service_Users();
+			$userService = new Application_Service_DataManagers();
 			$userService->resetPassword($email);
 			$this->_redirect('/auth/login');
 		}		

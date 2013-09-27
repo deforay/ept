@@ -1,0 +1,91 @@
+<div class="well">
+
+<form name="editUserForm" id="editUserForm" method="post" action="<?php echo $this->url(array("module"=>"admin", "controller" => "data-managers", "action" => "edit"), null, true) ?>" class="form-horizontal bs-example" role="form">
+
+    <fieldset>
+                  <legend>Edit Data Manager</legend>
+
+        <div class="form-group">
+            <label class="col-lg-3 control-label">Login (Primary e-mail) <span class="mandatory">*</span></label>
+            <div class="col-lg-5">
+                <input type="text" id="userId" name="userId"  size="50" value="<?php echo $this->rsUser['UserID']; ?>" class="isRequired isEmail form-control" title="Please enter the primary email id here" onblur="checkDuplicate('users','UserID',this,'<?php echo "UserID##" . $this->rsUser['UserID']; ?>','This email already exists as a primary email for another user. Please choose another email.')"/>
+                <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['UserSystemID']; ?>" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-3 control-label">Password <br/> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
+            <div class="col-lg-5"><input type="text" id="password" name="password" size="50" maxlength="45" value="" class="form-control"  title="" placeholder="Please enter new password here"  /></div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-3 control-label">Confirm Password <br/> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
+            <div class="col-lg-5"><input type="text" id="password1" name="password" size="50" maxlength="45" value="" class="confirmPassword form-control"  title="" placeholder="Please re-enter new password here"  /></div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-3 control-label">User First Name <span class="mandatory">*</span></label>
+            <div class="col-lg-5"><input type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['UserFName']; ?>" class="isRequired form-control"  title="Please enter the first name here" placeholder="Please enter the first name here"  /></div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-3 control-label">User Last Name <span class="mandatory">*</span></label>
+            <div class="col-lg-5"><input type="text" id="lname" name="lname" size="50" maxlength="45" value="<?php echo $this->rsUser['UserLName']; ?>" title="Please enter the last name here" placeholder="Please enter the last name here" class="isRequired form-control" /></div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-3 control-label">Secondary e-mail Address <span class="mandatory">*</span></label>
+            <div class="col-lg-5"><input type="text" id="semail" name="semail" size="50" maxlength="45" value="<?php echo $this->rsUser['UserSecondaryemail']; ?>" class="isRequired isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-3 control-label">Cell Phone Number <span class="mandatory">*</span></label>
+            <div class="col-lg-5"><input type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['UserCellNumber']; ?>" class="isRequired form-control"   title="Please enter the contact number here" placeholder="Please enter the contact number here"  /></div>
+        </div>
+        <div class="form-group"> 
+            <label class="col-lg-3 control-label">Phone Number</label>
+            <div class="col-lg-5"><input type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['UserPhoneNumber']; ?>" class=" form-control"/></div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-3 control-label">Status</label>
+            <div class="col-lg-5">
+				<select type="text" id="status" name="status" class="isRequired form-control" title="Please select user status here">
+					<option value="">--Select--</option>
+					<option value="active" <?php echo ($this->rsUser['status'] == "active") ? "selected='selected'" : ""; ?>>Active</option>
+					<option value="inactive" <?php echo ($this->rsUser['status'] == "inactive") ? "selected='selected'" : ""; ?>>Inactive</option>
+				</select>
+			</div>
+        </div>
+
+    </table>
+    <br>
+    <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+        <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update"  /> 
+        <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/data-managers';" tabindex="8" value="Cancel" /> 
+    </div>
+	</fieldset>
+</form>
+</div>
+<script type="text/javascript">
+	var duplicated = false;
+	var duplicateInformed = false;
+    function checkDuplicate(tableName,fieldName,obj,fnct,msg)
+    {
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName,fieldName : fieldName ,value : obj.value,fnct : fnct, format: "html" },
+        function(data){
+            if(data>0)
+            {
+                alert(msg,"err");
+                duplicated=true;
+				obj.focus();
+            }
+            else{
+                duplicated=false;
+            }
+        });
+    }	
+    function validateNow(){
+		checkDuplicate('users','UserID',$("#userId"),'<?php echo "UserID##" . $this->rsUser['UserID']; ?>','This email already exists as a primary email for another user. Please choose another email.')
+        flag = deforayValidator.init({
+            formId: 'editUserForm'
+        });
+        if(flag && !duplicated){
+            $.blockUI();
+            document.getElementById('editUserForm').submit();
+        }
+    }	    
+</script>

@@ -1,24 +1,24 @@
 <?php
 
-class Application_Service_Users {
+class Application_Service_DataManagers {
 
     public function addUser($params){
-		$userDb = new Application_Model_DbTable_Users();
+		$userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->addUser($params);
     }
     
     public function updateUser($params){
-        $userDb = new Application_Model_DbTable_Users();
+        $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->updateUser($params);
     }
     public function getAllUsers($params){
-        $userDb = new Application_Model_DbTable_Users();
+        $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->getAllUsers($params);
     }
     
     public function getUserInfo($userId = null){
 
-		$userDb = new Application_Model_DbTable_Users();
+		$userDb = new Application_Model_DbTable_DataManagers();
         if($userId == null){
             $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
             $userId = $authNameSpace->UserID;
@@ -27,7 +27,7 @@ class Application_Service_Users {
     }    
     public function getUserInfoBySystemId($userSystemId = null){
 
-		$userDb = new Application_Model_DbTable_Users();
+		$userDb = new Application_Model_DbTable_DataManagers();
         if($userSystemId == null){
             $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
             $userSystemId = $authNameSpace->UserSystemID;
@@ -36,7 +36,7 @@ class Application_Service_Users {
     }
 	
 	public function resetPassword($email){
-		$userDb = new Application_Model_DbTable_Users();
+		$userDb = new Application_Model_DbTable_DataManagers();
 		$newPassword = $userDb->resetPasswordForEmail($email);
 		$sessionAlert = new Zend_Session_Namespace('alertSpace');
 		if($newPassword != false){
@@ -53,7 +53,7 @@ class Application_Service_Users {
 		}
 	}	
 	public function changePassword($oldPassword,$newPassword){
-		$userDb = new Application_Model_DbTable_Users();
+		$userDb = new Application_Model_DbTable_DataManagers();
 		$newPassword = $userDb->updatePassword($oldPassword,$newPassword);
 		$sessionAlert = new Zend_Session_Namespace('alertSpace');
 		if($newPassword != false){

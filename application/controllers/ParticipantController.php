@@ -65,7 +65,7 @@ class ParticipantController extends Zend_Controller_Action
 
     public function userInfoAction()
     {
-	$userService = new Application_Service_Users();
+	$userService = new Application_Service_DataManagers();
     	if($this->_request->isPost()){
 	    $params = $this->_request->getPost();
 	    $userService->updateUser($params);  
@@ -88,7 +88,7 @@ class ParticipantController extends Zend_Controller_Action
     public function passwordAction()
     {
 		if($this->getRequest()->isPost()){
-			$user = new Application_Service_Users();
+			$user = new Application_Service_DataManagers();
 			$newPassword = $this->getRequest()->getPost('newpassword');
 			$oldPassword = $this->getRequest()->getPost('oldpassword');
 			$user->changePassword($oldPassword,$newPassword);

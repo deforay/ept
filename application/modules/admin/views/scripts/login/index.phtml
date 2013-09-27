@@ -1,74 +1,110 @@
-<style>
-	td{
-		padding:5px !important;
-	}
-	th{
-		text-align: right;
-	}
-</style>
 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.png">
 
+    <title>Admin Login</title>
 
+    <!-- Bootstrap core CSS -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <style>
+		body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #eee;
+}
+
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  font-size: 16px;
+  height: auto;
+  padding: 10px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="text"] {
+  margin-bottom: -1px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
 		
-<form name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("module"=>"admin","controller" => "login", "action" => "index"), null, true) ?>">
+	</style>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.3.0/respond.js"></script>
+    <![endif]-->
+  </head>
 
-    <table style="width: 60%;margin: auto;" cellspacing="15" cellpadding="15">
-		<tr>
-			<td colspan="2">
-				<h1 class="txt" style="text-align: center;">Admin Login</h1>
-			</td>
-		</tr>
-        <tr> 
-            <th>
-				<label for="username" class="uname" data-icon="u"> Your email or username </label>
-			</th>
-            <td>
-				<input id="username" name="username" class="isRequired" title="Please enter your email or username" type="text" placeholder="myusername or mymail@mail.com"/>
-			</td>
-        </tr>
-        <tr>
-			<th>
-				<label for="password" class="youpasswd" data-icon="p"> Your password </label>
-			</th>
-			<td>
-				<input id="password" name="password" class="isRequired" title="Please enter your password" type="password" placeholder="eg. X8df!90EO" />
-				
-			</td>
-        </tr>
-		<tr>
-			<td colspan="2">
-				<table border="0" style="width:50%;margin-top: 10px;margin:0 auto;clear: both;">
+  <body>
+
+    <div class="container">
+
+      <form class="form-signin" name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("module"=>"admin","controller" => "login", "action" => "index"), null, true) ?>">
+        <h2 class="form-signin-heading">Please sign in</h2>
+		<input type="text" id="username" name="username" class="isRequired form-control isEmail" title="Please enter your registered email" placeholder="eg. mymail@mail.com" autofocus/>
+		<input type="password" id="password" name="password" class="isRequired  form-control" title="Please enter your password" placeholder="eg. X8df!90EO" />
+		<table border="0" style="width:50%;margin-top: 10px;margin:0 auto;clear: both;">
 					<tbody>
 						<tr>
 							<td>
-								<div style="float:left;margin:5px;">
+								<div style="float:left;margin:1px;">
 									<img id="capChaw" src="/captcha/<?php echo rand(); ?>" />
 								</div>
 							</td>
 							<td style="padding-top:3px;" align="center">
-								<input type="text" style="margin:0;width:200px;padding:3px;margin-top:8px" id="challengeResponse" placeholder="Enter text from image on left" class="isRequired" title="Please enter the text from the image." maxlength="40">
-									<br/>
-								<button onclick="getCaptcha('capChaw');return false;" class="button button-rounded button-small" style="font-size:12px;margin:5px;"><i class="icon-refresh icon-white"></i> Get New Image</button>
+								<button onclick="getCaptcha('capChaw');return false;" class="btn btn-info btn-xs" style="font-size:12px;margin:3px;"><i class="icon-refresh"></i> Get New Image</button>
+								<input type="text" style="margin:0;width:140px;padding:3px;margin-top:3px;font-size:13px;" id="challengeResponse" placeholder="Enter text from image" class="form-control input-sm" title="Please enter the text from the image." maxlength="40" />
+								
 							</td>
 							
 						</tr>
 					</tbody>
 				</table>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2" align="center">
-				<button class="button button-rounded button-primary" onclick="validateLogin();return false;">Login</button>
-				<a href="/auth/reset-password" style="font-size:0.8em;color:red;">Forgot Password ?</a>
-				<br/><br/>
-				<a href="/contact-us" style="">Don't have a login ? Click here to contact us</a>
-			</td>
-		</tr>
+        <label class="checkbox">
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+        <button type class="btn btn-lg btn-primary btn-block" onclick="validateLogin();return false;">Sign in</button>
+      </form>
 
-    </table>
+    </div> <!-- /container -->
 
-</form>
 
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
         <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
         <script type="text/javascript">
@@ -109,3 +145,5 @@
             }	    
 
         </script>
+  </body>
+</html>
