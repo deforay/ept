@@ -24,5 +24,9 @@ class Application_Service_Participants {
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->updateParticipant($params);		
 	}
+	public function getAllParticipants($params){
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->getAllParticipants($params);
+	}
 
 }

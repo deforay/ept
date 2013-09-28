@@ -234,7 +234,7 @@ CREATE PROCEDURE `SHIPMENT_CURRENT`(IN uId varchar(45) )
 BEGIN
 Select year(a.ShipmentDate) as SHIP_YEAR,   
 'DTS' AS SCHEME,
-b.ParticipantFname as FNAME,b.ParticipantFname as LNAME,
+b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.PARTICIPANTID,
 a.SHIPMENTDATE, 
 DATE_FORMAT(a.ShipmentTestReportDate,'%Y-%m-%d')  as RESPONSEDATE,
@@ -254,7 +254,7 @@ a.EvaluationStatus as EVALUATIONSTATUS,
 	END
 	as 'REPORTSTATUS' 
 from shipment_dts  as a 
-left join participant as b on a.ParticipantID = b.ParticipantID where year(a.ShipmentDate)  + 5 > year(CURDATE()) 
+left join participant as b on a.ParticipantID = b.ParticipantSystemID where year(a.ShipmentDate)  + 5 > year(CURDATE()) 
 and a.LASTDATERESPONSE >= CURDATE() 
 -- and a.ParticipantID in (Select ParticipantID from participant where UserSystemId = '1')
 
@@ -262,7 +262,7 @@ union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
 'VL' AS SCHEME,
-b.ParticipantFname as FNAME,b.ParticipantFname as LNAME,
+b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.participant_id,
 a.shipment_date, 
 DATE_FORMAT(a.shipment_test_report_date, '%Y-%m-%d') as RESPONSEDATE,
@@ -282,14 +282,14 @@ a.evaluation_status as EVALUATIONSTATUS,
 	END
 	as 'REPORTSTATUS' 
 from shipment_vl  as a 
-left join participant as b on a.participant_id = b.ParticipantID where year(a.shipment_date)  + 5 > year(CURDATE()) 
+left join participant as b on a.participant_id = b.ParticipantSystemID where year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response >= CURDATE() 
 
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
 'EID' AS SCHEME,
-b.ParticipantFname as FNAME,b.ParticipantFname as LNAME,
+b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.participant_id,
 a.shipment_date, 
 DATE_FORMAT(a.shipment_test_report_date, '%Y-%m-%d') as RESPONSEDATE,
@@ -309,7 +309,7 @@ a.evaluation_status as EVALUATIONSTATUS,
 	END
 	as 'REPORTSTATUS' 
 from shipment_eid  as a 
-left join participant as b on a.participant_id = b.ParticipantID where year(a.shipment_date)  + 5 > year(CURDATE()) 
+left join participant as b on a.participant_id = b.ParticipantSystemID where year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response >= CURDATE() 
 
 -- and a.participant_id in (Select ParticipantID from participant where UserSystemId = uId)
@@ -363,7 +363,7 @@ BEGIN
 
 Select year(a.ShipmentDate) as SHIP_YEAR,   
 'DTS' AS SCHEME,
-b.ParticipantFname as FNAME,b.ParticipantFname as LNAME,
+b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.PARTICIPANTID,
 a.SHIPMENTDATE, 
 -- a.ShipmentTestReportDate as RESPONSEDATE,
@@ -385,14 +385,14 @@ a.EvaluationStatus as EVALUATIONSTATUS,
 	END
 	as 'REPORT' 
 from shipment_dts  as a 
-left join participant as b on a.ParticipantID = b.ParticipantID where year(a.ShipmentDate)  + 5 > year(CURDATE())
+left join participant as b on a.ParticipantID = b.ParticipantSystemID where year(a.ShipmentDate)  + 5 > year(CURDATE())
 
 
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
 'VL' AS SCHEME,
-b.ParticipantFname as FNAME,b.ParticipantFname as LNAME,
+b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.participant_id,
 a.shipment_date, 
 -- a.shipment_test_report_date as RESPONSEDATE,
@@ -413,13 +413,13 @@ a.evaluation_status as EVALUATIONSTATUS,
 	END
 	as 'REPORT' 
 from shipment_vl  as a 
-left join participant as b on a.participant_id = b.ParticipantID where year(a.shipment_date)  + 5 > year(CURDATE())
+left join participant as b on a.participant_id = b.ParticipantSystemID where year(a.shipment_date)  + 5 > year(CURDATE())
 
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
 'EID' AS SCHEME,
-b.ParticipantFname as FNAME,b.ParticipantFname as LNAME,
+b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.participant_id,
 a.shipment_date, 
 -- a.shipment_test_report_date as RESPONSEDATE,
@@ -440,7 +440,7 @@ a.evaluation_status as EVALUATIONSTATUS,
 	END
 	as 'REPORT' 
 from shipment_eid  as a 
-left join participant as b on a.participant_id = b.ParticipantID where year(a.shipment_date)  + 5 > year(CURDATE())
+left join participant as b on a.participant_id = b.ParticipantSystemID where year(a.shipment_date)  + 5 > year(CURDATE())
 
 order by SHIP_YEAR, ParticipantID ;
 -- LIMIT valFrom, valTo;
@@ -538,7 +538,7 @@ CREATE PROCEDURE `SHIPMENT_DEFAULTED`()
 BEGIN
 Select year(a.ShipmentDate) as SHIP_YEAR,   
 'DTS' AS SCHEME,
-b.ParticipantFname as FNAME,b.ParticipantFname as LNAME,
+b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.PARTICIPANTID,
 a.SHIPMENTDATE, 
 a.ShipmentTestReportDate as RESPONSEDATE,
@@ -560,14 +560,14 @@ a.EvaluationStatus as EVALUATIONSTATUS,
 	END
 	as 'STATUS' 
 from shipment_dts  as a 
-left join participant as b on a.ParticipantID = b.ParticipantID where year(a.ShipmentDate)  + 5 > year(CURDATE()) 
+left join participant as b on a.ParticipantID = b.ParticipantSystemID where year(a.ShipmentDate)  + 5 > year(CURDATE()) 
 and a.LASTDATERESPONSE < CURDATE() and  substr(a.EvaluationStatus,3,1) <> '1'
 
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
 'VL' AS SCHEME,
-b.ParticipantFname as FNAME,b.ParticipantFname as LNAME,
+b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.participant_id,
 a.shipment_date, 
 a.shipment_test_report_date as RESPONSEDATE,
@@ -589,13 +589,13 @@ a.evaluation_status as EVALUATIONSTATUS,
 	END
 	as 'STATUS' 
 from shipment_vl  as a 
-left join participant as b on a.participant_id = b.ParticipantID where year(a.shipment_date)  + 5 > year(CURDATE()) 
+left join participant as b on a.participant_id = b.ParticipantSystemID where year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response < CURDATE() and  substr(a.evaluation_status,3,1) <> '1'
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
 'EID' AS SCHEME,
-b.ParticipantFname as FNAME,b.ParticipantFname as LNAME,
+b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.participant_id,
 a.shipment_date, 
 a.shipment_test_report_date as RESPONSEDATE,
@@ -617,7 +617,7 @@ a.evaluation_status as EVALUATIONSTATUS,
 	END
 	as 'STATUS' 
 from shipment_eid  as a 
-left join participant as b on a.participant_id = b.ParticipantID where year(a.shipment_date)  + 5 > year(CURDATE()) 
+left join participant as b on a.participant_id = b.ParticipantSystemID where year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response < CURDATE() and  substr(a.evaluation_status,3,1) <> '1'
 
 order by SHIP_YEAR, ParticipantID ;
@@ -702,3 +702,15 @@ ALTER TABLE  `users` CHANGE  `UserSystemID`  `UserSystemID` INT NOT NULL;
 ALTER TABLE  `users` CHANGE  `UserSystemID`  `UserSystemID` INT( 11 ) NOT NULL AUTO_INCREMENT;
 ALTER TABLE  `users` CHANGE  `force_password_reset`  `force_password_reset` INT( 1 ) NOT NULL DEFAULT  '0';
 ALTER TABLE  `users` CHANGE  `status`  `status` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  'inactive';
+
+
+UPDATE  `participant` SET  `ParticipantSystemID` =  '1' WHERE  `participant`.`ParticipantID` =  'adhikari1';
+UPDATE  `participant` SET  `ParticipantSystemID` =  '2' WHERE  `participant`.`ParticipantID` =  'adhikari2';
+UPDATE  `participant` SET  `ParticipantSystemID` =  '3' WHERE  `participant`.`ParticipantID` =  'amit1';
+UPDATE  `participant` SET  `ParticipantSystemID` =  '4' WHERE  `participant`.`ParticipantID` =  'app012';
+UPDATE  `participant` SET  `ParticipantSystemID` =  '5' WHERE  `participant`.`ParticipantID` =  'app02';
+UPDATE  `participant` SET  `ParticipantSystemID` =  '6' WHERE  `participant`.`ParticipantID` =  'app03';
+ALTER TABLE participant DROP PRIMARY KEY;
+ALTER TABLE  `participant` ADD PRIMARY KEY (  `ParticipantSystemID` ) ;
+ALTER TABLE  `participant` CHANGE  `ParticipantSystemID`  `ParticipantSystemID` INT NOT NULL AUTO_INCREMENT;
+ALTER TABLE  `participant` ADD UNIQUE (`ParticipantID`);

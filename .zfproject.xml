@@ -101,6 +101,11 @@
               <actionMethod actionName="add"/>
               <actionMethod actionName="edit"/>
             </controllerFile>
+            <controllerFile controllerName="Participants">
+              <actionMethod actionName="index"/>
+              <actionMethod actionName="add"/>
+              <actionMethod actionName="edit"/>
+            </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
           <layoutsDirectory enabled="false">
@@ -136,6 +141,15 @@
                 <viewScriptFile forActionName="add"/>
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="DataManagers">
+                <viewScriptFile forActionName="edit"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Participants">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Participants">
+                <viewScriptFile forActionName="add"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Participants">
                 <viewScriptFile forActionName="edit"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
@@ -327,6 +341,11 @@
                 <testApplicationActionMethod forActionName="edit"/>
               </testApplicationControllerFile>
               <testApplicationControllerFile forControllerName="DataManagers">
+                <testApplicationActionMethod forActionName="index"/>
+                <testApplicationActionMethod forActionName="add"/>
+                <testApplicationActionMethod forActionName="edit"/>
+              </testApplicationControllerFile>
+              <testApplicationControllerFile forControllerName="Participants">
                 <testApplicationActionMethod forActionName="index"/>
                 <testApplicationActionMethod forActionName="add"/>
                 <testApplicationActionMethod forActionName="edit"/>

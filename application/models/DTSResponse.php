@@ -136,7 +136,6 @@ public function getPossibleResult($testCode,$subgroup){
 			
 			$testResult1 = $data[$i . '_testresult1'];
 			
-			
 			// Test 2
 			$testKit2 = $data['testkit2'];
 			$lotNo2 = $data['lot_no2'];
@@ -162,22 +161,16 @@ public function getPossibleResult($testCode,$subgroup){
 			//$userId = $userId;
 			
 			$stmtSample = $db->prepare("call RESPONSE_RESULT_DTS_UPDATE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			/*
-			print_r(array($participantId,$shipId,$DTSSampleID,$testKit1,$lotNo1,$expDate1,$testResult1, $testKit2,$lotNo2,$expDate2,$testResult2,	$testKit3,$lotNo3,$expDate3,$testResult3,
-					$rptResult,$userId));
-			*/
 			
-			$stmtSample->execute(array(
-					$participantId,$shipId,$DTSSampleID,$testKit1,$lotNo1,$expDate1,$testResult1, $testKit2,$lotNo2,$expDate2,$testResult2,	$testKit3,$lotNo3,$expDate3,$testResult3,
+			
+		$stmtSample->execute(array($participantId,$shipId,$DTSSampleID,$testKit1,$lotNo1,$expDate1,$testResult1, $testKit2,$lotNo2,$expDate2,$testResult2,	$testKit3,$lotNo3,$expDate3,$testResult3,
 					$rptResult,$userId ));
-					
-			
 		}
 		$db->commit();
+		
 		}
 		catch (exception $e) {
-			echo "error";
-			echo $e->getMessage();
+			error_log($e->getMessage());
 			$db->rollBack();
 			die;
 			return false;

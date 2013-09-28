@@ -209,7 +209,7 @@ order by
 */
 SELECT
 b.CalculatedScore,
-b.DTSSampleID,
+a.DTSSampleID,
 date_format(b.ExpDate1,'%d-%b-%Y') as ExpDate1,
 date_format(b.ExpDate2,'%d-%b-%Y') as ExpDate2,
 date_format(b.ExpDate3,'%d-%b-%Y') as ExpDate3,
