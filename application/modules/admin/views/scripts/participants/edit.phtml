@@ -52,7 +52,7 @@
                 <label class="col-lg-3 control-label">Cell/Mobile Number <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5"><input id="phone1" type="text" id="pphone2" name="pphone2" size="50" maxlength="45"
-                                             class="isRequired form-control"
+                                             class="isRequired form-control isNumeric"
                                              title="Please enter mobile/cell number here"
                                              placeholder="Please enter mobile/cell number here"
                                              value="<?php echo $this->participant['ParticipantMobile']; ?>"/></div>
@@ -61,7 +61,7 @@
                 <label class="col-lg-3 control-label">Phone Number</label>
 
                 <div class="col-lg-5"><input id="phone2" type="text" id="pphone1" name="pphone1" size="50" maxlength="45"
-                                             placeholder="Please enter phone number here" class="form-control"
+                                             placeholder="Please enter phone number here" class="form-control isNumeric"
                                              value="<?php echo $this->participant['ParticipantPhone']; ?>"/></div>
             </div>
             <div class="form-group">

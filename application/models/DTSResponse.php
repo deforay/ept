@@ -72,20 +72,12 @@ public function getPossibleResult($testCode,$subgroup){
 		//Zend_Debug::dump($data);
 		$shipId = $data['hdshipId'];
 		$participantId = $data['hdparticipantId'];
-		
-		$date = DateTime::createFromFormat('j-M-yy', $data['receipt_date']);
-		$receiptDate = $date->format('Y-m-d');
-		
-		$date = DateTime::createFromFormat('j-M-yy', $data['hdLastDate']);
-		$lastDate = $date->format('Y-m-d');
-		
-		
-		
-		$date = DateTime::createFromFormat('j-M-yy', $data['test_date']);
-		$testDate = $date->format('Y-m-d');
-		
-		$date = DateTime::createFromFormat('j-M-yy', $data['reh_date']);
-		$rehydrationDate = $date->format('Y-m-d');
+
+        $receiptDate = Pt_Commons_General::dateFormat($data['receipt_date']);
+        $lastDate = Pt_Commons_General::dateFormat($data['hdLastDate']);
+        $testDate = Pt_Commons_General::dateFormat($data['test_date']);
+
+        $rehydrationDate = Pt_Commons_General::dateFormat($data['reh_date']);
 		
 		$supervisorApproval =$data['supervisorApproval'];
 		$participantSupervisor = $data['participantSupervisor'];
@@ -130,18 +122,17 @@ public function getPossibleResult($testCode,$subgroup){
 			// Test 1
 			$testKit1 = $data['testkit1'];
 			$lotNo1 = $data['lot_no1'];
-			
-			$date = DateTime::createFromFormat('j-M-yy', $data['exp_date1']);
-			$expDate1 = $date->format('Y-m-d');
+
+            $expDate1 = Pt_Commons_General::dateFormat($data['exp_date1']);
 			
 			$testResult1 = $data[$i . '_testresult1'];
 			
 			// Test 2
 			$testKit2 = $data['testkit2'];
 			$lotNo2 = $data['lot_no2'];
-			
-			$date = DateTime::createFromFormat('j-M-yy', $data['exp_date2']);
-			$expDate2 = $date->format('Y-m-d');
+
+            $expDate2 = Pt_Commons_General::dateFormat($data['exp_date2']);
+
 			
 			
 			$testResult2 = $data[$i . '_testresult2'];
@@ -149,9 +140,8 @@ public function getPossibleResult($testCode,$subgroup){
 			// Test 2
 			$testKit3 = $data['testkit3'];
 			$lotNo3 = $data['lot_no3'];
-			
-			$date = DateTime::createFromFormat('j-M-yy', $data['exp_date3']);
-			$expDate3 = $date->format('Y-m-d');
+
+            $expDate3 = Pt_Commons_General::dateFormat($data['exp_date3']);
 				
 			
 			$testResult3 = $data[$i . '_testresult3'];
@@ -163,11 +153,10 @@ public function getPossibleResult($testCode,$subgroup){
 			$stmtSample = $db->prepare("call RESPONSE_RESULT_DTS_UPDATE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 			
 			
-		$stmtSample->execute(array($participantId,$shipId,$DTSSampleID,$testKit1,$lotNo1,$expDate1,$testResult1, $testKit2,$lotNo2,$expDate2,$testResult2,	$testKit3,$lotNo3,$expDate3,$testResult3,
+		$res = $stmtSample->execute(array($participantId,$shipId,$DTSSampleID,$testKit1,$lotNo1,$expDate1,$testResult1, $testKit2,$lotNo2,$expDate2,$testResult2,	$testKit3,$lotNo3,$expDate3,$testResult3,
 					$rptResult,$userId ));
 		}
-		$db->commit();
-		
+		$res = $db->commit();
 		}
 		catch (exception $e) {
 			error_log($e->getMessage());

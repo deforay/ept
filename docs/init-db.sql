@@ -270,6 +270,7 @@ Declare SampleCount INT default 0;
  
 select count(*) into  SampleCount from response_result_dts where 
 ShipmentID = ShipId and
+DTSSampleID = SampID and
 ParticipantID = PartId;
 
 IF (SampleCount > 0) THEN

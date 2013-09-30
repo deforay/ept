@@ -98,17 +98,17 @@ CREATE TABLE IF NOT EXISTS `reference_result_eid` (
 ) ENGINE=InnoDB;
 
 
-CREATE TABLE IF NOT EXISTS `vl_assay` (
+CREATE TABLE IF NOT EXISTS `r_vl_assay` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
--- Dumping data for table `vl_assay`
+-- Dumping data for table `r_vl_assay`
 --
 
-INSERT INTO `vl_assay` (`id`, `name`) VALUES
+INSERT INTO `r_vl_assay` (`id`, `name`) VALUES
 (1, 'Abbott - RealTime '),
 (2, 'Roche - COBAS Ampliprep/TaqMan'),
 (3, 'Biocentric - Generic HIV Charge Virale'),
@@ -714,3 +714,135 @@ ALTER TABLE participant DROP PRIMARY KEY;
 ALTER TABLE  `participant` ADD PRIMARY KEY (  `ParticipantSystemID` ) ;
 ALTER TABLE  `participant` CHANGE  `ParticipantSystemID`  `ParticipantSystemID` INT NOT NULL AUTO_INCREMENT;
 ALTER TABLE  `participant` ADD UNIQUE (`ParticipantID`);
+
+
+-- By Amit on Sep 30 2013
+
+RENAME TABLE  `vl_assay` TO  `r_vl_assay` ;
+
+
+
+CREATE PROCEDURE `RESPONSE_RESULT_DTS_UPDATE`(
+IN PartId varchar(45),
+IN ShipID varchar(45),
+IN SampID varchar(45),
+
+IN KITName1 varchar(45),
+IN Lot1 varchar(45),
+IN ExpDt1 date,
+IN TResult1 varchar(45),
+
+IN KITName2 varchar(45),
+IN Lot2 varchar(45),
+IN ExpDt2 date,
+IN TResult2 varchar(45),
+
+
+IN KITName3 varchar(45),
+IN Lot3 varchar(45),
+IN ExpDt3 date,
+IN TResult3 varchar(45),
+
+IN RptResult varchar(45),
+
+IN user varchar(45)
+)
+BEGIN
+Declare SampleCount INT default 0;
+
+select count(*) into  SampleCount from response_result_dts where
+ ShipmentID = ShipId and
+	ParticipantID = PartId and
+	DTSSampleID = SampID;
+
+IF (SampleCount > 0) THEN
+-- Use update
+-- select * from response_result_dts;
+	update response_result_dts set
+
+		TestKitName1 = KITName1,
+		LotNo1 = Lot1,
+		TestResult1 = TResult1,
+		ExpDate1 = ExpDt1,
+
+		TestKitName2 = KITName2,
+		LotNo2 = Lot2,
+		TestResult2 = TResult2,
+		ExpDate2 = ExpDt2,
+
+		TestKitName3 =KITName3,
+		LotNo3 = Lot3,
+		TestResult3 = TResult3,
+		ExpDate3 = ExpDt3,
+
+		ReportedResult = RptResult,
+		Updated_on = now(),
+		Updated_by = user
+
+	Where
+	ShipmentID = ShipId and
+	ParticipantID = PartId and
+	DTSSampleID = SampID;
+ELSE
+INSERT INTO response_result_dts
+	(
+		ParticipantID,
+		ShipmentID,
+		DTSSampleID,
+
+		TestKitName1,
+		LotNo1,
+		TestResult1,
+		ExpDate1,
+
+		TestKitName2,
+		LotNo2,
+		TestResult2,
+		ExpDate2,
+
+		TestKitName3,
+		LotNo3,
+		TestResult3,
+		ExpDate3,
+
+		ReportedResult,
+		Created_on,
+		Updated_on,
+		Updated_by,
+		Created_by
+	)
+	VALUES
+	(
+		PartId ,
+		ShipID,
+		SampID,
+
+		KITName1,
+		Lot1,
+		ExpDt1,
+		TResult1,
+
+		KITName2,
+		Lot2 ,
+		ExpDt2,
+		TResult2,
+
+
+		KITName3,
+		Lot3,
+		ExpDt3,
+		TResult3,
+
+		RptResult,
+
+		now(),
+		now(),
+		user,
+		user
+	);
+
+
+END IF;
+
+END$$
+

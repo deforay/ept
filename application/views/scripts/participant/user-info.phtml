@@ -25,11 +25,11 @@
         </tr>
         <tr align="left" class="dark">
             <td>Cell Phone Number <span class="mandatory">*</span></td>
-            <td><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['UserCellNumber']; ?>" class="isRequired"   title="Please enter your contact number here" placeholder="Please enter your contact number here"  /></td>
+            <td><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['UserCellNumber']; ?>" class="isRequired isNumeric"   title="Please enter your contact number here" placeholder="Please enter your contact number here"  /></td>
         </tr>
         <tr align="left" class="light"> 
             <td>Phone Number</td>
-            <td><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['UserPhoneNumber']; ?>" /></td>
+            <td><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['UserPhoneNumber']; ?>" class="isNumeric"/></td>
         </tr>
         <tr align="left" class="dark">
             <td>UserFld1</td>
@@ -48,7 +48,7 @@
     <br>
     <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
         <input name="submitbtn" class="button button-rounded button-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
-        <input name="reset" class="button button-rounded button-caution" type="reset" id="reset" tabindex="8" value="Cancel" /> 
+        <input name="reset" class="button button-rounded button-caution" type="button" onclick="window.history.go(-1);" tabindex="8" value="Cancel" />
     </div>
 
 </form>
