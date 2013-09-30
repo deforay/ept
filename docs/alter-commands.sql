@@ -175,27 +175,27 @@ group by SHIP_YEAR
 
 union
 
-Select year(ShipmentDate) as SHIP_YEAR,   
+Select year(shipment_date) as SHIP_YEAR,   
 'VL' AS SCHEME,
-count(substr(EvaluationStatus,1,1)) as TOTLASHIPPED,  
+count(substr(evaluation_status,1,1)) as TOTLASHIPPED,  
 count(
-	CASE  substr(EvaluationStatus,3,1)
+	CASE  substr(evaluation_status,3,1)
 	WHEN 1 THEN   'T'
 	END 
 	) as 'ONTIME' ,
 count(
-	CASE  substr(EvaluationStatus,2,1)
+	CASE  substr(evaluation_status,2,1)
 	WHEN 1 THEN   'R'
 	END 
 	) as 'RESPOND' ,
 
 count(
-	CASE  substr(EvaluationStatus,2,1)
+	CASE  substr(evaluation_status,2,1)
 	WHEN 9 THEN   'N'
 	END
 	)  as 'NORESPONSE' 
 from shipment_vl as a 
-where year(ShipmentDate)  + 5 > year(CURDATE())
+where year(shipment_date)  + 5 > year(CURDATE())
 group by SHIP_YEAR 
 
 union

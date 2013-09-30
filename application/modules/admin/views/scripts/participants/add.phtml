@@ -1,82 +1,113 @@
 <div class="well">
-<form name="addUserForm" id="addUserForm" method="post" action="<?php echo $this->url(array("module"=>"admin", "controller" => "data-managers", "action" => "add"), null, true) ?>" class="form-horizontal bs-example" role="form">
-<fieldset>
-                  <legend>Add New Participant</legend>
-    
-    
+    <form name="addParticipantForm" id="addParticipantForm" method="post"
+          action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "add"), null, true) ?>"
+          class="form-horizontal bs-example" role="form">
+        <fieldset>
+            <legend>Add New Participant</legend>
 
-        <div class="form-group">
-            <label class="col-lg-3 control-label">Participant ID <span class="mandatory">*</span></label>
-            <div class="col-lg-5">
-                <input type="text" id="participantId" name="participantId"  size="50" class="isRequired form-control" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('users','UserID',this,null,'This email already exists as a primary email for another user. Please choose another email.')"/>
+
+            <div class="form-group">
+                <label class="col-lg-3 control-label">First Name <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input id="fname" type="text" id="pfname" name="pfname" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the first name here"
+                                             placeholder="Please enter the first name here"/></div>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">First Name <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input id="fname" type="text" id="fname" name="fname" size="50" maxlength="45" class="isRequired form-control"  title="Please enter the first name here" placeholder="Please enter the first name here"  /></div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">Last Name <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input id="lname" type="text" id="lname" name="lname" size="50" maxlength="45" class="isRequired form-control" title="Please enter the last name here" placeholder="Please enter the last name here"  /></div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">E-mail Address <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input id="semail" type="text" id="email" name="email" size="50" maxlength="45" class="isRequired isEmail form-control" title="Please enter the email id here" placeholder="Please enter the email id here"  /></div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">Cell/Mobile Number <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45" class="isRequired form-control"   title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here"  /></div>
-        </div>
-        <div class="form-group"> 
-            <label class="col-lg-3 control-label">Phone Number</label>
-            <div class="col-lg-5"><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['UserPhoneNumber']; ?>" placeholder="Please enter phone number here" class="form-control"/></div>
-        </div>
-        <div class="form-group"> 
-            <label class="col-lg-3 control-label">Status</label>
-            <div class="col-lg-5">
-				<select type="text" id="status" name="status" class="isRequired form-control" title="Please select user status here">
-					<option value="">--Select--</option>
-					<option value="active" <?php echo ($this->rsUser['status'] == "active") ? "selected='selected'" : ""; ?>>Active</option>
-					<option value="inactive" <?php echo ($this->rsUser['status'] == "inactive") ? "selected='selected'" : ""; ?>>Inactive</option>
-				</select>
-			</div>
-        </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Last Name <span class="mandatory">*</span></label>
 
-    </table>
-    <br>
-    <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-        <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Add"  /> 
-        <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/data-managers';" tabindex="8" value="Cancel" /> 
-    </div>
-</fieldset>
-</form>
+                <div class="col-lg-5"><input id="lname" type="text" id="plname" name="plname" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the last name here"
+                                             placeholder="Please enter the last name here"/></div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Participant ID <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5">
+                    <input type="text" id="participantId" name="participantId" size="50" class="isRequired form-control"
+                           title="Please enter the primary email id here"
+                           placeholder="Please enter the primary email id here"
+                           onblur="checkDuplicate('participants','ParticipantID',this,null,'This Participant ID already exists for another Participant. Please try something else.')"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">E-mail Address <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="pemail" name="pemail" size="50" maxlength="45"
+                                             class="isRequired isEmail form-control"
+                                             title="Please enter the email id here"
+                                             placeholder="Please enter the email id here"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Cell/Mobile Number <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input id="phone1" type="text" id="pphone2" name="pphone2" size="50" maxlength="45"
+                                             class="isRequired form-control"
+                                             title="Please enter mobile/cell number here"
+                                             placeholder="Please enter mobile/cell number here"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Phone Number</label>
+
+                <div class="col-lg-5"><input id="phone2" type="text" id="pphone1" name="pphone1" size="50" maxlength="45"
+                                             placeholder="Please enter phone number here" class="form-control"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Affiliation</label>
+
+                <div class="col-lg-5"><input type="text" id="partAff" name="partAff" size="50" maxlength="45"
+                                             placeholder="Please enter affiliation here" class="form-control"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Status</label>
+
+                <div class="col-lg-5">
+                    <select type="text" id="status" name="status" class="isRequired form-control"
+                            title="Please select user status here">
+                        <option value="">--Select--</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            </table>
+            <br>
+
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
+                       tabindex="7" value="Add"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/participants';"
+                       tabindex="8" value="Cancel"/>
+            </div>
+        </fieldset>
+    </form>
 </div>
 <script type="text/javascript">
-	var duplicated = false;
-    function checkDuplicate(tableName,fieldName,obj,fnct,msg)
-    {
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName,fieldName : fieldName ,value : obj.value,fnct : fnct, format: "html" },
-        function(data){
-            if(data>0)
-            {
-                alert(msg,"err");
-                duplicated=true;
-				obj.focus();
-            }
-            else{
-                duplicated=false;
-            }
-        });
+    var duplicated = false;
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html" },
+            function (data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    obj.focus();
+                }
+                else {
+                    duplicated = false;
+                }
+            });
     }
-	
-    function validateNow(){
-		checkDuplicate('users','UserID',$("#userId"),null,'This email already exists as a primary email for another user. Please choose another email.')
+
+    function validateNow() {
+        checkDuplicate('participants', 'ParticipantID', $("#participantId"), null, 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
-            formId: 'addUserForm'
+            formId: 'addParticipantForm'
         });
-        if(flag && !duplicated){
+        if (flag && !duplicated) {
             $.blockUI();
-            document.getElementById('addUserForm').submit();
+            document.getElementById('addParticipantForm').submit();
         }
-    }	    
+    }
 </script>

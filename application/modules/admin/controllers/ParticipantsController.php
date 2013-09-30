@@ -22,12 +22,30 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function addAction()
     {
-        // action body
+        $userService = new Application_Service_Participants();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getRequest()->getPost();
+            $userService->addParticipant($params);
+            $this->_redirect("/admin/participants");
+        }else{
+
+        }
     }
 
     public function editAction()
     {
-        // action body
+
+        $userService = new Application_Service_Participants();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getRequest()->getPost();
+            $userService->updateParticipant($params);
+            $this->_redirect("/admin/participants");
+        }else{
+            if($this->_hasParam('id')){
+                $userId = (int)$this->_getParam('id');
+                $this->view->participant = $userService->getParticipantDetails($userId);
+            }
+        }
     }
 
 

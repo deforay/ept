@@ -7,21 +7,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     protected $_primary = 'ParticipantID';
 
 
-    public function getParticipantsByUserSystemId($userSystemId){
+    public function getParticipantsByUserSystemId($userSystemId)
+    {
         return $this->fetchAll("UserSystemID = $userSystemId");
     }
 
-    public function getParticipant($partSysId){
-        return $this->fetchRow("ParticipantSystemID = '".$partSysId."'");
+    public function getParticipant($partSysId)
+    {
+        return $this->fetchRow("ParticipantSystemID = '" . $partSysId . "'");
     }
 
-    public function getAllParticipants($parameters) {
+    public function getAllParticipants($parameters)
+    {
 
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('ParticipantFName','ParticipantLName', 'ParticipantMobile', 'ParticipanteMail', 'ParticipanteMail', 'status');
+        $aColumns = array('ParticipantFName', 'ParticipantLName', 'ParticipantMobile', 'ParticipantPhone', 'ParticipantAffiliation', 'ParticipanteMail', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "UserSystemID";
@@ -45,7 +48,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
                     $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ( $parameters['sSortDir_' . $i] ) . ", ";
+				 	" . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
 
@@ -72,9 +75,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                 for ($i = 0; $i < $colSize; $i++) {
                     if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search ) . "%' OR ";
+                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
                     } else {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search ) . "%' ";
+                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
                 $sWhereSub .= ")";
@@ -99,7 +102,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('u' => $this->_name));
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name));
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -139,37 +142,71 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
 
-        $aColumns = array('UserFName','UserLName', 'UserPhoneNumber', 'UserID', 'UserSecondaryemail', 'status');
+        $aColumns = array('UserFName', 'UserLName', 'UserPhoneNumber', 'UserID', 'UserSecondaryemail', 'status');
         foreach ($rResult as $aRow) {
             $row = array();
-            $row[] = $aRow['UserFName'];
-            $row[] = $aRow['UserLName'];
-            $row[] = $aRow['UserCellNumber'];
-            $row[] = $aRow['UserID'];
-            $row[] = $aRow['UserSecondaryemail'];
+            $row[] = $aRow['ParticipantFName'];
+            $row[] = $aRow['ParticipantLName'];
+            $row[] = $aRow['ParticipantMobile'];
+            $row[] = $aRow['ParticipantPhone'];
+            $row[] = $aRow['ParticipantAffiliation'];
+            $row[] = $aRow['ParticipanteMail'];
             $row[] = $aRow['status'];
-            $row[] = '<a href="/admin/data-managers/edit/id/' . $aRow['UserSystemID'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i></a>';
+            $row[] = '<a href="/admin/participants/edit/id/' . $aRow['ParticipantSystemID'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i></a>';
 
             $output['aaData'][] = $row;
         }
 
         echo json_encode($output);
     }
-    public function updateParticipant($params){
-			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
-			 
+
+    public function updateParticipant($params)
+    {
+        $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+
+       $data = array(
+            'ParticipantID' => $params['pid'],
+            'ParticipantFName' => $params['pfname'],
+            'ParticipantLName' => $params['plname'],
+            'ParticipantMobile' => $params['pphone2'],
+            'ParticipantPhone' => $params['pphone1'],
+            'ParticipanteMail' => $params['pemail'],
+            'ParticipantAffiliation' => $params['partAff'],
+            'Updated_on' => new Zend_Db_Expr('now()')
+        );
+
+        if(isset($params['status']) && $params['status'] != "" && $params['status'] != null){
+            $data['status'] = $params['status'];
+        }
+
+        if(isset($authNameSpace->UserID) && $authNameSpace->UserID != ""){
+            $data['Updated_by'] = $authNameSpace->UserID;
+        }
+
+        if(isset($authNameSpace->primary_email) && $authNameSpace->primary_email != ""){
+            $data['Updated_by'] = $authNameSpace->primary_email;
+        }
+
+        return $this->update($data, "ParticipantSystemID = '" . $params['PartSysID'] . "'");
+    }
+
+    public function addParticipant($params)
+    {
+        $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+
         $data = array(
-                      'ParticipantID'=>$params['pid'],
-                      'ParticipantFName'=>$params['pfname'],
-                      'ParticipantLName'=>$params['plname'],
-                      'ParticipantMobile'=>$params['pphone2'],
-                      'ParticipantPhone'=>$params['pphone1'],
-                      'ParticipanteMail'=>$params['pemail'],
-                      'ParticipantAffiliation'=>$params['partAff'],
-                      'Updated_on'=>new Zend_Db_Expr('now()'),
-                      'Updated_by'=>$authNameSpace->UserID,
-                      );
-        return $this->update($data,"ParticipantSystemID = '".$params['PartSysID']."'");
+            'ParticipantID' => $params['participantId'],
+            'ParticipantFName' => $params['pfname'],
+            'ParticipantLName' => $params['plname'],
+            'ParticipantMobile' => $params['pphone2'],
+            'ParticipantPhone' => $params['pphone1'],
+            'ParticipanteMail' => $params['pemail'],
+            'ParticipantAffiliation' => $params['partAff'],
+            'status' => $params['status'],
+            'Created_on' => new Zend_Db_Expr('now()'),
+            'Created_by' => $authNameSpace->primary_email,
+        );
+        return $this->insert($data);
     }
 
 }

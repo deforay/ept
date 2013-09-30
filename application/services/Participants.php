@@ -20,9 +20,13 @@ class Application_Service_Participants {
 		
 	}
 	
+	public function addParticipant($params){
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->addParticipant($params);
+    }
 	public function updateParticipant($params){
 		$participantDb = new Application_Model_DbTable_Participants();
-		return $participantDb->updateParticipant($params);		
+		return $participantDb->updateParticipant($params);
 	}
 	public function getAllParticipants($params){
 		$participantDb = new Application_Model_DbTable_Participants();

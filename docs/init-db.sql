@@ -195,17 +195,17 @@ SELECT
 `response_result_dts`.`TestResult2`,
 `response_result_dts`.`TestResult3`,
 
-`referance_result_dts`.`DTSSampleLabel`
+`reference_result_dts`.`DTSSampleLabel`
 
 FROM `eanalyze`.`response_result_dts` left join
-referance_result_dts on
-`response_result_dts`.`DTSSampleID` = `referance_result_dts`.`DTSSampleID` and
-`response_result_dts`.`ShipmentID` = `referance_result_dts`.`DTSShipmentID`
+reference_result_dts on
+`response_result_dts`.`DTSSampleID` = `reference_result_dts`.`DTSSampleID` and
+`response_result_dts`.`ShipmentID` = `reference_result_dts`.`DTSShipmentID`
 where 
 `response_result_dts`.`ShipmentID` = ShipId and
 `response_result_dts`.`ParticipantID` = PartId 
 order by 
-`referance_result_dts`.`DTSSampleLabel`;
+`reference_result_dts`.`DTSSampleLabel`;
 */
 SELECT
 b.CalculatedScore,
@@ -227,7 +227,7 @@ b.TestResult2,
 b.TestResult3,
 a.DTSSampleLabel
 FROM 
-(select * from referance_result_dts where DTSShipmentID = ShipId) as a left join 
+(select * from reference_result_dts where DTSShipmentID = ShipId) as a left join 
 (Select * from response_result_dts where ShipmentID = ShipId and ParticipantID = PartId) as b
  on 
 a.DTSSampleID = b.DTSSampleID and
@@ -739,11 +739,11 @@ INSERT INTO `participant` (`ParticipantID`, `UserSystemID`, `ParticipantFName`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `referance_result_dts`
+-- Table structure for table `reference_result_dts`
 --
 
-DROP TABLE IF EXISTS `referance_result_dts`;
-CREATE TABLE IF NOT EXISTS `referance_result_dts` (
+DROP TABLE IF EXISTS `reference_result_dts`;
+CREATE TABLE IF NOT EXISTS `reference_result_dts` (
   `DTSShipmentID` varchar(45) NOT NULL,
   `DTSSampleID` int(11) NOT NULL,
   `DTSRefranceResult` varchar(45) DEFAULT NULL,
@@ -752,10 +752,10 @@ CREATE TABLE IF NOT EXISTS `referance_result_dts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Referance Result for DTS Shipment';
 
 --
--- Dumping data for table `referance_result_dts`
+-- Dumping data for table `reference_result_dts`
 --
 
-INSERT INTO `referance_result_dts` (`DTSShipmentID`, `DTSSampleID`, `DTSRefranceResult`, `DTSSampleLabel`) VALUES
+INSERT INTO `reference_result_dts` (`DTSShipmentID`, `DTSSampleID`, `DTSRefranceResult`, `DTSSampleLabel`) VALUES
 ('1', 1, 'P', 'Sample 1'),
 ('1', 2, 'N', 'Sample 2'),
 ('1', 3, 'P', 'Sample 3'),

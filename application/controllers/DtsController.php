@@ -47,7 +47,7 @@ class DtsController extends Zend_Controller_Action
     		$data = $this->_request->getParams();
 			
     		$dtsResponseDb->saveResponse($data);
-			Zend_Debug::dump($data);die;
+			//Zend_Debug::dump($data);die;
     		//Zend_Debug::dump($data);
     		//echo "data Saved"; 
     		$this->_forward('dashboard', 'Participant',null,array('msg'=>'Saved'));
