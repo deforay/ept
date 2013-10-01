@@ -15,11 +15,25 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
     {
         if ($this->getRequest()->isPost()) {
             $params = $this->_getAllParams();            
-            $clientsServices = new Application_Service_Participants();
-            $clientsServices->getAllEnrollments($params);
+            $participantService = new Application_Service_Participants();
+            $participantService->getAllEnrollments($params);
+        }
+    }
+
+    public function viewAction()
+    {
+        if($this->_hasParam('pid') && $this->_hasParam('sid')){
+            $pid = $this->_getParam('pid');
+            $this->view->sid = $sid = $this->_getParam('sid');
+            $participantService = new Application_Service_Participants();
+            $this->view->enrollmentDetails = $participantService->getEnrollmentDetails($pid,$sid);
+        }else{
+            $this->_redirect("/admin/enrollments");
         }
     }
 
 
 }
+
+
 

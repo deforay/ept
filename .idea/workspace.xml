@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7489a970-6e61-44a0-8c33-5b0d2af16ed2" name="Default" comment="">
+<<<<<<< local
+=======
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/php.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/layouts/scripts/admin.phtml" afterPath="$PROJECT_DIR$/application/layouts/scripts/admin.phtml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/modules/admin/views/scripts/login/index.phtml" afterPath="$PROJECT_DIR$/application/modules/admin/views/scripts/login/index.phtml" />
+>>>>>>> other
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ept.iws" />
@@ -40,6 +43,9 @@
     <favorites_list name="ept" />
   </component>
   <component name="FileEditorManager">
+<<<<<<< local
+    <leaf />
+=======
     <leaf>
       <file leaf-file-name="add.phtml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/modules/admin/views/scripts/participants/add.phtml">
@@ -138,6 +144,7 @@
         </entry>
       </file>
     </leaf>
+>>>>>>> other
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -204,6 +211,10 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="options.lastSelected" value="preferences.keymap" />
+<<<<<<< local
+    <property name="FullScreen" value="false" />
+=======
+>>>>>>> other
     <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="GoToClass.includeJavaFiles" value="false" />
@@ -351,24 +362,76 @@
     <entry file="file://$PROJECT_DIR$/application/services/Schemes.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="108" column="27" selection-start="3863" selection-end="3863" vertical-scroll-proportion="-4.5833335" />
+<<<<<<< local
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/library/Pt/Commons/General.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="45" selection-start="441" selection-end="441" vertical-scroll-proportion="0.46588695" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/DtsController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="54" column="0" selection-start="1582" selection-end="1582" vertical-scroll-proportion="0.67836255" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/models/DTSResponse.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="158" column="29" selection-start="4905" selection-end="4905" vertical-scroll-proportion="0.27" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/views/scripts/participant/testeredit.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="42" column="200" selection-start="2900" selection-end="2900" vertical-scroll-proportion="0.37284896" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/views/scripts/participant/testers.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="184" selection-start="1154" selection-end="1154" vertical-scroll-proportion="0.68451244" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/modules/admin/views/scripts/participants/edit.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="63" column="119" selection-start="4402" selection-end="4402" vertical-scroll-proportion="0.38623327" />
+=======
+>>>>>>> other
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/views/scripts/vl/response.phtml">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< local
+        <state line="63" column="84" selection-start="2864" selection-end="2864" vertical-scroll-proportion="0.21032505" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/alter-commands.sql">
+      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="848" column="0" selection-start="24902" selection-end="24902" vertical-scroll-proportion="0.88723403" />
+=======
         <state line="63" column="84" selection-start="2864" selection-end="2864" vertical-scroll-proportion="0.0">
           <folding />
         </state>
+>>>>>>> other
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/views/scripts/participant/user-info.phtml">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< local
+        <state line="50" column="118" selection-start="3610" selection-end="3610" vertical-scroll-proportion="0.625239" />
+=======
         <state line="50" column="118" selection-start="3610" selection-end="3610" vertical-scroll-proportion="0.0">
           <folding />
         </state>
+>>>>>>> other
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/modules/admin/views/scripts/participants/add.phtml">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< local
+        <state line="45" column="85" selection-start="2943" selection-end="2943" vertical-scroll-proportion="0.12810707" />
+=======
         <state line="45" column="76" selection-start="2934" selection-end="2934" vertical-scroll-proportion="0.0">
           <folding />
         </state>
@@ -405,6 +468,7 @@
         <state line="365" column="0" selection-start="7266" selection-end="7271" vertical-scroll-proportion="0.0">
           <folding />
         </state>
+>>>>>>> other
       </provider>
       <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
         <state />
@@ -412,6 +476,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/docs/alter-commands.sql">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< local
+        <state line="364" column="0" selection-start="7241" selection-end="7246" vertical-scroll-proportion="0.7276596" />
+=======
         <state line="847" column="0" selection-start="24901" selection-end="24901" vertical-scroll-proportion="0.0">
           <folding />
         </state>
@@ -432,6 +499,7 @@
         <state line="45" column="13" selection-start="1407" selection-end="1407" vertical-scroll-proportion="1.4673913">
           <folding />
         </state>
+>>>>>>> other
       </provider>
     </entry>
   </component>

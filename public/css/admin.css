@@ -21,3 +21,7 @@ body {
 .dataTables_paginate,.dataTables_info,.dataTables_filter{
   padding:7px 0;
 }
+
+.dataTable th{
+text-align:center;
+}

@@ -13,7 +13,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('p.ParticipantFName', 'p.ParticipantLName', 'e.scheme_name', 'e.enrolled_on');
+        $aColumns = array('ParticipantFName', 'ParticipantLName', 'scheme_id', 'scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')");
 
 
 
@@ -90,7 +90,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('e' => $this->_name))
-                                     ->join(array('p'=>'participants'),'p.ParticipantSystemID = e.participant_id');
+                                     ->join(array('p'=>'participant'),'p.ParticipantSystemID = e.participant_id')
+                                     ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -104,7 +105,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //error_log($sQuery);
+        //die($sQuery);
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
@@ -117,7 +118,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         /* Total data set length */
         $sQuery = $this->getAdapter()->select()->from(array('e' => $this->_name), new Zend_Db_Expr("COUNT('e.scheme_id')"))
-                                            ->join(array('p'=>'participants'),'p.ParticipantSystemID = e.participant_id',array());
+                                            ->join(array('p'=>'participant'),'p.ParticipantSystemID = e.participant_id',array())
+					    ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array());
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -134,11 +136,12 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         
         foreach ($rResult as $aRow) {
             $row = array();
-            $row[] = $aRow['p.ParticipantFName'];
-            $row[] = $aRow['p.ParticipantLName'];
-            $row[] = $aRow['e.scheme_name'];
-            $row[] = $aRow['e.enrolled_on'];
-            $row[] = '<a href="/admin/enrollments/view/id/' . $aRow['p.ParticipantSystemID'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i></a>';
+            $row[] = $aRow['ParticipantFName'];
+            $row[] = $aRow['ParticipantLName'];
+            $row[] = $aRow['scheme_id'];
+            $row[] = $aRow['scheme_name'];
+            $row[] = Pt_Commons_General::humanDateFormat($aRow['enrolled_on']);
+            $row[] = '<a href="/admin/enrollments/view/pid/' . $aRow['ParticipantSystemID'] . '/sid/' . strtolower($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-eye-open"></i> Know More</a>';
 
             $output['aaData'][] = $row;
         }

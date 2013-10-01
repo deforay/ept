@@ -1,0 +1,26 @@
+
+<div class="container">
+	<fieldset>
+		<legend><?php echo ucwords($this->enrollmentDetails[0]['ParticipantFName']. " " . $this->enrollmentDetails[0]['ParticipantLName']) ; ?> - Scheme <?php echo strtoupper($this->sid); ?></legend>
+		
+		<table class="table table-bordered table-striped table-hover" style="width:50%;">
+			<tr>
+				<th>Shipment Date</th>
+				<th>Status</th>
+			</tr>
+			<?php
+				foreach($this->enrollmentDetails as $ed){
+					if($ed['shipment_date'] != "" && $ed['shipment_date'] != null){
+					?>
+			<tr>
+				<td><?php echo $this->dateFormat($ed['shipment_date']); ?></td>
+				<td>Coming Soon</td>
+			</tr>
+					<?php
+					}
+				}
+			?>
+		</table>
+		
+	</fieldset>
+</div>
