@@ -32,5 +32,10 @@ class Application_Service_Participants {
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->getAllParticipants($params);
 	}
+	
+	public function getAllEnrollments($params){
+		$enrollments = new Application_Model_DbTable_Enrollments();
+		
+	}
 
 }

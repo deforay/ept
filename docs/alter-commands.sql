@@ -18,9 +18,9 @@ ALTER TABLE  `users` ADD  `force_password_reset` INT NOT NULL DEFAULT  '0';
 
 -- By Amit on 18 Sep 2013
 
-ALTER TABLE  `schemelist` CHANGE  `schemeID`  `SchemeID` VARCHAR( 10 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
-ALTER TABLE  `schemelist` ADD  `SchemeName` VARCHAR( 255 ) NOT NULL AFTER  `SchemeID`;
-INSERT INTO `eanalyze`.`schemelist` (`SchemeID`, `SchemeName`, `ShipmentTable`, `ResponseTable`, `ReferanceResultTable`) VALUES ('DTS', 'Dried Tube Specimen', NULL, NULL, NULL), ('VL', 'Viral Load', NULL, NULL, NULL);
+-- ALTER TABLE  `schemelist` CHANGE  `schemeID`  `SchemeID` VARCHAR( 10 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+-- ALTER TABLE  `schemelist` ADD  `SchemeName` VARCHAR( 255 ) NOT NULL AFTER  `SchemeID`;
+-- INSERT INTO `eanalyze`.`schemelist` (`SchemeID`, `SchemeName`, `ShipmentTable`, `ResponseTable`, `ReferanceResultTable`) VALUES ('DTS', 'Dried Tube Specimen', NULL, NULL, NULL), ('VL', 'Viral Load', NULL, NULL, NULL);
 
 -- By Amit on 19 Sep 2013
 
@@ -846,3 +846,23 @@ END IF;
 
 END$$
 
+
+-- By Amit on Oct 01 2013
+
+CREATE TABLE IF NOT EXISTS `scheme_list` (
+  `scheme_id` varchar(10) NOT NULL,
+  `scheme_name` varchar(255) NOT NULL,
+  `shipment_table` varchar(45) DEFAULT NULL,
+  `response_table` varchar(45) DEFAULT NULL,
+  `reference_result_table` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`scheme_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `enrollments` (
+  `scheme_id` varchar(255) NOT NULL,
+  `participant_id` int(11) NOT NULL,
+  `enrolled_on` date NOT NULL,
+  `enrollment_ended_on` date NOT NULL,
+  `status` varchar(255) NOT NULL,
+  PRIMARY KEY (`scheme_id`,`participant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

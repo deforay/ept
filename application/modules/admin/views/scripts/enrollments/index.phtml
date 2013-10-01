@@ -1,0 +1,15 @@
+<div class="well">
+	<fieldset>
+		<legend>Enrollments</legend>
+		Choose Scheme :
+		<div class="">
+		<select class="form-control">
+			<?php
+				foreach($this->schemes as $scheme){
+					echo "<option value='".$scheme['scheme_name']."'>".$scheme['scheme_name']."</option>";
+				}
+			?>
+		</select>
+		</div>
+	</fieldset>
+</div>

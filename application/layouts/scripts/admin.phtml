@@ -15,7 +15,7 @@ $adminSession = new Zend_Session_Namespace('admin');
   
   
   <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
-	    
+
 	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -39,15 +39,15 @@ $adminSession = new Zend_Session_Namespace('admin');
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?> ><a href="/admin">Dashboard</a></li>
+            <li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?> ><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'index'),'default',true); ?>">Dashboard</a></li>
             <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manage') ? "class='active dropdown'" : "class='dropdown'"; ?>>
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="/admin/data-managers">Data Managers</a></li>
-                <li><a href="/admin/participants">PT Participants</a></li>
-                <li><a href="#">Participants - Manager Map</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'data-managers'),'default',true); ?>">Data Managers</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'participants'),'default',true); ?>">PT Participants</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'system-admins'),'default',true); ?>">System Admin</a></li>
                 <li class="divider"></li>
-                <li><a href="#">New Enrollments</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments'),'default',true); ?>">Enrollments</a></li>
               </ul>
             </li>
 			<li><a href="/admin">Distributions</a></li>

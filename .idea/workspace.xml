@@ -2,18 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7489a970-6e61-44a0-8c33-5b0d2af16ed2" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/models/DTSResponse.php" afterPath="$PROJECT_DIR$/application/models/DTSResponse.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controllers/DtsController.php" afterPath="$PROJECT_DIR$/application/controllers/DtsController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/models/DbTable/VlAssay.php" afterPath="$PROJECT_DIR$/application/models/DbTable/VlAssay.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/modules/admin/views/scripts/participants/add.phtml" afterPath="$PROJECT_DIR$/application/modules/admin/views/scripts/participants/add.phtml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/alter-commands.sql" afterPath="$PROJECT_DIR$/docs/alter-commands.sql" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/configs/application.ini" afterPath="$PROJECT_DIR$/application/configs/application.ini" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/scripts/participant/dashboard.phtml" afterPath="$PROJECT_DIR$/application/views/scripts/participant/dashboard.phtml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/modules/admin/views/scripts/participants/edit.phtml" afterPath="$PROJECT_DIR$/application/modules/admin/views/scripts/participants/edit.phtml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/init-db.sql" afterPath="$PROJECT_DIR$/docs/init-db.sql" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/scripts/participant/testeredit.phtml" afterPath="$PROJECT_DIR$/application/views/scripts/participant/testeredit.phtml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/scripts/participant/testers.phtml" afterPath="$PROJECT_DIR$/application/views/scripts/participant/testers.phtml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/scripts/participant/user-info.phtml" afterPath="$PROJECT_DIR$/application/views/scripts/participant/user-info.phtml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/php.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/layouts/scripts/admin.phtml" afterPath="$PROJECT_DIR$/application/layouts/scripts/admin.phtml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/modules/admin/views/scripts/login/index.phtml" afterPath="$PROJECT_DIR$/application/modules/admin/views/scripts/login/index.phtml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ept.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -52,7 +44,7 @@
       <file leaf-file-name="add.phtml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/modules/admin/views/scripts/participants/add.phtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="45" column="85" selection-start="2943" selection-end="2943" vertical-scroll-proportion="-2.7916667">
+            <state line="45" column="76" selection-start="2934" selection-end="2934" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -61,7 +53,7 @@
       <file leaf-file-name="user-info.phtml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/views/scripts/participant/user-info.phtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="50" column="118" selection-start="3610" selection-end="3610" vertical-scroll-proportion="-13.625">
+            <state line="50" column="118" selection-start="3610" selection-end="3610" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -69,20 +61,20 @@
       </file>
       <file leaf-file-name="alter-commands.sql" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/docs/alter-commands.sql">
-          <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
-            <state />
-          </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state line="848" column="0" selection-start="24902" selection-end="24902" vertical-scroll-proportion="-5.4155846">
+            <state line="847" column="0" selection-start="24901" selection-end="24901" vertical-scroll-proportion="0.0">
               <folding />
             </state>
+          </provider>
+          <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+            <state />
           </provider>
         </entry>
       </file>
       <file leaf-file-name="response.phtml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/views/scripts/vl/response.phtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="63" column="84" selection-start="2864" selection-end="2864" vertical-scroll-proportion="-4.5833335">
+            <state line="63" column="84" selection-start="2864" selection-end="2864" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -91,7 +83,7 @@
       <file leaf-file-name="edit.phtml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/modules/admin/views/scripts/participants/edit.phtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="63" column="119" selection-start="4402" selection-end="4402" vertical-scroll-proportion="-8.416667">
+            <state line="63" column="110" selection-start="4393" selection-end="4393" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -100,7 +92,7 @@
       <file leaf-file-name="testers.phtml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/views/scripts/participant/testers.phtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="184" selection-start="1154" selection-end="1154" vertical-scroll-proportion="-8.125">
+            <state line="30" column="36" selection-start="1205" selection-end="1205" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -109,7 +101,7 @@
       <file leaf-file-name="testeredit.phtml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/views/scripts/participant/testeredit.phtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="42" column="200" selection-start="2900" selection-end="2900" vertical-scroll-proportion="-8.125">
+            <state line="42" column="200" selection-start="2900" selection-end="2900" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -118,7 +110,7 @@
       <file leaf-file-name="DTSResponse.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/models/DTSResponse.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="158" column="29" selection-start="4905" selection-end="4905" vertical-scroll-proportion="-5.625">
+            <state line="147" column="12" selection-start="4465" selection-end="4465" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -127,7 +119,7 @@
       <file leaf-file-name="DtsController.php" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/application/controllers/DtsController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="48" column="48" selection-start="1498" selection-end="1498" vertical-scroll-proportion="0.50292397">
+            <state line="45" column="13" selection-start="1407" selection-end="1407" vertical-scroll-proportion="1.4673913">
               <folding />
             </state>
           </provider>
@@ -135,13 +127,13 @@
       </file>
       <file leaf-file-name="init-db.sql" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/docs/init-db.sql">
-          <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
-            <state />
-          </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state line="364" column="0" selection-start="7241" selection-end="7246" vertical-scroll-proportion="-4.4415584">
+            <state line="365" column="0" selection-start="7266" selection-end="7271" vertical-scroll-proportion="0.0">
               <folding />
             </state>
+          </provider>
+          <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+            <state />
           </provider>
         </entry>
       </file>
@@ -176,9 +168,10 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="y" value="22" />
-    <option name="width" value="1280" />
-    <option name="height" value="708" />
+    <option name="x" value="65" />
+    <option name="y" value="24" />
+    <option name="width" value="1301" />
+    <option name="height" value="744" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -194,7 +187,7 @@
     <option name="STATE" value="0" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+    <navigator proportions="" version="1" splitterProportion="0.5">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -205,177 +198,19 @@
       <autoscrollFromSource />
       <sortByType />
     </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="application" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="application" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="services" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="application" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="application" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="admin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="application" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="admin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="participants" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ept" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="application" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="admin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="options.lastSelected" value="preferences.keymap" />
-    <property name="GoToClass.includeJavaFiles" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="GoToClass.includeJavaFiles" value="false" />
   </component>
   <component name="PublishConfig" serverName="ept" serverId="777f4cc0-3538-4d16-8544-71ca5b2daf4b">
     <servers>
-      <server id="6f6a44f5-6f4d-494b-96ce-ef32971ed8b3">
+      <server id="777f4cc0-3538-4d16-8544-71ca5b2daf4b">
         <serverdata />
       </server>
     </servers>
@@ -408,12 +243,11 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1280" height="708" extended-state="6" />
-    <editor active="true" />
+    <frame x="65" y="24" width="1301" height="744" extended-state="6" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282313" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2706645" sideWeight="0.6717687" order="0" side_tool="false" content_ui="combo" />
@@ -425,6 +259,7 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282313" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -495,132 +330,106 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/application/models/DbTable/Participants.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="204" column="42" selection-start="7468" selection-end="7468" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="204" column="42" selection-start="7468" selection-end="7468" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/configs/application.ini">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="22" selection-start="994" selection-end="994" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="27" column="22" selection-start="994" selection-end="994" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/views/scripts/participant/dashboard.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="44" selection-start="1937" selection-end="1937" vertical-scroll-proportion="-16.25">
-          <folding>
-            <element signature="n#style#0;n#a#0;n#span#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#h3#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#h3#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#1;n#h3#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#table#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#table#1;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#4;n#tr#0;n#table#1;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#table#2;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#7;n#tr#0;n#table#2;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#table#3;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#5;n#tr#0;n#table#3;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#6;n#tr#0;n#table#3;n#div#0;n#section#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
+        <state line="26" column="44" selection-start="1937" selection-end="1937" vertical-scroll-proportion="-16.25" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/models/DbTable/VlAssay.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="24" selection-start="105" selection-end="105" vertical-scroll-proportion="-3.125">
-          <folding />
-        </state>
+        <state line="5" column="24" selection-start="105" selection-end="105" vertical-scroll-proportion="-3.125" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/services/Schemes.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="108" column="27" selection-start="3863" selection-end="3863" vertical-scroll-proportion="-4.5833335">
-          <folding />
-        </state>
+        <state line="108" column="27" selection-start="3863" selection-end="3863" vertical-scroll-proportion="-4.5833335" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/views/scripts/vl/response.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="84" selection-start="2864" selection-end="2864" vertical-scroll-proportion="-4.5833335">
+        <state line="63" column="84" selection-start="2864" selection-end="2864" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/views/scripts/participant/user-info.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="118" selection-start="3610" selection-end="3610" vertical-scroll-proportion="-13.625">
+        <state line="50" column="118" selection-start="3610" selection-end="3610" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/modules/admin/views/scripts/participants/add.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="85" selection-start="2943" selection-end="2943" vertical-scroll-proportion="-2.7916667">
+        <state line="45" column="76" selection-start="2934" selection-end="2934" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/modules/admin/views/scripts/participants/edit.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="119" selection-start="4402" selection-end="4402" vertical-scroll-proportion="-8.416667">
+        <state line="63" column="110" selection-start="4393" selection-end="4393" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/views/scripts/participant/testers.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="184" selection-start="1154" selection-end="1154" vertical-scroll-proportion="-8.125">
+        <state line="30" column="36" selection-start="1205" selection-end="1205" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/views/scripts/participant/testeredit.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="200" selection-start="2900" selection-end="2900" vertical-scroll-proportion="-8.125">
+        <state line="42" column="200" selection-start="2900" selection-end="2900" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/library/Pt/Commons/General.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="45" selection-start="441" selection-end="441" vertical-scroll-proportion="0.46588695">
-          <folding />
-        </state>
+        <state line="17" column="45" selection-start="441" selection-end="441" vertical-scroll-proportion="0.46588695" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/docs/init-db.sql">
-      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="364" column="0" selection-start="7241" selection-end="7246" vertical-scroll-proportion="-4.4415584">
+        <state line="365" column="0" selection-start="7266" selection-end="7271" vertical-scroll-proportion="0.0">
           <folding />
         </state>
+      </provider>
+      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/docs/alter-commands.sql">
-      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="848" column="0" selection-start="24902" selection-end="24902" vertical-scroll-proportion="-5.4155846">
+        <state line="847" column="0" selection-start="24901" selection-end="24901" vertical-scroll-proportion="0.0">
           <folding />
         </state>
+      </provider>
+      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/models/DTSResponse.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="158" column="29" selection-start="4905" selection-end="4905" vertical-scroll-proportion="-5.625">
+        <state line="147" column="12" selection-start="4465" selection-end="4465" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/controllers/DtsController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="48" selection-start="1498" selection-end="1498" vertical-scroll-proportion="0.50292397">
+        <state line="45" column="13" selection-start="1407" selection-end="1407" vertical-scroll-proportion="1.4673913">
           <folding />
         </state>
       </provider>
