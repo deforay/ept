@@ -40,9 +40,8 @@ class Application_Service_Participants {
 	public function getEnrollmentDetails($pid,$sid){
 	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 	    $shipmentTable = 'shipment_'.strtolower($sid);
-	    $participantIdColumn =  (($sid == 'dts') ? 's.ParticipantID' : 's.participant_id');
 	    $sql = $db->select()->from(array('p'=>'participant'))
-				->joinLeft(array('s'=>$shipmentTable),'p.ParticipantSystemID='.$participantIdColumn)
+				->joinLeft(array('s'=>$shipmentTable),'p.ParticipantSystemID=s.participant_id')
 				->where("p.ParticipantSystemID=".$pid);
 	    return $db->fetchAll($sql);
 	}

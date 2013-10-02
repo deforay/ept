@@ -79,12 +79,12 @@
 				
 				<?php foreach($this->rsShipCurr as $curr){ ?>
 				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">				
-					<td><?php echo $curr['SHIPMENTDATE']; ?></td>
+					<td><?php echo $curr['shipment_date']; ?></td>
 					<td><?php echo $curr['SCHEME']; ?></td>
 					<td align="left"><?php echo $curr['FNAME'] . ' ' . $curr['LNAME'] ;?></td>
-					<td><?php echo $curr['LASTDATERESPONSE']; ?></td>
-					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($curr['SCHEME']),"action"=>"response","sid"=>$curr['SHIPID'],"pid"=>$curr['PARTICIPANTID'],"eid"=>$curr['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $curr['RESPONSE']; ?></a></td>
-					<td><?php echo $curr['RESPONSEDATE']; ?></td>
+					<td><?php echo $curr['lastdate_response']; ?></td>
+					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($curr['SCHEME']),"action"=>"response","sid"=>$curr['SHIPID'],"pid"=>$curr['participant_id'],"eid"=>$curr['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $curr['RESPONSE']; ?></a></td>
+					<td><?php echo $this->dateFormat($curr['RESPONSEDATE']); ?></td>
 				</tr>
 				<?php } ?>
 			</table>
@@ -109,10 +109,10 @@
 				<?php foreach($this->rsShipDef as $def){ ?>
 				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">
 					<td><?php echo $def['SHIP_YEAR']; ?></td>
-					<td><?php echo $def['SHIPMENTDATE']; ?></td>
+					<td><?php echo $def['shipment_date']; ?></td>
 					<td><?php echo $def['SCHEME']; ?></td>
 					<td align="left"><?php echo $def['FNAME'] . ' ' . $def['LNAME'] ;?></td>					
-					<td><?php echo $def['LASTDATERESPONSE']; ?></td>					
+					<td><?php echo $def['lastdate_response']; ?></td>					
 					<td><?php echo $def['STATUS']; ?></td>
 					<td><b><?php //echo $def['RESPONSEDATE']; ?></b></td>
 					<td style="text-decoration : underline;"><a href="<?php ?>"><?php echo $def['ACTION']; ?></a></td>					
@@ -149,11 +149,11 @@
 				<?php foreach($this->rsShipAll as $all){ ?>
 				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">					
 					<td><?php echo $all['SHIP_YEAR']; ?></td>
-					<td><?php echo $all['SHIPMENTDATE']; ?></td>
+					<td><?php echo $all['shipment_date']; ?></td>
 					<td><?php echo $all['SCHEME']; ?></td>
 					<td align="left"><?php echo $all['FNAME'] . ' ' . $all['LNAME'] ;?></td>
 					<td><?php echo $all['RESPONSEDATE']; ?></td>
-					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($all['SCHEME']),"action"=>"response","sid"=>$all['SHIPID'],"pid"=>$all['PARTICIPANTID'],"eid"=>$all['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $all['RESPONSE']; ?></a></td>
+					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($all['SCHEME']),"action"=>"response","sid"=>$all['SHIPID'],"pid"=>$all['PARTICIPANT_ID'],"eid"=>$all['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $all['RESPONSE']; ?></a></td>
 					<td style="text-decoration : underline;"><a href="#"><?php echo $all['REPORT']; ?></a></td>					
 				</tr>	
 				<?php }?>		

@@ -1,7 +1,8 @@
 <?php date_default_timezone_set('America/New_York');?>
-<form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller"=>"DTS","action"=>"response"),null,true) ?>">
 
-<input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['LastDateResponse'];?>" />
+<form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller"=>"dts","action"=>"response"),null,true) ?>">
+
+<input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response'];?>" />
 <input type="hidden" id ="hdshipId" name="hdshipId" value="<?php echo $this->shipId;?>" />
 
 
@@ -10,11 +11,11 @@
 <?php $count =0;  
 foreach($this->allSamples as $sample){ 
 $count++;  ?>
-<input type="hidden" id ="<?php echo $count . "_hdSampleId"; ?>" name="<?php echo $count . "_hdSampleId"; ?>" value="<?php echo $sample['DTSSampleID'];?>" />	 
+<input type="hidden" id ="<?php echo $count . "_hdSampleId"; ?>" name="<?php echo $count . "_hdSampleId"; ?>" value="<?php echo $sample['dts_sample_id'];?>" />	 
 <?php } ?>
 
 <?php 
-//  $dt= DateTime::createFromFormat('Y-m-d',$this->shipment["ShipmentReceiptDate"]); echo $dt->format('d-M-Y'); 
+//  $dt= DateTime::createFromFormat('Y-m-d',$this->shipment["shipment_receipt_date"]); echo $dt->format('d-M-Y'); 
 
 
 ?>
@@ -33,29 +34,28 @@ $count++;  ?>
 <table>
 	<tr class="dark">
 		<td>Shipment Date</td>
-		<td><?php echo ($this->shipment['ShipmentDate']);?></td>
+		<td><?php echo ($this->shipment['shipment_date']);?></td>
 		<td>Last Response Date <?php  ?></td>
-		<td><?php echo ($this->shipment['LastDateResponse']);?> </td>
+		<td><?php echo ($this->shipment['lastdate_response']);?> </td>
 	</tr>
 	
 	
 	
 	<tr class ="light">
 		<td>Shipment Receipt Date</td>
-		<td><input type="text" id="receipt_date" name="receipt_date" size="11" maxlength="11" value="<?php  echo ($this->shipment["ShipmentReceiptDate"]);  ?>" class="isRequired datepicker" readonly="readonly"   title="Please enter Test Receipt Date" /></td>
+		<td><input type="text" id="receipt_date" name="receipt_date" size="11" maxlength="11" value="<?php  echo ($this->shipment["shipment_receipt_date"]);  ?>" class="isRequired datepicker" readonly="readonly"   title="Please enter Test Receipt Date" /></td>
 		<td>Testing Date</td> 
-		<td><input type="text" id="test_date" name="test_date" size="11" maxlength="11" value="<?php  echo ($this->shipment["ShipmentTestDate"]); ?>"   class="isRequired datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /></td>
+		<td><input type="text" id="test_date" name="test_date" size="11" maxlength="11" value="<?php  echo ($this->shipment["shipment_test_date"]); ?>"   class="isRequired datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /></td>
 	</tr>
 	
 	<tr class ="dark">
 		<td>Sample Rehydration Date</td>
-		<td><input id="reh_date" type="text" id="reh_date" name="reh_date" size="11" maxlength="11" value="<?php echo $this->shipment["SampleRehydrationDate"]; ?>"  class="isRequired datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  /></td>
+		<td><input id="reh_date" type="text" id="reh_date" name="reh_date" size="11" maxlength="11" value="<?php echo $this->shipment["sample_rehydration_date"]; ?>"  class="isRequired datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  /></td>
 		<td></td> 
 		<td></td>
 	</tr>
 	
 </table>
-
 <table style="width: max-content;" border="1">
 	<thead>
 	<tr align="CENTER" class="dark" >
@@ -117,7 +117,7 @@ $count++;  ?>
 	
 	<tr align="CENTER" class="light" >
 		
-		<th><?php echo ($sample['DTSSampleLabel']); ?></th>
+		<th><?php echo ($sample['dts_sample_label']); ?></th>
 		
 		<td   width="20%" >
         <select name="<?php echo $count . "_testresult1"; ?>" id="<?php echo $count . "_testresult1"; ?>" style="width: 150px"  >
@@ -149,16 +149,16 @@ $count++;  ?>
 <tr>
 	<th>Supervisor Review</th>
 	<td><select name="supervisorApproval" id="supervisorApproval" class="isRequired"  title="Please select if Supervisor Approval was conducted or not"><option value=""> -- Select -- </option>
-	<option value="YES" <?php if($this->shipment['supervisorApproval'] == 'YES') echo " selected "; ?>>YES</option>
-	<option value="NO" <?php if($this->shipment['supervisorApproval'] == 'NO') echo " selected "; ?>>NO</option></select></td>
+	<option value="YES" <?php if($this->shipment['supervisor_approval'] == 'YES') echo " selected "; ?>>YES</option>
+	<option value="NO" <?php if($this->shipment['supervisor_approval'] == 'NO') echo " selected "; ?>>NO</option></select></td>
 	<th><label id ="labSupervisor">Supervisor Name</label></th> 
-	<td><input name="participantSupervisor" id="participantSupervisor" type="text"size="10" maxlength="10" value="<?php echo $this->shipment['ParticipantSupervisor'] ; ?>"/></td>
+	<td><input name="participantSupervisor" id="participantSupervisor" type="text"size="10" maxlength="10" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
 	
 </tr>
 <tr>
 
 <th>Comments </th> <td colspan="3">
-<input name="userCommnets" id="userCommnets" type="text"size="120" maxlength="40" value="<?php echo $this->shipment['UserComment'] ; ?>"/>
+<input name="userCommnets" id="userCommnets" type="text"size="120" maxlength="40" value="<?php echo $this->shipment['user_comment'] ; ?>"/>
 
 </td>
 </tr>

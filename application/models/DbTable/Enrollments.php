@@ -151,4 +151,3 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
 
 }
-

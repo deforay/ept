@@ -159,9 +159,8 @@ public function getPossibleResult($testCode,$subgroup){
 		$res = $db->commit();
 		}
 		catch (exception $e) {
-			error_log($e->getMessage());
+			echo($e->getMessage());die;
 			$db->rollBack();
-			die;
 			return false;
 		}
 		//$date = DateTime::createFromFormat('j-M-Y', '1 5-Feb-2009');
