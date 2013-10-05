@@ -1,6 +1,7 @@
 .ms-container{
   background: transparent url('../images/switch.png') no-repeat 50% 50%;
-  width: 370px;
+  width: 70%;
+  margin:0 auto;
 }
 
 .ms-container:after{
@@ -93,9 +94,13 @@
 }
 
 .custom-header{
-  background : #1e2a36;
+  background : #2c3e50;
   color:#fff;
   font-size:13px;
   text-align:center;
   padding:5px 0;
+}
+
+.search-input{
+  width:100%;
 }
