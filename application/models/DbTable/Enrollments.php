@@ -96,6 +96,9 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_id = ? ",$parameters['scheme']);
+        }
 
         if (isset($sOrder) && $sOrder != "") {
             $sQuery = $sQuery->order($sOrder);
@@ -104,7 +107,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-
+        //die($parameters['scheme']);
         //die($sQuery);
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);

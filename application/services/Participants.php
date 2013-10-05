@@ -45,5 +45,11 @@ class Application_Service_Participants {
 				->where("p.ParticipantSystemID=".$pid);
 	    return $db->fetchAll($sql);
 	}
+	public function getUnEnrolled($scheme){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$subSql = $db->select()->from(array('e'=>'enrollments'), 'participant_id')->where("scheme_id = ?", $scheme);
+		$sql = $db->select()->from(array('p'=>'participant'))->where("ParticipantSystemID NOT IN ?", $subSql);
+		return $db->fetchAll($sql);
+	}
 
 }

@@ -18,6 +18,8 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
             $participantService = new Application_Service_Participants();
             $participantService->getAllEnrollments($params);
         }
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
     }
 
     public function viewAction()
@@ -32,8 +34,19 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
         }
     }
 
+    public function addAction()
+    {
+        if($this->_hasParam('scheme')){
+            $participants = new Application_Service_Participants();
+            $scheme = $this->_getParam('scheme');
+            $this->view->participants = $participants->getUnEnrolled($scheme);
+        }
+    }
+
 
 }
+
+
 
 
 

@@ -128,6 +128,7 @@
             <controllerFile controllerName="Enrollments">
               <actionMethod actionName="index"/>
               <actionMethod actionName="view"/>
+              <actionMethod actionName="add"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -189,6 +190,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Enrollments">
                 <viewScriptFile forActionName="view"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Enrollments">
+                <viewScriptFile forActionName="add"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -419,6 +423,7 @@
               </testApplicationControllerFile>
               <testApplicationControllerFile forControllerName="Enrollments">
                 <testApplicationActionMethod forActionName="index"/>
+                <testApplicationActionMethod forActionName="add"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>
           </testApplicationModuleDirectory>
