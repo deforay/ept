@@ -36,11 +36,19 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
 
     public function addAction()
     {
-        if($this->_hasParam('scheme')){
+        if($this->getRequest()->isPost()){
+            $params = $this->getRequest()->getPost();
             $participants = new Application_Service_Participants();
-            $scheme = $this->_getParam('scheme');
-            $this->view->participants = $participants->getUnEnrolled($scheme);
+            $participants->enrollParticipants($params);
+            $this->_redirect("/admin/enrollments");
+        }else{
+            if($this->_hasParam('scheme')){
+                $participants = new Application_Service_Participants();
+                $this->view->scheme = $scheme = $this->_getParam('scheme');
+                $this->view->participants = $participants->getUnEnrolled($scheme);
+            }            
         }
+
     }
 
 

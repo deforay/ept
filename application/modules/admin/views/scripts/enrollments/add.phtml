@@ -2,7 +2,7 @@
 <div class="well">
 	<fieldset>
 		<legend>Enroll Participants</legend>
-		<form name="enroll" id="enroll" method="post">
+		<form name="enroll" id="enroll" method="post" action="<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments','action'=>'add'),'default',true); ?>">
 			<select id="participants" name="participants[]" multiple="multiple" >
 	<?php
 	foreach($this->participants as $participant){
@@ -12,8 +12,10 @@
 	}
 	?>
 </select>
+			<input type="hidden" name="schemeId" id="schemeId" value="<?php echo $this->scheme;?>" />
 			<br/>
-			<input type="button" class="btn btn-primary" value="Enroll Selected" />
+			<input type="submit" class="btn btn-primary" value="Enroll Selected" />
+			<input type="button" onclick="window.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments','action'=>'index'),'default',true); ?>'" class="btn btn-danger" value="Cancel" />
 		</form>
 	</fieldset>
 
@@ -22,8 +24,8 @@
 <script>
 	$(document).ready(function(){
 		$('#participants').multiSelect({
-			selectableHeader: "<div class='custom-header'>Unenrolled Participants</div>",
-			selectionHeader: "<div class='custom-header'>Selected Participants</div>"
+			selectableFooter: "<div class='custom-header'>Unenrolled Participants</div>",
+			selectionFooter: "<div class='custom-header'>Selected Participants</div>"
 		});
 	});
 </script>

@@ -151,6 +151,13 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         echo json_encode($output);
     }
+    
+    public function enrollParticipants($params){
+        foreach($params['participants'] as $participant){
+            $data = array('participant_id'=>$participant,'scheme_id'=>$params['schemeId'],'status'=>'enrolled','enrolled_on'=>new Zend_Db_Expr('now()'));
+            $this->insert($data);
+        }
+    }
 
 
 }

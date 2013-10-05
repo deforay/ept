@@ -91,3 +91,11 @@
   color: #aaa;
   cursor: text;
 }
+
+.custom-header{
+  background : #1e2a36;
+  color:#fff;
+  font-size:13px;
+  text-align:center;
+  padding:5px 0;
+}

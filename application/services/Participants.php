@@ -51,5 +51,10 @@ class Application_Service_Participants {
 		$sql = $db->select()->from(array('p'=>'participant'))->where("ParticipantSystemID NOT IN ?", $subSql);
 		return $db->fetchAll($sql);
 	}
+	
+	public function enrollParticipants($params){
+		$enrollments = new Application_Model_DbTable_Enrollments();
+		return $enrollments->enrollParticipants($params);
+	}
 
 }
