@@ -27,8 +27,6 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $params = $this->getRequest()->getPost();
             $userService->addParticipant($params);
             $this->_redirect("/admin/participants");
-        }else{
-
         }
     }
 

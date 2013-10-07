@@ -25,6 +25,10 @@ class AuthController extends Zend_Controller_Action
     		$adapter = new Zend_Auth_Adapter_DbTable($db, "users", "UserID", "Password");
     		$adapter->setIdentity($params['username']);
     		$adapter->setCredential($params['password']);
+			
+            $select = $adapter->getDbSelect();
+            $select->where('status = "active"');			
+			
     		// STEP 2 : Let's Authenticate
     		$auth = Zend_Auth::getInstance();
     		$res = $auth->authenticate($adapter); // -- METHOD 2 to authenticate , seems to work fine for me

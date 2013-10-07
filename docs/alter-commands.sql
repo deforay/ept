@@ -876,3 +876,12 @@ ALTER TABLE `response_result_dts` CHANGE `ShipmentID` `shipment_id` VARCHAR(45) 
 
 RENAME TABLE  `eid_detection_assay` TO  `r_eid_detection_assay` ;
 RENAME TABLE  `eid_extraction_assay` TO  `r_eid_extraction_assay` ;
+
+-- By Amit on Oct 04
+
+-- Loads of changes done .. cannot put them here :)
+
+
+-- By Amit on Oct 07 2013
+
+ALTER TABLE  `admin` ADD  `status` VARCHAR( 255 ) NOT NULL DEFAULT  'inactive';

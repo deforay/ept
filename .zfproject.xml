@@ -90,6 +90,7 @@
           <dbTableFile dbTableName="ResponseVl"/>
           <dbTableFile dbTableName="SchemeList"/>
           <dbTableFile dbTableName="Enrollments"/>
+          <dbTableFile dbTableName="SystemAdmin"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>

@@ -36,11 +36,11 @@
                            title="Please enter the Participant id here"
                            placeholder="Please enter the Participant id here"
                            value="<?php echo $this->participant['ParticipantID']; ?>"
-                           onblur="checkDuplicate('participants','ParticipantID',<?php echo "ParticipantSystemID##" . $this->rsUser['ParticipantSystemID']; ?>,null,'This Participant ID already exists for another Participant. Please try something else.')"/>
+                           onblur="checkDuplicate('participants','ParticipantID',this,'<?php echo "ParticipantSystemID##" . $this->participant['ParticipantSystemID']; ?>','This Participant ID already exists for another Participant. Please try something else.')"/>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">E-mail editress <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">E-mail <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5"><input type="text" id="pemail" name="pemail" size="50" maxlength="45"
                                              class="isRequired isEmail form-control"

@@ -1,4 +1,125 @@
-<br /><br />
-<div id="view-content">
-	<p>View script for controller <b>SystemAdmins</b> and script/action name <b>edit</b></p>
+<div class="well">
+    <form name="editSystemAdminForm" id="editSystemAdminForm" method="post"
+          action="<?php echo $this->url(array("module" => "admin", "controller" => "system-admins", "action" => "edit"), null, true) ?>"
+          class="form-horizontal bs-example" role="form">
+        <fieldset>
+            <legend>Update System Admin</legend>
+
+
+            <div class="form-group">
+                <label class="col-lg-3 control-label">First Name <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="firstName" name="firstName" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the first name here"
+											 value="<?php echo $this->admin['first_name']; ?>"
+                                             placeholder="Please enter the first name here"/></div>
+				<input type="hidden" id="adminId" name="adminId" size="50" maxlength="45"
+                                             class="isRequired form-control" 
+											 value="<?php echo $this->admin['admin_id']; ?>"/>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Last Name <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="lastName" name="lastName" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the last name here"
+											 value="<?php echo $this->admin['last_name']; ?>"
+                                             placeholder="Please enter the last name here"/></div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Primary Email <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5">
+                    <input type="text" id="primaryEmail" name="primaryEmail" size="50" class="isRequired form-control isEmail"
+                           title="Please enter the primary email id here"
+                           placeholder="Please enter the primary email id here"
+						   value="<?php echo $this->admin['primary_email']; ?>"
+                           onblur="checkDuplicate('admin', 'primary_email',this,'<?php echo "admin_id##" . $this->admin['admin_id']; ?>', 'This Email already exists for another Admin. Please try something else.')"/>
+                </div>
+            </div>
+			<div class="form-group">
+            <label class="col-lg-3 control-label">Password <br/> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
+            <div class="col-lg-5">
+                <input type="password" id="password" name="password"  size="50" value="" class="form-control" title="Please enter a password" placeholder="Please enter a password"/>
+            </div>
+			</div>
+			<div class="form-group">
+				<label class="col-lg-3 control-label">Confirm Password <br/> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
+				<div class="col-lg-5">
+					<input type="password" id="confirmPassword" name="password"  size="50" value="" class="form-control confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password"/>
+				</div>
+			</div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Cell/Mobile Number <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="phone" name="phone" size="50" maxlength="45"
+                                             class="isRequired form-control isNumeric"
+                                             title="Please enter mobile/cell number here"
+											 value="<?php echo $this->admin['phone']; ?>"
+                                             placeholder="Please enter mobile/cell number here"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Secondary Email</label>
+
+                <div class="col-lg-5"><input  type="text" id="secondaryEmail" name="secondaryEmail" size="50" maxlength="45"
+											  value="<?php echo $this->admin['secondary_email']; ?>"
+                                             placeholder="Please enter secondary email here" class="form-control isEmail"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Status</label>
+
+                <div class="col-lg-5">
+                    <select type="text" id="status" name="status" class="isRequired form-control"
+                            title="Please select user status here">
+                        <option value="">--Select--</option>
+                        <option
+                            value="active" <?php echo ($this->admin['status'] == "active") ? "selected='selected'" : ""; ?>>
+                            Active
+                        </option>
+                        <option
+                            value="inactive" <?php echo ($this->admin['status'] == "inactive") ? "selected='selected'" : ""; ?>>
+                            Inactive
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            </table>
+            <br>
+
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
+                       tabindex="7" value="Add"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/participants';"
+                       tabindex="8" value="Cancel"/>
+            </div>
+        </fieldset>
+    </form>
 </div>
+<script type="text/javascript">
+    var duplicated = false;
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html" },
+            function (data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    obj.focus();
+                }
+                else {
+                    duplicated = false;
+                }
+            });
+    }
+
+    function validateNow() {
+        checkDuplicate('admin', 'primary_email', $("#primaryEmail"), '<?php echo "admin_id##" . $this->admin['admin_id']; ?>', 'This Email already exists for another Admin. Please try something else.')
+        flag = deforayValidator.init({
+            formId: 'editSystemAdminForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('editSystemAdminForm').submit();
+        }
+    }
+</script>
