@@ -11,6 +11,7 @@
 body {
 
   padding-top: 70px;
+  overflow-y:scroll;
 }
 
 .mandatory{
@@ -24,4 +25,13 @@ body {
 
 .dataTable th{
 text-align:center;
+}
+
+.ui-datepicker-unselectable span{
+  border:1px solid red !important;
+  border-radius:25px;
+  -webkit-border-radius:25px;
+  -moz-border-radius:25px;
+  
+  text-align:center;
 }

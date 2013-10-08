@@ -1,0 +1,89 @@
+<div class="well">
+    <form name="addDistributionForm" id="addDistributionForm" method="post"
+          action="<?php echo $this->url(array("module" => "admin", "controller" => "distributions", "action" => "add"), null, true) ?>"
+          class="form-horizontal bs-example" role="form">
+        <fieldset>
+            <legend>Add New Distribution</legend>
+
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Distribution Code <span class="mandatory">*</span></label>
+
+                <div class="col-lg-6">
+                    <input type="text" id="distributionCode" name="distributionCode" size="50" class="isRequired form-control"
+                           title="Please enter a Unique Distribution Code here"
+                           placeholder="Please enter a Unique Distribution Code here"
+                           onblur="checkDuplicate('distributions', 'distribution_code',this,null, 'This Code already exists for another Distribution. Please try something else.')"/>
+                </div>
+            </div>
+			
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Distribution Date <span class="mandatory">*</span></label>
+
+                <div class="col-lg-6">
+					<input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45"
+                                             class="isRequired form-control datepicker"
+                                             title="Please enter the Distribution date here"
+                                             placeholder="Please enter the Distribution date here"/>
+					<span class="help-block">Dates already having a distribution will be disabled and marked with a red circle.</span>
+				</div>
+				
+            </div>
+
+            </table>
+            <br>
+
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
+                       tabindex="7" value="Add"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/distributions';"
+                       tabindex="8" value="Cancel"/>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+    var duplicated = false;
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html" },
+            function (data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    obj.focus();
+                }
+                else {
+                    duplicated = false;
+                }
+            });
+    }
+
+    function validateNow() {
+		checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another Distribution. Please try something else.')
+        flag = deforayValidator.init({
+            formId: 'addDistributionForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('addDistributionForm').submit();
+        }
+    }
+	
+
+	
+	var disabledDates = [<?php echo '"'.implode('","', $this->distributionDates).'"' ?>];
+	
+	
+	$(function() {
+  	    //$(".datepicker" ).datepicker({dateFormat: '<?php echo $this->defaultDateFormat();?>'});
+		$('.datepicker').datepicker({
+				dateFormat: '<?php echo $this->defaultDateFormat();?>',
+				beforeShowDay: function(date){
+					var string = jQuery.datepicker.formatDate('<?php echo $this->defaultDateFormat();?>', date);
+					return [ disabledDates.indexOf(string) == -1 ]
+				}
+		});			
+	});
+	
+
+		
+</script>

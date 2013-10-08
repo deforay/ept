@@ -885,3 +885,17 @@ RENAME TABLE  `eid_extraction_assay` TO  `r_eid_extraction_assay` ;
 -- By Amit on Oct 07 2013
 
 ALTER TABLE  `admin` ADD  `status` VARCHAR( 255 ) NOT NULL DEFAULT  'inactive';
+
+-- By Amit on Oct 08 2013
+
+CREATE TABLE IF NOT EXISTS `distributions` (
+  `distribution_id` int(11) NOT NULL AUTO_INCREMENT,
+  `distribution_code` varchar(255) NOT NULL,
+  `distribution_date` date NOT NULL,
+  `status` varchar(255) NOT NULL,
+  PRIMARY KEY (`distribution_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+ALTER TABLE  `shipment_dts` ADD  `disrtibution_id` INT NOT NULL AFTER  `shipment_date`;
+ALTER TABLE  `shipment_eid` ADD  `disrtibution_id` INT NOT NULL AFTER  `shipment_date`;
+ALTER TABLE  `shipment_vl` ADD  `disrtibution_id` INT NOT NULL AFTER  `shipment_date`;

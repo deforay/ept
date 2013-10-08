@@ -149,10 +149,6 @@ $count++;
 				</p>
 			</div>
 </div>
-<?php 
-$genderHelper = $this->getHelper('DateFormat');
-$dtFormat=  $genderHelper->getDateFormat();
-?>
 </form>
  <style type="text/css">
 textarea:focus { outline: 1px solid blue; }
@@ -186,7 +182,7 @@ textarea:focus { outline: 1px solid blue; }
 
 
 	$(function() {
-  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $this->defaultDateFormat();?>'});
 	});
 
 	

@@ -1,20 +1,23 @@
 <?php
 
-class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
+class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
 {
 
-    protected $_name = 'enrollments';
-    protected $_primary = array('scheme_id','participant_id');
+    protected $_name = 'distributions';
+    protected $_primary = 'distribution_id';
+
     
-    public function getAllEnrollments($parameters)
+    public function getAllDistributions($parameters)
     {
 
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('ParticipantFName', 'ParticipantLName', 's.scheme_id', 'scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')");
+        $aColumns = array('',"DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 'status');
 
+        /* Indexed column (used for fast and accurate table cardinality) */
+        $sIndexColumn = $this->_primary;
 
 
         /*
@@ -61,6 +64,9 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                 $colSize = count($aColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
+                    if($aColumns[$i] == "" || $aColumns[$i] == null){
+                        continue;
+                    }
                     if ($i < $colSize - 1) {
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
                     } else {
@@ -89,15 +95,10 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('e' => $this->_name))
-                                     ->join(array('p'=>'participant'),'p.ParticipantSystemID = e.participant_id')
-                                     ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id');
+        $sQuery = $this->getAdapter()->select()->from(array('d' => $this->_name));
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
-        }
-        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
-            $sQuery = $sQuery->where("s.scheme_id = ? ",$parameters['scheme']);
         }
 
         if (isset($sOrder) && $sOrder != "") {
@@ -107,7 +108,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //die($parameters['scheme']);
+
         //die($sQuery);
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
@@ -120,9 +121,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('e' => $this->_name), new Zend_Db_Expr("COUNT('e.scheme_id')"))
-                                            ->join(array('p'=>'participant'),'p.ParticipantSystemID = e.participant_id',array())
-					    ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array());
+        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -136,15 +135,14 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
 
-        
+
         foreach ($rResult as $aRow) {
             $row = array();
-            $row[] = $aRow['ParticipantFName'];
-            $row[] = $aRow['ParticipantLName'];
-            $row[] = $aRow['scheme_id'];
-            $row[] = $aRow['scheme_name'];
-            $row[] = Pt_Commons_General::humanDateFormat($aRow['enrolled_on']);
-            $row[] = '<a href="/admin/enrollments/view/pid/' . $aRow['ParticipantSystemID'] . '/sid/' . strtolower($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-eye-open"></i> Know More</a>';
+            $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/'.$aRow['distribution_id'].'"><span><i class="icon-search"></i></span></a>';
+            $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
+            $row[] = $aRow['distribution_code'];
+            $row[] = $aRow['status'];
+            $row[] = 'Coming Soon';
 
             $output['aaData'][] = $row;
         }
@@ -152,12 +150,21 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         echo json_encode($output);
     }
     
-    public function enrollParticipants($params){
-        foreach($params['participants'] as $participant){
-            $data = array('participant_id'=>$participant,'scheme_id'=>$params['schemeId'],'status'=>'enrolled','enrolled_on'=>new Zend_Db_Expr('now()'));
-            $this->insert($data);
-        }
+    public function addDistribution($params){
+        $data = array('distribution_code'=>$params['distributionCode'],
+                      'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']));
+        return $this->insert($data);
+    }
+    
+    public function getDistributionDates(){
+        return $this->getAdapter()->fetchCol($this->select()->from($this->_name,new Zend_Db_Expr("DATE_FORMAT(distribution_date,'%d-%b-%Y')")));
+    }
+    
+    public function updateDistribution($params){
+        $data = array('distribution_code'=>$params['distributionCode'],
+                      'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']));
+        return $this->update($data,"distribution_id=".$params['distributionId']);
     }
 
-
 }
+

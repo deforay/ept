@@ -91,6 +91,7 @@
           <dbTableFile dbTableName="SchemeList"/>
           <dbTableFile dbTableName="Enrollments"/>
           <dbTableFile dbTableName="SystemAdmin"/>
+          <dbTableFile dbTableName="Distribution"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>
@@ -130,6 +131,14 @@
               <actionMethod actionName="index"/>
               <actionMethod actionName="view"/>
               <actionMethod actionName="add"/>
+            </controllerFile>
+            <controllerFile controllerName="Distributions">
+              <actionMethod actionName="index"/>
+              <actionMethod actionName="add"/>
+              <actionMethod actionName="viewShipment"/>
+            </controllerFile>
+            <controllerFile controllerName="Shipment">
+              <actionMethod actionName="index"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -194,6 +203,18 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Enrollments">
                 <viewScriptFile forActionName="add"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Distributions">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Distributions">
+                <viewScriptFile forActionName="add"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Distributions">
+                <viewScriptFile forActionName="viewShipment"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -425,6 +446,14 @@
               <testApplicationControllerFile forControllerName="Enrollments">
                 <testApplicationActionMethod forActionName="index"/>
                 <testApplicationActionMethod forActionName="add"/>
+              </testApplicationControllerFile>
+              <testApplicationControllerFile forControllerName="Distributions">
+                <testApplicationActionMethod forActionName="index"/>
+                <testApplicationActionMethod forActionName="add"/>
+                <testApplicationActionMethod forActionName="viewShipment"/>
+              </testApplicationControllerFile>
+              <testApplicationControllerFile forControllerName="Shipment">
+                <testApplicationActionMethod forActionName="index"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>
           </testApplicationModuleDirectory>
