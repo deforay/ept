@@ -1,4 +1,4 @@
--- By Amit on 15 Sep 2013
+By Amit on 15 Sep 2013
 ALTER TABLE  `users` DROP PRIMARY KEY;
 ALTER TABLE  `users` ADD PRIMARY KEY (  `UserSystemID` );
 ALTER TABLE  `users` CHANGE  `UserSystemID`  `UserSystemID` INT NOT NULL AUTO_INCREMENT;
@@ -896,6 +896,47 @@ CREATE TABLE IF NOT EXISTS `distributions` (
   PRIMARY KEY (`distribution_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-ALTER TABLE  `shipment_dts` ADD  `disrtibution_id` INT NOT NULL AFTER  `shipment_date`;
-ALTER TABLE  `shipment_eid` ADD  `disrtibution_id` INT NOT NULL AFTER  `shipment_date`;
-ALTER TABLE  `shipment_vl` ADD  `disrtibution_id` INT NOT NULL AFTER  `shipment_date`;
+ALTER TABLE  `shipment_dts` ADD  `distribution_id` INT NOT NULL AFTER  `shipment_date`;
+ALTER TABLE  `shipment_eid` ADD  `distribution_id` INT NOT NULL AFTER  `shipment_date`;
+ALTER TABLE  `shipment_vl` ADD  `distribution_id` INT NOT NULL AFTER  `shipment_date`;
+
+
+-- By Amit on Oct 09 2013
+
+CREATE TABLE IF NOT EXISTS `shipment` (
+  `shipment_id` varchar(255) NOT NULL,
+  `shipment_code` varchar(255) NOT NULL,
+  `participant_id` varchar(255) NOT NULL,
+  `shipment_date` date DEFAULT NULL,
+  `distribution_id` int(11) NOT NULL,
+  `evaluation_status` varchar(10) DEFAULT NULL COMMENT 'Shipment Status					\\nUse this to flag - 					\\nABCDEFG					\\nA = 9 Not shipped 1 shipped					\\nB = 1 Sample Received 9 Not recieved					\\nC = 1 = Responded 9 = Not responded					\\nD = 1= Timeely response 2= Late					\\nE = 1 - via Web user 2 - via web Provider 3 - Scanning 					\\nF = 9 Not eligille for evaluation 1 eligible for evaluation					\\nG = 1 = Evaluated  9= not evaluated					\\n',
+  `shipment_score` int(11) DEFAULT NULL,
+  `lastdate_response` date DEFAULT NULL,
+  `shipment_test_date` date DEFAULT NULL,
+  `shipment_receipt_date` date DEFAULT NULL,
+  `shipment_test_report_date` datetime DEFAULT NULL,
+  `participant_supervisor` varchar(255) DEFAULT NULL,
+  `supervisor_approval` varchar(255) DEFAULT NULL,
+  `review_date` date DEFAULT NULL,
+  `sample_rehydration_date` date DEFAULT NULL,
+  `number_of_samples` int(11) DEFAULT NULL,
+  `user_comment` varchar(1000) DEFAULT NULL,
+  `created_on_admin` datetime DEFAULT NULL,
+  `updated_on_admin` datetime DEFAULT NULL,
+  `updated_by_admin` varchar(255) DEFAULT NULL,
+  `updated_on_user` datetime DEFAULT NULL,
+  `updated_by_user` varchar(255) DEFAULT NULL,
+  `created_by_admin` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`shipment_id`,`participant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- by Amit on Oct 10 2013
+
+ALTER TABLE  `shipment_dts` CHANGE  `number_of_sample`  `number_of_samples` INT( 11 ) NULL DEFAULT NULL;
+ALTER TABLE  `shipment_eid` ADD  `shipment_code` VARCHAR( 255 ) NOT NULL AFTER  `eid_shipment_id`;
+ALTER TABLE  `shipment_dts` ADD  `shipment_code` VARCHAR( 255 ) NOT NULL AFTER  `dts_shipment_id`;
+ALTER TABLE  `shipment_vl` ADD  `shipment_code` VARCHAR( 255 ) NOT NULL AFTER  `vl_shipment_id`;
+ALTER TABLE  `r_possibleresult` CHANGE  `ID`  `ID` INT( 11 ) NOT NULL AUTO_INCREMENT;
+INSERT INTO `r_possibleresult` (`ID`, `SchemeCode`, `SchemeSubgroup`, `Response`) VALUES ('', 'EID', 'EID_FINAL', 'Positive (HIV Detected)'), ('', 'EID', 'EID_FINAL', 'Negative (HIV Not Detected)');
+INSERT INTO `r_possibleresult` (`ID`, `SchemeCode`, `SchemeSubgroup`, `Response`) VALUES (NULL, 'EID', 'EID_FINAL', 'Equivocal');

@@ -1,0 +1,45 @@
+<?php
+
+if($this->scheme == 'vl'){
+	?>
+	
+	<table style="width: 100%;" border="1" class="table table-bordered table-striped">
+<thead>
+	<tr align="CENTER" class="dark" >
+		<th style="width:35%;">Control/Sample</th>
+		<th>Viral Load (log<sub>10</sub> copies/ml)</th>		
+	</tr>
+</thead>
+
+<?php $count =0;  
+foreach($this->vlControls as $control){ 
+$count++;
+?>
+
+
+	<tr align="CENTER" class="light" >
+		<th>
+			<?php echo $control['control_name']; ?>
+			<input type="hidden" id ="control<?php echo $count; ?>" name="controlId[]" value="<?php echo $control['control_id'];?>" />
+		</th>
+        <td>
+			<input type="text" name="vlResult[]" class="isRequired form-control" placeholder="Please enter the value here"  title="Please enter the Viral Load Values for <?php echo $control['control_name']; ?>" />
+		</td>
+    </tr>
+
+
+<?php } ?>
+<tr align="CENTER" class="light" >
+		<th>
+			<input type="text" id ="sample1" name="sampleName[]" value="" class="isRequired form-control" placeholder="Please enter the Sample Name here" />
+		</th>
+        <td>
+			<input type="text" name="vlResult[]" class="isRequired form-control"  title="Please enter the Viral Load Values for this sample" />
+		</td>
+    </tr>
+</table>
+<br>
+<table>
+	
+	<?php
+}

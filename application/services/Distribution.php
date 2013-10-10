@@ -22,6 +22,10 @@ class Application_Service_Distribution {
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select();
 	}
+	public function getUnshippedDistributions(){
+		$disrtibutionDb = new Application_Model_DbTable_Distribution();
+		return $disrtibutionDb->getUnshippedDistributions();		
+	}
 
 }
 

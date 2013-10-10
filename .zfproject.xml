@@ -139,6 +139,8 @@
             </controllerFile>
             <controllerFile controllerName="Shipment">
               <actionMethod actionName="index"/>
+              <actionMethod actionName="add"/>
+              <actionMethod actionName="getSampleForm"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -215,6 +217,12 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Distributions">
                 <viewScriptFile forActionName="viewShipment"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="add"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="getSampleForm"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -454,6 +462,8 @@
               </testApplicationControllerFile>
               <testApplicationControllerFile forControllerName="Shipment">
                 <testApplicationActionMethod forActionName="index"/>
+                <testApplicationActionMethod forActionName="add"/>
+                <testApplicationActionMethod forActionName="getSampleForm"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>
           </testApplicationModuleDirectory>

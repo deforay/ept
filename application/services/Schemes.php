@@ -139,6 +139,11 @@ class Application_Service_Schemes {
 		}
 		
 	}
+	
+	public function getSchemeControls($schemeId){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		return $db->fetchAll($db->select()->from('r_control')->where("for_scheme='$schemeId'"));
+	}
 
 }
 

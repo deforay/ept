@@ -1,0 +1,13 @@
+syntax: regexp
+afq.komodoproject
+^application/cache/(?!index.php)
+^backup/(?!index.php)
+^public/uploads/(?!index.php)
+^public/temporary/cache(?!index.php)
+^public/temporary/(?!index.php)
+^public/images/(?!index.php)
+error_log
+Thumbs.db
+Thumbs.db.orig
+.DS_Store
+.DS_Store.orig

@@ -37,7 +37,7 @@ var deforayValidator = {
 	init: function (settings) {
 		this.settings = settings;
 		this.form = document.getElementById(this.settings["formId"]);
-		formInputs = this.form.getElementsByTagName('*');
+		formInputs = $("input[type='text'],textarea,select");
 
 		// change color of inputs on focus
 		for(i=0;i<formInputs.length;i++)

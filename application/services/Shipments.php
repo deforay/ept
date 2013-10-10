@@ -1,23 +1,14 @@
 <?php
 
-class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
-{
+class Application_Service_Shipments {
+	
+	public function getAllShipments($parameters){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-    protected $_name = 'distributions';
-    protected $_primary = 'distribution_id';
-
-    
-    public function getAllDistributions($parameters)
-    {
-
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
-
-        $aColumns = array('',"DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 'status');
+        $aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distibution_date', 'no_of_samples');
 
         /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
+        $sIndexColumn = "shipment_date";
 
 
         /*
@@ -64,9 +55,6 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
                 $colSize = count($aColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
-                    if($aColumns[$i] == "" || $aColumns[$i] == null){
-                        continue;
-                    }
                     if ($i < $colSize - 1) {
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
                     } else {
@@ -94,10 +82,31 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
          * SQL queries
          * Get data to display
          */
+		
+		
+		// Some long queries coming up !
+		
 
-        $sQuery = $this->getAdapter()->select()->from(array('d' => $this->_name));
+		if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
+			$sQuery = $db->select()->from(array('s'=>'shipment_'.strtolower($parameters['scheme'])),array('s.shipment_date','s.shipment_code','SCHEME'=>new Zend_Db_Expr("'DTS'"),'s.number_of_samples'))
+						->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'));			
+		}else{
+			
+			$dtsSql = $db->select()->from(array('s'=>'shipment_dts'),array('s.shipment_date','s.shipment_code','SCHEME'=>new Zend_Db_Expr("'DTS'"),'s.number_of_samples'))
+								->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'));
+								
+			$eidSql = $db->select()->from(array('s'=>'shipment_eid'),array('s.shipment_date','s.shipment_code','SCHEME'=>new Zend_Db_Expr("'EID'"),'s.number_of_samples'))
+								->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'));
+								
+			$vlSql = $db->select()->from(array('s'=>'shipment_vl'),array('s.shipment_date','s.shipment_code','SCHEME'=>new Zend_Db_Expr("'VL'"),'s.number_of_samples'))
+								->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'));			
+			$sQuery = $db->select()->union(array($dtsSql,$eidSql,$vlSql));	
+		}
+		
+		
+			
 
-        if (isset($sWhere) && $sWhere != "") {
+	    if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
 
@@ -109,20 +118,32 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //die($sQuery);
+        //error_log($sQuery);
 
-        $rResult = $this->getAdapter()->fetchAll($sQuery);
+        $rResult = $db->fetchAll($sQuery);
 
 
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
+        $aResultFilterTotal = $db->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
-        $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
+		if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
+			$sQuery = $db->select()->from('shipment_'.strtolower($parameters['scheme']), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+		}else{
+			
+			$dtsSql = $db->select()->from(array('s'=>'shipment_dts'), array('total'=>new Zend_Db_Expr("COUNT('dts_shipment_id')")));
+			$eidSql = $db->select()->from(array('s'=>'shipment_eid'), array('total'=>new Zend_Db_Expr("COUNT('eid_shipment_id')")));
+			$vlSql = $db->select()->from(array('s'=>'shipment_vl'), array('total'=>new Zend_Db_Expr("COUNT('vl_shipment_id')")));
+			$subSql = $db->select()->union(array($dtsSql,$eidSql,$vlSql),Zend_Db_Select::SQL_UNION_ALL);
+			
+			$sQuery = $db->select()->from(array('t'=>$subSql),array('totalRows'=>new Zend_Db_expr("SUM(total)")));
+			
+		}
+		
+        $aResultTotal = $db->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
         /*
@@ -135,40 +156,33 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
 
-
+		//$aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distibution_date', 'no_of_samples');
         foreach ($rResult as $aRow) {
             $row = array();
-            $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/'.$aRow['distribution_id'].'"><span><i class="icon-search"></i></span></a>';
+			$row[] = $aRow['SCHEME'];
+			$row[] = $aRow['shipment_code'];
+            $row[] = Pt_Commons_General::humanDateFormat($aRow['shipment_date']);			
+			$row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-            $row[] = $aRow['distribution_code'];
-            $row[] = $aRow['status'];
-            $row[] = 'Coming Soon';
+			$row[] = $aRow['number_of_samples'];
+            $row[] = '';
 
             $output['aaData'][] = $row;
         }
 
         echo json_encode($output);
-    }
-    
-    public function addDistribution($params){
-        $data = array('distribution_code'=>$params['distributionCode'],
-                      'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']),
-                      'status' => 'created');
-        return $this->insert($data);
-    }
-    
-    public function getDistributionDates(){
-        return $this->getAdapter()->fetchCol($this->select()->from($this->_name,new Zend_Db_Expr("DATE_FORMAT(distribution_date,'%d-%b-%Y')")));
-    }
-    
-    public function updateDistribution($params){
-        $data = array('distribution_code'=>$params['distributionCode'],
-                      'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']));
-        return $this->update($data,"distribution_id=".$params['distributionId']);
-    }
-    public function getUnshippedDistributions(){
-        return $this->fetchAll($this->select()->where("status = 'created'")->orWhere("status = 'configured'"));
-    }
+	
+	
+	
+	
+	
+	
+		
+	
+	
+	}
+	
+
 
 }
 

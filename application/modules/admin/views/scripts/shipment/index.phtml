@@ -1,4 +1,203 @@
-<br /><br />
-<div id="view-content">
-	<p>View script for controller <b>Shipment</b> and script/action name <b>index</b></p>
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Shipments</div>
+</h4>
+
+
+<span class="col-md-3 col-xs-12" style="padding:10px 0;">
+<select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control input-sm">
+	<option value=""> -- Select Scheme Type --</option>
+	<?php
+	  foreach($this->schemes as $scheme){
+		?>
+			<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
+		<?php
+	  }
+	?>
+</select>
+</span>
+<span class="col-md-5 col-xs-12" id="btnSpan" style="padding:10px;display:none;">
+<button class="btn btn-primary btn-sm" onclick="newShipment();" id="enrollBtn"><span>New Shipment</span></button>
+<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location;"><span>Reset</span></button>
+</span>
+
+
+<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentTable">
+    <thead>
+    <tr>
+        <th>Scheme Code</th>
+        <th>Shipment Code</th>
+        <th>Shipment Date</th>
+        <th>Distribution Code</th>
+        <th>Distribution Date</th>
+        <th>No. Of Samples</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td colspan="10" class="dataTables_empty">Loading data from server</td>
+    </tr>
+    </tbody>
+</table>
+<br/><br/><br/>
+<div style="display:none;clear:both;padding:30px;" id="configShipment">
+	<fieldset>
+		<legend style="font-size:17px;">Add Shipment Details</legend>
+	
+	<form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'add')); ?>">
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Distribution <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5">
+					<select id="distribution" name="distribution" class="isRequired form-control" title="Please select a Distribution">
+						<option value="">--Select--</option>
+						<?php
+							foreach($this->unshippedDistro as $dist){
+								?>
+								<option value="<?php echo $dist['distribution_id']; ?>"><?php echo $dist['distribution_code'] . "   (". $this->dateFormat($dist['distribution_date']) .")"; ?></option>		
+								<?php
+							}
+						?>
+					</select>
+				</div>
+				
+				<input type="hidden" name="schemeId" id="schemeId" class="isRequired" title="Please choose a Scheme Type on the top of this page"/>
+				
+            </div>		
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Shipment Code <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="shipmentCode" name="shipmentCode" size="50" maxlength="45"
+                                             class="isRequired form-control"
+											 title="Please enter the shipment code here"
+                                             placeholder="Please enter the shipment code here"/></div>
+				
+				<input type="hidden" name="schemeId" id="schemeId" class="isRequired" title="Please choose a Scheme Type on the top of this page"/>
+				
+            </div>		
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Shipment Date <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="shipmentDate" name="shipmentDate" size="50" maxlength="45"
+                                             class="isRequired form-control datepicker"
+											 readonly="readonly"
+											 title="Please enter the shipment date here"
+                                             placeholder="Please enter the shipment date here"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Number of Samples <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="numberOfSamples" name="numberOfSamples" size="50" maxlength="45"
+                                             class="isRequired form-control"
+											 title="Please enter the number of samples in this shipment"
+                                             placeholder="Please enter the number of samples in this shipment"/></div>
+            </div>
+			<div class="form-group" id="sampleFormFragment">
+				
+			</div>
+			
+            <div style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();return false;"
+                       tabindex="7" value="Add Shipment"/>
+                <input class="btn btn-danger btn-sm" type="button" onclick="document.location.href=document.location;"
+                       tabindex="8" value="Cancel"/>
+            </div>			
+	</form>
+	</fieldset>
 </div>
+
+
+<script type="text/javascript" charset="utf-8">
+    /* Table initialisation */
+    var oTable = null;
+	
+	
+    $(document).ready(function() {
+       //drawTable();
+	   schemeSelected($("#scheme").val());
+	   $(".datepicker" ).datepicker({dateFormat: '<?php echo $this->defaultDateFormat();?>'});
+    });
+	
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'shipmentForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('shipmentForm').submit();
+        }
+    }
+	
+	function schemeSelected(scheme) {
+		drawTable();
+		$("#schemeId").val(scheme)
+		$("#configShipment").hide();
+		if (scheme !="" && scheme !=null) {
+			$("#enrollBtn span").text("New Shipment : " + $("#scheme option:selected").text());
+			$("#btnSpan").fadeIn();			
+		}else{
+			$("#btnSpan").fadeOut();
+		}
+		
+	}	
+	
+    function drawTable() {
+        oTable = $('#shipmentTable').dataTable( {
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "full_numbers",
+            "bRetrieve": false,
+            "bDestroy": true,
+            "aoColumns": [
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center","bSortable":false}
+            ],
+            "aaSorting": [[ 2, "desc" ]],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'index', 'format' => 'html')); ?>",
+			"fnServerParams": function ( aoData ) {
+				schemeId = $("#scheme").val();
+				aoData.push( { "name": "scheme", "value": schemeId } );
+			},			
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+
+	};
+	
+	function newShipment() {
+		$("#configShipment").fadeIn('fast',function(){
+			$('html body').animate({scrollTop: ($("#configShipment").offset().top)}, 1300, function(){
+				$("#configShipment").effect( "highlight", "slow" );
+				getSampleForm();
+			});
+			
+		});
+	}
+	
+	function getSampleForm() {
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-sample-form')); ?>", { sid: $("#scheme").val(), format: "html" },
+            function (data) {
+               $("#sampleFormFragment").html(data);
+            });
+	}
+
+</script>
