@@ -172,14 +172,10 @@ class Application_Service_Shipments {
 
         echo json_encode($output);
 	
+	}
 	
-	
-	
-	
-	
-		
-	
-	
+	public function addShipment($params){
+		Zend_Debug::dump($params);die;
 	}
 	
 

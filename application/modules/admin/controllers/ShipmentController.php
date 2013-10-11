@@ -31,7 +31,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $params = $this->_getAllParams();            
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->addShipment($params);
-            $this->_redirect("/admin/shipment");
+            //$this->_redirect("/admin/shipment");
         }
     }
 
@@ -43,9 +43,14 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $scheme = new Application_Service_Schemes();
                 $this->view->vlControls = $scheme->getSchemeControls($sid);
             }
-            if($sid == 'eid'){
+            else if($sid == 'eid'){
                 $scheme = new Application_Service_Schemes();
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
+                $this->view->eidPossibleResults = $scheme->getPossibleResults($sid);
+            }
+            else if($sid == 'dts'){
+                $scheme = new Application_Service_Schemes();
+                $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
             }
         }        
     }

@@ -144,6 +144,11 @@ class Application_Service_Schemes {
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		return $db->fetchAll($db->select()->from('r_control')->where("for_scheme='$schemeId'"));
 	}
+	
+	public function getPossibleResults($schemeId){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		return $db->fetchAll($db->select()->from('r_possibleresult')->where("SchemeCode='$schemeId'"));
+	}
 
 }
 
