@@ -28,29 +28,33 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function addAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->getRequest()->getPost();            
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->addShipment($params);
-            //$this->_redirect("/admin/shipment");
+            $this->_redirect("/admin/shipment");
         }
     }
 
     public function getSampleFormAction()
     {
         if ($this->getRequest()->isPost()) {
+            $participantService = new Application_Service_Participants();
             $this->view->scheme = $sid = strtolower($this->_getParam('sid'));
             if($sid == 'vl'){
                 $scheme = new Application_Service_Schemes();
                 $this->view->vlControls = $scheme->getSchemeControls($sid);
+                $this->view->participants = $participantService->getEnrolled($sid);
             }
             else if($sid == 'eid'){
                 $scheme = new Application_Service_Schemes();
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
                 $this->view->eidPossibleResults = $scheme->getPossibleResults($sid);
+                $this->view->participants = $participantService->getEnrolled($sid);
             }
             else if($sid == 'dts'){
                 $scheme = new Application_Service_Schemes();
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
+                $this->view->participants = $participantService->getEnrolled($sid);
             }
         }        
     }

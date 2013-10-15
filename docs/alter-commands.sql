@@ -940,3 +940,10 @@ ALTER TABLE  `shipment_vl` ADD  `shipment_code` VARCHAR( 255 ) NOT NULL AFTER  `
 ALTER TABLE  `r_possibleresult` CHANGE  `ID`  `ID` INT( 11 ) NOT NULL AUTO_INCREMENT;
 INSERT INTO `r_possibleresult` (`ID`, `SchemeCode`, `SchemeSubgroup`, `Response`) VALUES ('', 'EID', 'EID_FINAL', 'Positive (HIV Detected)'), ('', 'EID', 'EID_FINAL', 'Negative (HIV Not Detected)');
 INSERT INTO `r_possibleresult` (`ID`, `SchemeCode`, `SchemeSubgroup`, `Response`) VALUES (NULL, 'EID', 'EID_FINAL', 'Equivocal');
+
+
+-- by Amit on Oct 15 2013
+
+ALTER TABLE  `shipment_eid` CHANGE  `eid_shipment_id`  `eid_shipment_id` INT NOT NULL;
+ALTER TABLE  `shipment_vl` CHANGE  `vl_shipment_id`  `vl_shipment_id` INT NOT NULL;
+ALTER TABLE  `shipment_dts` CHANGE  `dts_shipment_id`  `dts_shipment_id` INT NOT NULL;

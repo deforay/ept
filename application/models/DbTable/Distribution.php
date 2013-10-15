@@ -161,6 +161,10 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         return $this->getAdapter()->fetchCol($this->select()->from($this->_name,new Zend_Db_Expr("DATE_FORMAT(distribution_date,'%d-%b-%Y')")));
     }
     
+    public function getDistribution($did){
+        return $this->fetchRow("distribution_id = ".$did);
+    }
+    
     public function updateDistribution($params){
         $data = array('distribution_code'=>$params['distributionCode'],
                       'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']));

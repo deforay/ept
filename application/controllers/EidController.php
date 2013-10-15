@@ -17,6 +17,7 @@ class EidController extends Zend_Controller_Action
     {
         
         $schemeService = new Application_Service_Schemes();
+        $shipmentService = new Application_Service_Shipments();
         
         $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
         $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
@@ -26,7 +27,7 @@ class EidController extends Zend_Controller_Action
 
     		$data = $this->getRequest()->getPost();
            
-            $schemeService->updateEidResults($data);
+            $shipmentService->updateEidResults($data);
     		
     		// Zend_Debug::dump($data);die;
     		

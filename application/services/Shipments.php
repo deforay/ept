@@ -173,9 +173,158 @@ class Application_Service_Shipments {
         echo json_encode($output);
 	
 	}
-	
+
+	public function updateEidResults($params){
+		
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		
+		$db->beginTransaction();
+		try {
+			$eidShipmentDb = new Application_Model_DbTable_ShipmentEid();
+			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+			$data = array(
+						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
+						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
+						  "sample_rehydration_date"=>Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+						  "extraction_assay"=>$params['extractionAssay'],
+						  "detection_assay"=>$params['detectionAssay'],
+						  "supervisor_approval"=>$params['supervisorApproval'],
+						  "participant_supervisor"=>$params['participantSupervisor'],
+						  "user_comment"=>$params['userComments'],
+						  "updated_by_user"=>$authNameSpace->UserSystemID,
+						  "updated_on_user"=>new Zend_Db_Expr('now()')
+						  );
+			
+			$noOfRowsAffected = $eidShipmentDb->updateShipmentEid($data,$params['hdshipId'], $params['hdparticipantId']);
+			
+			$eidResponseDb = new Application_Model_DbTable_ResponseEid();
+			$eidResponseDb->updateResults($params);
+			$db->commit();
+		 
+		} catch (Exception $e) {
+			// If any of the queries failed and threw an exception,
+			// we want to roll back the whole transaction, reversing
+			// changes made in the transaction, even those that succeeded.
+			// Thus all changes are committed together, or none are.
+			$db->rollBack();
+			error_log($e->getMessage());
+		}
+		
+	}
+	public function updateVlResults($params){
+		
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		
+		$db->beginTransaction();
+		try {
+			$vlShipmentDb = new Application_Model_DbTable_ShipmentVl();
+			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+			$data = array(
+						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
+						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
+						  "sample_rehydration_date"=>Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+						  "vl_assay"=>$params['vlAssay'],
+						  "assay_lot_number"=>$params['assayLotNumber'],
+						  "assay_expiration_date"=>Pt_Commons_General::dateFormat($params['assayExpirationDate']),
+						  "specimen_volume"=>$params['specimenVolume'],
+						  "supervisor_approval"=>$params['supervisorApproval'],
+						  "participant_supervisor"=>$params['participantSupervisor'],
+						  "user_comment"=>$params['userComments'],
+						  "updated_by_user"=>$authNameSpace->UserSystemID,
+						  "updated_on_user"=>new Zend_Db_Expr('now()')
+						  );
+			
+			$noOfRowsAffected = $vlShipmentDb->updateShipmentVl($data,$params['hdshipId'], $params['hdparticipantId']);
+			
+			$eidResponseDb = new Application_Model_DbTable_ResponseVl();
+			$eidResponseDb->updateResults($params);
+			$db->commit();
+		 
+		} catch (Exception $e) {
+			// If any of the queries failed and threw an exception,
+			// we want to roll back the whole transaction, reversing
+			// changes made in the transaction, even those that succeeded.
+			// Thus all changes are committed together, or none are.
+			$db->rollBack();
+			error_log($e->getMessage());
+		}
+		
+	}
+		
 	public function addShipment($params){
-		Zend_Debug::dump($params);die;
+		//Zend_Debug::dump($params);die;
+		$scheme = $params['schemeId'];
+		$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+		if($params['schemeId'] == 'EID'){
+			$db = new Application_Model_DbTable_ShipmentEid();
+			$distroService = new Application_Service_Distribution();
+			$distro = $distroService->getDistribution($params['distribution']);
+			$maxRow = $db->getAdapter()->fetchCol($db->select()->from($db,new Zend_Db_Expr('MAX(eid_shipment_id)')));
+			$max = (int)$maxRow[0] + 1;			
+			foreach($params['participants'] as $participant){
+				
+				$data = array(
+							  'eid_shipment_id'=>$max,
+							  'participant_id'=>$participant,
+							  'shipment_code'=>$params['shipmentCode'],
+							  'distribution_id'=>$params['distribution'],
+							  'shipment_date'=>$distro['distribution_date'],
+							  'number_of_samples'=>count($params['sampleName']),
+							  'lastdate_response'=>Pt_Commons_General::dateFormat($params['lastDate']),
+							  'created_on_admin'=>new Zend_Db_Expr('now()'),
+							  'created_by_admin'=>$authNameSpace->primary_email
+							  );
+				$db->insert($data);
+			}
+			$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$size = count($params['sampleName']);
+			for($i = 0;$i < $size;$i++){
+				$dbAdapter->insert('reference_result_eid',array(
+														'eid_shipment_id'=>$max,
+														'eid_sample_id'=>($i+1),
+														'eid_sample_label'=>$params['sampleName'][$i],
+														'reference_result'=>$params['possibleResults'][$i],
+														'reference_hiv_ct_od'=>$params['hivCtOd'][$i],
+														'reference_ic_qs'=>$params['icQs'][$i],
+														)
+								  );
+			}
+
+		}
+		else if($params['schemeId'] == 'VL'){
+			$db = new Application_Model_DbTable_ShipmentVl();
+			$distroService = new Application_Service_Distribution();
+			$distro = $distroService->getDistribution($params['distribution']);
+			$maxRow = $db->getAdapter()->fetchCol($db->select()->from($db,new Zend_Db_Expr('MAX(vl_shipment_id)')));
+			$max = (int)$maxRow[0] + 1;			
+			foreach($params['participants'] as $participant){
+				
+				$data = array(
+							  'vl_shipment_id'=>$max,
+							  'participant_id'=>$participant,
+							  'shipment_code'=>$params['shipmentCode'],
+							  'distribution_id'=>$params['distribution'],
+							  'shipment_date'=>$distro['distribution_date'],
+							  'number_of_samples'=>count($params['sampleName']),
+							  'lastdate_response'=>Pt_Commons_General::dateFormat($params['lastDate']),
+							  'created_on_admin'=>new Zend_Db_Expr('now()'),
+							  'created_by_admin'=>$authNameSpace->primary_email
+							  );
+				$db->insert($data);
+			}
+			$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$size = count($params['sampleName']);
+			for($i = 0;$i < $size;$i++){
+				$dbAdapter->insert('reference_result_vl',array(
+														'vl_shipment_id'=>$max,
+														'vl_sample_id'=>($i+1),
+														'vl_sample_label'=>$params['sampleName'][$i],
+														'reference_viral_load'=>$params['vlResult'][$i]
+														)
+								  );
+			}
+
+		}
 	}
 	
 

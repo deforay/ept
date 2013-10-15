@@ -10,6 +10,10 @@ class Application_Service_Distribution {
 		$disrtibutionDb = new Application_Model_DbTable_Distribution();
 		return $disrtibutionDb->addDistribution($params);		
 	}
+	public function getDistribution($did){
+		$disrtibutionDb = new Application_Model_DbTable_Distribution();
+		return $disrtibutionDb->getDistribution($did);		
+	}
 	public function updateDistribution($params){
 		$disrtibutionDb = new Application_Model_DbTable_Distribution();
 		return $disrtibutionDb->updateDistribution($params);		

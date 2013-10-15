@@ -1,3 +1,4 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <?php
 
 
@@ -277,3 +278,60 @@ else if($this->scheme == 'dts'){
  DTS SAMPLE ADDING PART ENDS HERE
  **
 ********************************************************************************************/
+?>
+
+<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
+				<?php
+				foreach($this->participants as $participant){
+					?>
+					<option value="<?php echo $participant['ParticipantSystemID']; ?>"><?php echo $participant['ParticipantFName'] . " " .$participant['ParticipantLName'] ; ?></option>
+					<?php
+				}
+				?>
+			</select>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
+<script>
+	//$(document).ready(function(){
+		
+		
+		
+$('#participants').multiSelect({
+	selectableFooter: "<div class='custom-header'>Unenrolled Participants</div>",
+	selectionFooter: "<div class='custom-header'>Selected Participants</div>",
+	selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name To Filter'>",
+	selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name To Filter'>",
+	afterInit: function(ms){
+	  var that = this,
+		  $selectableSearch = that.$selectableUl.prev(),
+		  $selectionSearch = that.$selectionUl.prev(),
+		  selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+		  selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+  
+	  that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+	  .on('keydown', function(e){
+		if (e.which === 40){
+		  that.$selectableUl.focus();
+		  return false;
+		}
+    });
+
+    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+    .on('keydown', function(e){
+      if (e.which == 40){
+        that.$selectionUl.focus();
+        return false;
+      }
+    });
+  },
+  afterSelect: function(){
+    this.qs1.cache();
+    this.qs2.cache();
+  },
+  afterDeselect: function(){
+    this.qs1.cache();
+    this.qs2.cache();
+  }
+});
+	//});
+</script>

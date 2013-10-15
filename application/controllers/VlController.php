@@ -17,6 +17,7 @@ class VlController extends Zend_Controller_Action
     {
         
         $schemeService = new Application_Service_Schemes();
+        $shipmentService = new Application_Service_Shipments();
         
         $this->view->vlAssay = $schemeService->getVlAssay();
         
@@ -27,7 +28,7 @@ class VlController extends Zend_Controller_Action
            
            // Zend_Debug::dump($data);die;
            
-            $schemeService->updateVlResults($data);
+            $shipmentService->updateVlResults($data);
     		
     		
     		
