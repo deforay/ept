@@ -14,7 +14,7 @@ class Admin_LoginController extends Zend_Controller_Action
             
             $params = $this->getRequest()->getPost();
     		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-    		$adapter = new Zend_Auth_Adapter_DbTable($db, "admin", "primary_email", "password");
+    		$adapter = new Zend_Auth_Adapter_DbTable($db, "system_admin", "primary_email", "password");
             
             $select = $adapter->getDbSelect();
             $select->where('status = "active"');

@@ -41,20 +41,20 @@ class Application_Service_Participants {
 	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 	    $shipmentTable = 'shipment_'.strtolower($sid);
 	    $sql = $db->select()->from(array('p'=>'participant'))
-				->joinLeft(array('s'=>$shipmentTable),'p.ParticipantSystemID=s.participant_id')
-				->where("p.ParticipantSystemID=".$pid);
+				->joinLeft(array('s'=>$shipmentTable),'p.participant_id=s.participant_id')
+				->where("p.participant_id=".$pid);
 	    return $db->fetchAll($sql);
 	}
 	public function getUnEnrolled($scheme){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('e'=>'enrollments'), 'participant_id')->where("scheme_id = ?", $scheme);
-		$sql = $db->select()->from(array('p'=>'participant'))->where("ParticipantSystemID NOT IN ?", $subSql);
+		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id NOT IN ?", $subSql);
 		return $db->fetchAll($sql);
 	}
 	public function getEnrolled($scheme){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('e'=>'enrollments'), 'participant_id')->where("scheme_id = ?", $scheme);
-		$sql = $db->select()->from(array('p'=>'participant'))->where("ParticipantSystemID IN ?", $subSql);
+		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id IN ?", $subSql);
 		return $db->fetchAll($sql);
 	}
 	

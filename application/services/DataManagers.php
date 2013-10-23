@@ -51,7 +51,14 @@ class Application_Service_DataManagers {
 			$sessionAlert->message = "Sorry, we could not reset your password. Please make sure that you enter your registered primary email id";
 			$sessionAlert->status = "failure";
 		}
-	}	
+	}
+	
+	
+	public function getDataManagerList(){
+		$userDb = new Application_Model_DbTable_DataManagers();
+		return $userDb->getAllDataManagers();
+	}
+	
 	public function changePassword($oldPassword,$newPassword){
 		$userDb = new Application_Model_DbTable_DataManagers();
 		$newPassword = $userDb->updatePassword($oldPassword,$newPassword);

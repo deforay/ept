@@ -8,8 +8,8 @@
         <div class="form-group">
             <label class="col-lg-3 control-label">Login (Primary e-mail) <span class="mandatory">*</span></label>
             <div class="col-lg-5">
-                <input type="text" id="userId" name="userId"  size="50" value="<?php echo $this->rsUser['UserID']; ?>" class="isRequired isEmail form-control" title="Please enter the primary email id here" onblur="checkDuplicate('users','UserID',this,'<?php echo "UserID##" . $this->rsUser['UserID']; ?>','This email already exists as a primary email for another user. Please choose another email.')"/>
-                <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['UserSystemID']; ?>" />
+                <input type="text" id="userId" name="userId"  size="50" value="<?php echo $this->rsUser['primary_email']; ?>" class="isRequired isEmail form-control" title="Please enter the primary email id here" onblur="checkDuplicate('users','primary_email',this,'<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>','This email already exists as a primary email for another user. Please choose another email.')"/>
+                <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
             </div>
         </div>
         <div class="form-group">
@@ -22,23 +22,23 @@
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">User First Name <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['UserFName']; ?>" class="isRequired form-control"  title="Please enter the first name here" placeholder="Please enter the first name here"  /></div>
+            <div class="col-lg-5"><input type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control"  title="Please enter the first name here" placeholder="Please enter the first name here"  /></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">User Last Name <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="lname" name="lname" size="50" maxlength="45" value="<?php echo $this->rsUser['UserLName']; ?>" title="Please enter the last name here" placeholder="Please enter the last name here" class="isRequired form-control" /></div>
+            <div class="col-lg-5"><input type="text" id="lname" name="lname" size="50" maxlength="45" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter the last name here" placeholder="Please enter the last name here" class="isRequired form-control" /></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">Secondary e-mail Address <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="semail" name="semail" size="50" maxlength="45" value="<?php echo $this->rsUser['UserSecondaryemail']; ?>" class="isRequired isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></div>
+            <div class="col-lg-5"><input type="text" id="semail" name="semail" size="50" maxlength="45" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">Cell Phone Number <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['UserCellNumber']; ?>" class="isRequired form-control"   title="Please enter the contact number here" placeholder="Please enter the contact number here"  /></div>
+            <div class="col-lg-5"><input type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired form-control"   title="Please enter the contact number here" placeholder="Please enter the contact number here"  /></div>
         </div>
         <div class="form-group"> 
             <label class="col-lg-3 control-label">Phone Number</label>
-            <div class="col-lg-5"><input type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['UserPhoneNumber']; ?>" class=" form-control"/></div>
+            <div class="col-lg-5"><input type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['phone']; ?>" class=" form-control"/></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">Status</label>
@@ -79,7 +79,7 @@
         });
     }	
     function validateNow(){
-		checkDuplicate('users','UserID',$("#userId"),'<?php echo "UserID##" . $this->rsUser['UserID']; ?>','This email already exists as a primary email for another user. Please choose another email.')
+		checkDuplicate('users','primary_email',$("#userId"),'<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>','This email already exists as a primary email for another user. Please choose another email.')
         flag = deforayValidator.init({
             formId: 'editUserForm'
         });

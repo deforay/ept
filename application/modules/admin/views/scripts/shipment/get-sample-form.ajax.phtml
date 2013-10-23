@@ -30,7 +30,7 @@ if($this->scheme == 'vl'){
 			<tr align="center">
 				<td style="text-align: center">
 					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $control['control_name']; ?>" readonly="readonly"/>
-					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['control_id'];?>" />-->
+					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
 				</td>
 				<td>
 					<input type="text" name="vlResult[]" class="isRequired form-control input-sm" placeholder="Please enter the Viral Load Values for <?php echo $control['control_name']; ?> here"  title="Please enter the Viral Load Values for <?php echo $control['control_name']; ?>" />
@@ -94,7 +94,7 @@ if($this->scheme == 'vl'){
 else if($this->scheme == 'eid'){
 	$possibleResults ='<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 	foreach($this->eidPossibleResults as $pr){
-		$possibleResults .= '<option value="'.$pr['ID'].'">'.$pr['Response'].'</option>';
+		$possibleResults .= '<option value="'.$pr['id'].'">'.$pr['response'].'</option>';
 	}
 	
 	$possibleResults .= "</select>";
@@ -121,7 +121,7 @@ else if($this->scheme == 'eid'){
 			<tr align="center">
 				<td style="text-align: center">
 					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $control['control_name']; ?>" readonly="readonly"/>
-					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['control_id'];?>" />-->
+					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
 				</td>
 				<td>
 					<?php echo $possibleResults; ?>
@@ -140,7 +140,7 @@ else if($this->scheme == 'eid'){
 		<tr align="center">
 				<td style="text-align: center">
 					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/>
-					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['control_id'];?>" />-->
+					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
 				</td>
 				<td>
 					<?php echo $possibleResults; ?>
@@ -211,7 +211,7 @@ else if($this->scheme == 'eid'){
 else if($this->scheme == 'dts'){
 	$possibleResults ='<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 	foreach($this->dtsPossibleResults as $pr){
-		$possibleResults .= '<option value="'.$pr['ID'].'">'.$pr['Response'].'</option>';
+		$possibleResults .= '<option value="'.$pr['id'].'">'.$pr['response'].'</option>';
 	}
 	
 	$possibleResults .= "</select>";
@@ -231,7 +231,7 @@ else if($this->scheme == 'dts'){
 		<tr align="center">
 				<td style="text-align: center">
 					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/>
-					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['control_id'];?>" />-->
+					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
 				</td>
 				<td>
 					<?php echo $possibleResults; ?>
@@ -279,25 +279,25 @@ else if($this->scheme == 'dts'){
  **
 ********************************************************************************************/
 ?>
-
+<!--
 <select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
-				<?php
+				< ?php
 				foreach($this->participants as $participant){
 					?>
-					<option value="<?php echo $participant['ParticipantSystemID']; ?>"><?php echo $participant['ParticipantFName'] . " " .$participant['ParticipantLName'] ; ?></option>
-					<?php
+					<option value="< ?php echo $participant['ParticipantSystemID']; ?>">< ?php echo $participant['ParticipantFName'] . " " .$participant['ParticipantLName'] ; ?></option>
+					< ?php
 				}
 				?>
 			</select>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
+<script type="text/javascript" src="< ?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
+<script type="text/javascript" src="< ?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
 	//$(document).ready(function(){
 		
 		
 		
 $('#participants').multiSelect({
-	selectableFooter: "<div class='custom-header'>Unenrolled Participants</div>",
+	selectableFooter: "<div class='custom-header'>Enrolled Participants</div>",
 	selectionFooter: "<div class='custom-header'>Selected Participants</div>",
 	selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name To Filter'>",
 	selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name To Filter'>",
@@ -334,4 +334,4 @@ $('#participants').multiSelect({
   }
 });
 	//});
-</script>
+</script>-->

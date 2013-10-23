@@ -8,7 +8,7 @@
 				<?php
 				foreach($this->participants as $participant){
 					?>
-					<option value="<?php echo $participant['ParticipantSystemID']; ?>"><?php echo $participant['ParticipantFName'] . " " .$participant['ParticipantLName'] ; ?></option>
+					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
 					<?php
 				}
 				?>

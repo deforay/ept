@@ -947,3 +947,9 @@ INSERT INTO `r_possibleresult` (`ID`, `SchemeCode`, `SchemeSubgroup`, `Response`
 ALTER TABLE  `shipment_eid` CHANGE  `eid_shipment_id`  `eid_shipment_id` INT NOT NULL;
 ALTER TABLE  `shipment_vl` CHANGE  `vl_shipment_id`  `vl_shipment_id` INT NOT NULL;
 ALTER TABLE  `shipment_dts` CHANGE  `dts_shipment_id`  `dts_shipment_id` INT NOT NULL;
+
+
+-- by Amit on Oct 22 2013
+
+ALTER TABLE  `participant` ADD  `email` VARCHAR( 255 ) NOT NULL AFTER  `phone`;
+ALTER TABLE  `reference_result_vl` CHANGE  `vl_sample_label`  `sample_label` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;

@@ -2,19 +2,19 @@
 
 class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
 
-    protected $_name = 'users';
-    protected $_primary = array('UserID','UserSystemID');
+    protected $_name = 'data_manager';
+    protected $_primary = array('dm_id');
 
     public function addUser($params) {
 
      $data = array(
-            'UserFName' => $params['fname'],
-            'UserLName' => $params['lname'],
-            'UserPhoneNumber' => $params['phone2'],
-            'UserCellNumber' => $params['phone1'],
-            'UserSecondaryemail' => $params['semail'],
-            'UserID' => $params['userId'],
-            'Password' => $params['password'],
+            'first_name' => $params['fname'],
+            'last_name' => $params['lname'],
+            'phone' => $params['phone2'],
+            'mobile' => $params['phone1'],
+            'secondary_email' => $params['semail'],
+            'primary_email' => $params['userId'],
+            'password' => $params['password'],
             'force_password_reset' => 1,
             'status' => $params['status']
         );
@@ -28,10 +28,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('UserFName','UserLName', 'UserPhoneNumber', 'UserID', 'UserSecondaryemail', 'status');
+        $aColumns = array('first_name','last_name', 'phone', 'primary_email', 'secondary_email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = "UserSystemID";
+        $sIndexColumn = "dm_id";
 
 
         /*
@@ -146,16 +146,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             "aaData" => array()
         );
         
-        $aColumns = array('UserFName','UserLName', 'UserPhoneNumber', 'UserID', 'UserSecondaryemail', 'status');
+        $aColumns = array('first_name','last_name', 'phone', 'primary_email', 'secondary_email', 'status');
         foreach ($rResult as $aRow) {
             $row = array();
-            $row[] = $aRow['UserFName']; 
-            $row[] = $aRow['UserLName']; 
-            $row[] = $aRow['UserCellNumber'];
-            $row[] = $aRow['UserID'];
-            $row[] = $aRow['UserSecondaryemail'];
+            $row[] = $aRow['first_name']; 
+            $row[] = $aRow['last_name']; 
+            $row[] = $aRow['mobile'];
+            $row[] = $aRow['primary_email'];
+            $row[] = $aRow['secondary_email'];
             $row[] = $aRow['status'];
-            $row[] = '<a href="/admin/data-managers/edit/id/' . $aRow['UserSystemID'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i></a>';
+            $row[] = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i></a>';
 
             $output['aaData'][] = $row;
         }
@@ -164,56 +164,65 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
     }    
     
     public function getUserDetails($userId){
-        return $this->fetchRow("UserID = '".$userId."'")->toArray();
+        return $this->fetchRow("primary_email = '".$userId."'")->toArray();
     }
     
     public function getUserDetailsBySystemId($userSystemId){
-        return $this->fetchRow("UserSystemID = '".$userSystemId."'")->toArray();
+        return $this->fetchRow("dm_id = '".$userSystemId."'")->toArray();
     }
 
     public function updateUser($params) {
 
         $data = array(
-            'UserFName' => $params['fname'],
-            'UserLName' => $params['lname'],
-            'UserPhoneNumber' => $params['phone2'],
-            'UserCellNumber' => $params['phone1'],
-            'UserSecondaryemail' => $params['semail']
+            'first_name' => $params['fname'],
+            'last_name' => $params['lname'],
+            'phone' => $params['phone2'],
+            'mobile' => $params['phone1'],
+            'secondary_email' => $params['semail']
         );
         
         if(isset($params['userId']) && $params['userId'] != ""){
-            $data['UserID'] = $params['userId'];
+            $data['primary_email'] = $params['userId'];
         }
         
         if(isset($params['password']) && $params['password'] != ""){
-            $data['Password'] = $params['password'];
+            $data['password'] = $params['password'];
             $data['force_password_reset'] = 1;
         }
         if(isset($params['status']) && $params['status'] != ""){
             $data['status'] = $params['status'];
         }
 
-        return $this->update($data, "UserSystemID = " . $params['userSystemId']);
+        return $this->update($data, "dm_id = " . $params['userSystemId']);
     }
     
-    public function resetPasswordForEmail($email){
-        $row = $this->fetchRow("UserID = '".$email."'");
+    public function resetpasswordForEmail($email){
+        $row = $this->fetchRow("primary_email = '".$email."'");
         if($row != null && count($row) ==1){
-            $randomPassword = Application_Service_Common::getRandomString(15);
-            $row->Password = $randomPassword;
+            $randompassword = Application_Service_Common::getRandomString(15);
+            $row->password = $randompassword;
             $row->force_password_reset = 1;
             $row->save();
-            return $randomPassword;
+            return $randompassword;
         }else{
             return false;
         }
-    }    
-    public function updatePassword($oldPassword,$newPassword){
+    }
+	
+	public function getAllDataManagers($active=true){
+		$sql = $this->select();
+		if($active){
+			$sql = $sql->where("status='active'");
+		}
+		return $this->fetchAll($sql);
+	}
+	
+    public function updatepassword($oldpassword,$newpassword){
         $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
-    	$email = $authNameSpace->UserID;
-        $noOfRows = $this->update(array('Password' => $newPassword,'force_password_reset'=>0),"UserID = '".$email."' and Password = '".$oldPassword."'");
+    	$email = $authNameSpace->primary_email;
+        $noOfRows = $this->update(array('password' => $newpassword,'force_password_reset'=>0),"primary_email = '".$email."' and password = '".$oldpassword."'");
         if($noOfRows != null && count($noOfRows) ==1){
-            $authNameSpace->ForcePasswordReset = 0;
+            $authNameSpace->ForcepasswordReset = 0;
             return true;
         }else{
             return false;

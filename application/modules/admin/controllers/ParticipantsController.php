@@ -28,6 +28,8 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $userService->addParticipant($params);
             $this->_redirect("/admin/participants");
         }
+        $dataManagerService = new Application_Service_DataManagers();
+        $this->view->dataManagers = $dataManagerService->getDataManagerList();
     }
 
     public function editAction()
@@ -43,6 +45,8 @@ class Admin_ParticipantsController extends Zend_Controller_Action
                 $userId = (int)$this->_getParam('id');
                 $this->view->participant = $userService->getParticipantDetails($userId);
             }
+            $dataManagerService = new Application_Service_DataManagers();
+            $this->view->dataManagers = $dataManagerService->getDataManagerList();            
         }
     }
 

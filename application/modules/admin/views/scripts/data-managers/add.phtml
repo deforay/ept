@@ -8,7 +8,7 @@
         <div class="form-group">
             <label class="col-lg-3 control-label">Login (Primary e-mail) <span class="mandatory">*</span></label>
             <div class="col-lg-5">
-                <input type="text" id="userId" name="userId"  size="50" class="isRequired isEmail form-control" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('users','UserID',this,null,'This email already exists as a primary email for another user. Please choose another email.')"/>
+                <input type="text" id="userId" name="userId"  size="50" class="isRequired isEmail form-control" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('users','primary_email',this,null,'This email already exists as a primary email for another user. Please choose another email.')"/>
             </div>
         </div>
         <div class="form-group">
@@ -82,7 +82,7 @@
     }
 	
     function validateNow(){
-		checkDuplicate('users','UserID',$("#userId"),null,'This email already exists as a primary email for another user. Please choose another email.')
+		checkDuplicate('users','primary_email',$("#userId"),null,'This email already exists as a primary email for another user. Please choose another email.')
         flag = deforayValidator.init({
             formId: 'addUserForm'
         });

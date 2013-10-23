@@ -92,6 +92,7 @@
           <dbTableFile dbTableName="Enrollments"/>
           <dbTableFile dbTableName="SystemAdmin"/>
           <dbTableFile dbTableName="Distribution"/>
+          <dbTableFile dbTableName="Shipments"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>

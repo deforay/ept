@@ -26,9 +26,24 @@
 
                 <div class="col-lg-5">
                     <input type="text" id="participantId" name="participantId" size="50" class="isRequired form-control"
-                           title="Please enter the primary email id here"
-                           placeholder="Please enter the primary email id here"
-                           onblur="checkDuplicate('participants','ParticipantID',this,null,'This Participant ID already exists for another Participant. Please try something else.')"/>
+                           title="Please enter a unique identifier here"
+                           placeholder="Please enter a unique identifier here"
+                           onblur="checkDuplicate('participants','unique_identifier',this,null,'This Participant ID already exists for another Participant. Please try something else.')"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Data Manager <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5">
+                    <select class="form-control isRequired" name="dataManager" id="dataManager">
+						<option value="">--Select--</option>
+						<?php foreach($this->dataManagers as $dm){
+							?>
+							<option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name']. " " . $dm['last_name']; ?></option>
+							<?php
+						}
+						?>
+					</select>
                 </div>
             </div>
             <div class="form-group">
@@ -101,7 +116,7 @@
     }
 
     function validateNow() {
-        checkDuplicate('participants', 'ParticipantID', $("#participantId"), null, 'This Participant ID already exists for another Participant. Please try something else.')
+        checkDuplicate('participants', 'unique_identifier', $("#participantId"), null, 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'addParticipantForm'
         });

@@ -3,7 +3,7 @@
 class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
 {
 
-    protected $_name = 'admin';
+    protected $_name = 'system_admin';
     protected $_primary = 'admin_id';
 
     

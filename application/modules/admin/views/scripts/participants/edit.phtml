@@ -13,10 +13,10 @@
                     <input id="fname" type="text" id="pfname" name="pfname" size="50" maxlength="45"
                                              class="isRequired form-control" title="Please enter the first name here"
                                              placeholder="Please enter the first name here"
-                                             value="<?php echo $this->participant['ParticipantFName']; ?>"/>
+                                             value="<?php echo $this->participant['first_name']; ?>"/>
                     <input type="hidden" id="PartSysID" name="PartSysID" size="50" maxlength="45"
                                              class="isRequired form-control"
-                                             value="<?php echo $this->participant['ParticipantSystemID']; ?>"/>
+                                             value="<?php echo $this->participant['participant_id']; ?>"/>
                 </div>
             </div>
             <div class="form-group">
@@ -25,7 +25,7 @@
                 <div class="col-lg-5"><input id="lname" type="text" id="plname" name="plname" size="50" maxlength="45"
                                              class="isRequired form-control" title="Please enter the last name here"
                                              placeholder="Please enter the last name here"
-                                             value="<?php echo $this->participant['ParticipantLName']; ?>"/></div>
+                                             value="<?php echo $this->participant['last_name']; ?>"/></div>
             </div>
 
             <div class="form-group">
@@ -35,8 +35,23 @@
                     <input type="text" id="pid" name="pid" size="50" class="isRequired form-control"
                            title="Please enter the Participant id here"
                            placeholder="Please enter the Participant id here"
-                           value="<?php echo $this->participant['ParticipantID']; ?>"
-                           onblur="checkDuplicate('participants','ParticipantID',this,'<?php echo "ParticipantSystemID##" . $this->participant['ParticipantSystemID']; ?>','This Participant ID already exists for another Participant. Please try something else.')"/>
+                           value="<?php echo $this->participant['unique_identifier']; ?>"
+                           onblur="checkDuplicate('participants','unique_identifier',this,'<?php echo "participant_id##" . $this->participant['participant_id']; ?>','This Participant ID already exists for another Participant. Please try something else.')"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Data Manager <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5">
+                    <select class="form-control isRequired" name="dataManager" id="dataManager">
+						<option value="">--Select--</option>
+						<?php foreach($this->dataManagers as $dm){
+							?>
+							<option value="<?php echo $dm['dm_id']; ?>" <?php echo ($dm['dm_id'] == $this->participant['data_manager']) ? "selected='selected'" : "" ?>><?php echo $dm['first_name']. " " . $dm['last_name']; ?></option>
+							<?php
+						}
+						?>
+					</select>
                 </div>
             </div>
             <div class="form-group">
@@ -45,7 +60,7 @@
                 <div class="col-lg-5"><input type="text" id="pemail" name="pemail" size="50" maxlength="45"
                                              class="isRequired isEmail form-control"
                                              title="Please enter the email id here"
-                                             value="<?php echo $this->participant['ParticipanteMail']; ?>"
+                                             value="<?php echo $this->participant['email']; ?>"
                                              placeholder="Please enter the email id here"/></div>
             </div>
             <div class="form-group">
@@ -55,21 +70,21 @@
                                              class="isRequired form-control isNumeric"
                                              title="Please enter mobile/cell number here"
                                              placeholder="Please enter mobile/cell number here"
-                                             value="<?php echo $this->participant['ParticipantMobile']; ?>"/></div>
+                                             value="<?php echo $this->participant['mobile']; ?>"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Phone Number</label>
 
                 <div class="col-lg-5"><input id="phone2" type="text" id="pphone1" name="pphone1" size="50" maxlength="45"
                                              placeholder="Please enter phone number here" class="form-control isNumeric"
-                                             value="<?php echo $this->participant['ParticipantPhone']; ?>"/></div>
+                                             value="<?php echo $this->participant['phone']; ?>"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Affiliation</label>
 
                 <div class="col-lg-5"><input type="text" id="partAff" name="partAff" size="50" maxlength="45"
                                              placeholder="Please enter affiliation here" class="form-control"
-                                             value="<?php echo $this->participant['ParticipantAffiliation']; ?>"/></div>
+                                             value="<?php echo $this->participant['affiliation']; ?>"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Status</label>
@@ -119,7 +134,7 @@
     }
 
     function validateNow() {
-        checkDuplicate('participants', 'ParticipantID', $("#participantId"), '<?php echo "ParticipantSystemID##" . $this->participant['ParticipantSystemID']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')
+        checkDuplicate('participants', 'unique_identifier', $("#participantId"), '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'editParticipantForm'
         });

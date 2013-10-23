@@ -84,23 +84,13 @@ class Application_Service_Shipments {
          */
 		
 		
-		// Some long queries coming up !
 		
+			$sQuery = $db->select()->from(array('s'=>'shipment'),array('s.shipment_date','s.shipment_code','s.number_of_samples'))
+						->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'))
+						->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('SCHEME'=>'sl.scheme_name'));		
 
 		if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
-			$sQuery = $db->select()->from(array('s'=>'shipment_'.strtolower($parameters['scheme'])),array('s.shipment_date','s.shipment_code','SCHEME'=>new Zend_Db_Expr("'DTS'"),'s.number_of_samples'))
-						->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'));			
-		}else{
-			
-			$dtsSql = $db->select()->from(array('s'=>'shipment_dts'),array('s.shipment_date','s.shipment_code','SCHEME'=>new Zend_Db_Expr("'DTS'"),'s.number_of_samples'))
-								->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'));
-								
-			$eidSql = $db->select()->from(array('s'=>'shipment_eid'),array('s.shipment_date','s.shipment_code','SCHEME'=>new Zend_Db_Expr("'EID'"),'s.number_of_samples'))
-								->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'));
-								
-			$vlSql = $db->select()->from(array('s'=>'shipment_vl'),array('s.shipment_date','s.shipment_code','SCHEME'=>new Zend_Db_Expr("'VL'"),'s.number_of_samples'))
-								->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'));			
-			$sQuery = $db->select()->union(array($dtsSql,$eidSql,$vlSql));	
+				$sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
 		}
 		
 		
@@ -130,17 +120,11 @@ class Application_Service_Shipments {
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
+		
+		$sQuery = $db->select()->from('shipment', new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+		
 		if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
-			$sQuery = $db->select()->from('shipment_'.strtolower($parameters['scheme']), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
-		}else{
-			
-			$dtsSql = $db->select()->from(array('s'=>'shipment_dts'), array('total'=>new Zend_Db_Expr("COUNT('dts_shipment_id')")));
-			$eidSql = $db->select()->from(array('s'=>'shipment_eid'), array('total'=>new Zend_Db_Expr("COUNT('eid_shipment_id')")));
-			$vlSql = $db->select()->from(array('s'=>'shipment_vl'), array('total'=>new Zend_Db_Expr("COUNT('vl_shipment_id')")));
-			$subSql = $db->select()->union(array($dtsSql,$eidSql,$vlSql),Zend_Db_Select::SQL_UNION_ALL);
-			
-			$sQuery = $db->select()->from(array('t'=>$subSql),array('totalRows'=>new Zend_Db_expr("SUM(total)")));
-			
+			$sQuery = $sQuery->where("scheme_type = ?",$parameters['scheme']);
 		}
 		
         $aResultTotal = $db->fetchCol($sQuery);
@@ -255,34 +239,31 @@ class Application_Service_Shipments {
 		//Zend_Debug::dump($params);die;
 		$scheme = $params['schemeId'];
 		$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
-		if($params['schemeId'] == 'EID'){
-			$db = new Application_Model_DbTable_ShipmentEid();
-			$distroService = new Application_Service_Distribution();
-			$distro = $distroService->getDistribution($params['distribution']);
-			$maxRow = $db->getAdapter()->fetchCol($db->select()->from($db,new Zend_Db_Expr('MAX(eid_shipment_id)')));
-			$max = (int)$maxRow[0] + 1;			
-			foreach($params['participants'] as $participant){
-				
-				$data = array(
-							  'eid_shipment_id'=>$max,
-							  'participant_id'=>$participant,
-							  'shipment_code'=>$params['shipmentCode'],
-							  'distribution_id'=>$params['distribution'],
-							  'shipment_date'=>$distro['distribution_date'],
-							  'number_of_samples'=>count($params['sampleName']),
-							  'lastdate_response'=>Pt_Commons_General::dateFormat($params['lastDate']),
-							  'created_on_admin'=>new Zend_Db_Expr('now()'),
-							  'created_by_admin'=>$authNameSpace->primary_email
-							  );
-				$db->insert($data);
-			}
-			$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-			$size = count($params['sampleName']);
+		$db = new Application_Model_DbTable_Shipments();
+		$distroService = new Application_Service_Distribution();
+		$distro = $distroService->getDistribution($params['distribution']);
+		
+		
+		$data = array(
+					  'shipment_code'=>$params['shipmentCode'],
+					  'distribution_id'=>$params['distribution'],
+					  'scheme_type'=>$scheme,
+					  'shipment_date'=>$distro['distribution_date'],
+					  'number_of_samples'=>count($params['sampleName']),
+					  'lastdate_response'=>Pt_Commons_General::dateFormat($params['lastDate']),
+					  'created_on_admin'=>new Zend_Db_Expr('now()'),
+					  'created_by_admin'=>$authNameSpace->primary_email
+					  );
+		$lastId = $db->insert($data);
+		
+		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$size = count($params['sampleName']);
+		if($params['schemeId'] == 'eid'){
 			for($i = 0;$i < $size;$i++){
 				$dbAdapter->insert('reference_result_eid',array(
-														'eid_shipment_id'=>$max,
-														'eid_sample_id'=>($i+1),
-														'eid_sample_label'=>$params['sampleName'][$i],
+														'shipment_id'=>$lastId,
+														'sample_id'=>($i+1),
+														'sample_label'=>$params['sampleName'][$i],
 														'reference_result'=>$params['possibleResults'][$i],
 														'reference_hiv_ct_od'=>$params['hivCtOd'][$i],
 														'reference_ic_qs'=>$params['icQs'][$i],
@@ -291,43 +272,31 @@ class Application_Service_Shipments {
 			}
 
 		}
-		else if($params['schemeId'] == 'VL'){
-			$db = new Application_Model_DbTable_ShipmentVl();
-			$distroService = new Application_Service_Distribution();
-			$distro = $distroService->getDistribution($params['distribution']);
-			$maxRow = $db->getAdapter()->fetchCol($db->select()->from($db,new Zend_Db_Expr('MAX(vl_shipment_id)')));
-			$max = (int)$maxRow[0] + 1;			
-			foreach($params['participants'] as $participant){
-				
-				$data = array(
-							  'vl_shipment_id'=>$max,
-							  'participant_id'=>$participant,
-							  'shipment_code'=>$params['shipmentCode'],
-							  'distribution_id'=>$params['distribution'],
-							  'shipment_date'=>$distro['distribution_date'],
-							  'number_of_samples'=>count($params['sampleName']),
-							  'lastdate_response'=>Pt_Commons_General::dateFormat($params['lastDate']),
-							  'created_on_admin'=>new Zend_Db_Expr('now()'),
-							  'created_by_admin'=>$authNameSpace->primary_email
-							  );
-				$db->insert($data);
-			}
-			$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-			$size = count($params['sampleName']);
+		else if($params['schemeId'] == 'vl'){
 			for($i = 0;$i < $size;$i++){
 				$dbAdapter->insert('reference_result_vl',array(
-														'vl_shipment_id'=>$max,
-														'vl_sample_id'=>($i+1),
-														'vl_sample_label'=>$params['sampleName'][$i],
+														'shipment_id'=>$lastId,
+														'sample_id'=>($i+1),
+														'sample_label'=>$params['sampleName'][$i],
 														'reference_viral_load'=>$params['vlResult'][$i]
 														)
 								  );
 			}
 
 		}
-	}
-	
+		else if($params['schemeId'] == 'dts'){
+			for($i = 0;$i < $size;$i++){
+				$dbAdapter->insert('reference_result_dts',array(
+														'shipment_id'=>$lastId,
+														'sample_id'=>($i+1),
+														'sample_label'=>$params['sampleName'][$i],
+														'reference_result'=>$params['possibleResults'][$i]
+														)
+								  );
+			}
 
+		}
+	}
 
 }
 

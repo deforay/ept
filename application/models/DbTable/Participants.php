@@ -4,17 +4,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 {
 
     protected $_name = 'participant';
-    protected $_primary = 'ParticipantID';
+    protected $_primary = 'participant_id';
 
 
     public function getParticipantsByUserSystemId($userSystemId)
     {
-        return $this->fetchAll("UserSystemID = $userSystemId");
+        return $this->fetchAll("data_manager = $userSystemId");
     }
 
     public function getParticipant($partSysId)
     {
-        return $this->fetchRow("ParticipantSystemID = '" . $partSysId . "'");
+        return $this->fetchRow("participant_id = '" . $partSysId . "'");
     }
 
     public function getAllParticipants($parameters)
@@ -24,10 +24,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('ParticipantFName', 'ParticipantLName', 'ParticipantMobile', 'ParticipantPhone', 'ParticipantAffiliation', 'ParticipanteMail', 'status');
+        $aColumns = array('first_name', 'last_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = "UserSystemID";
+        $sIndexColumn = "participant_id";
 
 
         /*
@@ -145,14 +145,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = array();
-            $row[] = $aRow['ParticipantFName'];
-            $row[] = $aRow['ParticipantLName'];
-            $row[] = $aRow['ParticipantMobile'];
-            $row[] = $aRow['ParticipantPhone'];
-            $row[] = $aRow['ParticipantAffiliation'];
-            $row[] = $aRow['ParticipanteMail'];
+            $row[] = $aRow['first_name'];
+            $row[] = $aRow['last_name'];
+            $row[] = $aRow['mobile'];
+            $row[] = $aRow['phone'];
+            $row[] = $aRow['affiliation'];
+            $row[] = $aRow['email'];
             $row[] = $aRow['status'];
-            $row[] = '<a href="/admin/participants/edit/id/' . $aRow['ParticipantSystemID'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i></a>';
+            $row[] = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i></a>';
 
             $output['aaData'][] = $row;
         }
@@ -165,13 +165,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
 
        $data = array(
-            'ParticipantID' => $params['pid'],
-            'ParticipantFName' => $params['pfname'],
-            'ParticipantLName' => $params['plname'],
-            'ParticipantMobile' => $params['pphone2'],
-            'ParticipantPhone' => $params['pphone1'],
-            'ParticipanteMail' => $params['pemail'],
-            'ParticipantAffiliation' => $params['partAff'],
+            'unique_identifier' => $params['pid'],
+            'first_name' => $params['pfname'],
+            'last_name' => $params['plname'],
+            'mobile' => $params['pphone2'],
+            'phone' => $params['pphone1'],
+            'data_manager' => $params['dataManager'],
+            'email' => $params['pemail'],
+            'affiliation' => $params['partAff'],
             'Updated_on' => new Zend_Db_Expr('now()')
         );
 
@@ -187,7 +188,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $data['Updated_by'] = $authNameSpace->primary_email;
         }
 
-        return $this->update($data, "ParticipantSystemID = '" . $params['PartSysID'] . "'");
+        return $this->update($data, "participant_id = '" . $params['PartSysID'] . "'");
     }
 
     public function addParticipant($params)
@@ -195,13 +196,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
 
         $data = array(
-            'ParticipantID' => $params['participantId'],
-            'ParticipantFName' => $params['pfname'],
-            'ParticipantLName' => $params['plname'],
-            'ParticipantMobile' => $params['pphone2'],
-            'ParticipantPhone' => $params['pphone1'],
-            'ParticipanteMail' => $params['pemail'],
-            'ParticipantAffiliation' => $params['partAff'],
+            'unique_identifier' => $params['participantId'],
+            'first_name' => $params['pfname'],
+            'last_name' => $params['plname'],
+            'mobile' => $params['pphone2'],
+            'phone' => $params['pphone1'],
+            'email' => $params['pemail'],
+            'affiliation' => $params['partAff'],
+            'data_manager' => $params['dataManager'],
             'status' => $params['status'],
             'Created_on' => new Zend_Db_Expr('now()'),
             'Created_by' => $authNameSpace->primary_email,
