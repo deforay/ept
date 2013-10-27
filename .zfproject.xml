@@ -93,6 +93,7 @@
           <dbTableFile dbTableName="SystemAdmin"/>
           <dbTableFile dbTableName="Distribution"/>
           <dbTableFile dbTableName="Shipments"/>
+          <dbTableFile dbTableName="ShipmentParticipantMap"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>
@@ -142,6 +143,7 @@
               <actionMethod actionName="index"/>
               <actionMethod actionName="add"/>
               <actionMethod actionName="getSampleForm"/>
+              <actionMethod actionName="shipIt"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -224,6 +226,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Shipment">
                 <viewScriptFile forActionName="getSampleForm"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="shipIt"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

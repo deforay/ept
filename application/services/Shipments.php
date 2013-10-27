@@ -5,7 +5,8 @@ class Application_Service_Shipments {
 	public function getAllShipments($parameters){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distibution_date', 'no_of_samples');
+        $aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distribution_date', 'no_of_samples');
+        $orderColumns = array("SCHEME","shipment_code","shipment_date", 'distribution_code', 'distribution_date', 'no_of_samples');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "shipment_date";
@@ -28,7 +29,7 @@ class Application_Service_Shipments {
             $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
 				 	" . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
@@ -85,18 +86,16 @@ class Application_Service_Shipments {
 		
 		
 		
-			$sQuery = $db->select()->from(array('s'=>'shipment'),array('s.shipment_date','s.shipment_code','s.number_of_samples'))
-						->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'))
-						->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('SCHEME'=>'sl.scheme_name'));		
+	$sQuery = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_date','s.shipment_code','s.number_of_samples'))
+				->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'))
+				->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('SCHEME'=>'sl.scheme_name'));		
 
-		if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
-				$sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
-		}
-		
-		
+	if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
+		$sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
+	}	
 			
 
-	    if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
 
@@ -143,13 +142,12 @@ class Application_Service_Shipments {
 		//$aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distibution_date', 'no_of_samples');
         foreach ($rResult as $aRow) {
             $row = array();
-			$row[] = $aRow['SCHEME'];
-			$row[] = $aRow['shipment_code'];
-            $row[] = Pt_Commons_General::humanDateFormat($aRow['shipment_date']);			
-			$row[] = $aRow['distribution_code'];
+	    $row[] = $aRow['shipment_code'];
+	    $row[] = $aRow['SCHEME'];	    
+	    $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-			$row[] = $aRow['number_of_samples'];
-            $row[] = '';
+	    $row[] = $aRow['number_of_samples'];
+            $row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-share-alt"></i> Ship</span></a>';
 
             $output['aaData'][] = $row;
         }
@@ -192,6 +190,7 @@ class Application_Service_Shipments {
 			// Thus all changes are committed together, or none are.
 			$db->rollBack();
 			error_log($e->getMessage());
+			error_log($e->getTraceAsString());
 		}
 		
 	}
@@ -245,15 +244,15 @@ class Application_Service_Shipments {
 		
 		
 		$data = array(
-					  'shipment_code'=>$params['shipmentCode'],
-					  'distribution_id'=>$params['distribution'],
-					  'scheme_type'=>$scheme,
-					  'shipment_date'=>$distro['distribution_date'],
-					  'number_of_samples'=>count($params['sampleName']),
-					  'lastdate_response'=>Pt_Commons_General::dateFormat($params['lastDate']),
-					  'created_on_admin'=>new Zend_Db_Expr('now()'),
-					  'created_by_admin'=>$authNameSpace->primary_email
-					  );
+			'shipment_code'=>$params['shipmentCode'],
+			'distribution_id'=>$params['distribution'],
+			'scheme_type'=>$scheme,
+			'shipment_date'=>$distro['distribution_date'],
+			'number_of_samples'=>count($params['sampleName']),
+			'lastdate_response'=>Pt_Commons_General::dateFormat($params['lastDate']),
+			'created_on_admin'=>new Zend_Db_Expr('now()'),
+			'created_by_admin'=>$authNameSpace->primary_email
+			);
 		$lastId = $db->insert($data);
 		
 		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -261,13 +260,13 @@ class Application_Service_Shipments {
 		if($params['schemeId'] == 'eid'){
 			for($i = 0;$i < $size;$i++){
 				$dbAdapter->insert('reference_result_eid',array(
-														'shipment_id'=>$lastId,
-														'sample_id'=>($i+1),
-														'sample_label'=>$params['sampleName'][$i],
-														'reference_result'=>$params['possibleResults'][$i],
-														'reference_hiv_ct_od'=>$params['hivCtOd'][$i],
-														'reference_ic_qs'=>$params['icQs'][$i],
-														)
+									'shipment_id'=>$lastId,
+									'sample_id'=>($i+1),
+									'sample_label'=>$params['sampleName'][$i],
+									'reference_result'=>$params['possibleResults'][$i],
+									'reference_hiv_ct_od'=>$params['hivCtOd'][$i],
+									'reference_ic_qs'=>$params['icQs'][$i],
+									)
 								  );
 			}
 
@@ -275,11 +274,11 @@ class Application_Service_Shipments {
 		else if($params['schemeId'] == 'vl'){
 			for($i = 0;$i < $size;$i++){
 				$dbAdapter->insert('reference_result_vl',array(
-														'shipment_id'=>$lastId,
-														'sample_id'=>($i+1),
-														'sample_label'=>$params['sampleName'][$i],
-														'reference_viral_load'=>$params['vlResult'][$i]
-														)
+									'shipment_id'=>$lastId,
+									'sample_id'=>($i+1),
+									'sample_label'=>$params['sampleName'][$i],
+									'reference_viral_load'=>$params['vlResult'][$i]
+									)
 								  );
 			}
 
@@ -287,15 +286,25 @@ class Application_Service_Shipments {
 		else if($params['schemeId'] == 'dts'){
 			for($i = 0;$i < $size;$i++){
 				$dbAdapter->insert('reference_result_dts',array(
-														'shipment_id'=>$lastId,
-														'sample_id'=>($i+1),
-														'sample_label'=>$params['sampleName'][$i],
-														'reference_result'=>$params['possibleResults'][$i]
-														)
+									'shipment_id'=>$lastId,
+									'sample_id'=>($i+1),
+									'sample_label'=>$params['sampleName'][$i],
+									'reference_result'=>$params['possibleResults'][$i]
+									)
 								  );
 			}
 
 		}
+	}
+	
+	public function getShipment($sid){
+	    $db = new Application_Model_DbTable_Shipments();		
+	    return $db->fetchRow($db->select()->where("shipment_id = ?",$sid));
+	}
+	
+	public function shipItNow($params){
+		$db = new Application_Model_DbTable_ShipmentParticipantMap();
+		return $db->shipItNow($params);
 	}
 
 }

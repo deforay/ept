@@ -14,7 +14,8 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('',"DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 'status');
+        $aColumns = array("DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code' ,'status');
+        $orderColumns = array('distribution_date', 'distribution_code', 's.shipment_code' ,'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -37,7 +38,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
 				 	" . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
@@ -95,7 +96,9 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('d' => $this->_name));
+        $sQuery = $this->getAdapter()->select()->from(array('d' => $this->_name))
+				     ->joinLeft(array('s'=>'shipment'),'s.distribution_id=d.distribution_id',array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
+				     ->group('d.distribution_id');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -138,9 +141,10 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = array();
-            $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/'.$aRow['distribution_id'].'"><span><i class="icon-search"></i></span></a>';
+            //$row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/'.$aRow['distribution_id'].'"><span><i class="icon-search"></i></span></a>';
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];
+            $row[] = $aRow['shipments'];
             $row[] = $aRow['status'];
             $row[] = 'Coming Soon';
 

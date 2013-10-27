@@ -51,9 +51,11 @@ class Application_Service_Participants {
 		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id NOT IN ?", $subSql);
 		return $db->fetchAll($sql);
 	}
-	public function getEnrolled($scheme){
+	public function getEnrolled($shipmentId){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$subSql = $db->select()->from(array('e'=>'enrollments'), 'participant_id')->where("scheme_id = ?", $scheme);
+		$subSql = $db->select()->from(array('e'=>'enrollments'), 'participant_id')
+				       ->join(array('s'=>'shipment'),'s.scheme_type=e.scheme_id',array())
+				       ->where("s.shipment_id = ?", $shipmentId);
 		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id IN ?", $subSql);
 		return $db->fetchAll($sql);
 	}

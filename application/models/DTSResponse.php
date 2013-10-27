@@ -159,7 +159,8 @@ public function getPossibleResult($testCode,$subgroup){
 		$res = $db->commit();
 		}
 		catch (exception $e) {
-			echo($e->getMessage());die;
+			error_log($e->getMessage());
+			error_log($e->getTraceAsString());
 			$db->rollBack();
 			return false;
 		}
