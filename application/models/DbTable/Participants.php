@@ -188,7 +188,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $data['Updated_by'] = $authNameSpace->primary_email;
         }
 
-        return $this->update($data, "participant_id = '" . $params['PartSysID'] . "'");
+        return $this->update($data, "participant_id = '" . $params['participantId'] . "'");
     }
 
     public function addParticipant($params)

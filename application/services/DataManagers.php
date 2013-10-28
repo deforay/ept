@@ -30,7 +30,7 @@ class Application_Service_DataManagers {
 		$userDb = new Application_Model_DbTable_DataManagers();
         if($userSystemId == null){
             $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
-            $userSystemId = $authNameSpace->UserSystemID;
+            $userSystemId = $authNameSpace->dm_id;
         }
 		return $userDb->getUserDetailsBySystemId($userSystemId);
     }

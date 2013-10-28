@@ -22,7 +22,7 @@ class AuthController extends Zend_Controller_Action
     		//echo "Post";
     		$params = $this->getRequest()->getPost();
     		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-    		$adapter = new Zend_Auth_Adapter_DbTable($db, "users", "UserID", "Password");
+    		$adapter = new Zend_Auth_Adapter_DbTable($db, "data_manager", "primary_email", "password");
     		$adapter->setIdentity($params['username']);
     		$adapter->setCredential($params['password']);
 			
@@ -42,12 +42,12 @@ class AuthController extends Zend_Controller_Action
     			
     			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
     			$authNameSpace->UserID = $params['username'];
-	    		$authNameSpace->UserSystemID = $rs->UserSystemID;
-	    		$authNameSpace->UserFName = $rs->UserFName;
-	    		$authNameSpace->UserLName = $rs->UserLName;
-	    		$authNameSpace->UserPhoneNumber = $rs->UserPhoneNumber;
-	    		$authNameSpace->UserEmail = $rs->UserEmail;
-	    		$authNameSpace->ForcePasswordReset = $rs->force_password_reset;
+	    		$authNameSpace->dm_id = $rs->dm_id;
+	    		$authNameSpace->first_name = $rs->first_name;
+	    		$authNameSpace->last_name = $rs->last_name;
+	    		$authNameSpace->phone = $rs->phone;
+	    		$authNameSpace->email = $rs->email;
+	    		$authNameSpace->force_password_reset = $rs->force_password_reset;
 	    		// PT Provider Dependent Configuration 
 	    		$authNameSpace->UserFld1 = $rs->UserFld1;
 	    		$authNameSpace->UserFld2 = $rs->UserFld2;
@@ -74,12 +74,12 @@ class AuthController extends Zend_Controller_Action
 
     public function resetPasswordAction()
     {
-		if($this->getRequest()->isPost()){
-			$email = $this->getRequest()->getPost('registeredEmail');
-			$userService = new Application_Service_DataManagers();
-			$userService->resetPassword($email);
-			$this->_redirect('/auth/login');
-		}		
+	if($this->getRequest()->isPost()){
+		$email = $this->getRequest()->getPost('registeredEmail');
+		$userService = new Application_Service_DataManagers();
+		$userService->resetPassword($email);
+		$this->_redirect('/auth/login');
+	}		
         
     }
 

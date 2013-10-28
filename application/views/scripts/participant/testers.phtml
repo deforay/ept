@@ -20,14 +20,14 @@
 				
 				?>
 				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">					
-					<td><a href="javascript:void(0);" style="text-decoration: underline;"><?php echo $tester['ParticipantID']; ?></a></td>
-					<td align="left"><?php echo $tester['ParticipantFName'] . ' ' . $tester['ParticipantLName'] ;?></td>
+					<td><a href="javascript:void(0);" style="text-decoration: underline;"><?php echo $tester['unique_identifier']; ?></a></td>
+					<td align="left"><?php echo $tester['first_name'] . ' ' . $tester['last_name'] ;?></td>
 					
-					<td><?php echo $tester['ParticipantPhone']; ?></td>
-					<td><?php echo $tester['ParticipanteMail']; ?></td>
+					<td><?php echo $tester['phone']; ?></td>
+					<td><?php echo $tester['email']; ?></td>
 					
 					<!--<td>< ?php echo $tester['TESTGROUP']; ?></td>-->
-					<td style="text-decoration : underline;"><a href="<?php  echo $this->url(array("controller"=>"participant","action"=>"testeredit","psid"=>$tester['ParticipantSystemID']),null,true,false); ?>">Edit</a></td>
+					<td style="text-decoration : underline;"><a href="<?php  echo $this->url(array("controller"=>"participant","action"=>"testeredit","psid"=>$tester['participant_id']),null,true,false); ?>">Edit</a></td>
 									
 				</tr>	
 				<?php }?>								

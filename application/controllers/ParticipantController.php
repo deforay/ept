@@ -87,12 +87,12 @@ class ParticipantController extends Zend_Controller_Action
 
     public function passwordAction()
     {
-		if($this->getRequest()->isPost()){
-			$user = new Application_Service_DataManagers();
-			$newPassword = $this->getRequest()->getPost('newpassword');
-			$oldPassword = $this->getRequest()->getPost('oldpassword');
-			$user->changePassword($oldPassword,$newPassword);
-		}
+	if($this->getRequest()->isPost()){
+		$user = new Application_Service_DataManagers();
+		$newPassword = $this->getRequest()->getPost('newpassword');
+		$oldPassword = $this->getRequest()->getPost('oldpassword');
+		$user->changePassword($oldPassword,$newPassword);
+	}
     }
 
     public function testereditAction()

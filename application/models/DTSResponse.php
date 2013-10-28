@@ -2,18 +2,18 @@
 
 class Application_Model_DTSResponse
 {
-public function getParticipantInfo($ParticipantID){
+public function getParticipantInfo($participant_id){
 	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 	$stmt = $db->prepare("call PARTICIPANT_ONE(?)");
-	$stmt->execute(array($ParticipantID));
+	$stmt->execute(array($participant_id));
 	$rs = $stmt->fetch();
 	return $rs;
 }
 
-public function getDTSResponse($ShipmentID,$ParticipantID){
+public function getDTSResponse($ShipmentID,$participant_id){
 	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 	$stmt = $db->prepare("call RESPONSE_DTS_ONE(?,?)");
-	$stmt->execute(array($ParticipantID,$ShipmentID));
+	$stmt->execute(array($participant_id,$ShipmentID));
 	$rowCount = $stmt->rowCount();
 	if($rowCount > 0){
 	$rs = $stmt->fetchAll();
@@ -21,10 +21,10 @@ public function getDTSResponse($ShipmentID,$ParticipantID){
 	}
 	else return false;	
 }
-public function getDTSShipment($ShipmentID,$ParticipantID){
+public function getDTSShipment($ShipmentID,$participant_id){
 	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 	$stmt = $db->prepare("call SHIPMENT_ONE(?,?)");
-	$stmt->execute(array($ParticipantID,$ShipmentID));
+	$stmt->execute(array($participant_id,$ShipmentID));
 	$rs = $stmt->fetch();
 	return $rs;
 }

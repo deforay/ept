@@ -173,7 +173,7 @@ class Application_Service_Shipments {
 						  "supervisor_approval"=>$params['supervisorApproval'],
 						  "participant_supervisor"=>$params['participantSupervisor'],
 						  "user_comment"=>$params['userComments'],
-						  "updated_by_user"=>$authNameSpace->UserSystemID,
+						  "updated_by_user"=>$authNameSpace->dm_id,
 						  "updated_on_user"=>new Zend_Db_Expr('now()')
 						  );
 			
@@ -213,7 +213,7 @@ class Application_Service_Shipments {
 						  "supervisor_approval"=>$params['supervisorApproval'],
 						  "participant_supervisor"=>$params['participantSupervisor'],
 						  "user_comment"=>$params['userComments'],
-						  "updated_by_user"=>$authNameSpace->UserSystemID,
+						  "updated_by_user"=>$authNameSpace->dm_id,
 						  "updated_on_user"=>new Zend_Db_Expr('now()')
 						  );
 			

@@ -7,29 +7,29 @@
         <tr align="left"  class="dark">
             <td>Login or primary e-mail address</td>
             <td>
-                <?php echo $this->rsUser['UserEmail']; ?>
-                <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['UserSystemID']; ?>" />
+                <?php echo $this->rsUser['primary_email']; ?>
+                <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
             </td>
         </tr>
         <tr align="left" class="light">
             <td>User First Name <span class="mandatory">*</span></td>
-            <td><input id="fname" type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['UserFName']; ?>" class="isRequired"  title="Please enter your first name here" placeholder="Please enter your first name here"  /></td>
+            <td><input id="fname" type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired"  title="Please enter your first name here" placeholder="Please enter your first name here"  /></td>
         </tr>
         <tr align="left" class="dark">
             <td>User Last Name <span class="mandatory">*</span></td>
-            <td><input id="lname" type="text" id="lname" name="lname" size="50" maxlength="45" value="<?php echo $this->rsUser['UserLName']; ?>" title="Please enter your last name here" placeholder="Please enter your last name here"  /></td>
+            <td><input id="lname" type="text" id="lname" name="lname" size="50" maxlength="45" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter your last name here" placeholder="Please enter your last name here"  /></td>
         </tr>
         <tr align="left" class="light">
             <td>Secondary e-mail Address <span class="mandatory">*</span></td>
-            <td><input id="semail" type="text" id="semail" name="semail" size="50" maxlength="45" value="<?php echo $this->rsUser['UserSecondaryemail']; ?>" class="isRequired" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></td>
+            <td><input id="semail" type="text" id="semail" name="semail" size="50" maxlength="45" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></td>
         </tr>
         <tr align="left" class="dark">
             <td>Cell Phone Number <span class="mandatory">*</span></td>
-            <td><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['UserCellNumber']; ?>" class="isRequired isNumeric"   title="Please enter your contact number here" placeholder="Please enter your contact number here"  /></td>
+            <td><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired isNumeric"   title="Please enter your contact number here" placeholder="Please enter your contact number here"  /></td>
         </tr>
         <tr align="left" class="light"> 
             <td>Phone Number</td>
-            <td><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['UserPhoneNumber']; ?>" class="isNumeric"/></td>
+            <td><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['phone']; ?>" class="isNumeric"/></td>
         </tr>
         <tr align="left" class="dark">
             <td>UserFld1</td>
