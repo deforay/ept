@@ -13,6 +13,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             foreach($params['participants'] as $participant){
                 $data = array('shipment_id'=>$params['shipmentId'],
                               'participant_id'=>$participant,
+                              'evaluation_status'=>'19901190',
                               'created_by_admin' => $authNameSpace->admin_id,
                               "created_on_admin"=>new Zend_Db_Expr('now()'));
                 $this->insert($data);
