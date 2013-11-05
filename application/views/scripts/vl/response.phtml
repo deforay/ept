@@ -2,6 +2,7 @@
 <form name="vlResponseForm" id="vlResponseForm" method="post"   action="<?php echo $this->url(array("controller"=>"vl","action"=>"response"),null,true) ?>">
 
 <input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response'];?>" />
+<input type="hidden" id ="smid" name="smid" value="<?php echo $this->shipment['map_id'];?>" />
 <input type="hidden" id ="hdshipId" name="hdshipId" value="<?php echo $this->shipId;?>" />
 
 
@@ -10,7 +11,7 @@
 <?php $count =0;  
 foreach($this->allSamples as $sample){ 
 $count++;  ?>
-<input type="hidden" id ="<?php echo $count . "_hdSampleId"; ?>" name="<?php echo $count . "_hdSampleId"; ?>" value="<?php echo $sample['vl_sample_id'];?>" />	 
+<input type="hidden" id ="<?php echo $count . "_hdSampleId"; ?>" name="<?php echo $count . "_hdSampleId"; ?>" value="<?php echo $sample['sample_id'];?>" />	 
 <?php } ?>
 
 <?php 
@@ -24,9 +25,9 @@ $count++;  ?>
 <div id=error></div>
 <table>
 <tr>
-	<td> <span class="txt"> Participant </span> <?php echo ( $this->participant['ParticipantFName'] . ' ' . $this->participant['last_name'] );?></td>
-	<td><span class="txt"> Affiliation </span> <?php echo ( $this->participant['ParticipantAffiliation'] );?> </td>
-	<td><span class="txt"> Phone No </span> <?php  echo ( $this->participant['ParticipantMobile']  . '  ' .   $this->participant['ParticipantPhone'] ); ?></td>
+	<td> <span class="txt"> Participant </span> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?></td>
+	<td><span class="txt"> Affiliation </span> <?php echo ( $this->participant['affiliation'] );?> </td>
+	<td><span class="txt"> Phone No </span> <?php  echo ( $this->participant['mobile']  . '  ' .   $this->participant['phone'] ); ?></td>
 </tr>
 </table>
 
@@ -48,7 +49,7 @@ $count++;  ?>
 	</tr>
 	<tr>
 		<td>Sample Rehydration Date</td>
-		<td><input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate"value="<?php  echo  $this->dateFormat($this->shipment["sample_rehydration_date"]); ?>" class="isRequired datepicker" readonly="readonly" /></td>
+		<td><input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate"value="<?php  echo  $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>" class="isRequired datepicker" readonly="readonly" /></td>
 		<td></td>
 		<td></td>
 	</tr>
@@ -61,7 +62,7 @@ $count++;  ?>
 			<?php
 			foreach($this->vlAssay as $vlAssay){
 				?>
-				<option value="<?php echo $vlAssay['id']; ?>"  <?php echo ($sample['vl_assay'] == $vlAssay['id']) ? "selected='selected'" : "";?>><?php echo $vlAssay['name']; ?></option>	
+				<option value="<?php echo $vlAssay['id']; ?>"  <?php echo ($this->shipment['attributes']['vl_assay'] == $vlAssay['id']) ? "selected='selected'" : "";?>><?php echo $vlAssay['name']; ?></option>	
 				<?php
 			}
 			?>
@@ -69,18 +70,18 @@ $count++;  ?>
 		</td>
 		<td>Assay Lot Number:</td> 
 		<td>
-			<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired"  value="<?php echo $sample['assay_lot_number'];?>"/>
+			<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired"  value="<?php echo $this->shipment['attributes']['assay_lot_number'];?>"/>
 		</td>
 	</tr>
 
 	<tr class ="dark">
 		<td>Assay Expiration Date:</td>
 		<td>
-			<input type="text" name="assayExpirationDate" id="assayExpirationDate" class="isRequired datepicker" readonly="readonly"  value="<?php echo $this->dateFormat($sample['assay_expiration_date']);?>"/>
+			<input type="text" name="assayExpirationDate" id="assayExpirationDate" class="isRequired datepicker" readonly="readonly"  value="<?php echo $this->dateFormat($this->shipment['attributes']['assay_expiration_date']);?>"/>
 		</td>
 		<td>Specimen Volume:</td> 
 		<td>
-			<input type="text" name="specimenVolume" id="specimenVolume" class="isRequired"  value="<?php echo $sample['specimen_volume'];?>"/>
+			<input type="text" name="specimenVolume" id="specimenVolume" class="isRequired"  value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
 		</td>
 	</tr>
 	
@@ -102,11 +103,11 @@ $count++;
 
 	<tr align="CENTER" class="light" >
 		<th>
-			<?php echo $sample['vl_sample_label']; ?>
-			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['vl_sample_id'];?>" />
+			<?php echo $sample['sample_label']; ?>
+			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
 		</th>
         <td>
-			<input type="text" name="vlResult[]" class="isRequired"  value="<?php echo $sample['reported_viral_load']; ?>" title="Please enter the Viral Load Values for <?php echo $sample['vl_sample_label']; ?>" />
+			<input type="text" name="vlResult[]" class="isRequired"  value="<?php echo $sample['reported_viral_load']; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
 		</td>
     </tr>
 

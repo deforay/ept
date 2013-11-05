@@ -218,7 +218,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
 	}
 	
     public function updatepassword($oldpassword,$newpassword){
-        $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
     	$email = $authNameSpace->primary_email;
         $noOfRows = $this->update(array('password' => $newpassword,'force_password_reset'=>0),"primary_email = '".$email."' and password = '".$oldpassword."'");
         if($noOfRows != null && count($noOfRows) ==1){

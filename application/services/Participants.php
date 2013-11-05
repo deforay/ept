@@ -4,7 +4,7 @@ class Application_Service_Participants {
 	
 	public function getUsersParticipants($userSystemId = null){
 		if($userSystemId == null){
-			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+			$authNameSpace = new Zend_Session_Namespace('datamanagers');
 			$userSystemId = $authNameSpace->dm_id;
 		}
 		

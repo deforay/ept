@@ -162,14 +162,16 @@ class Application_Service_Shipments {
 		
 		$db->beginTransaction();
 		try {
-			$eidShipmentDb = new Application_Model_DbTable_ShipmentEid();
-			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+			$shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+			$authNameSpace = new Zend_Session_Namespace('datamanagers');
+			$attributes = array("sample_rehydration_date"=>Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+						  "extraction_assay"=>$params['extractionAssay'],
+						  "detection_assay"=>$params['detectionAssay']);
+			$attributes = json_encode($attributes);
 			$data = array(
 						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
 						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
-						  "sample_rehydration_date"=>Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
-						  "extraction_assay"=>$params['extractionAssay'],
-						  "detection_assay"=>$params['detectionAssay'],
+						  "attributes" => $attributes,
 						  "supervisor_approval"=>$params['supervisorApproval'],
 						  "participant_supervisor"=>$params['participantSupervisor'],
 						  "user_comment"=>$params['userComments'],
@@ -177,7 +179,7 @@ class Application_Service_Shipments {
 						  "updated_on_user"=>new Zend_Db_Expr('now()')
 						  );
 			
-			$noOfRowsAffected = $eidShipmentDb->updateShipmentEid($data,$params['hdshipId'], $params['hdparticipantId']);
+			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid']);
 			
 			$eidResponseDb = new Application_Model_DbTable_ResponseEid();
 			$eidResponseDb->updateResults($params);
@@ -201,15 +203,17 @@ class Application_Service_Shipments {
 		$db->beginTransaction();
 		try {
 			$vlShipmentDb = new Application_Model_DbTable_ShipmentVl();
-			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
-			$data = array(
-						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
-						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
-						  "sample_rehydration_date"=>Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+			$authNameSpace = new Zend_Session_Namespace('datamanagers');
+			$attributes = array( "sample_rehydration_date"=>Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
 						  "vl_assay"=>$params['vlAssay'],
 						  "assay_lot_number"=>$params['assayLotNumber'],
 						  "assay_expiration_date"=>Pt_Commons_General::dateFormat($params['assayExpirationDate']),
-						  "specimen_volume"=>$params['specimenVolume'],
+						  "specimen_volume"=>$params['specimenVolume']);
+			$attributes = json_encode($attributes);
+			$data = array(
+						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
+						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
+						  "attributes" => $attributes,
 						  "supervisor_approval"=>$params['supervisorApproval'],
 						  "participant_supervisor"=>$params['participantSupervisor'],
 						  "user_comment"=>$params['userComments'],
@@ -217,7 +221,7 @@ class Application_Service_Shipments {
 						  "updated_on_user"=>new Zend_Db_Expr('now()')
 						  );
 			
-			$noOfRowsAffected = $vlShipmentDb->updateShipmentVl($data,$params['hdshipId'], $params['hdparticipantId']);
+			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid']);
 			
 			$eidResponseDb = new Application_Model_DbTable_ResponseVl();
 			$eidResponseDb->updateResults($params);
@@ -237,7 +241,7 @@ class Application_Service_Shipments {
 	public function addShipment($params){
 		//Zend_Debug::dump($params);die;
 		$scheme = $params['schemeId'];
-		$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+		$authNameSpace = new Zend_Session_Namespace('administrators');
 		$db = new Application_Model_DbTable_Shipments();
 		$distroService = new Application_Service_Distribution();
 		$distro = $distroService->getDistribution($params['distribution']);

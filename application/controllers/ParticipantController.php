@@ -20,7 +20,7 @@ class ParticipantController extends Zend_Controller_Action
     public function dashboardAction()
     {
     	
-        $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
     	$this->view->authNameSpace = $authNameSpace;
     	//echo $authNameSpace->UserID; 
     	// get overview Info and pass to view 

@@ -31,7 +31,7 @@ class Admin_LoginController extends Zend_Controller_Action
 
     			$rs = $adapter->getResultRowObject();
     			
-    			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+    			$authNameSpace = new Zend_Session_Namespace('administrators');
     			$authNameSpace->primary_email = $params['username'];
 	    		$authNameSpace->admin_id = $rs->admin_id;
 	    		$authNameSpace->first_name = $rs->first_name;

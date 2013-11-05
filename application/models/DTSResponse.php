@@ -88,7 +88,7 @@ public function getPossibleResult($testCode,$subgroup){
 		$evaStatus = $this->newEvalStatus($evaStatus1,$lastDate,'1');
 		
 			
-		$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		$userId = $authNameSpace->UserID;
 		
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();

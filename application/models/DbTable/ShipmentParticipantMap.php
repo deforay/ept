@@ -9,7 +9,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     public function shipItNow($params){
         try{
             $this->getAdapter()->beginTransaction();
-            $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+            $authNameSpace = new Zend_Session_Namespace('administrators');
             foreach($params['participants'] as $participant){
                 $data = array('shipment_id'=>$params['shipmentId'],
                               'participant_id'=>$participant,
@@ -27,6 +27,10 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             return false;
         }
     }
-
+    
+    public function updateShipment($params,$shipmentMapId){
+        $params['evaluation_status'] = '11111190';
+        return $this->update($params,"map_id = ". $shipmentMapId);
+    }
 }
 

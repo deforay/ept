@@ -162,7 +162,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function updateParticipant($params)
     {
-        $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
        $data = array(
             'unique_identifier' => $params['pid'],
@@ -182,18 +182,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         if(isset($authNameSpace->UserID) && $authNameSpace->UserID != ""){
             $data['Updated_by'] = $authNameSpace->UserID;
-        }
+        }else{
+			$authNameSpace = new Zend_Session_Namespace('administrators');
+			if(isset($authNameSpace->primary_email) && $authNameSpace->primary_email != ""){
+				$data['Updated_by'] = $authNameSpace->primary_email;
+			}			
+		}
 
-        if(isset($authNameSpace->primary_email) && $authNameSpace->primary_email != ""){
-            $data['Updated_by'] = $authNameSpace->primary_email;
-        }
+
 
         return $this->update($data, "participant_id = '" . $params['participantId'] . "'");
     }
 
     public function addParticipant($params)
     {
-        $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+        $authNameSpace = new Zend_Session_Namespace('administrators');
 
         $data = array(
             'unique_identifier' => $params['participantId'],

@@ -4,10 +4,10 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
 
     public function preDispatch(Zend_Controller_Request_Abstract $request) {
         $layout = Zend_Layout::getMvcInstance();
-        $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+        
         if ($request->getModuleName() == 'default'  && $request->getControllerName() != 'auth' && $request->getControllerName() != 'index' && $request->getControllerName() != 'captcha' && $request->getControllerName() != 'contact-us') {
-            
-            if(!Zend_Auth::getInstance()->hasIdentity()){
+             $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if(!isset($authNameSpace->dm_id)){
                 $request->setModuleName('default')->setControllerName('auth')->setActionName('login');
                 $request->setDispatched(false);
                 return;
@@ -23,8 +23,9 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
             }            
             
         }else if ($request->getModuleName() == 'admin'  && $request->getControllerName() != 'login') {
+            $authNameSpace = new Zend_Session_Namespace('administrators');
             $layout->setLayout('admin');
-            if(!Zend_Auth::getInstance()->hasIdentity()){
+            if(!isset($authNameSpace->admin_id)){
                 $request->setModuleName('admin')->setControllerName('login')->setActionName('index');
                 $request->setDispatched(false);
                 return;

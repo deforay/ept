@@ -20,7 +20,7 @@ class Application_Service_DataManagers {
 
 		$userDb = new Application_Model_DbTable_DataManagers();
         if($userId == null){
-            $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $userId = $authNameSpace->UserID;
         }
 		return $userDb->getUserDetails($userId);
@@ -29,7 +29,7 @@ class Application_Service_DataManagers {
 
 		$userDb = new Application_Model_DbTable_DataManagers();
         if($userSystemId == null){
-            $authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $userSystemId = $authNameSpace->dm_id;
         }
 		return $userDb->getUserDetailsBySystemId($userSystemId);

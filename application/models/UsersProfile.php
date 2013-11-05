@@ -34,7 +34,7 @@ class Application_Model_UsersProfile{
 		$pAff = $data['UserFld1'];
 		
 
-		$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		$user = $authNameSpace->UserID;
 		
 		

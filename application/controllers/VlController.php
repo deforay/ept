@@ -44,7 +44,9 @@ class VlController extends Zend_Controller_Action
             $this->view->participant = $participantService->getParticipantDetails($pID);
             //Zend_Debug::dump($schemeService->getVlSamples($sID,$pID));
             $this->view->allSamples =$schemeService->getVlSamples($sID,$pID);
-            $this->view->shipment = $schemeService->getShipmentVl( $sID,$pID);
+            $shipment = $schemeService->getShipmentData($sID,$pID);
+			$shipment['attributes'] = json_decode($shipment['attributes'],true);
+            $this->view->shipment = $shipment;
             $this->view->shipId = $sID;
             $this->view->participantId = $pID;
             $this->view->eID = $eID;

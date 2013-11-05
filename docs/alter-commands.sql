@@ -985,6 +985,7 @@ count(
 	)  as 'NORESPONSE' 
 from shipment  as a , shipment_participant_map as b
 where (year(shipment_date)  + 5 > year(CURDATE())) AND scheme_type='dts'
+and a.shipment_id = b.shipment_id
 group by SHIP_YEAR 
 
 union
@@ -1010,6 +1011,7 @@ count(
 	)  as 'NORESPONSE' 
 from shipment    as a  , shipment_participant_map as b
 where (year(shipment_date)  + 5 > year(CURDATE())) AND scheme_type='vl'
+and a.shipment_id = b.shipment_id
 group by SHIP_YEAR 
 
 union
@@ -1035,6 +1037,7 @@ count(
 	)  as 'NORESPONSE' 
 from shipment as a , shipment_participant_map as b
 where (year(shipment_date)  + 5 > year(CURDATE())) AND scheme_type='eid'
+and a.shipment_id = b.shipment_id
 group by SHIP_YEAR;
 
 END $$
@@ -1066,8 +1069,10 @@ spm.evaluation_status as EVALUATIONSTATUS,
 	WHEN '1' THEN   'Report'
 	END
 	as 'REPORTSTATUS' 
-from shipment  as a , shipment_participant_map spm
-left join participant as b on spm.participant_id = b.participant_id where year(a.shipment_date)  + 5 > year(CURDATE()) 
+from shipment  as a , shipment_participant_map spm, participant as b
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response >= CURDATE()
 and a.scheme_type = 'dts'
 
@@ -1094,8 +1099,10 @@ spm.evaluation_status as EVALUATIONSTATUS,
 	WHEN '1' THEN   'Report'
 	END
 	as 'REPORTSTATUS' 
-from shipment  as a  , shipment_participant_map spm
-left join participant as b on spm.participant_id = b.participant_id where year(a.shipment_date)  + 5 > year(CURDATE()) 
+from shipment  as a , shipment_participant_map spm, participant as b
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response >= CURDATE()
 and a.scheme_type = 'vl'
 
@@ -1122,8 +1129,10 @@ spm.evaluation_status as EVALUATIONSTATUS,
 	WHEN '1' THEN   'Report'
 	END
 	as 'REPORTSTATUS' 
-from shipment  as a  , shipment_participant_map spm
-left join participant as b on spm.participant_id = b.participant_id where year(a.shipment_date)  + 5 > year(CURDATE()) 
+from shipment  as a , shipment_participant_map spm, participant as b
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response >= CURDATE() 
 and a.scheme_type = 'eid'
 order by SHIP_YEAR, participant_id ;
@@ -1159,8 +1168,10 @@ spm.evaluation_status as EVALUATIONSTATUS,
 	WHEN '0' THEN   'No Response'
 	END
 	as 'STATUS' 
-from shipment  as a , shipment_participant_map as spm
-left join participant as b on spm.participant_id = b.participant_id where year(a.shipment_date)  + 5 > year(CURDATE()) 
+from shipment  as a , shipment_participant_map spm, participant as b
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response < CURDATE() and  substr(spm.evaluation_status,3,1) <> '1'
 and a.scheme_type = 'dts'
 union
@@ -1187,8 +1198,10 @@ spm.evaluation_status as EVALUATIONSTATUS,
 	WHEN '0' THEN   'No Response'
 	END
 	as 'STATUS' 
-from shipment  as a  , shipment_participant_map as spm
-left join participant as b on spm.participant_id = b.participant_id where year(a.shipment_date)  + 5 > year(CURDATE()) 
+from shipment  as a , shipment_participant_map spm, participant as b
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response < CURDATE() and  substr(spm.evaluation_status,3,1) <> '1'
 and a.scheme_type = 'vl'
 union
@@ -1215,8 +1228,10 @@ spm.evaluation_status as EVALUATIONSTATUS,
 	WHEN '0' THEN   'No Response'
 	END
 	as 'STATUS' 
-from shipment  as a  , shipment_participant_map as spm
-left join participant as b on spm.participant_id = b.participant_id where year(a.shipment_date)  + 5 > year(CURDATE()) 
+from shipment  as a , shipment_participant_map spm, participant as b
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response < CURDATE() and  substr(spm.evaluation_status,3,1) <> '1'
 and a.scheme_type = 'eid'
 order by SHIP_YEAR, PARTICIPANT_ID ;
@@ -1258,8 +1273,10 @@ spm.evaluation_status as EVALUATIONSTATUS,
 	WHEN '1' THEN   'Report'
 	END
 	as 'REPORT' 
-from shipment  as a , shipment_participant_map as spm
-left join participant as b on spm.participant_id = b.participant_id where year(a.shipment_date)  + 5 > year(CURDATE())
+from shipment  as a , shipment_participant_map spm, participant as b
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE())
 and scheme_type = 'dts'
 
 union
@@ -1285,8 +1302,10 @@ spm.evaluation_status as EVALUATIONSTATUS,
 	WHEN '1' THEN   'Report'
 	END
 	as 'REPORT' 
-from shipment  as a , shipment_participant_map as spm
-left join participant as b on spm.participant_id = b.participant_id where year(a.shipment_date)  + 5 > year(CURDATE())
+from shipment  as a , shipment_participant_map spm, participant as b
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE())
 and scheme_type = 'vl'
 union
 
@@ -1311,11 +1330,18 @@ spm.evaluation_status as EVALUATIONSTATUS,
 	WHEN '1' THEN   'Report'
 	END
 	as 'REPORT' 
-from shipment  as a , shipment_participant_map as spm
-left join participant as b on spm.participant_id = b.participant_id where year(a.shipment_date)  + 5 > year(CURDATE())
+from shipment  as a , shipment_participant_map spm, participant as b
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE())
 and scheme_type = 'eid'
 order by SHIP_YEAR, participant_id ;
 -- LIMIT valFrom, valTo;
 END $$
 
 Delimiter ;
+
+
+ -- by Amit on Nov 4 2013
+ 
+ ALTER TABLE  `response_result_eid` CHANGE  `eid_sample_id`  `sample_id` VARCHAR( 45 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;

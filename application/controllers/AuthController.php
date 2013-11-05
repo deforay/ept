@@ -16,6 +16,7 @@ class AuthController extends Zend_Controller_Action
 
     public function loginAction()
     {
+
     // action body
     	if($this->getRequest()->isPost()){
     		//die;
@@ -40,7 +41,7 @@ class AuthController extends Zend_Controller_Action
 
     			$rs = $adapter->getResultRowObject();
     			
-    			$authNameSpace = new Zend_Session_Namespace('Zend_Auth');
+    			$authNameSpace = new Zend_Session_Namespace('datamanagers');
     			$authNameSpace->UserID = $params['username'];
 	    		$authNameSpace->dm_id = $rs->dm_id;
 	    		$authNameSpace->first_name = $rs->first_name;

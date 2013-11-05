@@ -6,6 +6,7 @@
 
 
 <input type="hidden" id ="hdparticipantId" name="hdparticipantId" value="<?php echo $this->participantId;?>" />
+<input type="hidden" id ="smid" name="smid" value="<?php echo $this->shipment['map_id'];?>" />
 <input type="hidden" id ="hdeID" name="hdeID" value="<?php echo $this->eID;?>" />
 
 
@@ -15,9 +16,9 @@
 <div id=error></div>
 <table>
 <tr>
-	<td> <span class="txt"> Participant </span> <?php echo ( $this->participant['ParticipantFName'] . ' ' . $this->participant['last_name'] );?></td>
-	<td><span class="txt"> Affiliation </span> <?php echo ( $this->participant['ParticipantAffiliation'] );?> </td>
-	<td><span class="txt"> Phone No </span> <?php  echo ( $this->participant['ParticipantMobile']  . '  ' .   $this->participant['ParticipantPhone'] ); ?></td>
+	<td> <span class="txt"> Participant </span> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?></td>
+	<td><span class="txt"> Affiliation </span> <?php echo ( $this->participant['affiliation'] );?> </td>
+	<td><span class="txt"> Phone No </span> <?php  echo ( $this->participant['mobile']  . '  ' .   $this->participant['phone'] ); ?></td>
 </tr>
 </table>
 
@@ -43,7 +44,7 @@
 			<?php
 			foreach($this->extractionAssay as $eAssay){
 				?>
-				<option value="<?php echo $eAssay['id']; ?>" <?php echo ($this->shipment['extraction_assay'] == $eAssay['id']) ? "selected='selected'" : "" ?>><?php echo $eAssay['name']; ?></option>	
+				<option value="<?php echo $eAssay['id']; ?>" <?php echo (isset($this->shipment['attributes']['extraction_assay']) && $this->shipment['attributes']['extraction_assay'] == $eAssay['id']) ? "selected='selected'" : "" ?>><?php echo $eAssay['name']; ?></option>	
 				<?php
 			}
 			?>
@@ -56,7 +57,7 @@
 				<?php
 				foreach($this->detectionAssay as $dAssay){
 					?>
-					<option value="<?php echo $dAssay['id']; ?>" <?php echo ($this->shipment['detection_assay'] == $dAssay['id']) ? "selected='selected'" : "" ?>><?php echo $dAssay['name']; ?></option>	
+					<option value="<?php echo $dAssay['id']; ?>" <?php echo (isset($this->shipment['attributes']['detection_assay']) &&$this->shipment['attributes']['detection_assay'] == $dAssay['id']) ? "selected='selected'" : "" ?>><?php echo $dAssay['name']; ?></option>	
 					<?php
 				}
 				?>				
@@ -65,7 +66,7 @@
 	</tr>
 	<tr>
 		<td>Sample Rehydration Date</td>
-		<td><input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" class="datepicker" readonly="readonly" value="<?php  echo $this->dateFormat($this->shipment["sample_rehydration_date"]); ?>"  /></td>
+		<td><input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" class="datepicker" readonly="readonly" value="<?php  echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  /></td>
 		<td></td>
 		<td></td>
 	</tr>
@@ -89,11 +90,11 @@ $count++;
 
 	<tr align="CENTER" class="light" >
 		<th>
-			<?php echo $sample['eid_sample_label']; ?>
-			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['eid_sample_id'];?>" />
+			<?php echo $sample['sample_label']; ?>
+			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
 		</th>
 		<td class="dark" >
-			<select name="result[]" id="result<?php echo $count; ?>"  style="width: 200px"   class="isRequired" title="Please select the result for <?php echo $sample['eid_sample_label']; ?>">
+			<select name="result[]" id="result<?php echo $count; ?>"  style="width: 200px"   class="isRequired" title="Please select the result for <?php echo $sample['sample_label']; ?>">
 				<option value="">--Select--</option>
 				<option value="Positive" <?php echo ($sample['reported_result'] == "Positive") ? "selected='selected'" : ""; ?>>Positive (HIV Detected)</option>
 				<option value="Negative" <?php echo ($sample['reported_result'] == "Negative") ? "selected='selected'" : ""; ?>>Negative (HIV Not Detected)</option>
@@ -101,10 +102,10 @@ $count++;
 			</select>
 		</td>
 		<td>
-			<input type="text" name="hivCtOd[]" class="isRequired" value="<?php echo $sample['hiv_ct_od']; ?>" title="Please enter the HIV CT/OD for <?php echo $sample['eid_sample_label']; ?>" />
+			<input type="text" name="hivCtOd[]" class="isRequired" value="<?php echo $sample['hiv_ct_od']; ?>" title="Please enter the HIV CT/OD for <?php echo $sample['sample_label']; ?>" />
 		</td>
         <td>
-			<input type="text" name="icQs[]" class="isRequired"  value="<?php echo $sample['ic_qs']; ?>" title="Please enter the IC/QS Values for <?php echo $sample['eid_sample_label']; ?>" />
+			<input type="text" name="icQs[]" class="isRequired"  value="<?php echo $sample['ic_qs']; ?>" title="Please enter the IC/QS Values for <?php echo $sample['sample_label']; ?>" />
 		</td>
     </tr>
 
