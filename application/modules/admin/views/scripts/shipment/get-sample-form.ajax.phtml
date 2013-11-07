@@ -210,7 +210,9 @@ else if($this->scheme == 'eid'){
 else if($this->scheme == 'dts'){
 	$possibleResults ='<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 	foreach($this->dtsPossibleResults as $pr){
-		$possibleResults .= '<option value="'.$pr['id'].'">'.$pr['response'].'</option>';
+		if($pr['scheme_sub_group'] == 'DTS_FINAL'){
+			$possibleResults .= '<option value="'.$pr['id'].'">'.$pr['response'].'</option>';
+		}
 	}
 	
 	$possibleResults .= "</select>";
@@ -277,4 +279,3 @@ else if($this->scheme == 'dts'){
  DTS SAMPLE ADDING PART ENDS HERE
  **
 ********************************************************************************************/
-?>

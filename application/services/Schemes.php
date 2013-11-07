@@ -27,14 +27,39 @@ class Application_Service_Schemes {
 		
 	}
 	
+	public function getDtsSamples($sId,$pId){
+		
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('ref'=>'reference_result_dts'))
+								->join(array('s'=>'shipment'),'s.shipment_id=ref.shipment_id')
+								->join(array('sp'=>'shipment_participant_map'),'s.shipment_id=sp.shipment_id')
+								->joinLeft(array('res'=>'response_result_dts'),'res.shipment_map_id = sp.map_id',array('test_kit_name_1',
+																													   'lot_no_1',
+																													   'exp_date_1',
+																													   'test_result_1',
+																													   'test_kit_name_2',
+																													   'lot_no_2',
+																													   'exp_date_2',
+																													   'test_result_2',
+																													   'test_kit_name_3',
+																													   'lot_no_3',
+																													   'exp_date_3',
+																													   'test_result_3',
+																													   'reported_result'
+																													   ))
+								->where('sp.shipment_id = ? ',$sId)
+								->where('sp.participant_id = ? ',$pId);
+		return $db->fetchAll($sql);
+		
+	}	
 	public function getEidSamples($sId,$pId){
 		
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('ref'=>'reference_result_eid'))
 								->join(array('s'=>'shipment'),'s.shipment_id=ref.shipment_id')
 								->join(array('sp'=>'shipment_participant_map'),'s.shipment_id=sp.shipment_id')
-								->joinLeft(array('res'=>'response_result_eid'),'res.sample_id = ref.sample_id',array('reported_result','hiv_ct_od','ic_qs'))
-								->where('s.shipment_id = ? ',$sId)
+								->joinLeft(array('res'=>'response_result_eid'),'res.shipment_map_id = sp.map_id',array('reported_result','hiv_ct_od','ic_qs'))
+								->where('sp.shipment_id = ? ',$sId)
 								->where('sp.participant_id = ? ',$pId);
 		return $db->fetchAll($sql);
 		
@@ -43,10 +68,11 @@ class Application_Service_Schemes {
 		
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('ref'=>'reference_result_vl'))
-								->join(array('s'=>'shipment'),'s.vl_shipment_id=ref.vl_shipment_id')
-								->joinLeft(array('res'=>'response_result_vl'),'res.sample_id = ref.sample_id', array('reported_viral_load'))
-								->where('s.shipment_id = ? ',$sId)
-								->where('s.participant_id = ? ',$pId);
+								->join(array('s'=>'shipment'),'s.shipment_id=ref.shipment_id')
+								->join(array('sp'=>'shipment_participant_map'),'s.shipment_id=sp.shipment_id')
+								->joinLeft(array('res'=>'response_result_vl'),'res.shipment_map_id = sp.map_id', array('reported_viral_load'))
+								->where('sp.shipment_id = ? ',$sId)
+								->where('sp.participant_id = ? ',$pId);
 		return $db->fetchAll($sql);
 		
 	}

@@ -72,6 +72,16 @@
 	</tr>
 </table>
 
+<?php
+	$possibleResults = array();
+	foreach($this->eidPossibleResults as $pr){
+		if($pr['scheme_sub_group'] == 'EID_FINAL'){
+			$possibleResults[$pr['id']]= $pr['response'];
+		}
+	}
+ 
+?>
+
 <table style="width: max-content;" border="1">
 <thead>
 	<tr align="CENTER" class="dark" >
@@ -94,11 +104,9 @@ $count++;
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
 		</th>
 		<td class="dark" >
+			
 			<select name="result[]" id="result<?php echo $count; ?>"  style="width: 200px"   class="isRequired" title="Please select the result for <?php echo $sample['sample_label']; ?>">
-				<option value="">--Select--</option>
-				<option value="Positive" <?php echo ($sample['reported_result'] == "Positive") ? "selected='selected'" : ""; ?>>Positive (HIV Detected)</option>
-				<option value="Negative" <?php echo ($sample['reported_result'] == "Negative") ? "selected='selected'" : ""; ?>>Negative (HIV Not Detected)</option>
-				<option value="Equivocal" <?php echo ($sample['reported_result'] == "Equivocal") ? "selected='selected'" : ""; ?>>Equivocal</option>
+				<?php $this->dropdownSelection($possibleResults,$sample['reported_result'],true); ?>
 			</select>
 		</td>
 		<td>
@@ -125,8 +133,8 @@ $count++;
 			<option value="NO" <?php if($this->shipment['supervisor_approval'] == 'NO') echo " selected "; ?>>NO</option>
 		</select>
 	</td>
-	<th><label id ="labSupervisor">Supervisor Name</label></th> 
-	<td><input name="participantSupervisor" id="participantSupervisor" type="text"size="10" maxlength="10" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
+	<th><label id ="labSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
+	<td><input name="participantSupervisor" id="participantSupervisor" type="text"size="10" maxlength="10" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?>  value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
 	
 </tr>
 <tr>
@@ -166,19 +174,20 @@ textarea:focus { outline: 1px solid blue; }
 		window.history.back();
 	}
 
-	function validateNow(){
+	function validateNow(){	
 		
-		if(moment($("#receiptDate").val(), "DD-MMM-YYYY").isAfter($("#testDate").val(), "DD-MMM-YYYY")){
-			alert('Testing Date has to come after the Shipment Receipt Date');
-		}else{
 			flag = deforayValidator.init({
 				formId: 'eidResponseForm'
 			});
 			if(flag){
+				if(moment($("#receiptDate").val(), "DD-MMM-YYYY").isAfter($("#testDate").val(), "DD-MMM-YYYY")){
+					alert('Testing Date has to come after the Shipment Receipt Date');
+					return false;
+				}				
 				$.blockUI();
 				document.getElementById('eidResponseForm').submit();
 			}
-		}
+		
 	}
 
 

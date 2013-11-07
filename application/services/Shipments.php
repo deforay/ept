@@ -196,13 +196,51 @@ class Application_Service_Shipments {
 		}
 		
 	}
+	public function updateDtsResults($params){
+		
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		
+		$db->beginTransaction();
+		try {
+			$shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+			$authNameSpace = new Zend_Session_Namespace('datamanagers');
+			$attributes = array("sample_rehydration_date"=>Pt_Commons_General::dateFormat($params['sampleRehydrationDate']));
+			$attributes = json_encode($attributes);
+			$data = array(
+						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
+						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
+						  "attributes" => $attributes,
+						  "supervisor_approval"=>$params['supervisorApproval'],
+						  "participant_supervisor"=>$params['participantSupervisor'],
+						  "user_comment"=>$params['userComments'],
+						  "updated_by_user"=>$authNameSpace->dm_id,
+						  "updated_on_user"=>new Zend_Db_Expr('now()')
+						  );
+			
+			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid']);
+			
+			$eidResponseDb = new Application_Model_DbTable_ResponseDts();
+			$eidResponseDb->updateResults($params);
+			$db->commit();
+		 
+		} catch (Exception $e) {
+			// If any of the queries failed and threw an exception,
+			// we want to roll back the whole transaction, reversing
+			// changes made in the transaction, even those that succeeded.
+			// Thus all changes are committed together, or none are.
+			$db->rollBack();
+			error_log($e->getMessage());
+			error_log($e->getTraceAsString());
+		}
+		
+	}
 	public function updateVlResults($params){
 		
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		
 		$db->beginTransaction();
 		try {
-			$vlShipmentDb = new Application_Model_DbTable_ShipmentVl();
+			$shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
 			$authNameSpace = new Zend_Session_Namespace('datamanagers');
 			$attributes = array( "sample_rehydration_date"=>Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
 						  "vl_assay"=>$params['vlAssay'],

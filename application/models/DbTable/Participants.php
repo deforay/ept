@@ -24,7 +24,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name', 'last_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('first_name', 'last_name','lab_name','country', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -147,6 +147,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row = array();
             $row[] = $aRow['first_name'];
             $row[] = $aRow['last_name'];
+            $row[] = $aRow['lab_name'];
+            $row[] = $aRow['country'];
             $row[] = $aRow['mobile'];
             $row[] = $aRow['phone'];
             $row[] = $aRow['affiliation'];
@@ -166,6 +168,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
        $data = array(
             'unique_identifier' => $params['pid'],
+            'lab_name' => $params['labName'],
+            'institute_name' => $params['instituteName'],
+            'department_name' => $params['departmentName'],
+            'address' => $params['address'],
+            'city' => $params['city'],
+            'state' => $params['state'],
+            'country' => $params['country'],
+            'zip' => $params['zip'],
+            'long' => $params['long'],
+			'lat' => $params['lat'],			
             'first_name' => $params['pfname'],
             'last_name' => $params['plname'],
             'mobile' => $params['pphone2'],
@@ -173,19 +185,19 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'data_manager' => $params['dataManager'],
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
-            'Updated_on' => new Zend_Db_Expr('now()')
+            'updated_on' => new Zend_Db_Expr('now()')
         );
 
         if(isset($params['status']) && $params['status'] != "" && $params['status'] != null){
             $data['status'] = $params['status'];
         }
 
-        if(isset($authNameSpace->UserID) && $authNameSpace->UserID != ""){
-            $data['Updated_by'] = $authNameSpace->UserID;
+        if(isset($authNameSpace->dm_id) && $authNameSpace->dm_id != ""){
+            $data['updated_by'] = $authNameSpace->dm_id;
         }else{
 			$authNameSpace = new Zend_Session_Namespace('administrators');
 			if(isset($authNameSpace->primary_email) && $authNameSpace->primary_email != ""){
-				$data['Updated_by'] = $authNameSpace->primary_email;
+				$data['updated_by'] = $authNameSpace->primary_email;
 			}			
 		}
 
@@ -200,6 +212,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $data = array(
             'unique_identifier' => $params['participantId'],
+            'lab_name' => $params['labName'],
+            'institute_name' => $params['instituteName'],
+            'department_name' => $params['departmentName'],
+            'address' => $params['address'],
+            'city' => $params['city'],
+            'state' => $params['state'],
+            'zip' => $params['zip'],
+			'country' => $params['country'],
+            'long' => $params['long'],
+			'lat' => $params['lat'],
             'first_name' => $params['pfname'],
             'last_name' => $params['plname'],
             'mobile' => $params['pphone2'],
@@ -208,8 +230,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'affiliation' => $params['partAff'],
             'data_manager' => $params['dataManager'],
             'status' => $params['status'],
-            'Created_on' => new Zend_Db_Expr('now()'),
-            'Created_by' => $authNameSpace->primary_email,
+            'created_on' => new Zend_Db_Expr('now()'),
+            'created_by' => $authNameSpace->primary_email,
         );
         return $this->insert($data);
     }

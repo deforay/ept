@@ -23,8 +23,8 @@
                               <span class="txt">User Information <a href="<?php echo $this->url(array('controller'=>'participant','action'=>'user-info'),'default',true); ?>" class="link" style="font-size:10px;text-transform: lowercase;">modify</a> </span>
                               
 							  <div style="margin-left: 60px;">
-                        	  	<h3 style="width:700px;"><span style="color:#df7a18;"> Your Name : </span> <?php echo( ($this->authNameSpace->UserFName ) . "  " . ($this->authNameSpace->UserLName ) );?> <br/>
-                        		 <span style="color:#df7a18"> Your Email : </span> <?php echo( $this->authNameSpace->UserEmail);?>
+                        	  	<h3 style="width:700px;"><span style="color:#df7a18;"> Your Name : </span> <?php echo( ($this->authNameSpace->first_name ) . "  " . ($this->authNameSpace->last_name ) );?> <br/>
+                        		 <span style="color:#df7a18"> Your Email : </span> <?php echo( $this->authNameSpace->email);?>
                         </div>
                               <br class="clear" />          
                           </div>

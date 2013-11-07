@@ -1,17 +1,20 @@
 <header>
     <div class="main">
         <h1><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>">e-PT</a></h1>
-        <?php if(Zend_Auth::getInstance()->hasIdentity()){ ?>
+                         <?php
+					   $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if(isset($authNameSpace->dm_id)){
+						?>
       	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"logout"),null,true) ?>" class="button1">logout</a>
   		<?php }?>
         <div class="inside">
-        <?php if(!Zend_Auth::getInstance()->hasIdentity()){ ?>
+                      <?php if(!isset($authNameSpace->dm_id)){ ?>
         	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>" class="da-button">Client Login</a>
         <?php }?>
             <nav>
                 <ul class="sf-menu">
                     <li class="m"><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>" class="current">&nbsp;</a></li>
-                      <?php if(Zend_Auth::getInstance()->hasIdentity()){ ?>
+                      <?php if(isset($authNameSpace->dm_id)){ ?>
                     <li><a href="javascript:void(0);">My Account</a>
                     	<ul>
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"user-info"),null,true) ?>">My Information</a></li>

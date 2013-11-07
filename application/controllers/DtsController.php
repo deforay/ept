@@ -16,14 +16,18 @@ class DtsController extends Zend_Controller_Action
     public function responseAction()
     {	
     	$dtsResponseDb = new Application_Model_DTSResponse();
+        
+        $schemeService = new Application_Service_Schemes();
+        $shipmentService = new Application_Service_Shipments();		
     	if(!$this->_request->isPost())
     	{
     	$sID= $this->getRequest()->getParam('sid');
     	$pID= $this->getRequest()->getParam('pid');
     	$eID =$this->getRequest()->getParam('eid');
     
-    	$this->view->participant = $dtsResponseDb->getParticipantInfo($pID);
-    	$response =$dtsResponseDb->getDTSResponse($sID,$pID);
+		$participantService = new Application_Service_Participants();
+		$this->view->participant = $participantService->getParticipantDetails($pID);
+    	$response =$schemeService->getDtsSamples($sID,$pID);
     	$this->view->allSamples = $response;
     	
     	//echo $dtsResponse->getDTSResponse(3, 4);
@@ -31,23 +35,27 @@ class DtsController extends Zend_Controller_Action
     	//echo "<br>pID = " . $pID;
     	
     	
-    	$this->view->shipment = $dtsResponseDb->getDTSShipment( $sID,$pID);
+		$shipment = $schemeService->getShipmentData($sID,$pID);
+		$shipment['attributes'] = json_decode($shipment['attributes'],true);
+		$this->view->shipment = $shipment;
+		
     	//Zend_Debug::dump($this->view->shipment);
-    	$this->view->allTestKits = $dtsResponseDb->getAllTestKit();
-    	$this->view->result = $dtsResponseDb->getPossibleResult('DTS', 'DTS_TEST');
-    	//Zend_debug::dump($this->view->shipment );
-    	$this->view->fresult = $dtsResponseDb->getPossibleResult('DTS', 'DTS_FINAL');
+    	$this->view->allTestKits = $dtsResponseDb->getAllDtsTestKit();
+    	$this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts');
     	$this->view->shipId = $sID;
     	$this->view->participantId = $pID;
     	$this->view->eID = $eID;
-
-    	$isEditable = $dtsResponseDb->IsgetDTSResponseEditable($eID);
+    	//
+    	//$isEditable = $dtsResponseDb->IsgetDTSResponseEditable($eID);
     	}
     	else{
-    		$data = $this->_request->getParams();
-			
-    		$dtsResponseDb->saveResponse($data);
-    		$this->_redirect('/participant/dashboard');
+    		$data = $this->getRequest()->getPost();
+           
+            $shipmentService->updateDtsResults($data);
+    		
+    		// Zend_Debug::dump($data);die;
+    		
+    		$this->_redirect("/participant/dashboard");
     		
     		//die;
     	}

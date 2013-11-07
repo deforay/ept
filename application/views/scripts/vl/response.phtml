@@ -126,8 +126,8 @@ $count++;
 			<option value="NO" <?php if($this->shipment['supervisor_approval'] == 'NO') echo " selected "; ?>>NO</option>
 		</select>
 	</td>
-	<th><label id ="labSupervisor">Supervisor Name</label></th> 
-	<td><input name="participantSupervisor" id="participantSupervisor" type="text"size="10" maxlength="10" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
+	<th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
+	<td><input name="participantSupervisor" id="participantSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?>  type="text"size="10" maxlength="10" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
 	
 </tr>
 <tr>
@@ -175,22 +175,21 @@ textarea:focus { outline: 1px solid blue; }
   	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 	});
 	
+	
 	function validateNow(){
-		
-		if(moment($("#receiptDate").val(), "DD-MMM-YYYY").isAfter($("#testDate").val(), "DD-MMM-YYYY")){
-			alert('Testing Date has to come after the Shipment Receipt Date');
-		}else{
-			flag = deforayValidator.init({
-				formId: 'vlResponseForm'
-			});
-			if(flag){
-				$.blockUI();
-				document.getElementById('vlResponseForm').submit();
-			}
+
+		flag = deforayValidator.init({
+			formId: 'vlResponseForm'
+		});
+		if(flag){
+			if(moment($("#receipt_date").val(), "DD-MMM-YYYY").isAfter($("#test_date").val(), "DD-MMM-YYYY")){
+				alert('Testing Date has to come after the Shipment Receipt Date');
+				return false;
+			}				
+			$.blockUI();
+			document.getElementById('vlResponseForm').submit();
 		}
 	}	
-
-	
 	$('#supervisorApproval').change(function() {		
 		if ($('#supervisorApproval').val() =='YES') 
 		{

@@ -2,42 +2,17 @@
 
 class Application_Model_DTSResponse
 {
-public function getParticipantInfo($participant_id){
-	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$stmt = $db->prepare("call PARTICIPANT_ONE(?)");
-	$stmt->execute(array($participant_id));
-	$rs = $stmt->fetch();
-	return $rs;
-}
 
-public function getDTSResponse($ShipmentID,$participant_id){
-	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$stmt = $db->prepare("call RESPONSE_DTS_ONE(?,?)");
-	$stmt->execute(array($participant_id,$ShipmentID));
-	$rowCount = $stmt->rowCount();
-	if($rowCount > 0){
-	$rs = $stmt->fetchAll();
-	return $rs;
-	}
-	else return false;	
-}
-public function getDTSShipment($ShipmentID,$participant_id){
-	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$stmt = $db->prepare("call SHIPMENT_ONE(?,?)");
-	$stmt->execute(array($participant_id,$ShipmentID));
-	$rs = $stmt->fetch();
-	return $rs;
-}
 public function IsgetDTSResponseEditable($evaluationStatus){
 	return true;
 }
 
-public function getAllTestKit(){
+public function getAllDtsTestKit(){
 
 	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$stmt = $db->prepare("call TESTKITNAME_ALL_DTS()");
-	$stmt->execute();
-	$stmt = $stmt->fetchAll();
+	$sql = $db->select()->from(array('r_testkitname_dts'),array('TESTKITNAMEID'=>'TESTKITNAME_ID', 'TESTKITNAME'=>'TESTKIT_NAME'))
+					->where('COUNTRYADAPTED = 1');
+	$stmt = $db->fetchAll($sql);
 	
 	foreach($stmt as $kitName){
 		$retval[$kitName['TESTKITNAMEID']] = $kitName['TESTKITNAME'];	
@@ -45,17 +20,6 @@ public function getAllTestKit(){
 	return $retval;
 }
 
-public function getPossibleResult($testCode,$subgroup){
-	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$stmt = $db->prepare("call POSSIBLE_TESTRESULT(?,?)");
-			$stmt->execute(array($testCode,$subgroup));
-			$stmt = $stmt->fetchAll();
-
-			foreach($stmt as $var){
-			$retval[$var['RESULT']] = $var['RES_VALUE'];
-			}
-			return $retval;
-	}
 	
 	public function saveResponse($data){
 		date_default_timezone_set('America/New_York');

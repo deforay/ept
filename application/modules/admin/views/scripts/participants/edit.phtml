@@ -7,6 +7,87 @@
 
 
             <div class="form-group">
+                <label class="col-lg-3 control-label">Laboratory Name <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="labName" name="labName" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the Laboratory Name here"
+                                             placeholder="Please enter the Laboratory Name here"
+                                             value="<?php echo $this->participant['lab_name']; ?>"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Institute Name <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="instituteName" name="instituteName" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the Institute Name here"
+                                             placeholder="Please enter the Institute Name here"
+                                             value="<?php echo $this->participant['institute_name']; ?>"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Department Name <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="departmentName" name="departmentName" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the Department Name here"
+                                             placeholder="Please enter the Department Name here"
+                                             value="<?php echo $this->participant['department_name']; ?>"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Physical Address <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><textarea id="address" name="address" size="50" 
+                                             class="isRequired form-control" title="Please enter the address here"
+                                             placeholder="Please enter the address here"><?php echo $this->participant['address']; ?></textarea></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">City <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="city" name="city" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the city here"
+                                             placeholder="Please enter the city here"
+                                             value="<?php echo $this->participant['city']; ?>"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">State (if applicable)</label>
+
+                <div class="col-lg-5"><input type="text" id="state" name="state" size="50" maxlength="45"
+                                             class="form-control" title="Please enter the state here"
+                                             placeholder="Please enter the state here"
+                                             value="<?php echo $this->participant['state']; ?>"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Country <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="country" name="country" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the country here"
+                                             placeholder="Please enter the country here"
+                                             value="<?php echo $this->participant['country']; ?>"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Zip Code (if applicable)</label>
+
+                <div class="col-lg-5"><input type="text" id="zip" name="zip" size="50" maxlength="45"
+                                             class="form-control" title="Please enter the zip here"
+                                             placeholder="Please enter the zip here"
+                                             value="<?php echo $this->participant['zip']; ?>"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Longitude <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="long" name="long" size="50" maxlength="45"
+                                             class="form-control" title="Please enter the longitude here"
+                                             placeholder="Please enter the longitude here"
+                                             value="<?php echo $this->participant['long']; ?>"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Latitude <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="lat" name="lat" size="50" maxlength="45"
+                                             class="form-control" title="Please enter the latitude here"
+                                             placeholder="Please enter the latitude here"
+                                             value="<?php echo $this->participant['lat']; ?>"/></div>
+            </div>
+			<hr style="border:1px solid #ccc;background: #ccc;width:90%;"/>
+
+            <div class="form-group">
                 <label class="col-lg-3 control-label">First Name <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
@@ -14,7 +95,7 @@
                                              class="isRequired form-control" title="Please enter the first name here"
                                              placeholder="Please enter the first name here"
                                              value="<?php echo $this->participant['first_name']; ?>"/>
-                    <input type="hidden" id="PartSysID" name="PartSysID" size="50" maxlength="45"
+                    <input type="hidden" id="participantId" name="participantId" size="50" maxlength="45"
                                              class="isRequired form-control"
                                              value="<?php echo $this->participant['participant_id']; ?>"/>
                 </div>
@@ -134,7 +215,7 @@
     }
 
     function validateNow() {
-        checkDuplicate('participants', 'unique_identifier', $("#participantId"), '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')
+        checkDuplicate('participants', 'unique_identifier', $("#pid"), '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'editParticipantForm'
         });

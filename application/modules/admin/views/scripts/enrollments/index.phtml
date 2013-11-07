@@ -19,8 +19,11 @@
 <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="usersTable">
     <thead>
         <tr>
+            <th>Unique <br/> Participant ID</th>
             <th>First Name</th>
             <th>Last Name</th>
+            <th>Lab Name</th>
+            <th>Country</th>
             <th>Scheme ID</th>
             <th>Scheme</th>
             <th>Enrolled On</th>
@@ -76,9 +79,12 @@
                 {"sClass":"center"},
                 {"sClass":"center"},
                 {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
                 {"sClass":"center","bSortable":false}
             ],
-            "aaSorting": [[ 4, "desc" ],[0,"asc"]],
+            "aaSorting": [[ 4, "desc" ]],
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments', 'action' => 'index', 'format' => 'html')); ?>",

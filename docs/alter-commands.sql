@@ -1345,3 +1345,41 @@ Delimiter ;
  -- by Amit on Nov 4 2013
  
  ALTER TABLE  `response_result_eid` CHANGE  `eid_sample_id`  `sample_id` VARCHAR( 45 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+ ALTER TABLE  `response_result_vl` CHANGE  `vl_sample_id`  `sample_id` VARCHAR( 45 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+ ALTER TABLE  `response_result_dts` CHANGE  `dts_sample_id`  `sample_id` INT( 11 ) NOT NULL;
+ 
+ 
+ -- by Amit on Nov 7 2013
+ 
+ ALTER TABLE  `participant` ADD  `lab_name` VARCHAR( 255 ) NULL AFTER  `data_manager`;
+ ALTER TABLE `participant`  ADD `institute_name` VARCHAR(255) NULL AFTER `lab_name`;
+ ALTER TABLE `participant`
+ ADD `department_name` VARCHAR(255) NULL AFTER `institute_name`,
+ ADD `address` VARCHAR(500) NULL AFTER `department_name`,
+ ADD `city` VARCHAR(255) NULL AFTER `address`,
+ ADD `state` VARCHAR(255) NULL AFTER `city`,
+ ADD `country` VARCHAR(255) NULL AFTER `state`,
+ ADD `zip` VARCHAR(255) NULL AFTER `country`,
+ ADD `long` VARCHAR(255) NULL AFTER `zip`,
+ ADD `lat` VARCHAR(255) NULL AFTER `long`;
+ 
+ ALTER TABLE `response_result_dts` CHANGE `shipment_map_id` `shipment_map_id` INT(11) NOT NULL,
+ CHANGE `sample_id` `sample_id` INT(11) NOT NULL,
+ CHANGE `TestKitName1` `test_kit_name_1` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `LotNo1` `lot_no_1` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `ExpDate1` `exp_date_1` DATE NULL DEFAULT NULL,
+ CHANGE `TestResult1` `test_result_1` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `TestKitName2` `test_kit_name_2` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `LotNo2` `lot_no_2` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `ExpDate2` `exp_date_2` DATE NULL DEFAULT NULL,
+ CHANGE `TestResult2` `test_result_2` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `TestKitName3` `test_kit_name_3` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `LotNo3` `lot_no_3` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `ExpDate3` `exp_date_3` DATE NULL DEFAULT NULL,
+ CHANGE `TestResult3` `test_result_3` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `ReportedResult` `reported_result` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `CalculatedScore` `calculated_score` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `Created_by` `created_by` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `Created_on` `created_on` DATETIME NULL DEFAULT NULL,
+ CHANGE `Updated_by` `updated_by` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+ CHANGE `Updated_on` `updated_on` DATETIME NULL DEFAULT NULL;
