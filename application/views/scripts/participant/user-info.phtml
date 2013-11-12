@@ -31,7 +31,7 @@
             <td>Phone Number</td>
             <td><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['phone']; ?>" class="isNumeric"/></td>
         </tr>
-        <tr align="left" class="dark">
+       <!-- <tr align="left" class="dark">
             <td>UserFld1</td>
             <td><input id="UserFld1" type="text" id="UserFld1" name="UserFld1" size="50" maxlength="45" value="<?php echo $this->rsUser['UserFld1']; ?>" /></td>
         </tr>
@@ -42,13 +42,13 @@
         <tr align="left" class="dark">
             <td>UserFld3</td>
             <td><input id="UserFld3" type="text" id="UserFld3" name="UserFld3" size="50" maxlength="45" value="<?php echo $this->rsUser['UserFld3']; ?>" /></td>
-        </tr>
+        </tr>-->
 
     </table>
     <br>
     <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
         <input name="submitbtn" class="button button-rounded button-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
-        <input name="reset" class="button button-rounded button-caution" type="button" onclick="window.history.go(-1);" tabindex="8" value="Cancel" />
+        <input name="reset" class="button button-rounded button-caution" type="button" onclick="document.location.href='/participant/dashboard'" tabindex="8" value="Cancel" />
     </div>
 
 </form>

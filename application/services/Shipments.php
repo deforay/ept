@@ -87,12 +87,12 @@ class Application_Service_Shipments {
 		
 		
 	$sQuery = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_date','s.shipment_code','s.number_of_samples'))
-				->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'))
-				->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('SCHEME'=>'sl.scheme_name'));		
+							->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'))
+							->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('SCHEME'=>'sl.scheme_name'));		
 
 	if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
 		$sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
-	}	
+	}
 			
 
         if (isset($sWhere) && $sWhere != "") {
@@ -141,13 +141,14 @@ class Application_Service_Shipments {
 
 		//$aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distibution_date', 'no_of_samples');
         foreach ($rResult as $aRow) {
-            $row = array();
-	    $row[] = $aRow['shipment_code'];
-	    $row[] = $aRow['SCHEME'];	    
-	    $row[] = $aRow['distribution_code'];
-            $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-	    $row[] = $aRow['number_of_samples'];
-            $row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-share-alt"></i> Ship</span></a>';
+			$row = array();
+
+			$row[] = $aRow['shipment_code'];
+			$row[] = $aRow['SCHEME'];	    
+			$row[] = $aRow['distribution_code'];
+			$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
+			$row[] = $aRow['number_of_samples'];
+			$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-share-alt"></i> Ship</span></a>';
 
             $output['aaData'][] = $row;
         }
