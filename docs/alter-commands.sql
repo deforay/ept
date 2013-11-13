@@ -1383,3 +1383,7 @@ Delimiter ;
  CHANGE `Created_on` `created_on` DATETIME NULL DEFAULT NULL,
  CHANGE `Updated_by` `updated_by` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
  CHANGE `Updated_on` `updated_on` DATETIME NULL DEFAULT NULL;
+ 
+ -- by Amit on 13 Nov 2013
+ 
+ ALTER TABLE  `shipment_participant_map` ADD  `status` VARCHAR( 255 ) NOT NULL DEFAULT  'configured';

@@ -5,18 +5,41 @@
 	<div class="form-group">
 		<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
 			<?php
-			foreach($this->participants as $participant){
-				?>
-				<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
-				<?php
+			
+			if(isset($this->previouslySelected) && $this->previouslySelected != null){
+				foreach($this->previouslySelected as $participant){
+					?>
+					<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<?php
+				}
+				
+				foreach($this->previouslyUnSelected as $participant){
+					?>
+					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<?php
+				}				
+			}else{
+				foreach($this->enrolledParticipants as $participant){
+					?>
+					<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<?php
+				}
+				foreach($this->unEnrolledParticipants as $participant){
+					?>
+					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<?php
+				}				
 			}
+			
+
+
 			?>
 		</select>
 	</div>
 	
 	<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />	
 	
-	<div class="form-group" style="margin-left:230px;">
+	<div class="form-group" style="margin-left:230px;display:none;">
 	    <label class="col-lg-4 control-label">Optional Enrollment Identifier</label>
 
 	    <div class="col-lg-4"><input type="text" id="enrollmentName" name="enrollmentName" size="50" maxlength="45"
@@ -42,8 +65,8 @@
 		
 		
 $('#participants').multiSelect({
-	selectableFooter: "<div class='custom-header'>Enrolled Participants</div>",
-	selectionFooter: "<div class='custom-header'>Selected Participants</div>",
+	selectableFooter: "<div class='custom-header'>Participants not yet enrolled for this scheme</div>",
+	selectionFooter: "<div class='custom-header'>Enrolled/Selected Participants</div>",
 	selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name To Filter'>",
 	selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name To Filter'>",
 	afterInit: function(ms){

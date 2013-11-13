@@ -87,6 +87,7 @@ class Application_Service_Shipments {
 		
 		
 	$sQuery = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_date','s.shipment_code','s.number_of_samples'))
+							//->joinLeft(array('sp'=>'shipment_participant_map'),'s.shipment_id = sp.shipment_id',array())
 							->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'))
 							->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('SCHEME'=>'sl.scheme_name'));		
 
@@ -148,7 +149,7 @@ class Application_Service_Shipments {
 			$row[] = $aRow['distribution_code'];
 			$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
 			$row[] = $aRow['number_of_samples'];
-			$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-share-alt"></i> Ship</span></a>';
+			$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>';
 
             $output['aaData'][] = $row;
         }
