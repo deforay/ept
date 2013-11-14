@@ -68,12 +68,11 @@ class Application_Service_Participants {
 	}
 	public function getUnEnrolledByShipmentId($shipmentId){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$subSql = $db->select()->from(array('p'=>'participant'),'participant_id')
+		$subSql = $db->select()->from(array('p'=>'participant'),array('participant_id'))
 				       ->join(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array())
 					   ->join(array('s'=>'shipment'),'sp.shipment_id=s.shipment_id',array())
 				       ->where("s.shipment_id = ?", $shipmentId);
 		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id NOT IN ?", $subSql);
-		//die($sql);
 		return $db->fetchAll($sql);
 	}
 	

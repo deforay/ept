@@ -10,8 +10,10 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         try{
             $this->getAdapter()->beginTransaction();
             $authNameSpace = new Zend_Session_Namespace('administrators');
+            $this->delete('shipment_id='.$params['shipmentId']);
             foreach($params['participants'] as $participant){
-                $this->delete('shipment_id='.$params['shipmentId'] .' and participant_id='.$participant);
+                
+                
                 //$row = $this->fetchRow('shipment_id='.$params['shipmentId'] .' and participant_id='.$participant);
                 //if($row != null && $row != ""){
                 //    echo('shipment_id='.$params['shipmentId'] .' and participant_id='.$participant);
@@ -30,12 +32,24 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 //}
 
             }
+            
+            $shipmentDb = new Application_Model_DbTable_Shipments();
+            $shipmentDb->updateShipmentStatus($params['shipmentId'],'ready');
+            
+            $shipmentRow = $shipmentDb->fetchRow('shipment_id='.$params['shipmentId']);
+            
+            $resultSet = $shipmentDb->fetchAll($shipmentDb->select()->where("status = 'pending' AND distribution_id = ".$shipmentRow['distribution_id']));
+            
+            if(count($resultSet) == 0){
+                $distroService = new Application_Service_Distribution();
+                $distroService->updateDistributionStatus($shipmentRow['distribution_id'],'configured');
+            }
 
             $this->getAdapter()->commit();
             return true;            
         }catch(Exception $e){
             $this->getAdapter()->rollBack();
-            error_log($e->getMessage());
+            die($e->getMessage());
             error_log($e->getTraceAsString());
             return false;
         }

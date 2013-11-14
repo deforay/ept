@@ -138,15 +138,27 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
 
+        
+        $shipmentDb = new Application_Model_DbTable_Shipments();
 
         foreach ($rResult as $aRow) {
+            
+            $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
+            
             $row = array();
-            //$row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/'.$aRow['distribution_id'].'"><span><i class="icon-search"></i></span></a>';
+            $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/'.$aRow['distribution_id'].'"><span><i class="icon-search"></i></span></a>';
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];
-            $row[] = $aRow['status'];
-            $row[] = 'Coming Soon';
+            $row[] = ucwords($aRow['status']);
+            if(isset($aRow['status']) && $aRow['status'] == 'configured'){
+                $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\''.base64_encode($aRow['distribution_id']).'\')"><span><i class="icon-ambulance"></i> Ship Now</span></a>';	    
+            }else if(isset($aRow['status']) && $aRow['status'] == 'shipped'){
+                $row[] = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';	    
+            }else{
+                $row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-plus"></i> Add Scheme</span></a>';
+            }
+            
 
             $output['aaData'][] = $row;
         }
@@ -159,6 +171,10 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
                       'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']),
                       'status' => 'created');
         return $this->insert($data);
+    }
+    
+    public function shipDistribution($params){
+
     }
     
     public function getDistributionDates(){
@@ -175,7 +191,14 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         return $this->update($data,"distribution_id=".$params['distributionId']);
     }
     public function getUnshippedDistributions(){
-        return $this->fetchAll($this->select()->where("status = 'created'")->orWhere("status = 'configured'"));
+        return $this->fetchAll($this->select()->where("status != 'shipped'"));
+    }
+    public function updateDistributionStatus($distributionId,$status){
+        if(isset($status) && $status != null && $status != ""){
+            return $this->update(array('status'=>$status),"distribution_id=".$distributionId);
+        }else{
+            return 0;
+        }
     }
 
 }

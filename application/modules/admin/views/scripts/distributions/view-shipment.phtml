@@ -12,11 +12,31 @@
 				<th>Shipment Date</th>
 				<th>Scheme</th>
 				<th>No of Samples</th>
-				<th>No of Participants</th>
+				<th>Status</th>
 			</tr>
-			<tr>
-				<td colspan="5" align="center"> Coming Soon</td>
-			</tr>
+			<?php
+			if(count($this->shipments) > 0){
+			foreach($this->shipments as $shipment){
+				?>
+				<tr>
+					<td><?php echo $shipment['shipment_code'] ?></td>
+					<td><?php echo $this->dateFormat($shipment['shipment_date']) ?></td>
+					<td><?php echo strtoupper($shipment['scheme_type']) ?></td>
+					<td><?php echo $shipment['number_of_samples'] ?></td>
+					<td><?php echo ucwords($shipment['status']); ?></td>
+				</tr>
+				<?php
+				}
+			}else{
+				?>
+				<tr>
+					<td colspan="5" align="center" style="text-align:center">
+						No shipments for this distribution yet
+					</td>
+				</tr>
+				<?php
+			}
+			?>
 		  </table>
         </div>
         <div class="modal-footer">

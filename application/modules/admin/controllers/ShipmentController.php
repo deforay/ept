@@ -8,6 +8,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
                 ->addActionContext('get-sample-form', 'html')
+                ->addActionContext('remove', 'html')
                 ->initContext();
         $this->_helper->layout()->pageName = 'configurations';
     }
@@ -21,7 +22,12 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
-        $distro = new Application_Service_Distribution();
+        if($this->_hasParam('did')){
+            $this->view->selectedDistribution = (int)base64_decode($this->_getParam('did'));
+        }else{
+            $this->view->selectedDistribution = "";
+        }
+        $distro = new Application_Service_Distribution();        
         $this->view->unshippedDistro = $distro->getUnshippedDistributions();        
     }
 
@@ -58,35 +64,43 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function shipItAction()
     {
-        $shipmentService = new Application_Service_Shipments();        
-	if($this->getRequest()->isPost()){
-	    $params = $this->getRequest()->getPost();
-            $shipmentService->shipItNow($params);
-            $this->_redirect("/admin/shipment");
-            
-	}else{
+        $shipmentService = new Application_Service_Shipments();
+        if($this->getRequest()->isPost()){
+            $params = $this->getRequest()->getPost();
+                $shipmentService->shipItNow($params);
+                $this->_redirect("/admin/shipment");
+                
+        }else{
             if($this->_hasParam('sid')){
                 $participantService = new Application_Service_Participants();
                 $sid = (int)base64_decode($this->_getParam('sid'));
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);            
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
-                //Zend_Debug::dump($previouslySelected);die;
                 if($previouslySelected == "" || $previouslySelected == null){
                     $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
                     $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type']);                    
                 }else{
                     $this->view->previouslyUnSelected = $participantService->getUnEnrolledByShipmentId($sid);
-                }
-
-                
-                
-                
+                }                
             }
+        }
+    }
+
+    public function removeAction()
+    {
+        if($this->_hasParam('sid')){
+            $sid = (int)base64_decode($this->_getParam('sid'));
+            $shipmentService = new Application_Service_Shipments();
+            $this->view->message = $shipmentService->removeShipment($sid);
+        }else{
+            $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
         }
     }
 
 
 }
+
+
 
 
 

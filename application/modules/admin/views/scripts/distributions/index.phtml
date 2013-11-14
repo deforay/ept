@@ -8,6 +8,7 @@
 <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="usersTable">
     <thead>
     <tr>
+        <th>See Shipments</th>
         <th>Distribution Date</th>
         <th>Distribution Code</th>
         <th>Shipment Code(s)</th>
@@ -28,9 +29,16 @@
   </div><!-- /.modal -->
 
 <script type="text/javascript" charset="utf-8">
+	
+	$('#myModal').on('hidden.bs.modal', function () {
+	  $(this).removeData('bs.modal');
+	});		
     /* Table initialisation */
     var oTable = null;
     $(document).ready(function() {
+		
+
+		
         oTable = $('#usersTable').dataTable( {
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"
@@ -42,6 +50,7 @@
             "sPaginationType": "full_numbers",
             "bRetrieve": true,
             "aoColumns": [
+                {"sClass":"center"},
                 {"sClass":"center"},
                 {"sClass":"center"},
                 {"sClass":"center"},
@@ -64,5 +73,17 @@
         } );
 
     } );
+	
+
+	
+	function shipDistribution(did) {
+		$.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'ship-distribution')); ?>", { did: did, format: "html" },
+            function (data) {
+               alert(data);
+			   oTable.fnDraw();
+			   $.unblockUI();
+        });
+	}	
 
 </script>

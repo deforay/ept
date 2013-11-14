@@ -986,6 +986,7 @@ count(
 from shipment  as a , shipment_participant_map as b
 where (year(shipment_date)  + 5 > year(CURDATE())) AND scheme_type='dts'
 and a.shipment_id = b.shipment_id
+and a.status != 'pending'
 group by SHIP_YEAR 
 
 union
@@ -1012,6 +1013,7 @@ count(
 from shipment    as a  , shipment_participant_map as b
 where (year(shipment_date)  + 5 > year(CURDATE())) AND scheme_type='vl'
 and a.shipment_id = b.shipment_id
+and a.status != 'pending'
 group by SHIP_YEAR 
 
 union
@@ -1038,6 +1040,7 @@ count(
 from shipment as a , shipment_participant_map as b
 where (year(shipment_date)  + 5 > year(CURDATE())) AND scheme_type='eid'
 and a.shipment_id = b.shipment_id
+and a.status != 'pending'
 group by SHIP_YEAR;
 
 END $$
@@ -1075,7 +1078,7 @@ and a.shipment_id = spm.shipment_id
 and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response >= CURDATE()
 and a.scheme_type = 'dts'
-
+and a.status != 'pending'
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
@@ -1105,7 +1108,7 @@ and a.shipment_id = spm.shipment_id
 and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response >= CURDATE()
 and a.scheme_type = 'vl'
-
+and a.status != 'pending'
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
@@ -1135,6 +1138,7 @@ and a.shipment_id = spm.shipment_id
 and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response >= CURDATE() 
 and a.scheme_type = 'eid'
+and a.status != 'pending'
 order by SHIP_YEAR, participant_id ;
 
 END $$
@@ -1174,6 +1178,7 @@ and a.shipment_id = spm.shipment_id
 and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response < CURDATE() and  substr(spm.evaluation_status,3,1) <> '1'
 and a.scheme_type = 'dts'
+and a.status != 'pending'
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
@@ -1204,6 +1209,7 @@ and a.shipment_id = spm.shipment_id
 and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response < CURDATE() and  substr(spm.evaluation_status,3,1) <> '1'
 and a.scheme_type = 'vl'
+and a.status != 'pending'
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
@@ -1234,6 +1240,7 @@ and a.shipment_id = spm.shipment_id
 and year(a.shipment_date)  + 5 > year(CURDATE()) 
 and a.lastdate_response < CURDATE() and  substr(spm.evaluation_status,3,1) <> '1'
 and a.scheme_type = 'eid'
+and a.status != 'pending'
 order by SHIP_YEAR, PARTICIPANT_ID ;
 
 END $$
@@ -1278,7 +1285,7 @@ where spm.participant_id = b.participant_id
 and a.shipment_id = spm.shipment_id
 and year(a.shipment_date)  + 5 > year(CURDATE())
 and scheme_type = 'dts'
-
+and a.status != 'pending'
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
@@ -1307,6 +1314,7 @@ where spm.participant_id = b.participant_id
 and a.shipment_id = spm.shipment_id
 and year(a.shipment_date)  + 5 > year(CURDATE())
 and scheme_type = 'vl'
+and a.status != 'pending'
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
@@ -1335,6 +1343,7 @@ where spm.participant_id = b.participant_id
 and a.shipment_id = spm.shipment_id
 and year(a.shipment_date)  + 5 > year(CURDATE())
 and scheme_type = 'eid'
+and a.status = 'shipped'
 order by SHIP_YEAR, participant_id ;
 -- LIMIT valFrom, valTo;
 END $$
@@ -1386,4 +1395,4 @@ Delimiter ;
  
  -- by Amit on 13 Nov 2013
  
- ALTER TABLE  `shipment_participant_map` ADD  `status` VARCHAR( 255 ) NOT NULL DEFAULT  'configured';
+ ALTER TABLE  `shipment` ADD  `status` VARCHAR( 255 ) NOT NULL DEFAULT  'pending';

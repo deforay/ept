@@ -86,7 +86,7 @@ class Application_Service_Shipments {
 		
 		
 		
-	$sQuery = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_date','s.shipment_code','s.number_of_samples'))
+	$sQuery = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_date','s.shipment_code','s.number_of_samples','s.status'))
 							//->joinLeft(array('sp'=>'shipment_participant_map'),'s.shipment_id = sp.shipment_id',array())
 							->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'))
 							->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('SCHEME'=>'sl.scheme_name'));		
@@ -149,7 +149,13 @@ class Application_Service_Shipments {
 			$row[] = $aRow['distribution_code'];
 			$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
 			$row[] = $aRow['number_of_samples'];
-			$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>';
+			if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped'){
+				$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>'
+				        .'&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\''.base64_encode($aRow['shipment_id']).'\')"><span><i class="icon-remove"></i> Delete</span></a>';	
+			}else{
+				$row[] = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';	
+			}
+			
 
             $output['aaData'][] = $row;
         }
@@ -339,6 +345,8 @@ class Application_Service_Shipments {
 			}
 
 		}
+		
+		$distroService->updateDistributionStatus($params['distribution'],'pending');
 	}
 	
 	public function getShipment($sid){
@@ -349,6 +357,35 @@ class Application_Service_Shipments {
 	public function shipItNow($params){
 		$db = new Application_Model_DbTable_ShipmentParticipantMap();
 		return $db->shipItNow($params);
+	}
+	
+	public function removeShipment($sid){
+		try{
+			
+			$shipmentDb = new Application_Model_DbTable_Shipments();
+			$row = $shipmentDb->fetchRow('shipment_id='.$sid);
+			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			if($row['scheme_type'] == 'dts'){
+				$db->delete("reference_result_dts",'shipment_id='.$sid);	
+			}else if($row['scheme_type'] == 'vl'){
+				$db->delete("reference_result_vl",'shipment_id='.$sid);	
+			}else if($row['scheme_type'] == 'eid'){
+				$db->delete("reference_result_eid",'shipment_id='.$sid);	
+			}
+			
+			$shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();			
+			$shipmentParticipantMap->delete('shipment_id='.$sid);		
+			
+			
+			
+			$shipmentDb->delete('shipment_id='.$sid);
+			
+			return "Shipment deleted.";
+		}catch(Exception $e){
+			return($e->getMessage());
+			return "c Unable to delete. Please try again later or contact system admin for help";
+		}
+
 	}
 
 }

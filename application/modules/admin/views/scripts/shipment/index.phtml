@@ -46,7 +46,7 @@
 	
 	<form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'add')); ?>" autocomplete="off">
             <div class="form-group">
-                <label class="col-lg-3 control-label">Distribution <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">Distribution (Unshipped) <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
 					<select id="distribution" name="distribution" class="isRequired form-control input-sm" title="Please select a Distribution">
@@ -54,7 +54,7 @@
 						<?php
 							foreach($this->unshippedDistro as $dist){
 								?>
-								<option value="<?php echo $dist['distribution_id']; ?>"><?php echo $dist['distribution_code'] . "   (". $this->dateFormat($dist['distribution_date']) .")"; ?></option>		
+								<option value="<?php echo $dist['distribution_id']; ?>" <?php echo ($dist['distribution_id'] == $this->selectedDistribution) ? "selected='selected'" : "" ?>><?php echo $dist['distribution_code'] . "   (". $this->dateFormat($dist['distribution_date']) .")"; ?></option>		
 								<?php
 							}
 						?>
@@ -131,6 +131,16 @@
 			$("#btnSpan").fadeOut();
 		}
 		
+	}
+	
+	function removeShipment(sid){
+		$.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'remove')); ?>", { sid: sid, format: "html" },
+            function (data) {
+               alert(data);
+			   drawTable();
+			   $.unblockUI();
+        });		
 	}
 	
     function drawTable() {

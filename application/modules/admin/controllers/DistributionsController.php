@@ -8,6 +8,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
                     ->addActionContext('view-shipment', 'html')
+                    ->addActionContext('ship-distribution', 'html')
                     ->initContext();
         $this->_helper->layout()->pageName = 'configurations';
     }
@@ -49,8 +50,23 @@ class Admin_DistributionsController extends Zend_Controller_Action
         }
     }
 
+    public function shipDistributionAction()
+    {
+        if($this->_hasParam('did')){
+            
+            $id = (int)base64_decode($this->_getParam('did'));
+            $distributionService = new Application_Service_Distribution();
+            $this->view->message = $distributionService->shipDistribution($id);
+            
+       }else{
+            $this->view->message = "Unable to ship. Please try again later or contact system admin for help";
+        }
+    }
+
 
 }
+
+
 
 
 
