@@ -5,8 +5,8 @@ class Application_Service_Shipments {
 	public function getAllShipments($parameters){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distribution_date', 'no_of_samples');
-        $orderColumns = array("SCHEME","shipment_code","shipment_date", 'distribution_code', 'distribution_date', 'no_of_samples');
+        $aColumns = array("sl.scheme_name","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distribution_date', 'number_of_samples');
+        $orderColumns = array("sl.scheme_name","shipment_code","shipment_date", 'distribution_code', 'distribution_date', 'number_of_samples');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "shipment_date";
@@ -140,7 +140,7 @@ class Application_Service_Shipments {
             "aaData" => array()
         );
 
-		//$aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distibution_date', 'no_of_samples');
+		//$aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distibution_date', 'number_of_samples');
         foreach ($rResult as $aRow) {
 			$row = array();
 

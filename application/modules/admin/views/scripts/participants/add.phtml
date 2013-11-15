@@ -7,12 +7,19 @@
 
 
             <div class="form-group">
-                <label class="col-lg-3 control-label">Laboratory Name <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">Lab Name or First Name<span class="mandatory">*</span></label>
 
                 <div class="col-lg-5"><input type="text" id="labName" name="labName" size="50" maxlength="45"
-                                             class="isRequired form-control" title="Please enter the Laboratory Name here"
-                                             placeholder="Please enter the Laboratory Name here"/></div>
+                                             class="isRequired form-control" title="Please enter the Lab Name or First Name here"
+                                             placeholder="Please enter the Lab Name or First Name here"/></div>
             </div>
+	    <div class="form-group">
+                <label class="col-lg-3 control-label">Last Name <br/> <small>(Leave blank if Participant is Lab)</small></label>
+
+                <div class="col-lg-5"><input type="text" id="plname" name="plname" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the last name here"
+                                             placeholder="Please enter the last name here"/></div>
+            </div>	    
             <div class="form-group">
                 <label class="col-lg-3 control-label">Institute Name <span class="mandatory">*</span></label>
 
@@ -77,20 +84,8 @@
                                              placeholder="Please enter the latitude here"/></div>
             </div>
 			<hr style="border:1px solid #ccc;background: #ccc;width:90%;"/>
-            <div class="form-group">
-                <label class="col-lg-3 control-label">First Name <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="pfname" name="pfname" size="50" maxlength="45"
-                                             class="isRequired form-control" title="Please enter the first name here"
-                                             placeholder="Please enter the first name here"/></div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-3 control-label">Last Name <span class="mandatory">*</span></label>
-
-                <div class="col-lg-5"><input type="text" id="plname" name="plname" size="50" maxlength="45"
-                                             class="isRequired form-control" title="Please enter the last name here"
-                                             placeholder="Please enter the last name here"/></div>
-            </div>
+            
 
             <div class="form-group">
                 <label class="col-lg-3 control-label">Participant ID <span class="mandatory">*</span></label>

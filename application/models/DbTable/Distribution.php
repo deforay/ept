@@ -14,8 +14,8 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array("DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code' ,'status');
-        $orderColumns = array('distribution_date', 'distribution_code', 's.shipment_code' ,'status');
+        $aColumns = array("DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code' ,'d.status');
+        $orderColumns = array('distribution_date', 'distribution_code', 's.shipment_code' ,'d.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;

@@ -7,13 +7,25 @@
 
 
             <div class="form-group">
-                <label class="col-lg-3 control-label">Laboratory Name <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">Lab Name or First Name<span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="labName" name="labName" size="50" maxlength="45"
-                                             class="isRequired form-control" title="Please enter the Laboratory Name here"
-                                             placeholder="Please enter the Laboratory Name here"
-                                             value="<?php echo $this->participant['lab_name']; ?>"/></div>
+                <div class="col-lg-5"><input type="text" id="fname" name="fname" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the Lab Name or First Name here"
+                                             placeholder="Please enter the Lab Name or First Name here"
+					    value="<?php echo $this->participant['first_name']; ?>"/></div>
+		
+		<input type="hidden" id="participantId" name="participantId" size="50" maxlength="45"
+                                             class="isRequired form-control"
+                                             value="<?php echo $this->participant['participant_id']; ?>"/>
             </div>
+	    <div class="form-group">
+                <label class="col-lg-3 control-label">Last Name <br/> <small>(Leave blank if Participant is Lab)</small></label>
+
+                <div class="col-lg-5"><input type="text" id="plname" name="plname" size="50" maxlength="45"
+                                             class="isRequired form-control" title="Please enter the last name here"
+                                             placeholder="Please enter the last name here"
+					     value="<?php echo $this->participant['last_name']; ?>"/></div>
+            </div>	    
             <div class="form-group">
                 <label class="col-lg-3 control-label">Institute Name <span class="mandatory">*</span></label>
 
@@ -95,18 +107,8 @@
                                              class="isRequired form-control" title="Please enter the first name here"
                                              placeholder="Please enter the first name here"
                                              value="<?php echo $this->participant['first_name']; ?>"/>
-                    <input type="hidden" id="participantId" name="participantId" size="50" maxlength="45"
-                                             class="isRequired form-control"
-                                             value="<?php echo $this->participant['participant_id']; ?>"/>
+                    
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-3 control-label">Last Name <span class="mandatory">*</span></label>
-
-                <div class="col-lg-5"><input id="lname" type="text" id="plname" name="plname" size="50" maxlength="45"
-                                             class="isRequired form-control" title="Please enter the last name here"
-                                             placeholder="Please enter the last name here"
-                                             value="<?php echo $this->participant['last_name']; ?>"/></div>
             </div>
 
             <div class="form-group">

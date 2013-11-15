@@ -24,7 +24,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name', 'last_name','lab_name','country', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('first_name', 'last_name','country', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -147,13 +147,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row = array();
             $row[] = $aRow['first_name'];
             $row[] = $aRow['last_name'];
-            $row[] = $aRow['lab_name'];
             $row[] = $aRow['country'];
             $row[] = $aRow['mobile'];
             $row[] = $aRow['phone'];
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
-            $row[] = $aRow['status'];
+            $row[] = ucwords($aRow['status']);
             $row[] = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i></a>';
 
             $output['aaData'][] = $row;
@@ -168,7 +167,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
        $data = array(
             'unique_identifier' => $params['pid'],
-            'lab_name' => $params['labName'],
             'institute_name' => $params['instituteName'],
             'department_name' => $params['departmentName'],
             'address' => $params['address'],
@@ -212,7 +210,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $data = array(
             'unique_identifier' => $params['participantId'],
-            'lab_name' => $params['labName'],
             'institute_name' => $params['instituteName'],
             'department_name' => $params['departmentName'],
             'address' => $params['address'],

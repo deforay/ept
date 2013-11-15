@@ -134,13 +134,16 @@
 	}
 	
 	function removeShipment(sid){
-		$.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'remove')); ?>", { sid: sid, format: "html" },
-            function (data) {
-               alert(data);
-			   drawTable();
-			   $.unblockUI();
-        });		
+		if (window.confirm("Are you sure you wish to delete? This cannot be undone !")) { 
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'remove')); ?>", { sid: sid, format: "html" },
+			    function (data) {
+			       alert(data);
+					   drawTable();
+					   $.unblockUI();
+			});
+		}		
+		
 	}
 	
     function drawTable() {
@@ -196,11 +199,11 @@
 	
 	function getSampleForm() {
 		$.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-sample-form')); ?>", { sid: $("#scheme").val(), format: "html" },
-            function (data) {
-               $("#sampleFormFragment").html(data);
-			   $.unblockUI();
-        });
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-sample-form')); ?>", { sid: $("#scheme").val(), format: "html" },
+		    function (data) {
+		       $("#sampleFormFragment").html(data);
+				   $.unblockUI();
+		});
 	}
 
 </script>
