@@ -94,6 +94,9 @@ class Application_Service_Shipments {
 	if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
 		$sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
 	}
+	if(isset($parameters['distribution']) && $parameters['distribution'] !="" && $parameters['distribution'] !=0){
+		$sQuery = $sQuery->where("s.distribution_id = ?",$parameters['distribution']);
+	}
 			
 
         if (isset($sWhere) && $sWhere != "") {
@@ -108,7 +111,7 @@ class Application_Service_Shipments {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //error_log($sQuery);
+        //die($sQuery);
 
         $rResult = $db->fetchAll($sQuery);
 
@@ -166,6 +169,10 @@ class Application_Service_Shipments {
 
 	public function updateEidResults($params){
 		
+		if(!$this->isShipmentEditable($params['shipmentId'],$params['participantId'])){
+			return false;
+		}
+		
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		
 		$db->beginTransaction();
@@ -179,6 +186,7 @@ class Application_Service_Shipments {
 			$data = array(
 						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
 						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
+						  "shipment_test_report_date"=>new Zend_Db_Expr('now()'),
 						  "attributes" => $attributes,
 						  "supervisor_approval"=>$params['supervisorApproval'],
 						  "participant_supervisor"=>$params['participantSupervisor'],
@@ -187,7 +195,7 @@ class Application_Service_Shipments {
 						  "updated_on_user"=>new Zend_Db_Expr('now()')
 						  );
 			
-			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid']);
+			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid'],$params['hdLastDate']);
 			
 			$eidResponseDb = new Application_Model_DbTable_ResponseEid();
 			$eidResponseDb->updateResults($params);
@@ -206,6 +214,9 @@ class Application_Service_Shipments {
 	}
 	public function updateDtsResults($params){
 		
+		if(!$this->isShipmentEditable($params['shipmentId'],$params['participantId'])){
+			return false;
+		}		
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		
 		$db->beginTransaction();
@@ -218,6 +229,7 @@ class Application_Service_Shipments {
 						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
 						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
 						  "attributes" => $attributes,
+						  "shipment_test_report_date"=>new Zend_Db_Expr('now()'),
 						  "supervisor_approval"=>$params['supervisorApproval'],
 						  "participant_supervisor"=>$params['participantSupervisor'],
 						  "user_comment"=>$params['userComments'],
@@ -225,7 +237,7 @@ class Application_Service_Shipments {
 						  "updated_on_user"=>new Zend_Db_Expr('now()')
 						  );
 			
-			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid']);
+			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid'],$params['hdLastDate']);
 			
 			$eidResponseDb = new Application_Model_DbTable_ResponseDts();
 			$eidResponseDb->updateResults($params);
@@ -244,6 +256,10 @@ class Application_Service_Shipments {
 	}
 	public function updateVlResults($params){
 		
+		if(!$this->isShipmentEditable($params['shipmentId'],$params['participantId'])){
+			return false;
+		}
+		
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		
 		$db->beginTransaction();
@@ -260,6 +276,7 @@ class Application_Service_Shipments {
 						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
 						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
 						  "attributes" => $attributes,
+						  "shipment_test_report_date"=>new Zend_Db_Expr('now()'),
 						  "supervisor_approval"=>$params['supervisorApproval'],
 						  "participant_supervisor"=>$params['participantSupervisor'],
 						  "user_comment"=>$params['userComments'],
@@ -267,7 +284,7 @@ class Application_Service_Shipments {
 						  "updated_on_user"=>new Zend_Db_Expr('now()')
 						  );
 			
-			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid']);
+			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid'],$params['hdLastDate']);
 			
 			$eidResponseDb = new Application_Model_DbTable_ResponseVl();
 			$eidResponseDb->updateResults($params);
@@ -386,6 +403,11 @@ class Application_Service_Shipments {
 			return "c Unable to delete. Please try again later or contact system admin for help";
 		}
 
+	}
+	
+	public function isShipmentEditable($shipmentId,$participantId){
+		$spMap = new Application_Model_DbTable_ShipmentParticipantMap();
+		return $spMap->isShipmentEditable($shipmentId,$participantId);
 	}
 
 }

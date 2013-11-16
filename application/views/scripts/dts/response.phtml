@@ -3,11 +3,9 @@
 <form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller"=>"dts","action"=>"response"),null,true) ?>">
 
 <input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response'];?>" />
-<input type="hidden" id ="hdshipId" name="hdshipId" value="<?php echo $this->shipId;?>" />
-
-
-<input type="hidden" id ="hdparticipantId" name="hdparticipantId" value="<?php echo $this->participantId;?>" />
-<input type="hidden" id ="hdeID" name="hdeID" value="<?php echo $this->eID;?>" />
+<input type="hidden" id ="shipmentId" name="shipmentId" value="<?php echo $this->shipId;?>" />
+<input type="hidden" id ="participantId" name="participantId" value="<?php echo $this->participantId;?>" />
+<input type="hidden" id ="evId" name="evId" value="<?php echo $this->eID;?>" />
 <input type="hidden" id ="smid" name="smid" value="<?php echo $this->shipment['map_id'];?>" />
 
 
@@ -186,7 +184,7 @@
 </tr>
 
 </table>
-
+<?php if($this->isEditable){ ?>
 	<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 				<p>
 					
@@ -196,20 +194,22 @@
 					
 				</p>
 			</div>
+	<?php } ?>
 </div>
+
 <?php 
 $genderHelper = $this->getHelper('DateFormat');
 $dtFormat=  $genderHelper->getDateFormat();
 ?>
 </form>
- <style type="text/css">
-textarea:focus { outline: 1px solid blue; }
-
-
-
-
-</style>
-
+<?php if(!$this->isEditable){
+		?>
+		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+			<input name="cancel" class="css_btn_class" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />
+		</div>
+		<?php
+}
+?>
  
 <script>
 	
@@ -220,7 +220,12 @@ textarea:focus { outline: 1px solid blue; }
 
 	$(function() {
   	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-		
+		<?php if(!$this->isEditable){
+			?>
+			$("#dtsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
+			<?php
+		}
+		?>		
 
 		$('#supervisorApproval').change(function() {
 			

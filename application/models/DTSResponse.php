@@ -34,8 +34,8 @@ public function getAllDtsTestKit(){
 		// Get all Shipment variables 
 		
 		//Zend_Debug::dump($data);
-		$shipId = $data['hdshipId'];
-		$participantId = $data['hdparticipantId'];
+		$shipId = $data['shipmentId'];
+		$participantId = $data['participantId'];
 
         $receiptDate = Pt_Commons_General::dateFormat($data['receipt_date']);
         $lastDate = Pt_Commons_General::dateFormat($data['hdLastDate']);
@@ -47,7 +47,7 @@ public function getAllDtsTestKit(){
 		$participantSupervisor = $data['participantSupervisor'];
 		$userCommnets = $data['userCommnets'];
 		
-		$evaStatus1 = $data['hdeID'];
+		$evaStatus1 = $data['evId'];
 		
 		$evaStatus = $this->newEvalStatus($evaStatus1,$lastDate,'1');
 		

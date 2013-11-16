@@ -46,7 +46,7 @@ class DtsController extends Zend_Controller_Action
     	$this->view->participantId = $pID;
     	$this->view->eID = $eID;
     	//
-    	//$isEditable = $dtsResponseDb->IsgetDTSResponseEditable($eID);
+    	$this->view->isEditable = $shipmentService->isShipmentEditable($sID,$pID);
     	}
     	else{
     		$data = $this->getRequest()->getPost();

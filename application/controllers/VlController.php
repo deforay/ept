@@ -51,7 +51,7 @@ class VlController extends Zend_Controller_Action
             $this->view->participantId = $pID;
             $this->view->eID = $eID;
     
-            $isEditable = true;
+            $this->view->isEditable = $shipmentService->isShipmentEditable($sID,$pID);
     	}
     }
 

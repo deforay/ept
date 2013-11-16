@@ -55,9 +55,41 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         }
     }
     
-    public function updateShipment($params,$shipmentMapId){
-        $params['evaluation_status'] = '11111190';
+    public function updateShipment($params,$shipmentMapId,$lastDate){
+        $row =  $this->fetchRow("map_id = ". $shipmentMapId);
+        
+        $params['evaluation_status'] = $row['evaluation_status'];
+        
+        // changing evaluation status 3rd character to 1 = responded
+        $params['evaluation_status'][2] = 1; 
+        
+        // changing evaluation status 5th character to 1 = via web user
+        $params['evaluation_status'][4] = 1; 
+        
+        // changing evaluation status 4th character to 1 = timely response or 2 = delayed response
+        
+        $date = new Zend_Date();
+        $lastDate = new Zend_Date($lastDate, Zend_Date::ISO_8601);
+        // only if current date is LATER than last date we make status = 2
+        if($date->compare($lastDate) == 1){
+            $params['evaluation_status'][3] = 2;
+        }else{
+            $params['evaluation_status'][3] = 1;  
+        }        
+ 
         return $this->update($params,"map_id = ". $shipmentMapId);
+    }
+    
+    public function isShipmentEditable($shipmentId,$participantId){
+
+        $row =  $this->fetchRow("shipment_id = ". $shipmentId . " AND participant_id = ".$participantId);
+        $canEdit =  substr($row['evaluation_status'],2 ,1); // getting the 3rd character
+        if($canEdit == 9){
+            return true;
+        }else{
+            return false;
+        }
+        
     }
 }
 

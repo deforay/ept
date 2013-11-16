@@ -1396,3 +1396,9 @@ Delimiter ;
  -- by Amit on 13 Nov 2013
  
  ALTER TABLE  `shipment` ADD  `status` VARCHAR( 255 ) NOT NULL DEFAULT  'pending';
+ ALTER TABLE  `shipment_participant_map` ADD UNIQUE (
+`shipment_id` ,
+`participant_id`
+);
+
+ 

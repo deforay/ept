@@ -4,7 +4,6 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
 
     public function preDispatch(Zend_Controller_Request_Abstract $request) {
         $layout = Zend_Layout::getMvcInstance();
-        
         if ($request->getModuleName() == 'default'  && $request->getControllerName() != 'auth' && $request->getControllerName() != 'index' && $request->getControllerName() != 'captcha' && $request->getControllerName() != 'contact-us') {
              $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if(!isset($authNameSpace->dm_id)){
@@ -12,7 +11,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
                 $request->setDispatched(false);
                 return;
             }            
-            if($authNameSpace->ForcePasswordReset == 1 || $authNameSpace->ForcePasswordReset == '1'){
+            if($authNameSpace->force_password_reset == 1 || $authNameSpace->force_password_reset == '1'){
                 if ($request->getControllerName() == 'participant' && $request->getActionName() == 'password'){
                     $sessionAlert = new Zend_Session_Namespace('alertSpace');
                     $sessionAlert->message = "Please change your password to proceed.";

@@ -4,7 +4,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
 	protected function _initAppSetup(){
 		Zend_Session::start();
-		// setup localle
+		date_default_timezone_set("America/New_York");
 		$locale = new Zend_Locale('en_US');
 		Zend_Registry::set('Zend_Locale', $locale);
 		
