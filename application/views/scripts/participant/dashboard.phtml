@@ -48,16 +48,28 @@
 					<th>Not received</th>
 					</tr>
 				</thead>
-				<?php $i_count = 0; 
-				foreach($this->rsOverview as $site){  ?>
-				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">
-					<td><?php echo $site['SHIP_YEAR']; ?></td>
-					<td><?php echo $site['SCHEME']; ?></td>
-					<td><?php echo $site['TOTALSHIPMEN']; ?></td>
-					<td><?php echo $site['ONTIME']; ?></td>
-					<td><?php echo $site['NORESPONSE']; ?></td>
-				</tr>
-				<?php }?>
+				<?php
+				
+				if(count($this->rsOverview) > 0){
+				
+					$i_count = 0; 
+					foreach($this->rsOverview as $site){  ?>
+					<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">
+						<td><?php echo $site['SHIP_YEAR']; ?></td>
+						<td><?php echo $site['SCHEME']; ?></td>
+						<td><?php echo $site['TOTALSHIPMEN']; ?></td>
+						<td><?php echo $site['ONTIME']; ?></td>
+						<td><?php echo $site['NORESPONSE']; ?></td>
+					</tr>
+					<?php }
+				}else{
+					?>
+					<tr>
+						<td colspan="5" style="text-align:center;padding:5px;font-size:14px;background:#dee;"> No data to show. 	</td>
+					</tr>
+					<?php
+				}
+				?>
 			</table>
 			
 			 <br>
@@ -77,7 +89,9 @@
 					</tr>
 				</thead>
 				
-				<?php foreach($this->rsShipCurr as $curr){ ?>
+				<?php
+				if(count($this->rsShipCurr) > 0){
+				foreach($this->rsShipCurr as $curr){ ?>
 				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">				
 					<td><?php echo $this->dateFormat($curr['shipment_date']); ?></td>
 					<td><?php echo $curr['SCHEME']; ?></td>
@@ -86,7 +100,15 @@
 					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($curr['SCHEME']),"action"=>"response","sid"=>$curr['SHIPID'],"pid"=>$curr['participant_id'],"eid"=>$curr['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $curr['RESPONSE']; ?></a></td>
 					<td><?php echo $this->dateFormat($curr['RESPONSEDATE']); ?></td>
 				</tr>
-				<?php } ?>
+				<?php }
+				}else{
+					?>
+					<tr>
+						<td colspan="6" style="text-align:center;padding:5px;font-size:14px;background:#dee;"> No data to show. </td>
+					</tr>
+					<?php					
+				}
+				?>
 			</table>
 		  <br>
              <span class="txt">Defaulted Schemes</span>
@@ -106,7 +128,10 @@
 				</thead>
 				
 				
-				<?php foreach($this->rsShipDef as $def){ ?>
+				<?php
+				
+				if(count($this->rsShipDef) > 0){
+				foreach($this->rsShipDef as $def){ ?>
 				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">
 					<td><?php echo $def['SHIP_YEAR']; ?></td>
 					<td><?php echo $this->dateFormat($def['shipment_date']); ?></td>
@@ -117,7 +142,15 @@
 					<td><b><?php //echo $def['RESPONSEDATE']; ?></b></td>
 					<td style="text-decoration : underline;"><a href="<?php ?>"><?php echo $def['ACTION']; ?></a></td>					
 				</tr>
-				<?php }?>
+				<?php }
+				} else{
+					?>
+					<tr>
+						<td colspan="7" style="text-align:center;padding:5px;font-size:14px;background:#dee;"> No data to show. </td>
+					</tr>
+					<?php						
+				}
+				?>
 				
 			</table>
 			<p>
@@ -146,7 +179,9 @@
 				</td>
             </tr>
         	</tfoot>
-				<?php foreach($this->rsShipAll as $all){ ?>
+				<?php
+				if(count($this->rsShipAll) > 0) {
+				foreach($this->rsShipAll as $all){ ?>
 				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">					
 					<td><?php echo $all['SHIP_YEAR']; ?></td>
 					<td><?php echo $this->dateFormat($all['shipment_date']); ?></td>
@@ -156,7 +191,16 @@
 					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($all['SCHEME']),"action"=>"response","sid"=>$all['SHIPID'],"pid"=>$all['PARTICIPANT_ID'],"eid"=>$all['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $all['RESPONSE']; ?></a></td>
 					<td style="text-decoration : underline;"><a href="#"><?php echo $all['REPORT']; ?></a></td>					
 				</tr>	
-				<?php }?>		
+				<?php }
+				}
+				else{
+										?>
+					<tr>
+						<td colspan="7" style="text-align:center;padding:5px;font-size:14px;background:#dee;"> No data to show. </td>
+					</tr>
+					<?php	
+				}
+				?>		
 			</table>    
     </div>
 </section>

@@ -14,7 +14,7 @@ class ParticipantController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        // action body
+        $this->_redirect("/participant/dashboard");
     }
 
     public function dashboardAction()
@@ -25,24 +25,25 @@ class ParticipantController extends Zend_Controller_Action
     	//echo $authNameSpace->UserID; 
     	// get overview Info and pass to view 
     	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-    	$stmt = $db->prepare("call SHIPMENT_OVERVIEW()");
-    	$stmt->execute();
+    	$stmt = $db->prepare("call SHIPMENT_OVERVIEW(?)");
+    	$stmt->execute(array( $authNameSpace->dm_id));
     	$this->view->rsOverview = $stmt->fetchAll();
     	
     	$stmt = $db->prepare("call SHIPMENT_CURRENT(?)");
-    	$stmt->execute(array( $authNameSpace->UserID));
+		
+    	$stmt->execute(array( $authNameSpace->dm_id));
     	$this->view->rsShipCurr = $stmt->fetchAll();
     	 
-    	$stmt = $db->prepare("call SHIPMENT_DEFAULTED()");
-    	$stmt->execute();
+    	$stmt = $db->prepare("call SHIPMENT_DEFAULTED(?)");
+    	$stmt->execute(array( $authNameSpace->dm_id));
     	$this->view->rsShipDef = $stmt->fetchAll();
     	
     	$currentPage = $this->_getParam('page',1);
     	//$noOfItems = 4;
     	
-    	$stmt = $db->prepare("call SHIPMENT_ALL(?,?)");
+    	$stmt = $db->prepare("call SHIPMENT_ALL(?,?,?)");
     	
-    	$stmt->execute(array($this->noOfItems * $currentPage ,$this->noOfItems));
+    	$stmt->execute(array($this->noOfItems * $currentPage ,$this->noOfItems,$authNameSpace->dm_id));
     	//`$this->view->rsShipAll = $stmt->fetchAll();
 
     	$pag = Zend_Paginator::factory($stmt->fetchAll());
