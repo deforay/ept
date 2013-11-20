@@ -28,7 +28,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name','last_name', 'phone', 'primary_email', 'secondary_email', 'status');
+        $aColumns = array('first_name','last_name', 'phone', 'primary_email', 'secondary_email','p.first_name', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "dm_id";
@@ -106,7 +106,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('u' => $this->_name));
+        $sQuery = $this->getAdapter()->select()->from(array('u' => $this->_name))
+												->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.dm_id=u.dm_id',array())
+												->joinLeft(array('p'=>'participant'),'p.participant_id = pmm.participant_id',array('participants' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT(p.first_name,' ',p.last_name) SEPARATOR ', <br/>')")))
+												->group('u.dm_id');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -154,6 +157,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             $row[] = $aRow['mobile'];
             $row[] = $aRow['primary_email'];
             $row[] = $aRow['secondary_email'];
+            $row[] = $aRow['participants'];
             $row[] = $aRow['status'];
             $row[] = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
