@@ -1,0 +1,335 @@
+<?php
+
+//Zend_Debug::dump($this->shipmentData);
+$shipmentData = $this->shipmentData;
+
+?>
+<div class="well">
+	<fieldset>
+		<legend>Update Shipment Sample Details - <?php echo $shipmentData['shipment']['shipment_code']; ?></legend>
+<form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'edit')); ?>" autocomplete="off">
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Distribution Code </label>
+
+                <div class="col-lg-5">
+					<input type='text' disabled='disabled' class ='form-control' value='<?php echo $shipmentData['shipment']['distribution_code']; ?>' />
+				</div>
+				
+				<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo $shipmentData['shipment']['shipment_id']; ?>" class="isRequired" title="Please choose a Scheme Type on the top of this page"/>
+				<input type="hidden" name="selectedDistribution" id="selectedDistribution" class="" value="<?php echo $this->selectedDistribution; ?>"/>
+				
+            </div>		
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Shipment Code </label>
+
+                <div class="col-lg-5">
+					<input type='text' disabled='disabled' class ='form-control' value='<?php echo $shipmentData['shipment']['shipment_code']; ?>' />
+				</div>
+				
+				
+            </div>		
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Last Date</label>
+
+                <div class="col-lg-5">
+					<input type='text' disabled='disabled' class ='form-control' value='<?php echo $this->dateFormat($shipmentData['shipment']['shipment_date']); ?>' />
+				</div>
+				
+				
+            </div>		
+			<div class="form-group" id="sampleFormFragment">
+
+
+<?php
+
+if($shipmentData['shipment']['scheme_type'] == 'dts'){
+	
+	
+		$possibleResults ='<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
+	foreach($shipmentData['possibleResults'] as $pr){
+		if($pr['scheme_sub_group'] == 'DTS_FINAL'){
+			$possibleResults .= '<option value="'.$pr['id'].'">'.$pr['response'].'</option>';
+		}
+	}
+	
+	$possibleResults .= "</select>";
+	
+	?>
+	
+<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+	<thead>
+		<tr align="center">
+			<th style="width:25%;text-align: center;">Sample</th>
+			<th style="text-align: center;">Results</th>
+			<th style="width:20%;text-align: center;">Add/Remove Row</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php
+		$counter = 1;
+		foreach($shipmentData['reference'] as $reference){
+	    ?>
+		 <tr align="center">
+				<td style="text-align: center">
+					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" value="<?php echo $reference['sample_label']; ?>"/>
+					<input type="hidden" id ="sampleId" name="sampleId[]" value="<?php echo $reference['sample_id'];?>" />
+					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+				</td>
+				<td>
+					<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
+						<?php
+						foreach($shipmentData['possibleResults'] as $pr){
+							if($pr['scheme_sub_group'] == 'DTS_FINAL'){
+								?>
+								<option value="<?php echo $pr['id']; ?>" <?php echo ($reference['reference_result'] == $pr['id']) ? "selected='selected'" : ""; ?>><?php echo $pr['response']; ?></option>
+								<?php
+							}
+						}
+						?>
+						</select>
+						
+				</td>
+				<td>
+					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+					<?php
+					if($counter > 1){
+						?>
+						<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+						<?php
+					}
+					?>
+				</td>
+			</tr>
+		 <?php
+		 $counter++;
+		 }
+		 ?>
+	</tbody>
+</table>
+<br>
+
+<script type="text/javascript">
+	function addDtsRow(obj) {
+		//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
+		$(obj.parentNode.parentNode).after('<tr align="center"> \
+				<td style="text-align: center"> \
+					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
+				</td>  \
+				<td> \
+					<?php echo $possibleResults; ?> \
+				</td> \
+				<td> \
+					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a> \
+					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+				</td> \
+			</tr>');
+	}
+	function removeRow(obj) {
+		$(obj.parentNode.parentNode).fadeOut("normal",function(){
+			$(this).remove();
+		});
+	}	
+</script>
+<?php
+}
+if($shipmentData['shipment']['scheme_type'] == 'eid'){
+	$possibleResults ='<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
+	foreach($shipmentData['possibleResults'] as $pr){
+		$possibleResults .= '<option value="'.$pr['id'].'">'.$pr['response'].'</option>';
+	}
+	
+	$possibleResults .= "</select>";
+	
+	?>
+	
+<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+	<thead>
+		<tr align="center">
+			<th style="width:20%;text-align: center;">Control/Sample</th>
+			<th style="width:22%;text-align: center;">Results</th>
+			<th style="text-align: center;">HIV CT/OD</th>
+			<th style="text-align: center;">IC/QS Values</th>
+			<th style="width:13%;text-align: center;">Add/Remove Row</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php  $counter = 1;
+		foreach($shipmentData['reference'] as $reference){ 
+		
+		?>
+		
+		
+			<tr align="center">
+				<td style="text-align: center">
+					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>"/>
+					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+				</td>
+				<td>
+	<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>
+		<?php
+		 
+			foreach($shipmentData['possibleResults'] as $pr){
+				?>
+				<option value="<?php echo $pr['id']; ?>'" <?php echo ($reference['reference_result'] == $pr['id']) ? "selected='selected'" : ""; ?>><?php echo $pr['response']; ?></option>
+				<?php
+			}
+		?>
+	</select>
+				</td>
+				<td>
+					<input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values"  title="Please enter the HIV CT/OD values here" value="<?php echo $reference['reference_hiv_ct_od'] ?>"/>
+				</td>
+				<td>
+					<input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values"  title="Please enter the IC/QS Values here" value="<?php echo $reference['reference_ic_qs'] ?>" />
+				</td>
+			    <td>
+					<a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+					<?php
+					if($counter > 1){
+						
+						?>
+						<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+						<?php
+					}
+					?>
+				</td>
+			</tr>
+		
+		
+		<?php
+		$counter++;
+		} ?>
+	</tbody>
+</table>
+<br>
+
+<script type="text/javascript">
+	function addEidRow(obj) {
+		//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
+		$(obj.parentNode.parentNode).after('<tr align="center"> \
+				<td style="text-align: center"> \
+					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
+				</td>  \
+				<td> \
+					<?php echo $possibleResults; ?> \
+				</td> \
+				<td> \
+					<input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /> \
+				</td> \
+				<td> \
+					<input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /> \
+				</td> \
+				<td> \
+					<a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a> \
+					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+				</td> \
+			</tr>');
+	}
+	function removeRow(obj) {
+		$(obj.parentNode.parentNode).fadeOut("normal",function(){
+			$(this).remove();
+		});
+	}	
+</script>
+
+
+	<?php
+} else if($shipmentData['shipment']['scheme_type'] == 'vl'){
+	?>
+	
+<table style="width: 850px;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+	<thead>
+		<tr align="center">
+			<th style="width:25%;text-align: center;">Control/Sample</th>
+			<th style="text-align: center;">Viral Load (log<sub>10</sub> copies/ml)</th>
+			<th style="width:20%;text-align: center;">Add/Remove Row</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php $counter =1;  
+		foreach($shipmentData['reference'] as $reference){ 
+		
+		?>
+		
+		
+			<tr align="center">
+				<td style="text-align: center">
+					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>" readonly="readonly"/>
+					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+				</td>
+				<td>
+					<input type="text" name="vlResult[]" class="isRequired form-control input-sm" placeholder="Please enter the Viral Load Values for <?php echo $reference['sample_label']; ?> here"  title="Please enter the Viral Load Values for <?php echo $reference['sample_label']; ?>"  value="<?php echo $reference['reference_viral_load']; ?>"/>
+				</td>
+			    <td>
+					<a href="javascript:void(0);" onclick="addVlRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+					<?php
+					if($counter > 1){
+						
+						?>
+						<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+						<?php
+					}
+					?>
+				</td>
+			</tr>
+		
+		
+		<?php
+		$counter++;
+		}
+		
+		?>
+			
+		</tbody>
+</table>
+<br>
+
+<script type="text/javascript">
+	function addVlRow(obj) {
+		$(obj.parentNode.parentNode).after('<tr align="center"> \
+												<th><input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" title="Please enter the Sample Name"  placeholder="Please enter the Sample Name" /></th> \
+												<td><input type="text" name="vlResult[]" class="isRequired form-control input-sm"  title="Please enter the Viral Load Values for this sample" placeholder="Please enter the Viral Load Values for this sample" /></td> \
+												<td><a href="javascript:void(0);" onclick="addVlRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
+											</tr>');
+	}
+	function removeRow(obj) {
+		$(obj.parentNode.parentNode).fadeOut("normal",function(){
+			$(this).remove();
+		});
+	}	
+</script>
+
+
+	<?php
+}
+
+
+
+?>
+				
+			</div>
+			
+            <div style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();return false;"
+                       tabindex="7" value="Update Shipment"/>
+                <input class="btn btn-danger btn-sm" type="button" onclick="window.history.go(-1);"
+                       tabindex="8" value="Cancel"/>
+            </div>			
+	</form>
+</fieldset>
+</div>
+
+<script>
+	
+		
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'shipmentForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('shipmentForm').submit();
+        }
+    }
+	
+</script>

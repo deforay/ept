@@ -102,8 +102,31 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
     }
 
+    public function editAction(){
+        if($this->getRequest()->isPost()){
+            $shipmentService = new Application_Service_Shipments();
+            $params = $this->getRequest()->getPost();
+            $shipmentService->updateShipment($params);
+            $this->_redirect("/admin/shipment"); 
+        }else{
+            if($this->_hasParam('sid')){
+                $sid = (int)base64_decode($this->_getParam('sid'));
+                $shipmentService = new Application_Service_Shipments();
+                $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
+                if($response === false){
+                    $this->_redirect("/admin/shipment");        
+                }
+            }else{
+                $this->_redirect("/admin/shipment");    
+            }
+        }
+
+    }
+
 
 }
+
+
 
 
 

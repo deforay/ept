@@ -146,6 +146,7 @@
               <actionMethod actionName="getSampleForm"/>
               <actionMethod actionName="shipIt"/>
               <actionMethod actionName="remove"/>
+              <actionMethod actionName="edit"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -237,6 +238,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Distributions">
                 <viewScriptFile forActionName="shipDistribution"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="edit"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -480,6 +484,7 @@
                 <testApplicationActionMethod forActionName="add"/>
                 <testApplicationActionMethod forActionName="getSampleForm"/>
                 <testApplicationActionMethod forActionName="remove"/>
+                <testApplicationActionMethod forActionName="edit"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>
           </testApplicationModuleDirectory>

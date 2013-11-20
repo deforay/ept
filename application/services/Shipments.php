@@ -152,10 +152,15 @@ class Application_Service_Shipments {
 			$row[] = $aRow['distribution_code'];
 			$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
 			$row[] = $aRow['number_of_samples'];
-			if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped'){
-				$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>'
+			if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'closed'){
+				$row[] ='<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>'
+						.'&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>'
 				        .'&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\''.base64_encode($aRow['shipment_id']).'\')"><span><i class="icon-remove"></i> Delete</span></a>';	
-			}else{
+			}
+			else if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'closed'){
+			$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>';					
+			}
+			else{
 				$row[] = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';	
 			}
 			
@@ -408,6 +413,100 @@ class Application_Service_Shipments {
 	public function isShipmentEditable($shipmentId,$participantId){
 		$spMap = new Application_Model_DbTable_ShipmentParticipantMap();
 		return $spMap->isShipmentEditable($shipmentId,$participantId);
+	}
+	
+	
+	public function getShipmentForEdit($sid){
+
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();		
+		$shipment = $db->fetchRow($db->select()->from(array('s'=>'shipment'))
+									 ->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'))
+									 ->where("s.shipment_id = ?",$sid));
+		
+	
+		
+		if($shipment['scheme_type'] == 'dts'){			
+			$reference = $db->fetchAll($db->select()->from(array('s'=>'shipment'))
+													->join(array('ref'=>'reference_result_dts'),'ref.shipment_id=s.shipment_id')
+													->where("s.shipment_id = ?",$sid));
+			$schemeService = new Application_Service_Schemes();
+			$possibleResults = $schemeService->getPossibleResults('dts');		
+		}
+		else if($shipment['scheme_type'] == 'eid'){			
+			$reference = $db->fetchAll($db->select()->from(array('s'=>'shipment'))
+													->join(array('ref'=>'reference_result_eid'),'ref.shipment_id=s.shipment_id')
+													->where("s.shipment_id = ?",$sid));
+			$schemeService = new Application_Service_Schemes();
+			$possibleResults = $schemeService->getPossibleResults('eid');		
+		}
+		else if($shipment['scheme_type'] == 'vl'){			
+			$reference = $db->fetchAll($db->select()->from(array('s'=>'shipment'))
+													->join(array('ref'=>'reference_result_vl'),'ref.shipment_id=s.shipment_id')
+													->where("s.shipment_id = ?",$sid));
+			$possibleResults = "";		
+		}else{
+			return false;
+		}
+		
+		return array('shipment'=>$shipment, 'reference'=>$reference,'possibleResults'=>$possibleResults);
+		
+	}
+	
+	
+		public function updateShipment($params){
+		//Zend_Debug::dump($params);die;
+		
+		
+		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s'=>'shipment'))->where('shipment_id = '.$params['shipmentId']));
+		
+		$scheme = $shipmentRow['scheme_type'];
+		
+		$size = count($params['sampleName']);
+		if($scheme == 'eid'){
+			$dbAdapter->delete('reference_result_eid','shipment_id = '.$params['shipmentId']);
+			for($i = 0;$i < $size;$i++){
+				$dbAdapter->insert('reference_result_eid',array(
+									'shipment_id'=>$params['shipmentId'],
+									'sample_id'=>($i+1),
+									'sample_label'=>$params['sampleName'][$i],
+									'reference_result'=>$params['possibleResults'][$i],
+									'reference_hiv_ct_od'=>$params['hivCtOd'][$i],
+									'reference_ic_qs'=>$params['icQs'][$i],
+									)
+								  );
+			}
+
+		}
+		else if($scheme == 'vl'){
+			$dbAdapter->delete('reference_result_vl','shipment_id = '.$params['shipmentId']);
+			for($i = 0;$i < $size;$i++){				
+				$dbAdapter->insert('reference_result_vl',array(
+									'shipment_id'=>$params['shipmentId'],
+									'sample_id'=>($i+1),
+									'sample_label'=>$params['sampleName'][$i],
+									'reference_viral_load'=>$params['vlResult'][$i]
+									)
+								  );
+			}
+
+		}
+		else if($scheme == 'dts'){
+			$dbAdapter->delete('reference_result_dts','shipment_id = '.$params['shipmentId']);
+			for($i = 0;$i < $size;$i++){
+				
+				$dbAdapter->insert('reference_result_dts',array(
+									'shipment_id'=>$params['shipmentId'],
+									'sample_id'=>($i+1),
+									'sample_label'=>$params['sampleName'][$i],
+									'reference_result'=>$params['possibleResults'][$i]
+									)
+								  );
+			}
+
+		}
+		
+		$dbAdapter->update('shipment',array('number_of_samples' => $size),'shipment_id = '.$params['shipmentId']);
 	}
 
 }
