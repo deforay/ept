@@ -1402,3 +1402,6 @@ Delimiter ;
 );
 
  
+ -- by Amit on 19 Nov 2013
+  alter table participant drop foreign key participant_ibfk_1;
+  ALTER TABLE `participant` DROP `data_manager`;

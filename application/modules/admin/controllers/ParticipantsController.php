@@ -22,12 +22,13 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function addAction()
     {
-        $userService = new Application_Service_Participants();
+        $participantService = new Application_Service_Participants();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
-            $userService->addParticipant($params);
+            $participantService->addParticipant($params);
             $this->_redirect("/admin/participants");
         }
+        $this->view->affiliates = $participantService->getAffiliateList();
         $dataManagerService = new Application_Service_DataManagers();
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
     }
@@ -35,16 +36,17 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     public function editAction()
     {
 
-        $userService = new Application_Service_Participants();
+        $participantService = new Application_Service_Participants();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
-            $userService->updateParticipant($params);
+            $participantService->updateParticipant($params);
             $this->_redirect("/admin/participants");
         }else{
             if($this->_hasParam('id')){
                 $userId = (int)$this->_getParam('id');
-                $this->view->participant = $userService->getParticipantDetails($userId);
+                $this->view->participant = $participantService->getParticipantDetails($userId);
             }
+            $this->view->affiliates = $participantService->getAffiliateList();
             $dataManagerService = new Application_Service_DataManagers();
             $this->view->dataManagers = $dataManagerService->getDataManagerList();            
         }

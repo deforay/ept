@@ -78,7 +78,7 @@
 		$('.datepicker').datepicker({
 				dateFormat: '<?php echo $this->defaultDateFormat();?>',
 				beforeShowDay: function(date){
-					var string = jQuery.datepicker.formatDate('<?php echo $this->defaultDateFormat();?>', date);
+					var string = jQuery.datepicker.formatDate('dd-M-yy', date);
 					return [ disabledDates.indexOf(string) == -1 ]
 				}
 		});			

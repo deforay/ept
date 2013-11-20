@@ -44,9 +44,10 @@ $adminSession = new Zend_Session_Namespace('admin');
             <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manage') ? "class='active dropdown'" : "class='dropdown'"; ?>>
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
               <ul class="dropdown-menu">
+				<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'system-admins'),'default',true); ?>">PT Manager</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'data-managers'),'default',true); ?>">Data Managers</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'participants'),'default',true); ?>">PT Participants</a></li>
-                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'system-admins'),'default',true); ?>">System Admin</a></li>
+                
                 <li class="divider"></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments'),'default',true); ?>">Enrollments</a></li>
               </ul>

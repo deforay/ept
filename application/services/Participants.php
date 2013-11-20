@@ -80,5 +80,9 @@ class Application_Service_Participants {
 		$enrollments = new Application_Model_DbTable_Enrollments();
 		return $enrollments->enrollParticipants($params);
 	}
+	public function getAffiliateList(){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		return $db->fetchAll($db->select()->from('r_participant_affiliates')->order('affiliate ASC'));
+	}
 
 }

@@ -1,3 +1,4 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <div class="well">
     <form name="addParticipantForm" id="addParticipantForm" method="post"
           action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "add"), null, true) ?>"
@@ -9,7 +10,7 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label">Lab Name or First Name<span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="labName" name="labName" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="pfname" name="pfname" size="50" maxlength="45"
                                              class="isRequired form-control" title="Please enter the Lab Name or First Name here"
                                              placeholder="Please enter the Lab Name or First Name here"/></div>
             </div>
@@ -17,7 +18,7 @@
                 <label class="col-lg-3 control-label">Last Name <br/> <small>(Leave blank if Participant is Lab)</small></label>
 
                 <div class="col-lg-5"><input type="text" id="plname" name="plname" size="50" maxlength="45"
-                                             class="isRequired form-control" title="Please enter the last name here"
+                                             class="form-control" title="Please enter the last name here"
                                              placeholder="Please enter the last name here"/></div>
             </div>	    
             <div class="form-group">
@@ -63,11 +64,11 @@
                                              placeholder="Please enter the country here"/></div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Zip Code (if applicable)</label>
+                <label class="col-lg-3 control-label">Zip/Postal Code (if applicable)</label>
 
                 <div class="col-lg-5"><input type="text" id="zip" name="zip" size="50" maxlength="45"
-                                             class="form-control" title="Please enter the zip here"
-                                             placeholder="Please enter the zip here"/></div>
+                                             class="form-control" title="Please enter the Zip/Postal here"
+                                             placeholder="Please enter the Zip/Postal here"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Longitude <span class="mandatory">*</span></label>
@@ -101,8 +102,7 @@
                 <label class="col-lg-3 control-label">Data Manager <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-                    <select class="form-control isRequired" name="dataManager" id="dataManager">
-						<option value="">--Select--</option>
+                    <select class="form-control isRequired" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more Data Managers" data-selected-text-format="count>3">
 						<?php foreach($this->dataManagers as $dm){
 							?>
 							<option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name']. " " . $dm['last_name']; ?></option>
@@ -137,8 +137,15 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label">Affiliation</label>
 
-                <div class="col-lg-5"><input type="text" id="partAff" name="partAff" size="50" maxlength="45"
-                                             placeholder="Please enter affiliation here" class="form-control"/></div>
+                <div class="col-lg-5">
+					<select name="partAff" id="partAff"  class="form-control">
+						<option value="">--Select--</option>
+						<?php foreach($this->affiliates as $aff){
+						?>
+						<option value="<?php echo $aff['affiliate']; ?>"><?php echo $aff['affiliate']; ?></option>
+						<?php	
+						} ?>
+					</select>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Status</label>
@@ -146,8 +153,7 @@
                 <div class="col-lg-5">
                     <select type="text" id="status" name="status" class="isRequired form-control"
                             title="Please select user status here">
-                        <option value="">--Select--</option>
-                        <option value="active">Active</option>
+                        <option value="active" selected="selected">Active</option>
                         <option value="inactive">Inactive</option>
                     </select>
                 </div>
@@ -165,8 +171,14 @@
         </fieldset>
     </form>
 </div>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript">
     var duplicated = false;
+	
+	$(document).ready(function(){
+		$('#dataManager').selectpicker();
+	});
+	
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html" },
             function (data) {
@@ -182,6 +194,7 @@
     }
 
     function validateNow() {
+		$(".bootstrap-select").removeClass('isRequired');
         checkDuplicate('participants', 'unique_identifier', $("#participantId"), null, 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'addParticipantForm'

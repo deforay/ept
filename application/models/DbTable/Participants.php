@@ -9,12 +9,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function getParticipantsByUserSystemId($userSystemId)
     {
-        return $this->fetchAll("data_manager = $userSystemId");
+		return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
+				     ->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id',array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+					 ->where("pmm.dm_id = $userSystemId")
+				     ->group('p.participant_id'));	
     }
 
     public function getParticipant($partSysId)
     {
-        return $this->fetchRow("participant_id = '" . $partSysId . "'");
+        return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('p' => $this->_name))
+				     ->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id',array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+					 ->where("p.participant_id = '" . $partSysId . "'")
+				     ->group('p.participant_id'));
     }
 
     public function getAllParticipants($parameters)
@@ -153,7 +159,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i></a>';
+            $row[] = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
             $output['aaData'][] = $row;
         }
@@ -180,7 +186,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'last_name' => $params['plname'],
             'mobile' => $params['pphone2'],
             'phone' => $params['pphone1'],
-            'data_manager' => $params['dataManager'],
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
             'updated_on' => new Zend_Db_Expr('now()')
@@ -200,8 +205,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 		}
 
 
+        $noOfRows = $this->update($data, "participant_id = " . $params['participantId']);
+		
+		
+		
+		$db = Zend_Db_Table_Abstract::getAdapter();
+		$db->delete('participant_manager_map',"participant_id = " . $params['participantId']);
+		
+		foreach($params['dataManager'] as $dataManager){
+			$db->insert('participant_manager_map',array('dm_id'=>$dataManager,'participant_id'=>$params['participantId']));
+		}
 
-        return $this->update($data, "participant_id = '" . $params['participantId'] . "'");
+		return $noOfRows;
     }
 
     public function addParticipant($params)
@@ -225,12 +240,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'phone' => $params['pphone1'],
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
-            'data_manager' => $params['dataManager'],
             'status' => $params['status'],
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->primary_email,
         );
-        return $this->insert($data);
+		
+		//Zend_Debug::dump($data);die;
+        $participantId = $this->insert($data);
+		
+		$db = Zend_Db_Table_Abstract::getAdapter();
+		
+		foreach($params['dataManager'] as $dataManager){
+			$db->insert('participant_manager_map',array('dm_id'=>$dataManager,'participant_id'=>$participantId));
+		}				
+		
+		return $participantId;
     }
 
 }

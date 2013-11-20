@@ -110,7 +110,7 @@ class ParticipantController extends Zend_Controller_Action
 	    	$this->view->rsParticipant = $dbParticipant->getParticipantDetails($this->_getParam('psid'));    		
     	}
     	
-    	
+    	$this->view->affiliates = $dbParticipant->getAffiliateList();
     }
 
     public function schemeinfoAction()

@@ -1,3 +1,4 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <div class="well">
     <form name="editParticipantForm" id="editParticipantForm" method="post"
           action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "edit"), null, true) ?>"
@@ -22,7 +23,7 @@
                 <label class="col-lg-3 control-label">Last Name <br/> <small>(Leave blank if Participant is Lab)</small></label>
 
                 <div class="col-lg-5"><input type="text" id="plname" name="plname" size="50" maxlength="45"
-                                             class="isRequired form-control" title="Please enter the last name here"
+                                             class="form-control" title="Please enter the last name here"
                                              placeholder="Please enter the last name here"
 					     value="<?php echo $this->participant['last_name']; ?>"/></div>
             </div>	    
@@ -74,11 +75,11 @@
                                              value="<?php echo $this->participant['country']; ?>"/></div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Zip Code (if applicable)</label>
+                <label class="col-lg-3 control-label">Zip/Postal Code (if applicable)</label>
 
                 <div class="col-lg-5"><input type="text" id="zip" name="zip" size="50" maxlength="45"
-                                             class="form-control" title="Please enter the zip here"
-                                             placeholder="Please enter the zip here"
+                                             class="form-control" title="Please enter the Zip/Postal here"
+                                             placeholder="Please enter the Zip/Postal here"
                                              value="<?php echo $this->participant['zip']; ?>"/></div>
             </div>
             <div class="form-group">
@@ -126,11 +127,12 @@
                 <label class="col-lg-3 control-label">Data Manager <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-                    <select class="form-control isRequired" name="dataManager" id="dataManager">
-						<option value="">--Select--</option>
-						<?php foreach($this->dataManagers as $dm){
+					<select class="form-control isRequired" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more Data Managers" data-selected-text-format="count>3">
+						<?php
+						$dataManagers = explode(",",$this->participant['data_manager']);
+						foreach($this->dataManagers as $dm){
 							?>
-							<option value="<?php echo $dm['dm_id']; ?>" <?php echo ($dm['dm_id'] == $this->participant['data_manager']) ? "selected='selected'" : "" ?>><?php echo $dm['first_name']. " " . $dm['last_name']; ?></option>
+							<option value="<?php echo $dm['dm_id']; ?>" <?php echo (in_array($dm['dm_id'],$dataManagers)) ? "selected='selected'" : "" ?>><?php echo $dm['first_name']. " " . $dm['last_name']; ?></option>
 							<?php
 						}
 						?>
@@ -165,9 +167,16 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label">Affiliation</label>
 
-                <div class="col-lg-5"><input type="text" id="partAff" name="partAff" size="50" maxlength="45"
-                                             placeholder="Please enter affiliation here" class="form-control"
-                                             value="<?php echo $this->participant['affiliation']; ?>"/></div>
+                <div class="col-lg-5">
+					<select name="partAff" id="partAff"  class="form-control">
+						<option value="">--Select--</option>
+						<?php foreach($this->affiliates as $aff){
+						?>
+						<option value="<?php echo $aff['affiliate']; ?>" <?php echo ($this->participant['affiliation'] == $aff['affiliate']) ? "selected='selected'" : "" ?>><?php echo $aff['affiliate']; ?></option>
+						<?php	
+						} ?>
+					</select>
+				</div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Status</label>
@@ -200,8 +209,14 @@
         </fieldset>
     </form>
 </div>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript">
     var duplicated = false;
+	
+	$(document).ready(function(){
+		$('#dataManager').selectpicker();
+	});
+	
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html" },
             function (data) {
@@ -217,6 +232,7 @@
     }
 
     function validateNow() {
+		$(".bootstrap-select").removeClass('isRequired');
         checkDuplicate('participants', 'unique_identifier', $("#pid"), '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'editParticipantForm'
