@@ -147,8 +147,13 @@ class Application_Service_Shipments {
         foreach ($rResult as $aRow) {
 			$row = array();
 			
-			$row['DT_RowClass'] = $aRow['status'];	
-			
+			if($aRow['status'] == 'ready'){
+				$btn = "btn-success";
+			}else if($aRow['status'] == 'pending'){
+				$btn = "btn-danger";
+			}else {
+				$btn = "btn-primary";
+			}
 			
 			$row[] = $aRow['shipment_code'];
 			$row[] = $aRow['SCHEME'];	    
@@ -157,12 +162,12 @@ class Application_Service_Shipments {
 			$row[] = $aRow['number_of_samples'];
 			$row[] = ucfirst($aRow['status']);
 			if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'closed'){
-				$row[] ='<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>'
-						.'&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>'
+				$row[] ='<a class="btn '.$btn.' btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>'
+						.'&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>'
 				        .'&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\''.base64_encode($aRow['shipment_id']).'\')"><span><i class="icon-remove"></i> Delete</span></a>';	
 			}
 			else if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] == 'shipped' && $aRow['status'] != 'closed'){
-			$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>';					
+				$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>';					
 			}
 			else{
 				$row[] = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';	
