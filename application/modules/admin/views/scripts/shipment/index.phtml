@@ -30,6 +30,7 @@
         <th>Distribution Code</th>
         <th>Distribution Date</th>
         <th>No. Of Samples</th>
+        <th>Status</th>
         <th>Action</th>
     </tr>
     </thead>
@@ -166,6 +167,7 @@
                 {"sClass":"center"},
                 {"sClass":"center"},
                 {"sClass":"center"},
+                {"sClass":"center"},
                 {"sClass":"center","bSortable":false}
             ],
             "aaSorting": [[ 3, "desc" ]],
@@ -185,7 +187,11 @@
                     "data": aoData,
                     "success": fnCallback
                 });
-            }
+            },"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+            /* Append the grade to the default row class name */
+				
+					$('td.sorting_1').addClass( 'goga' );
+	        },
         } );
 
 	};

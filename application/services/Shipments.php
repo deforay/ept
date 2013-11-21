@@ -5,8 +5,8 @@ class Application_Service_Shipments {
 	public function getAllShipments($parameters){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $aColumns = array("sl.scheme_name","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distribution_date', 'number_of_samples');
-        $orderColumns = array("sl.scheme_name","shipment_code","shipment_date", 'distribution_code', 'distribution_date', 'number_of_samples');
+        $aColumns = array("sl.scheme_name","shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'number_of_samples','status');
+        $orderColumns = array("sl.scheme_name","shipment_code", 'distribution_code', 'distribution_date', 'number_of_samples','status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "shipment_date";
@@ -146,18 +146,22 @@ class Application_Service_Shipments {
 		//$aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distibution_date', 'number_of_samples');
         foreach ($rResult as $aRow) {
 			$row = array();
-
+			
+			$row['DT_RowClass'] = $aRow['status'];	
+			
+			
 			$row[] = $aRow['shipment_code'];
 			$row[] = $aRow['SCHEME'];	    
 			$row[] = $aRow['distribution_code'];
 			$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
 			$row[] = $aRow['number_of_samples'];
+			$row[] = ucfirst($aRow['status']);
 			if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'closed'){
 				$row[] ='<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>'
 						.'&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>'
 				        .'&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\''.base64_encode($aRow['shipment_id']).'\')"><span><i class="icon-remove"></i> Delete</span></a>';	
 			}
-			else if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'closed'){
+			else if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] == 'shipped' && $aRow['status'] != 'closed'){
 			$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>';					
 			}
 			else{
