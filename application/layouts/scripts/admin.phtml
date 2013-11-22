@@ -60,7 +60,14 @@ $adminSession = new Zend_Session_Namespace('admin');
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'shipment'),'default',true); ?>">Shipments</a></li>
               </ul>
             </li>
-			<li><a href="/admin">Reports</a></li>
+            <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'analyze') ? "class='active dropdown'" : "class='dropdown'"; ?>>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Analyze <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'evaluate'),'default',true); ?>">Evaluate</a></li>
+                <li><a href="javascript:void(0);">Reports</a></li>
+              </ul>
+            </li>
+			
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'login','action'=>'log-out')); ?>"><i class="icon-signout"></i> Logout</a></li>
