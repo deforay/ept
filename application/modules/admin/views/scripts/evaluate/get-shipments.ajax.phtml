@@ -32,7 +32,7 @@ if($this->shipments == false && count($this->shipments) <= 0){
 					<td><?php echo $shipment['number_of_samples'] ?></td>
 					<td><?php echo $shipment['participant_count'] ?></td>
 					<td><?php echo ucfirst($shipment['status']) ?></td>
-					<td><a class="btn btn-primary btn-xs" href="javascript:void(0);"><span><i class="icon-edit"></i> Evaluate</span></a></td>
+					<td><a class="btn btn-primary btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a></td>
 				</tr>
 				<?php
 				}

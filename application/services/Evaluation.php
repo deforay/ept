@@ -168,5 +168,16 @@ class Application_Service_Evaluation {
 			  
 	    return $db->fetchAll($sql);
 	}
+	
+	public function getShipmentToEvaluate($shipmentId){
+	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('s'=>'shipment'))
+							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
+							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id')
+							->join(array('p'=>'participant'),'p.participant_id=sp.participant_id')
+							->where("s.shipment_id = ?",$shipmentId);
+			  
+	    return $db->fetchAll($sql);
+	}
 }
 

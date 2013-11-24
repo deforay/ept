@@ -1,0 +1,62 @@
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Evaluate Shipment <?php echo $this->shipment[0]['shipment_code']; ?> from Distribution <?php echo $this->shipment[0]['distribution_code']; ?> </div>
+	<div style="margin-top:10px;">
+		<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
+	</div>
+</h4>
+
+<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation">
+    <thead>
+    <tr>
+        <th>Participant/Tester</th>
+        <th>Score</th>
+        <th>Max Score</th>
+        <th>Result</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+		<?php
+			foreach($this->shipment as $shipment){
+				?>
+				<tr>
+					<td><?php echo $shipment['first_name'] . " " .$shipment['last_name'] ?></td>
+					<td>8</td>
+					<td>10</td>
+					<td>Pass</td>
+					<td><a class="btn btn-primary btn-xs" href="javascript:void(0);"><span><i class="icon-search"></i> View</span></a></td>
+				</tr>
+				<?php
+			}
+		?>
+    </tr>
+    </tbody>
+</table>
+
+
+<script type="text/javascript" charset="utf-8">
+	var oTable = null;
+    $(document).ready(function() {
+		oTable = $("#shipmentEvaluation").dataTable({
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "full_numbers",
+            "bRetrieve": true,
+            "aoColumns": [
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center","bSortable":false}
+            ],
+            "aaSorting": [[ 0, "asc" ]],
+            "bProcessing": true,
+        } );
+	});
+</script>

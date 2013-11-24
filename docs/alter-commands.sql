@@ -1247,3 +1247,13 @@ Delimiter ;
  -- by Amit on 19 Nov 2013
   alter table participant drop foreign key participant_ibfk_1;
   ALTER TABLE `participant` DROP `data_manager`;
+  
+  -- by Amit Nov 24 2013
+  
+CREATE TABLE IF NOT EXISTS `r_results` (
+  `result_id` int(11) NOT NULL AUTO_INCREMENT,
+  `result_name` varchar(255) NOT NULL,
+  PRIMARY KEY (`result_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+INSERT INTO  `r_results` (`result_id` ,`result_name`) VALUES ('1',  'Pass'), ('2',  'Fail');
