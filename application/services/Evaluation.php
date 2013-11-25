@@ -179,5 +179,43 @@ class Application_Service_Evaluation {
 			  
 	    return $db->fetchAll($sql);
 	}
+	
+	public function viewEvaluation($shipmentId,$participantId,$scheme){
+	//    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+	//	$sql = $db->select()->from(array('s'=>'shipment'))
+	//						->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
+	//						->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id')
+	//						->join(array('p'=>'participant'),'p.participant_id=sp.participant_id')
+	//						->where("sp.participant_id = ?",$participantId)
+	//						->where("sp.shipment_id = ?",$shipmentId);
+	//		  
+	//    return $db->fetchAll($sql);
+	
+
+            $participantService = new Application_Service_Participants();
+			$schemeService = new Application_Service_Schemes();
+			$shipmentService = new Application_Service_Shipments();
+			
+			
+            $participantData = $participantService->getParticipantDetails($participantId);
+			$shipmentData = $schemeService->getShipmentData($shipmentId,$participantId);
+			
+			if($scheme == 'eid'){
+				$possibleResults = $schemeService->getPossibleResults('eid');
+				$results = $schemeService->getEidSamples($shipmentId,$participantId);
+			} else if($scheme == 'vl'){
+				$possibleResults = "";
+				$results = $schemeService->getVlSamples($shipmentId,$participantId);
+			} else if($scheme == 'dts'){
+				$possibleResults = $schemeService->getPossibleResults('dts');
+				$results = $schemeService->getDtsSamples($shipmentId,$participantId);
+			}
+
+			return array('participant'=>$participantData,
+			             'shipment' => $shipmentData ,
+						 'possibleResults' => $possibleResults,
+						 'results' => $results );
+	
+	}
 }
 

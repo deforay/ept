@@ -43,8 +43,30 @@ class Admin_EvaluateController extends Zend_Controller_Action
         }
     }
 
+    public function viewAction()
+    {
+        if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){            
+            $sid = (int)base64_decode($this->_getParam('sid'));
+            $pid = (int)base64_decode($this->_getParam('pid'));
+            $this->view->scheme = $scheme = base64_decode($this->_getParam('scheme'));
+            if($scheme == 'eid'){
+                
+                $schemeService = new Application_Service_Schemes();        
+                $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
+                $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
+                
+            }
+            $evalService = new Application_Service_Evaluation();
+            $this->view->evaluateData = $evalService->viewEvaluation($sid,$pid,$scheme);            
+        }else{
+            $this->_redirect("/admin/evaluate/");
+        }
+    }
+
 
 }
+
+
 
 
 

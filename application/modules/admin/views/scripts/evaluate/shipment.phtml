@@ -22,10 +22,10 @@
 				?>
 				<tr>
 					<td><?php echo $shipment['first_name'] . " " .$shipment['last_name'] ?></td>
-					<td>8</td>
-					<td>10</td>
+					<td><?php echo (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : 'Not Evaluated' ?></td>
+					<td><?php echo $shipment['number_of_samples'] ?></td>
 					<td>Pass</td>
-					<td><a class="btn btn-primary btn-xs" href="javascript:void(0);"><span><i class="icon-search"></i> View</span></a></td>
+					<td><a class="btn btn-primary btn-xs" href="/admin/evaluate/view/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-search"></i> View</span></a></td>
 				</tr>
 				<?php
 			}
