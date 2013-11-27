@@ -347,6 +347,8 @@ class Application_Service_Shipments {
 									'reference_result'=>$params['possibleResults'][$i],
 									'reference_hiv_ct_od'=>$params['hivCtOd'][$i],
 									'reference_ic_qs'=>$params['icQs'][$i],
+									'mandatory'=>$params['mandatory'][$i],
+									'sample_score'=>$params['score'][$i]
 									)
 								  );
 			}
@@ -358,7 +360,9 @@ class Application_Service_Shipments {
 									'shipment_id'=>$lastId,
 									'sample_id'=>($i+1),
 									'sample_label'=>$params['sampleName'][$i],
-									'reference_viral_load'=>$params['vlResult'][$i]
+									'reference_viral_load'=>$params['vlResult'][$i],
+									'mandatory'=>$params['mandatory'][$i],
+									'sample_score'=>$params['score'][$i]
 									)
 								  );
 			}
@@ -370,7 +374,9 @@ class Application_Service_Shipments {
 									'shipment_id'=>$lastId,
 									'sample_id'=>($i+1),
 									'sample_label'=>$params['sampleName'][$i],
-									'reference_result'=>$params['possibleResults'][$i]
+									'reference_result'=>$params['possibleResults'][$i],
+									'mandatory'=>$params['mandatory'][$i],
+									'sample_score'=>$params['score'][$i]
 									)
 								  );
 			}

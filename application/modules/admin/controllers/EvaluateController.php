@@ -37,7 +37,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
         if($this->_hasParam('sid')){            
             $id = (int)base64_decode($this->_getParam('sid'));
             $evalService = new Application_Service_Evaluation();
-            $this->view->shipment = $evalService->getShipmentToEvaluate($id);            
+            $this->view->shipment = $evalService->getShipmentToEvaluate($id);
+            Zend_Debug::dump( $this->view->shipment);
         }else{
             $this->_redirect("/admin/evaluate/");
         }

@@ -61,6 +61,8 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 		<tr align="center">
 			<th style="width:25%;text-align: center;">Sample</th>
 			<th style="text-align: center;">Results</th>
+			<th style="text-align: center;">Mandatory ?</th>
+			<th style="width:10%;text-align: center;">Score</th>
 			<th style="width:20%;text-align: center;">Add/Remove Row</th>
 		</tr>
 	</thead>
@@ -88,6 +90,16 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 						?>
 						</select>
 						
+				</td>
+				<td>
+					<select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory">
+						<option value="">--Select--</option>
+						<option value="1" <?php echo ($reference['mandatory'] == 1) ? "selected='selected'" : "";?>>Yes</option>
+						<option value="0" <?php echo ($reference['mandatory'] == 0) ? "selected='selected'" : "";?>>No</option>
+					</select>
+				</td>
+				<td>
+					<input type="text" name="score[]" class="isRequired isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample"  value="<?php echo $reference['sample_score'];?>" />
 				</td>
 				<td>
 					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
@@ -118,6 +130,11 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 				<td> \
 					<?php echo $possibleResults; ?> \
 				</td> \
+				<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+						<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+					</select> \
+				</td> \
+				<td><input type="text" name="score[]" class="isRequired isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 				<td> \
 					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a> \
 					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
@@ -147,8 +164,10 @@ if($shipmentData['shipment']['scheme_type'] == 'eid'){
 		<tr align="center">
 			<th style="width:20%;text-align: center;">Control/Sample</th>
 			<th style="width:22%;text-align: center;">Results</th>
-			<th style="text-align: center;">HIV CT/OD</th>
-			<th style="text-align: center;">IC/QS Values</th>
+			<th style="width:10%;text-align: center;">HIV CT/OD</th>
+			<th style="width:10%;text-align: center;">IC/QS Values</th>
+			<th style="width:10%;text-align: center;">Mandatory ?</th>
+			<th style="width:10%;text-align: center;">Score</th>			
 			<th style="width:13%;text-align: center;">Add/Remove Row</th>
 		</tr>
 	</thead>
@@ -181,6 +200,16 @@ if($shipmentData['shipment']['scheme_type'] == 'eid'){
 				</td>
 				<td>
 					<input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values"  title="Please enter the IC/QS Values here" value="<?php echo $reference['reference_ic_qs'] ?>" />
+				</td>
+				<td>
+					<select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory">
+						<option value="">--Select--</option>
+						<option value="1" <?php echo ($reference['mandatory'] == 1) ? "selected='selected'" : "";?>>Yes</option>
+						<option value="0" <?php echo ($reference['mandatory'] == 0) ? "selected='selected'" : "";?>>No</option>
+					</select>
+				</td>
+				<td>
+					<input type="text" name="score[]" class="isRequired isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample"  value="<?php echo $reference['sample_score'];?>" />
 				</td>
 			    <td>
 					<a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
@@ -218,7 +247,11 @@ if($shipmentData['shipment']['scheme_type'] == 'eid'){
 				</td> \
 				<td> \
 					<input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /> \
+				</td> \				<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+						<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+					</select> \
 				</td> \
+				<td><input type="text" name="score[]" class="isRequired isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 				<td> \
 					<a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a> \
 					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
@@ -242,6 +275,8 @@ if($shipmentData['shipment']['scheme_type'] == 'eid'){
 		<tr align="center">
 			<th style="width:25%;text-align: center;">Control/Sample</th>
 			<th style="text-align: center;">Viral Load (log<sub>10</sub> copies/ml)</th>
+			<th style="text-align: center;">Mandatory ?</th>
+			<th style="width:10%;text-align: center;">Score</th>
 			<th style="width:20%;text-align: center;">Add/Remove Row</th>
 		</tr>
 	</thead>
@@ -254,11 +289,21 @@ if($shipmentData['shipment']['scheme_type'] == 'eid'){
 		
 			<tr align="center">
 				<td style="text-align: center">
-					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>" readonly="readonly"/>
+					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>"/>
 					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
 				</td>
 				<td>
 					<input type="text" name="vlResult[]" class="isRequired form-control input-sm" placeholder="Please enter the Viral Load Values for <?php echo $reference['sample_label']; ?> here"  title="Please enter the Viral Load Values for <?php echo $reference['sample_label']; ?>"  value="<?php echo $reference['reference_viral_load']; ?>"/>
+				</td>
+				<td>
+					<select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory">
+						<option value="">--Select--</option>
+						<option value="1" <?php echo ($reference['mandatory'] == 1) ? "selected='selected'" : "";?>>Yes</option>
+						<option value="0" <?php echo ($reference['mandatory'] == 0) ? "selected='selected'" : "";?>>No</option>
+					</select>
+				</td>
+				<td>
+					<input type="text" name="score[]" class="isRequired isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample"  value="<?php echo $reference['sample_score'];?>" />
 				</td>
 			    <td>
 					<a href="javascript:void(0);" onclick="addVlRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
@@ -289,6 +334,11 @@ if($shipmentData['shipment']['scheme_type'] == 'eid'){
 		$(obj.parentNode.parentNode).after('<tr align="center"> \
 												<th><input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" title="Please enter the Sample Name"  placeholder="Please enter the Sample Name" /></th> \
 												<td><input type="text" name="vlResult[]" class="isRequired form-control input-sm"  title="Please enter the Viral Load Values for this sample" placeholder="Please enter the Viral Load Values for this sample" /></td> \
+												<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+														<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+													</select> \
+												</td> \
+												<td><input type="text" name="score[]" class="isRequired isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 												<td><a href="javascript:void(0);" onclick="addVlRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
 											</tr>');
 	}

@@ -1257,3 +1257,13 @@ CREATE TABLE IF NOT EXISTS `r_results` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 INSERT INTO  `r_results` (`result_id` ,`result_name`) VALUES ('1',  'Pass'), ('2',  'Fail');
+
+
+-- by Amit Nov 27 2013
+
+ALTER TABLE  `reference_result_dts` ADD  `mandatory` INT NOT NULL DEFAULT  '0',
+ADD  `sample_score` INT NOT NULL DEFAULT  '1';
+ALTER TABLE  `reference_result_vl` ADD  `mandatory` INT NOT NULL DEFAULT  '0',
+ADD  `sample_score` INT NOT NULL DEFAULT  '1';
+ALTER TABLE  `reference_result_eid` ADD  `mandatory` INT NOT NULL DEFAULT  '0',
+ADD  `sample_score` INT NOT NULL DEFAULT  '1';

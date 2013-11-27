@@ -23,11 +23,11 @@ class Admin_LoginController extends Zend_Controller_Action
     		$adapter->setCredential($params['password']);
     		
     		$auth = Zend_Auth::getInstance();
-    		$res = $auth->authenticate($adapter); // -- METHOD 2 to authenticate , seems to work fine for me
+    		$res = $auth->authenticate($adapter);
     		
 			
     		if($res->isValid()){
-				Zend_Session::rememberMe(18000); // asking the session to be active for 5 hours
+				Zend_Session::rememberMe(36000); // keeping the session cookie active for 10 hours
 
     			$rs = $adapter->getResultRowObject();
     			
