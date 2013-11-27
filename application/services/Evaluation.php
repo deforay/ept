@@ -175,9 +175,41 @@ class Application_Service_Evaluation {
 							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
 							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id')
 							->join(array('p'=>'participant'),'p.participant_id=sp.participant_id')
-							->where("s.shipment_id = ?",$shipmentId);
+							->where("s.shipment_id = ?",$shipmentId)
+							->where("substring(sp.evaluation_status,4,1) != '0'");
 			  
-	    return $db->fetchAll($sql);
+	    $shipmentResult = $db->fetchAll($sql);
+		
+		
+		$schemeService = new Application_Service_Schemes();
+		
+		if($shipmentResult[0]['scheme_type'] == 'eid'){
+			$counter = 0;
+			foreach($shipmentResult as $shipment){
+				$results = $schemeService->getEidSamples($shipmentId,$shipment['participant_id']);
+				$totalScore = 0;
+				$maxScore = 0;
+				foreach($results as $result){
+					if(isset($result['reported_result']) && $result['reported_result'] !=null){						
+						if($result['reference_result'] == $result['reported_result']){
+							$totalScore += $result['sample_score'];
+						}		
+					}
+					$maxScore  += $result['sample_score'];
+				}
+				$shipmentResult[$counter]['shipment_score'] = $totalScore;
+				$shipmentResult[$counter]['max_score'] = $maxScore;
+				
+				// let us update the total score in DB
+				$db->update('shipment_participant_map',array('shipment_score' => $totalScore), "map_id = ".$shipment['map_id']);
+				
+			}
+		}
+		
+		//Zend_Debug::dump($shipmentResult);
+		return $shipmentResult;
+		
+		
 	}
 	
 	public function viewEvaluation($shipmentId,$participantId,$scheme){
@@ -216,6 +248,18 @@ class Application_Service_Evaluation {
 						 'possibleResults' => $possibleResults,
 						 'results' => $results );
 	
+	}
+	
+	public function updateShipmentResults($params){
+		 $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$authNameSpace = new Zend_Session_Namespace('administrators');
+		$admin = $authNameSpace->primary_email;		 
+		 $size = count($params['sampleId']);
+		 if($params['scheme'] == 'eid'){
+			for($i=0;$i<$size;$i++){
+			   $db->update('response_result_eid',array('reported_result' => $params['reported'][$i], 'updated_by'=>$admin , 'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = ".$params['smid']. " AND sample_id = ".$params['sampleId'][$i]);
+			}
+		 }
 	}
 }
 

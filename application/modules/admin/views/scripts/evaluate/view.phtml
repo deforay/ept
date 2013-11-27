@@ -13,7 +13,11 @@ if($this->scheme == 'eid'){
 	$attributes = json_decode($this->evaluateData['shipment']['attributes'],true);
 	
 	?>
-	
+<form name="updateResultsForm" id="updateResultsForm" method="post" action="">
+	<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo $this->evaluateData['shipment']['shipment_id']; ?>" />
+	<input type="hidden" name="participantId" id="participantId" value="<?php echo $this->evaluateData['shipment']['participant_id']; ?>" />
+	<input type="hidden" name="smid" id="smid" value="<?php echo $this->evaluateData['shipment']['map_id']; ?>" />
+	<input type="hidden" name="scheme" id="scheme" value="<?php echo $this->scheme; ?>" />
 	<table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
 		<tr>
 			<th>Shipment Code</th>
@@ -85,12 +89,15 @@ foreach($this->evaluateData['results'] as $result){
 	?>
 		<tr>
 			<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
-			<td style="vertical-align: middle;"><select class="form-control" name="reference[]" disabled="disabled"><?php echo $this->dropdownSelection($possibleResults,$result['reference_result'],false); ?></select></td>
-			<td rowspan="2" style="vertical-align: middle;text-align: center;"><h1><?php echo $score = ($result['reference_result'] == $result['reported_result']) ? 1 : 0; $total+= $score; ?></h1></td>
+			<td style="vertical-align: middle;"><select class="form-control" name="reference[]" disabled="disabled"><?php echo $this->dropdownSelection($possibleResults,$result['reference_result'],true); ?></select></td>
+			<td rowspan="2" style="vertical-align: middle;text-align: center;"><h1><?php echo $score = ($result['reference_result'] == $result['reported_result']) ? $result['sample_score'] : 0; $total+= $score; ?></h1></td>
 		</tr>
 		<tr>
 			<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
-			<td style="vertical-align: middle;"><select class="form-control" name="reported[]"><?php echo $this->dropdownSelection($possibleResults,$result['reported_result'],false); ?></select></td>
+			<td style="vertical-align: middle;">
+				<select class="form-control" name="reported[]"><?php echo $this->dropdownSelection($possibleResults,$result['reported_result'],true); ?></select>
+				<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
+			</td>
 		</tr>
 	<?php
 }
@@ -102,10 +109,12 @@ foreach($this->evaluateData['results'] as $result){
 </table>
 	<br/>
 <div id="respond" style="margin: 10px auto 10px auto; text-align: center;" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="button" onclick="void(0);return false;"
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="$('#updateResultsForm').submit();return false;"
                        tabindex="7" value="Update"/>
-                <input class="btn btn-danger" type="button" onclick="window.history.go(-1);"
-                       tabindex="8" value="Cancel"/>
+                <input class="btn btn-danger" type="button" onclick="document.location='/admin/evaluate/shipment/sid/<?php echo base64_encode($this->evaluateData['shipment']['shipment_id']); ?>'"
+                       tabindex="8" value="Back"/>
+</div>
+</form>
 <?php
 }else{
 	echo "<br/><br/><br/><h4 style='text-align:center;'>VL and DTS not yet implemented</h4><br/><br/><br/>";

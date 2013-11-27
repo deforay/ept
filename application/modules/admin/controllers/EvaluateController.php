@@ -38,7 +38,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $id = (int)base64_decode($this->_getParam('sid'));
             $evalService = new Application_Service_Evaluation();
             $this->view->shipment = $evalService->getShipmentToEvaluate($id);
-            Zend_Debug::dump( $this->view->shipment);
         }else{
             $this->_redirect("/admin/evaluate/");
         }
@@ -46,22 +45,38 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function viewAction()
     {
-        if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){            
-            $sid = (int)base64_decode($this->_getParam('sid'));
-            $pid = (int)base64_decode($this->_getParam('pid'));
-            $this->view->scheme = $scheme = base64_decode($this->_getParam('scheme'));
-            if($scheme == 'eid'){
-                
-                $schemeService = new Application_Service_Schemes();        
-                $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
-                $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
-                
-            }
+        if($this->getRequest()->isPost()){
+            
+            $params = $this->getRequest()->getPost();
             $evalService = new Application_Service_Evaluation();
-            $this->view->evaluateData = $evalService->viewEvaluation($sid,$pid,$scheme);            
+            $evalService->updateShipmentResults($params);
+            $shipmentId = base64_encode($params['shipmentId']);
+            $participantId = base64_encode($params['participantId']);
+            $scheme = base64_encode($params['scheme']);
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = "Shipment Results updated successfully";
+            $this->_redirect("/admin/evaluate/view/sid/$shipmentId/pid/$participantId/scheme/$scheme");
+            
         }else{
-            $this->_redirect("/admin/evaluate/");
+            if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){            
+                $sid = (int)base64_decode($this->_getParam('sid'));
+                $pid = (int)base64_decode($this->_getParam('pid'));
+                $this->view->scheme = $scheme = base64_decode($this->_getParam('scheme'));
+                if($scheme == 'eid'){
+                    
+                    $schemeService = new Application_Service_Schemes();        
+                    $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
+                    $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
+                    
+                }
+                $evalService = new Application_Service_Evaluation();
+                $this->view->evaluateData = $evalService->viewEvaluation($sid,$pid,$scheme);            
+            }else{
+                $this->_redirect("/admin/evaluate/");
+            }            
         }
+        
+
     }
 
 
