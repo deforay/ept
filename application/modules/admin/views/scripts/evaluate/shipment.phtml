@@ -12,6 +12,7 @@
         <th>Score</th>
         <th>Max Score</th>
         <th>Result</th>
+        <th>Comments (if any)</th>
         <th>Action</th>
     </tr>
     </thead>
@@ -19,13 +20,18 @@
     
 		<?php
 			foreach($this->shipment as $shipment){
+				
+				if(isset($shipment['failure_reason']) && $shipment['failure_reason'] != ""){
+					$shipment['failure_reason'] = "<ul><li>" .str_replace(",","</li><li>",$shipment['failure_reason']) . "</li></ul>";
+				}
 				?>
 				<tr>
-					<td><?php echo $shipment['first_name'] . " " .$shipment['last_name'] ?></td>
-					<td><?php echo (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : 'Not Evaluated' ?></td>
-					<td><?php echo $shipment['max_score'] ?></td>
-					<td><?php echo $shipment['final_result'] ?></td>
-					<td><a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a></td>
+					<td style="text-align:center;"><?php echo $shipment['first_name'] . " " .$shipment['last_name'] ?></td>
+					<td style="text-align:center;"><?php echo (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : 'Not Evaluated' ?></td>
+					<td style="text-align:center;"><?php echo $shipment['max_score'] ?></td>
+					<td style="text-align:center;"><?php echo $shipment['final_result'] ?></td>
+					<td style="text-align:left;"><?php echo $shipment['failure_reason'] ?></td>
+					<td style="text-align:center;"><a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a></td>
 				</tr>
 				<?php
 			}

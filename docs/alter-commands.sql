@@ -1269,3 +1269,4 @@ ALTER TABLE  `reference_result_eid` ADD  `mandatory` INT NOT NULL DEFAULT  '0',
 ADD  `sample_score` INT NOT NULL DEFAULT  '1';
 
 ALTER TABLE  `shipment_participant_map` ADD  `final_result` VARCHAR( 255 ) NOT NULL AFTER  `review_date`;
+ALTER TABLE  `shipment_participant_map` ADD  `failure_reason` TEXT NOT NULL AFTER  `final_result`;

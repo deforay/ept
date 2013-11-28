@@ -68,8 +68,9 @@ if($this->scheme == 'eid'){
 			<td>
 			
 			<?php
+			
 			foreach($this->detectionAssay as $dAssay){
-				 if(isset($attributes['detection_assay']) && $attributes['detection_assay'] == $eAssay['id']){
+				 if(isset($attributes['detection_assay']) && $attributes['detection_assay'] == $dAssay['id']){
 					echo $dAssay['name'];
 					break;
 				 }

@@ -191,22 +191,33 @@ class Application_Service_Evaluation {
 				$maxScore = 0;
 				$mandatoryResult = "";
 				$scoreResult = "";
+				$failureReason = "";
 				foreach($results as $result){
 					if(isset($result['reported_result']) && $result['reported_result'] !=null){						
 						if($result['reference_result'] == $result['reported_result']){
 							$totalScore += $result['sample_score'];
+						}else{
+							if($result['sample_score'] > 0){
+								$failureReason[] = "Control/Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+							}
 						}		
 					}
 					$maxScore  += $result['sample_score'];
 					if($result['mandatory'] == 1){
-						if((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null) || ($result['reference_result'] != $result['reported_result'])){
-							$mandatoryResult = 'Fail';	
+						if((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)){
+							$mandatoryResult = 'Fail';
+							$failureReason[]= "Mandatory Control/Sample <strong>".$result['sample_label']."</strong> was not reported";
+						}
+						else if(($result['reference_result'] != $result['reported_result'])){
+							$mandatoryResult = 'Fail';
+							$failureReason[]= "Mandatory Control/Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
 						}
 					}
 				}
 				
 				if($totalScore != $maxScore){
 					$scoreResult = 'Fail';
+					$failureReason[]= "Did not meet the criteria of having Score of $maxScore";
 				}else{
 					$scoreResult = 'Pass';
 				}
@@ -219,8 +230,9 @@ class Application_Service_Evaluation {
 				$shipmentResult[$counter]['shipment_score'] = $totalScore;
 				$shipmentResult[$counter]['max_score'] = $maxScore;
 				$shipmentResult[$counter]['final_result'] = $finalResult;
+				$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
 				// let us update the total score in DB
-				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult), "map_id = ".$shipment['map_id']);
+				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
 				
 			}
 		}
