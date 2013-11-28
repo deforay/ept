@@ -189,6 +189,8 @@ class Application_Service_Evaluation {
 				$results = $schemeService->getEidSamples($shipmentId,$shipment['participant_id']);
 				$totalScore = 0;
 				$maxScore = 0;
+				$mandatoryResult = "";
+				$scoreResult = "";
 				foreach($results as $result){
 					if(isset($result['reported_result']) && $result['reported_result'] !=null){						
 						if($result['reference_result'] == $result['reported_result']){
@@ -196,12 +198,29 @@ class Application_Service_Evaluation {
 						}		
 					}
 					$maxScore  += $result['sample_score'];
+					if($result['mandatory'] == 1){
+						if((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null) || ($result['reference_result'] != $result['reported_result'])){
+							$mandatoryResult = 'Fail';	
+						}
+					}
+				}
+				
+				if($totalScore != $maxScore){
+					$scoreResult = 'Fail';
+				}else{
+					$scoreResult = 'Pass';
+				}
+				
+				if($scoreResult == 'Fail' || $mandatoryResult == 'Fail'){
+					$finalResult = 'Fail';
+				}else{
+					$finalResult = 'Pass';
 				}
 				$shipmentResult[$counter]['shipment_score'] = $totalScore;
 				$shipmentResult[$counter]['max_score'] = $maxScore;
-				
+				$shipmentResult[$counter]['final_result'] = $finalResult;
 				// let us update the total score in DB
-				$db->update('shipment_participant_map',array('shipment_score' => $totalScore), "map_id = ".$shipment['map_id']);
+				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult), "map_id = ".$shipment['map_id']);
 				
 			}
 		}

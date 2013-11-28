@@ -45,7 +45,12 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function viewAction()
     {
-        if($this->getRequest()->isPost()){
+        
+    }
+
+    public function editAction()
+    {
+if($this->getRequest()->isPost()){
             
             $params = $this->getRequest()->getPost();
             $evalService = new Application_Service_Evaluation();
@@ -55,7 +60,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $scheme = base64_encode($params['scheme']);
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = "Shipment Results updated successfully";
-            $this->_redirect("/admin/evaluate/view/sid/$shipmentId/pid/$participantId/scheme/$scheme");
+            $this->_redirect("/admin/evaluate/edit/sid/$shipmentId/pid/$participantId/scheme/$scheme");
             
         }else{
             if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){            
@@ -81,6 +86,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
 
 }
+
+
 
 
 

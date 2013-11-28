@@ -153,6 +153,7 @@
               <actionMethod actionName="getShipments"/>
               <actionMethod actionName="shipment"/>
               <actionMethod actionName="view"/>
+              <actionMethod actionName="edit"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -259,6 +260,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Evaluate">
                 <viewScriptFile forActionName="view"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Evaluate">
+                <viewScriptFile forActionName="edit"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -509,6 +513,7 @@
                 <testApplicationActionMethod forActionName="getShipments"/>
                 <testApplicationActionMethod forActionName="shipment"/>
                 <testApplicationActionMethod forActionName="view"/>
+                <testApplicationActionMethod forActionName="edit"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>
           </testApplicationModuleDirectory>

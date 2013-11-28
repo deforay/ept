@@ -1267,3 +1267,5 @@ ALTER TABLE  `reference_result_vl` ADD  `mandatory` INT NOT NULL DEFAULT  '0',
 ADD  `sample_score` INT NOT NULL DEFAULT  '1';
 ALTER TABLE  `reference_result_eid` ADD  `mandatory` INT NOT NULL DEFAULT  '0',
 ADD  `sample_score` INT NOT NULL DEFAULT  '1';
+
+ALTER TABLE  `shipment_participant_map` ADD  `final_result` VARCHAR( 255 ) NOT NULL AFTER  `review_date`;

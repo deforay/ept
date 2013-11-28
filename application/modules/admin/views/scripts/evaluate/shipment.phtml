@@ -24,8 +24,8 @@
 					<td><?php echo $shipment['first_name'] . " " .$shipment['last_name'] ?></td>
 					<td><?php echo (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : 'Not Evaluated' ?></td>
 					<td><?php echo $shipment['max_score'] ?></td>
-					<td>Pass</td>
-					<td><a class="btn btn-primary btn-xs" href="/admin/evaluate/view/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-search"></i> View</span></a></td>
+					<td><?php echo $shipment['final_result'] ?></td>
+					<td><a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a></td>
 				</tr>
 				<?php
 			}
