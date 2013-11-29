@@ -24,7 +24,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
     public function getShipmentsAction()
     {
         if($this->_hasParam('did')){            
-            $id = (int)base64_decode($this->_getParam('did'));
+            $id = (int)($this->_getParam('did'));
             $evalService = new Application_Service_Evaluation();
             $this->view->shipments = $evalService->getShipments($id);            
         }else{
@@ -50,7 +50,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function editAction()
     {
-if($this->getRequest()->isPost()){
+        if($this->getRequest()->isPost()){
             
             $params = $this->getRequest()->getPost();
             $evalService = new Application_Service_Evaluation();

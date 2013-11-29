@@ -144,11 +144,12 @@ class Application_Service_Evaluation {
             $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             
             $row = array();
+			$row['DT_RowId']="dist".$aRow['distribution_id'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipments(\''.base64_encode($aRow['distribution_id']).'\')"><span><i class="icon-search"></i> View</span></a>';	    
+            $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipments(\''.($aRow['distribution_id']).'\')"><span><i class="icon-search"></i> View</span></a>';	    
             
             
 
@@ -162,7 +163,7 @@ class Application_Service_Evaluation {
 	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s'=>'shipment'))
 							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
-							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participant_count' => new Zend_Db_Expr('count("participant_id")')))
+							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')")))
 							->where("s.distribution_id = ?",$distributionId)
 							->group('s.shipment_id');
 			  
@@ -239,7 +240,7 @@ class Application_Service_Evaluation {
 				$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
 				// let us update the total score in DB
 				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
-				
+				$counter++;
 			}
 		}else if($shipmentResult[0]['scheme_type'] == 'dts'){
 			$counter = 0;
@@ -373,7 +374,7 @@ class Application_Service_Evaluation {
 				$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
 				// let us update the total score in DB
 				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
-				
+				$counter++;
 			}			
 		}
 		
@@ -429,6 +430,11 @@ class Application_Service_Evaluation {
 		 if($params['scheme'] == 'eid'){
 			for($i=0;$i<$size;$i++){
 			   $db->update('response_result_eid',array('reported_result' => $params['reported'][$i], 'updated_by'=>$admin , 'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = ".$params['smid']. " AND sample_id = ".$params['sampleId'][$i]);
+			}
+		 }
+		 else if($params['scheme'] == 'dts'){
+			for($i=0;$i<$size;$i++){
+			   $db->update('response_result_dts',array('reported_result' => $params['reported'][$i], 'updated_by'=>$admin , 'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = ".$params['smid']. " AND sample_id = ".$params['sampleId'][$i]);
 			}
 		 }
 	}

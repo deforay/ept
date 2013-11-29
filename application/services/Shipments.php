@@ -237,7 +237,8 @@ class Application_Service_Shipments {
 		try {
 			$shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
 			$authNameSpace = new Zend_Session_Namespace('datamanagers');
-			$attributes = array("sample_rehydration_date"=>Pt_Commons_General::dateFormat($params['sampleRehydrationDate']));
+			$attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
+			$attributes["algorithm"] = $params['algorithm'];
 			$attributes = json_encode($attributes);
 			$data = array(
 						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
