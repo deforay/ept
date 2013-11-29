@@ -193,6 +193,8 @@ class Application_Service_Evaluation {
 				$scoreResult = "";
 				$failureReason = "";
 				foreach($results as $result){
+					
+					// matching reported and reference results
 					if(isset($result['reported_result']) && $result['reported_result'] !=null){						
 						if($result['reference_result'] == $result['reported_result']){
 							$totalScore += $result['sample_score'];
@@ -203,6 +205,8 @@ class Application_Service_Evaluation {
 						}		
 					}
 					$maxScore  += $result['sample_score'];
+					
+					// checking if mandatory fields were entered and were entered right
 					if($result['mandatory'] == 1){
 						if((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)){
 							$mandatoryResult = 'Fail';
@@ -215,13 +219,15 @@ class Application_Service_Evaluation {
 					}
 				}
 				
+				// checking if total score and maximum scores are the same
 				if($totalScore != $maxScore){
 					$scoreResult = 'Fail';
-					$failureReason[]= "Did not meet the criteria of having Score of $maxScore";
+					$failureReason[]= "Did not meet the criteria of having Score of <strong>$maxScore</strong>";
 				}else{
 					$scoreResult = 'Pass';
 				}
 				
+				// if any of the results have failed, then the final result is fail
 				if($scoreResult == 'Fail' || $mandatoryResult == 'Fail'){
 					$finalResult = 'Fail';
 				}else{
@@ -235,6 +241,140 @@ class Application_Service_Evaluation {
 				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
 				
 			}
+		}else if($shipmentResult[0]['scheme_type'] == 'dts'){
+			$counter = 0;
+			foreach($shipmentResult as $shipment){
+				$results = $schemeService->getDtsSamples($shipmentId,$shipment['participant_id']);
+				$totalScore = 0;
+				$maxScore = 0;
+				$mandatoryResult = "";
+				$lotResult = "";
+				$testKitResult = "";
+				$lotResult = "";
+				$scoreResult = "";
+				$failureReason = "";
+				foreach($results as $result){
+					
+					// matching reported and reference results
+					if(isset($result['reported_result']) && $result['reported_result'] !=null){						
+						if($result['reference_result'] == $result['reported_result']){
+							$totalScore += $result['sample_score'];
+						}else{
+							if($result['sample_score'] > 0){
+								$failureReason[] = "Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+							}
+						}		
+					}
+					$maxScore  += $result['sample_score'];
+					
+					// checking if mandatory fields were entered and were entered right
+					if($result['mandatory'] == 1){
+						if((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)){
+							$mandatoryResult = 'Fail';
+							$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was not reported";
+						}
+						else if(($result['reference_result'] != $result['reported_result'])){
+							$mandatoryResult = 'Fail';
+							$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+						}
+					}
+					
+					// checking if all LOT details were entered
+					if(!isset($result['lot_no_1']) || $result['lot_no_1'] == "" || $result['lot_no_1'] == null){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 1</strong> was not reported";
+					}
+					if(!isset($result['lot_no_2']) || $result['lot_no_2'] == "" || $result['lot_no_2'] == null){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 2</strong> was not reported";
+					}
+					if(!isset($result['lot_no_3']) || $result['lot_no_3'] == "" || $result['lot_no_3'] == null){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 3</strong> was not reported";
+					}
+					
+					
+					
+				}
+				
+				
+
+					// checking test kit expiry dates
+					
+					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+					$testDate = $testedOn->toString('dd-MMM-YYYY');
+					$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
+					$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
+					$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
+
+					if($testedOn->isLater($expDate1)){
+						$difference = $testedOn->sub($expDate1);
+						
+						$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_1']. "'"));
+
+						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+						$measure->convertTo(Zend_Measure_Time::DAY);
+
+						$testKitResult = 'Fail';
+						$failureReason[]= "Test Kit 1 (<strong>".$testKitName[0]."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+					}
+
+					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+					$testDate = $testedOn->toString('dd-MMM-YYYY');
+					
+					if($testedOn->isLater($expDate2)){
+						$difference = $testedOn->sub($expDate2);
+						
+						$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_2']. "'"));
+
+						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+						$measure->convertTo(Zend_Measure_Time::DAY);
+
+						$testKitResult = 'Fail';
+						$failureReason[]= "Test Kit 2 (<strong>".$testKitName[0]."</strong>) expired ".$measure->getValue(). " days before the test date ".$testDate;
+					}
+					
+					
+					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+					$testDate = $testedOn->toString('dd-MMM-YYYY');
+					
+					if($testedOn->isLater($expDate3)){
+						$difference = $testedOn->sub($expDate3);
+						
+						$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_3']. "'"));
+
+						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+						$measure->convertTo(Zend_Measure_Time::DAY);
+
+						$testKitResult = 'Fail';
+						$failureReason[]= "Test Kit 3 (<strong>".$testKitName[0]."</strong>) expired ".$measure->getValue(). " days before the test date ".$testDate;
+					}				
+				
+				// checking if total score and maximum scores are the same
+				if($totalScore != $maxScore){
+					$scoreResult = 'Fail';
+					$failureReason[]= "Did not meet the criteria of having Score of <strong>$maxScore</strong>";
+				}else{
+					$scoreResult = 'Pass';
+				}
+				
+				
+				
+				
+				// if any of the results have failed, then the final result is fail
+				if($scoreResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitResult == 'Fail'){
+					$finalResult = 'Fail';
+				}else{
+					$finalResult = 'Pass';
+				}
+				$shipmentResult[$counter]['shipment_score'] = $totalScore;
+				$shipmentResult[$counter]['max_score'] = $maxScore;
+				$shipmentResult[$counter]['final_result'] = $finalResult;
+				$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
+				// let us update the total score in DB
+				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
+				
+			}			
 		}
 		
 		//Zend_Debug::dump($shipmentResult);
