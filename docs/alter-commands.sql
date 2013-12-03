@@ -1270,3 +1270,18 @@ ADD  `sample_score` INT NOT NULL DEFAULT  '1';
 
 ALTER TABLE  `shipment_participant_map` ADD  `final_result` VARCHAR( 255 ) NOT NULL AFTER  `review_date`;
 ALTER TABLE  `shipment_participant_map` ADD  `failure_reason` TEXT NOT NULL AFTER  `final_result`;
+
+
+-- by Amit Dec 03 2013
+
+CREATE TABLE IF NOT EXISTS `r_evaluation_comments` (
+  `comment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `scheme` varchar(255) NOT NULL,
+  `comment` text NOT NULL,
+  PRIMARY KEY (`comment_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+ALTER TABLE  `shipment_participant_map` ADD  `evaluation_comment` INT NOT NULL AFTER  `failure_reason` ,
+ADD  `optional_eval_comment` TEXT NOT NULL AFTER  `evaluation_comment`;
+
+ALTER TABLE  `shipment_participant_map` ADD  `shipment_comment` TEXT NOT NULL AFTER  `optional_eval_comment`;

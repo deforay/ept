@@ -181,7 +181,6 @@ class Application_Service_Evaluation {
 			  
 	    $shipmentResult = $db->fetchAll($sql);
 		
-		
 		$schemeService = new Application_Service_Schemes();
 		
 		if($shipmentResult[0]['scheme_type'] == 'eid'){
@@ -223,7 +222,7 @@ class Application_Service_Evaluation {
 				// checking if total score and maximum scores are the same
 				if($totalScore != $maxScore){
 					$scoreResult = 'Fail';
-					$failureReason[]= "Did not meet the criteria of having Score of <strong>$maxScore</strong>";
+					$failureReason[]= "Participant did not meet the criteria of having Score of <strong>$maxScore</strong>";
 				}else{
 					$scoreResult = 'Pass';
 				}
@@ -250,7 +249,11 @@ class Application_Service_Evaluation {
 				$maxScore = 0;
 				$mandatoryResult = "";
 				$lotResult = "";
-				$testKitResult = "";
+				$testKit1 = "";
+				$testKit2 = "";
+				$testKit3 = "";
+				$testKitRepeatResult = "";
+				$testKitExpiryResult = "";
 				$lotResult = "";
 				$scoreResult = "";
 				$failureReason = "";
@@ -293,77 +296,93 @@ class Application_Service_Evaluation {
 						$lotResult = 'Fail';
 						$failureReason[]= "<strong>Lot No. 3</strong> was not reported";
 					}
+				}
+					// checking test kit expiry dates
+				
+				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+				$testDate = $testedOn->toString('dd-MMM-YYYY');
+				$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
+				$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
+				$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
+				
+
+				$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_1']. "'"));
+				$testKit1 = $testKitName[0];
+				
+				$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_2']. "'"));
+				$testKit2 = $testKitName[0];
+				
+				$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_3']. "'"));
+				$testKit3 = $testKitName[0];
+
+				if($testedOn->isLater($expDate1)){
+					$difference = $testedOn->sub($expDate1);
 					
+					$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+					$measure->convertTo(Zend_Measure_Time::DAY);
+
+					$testKitExpiryResult = 'Fail';
+					$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+				}
+
+				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+				$testDate = $testedOn->toString('dd-MMM-YYYY');
+				
+				if($testedOn->isLater($expDate2)){
+					$difference = $testedOn->sub($expDate2);
 					
-					
+					$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+					$measure->convertTo(Zend_Measure_Time::DAY);
+
+					$testKitExpiryResult = 'Fail';
+					$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".$measure->getValue(). " days before the test date ".$testDate;
 				}
 				
 				
-
-					// checking test kit expiry dates
+				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+				$testDate = $testedOn->toString('dd-MMM-YYYY');
+				
+				if($testedOn->isLater($expDate3)){
+					$difference = $testedOn->sub($expDate3);
 					
-					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
-					$testDate = $testedOn->toString('dd-MMM-YYYY');
-					$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
-					$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
-					$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
+					$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+					$measure->convertTo(Zend_Measure_Time::DAY);
 
-					if($testedOn->isLater($expDate1)){
-						$difference = $testedOn->sub($expDate1);
-						
-						$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_1']. "'"));
-
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-
-						$testKitResult = 'Fail';
-						$failureReason[]= "Test Kit 1 (<strong>".$testKitName[0]."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+					$testKitExpiryResult = 'Fail';
+					$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".$measure->getValue(). " days before the test date ".$testDate;
+				}				
+				
+				
+				//checking if testkits were repeated
+				if(($testKit1 == $testKit2) && ($testKit2 == $testKit3)){
+					$testKitRepeatResult = 'Fail';
+					$failureReason[]= "<strong>$testKit1</strong> repeated for all three Test Kits";					
+				}else{
+					if(($testKit1 == $testKit2)){
+						$testKitRepeatResult = 'Fail';
+						$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2";
 					}
-
-					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
-					$testDate = $testedOn->toString('dd-MMM-YYYY');
-					
-					if($testedOn->isLater($expDate2)){
-						$difference = $testedOn->sub($expDate2);
-						
-						$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_2']. "'"));
-
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-
-						$testKitResult = 'Fail';
-						$failureReason[]= "Test Kit 2 (<strong>".$testKitName[0]."</strong>) expired ".$measure->getValue(). " days before the test date ".$testDate;
+					if(($testKit2 == $testKit3)){
+						$testKitRepeatResult = 'Fail';
+						$failureReason[]= "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3";
 					}
-					
-					
-					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
-					$testDate = $testedOn->toString('dd-MMM-YYYY');
-					
-					if($testedOn->isLater($expDate3)){
-						$difference = $testedOn->sub($expDate3);
-						
-						$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_3']. "'"));
-
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-
-						$testKitResult = 'Fail';
-						$failureReason[]= "Test Kit 3 (<strong>".$testKitName[0]."</strong>) expired ".$measure->getValue(). " days before the test date ".$testDate;
-					}				
+					if(($testKit1 == $testKit3)){
+						$testKitRepeatResult = 'Fail';
+						$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3";
+					}					
+				}
 				
 				// checking if total score and maximum scores are the same
 				if($totalScore != $maxScore){
 					$scoreResult = 'Fail';
-					$failureReason[]= "Did not meet the criteria of having Score of <strong>$maxScore</strong>";
+					$failureReason[]= "Participant did not meet the criteria of having Score of <strong>$maxScore</strong>";
 				}else{
 					$scoreResult = 'Pass';
-				}
-				
-				
+				}				
 				
 				
 				// if any of the results have failed, then the final result is fail
-				if($scoreResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitResult == 'Fail'){
+				if($scoreResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail' || $testKitRepeatResult == 'Fail'){
 					$finalResult = 'Fail';
 				}else{
 					$finalResult = 'Pass';
@@ -406,18 +425,22 @@ class Application_Service_Evaluation {
 			
 			if($scheme == 'eid'){
 				$possibleResults = $schemeService->getPossibleResults('eid');
+				$evalComments = $schemeService->getSchemeEvaluationComments('eid');
 				$results = $schemeService->getEidSamples($shipmentId,$participantId);
 			} else if($scheme == 'vl'){
 				$possibleResults = "";
+				$evalComments = $schemeService->getSchemeEvaluationComments('vl');
 				$results = $schemeService->getVlSamples($shipmentId,$participantId);
 			} else if($scheme == 'dts'){
 				$possibleResults = $schemeService->getPossibleResults('dts');
+				$evalComments = $schemeService->getSchemeEvaluationComments('dts');
 				$results = $schemeService->getDtsSamples($shipmentId,$participantId);
 			}
 
 			return array('participant'=>$participantData,
 			             'shipment' => $shipmentData ,
 						 'possibleResults' => $possibleResults,
+						 'evalComments' => $evalComments,
 						 'results' => $results );
 	
 	}
@@ -437,6 +460,9 @@ class Application_Service_Evaluation {
 			   $db->update('response_result_dts',array('reported_result' => $params['reported'][$i], 'updated_by'=>$admin , 'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = ".$params['smid']. " AND sample_id = ".$params['sampleId'][$i]);
 			}
 		 }
+		 
+		$db->update('shipment_participant_map',array('evaluation_comment' => $params['comment'],'optional_eval_comment' => $params['optionalComments'], 'updated_by_admin'=>$admin , 'updated_on_admin' => new Zend_Db_Expr('now()')), "map_id = ".$params['smid']);
+		
 	}
 }
 

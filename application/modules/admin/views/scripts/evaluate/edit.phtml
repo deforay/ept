@@ -216,6 +216,30 @@ else{
 }
 
 ?>
+
+<?php
+
+	$evalComments = array();
+	foreach($this->evaluateData['evalComments'] as $ec){
+		$evalComments[$ec['comment_id']]= $ec['comment'];
+	}
+
+?>
+
+<table class="table table-bordered" style="width:70%;margin:0 auto;">
+	<tr>
+		<td style="width:25%;vertical-align: middle">Evaluation Comment</td>
+		<td><select class="form-control" name="comment" id="comment">
+			<?php echo $this->dropdownSelection($evalComments,$this->evaluateData['shipment']['evaluation_comment'],true); ?>
+		</td>		
+	</tr>
+	<tr>
+		<td style="vertical-align: middle;">
+			Optional Extra Comments
+		</td>
+		<td><textarea class="form-control" name="optionalComments" id="optionalComments"><?php echo $this->evaluateData['shipment']['optional_eval_comment']; ?></textarea></td>
+	</tr>
+</table>
 	<br/>
 <div id="respond" style="margin: 10px auto 10px auto; text-align: center;" align="center">
                 <input name="submitbtn" class="btn btn-primary" type="button" onclick="$('#updateResultsForm').submit();return false;"
