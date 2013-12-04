@@ -8,6 +8,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
                     ->addActionContext('get-shipments', 'html')
+                    ->addActionContext('update-shipment-comment', 'html')
                     ->initContext();        
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -45,6 +46,28 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function viewAction()
     {
+
+       
+            if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){            
+                $sid = (int)base64_decode($this->_getParam('sid'));
+                $pid = (int)base64_decode($this->_getParam('pid'));
+                $this->view->scheme = $scheme = base64_decode($this->_getParam('scheme'));
+                if($scheme == 'eid'){
+                    
+                    $schemeService = new Application_Service_Schemes();        
+                    $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
+                    $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
+                    
+                }
+                $evalService = new Application_Service_Evaluation();
+                $this->view->evaluateData = $evalService->viewEvaluation($sid,$pid,$scheme);
+                
+                
+            }else{
+                $this->_redirect("/admin/evaluate/");
+            }            
+        
+                
         
     }
 
@@ -86,8 +109,22 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     }
 
+    public function updateShipmentCommentAction()
+    {
+        if($this->_hasParam('sid')){            
+            $sid = (int)base64_decode($this->_getParam('sid'));
+            $comment = $this->_getParam('comment');
+            $evalService = new Application_Service_Evaluation();
+            $this->view->message = $evalService->updateShipmentComment($sid,$comment);
+        }else{
+            $this->view->message = "Unable to update shipment comment. Please try again later.";
+        }
+    }
+
 
 }
+
+
 
 
 

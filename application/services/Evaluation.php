@@ -185,6 +185,7 @@ class Application_Service_Evaluation {
 		
 		if($shipmentResult[0]['scheme_type'] == 'eid'){
 			$counter = 0;
+			$maxScore = 0;
 			foreach($shipmentResult as $shipment){
 				$results = $schemeService->getEidSamples($shipmentId,$shipment['participant_id']);
 				$totalScore = 0;
@@ -241,6 +242,7 @@ class Application_Service_Evaluation {
 				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
 				$counter++;
 			}
+			$db->update('shipment',array('max_score' => $maxScore), "shipment_id = ".$shipmentId);
 		}else if($shipmentResult[0]['scheme_type'] == 'dts'){
 			$counter = 0;
 			foreach($shipmentResult as $shipment){
@@ -394,7 +396,8 @@ class Application_Service_Evaluation {
 				// let us update the total score in DB
 				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
 				$counter++;
-			}			
+			}
+			$db->update('shipment',array('max_score' => $maxScore), "shipment_id = ".$shipmentId);
 		}
 		
 		//Zend_Debug::dump($shipmentResult);
@@ -404,16 +407,7 @@ class Application_Service_Evaluation {
 	}
 	
 	public function viewEvaluation($shipmentId,$participantId,$scheme){
-	//    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	//	$sql = $db->select()->from(array('s'=>'shipment'))
-	//						->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
-	//						->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id')
-	//						->join(array('p'=>'participant'),'p.participant_id=sp.participant_id')
-	//						->where("sp.participant_id = ?",$participantId)
-	//						->where("sp.shipment_id = ?",$shipmentId);
-	//		  
-	//    return $db->fetchAll($sql);
-	
+
 
             $participantService = new Application_Service_Participants();
 			$schemeService = new Application_Service_Schemes();
@@ -426,20 +420,41 @@ class Application_Service_Evaluation {
 			if($scheme == 'eid'){
 				$possibleResults = $schemeService->getPossibleResults('eid');
 				$evalComments = $schemeService->getSchemeEvaluationComments('eid');
-				$results = $schemeService->getEidSamples($shipmentId,$participantId);
+				$results = $schemeService->getEidSamples($shipmentId,$participantId);								
 			} else if($scheme == 'vl'){
 				$possibleResults = "";
 				$evalComments = $schemeService->getSchemeEvaluationComments('vl');
-				$results = $schemeService->getVlSamples($shipmentId,$participantId);
+				$results = $schemeService->getVlSamples($shipmentId,$participantId);				
 			} else if($scheme == 'dts'){
 				$possibleResults = $schemeService->getPossibleResults('dts');
 				$evalComments = $schemeService->getSchemeEvaluationComments('dts');
-				$results = $schemeService->getDtsSamples($shipmentId,$participantId);
+				$results = $schemeService->getDtsSamples($shipmentId,$participantId);								
 			}
+				
+
+			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$sql = $db->select()->from(array('s'=>'shipment'))
+							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
+							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id', array('fullscore'=>new Zend_Db_Expr("SUM(if(s.max_score = sp.shipment_score, 1, 0))")))
+							->join(array('p'=>'participant'),'p.participant_id=sp.participant_id')
+							->where("sp.shipment_id = ?",$shipmentId)
+							->where("substring(sp.evaluation_status,4,1) != '0'");
+			$shipmentOverall = $db->fetchAll($sql);
+			
+			
+			$noOfParticipants = count($shipmentOverall);
+			$numScoredFull = $shipmentOverall[0]['fullscore'];
+			$maxScore = $shipmentOverall[0]['max_score'];
+			
+			
+			
 
 			return array('participant'=>$participantData,
 			             'shipment' => $shipmentData ,
 						 'possibleResults' => $possibleResults,
+						 'totalParticipants' => $noOfParticipants,
+						 'fullScorers' => $numScoredFull,
+						 'maxScore' => $maxScore,
 						 'evalComments' => $evalComments,
 						 'results' => $results );
 	
@@ -464,5 +479,20 @@ class Application_Service_Evaluation {
 		$db->update('shipment_participant_map',array('evaluation_comment' => $params['comment'],'optional_eval_comment' => $params['optionalComments'], 'updated_by_admin'=>$admin , 'updated_on_admin' => new Zend_Db_Expr('now()')), "map_id = ".$params['smid']);
 		
 	}
+	
+	public function updateShipmentComment($shipmentId,$comment){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$authNameSpace = new Zend_Session_Namespace('administrators');
+		$admin = $authNameSpace->primary_email;		 
+		$noOfRows = $db->update('shipment',array('shipment_comment' => $comment,'updated_by_admin'=>$admin , 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = ".$shipmentId);
+		if($noOfRows > 0){
+			return "Comment updated";
+		}else{
+			return "Unable to update shipment comment. Please try again later.";
+		}
+		
+	}
+	
+	
 }
 

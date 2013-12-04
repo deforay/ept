@@ -1,0 +1,268 @@
+<style>
+	.evenResult td, .evenResult th{
+		background: #dee4e5 !important;
+		border-color: #dee4e5 !important;
+	}
+	
+	.oddResult td, .oddResult th{
+		background: #FFE !important;
+		border-color: #FFE !important;		
+	}
+	.totalResult td, .totalResult th{
+		background:#ECF0F1;
+	}
+</style>
+<br/>
+<legend>Participant Result Summary</legend>
+<?php
+	$reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report_date'])
+?>
+  <h5 style="border-bottom:1px solid #999;padding-bottom:10px;">
+	<strong>Participant/Lab Name :</strong> <?php echo $this->evaluateData['participant']['first_name']. " ".$this->evaluateData['participant']['last_name']; ?>
+	<span class="pull-right"><strong>Reported on :</strong> <?php echo $this->dateFormat($reportDate[0]); ?></span>
+  </h5>
+
+	<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo $this->evaluateData['shipment']['shipment_id']; ?>" />
+	<input type="hidden" name="participantId" id="participantId" value="<?php echo $this->evaluateData['shipment']['participant_id']; ?>" />
+	<input type="hidden" name="smid" id="smid" value="<?php echo $this->evaluateData['shipment']['map_id']; ?>" />
+	<input type="hidden" name="scheme" id="scheme" value="<?php echo $this->scheme; ?>" />  
+<?php
+if($this->scheme == 'eid'){
+	
+	$attributes = json_decode($this->evaluateData['shipment']['attributes'],true);
+	
+	?>
+
+	<table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
+		<tr>
+			<th>Shipment Code</th>
+			<td><?php echo $this->evaluateData['shipment']['shipment_code']; ?></td>
+			<th>Scheme Type</th>
+			<td><?php echo strtoupper($this->evaluateData['shipment']['scheme_type']); ?></td>
+		</tr>
+		<tr>
+			<th>Shipment Date</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_date']); ?></td>
+			<th>Last Response Date</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?></td>
+		</tr>
+		<tr>
+			<th>Shipment Received on</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_receipt_date']); ?></td>
+			<th>Samples Tested on</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_test_date']); ?></td>
+		</tr>
+		<tr>
+			<th>Extraction Assay</th>
+			<td>
+
+			<?php
+			foreach($this->extractionAssay as $eAssay){
+				 if(isset($attributes['extraction_assay']) && $attributes['extraction_assay'] == $eAssay['id']){
+					echo $eAssay['name'];
+					break;
+				 }
+			}
+			?>			
+			</td>
+			<th>Detection Assay</th>
+			<td>
+			
+			<?php
+			
+			foreach($this->detectionAssay as $dAssay){
+				 if(isset($attributes['detection_assay']) && $attributes['detection_assay'] == $dAssay['id']){
+					echo $dAssay['name'];
+					break;
+				 }
+			}
+			?>			
+			</td>
+		</tr>
+	</table>
+	
+	<?php
+	
+	
+	$possibleResults = array();
+	foreach($this->evaluateData['possibleResults'] as $pr){
+		if($pr['scheme_sub_group'] == 'EID_FINAL'){
+			$possibleResults[$pr['id']]= $pr['response'];
+		}
+	}	
+	
+?>
+	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+		<tr>
+			<th style="text-align: center;font-size:17px;">Control/Sample</th>
+			<th style="text-align: center;font-size:17px;">Results</th>
+			<th style="text-align: center;font-size:17px;">Score</th>
+		</tr>
+	
+<?php
+$total = 0;
+$counter = 1;
+foreach($this->evaluateData['results'] as $result){
+	if(($counter%2) == 0){
+		$class = "evenResult";
+	}else{
+		$class = "oddResult";
+	}
+	?>
+		<tr class="<?php echo $class ?>">
+			<td style="vertical-align: middle;text-align: center;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
+			<td style="vertical-align: middle;text-align: center;"><?php echo $this->dropdownSelectedText($possibleResults,$result['reference_result'],true); ?></td>
+			<td rowspan="2" style="vertical-align: middle;text-align: center;"><h2><?php echo $score = ($result['reference_result'] == $result['reported_result']) ? $result['sample_score'] : 0; $total+= $score; ?></h2></td>
+		</tr>
+		<tr class="<?php echo $class ?>">
+			<th style="vertical-align: middle;text-align: center;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
+			<td style="vertical-align: middle;text-align: center;">
+				<?php echo $this->dropdownSelectedText($possibleResults,$result['reported_result'],true); ?>
+				<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
+			</td>
+		</tr>
+	<?php
+	$counter++;
+}
+?>
+<tr class="totalResult">
+	<td colspan="2" style="vertical-align: middle;text-align:right;"><h3>Total Score</h3></td>
+	<td style="vertical-align: middle;text-align:center;"><h2><?php echo $total; ?></h2></td>
+</tr>
+</table>
+<?php
+}
+else if($this->scheme == 'dts'){
+	$attributes = json_decode($this->evaluateData['shipment']['attributes'],true);
+	
+	?>
+
+	<table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
+		<tr>
+			<th>Shipment Code</th>
+			<td><?php echo $this->evaluateData['shipment']['shipment_code']; ?></td>
+			<th>Scheme Type</th>
+			<td><?php echo strtoupper($this->evaluateData['shipment']['scheme_type']); ?></td>
+		</tr>
+		<tr>
+			<th>Shipment Date</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_date']); ?></td>
+			<th>Last Response Date</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?></td>
+		</tr>
+		<tr>
+			<th>Shipment Received on</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_receipt_date']); ?></td>
+			<th>Samples Tested on</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_test_date']); ?></td>
+		</tr>
+	</table>
+	
+	<?php
+	
+	
+	$possibleResults = array();
+	foreach($this->evaluateData['possibleResults'] as $pr){
+		if($pr['scheme_sub_group'] == 'DTS_FINAL'){
+			$possibleResults[$pr['id']]= $pr['response'];
+		}
+	}	
+	
+?>
+	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+		<tr>
+			<th style="text-align: center;font-size:17px;">Control/Sample</th>
+			<th style="text-align: center;font-size:17px;">Results</th>
+			<th style="text-align: center;font-size:17px;">Score</th>
+		</tr>
+	
+<?php
+$total = 0;
+$counter = 1;
+foreach($this->evaluateData['results'] as $result){
+	if(($counter%2) == 0){
+		$class = "evenResult";
+	}else{
+		$class = "oddResult";
+	}
+	?>
+		<tr class="<?php echo $class ?>">
+			<td style="vertical-align: middle;text-align:center;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
+			<td style="vertical-align: middle;text-align:center;"><?php echo $this->dropdownSelectedText($possibleResults,$result['reference_result'],true); ?></td>
+			<td rowspan="2" style="vertical-align: middle;text-align: center;"><h2><?php echo $score = ($result['reference_result'] == $result['reported_result']) ? $result['sample_score'] : 0; $total+= $score; ?></h2></td>
+		</tr>
+		<tr class="<?php echo $class ?>">
+			<th style="vertical-align: middle;text-align:center;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
+			<td style="vertical-align: middle;text-align:center;">
+				<?php echo $this->dropdownSelectedText($possibleResults,$result['reported_result'],true); ?>
+				<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
+			</td>
+		</tr>
+	<?php
+	$counter++;
+}
+?>
+<tr class="totalResult">
+	<td colspan="2" style="vertical-align: middle;text-align:right;"><h3>Total Score</h3></td>
+	<td style="vertical-align: middle;text-align:center;"><h3><?php echo $total; ?></h3></td>
+</tr>
+</table>
+
+
+<?php
+}
+else{
+	echo "<br/><br/><br/><h4 style='text-align:center;'>VL not yet implemented</h4><br/><br/><br/>";
+}
+
+?>
+
+<?php
+
+	$evalComments = array();
+	foreach($this->evaluateData['evalComments'] as $ec){
+		$evalComments[$ec['comment_id']]= $ec['comment'];
+	}
+
+?>
+
+<table class="table table-bordered" style="width:70%;margin:0 auto;">
+	<tr>
+		<td style="width:25%;vertical-align: middle">Evaluation Comment</td>
+		<td>
+			<?php echo $this->dropdownSelectedText($evalComments,$this->evaluateData['shipment']['evaluation_comment'],true); ?>
+		</td>		
+	</tr>
+	<tr>
+		<td style="vertical-align: middle;">
+			Optional Extra Comments
+		</td>
+		<td style="text-align:left;"><?php echo $this->evaluateData['shipment']['optional_eval_comment']; ?></td>
+	</tr>
+</table>
+	<br/>
+<legend>Summary of all Laboratory Scores</legend>
+<table class="table table-bordered table-striped">
+	<tr>
+		<th style="text-align: center;">Total Number of Participants</th>
+		<th style="text-align: center;">Total Number of Participants Scoring "<?php echo $this->evaluateData['maxScore']; ?>" </th>
+		<th style="text-align: center;">Total Number of Participants Scoring Below "<?php echo $this->evaluateData['maxScore']; ?>" </th>
+		<th style="text-align: center;">Percentage of Participants Scoring "<?php echo $this->evaluateData['maxScore']; ?>" </th>
+	</tr>
+	<tr>
+		<td style="text-align: center;"><?php echo $this->evaluateData['totalParticipants']; ?></td>
+		<td style="text-align: center;"><?php echo $this->evaluateData['fullScorers']; ?></td>
+		<td style="text-align: center;"><?php echo $this->evaluateData['totalParticipants'] - $this->evaluateData['fullScorers']; ?></td>
+		<td style="text-align: center;"><?php echo ($this->evaluateData['fullScorers']/$this->evaluateData['totalParticipants'])*100; ?> %</td>
+	</tr>
+</table>
+<br/>
+<?php if(isset($this->evaluateData['shipment']['shipment_comment']) && $this->evaluateData['shipment']['shipment_comment'] != ""){ ?>
+<legend>Comment from PT Admin</legend>
+<p class="well">
+	<?php echo $this->evaluateData['shipment']['shipment_comment']; ?>
+</p>
+<?php } ?>
+<div id="respond" style="margin: 10px auto 10px auto; text-align: center;" align="center">
+	<input class="btn btn-danger" type="button" onclick="document.location='/admin/evaluate/shipment/sid/<?php echo base64_encode($this->evaluateData['shipment']['shipment_id']); ?>'" value="Back"/>
+</div>

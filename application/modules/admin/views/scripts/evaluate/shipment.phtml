@@ -4,19 +4,19 @@
 		<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
 	</div>
 </h4>
+<br/>
 
-<form name="shipmentCommentForm" id="shipmentCommentForm" method="post" action="">
 	<table class="table table-bordered" style="width:95%;margin:10px auto;">
 	<tr>
 		<td style="vertical-align: middle;">
 			Comment for all Participants of this shipment
 		</td>
-		<td style="width:65%;"><textarea class="form-control" name="shipmentComment" id="shipmentComment"><?php echo $this->evaluateData['shipment']['optional_eval_comment']; ?></textarea></td>
-		<td style="vertical-align: middle;"><button class="btn btn-primary"><span>Update Comment</span></button></td>
+		<td style="width:65%;"><textarea class="form-control" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea></td>
+		<td style="vertical-align: middle;"><button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span>Update Comment</span></button></td>
 	</tr>
 </table>
-</form>
 
+<br/><br/>
 <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
     <thead>
     <tr>
@@ -43,15 +43,17 @@
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['max_score']) && $shipment['max_score'] != "") ? $shipment['max_score'] : '-'; ?></td>
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "") ? $shipment['final_result'] : 'Not Evaluated'; ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
-					<td style="text-align:center;vertical-align:middle;"><a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a></td>
+					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
+						<a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
+						<a class="btn btn-primary btn-xs" href="/admin/evaluate/view/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-search"></i> View</span></a>
+					</td>
 				</tr>
 				<?php
 			}
 		?>
-    </tr>
+    
     </tbody>
 </table>
-
 
 <script type="text/javascript" charset="utf-8">
 	var oTable = null;
@@ -71,10 +73,20 @@
                 {"sClass":"center"},
                 {"sClass":"center"},
                 {"sClass":"center"},
+                {"sClass":"center"},
                 {"sClass":"center","bSortable":false}
             ],
             "aaSorting": [[ 0, "asc" ]],
             "bProcessing": true,
         } );
 	});
+	
+	function updateComment(sid){
+		$.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment')); ?>", { sid: sid,comment: $("#shipmentComment").val(), format: "html" },
+            function (data) {
+               alert(data);
+			   $.unblockUI();
+        });		
+	}
 </script>

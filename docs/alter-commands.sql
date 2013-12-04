@@ -1284,4 +1284,6 @@ CREATE TABLE IF NOT EXISTS `r_evaluation_comments` (
 ALTER TABLE  `shipment_participant_map` ADD  `evaluation_comment` INT NOT NULL AFTER  `failure_reason` ,
 ADD  `optional_eval_comment` TEXT NOT NULL AFTER  `evaluation_comment`;
 
-ALTER TABLE  `shipment_participant_map` ADD  `shipment_comment` TEXT NOT NULL AFTER  `optional_eval_comment`;
+ALTER TABLE  `shipment` ADD  `shipment_comment` TEXT NOT NULL AFTER  `number_of_samples`;
+
+ALTER TABLE  `shipment` ADD  `max_score` INT NOT NULL AFTER  `number_of_samples`;
