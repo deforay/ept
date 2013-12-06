@@ -58,6 +58,43 @@
 <script type="text/javascript" charset="utf-8">
 	var oTable = null;
     $(document).ready(function() {
+		
+		var nCloneTh = document.createElement( 'th' );
+		var nCloneTd = document.createElement( 'td' );
+		nCloneTd.innerHTML = '<a href="javascript:void(0);" class="btn btn-success btn-xs clicker"><i class="icon-plus"></i></a>';
+		nCloneTd.className = "center";		
+		
+		$('#shipmentEvaluation thead tr').each( function () {
+				this.insertBefore( nCloneTh, this.childNodes[0] );
+			} );
+     
+		$('#shipmentEvaluation tbody tr').each( function () {
+			this.insertBefore(  nCloneTd.cloneNode( true ), this.childNodes[0] );
+		} );
+		
+   $('#shipmentEvaluation').on('click',".clicker", function () {
+        var nTr = $(this).parents('tr')[0];
+        if ( oTable.fnIsOpen(nTr) )
+        {
+            /* This row is already open - close it */
+            $(this).find('i').addClass("icon-plus");
+            $(this).find('i').removeClass("icon-minus");
+			$(this).removeClass('btn-danger');
+			$(this).addClass('btn-success');
+            oTable.fnClose( nTr );
+        }
+        else
+        {
+            /* Open this row */
+
+			$(this).find('i').addClass("icon-minus");
+            $(this).find('i').removeClass("icon-add");
+			$(this).removeClass('btn-success');
+			$(this).addClass('btn-danger');			
+            oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details' );
+        }
+    } );		
+		
 		oTable = $("#shipmentEvaluation").dataTable({
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"
@@ -69,17 +106,28 @@
             "sPaginationType": "full_numbers",
             "bRetrieve": true,
             "aoColumns": [
+				{ "bSortable": false, "aTargets": [ 0 ] },
                 {"sClass":"center"},
                 {"sClass":"center"},
                 {"sClass":"center"},
                 {"sClass":"center"},
-                {"sClass":"center"},
+                { "bSearchable": false, "bVisible": false},
                 {"sClass":"center","bSortable":false}
             ],
-            "aaSorting": [[ 0, "asc" ]],
+            "aaSorting": [[ 1, "asc" ]],
             "bProcessing": true,
         } );
 	});
+	
+	function fnFormatDetails ( oTable, nTr )
+	{
+		var aData = oTable.fnGetData( nTr );
+		var sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
+		sOut += '<tr><td>Failure Reasons:</td><td>'+aData[5]+'</td></tr>';
+		sOut += '</table>';
+		 
+		return sOut;
+	}	
 	
 	function updateComment(sid){
 		$.blockUI();
