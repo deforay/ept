@@ -348,6 +348,7 @@ class Application_Service_Shipments {
 									'reference_result'=>$params['possibleResults'][$i],
 									'reference_hiv_ct_od'=>$params['hivCtOd'][$i],
 									'reference_ic_qs'=>$params['icQs'][$i],
+									'control'=>$params['control'][$i],
 									'mandatory'=>$params['mandatory'][$i],
 									'sample_score'=>$params['score'][$i]
 									)
@@ -361,7 +362,8 @@ class Application_Service_Shipments {
 									'shipment_id'=>$lastId,
 									'sample_id'=>($i+1),
 									'sample_label'=>$params['sampleName'][$i],
-									'reference_viral_load'=>$params['vlResult'][$i],
+									'reference_result'=>$params['vlResult'][$i],
+									'control'=>$params['control'][$i],
 									'mandatory'=>$params['mandatory'][$i],
 									'sample_score'=>$params['score'][$i]
 									)
@@ -376,6 +378,7 @@ class Application_Service_Shipments {
 									'sample_id'=>($i+1),
 									'sample_label'=>$params['sampleName'][$i],
 									'reference_result'=>$params['possibleResults'][$i],
+									'control'=>$params['control'][$i],
 									'mandatory'=>$params['mandatory'][$i],
 									'sample_score'=>$params['score'][$i]
 									)
@@ -489,6 +492,7 @@ class Application_Service_Shipments {
 									'reference_result'=>$params['possibleResults'][$i],
 									'reference_hiv_ct_od'=>$params['hivCtOd'][$i],
 									'reference_ic_qs'=>$params['icQs'][$i],
+									'control'=>$params['control'][$i],
 									'mandatory'=>$params['mandatory'][$i],
 									'sample_score'=>$params['score'][$i]
 									)
@@ -498,12 +502,13 @@ class Application_Service_Shipments {
 		}
 		else if($scheme == 'vl'){
 			$dbAdapter->delete('reference_result_vl','shipment_id = '.$params['shipmentId']);
-			for($i = 0;$i < $size;$i++){				
+			for($i = 0;$i < $size;$i++){			
 				$dbAdapter->insert('reference_result_vl',array(
 									'shipment_id'=>$params['shipmentId'],
 									'sample_id'=>($i+1),
 									'sample_label'=>$params['sampleName'][$i],
-									'reference_viral_load'=>$params['vlResult'][$i],
+									'reference_result'=>$params['vlResult'][$i],
+									'control'=>$params['control'][$i],
 									'mandatory'=>$params['mandatory'][$i],
 									'sample_score'=>$params['score'][$i]
 									)
@@ -514,12 +519,12 @@ class Application_Service_Shipments {
 		else if($scheme == 'dts'){
 			$dbAdapter->delete('reference_result_dts','shipment_id = '.$params['shipmentId']);
 			for($i = 0;$i < $size;$i++){
-				
 				$dbAdapter->insert('reference_result_dts',array(
 									'shipment_id'=>$params['shipmentId'],
 									'sample_id'=>($i+1),
 									'sample_label'=>$params['sampleName'][$i],
 									'reference_result'=>$params['possibleResults'][$i],
+									'control'=>$params['control'][$i],
 									'mandatory'=>$params['mandatory'][$i],
 									'sample_score'=>$params['score'][$i]
 									)

@@ -83,7 +83,7 @@
 	
 	function updateComment(sid){
 		$.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment')); ?>", { sid: sid,comment: $("#shipmentComment").val(), format: "html" },
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'),'default',true); ?>", { sid: sid,comment: $("#shipmentComment").val(), format: "html" },
             function (data) {
                alert(data);
 			   $.unblockUI();

@@ -107,6 +107,18 @@
 	
 	
     $(document).ready(function() {
+		
+		$("body").on("change",'select.controlOrNot',function(){
+			var scoreElem = $(this).parent().parent().find('.score');
+			if ($(this).val() == 1) {
+				$(scoreElem).val(0); 
+				$(scoreElem).attr('readonly','readonly'); 
+			}else{
+				$(scoreElem).removeAttr('readonly'); 
+			}
+			
+		});		
+		
        //drawTable();
 	   schemeSelected($("#scheme").val());
 	   $(".datepicker" ).datepicker({dateFormat: '<?php echo $this->defaultDateFormat();?>'});
@@ -214,5 +226,6 @@
 				   $.unblockUI();
 		});
 	}
+		
 
 </script>

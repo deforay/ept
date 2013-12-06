@@ -453,7 +453,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_vl` (
   `vl_shipment_id` varchar(255) NOT NULL,
   `vl_sample_id` int(11) NOT NULL,
   `vl_sample_label` varchar(255) DEFAULT NULL,
-  `reference_viral_load` varchar(45) DEFAULT NULL,
+  `reference_result` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`vl_shipment_id`,`vl_sample_id`)
 ) ENGINE=InnoDB;
 
@@ -1287,3 +1287,10 @@ ADD  `optional_eval_comment` TEXT NOT NULL AFTER  `evaluation_comment`;
 ALTER TABLE  `shipment` ADD  `shipment_comment` TEXT NOT NULL AFTER  `number_of_samples`;
 
 ALTER TABLE  `shipment` ADD  `max_score` INT NOT NULL AFTER  `number_of_samples`;
+
+
+
+-- by Amit Dec 06 2013
+ALTER TABLE  `reference_result_dts` ADD  `control` INT NOT NULL AFTER  `reference_result`;
+ALTER TABLE  `reference_result_eid` ADD  `control` INT NOT NULL AFTER  `reference_result`;
+ALTER TABLE  `reference_result_vl` ADD  `control` INT NOT NULL AFTER  `reference_result`;

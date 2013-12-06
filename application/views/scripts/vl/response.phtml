@@ -101,11 +101,11 @@ $count++;
 
 	<tr align="CENTER" class="light" >
 		<th>
-			<?php echo $sample['sample_label']; ?>
+			<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
 		</th>
         <td>
-			<input type="text" name="vlResult[]" class="isRequired"  value="<?php echo $sample['reported_viral_load']; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
+			<input type="text" name="vlResult[]" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?>  value="<?php echo $sample['reported_viral_load']; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
 		</td>
     </tr>
 

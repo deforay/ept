@@ -259,17 +259,107 @@ class Application_Service_Evaluation {
 				$lotResult = "";
 				$scoreResult = "";
 				$failureReason = "";
+				$algoResult = "";
+				
+				$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
+				$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
+				
+
+				$attributes = json_decode($shipment['attributes'],true);
+				
+				
+				
 				foreach($results as $result){
+					$r1 = $r2 = $r3 = '';
+					if($result['test_result_1'] == 1){
+						$r1 = 'P';
+					} else if($result['test_result_1'] == 2){
+						$r1 = 'N';
+					} else if($result['test_result_1'] == 3){
+						$r2 = 'I';
+					}
+					if($result['test_result_2'] == 1){
+						$r2 = 'P';
+					} else if($result['test_result_2'] == 2){
+						$r2 = 'N';
+					} else if($result['test_result_2'] == 3){
+						$r1 = 'I';
+					}
+					if($result['test_result_3'] == 1){
+						$r3 = 'P';
+					} else if($result['test_result_3'] == 2){
+						$r3 = 'N';
+					} else if($result['test_result_3'] == 3){
+						$r3 = 'I';
+					}
+					
+					$algoString = $r1.$r2.$r3;
+
+					if($attributes['algorithm'] == 'serial'){
+						
+						if($r1 == 'N'){
+							if(($r2 == '') && ($r3 == '')){
+								$algoResult = 'Pass';	
+							}else{
+								$algoResult = 'Fail';
+								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";								
+							}							
+						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'N'){
+							$algoResult = 'Pass';
+						}else if($r1 == 'P' && $r2 == 'P'){
+							if(($r3 == '')){
+								$algoResult = 'Pass';	
+							}else{
+								$algoResult = 'Fail';
+								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";					
+							}
+						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'P'){
+							$algoResult = 'Pass';
+						}else{
+							$algoResult = 'Fail';
+							$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";	
+						}
+						
+					} else if($attributes['algorithm'] == 'parallel'){
+						
+						if($r1 == 'P' && $r2 == 'P'){
+							if(($r3 == '')){
+								$algoResult = 'Pass';	
+							}else{
+								$algoResult = 'Fail';
+								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";									
+							}
+						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'P'){
+							$algoResult = 'Pass';
+						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'N'){
+							$algoResult = 'Pass';
+						}else if($r1 == 'N' && $r2 == 'N'){
+							if(($r3 == '')){
+								$algoResult = 'Pass';	
+							}else{
+								$algoResult = 'Fail';
+								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";	
+							}
+						}else if($r1 == 'N' && $r2 == 'P' && $r3 == 'N'){
+							$algoResult = 'Pass';
+						}else if($r1 == 'N' && $r2 == 'P' && $r3 == 'P'){
+							$algoResult = 'Pass';
+						}else{
+							$algoResult = 'Fail';
+							$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";	
+						}
+						
+					}
 					
 					// matching reported and reference results
-					if(isset($result['reported_result']) && $result['reported_result'] !=null){						
+					if(isset($result['reported_result']) && $result['reported_result'] !=null){
 						if($result['reference_result'] == $result['reported_result']){
 							$totalScore += $result['sample_score'];
 						}else{
 							if($result['sample_score'] > 0){
 								$failureReason[] = "Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
 							}
-						}		
+						}
 					}
 					$maxScore  += $result['sample_score'];
 					
