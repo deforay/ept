@@ -40,3 +40,18 @@ text-align:center;
  border-color:#f3f791 !important;
  background:#f3f791 !important;
 }
+
+
+	.evenResult td, .evenResult th{
+		background: #51697F !important;
+		border-color: #51697F !important;
+		color: #FFF !important;
+	}
+	
+	.oddResult td, .oddResult th{
+		background: #e0f0ff !important;
+		border-color: #e0f0ff !important;		
+	}
+	.totalResult td, .totalResult th{
+		background:#ECF0F1;
+	}
