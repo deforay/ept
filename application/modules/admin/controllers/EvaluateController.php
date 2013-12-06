@@ -98,7 +98,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     
                 }
                 $evalService = new Application_Service_Evaluation();
-                $this->view->evaluateData = $evalService->viewEvaluation($sid,$pid,$scheme);
+                $this->view->evaluateData = $evalService->editEvaluation($sid,$pid,$scheme);
                 
                 
             }else{

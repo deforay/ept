@@ -261,8 +261,8 @@ class Application_Service_Evaluation {
 				$failureReason = "";
 				$algoResult = "";
 				
-				$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
-				$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
+				//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
+				//$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
 				
 
 				$attributes = json_decode($shipment['attributes'],true);
@@ -283,7 +283,7 @@ class Application_Service_Evaluation {
 					} else if($result['test_result_2'] == 2){
 						$r2 = 'N';
 					} else if($result['test_result_2'] == 3){
-						$r1 = 'I';
+						$r2 = 'I';
 					}
 					if($result['test_result_3'] == 1){
 						$r3 = 'P';
@@ -496,7 +496,7 @@ class Application_Service_Evaluation {
 		
 	}
 	
-	public function viewEvaluation($shipmentId,$participantId,$scheme){
+	public function editEvaluation($shipmentId,$participantId,$scheme){
 
 
             $participantService = new Application_Service_Participants();
@@ -536,6 +536,16 @@ class Application_Service_Evaluation {
 			$numScoredFull = $shipmentOverall[0]['fullscore'];
 			$maxScore = $shipmentOverall[0]['max_score'];
 			
+			$controlRes = array();
+			$sampleRes = array();
+			
+			foreach($results as $res){
+				if($res['control'] == 1){
+					$controlRes[] = $res;
+				}else{
+					$sampleRes[] = $res;
+				}
+			}			
 			
 			
 
@@ -546,7 +556,77 @@ class Application_Service_Evaluation {
 						 'fullScorers' => $numScoredFull,
 						 'maxScore' => $maxScore,
 						 'evalComments' => $evalComments,
-						 'results' => $results );
+						 'controlResults' => $controlRes, 
+						 'results' => $sampleRes );
+	
+	}
+	
+	public function viewEvaluation($shipmentId,$participantId,$scheme){
+
+
+            $participantService = new Application_Service_Participants();
+			$schemeService = new Application_Service_Schemes();
+			$shipmentService = new Application_Service_Shipments();
+			
+			
+            $participantData = $participantService->getParticipantDetails($participantId);
+			$shipmentData = $schemeService->getShipmentData($shipmentId,$participantId);
+			
+			
+			
+			if($scheme == 'eid'){
+				$possibleResults = $schemeService->getPossibleResults('eid');
+				$evalComments = $schemeService->getSchemeEvaluationComments('eid');
+				$results = $schemeService->getEidSamples($shipmentId,$participantId);								
+			} else if($scheme == 'vl'){
+				$possibleResults = "";
+				$evalComments = $schemeService->getSchemeEvaluationComments('vl');
+				$results = $schemeService->getVlSamples($shipmentId,$participantId);				
+			} else if($scheme == 'dts'){
+				$possibleResults = $schemeService->getPossibleResults('dts');
+				$evalComments = $schemeService->getSchemeEvaluationComments('dts');
+				$results = $schemeService->getDtsSamples($shipmentId,$participantId);								
+			}
+				
+			
+			$controlRes = array();
+			$sampleRes = array();
+			
+			foreach($results as $res){
+				if($res['control'] == 1){
+					$controlRes[] = $res;
+				}else{
+					$sampleRes[] = $res;
+				}
+			}
+
+				
+			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$sql = $db->select()->from(array('s'=>'shipment'))
+							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
+							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id', array('fullscore'=>new Zend_Db_Expr("SUM(if(s.max_score = sp.shipment_score, 1, 0))")))
+							->join(array('p'=>'participant'),'p.participant_id=sp.participant_id')
+							->where("sp.shipment_id = ?",$shipmentId)
+							->where("substring(sp.evaluation_status,4,1) != '0'");
+			$shipmentOverall = $db->fetchAll($sql);
+			
+			
+			$noOfParticipants = count($shipmentOverall);
+			$numScoredFull = $shipmentOverall[0]['fullscore'];
+			$maxScore = $shipmentOverall[0]['max_score'];
+			
+			
+			
+
+			return array('participant'=>$participantData,
+			             'shipment' => $shipmentData ,
+						 'possibleResults' => $possibleResults,
+						 'totalParticipants' => $noOfParticipants,
+						 'fullScorers' => $numScoredFull,
+						 'maxScore' => $maxScore,
+						 'evalComments' => $evalComments,
+						 'controlResults' => $controlRes,
+						 'results' => $sampleRes );
 	
 	}
 	

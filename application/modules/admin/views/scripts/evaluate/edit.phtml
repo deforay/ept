@@ -1,12 +1,13 @@
 <style>
 	.evenResult td, .evenResult th{
-		background: #dee4e5 !important;
-		border-color: #dee4e5 !important;
+		background: #51697F !important;
+		border-color: #51697F !important;
+		color: #FFF !important;
 	}
 	
 	.oddResult td, .oddResult th{
-		background: #FFE !important;
-		border-color: #FFE !important;		
+		background: #e0f0ff !important;
+		border-color: #e0f0ff !important;		
 	}
 	.totalResult td, .totalResult th{
 		background:#ECF0F1;
@@ -92,43 +93,86 @@ if($this->scheme == 'eid'){
 	}	
 	
 ?>
+<br/>
+
+	<?php
+		if(isset($this->evaluateData['controlResults']) && sizeof($this->evaluateData['controlResults'])){
+	?>
+		<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+			<caption><legend>Controls</legend></caption>
+				<tr>
+					<th style="text-align: center;font-size:17px;">Control</th>
+					<th style="text-align: center;font-size:17px;">Results</th>
+				</tr>
+					
+				<?php
+				$counter = 1;
+				foreach($this->evaluateData['controlResults'] as $result){
+					if(($counter%2) == 0){
+						$class = "evenResult";
+					}else{
+						$class = "oddResult";
+					}
+					?>
+						<tr class="<?php echo $class ?>">
+							<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
+							<td style="vertical-align: middle;"><select class="form-control" name="reference[]" disabled="disabled"><?php echo $this->dropdownSelection($possibleResults,$result['reference_result'],true); ?></select></td>
+						</tr>
+						<tr class="<?php echo $class ?>">
+							<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
+							<td style="vertical-align: middle;">
+								<select class="form-control" name="reported[]"><?php echo $this->dropdownSelection($possibleResults,$result['reported_result'],true); ?></select>
+								<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
+							</td>
+						</tr>
+					<?php
+					$counter++;
+				}
+				?>
+		</table>
+		<br/><br/>
+	<?php
+		}
+	?>
+
 	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+		<caption><legend>Samples</legend></caption>
 		<tr>
-			<th style="text-align: center;font-size:17px;">Control/Sample</th>
+			<th style="text-align: center;font-size:17px;">Sample</th>
 			<th style="text-align: center;font-size:17px;">Results</th>
 			<th style="text-align: center;font-size:17px;">Score</th>
 		</tr>
-	
-<?php
-$total = 0;
-$counter = 1;
-foreach($this->evaluateData['results'] as $result){
-	if(($counter%2) == 0){
-		$class = "evenResult";
-	}else{
-		$class = "oddResult";
-	}
-	?>
-		<tr class="<?php echo $class ?>">
-			<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
-			<td style="vertical-align: middle;"><select class="form-control" name="reference[]" disabled="disabled"><?php echo $this->dropdownSelection($possibleResults,$result['reference_result'],true); ?></select></td>
-			<td rowspan="2" style="vertical-align: middle;text-align: center;"><h1><?php echo $score = ($result['reference_result'] == $result['reported_result']) ? $result['sample_score'] : 0; $total+= $score; ?></h1></td>
+			
+		<?php
+		$total = 0;
+		$counter = 1;
+		foreach($this->evaluateData['results'] as $result){
+			if(($counter%2) == 0){
+				$class = "evenResult";
+			}else{
+				$class = "oddResult";
+			}
+			?>
+				<tr class="<?php echo $class ?>">
+					<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
+					<td style="vertical-align: middle;"><select class="form-control" name="reference[]" disabled="disabled"><?php echo $this->dropdownSelection($possibleResults,$result['reference_result'],true); ?></select></td>
+					<td rowspan="2" style="vertical-align: middle;text-align: center;"><h1><?php echo $score = ($result['reference_result'] == $result['reported_result']) ? $result['sample_score'] : 0; $total+= $score; ?></h1></td>
+				</tr>
+				<tr class="<?php echo $class ?>">
+					<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
+					<td style="vertical-align: middle;">
+						<select class="form-control" name="reported[]"><?php echo $this->dropdownSelection($possibleResults,$result['reported_result'],true); ?></select>
+						<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
+					</td>
+				</tr>
+			<?php
+			$counter++;
+		}
+		?>
+		<tr class="totalResult">
+			<td colspan="2" style="vertical-align: middle;text-align:right;"><h3>Total Score</h3></td>
+			<td style="vertical-align: middle;text-align:center;"><h1><?php echo $total; ?></h1></td>
 		</tr>
-		<tr class="<?php echo $class ?>">
-			<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
-			<td style="vertical-align: middle;">
-				<select class="form-control" name="reported[]"><?php echo $this->dropdownSelection($possibleResults,$result['reported_result'],true); ?></select>
-				<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
-			</td>
-		</tr>
-	<?php
-	$counter++;
-}
-?>
-<tr class="totalResult">
-	<td colspan="2" style="vertical-align: middle;text-align:right;"><h3>Total Score</h3></td>
-	<td style="vertical-align: middle;text-align:center;"><h1><?php echo $total; ?></h1></td>
-</tr>
 </table>
 <?php
 }
@@ -169,9 +213,52 @@ else if($this->scheme == 'dts'){
 	}	
 	
 ?>
+
+
+
+	
+		<?php
+		if(isset($this->evaluateData['controlResults']) && sizeof($this->evaluateData['controlResults'])){
+	?>
+		<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+			<caption><legend>Controls</legend></caption>
+				<tr>
+					<th style="text-align: center;font-size:17px;">Control</th>
+					<th style="text-align: center;font-size:17px;">Results</th>
+				</tr>
+
+<?php
+$total = 0;
+$counter = 1;
+foreach($this->evaluateData['controlResults'] as $result){
+	if(($counter%2) == 0){
+		$class = "evenResult";
+	}else{
+		$class = "oddResult";
+	}
+	?>
+		<tr class="<?php echo $class ?>">
+			<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
+			<td style="vertical-align: middle;"><select class="form-control" name="reference[]" disabled="disabled"><?php echo $this->dropdownSelection($possibleResults,$result['reference_result'],true); ?></select></td>
+		</tr>
+		<tr class="<?php echo $class ?>">
+			<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
+			<td style="vertical-align: middle;">
+				<select class="form-control" name="reported[]"><?php echo $this->dropdownSelection($possibleResults,$result['reported_result'],true); ?></select>
+				<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
+			</td>
+		</tr>
+	<?php
+	$counter++;
+}
+?>
+</table>
+		<br/><br/>
+<?php } ?>
 	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+		<caption><legend>Samples</legend></caption>
 		<tr>
-			<th style="text-align: center;font-size:17px;">Control/Sample</th>
+			<th style="text-align: center;font-size:17px;">Sample</th>
 			<th style="text-align: center;font-size:17px;">Results</th>
 			<th style="text-align: center;font-size:17px;">Score</th>
 		</tr>
