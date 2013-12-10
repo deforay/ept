@@ -223,7 +223,7 @@ class Application_Service_Evaluation {
 				// checking if total score and maximum scores are the same
 				if($totalScore != $maxScore){
 					$scoreResult = 'Fail';
-					$failureReason[]= "Participant did not meet the criteria of having Score of <strong>$maxScore</strong>";
+					$failureReason[]= "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
 				}else{
 					$scoreResult = 'Pass';
 				}
@@ -427,7 +427,7 @@ class Application_Service_Evaluation {
 					$measure->convertTo(Zend_Measure_Time::DAY);
 
 					$testKitExpiryResult = 'Fail';
-					$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".$measure->getValue(). " days before the test date ".$testDate;
+					$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
 				}
 				
 				
@@ -441,7 +441,7 @@ class Application_Service_Evaluation {
 					$measure->convertTo(Zend_Measure_Time::DAY);
 
 					$testKitExpiryResult = 'Fail';
-					$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".$measure->getValue(). " days before the test date ".$testDate;
+					$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
 				}				
 				
 				
@@ -467,7 +467,7 @@ class Application_Service_Evaluation {
 				// checking if total score and maximum scores are the same
 				if($totalScore != $maxScore){
 					$scoreResult = 'Fail';
-					$failureReason[]= "Participant did not meet the criteria of having Score of <strong>$maxScore</strong>";
+					$failureReason[]= "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
 				}else{
 					$scoreResult = 'Pass';
 				}				
@@ -607,7 +607,8 @@ class Application_Service_Evaluation {
 							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id', array('fullscore'=>new Zend_Db_Expr("SUM(if(s.max_score = sp.shipment_score, 1, 0))")))
 							->join(array('p'=>'participant'),'p.participant_id=sp.participant_id')
 							->where("sp.shipment_id = ?",$shipmentId)
-							->where("substring(sp.evaluation_status,4,1) != '0'");
+							->where("substring(sp.evaluation_status,4,1) != '0'")
+							->group('sp.map_id');
 			$shipmentOverall = $db->fetchAll($sql);
 			
 			

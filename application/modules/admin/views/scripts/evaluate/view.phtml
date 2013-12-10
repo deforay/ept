@@ -1,3 +1,20 @@
+<?php
+$evSession = new Zend_Session_Namespace('evalShipmentList');
+$urlListArray = $evSession->viewUrlList;
+$this->currentUrl;
+$pos = array_search($this->currentUrl,$urlListArray);
+
+$prev = $pos-1;
+$next = $pos+1;
+$previousLink = $nextLink = "";
+if($prev >= 0){
+	$previousLink = $urlListArray[$prev];
+}
+if($next < count($urlListArray)){
+	$nextLink = $urlListArray[$next];
+}
+
+?>
 <br/>
 <legend>Participant Result Summary</legend>
 <?php
@@ -339,5 +356,19 @@ else{
 </p>
 <?php } ?>
 <div id="respond" style="margin: 10px auto 10px auto; text-align: center;" align="center">
-	<input class="btn btn-danger" type="button" onclick="document.location='/admin/evaluate/shipment/sid/<?php echo base64_encode($this->evaluateData['shipment']['shipment_id']); ?>'" value="Back"/>
+	<h5>Currently viewing result <?php echo $pos+1 . " of ".count($urlListArray); ?> </h5>
+	<?php
+			if(isset($previousLink) && $previousLink != ""){
+			?>	
+			<a href="javascript:void(0)" class="btn btn-primary" onclick="$.blockUI();document.location.href='<?php echo $previousLink; ?>';"><span><i class="icon-chevron-left"></i> View Previous Result</span></a>
+			<?php
+			}
+			
+			if(isset($nextLink) && $nextLink != ""){
+			?>	
+			<a href="javascript:void(0)" class="btn btn-primary" onclick="$.blockUI();document.location.href='<?php echo $nextLink; ?>';"><span>View Next Result <i class="icon-chevron-right"></i></span></a>
+			<?php
+			}
+			?>			
+			<input class="btn btn-danger" type="button" onclick="document.location='/admin/evaluate/shipment/sid/<?php echo base64_encode($this->evaluateData['shipment']['shipment_id']); ?>'" value="Back to Listing"/>
 </div>

@@ -48,7 +48,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
     {
 
        
-            if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){            
+            if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){
+                $this->view->currentUrl = "/admin/evaluate/view/sid/".$this->_getParam('sid')."/pid/".$this->_getParam('pid')."/scheme/".$this->_getParam('scheme');
                 $sid = (int)base64_decode($this->_getParam('sid'));
                 $pid = (int)base64_decode($this->_getParam('pid'));
                 $this->view->scheme = $scheme = base64_decode($this->_getParam('scheme'));
@@ -83,10 +84,19 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $scheme = base64_encode($params['scheme']);
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = "Shipment Results updated successfully";
-            $this->_redirect("/admin/evaluate/edit/sid/$shipmentId/pid/$participantId/scheme/$scheme");
+            if(isset($params['whereToGo']) && $params['whereToGo'] != ""){
+               $this->_redirect($params['whereToGo']); 
+            }else{
+                $this->_redirect("/admin/evaluate/edit/sid/$shipmentId/pid/$participantId/scheme/$scheme");    
+            }
+            
+            
             
         }else{
-            if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){            
+            if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){
+                
+                $this->view->currentUrl = "/admin/evaluate/edit/sid/".$this->_getParam('sid')."/pid/".$this->_getParam('pid')."/scheme/".$this->_getParam('scheme');
+                
                 $sid = (int)base64_decode($this->_getParam('sid'));
                 $pid = (int)base64_decode($this->_getParam('pid'));
                 $this->view->scheme = $scheme = base64_decode($this->_getParam('scheme'));

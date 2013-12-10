@@ -1,3 +1,20 @@
+<?php
+$evSession = new Zend_Session_Namespace('evalShipmentList');
+$urlListArray = $evSession->editUrlList;
+$this->currentUrl;
+$pos = array_search($this->currentUrl,$urlListArray);
+
+$prev = $pos-1;
+$next = $pos+1;
+$previousLink = $nextLink = "";
+if($prev >= 0){
+	$previousLink = $urlListArray[$prev];
+}
+if($next < count($urlListArray)){
+	$nextLink = $urlListArray[$next];
+}
+
+?>
 <br/>
 <legend>Participant Result Summary</legend>
 <?php
@@ -11,7 +28,8 @@
 	<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo $this->evaluateData['shipment']['shipment_id']; ?>" />
 	<input type="hidden" name="participantId" id="participantId" value="<?php echo $this->evaluateData['shipment']['participant_id']; ?>" />
 	<input type="hidden" name="smid" id="smid" value="<?php echo $this->evaluateData['shipment']['map_id']; ?>" />
-	<input type="hidden" name="scheme" id="scheme" value="<?php echo $this->scheme; ?>" />  
+	<input type="hidden" name="scheme" id="scheme" value="<?php echo $this->scheme; ?>" />   
+	<input type="hidden" name="whereToGo" id="whereToGo" value="" />   
 <?php
 if($this->scheme == 'eid'){
 	
@@ -315,9 +333,27 @@ else{
 </table>
 	<br/>
 <div id="respond" style="margin: 10px auto 10px auto; text-align: center;" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="button" onclick="$('#updateResultsForm').submit();return false;"
-                       tabindex="7" value="Update"/>
+	<h5>Currently editing result <?php echo $pos+1 . " of ".count($urlListArray); ?> </h5>
+				<?php
+				if(isset($previousLink) && $previousLink != ""){
+				?>	
+                <button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $previousLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span><i class="icon-chevron-left"></i> Update and Previous</span></button>					
+				<?php
+				}
+				?>
+				
+				<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update</span></button>
+				
+				<?php
+				if(isset($nextLink) && $nextLink != ""){
+				?>	
+				<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $nextLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update and Next <i class="icon-chevron-right"></i></span></button>									
+				<?php
+				}
+				?>
+
+
                 <input class="btn btn-danger" type="button" onclick="document.location='/admin/evaluate/shipment/sid/<?php echo base64_encode($this->evaluateData['shipment']['shipment_id']); ?>'"
-                       tabindex="8" value="Back"/>
+                       tabindex="8" value="Back to Listing "/>
 </div>
 </form>

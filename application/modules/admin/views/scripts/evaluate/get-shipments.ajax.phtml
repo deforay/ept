@@ -14,27 +14,34 @@ if($this->shipments == false && count($this->shipments) <= 0){
           <table class="table table-bordered table-striped table-hover">
 			<tr>
 				<th style="text-align: center;">Shipment Code</th>
-				<th style="text-align: center;">Shipment Date</th>
 				<th style="text-align: center;">Scheme</th>
 				<th style="text-align: center;">No. of Samples</th>
 				<th style="text-align: center;">No. of Participants</th>
 				<th style="text-align: center;">No. of Responses</th>
+				<th style="text-align: center;">Response %</th>
 				<th style="text-align: center;">Shipment Status</th>
 				<th style="text-align: center;">Action</th>
 			</tr>
 			<?php
 			if(count($this->shipments) > 0){
 			foreach($this->shipments as $shipment){
+				$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
 				?>
 				<tr>
 					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
-					<td style="text-align: center;"><?php echo $this->dateFormat($shipment['shipment_date']) ?></td>
 					<td style="text-align: center;"><?php echo strtoupper($shipment['scheme_type']) ?></td>
 					<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
 					<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
-					<td style="text-align: center;"><?php echo $shipment['reported_count'] ?></td>
+					<td style="text-align: center;"><?php echo $reported ?></td>
+					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? (($reported/$shipment['participant_count'])*100) : 0; ?></td>					
 					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
-					<td style="text-align: center;"><a class="btn btn-primary btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a></td>
+					<td style="text-align: center;">
+						<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
+						<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
+						<?php } else { ?>
+						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
+						<?php }?>
+					</td>
 				</tr>
 				<?php
 				}

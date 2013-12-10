@@ -1294,3 +1294,8 @@ ALTER TABLE  `shipment` ADD  `max_score` INT NOT NULL AFTER  `number_of_samples`
 ALTER TABLE  `reference_result_dts` ADD  `control` INT NOT NULL AFTER  `reference_result`;
 ALTER TABLE  `reference_result_eid` ADD  `control` INT NOT NULL AFTER  `reference_result`;
 ALTER TABLE  `reference_result_vl` ADD  `control` INT NOT NULL AFTER  `reference_result`;
+
+
+-- by Amit Dec 09 2013
+
+ALTER TABLE  `shipment_participant_map` CHANGE  `final_result`  `final_result` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;

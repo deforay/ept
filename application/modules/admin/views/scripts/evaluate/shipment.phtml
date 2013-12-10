@@ -1,3 +1,4 @@
+<?php if (count($this->shipment) > 0) { ?>
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
 	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Evaluate Shipment <?php echo $this->shipment[0]['shipment_code']; ?> from Distribution <?php echo $this->shipment[0]['distribution_code']; ?> </div>
 	<div style="margin-top:10px;">
@@ -31,8 +32,11 @@
     <tbody>
     
 		<?php
+			$editList = array();
+			$viewList = array();
 			foreach($this->shipment as $shipment){
-				
+				$editList[] = "/admin/evaluate/edit/sid/".base64_encode($shipment['shipment_id'])."/pid/".base64_encode($shipment['participant_id'])."/scheme/".base64_encode($shipment['scheme_type']);
+				$viewList[] = "/admin/evaluate/view/sid/".base64_encode($shipment['shipment_id'])."/pid/".base64_encode($shipment['participant_id'])."/scheme/".base64_encode($shipment['scheme_type']);
 				if(isset($shipment['failure_reason']) && $shipment['failure_reason'] != ""){
 					$shipment['failure_reason'] = "<ul><li>" .str_replace(",","</li><li>",$shipment['failure_reason']) . "</li></ul>";
 				}
@@ -50,6 +54,9 @@
 				</tr>
 				<?php
 			}
+			$evSession = new Zend_Session_Namespace('evalShipmentList');
+			$evSession->editUrlList = $editList;
+			$evSession->viewUrlList = $viewList;
 		?>
     
     </tbody>
@@ -57,6 +64,7 @@
 
 <script type="text/javascript" charset="utf-8">
 	var oTable = null;
+	var nTr = null;
     $(document).ready(function() {
 		
 		var nCloneTh = document.createElement( 'th' );
@@ -73,7 +81,7 @@
 		} );
 		
    $('#shipmentEvaluation').on('click',".clicker", function () {
-        var nTr = $(this).parents('tr')[0];
+        nTr = $(this).parents('tr')[0];
         if ( oTable.fnIsOpen(nTr) )
         {
             /* This row is already open - close it */
@@ -122,19 +130,34 @@
 	function fnFormatDetails ( oTable, nTr )
 	{
 		var aData = oTable.fnGetData( nTr );
-		var sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
-		sOut += '<tr><td>Failure Reasons:</td><td>'+aData[5]+'</td></tr>';
-		sOut += '</table>';
-		 
+		var sOut = "";
+		if (aData[5] != "" && aData[5] != null && aData[5] != undefined) {
+			sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
+			sOut += '<tr><td style="width:220px;">Failure Reasons & Warnings:</td><td>'+aData[5]+'</td></tr>';
+			sOut += '</table>';
+		}else{
+			sOut = 'No comments to show';
+		}
 		return sOut;
+
 	}	
 	
 	function updateComment(sid){
+		if ($.trim($("#shipmentComment").val()) == "") {
+			alert("Please enter comment to proceed");
+			return;
+		}
 		$.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'),'default',true); ?>", { sid: sid,comment: $("#shipmentComment").val(), format: "html" },
-            function (data) {
-               alert(data);
-			   $.unblockUI();
-        });		
+            function (data) {               
+			   $.unblockUI({  onUnblock: function(){ alert(data); }  });			   
+			});		
 	}
 </script>
+
+<?php } else { ?>
+	
+	<br/><br/><br/>
+	<h3 style="text-align: center">No Shipment to evaluate. <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" >Click here to go back</a></h3>
+	
+<?php } ?>
