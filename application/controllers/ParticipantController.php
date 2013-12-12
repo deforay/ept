@@ -46,10 +46,11 @@ class ParticipantController extends Zend_Controller_Action
     	$stmt->execute(array($this->noOfItems * $currentPage ,$this->noOfItems,$authNameSpace->dm_id));
     	//`$this->view->rsShipAll = $stmt->fetchAll();
 
-    	$pag = Zend_Paginator::factory($stmt->fetchAll());
-    	$pag->setItemCountPerPage($this->noOfItems);
-    	$pag->setCurrentPageNumber($currentPage);
-    	$this->view->rsShipAll = $pag;
+    	//$pag = Zend_Paginator::factory($stmt->fetchAll());
+    	//$pag->setItemCountPerPage($this->noOfItems);
+    	//$pag->setCurrentPageNumber($currentPage);
+    	//$this->view->rsShipAll = $pag;
+    	$this->view->rsShipAll = $stmt->fetchAll();
 
     	
     	//Zend_Debug::dump($this->view->rs);
