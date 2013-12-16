@@ -23,7 +23,7 @@ $shipmentData = $this->shipmentData;
                 <label class="col-lg-3 control-label">Shipment Code </label>
 
                 <div class="col-lg-5">
-					<input type='text' disabled='disabled' class ='form-control' value='<?php echo $shipmentData['shipment']['shipment_code']; ?>' />
+					<input type='text' name="shipmentCode" id="shipmentCode" class ='form-control' value='<?php echo $shipmentData['shipment']['shipment_code']; ?>' />
 				</div>
 				
 				
@@ -409,7 +409,23 @@ if($shipmentData['shipment']['scheme_type'] == 'eid'){
 </div>
 
 <script>
-	
+    var duplicated = false;
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+		if (obj.val() == "" || obj.val() == null) {
+			return;
+		}
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.val(), fnct: fnct, format: "html" },
+            function (data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    obj.focus();
+                }
+                else {
+                    duplicated = false;
+                }
+            });
+    }	
 	$(document).ready(function(){
 		$("body").on("change",'select.controlOrNot',function(){
 			var scoreElem = $(this).parent().parent().find('.score');
@@ -424,10 +440,11 @@ if($shipmentData['shipment']['scheme_type'] == 'eid'){
 	});
 		
     function validateNow() {
+		checkDuplicate('shipment', 'shipment_code', $("#shipmentCode"), '<?php echo "shipment_id##" . $shipmentData['shipment']['shipment_id']; ?>', 'This Code already exists for another Shipment. Please try something else.')
         flag = deforayValidator.init({
             formId: 'shipmentForm'
         });
-        if (flag) {
+        if (flag && !duplicated) {
             $.blockUI();
             document.getElementById('shipmentForm').submit();
         }

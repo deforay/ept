@@ -26,7 +26,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
                 }
             }            
             
-        }else if ($request->getModuleName() == 'admin'  && $request->getControllerName() != 'login') {
+        }else if (($request->getModuleName() == 'admin'  && $request->getControllerName() != 'login') || $request->getModuleName() == 'reports') {
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $layout->setLayout('admin');
             if(!isset($authNameSpace->admin_id)){

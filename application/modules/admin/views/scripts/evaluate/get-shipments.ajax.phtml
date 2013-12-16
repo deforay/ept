@@ -19,6 +19,7 @@ if($this->shipments == false && count($this->shipments) <= 0){
 				<th style="text-align: center;">No. of Participants</th>
 				<th style="text-align: center;">No. of Responses</th>
 				<th style="text-align: center;">Response %</th>
+				<th style="text-align: center;">Number Passed</th>
 				<th style="text-align: center;">Shipment Status</th>
 				<th style="text-align: center;">Action</th>
 			</tr>
@@ -34,6 +35,7 @@ if($this->shipments == false && count($this->shipments) <= 0){
 					<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
 					<td style="text-align: center;"><?php echo $reported ?></td>
 					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? (($reported/$shipment['participant_count'])*100) : 0; ?></td>					
+					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
 					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
 					<td style="text-align: center;">
 						<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>

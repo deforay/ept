@@ -72,7 +72,8 @@
                 <div class="col-lg-5"><input type="text" id="shipmentCode" name="shipmentCode" size="50" maxlength="45"
                                              class="isRequired form-control input-sm"
 											 title="Please enter the shipment code here"
-                                             placeholder="Please enter the shipment code here"/></div>
+                                             placeholder="Please enter the shipment code here"
+											 onblur="checkDuplicate('shipment', 'shipment_code',$('#shipmentCode'),null, 'This Code already exists for another Shipment. Please try something else.')"/></div>
 				
 				
             </div>		
@@ -104,6 +105,24 @@
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;
+    var duplicated = false;
+	
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+		if (obj.val() == "" || obj.val() == null) {
+			return;
+		}		
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.val(), fnct: fnct, format: "html" },
+            function (data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    obj.focus();
+                }
+                else {
+                    duplicated = false;
+                }
+            });
+    }	
 	
 	
     $(document).ready(function() {
@@ -125,10 +144,11 @@
     });
 	
     function validateNow() {
+		checkDuplicate('shipment', 'shipment_code',$('#shipmentCode'),null, 'This Code already exists for another Shipment. Please try something else.');
         flag = deforayValidator.init({
             formId: 'shipmentForm'
         });
-        if (flag) {
+        if (flag && !duplicated) {
             $.blockUI();
             document.getElementById('shipmentForm').submit();
         }

@@ -1,4 +1,66 @@
-<?php if (count($this->shipment) > 0) { ?>
+<?php if (count($this->shipment) > 0) { 
+
+	$session = new Zend_Session_Namespace('tempSpace');
+	$session->shipments;
+	
+	
+	
+?>
+<div class="well" style="clear: both;">
+<a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
+<div id="allShipmentList">
+     
+          <legend><h4>All Shipments Under Distribution <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4></legend>
+     
+          <table class="table table-bordered table-striped table-hover">
+			<tr>
+				<th style="text-align: center;">Shipment Code</th>
+				<th style="text-align: center;">Scheme</th>
+				<th style="text-align: center;">No. of Samples</th>
+				<th style="text-align: center;">No. of Participants</th>
+				<th style="text-align: center;">No. of Responses</th>
+				<th style="text-align: center;">Response %</th>
+				<th style="text-align: center;">Number Passed</th>
+				<th style="text-align: center;">Shipment Status</th>
+				<th style="text-align: center;">Action</th>
+			</tr>
+			<?php
+			if(count($session->shipments) > 0){
+			foreach($session->shipments as $shipment){
+				$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+				?>
+				<tr>
+					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
+					<td style="text-align: center;"><?php echo strtoupper($shipment['scheme_type']) ?></td>
+					<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
+					<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
+					<td style="text-align: center;"><?php echo $reported ?></td>
+					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? (($reported/$shipment['participant_count'])*100) : 0; ?></td>					
+					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
+					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
+					<td style="text-align: center;">
+						<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
+						<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
+						<?php } else { ?>
+						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
+						<?php }?>
+					</td>
+				</tr>
+				<?php
+				}
+			}else{
+				?>
+				<tr>
+					<td colspan="5" align="center" style="text-align:center">
+						No shipments for this distribution yet
+					</td>
+				</tr>
+				<?php
+			}
+			?>
+		  </table>
+    </div><!-- /.modal-dialog -->
+</div>	
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
 	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Evaluate Shipment <?php echo $this->shipment[0]['shipment_code']; ?> from Distribution <?php echo $this->shipment[0]['distribution_code']; ?> </div>
 	<div style="margin-top:10px;">
@@ -45,7 +107,7 @@
 					<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['first_name'] . " " .$shipment['last_name'] ?></td>
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0' ?></td>
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['max_score']) && $shipment['max_score'] != "") ? $shipment['max_score'] : '-'; ?></td>
-					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "") ? $shipment['final_result'] : 'Not Evaluated'; ?></td>
+					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['result_name']) && $shipment['result_name'] != "") ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
 						<a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;

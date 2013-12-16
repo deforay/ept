@@ -17,8 +17,8 @@ table{
 	}
 
 table thead th{
-	/*color:#FFFFFF;
-	background-color:#0c80a5;*/
+	color:#FFFFFF;
+	background-color:#0c80a5;
 	border:1px solid #CCCCCC;
 	border-collapse:collapse;
 	text-align:center;

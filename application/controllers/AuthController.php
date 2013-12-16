@@ -37,7 +37,7 @@ class AuthController extends Zend_Controller_Action
 			//echo "hi";
     		if($res->isValid()){
 				
-				Zend_Session::rememberMe(18000); // asking the session to be active for 5 hours
+				Zend_Session::rememberMe(60 * 60 * 5); // asking the session to be active for 5 hours
 
     			$rs = $adapter->getResultRowObject();
     			
@@ -50,9 +50,9 @@ class AuthController extends Zend_Controller_Action
 	    		$authNameSpace->email = $rs->primary_email;
 	    		$authNameSpace->force_password_reset = $rs->force_password_reset;
 	    		// PT Provider Dependent Configuration 
-	    		$authNameSpace->UserFld1 = $rs->UserFld1;
-	    		$authNameSpace->UserFld2 = $rs->UserFld2;
-	    		$authNameSpace->UserFld3 = $rs->UserFld3;
+	    		//$authNameSpace->UserFld1 = $rs->UserFld1;
+	    		//$authNameSpace->UserFld2 = $rs->UserFld2;
+	    		//$authNameSpace->UserFld3 = $rs->UserFld3;
 	    		
     			$this->_redirect('/participant/dashboard');
     		

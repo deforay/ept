@@ -1299,3 +1299,6 @@ ALTER TABLE  `reference_result_vl` ADD  `control` INT NOT NULL AFTER  `reference
 -- by Amit Dec 09 2013
 
 ALTER TABLE  `shipment_participant_map` CHANGE  `final_result`  `final_result` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
+-- by Amit Dec 16 2013
+ALTER TABLE  `shipment_participant_map` CHANGE  `final_result`  `final_result` INT NULL DEFAULT NULL

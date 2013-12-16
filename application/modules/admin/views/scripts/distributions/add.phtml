@@ -44,6 +44,9 @@
 <script type="text/javascript">
     var duplicated = false;
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+		if (obj.value == "" || obj.value == null) {
+			return;
+		}		
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html" },
             function (data) {
                 if (data > 0) {

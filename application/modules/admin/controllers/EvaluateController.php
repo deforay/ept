@@ -45,9 +45,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
     }
 
     public function viewAction()
-    {
-
-       
+    {       
             if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){
                 $this->view->currentUrl = "/admin/evaluate/view/sid/".$this->_getParam('sid')."/pid/".$this->_getParam('pid')."/scheme/".$this->_getParam('scheme');
                 $sid = (int)base64_decode($this->_getParam('sid'));
@@ -66,10 +64,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 
             }else{
                 $this->_redirect("/admin/evaluate/");
-            }            
-        
-                
-        
+            }        
     }
 
     public function editAction()
