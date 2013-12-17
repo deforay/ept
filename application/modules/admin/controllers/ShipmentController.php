@@ -38,7 +38,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->addShipment($params);
             if(isset($params['selectedDistribution']) && $params['selectedDistribution'] != "" && $params['selectedDistribution'] != null){
-                $this->_redirect("/admin/shipment/did/".base64_encode($params['selectedDistribution']));
+                $this->_redirect("/admin/shipment/index/did/".base64_encode($params['selectedDistribution']));
             }else{
                 $this->_redirect("/admin/shipment");    
             }
