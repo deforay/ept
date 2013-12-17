@@ -7,7 +7,7 @@ class ContactUsController extends Zend_Controller_Action
     {
          $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $ajaxContext->addActionContext('index', 'html')
-                ->initContext();
+                        ->initContext();
     }
 
     public function indexAction()

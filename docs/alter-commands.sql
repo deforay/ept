@@ -1302,3 +1302,10 @@ ALTER TABLE  `shipment_participant_map` CHANGE  `final_result`  `final_result` V
 
 -- by Amit Dec 16 2013
 ALTER TABLE  `shipment_participant_map` CHANGE  `final_result`  `final_result` INT NULL DEFAULT NULL
+
+
+
+-- by Amit Dec 17 2013
+CREATE TABLE IF NOT EXISTS `r_network_tiers` ( `network_id` int(11) NOT NULL AUTO_INCREMENT, `network_name` varchar(255) DEFAULT NULL, PRIMARY KEY (`network_id`)) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+ALTER TABLE  `participant` ADD  `network_tier` INT NOT NULL AFTER  `affiliation`;

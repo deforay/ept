@@ -83,7 +83,7 @@
                                              value="<?php echo $this->participant['zip']; ?>"/></div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Longitude <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">Longitude</label>
 
                 <div class="col-lg-5"><input type="text" id="long" name="long" size="50" maxlength="45"
                                              class="form-control" title="Please enter the longitude here"
@@ -91,7 +91,7 @@
                                              value="<?php echo $this->participant['long']; ?>"/></div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Latitude <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">Latitude</label>
 
                 <div class="col-lg-5"><input type="text" id="lat" name="lat" size="50" maxlength="45"
                                              class="form-control" title="Please enter the latitude here"
@@ -164,6 +164,21 @@
                                              placeholder="Please enter phone number here" class="form-control isNumeric"
                                              value="<?php echo $this->participant['phone']; ?>"/></div>
             </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Network Tier</label>
+
+                <div class="col-lg-5">
+					<select name="network" id="network"  class="form-control">
+						<option value="">--Select--</option>
+						<?php foreach($this->networks as $nw){
+						?>
+						<option value="<?php echo $nw['network_id']; ?>" <?php echo ($this->participant['network_tier'] == $nw['network_tier']) ? "selected='selected'" : "" ?>><?php echo $nw['network_name']; ?></option>
+						<?php	
+						} ?>
+					</select>
+				</div>
+            </div>
+			
             <div class="form-group">
                 <label class="col-lg-3 control-label">Affiliation</label>
 

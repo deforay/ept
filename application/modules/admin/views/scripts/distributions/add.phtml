@@ -3,28 +3,28 @@
           action="<?php echo $this->url(array("module" => "admin", "controller" => "distributions", "action" => "add"), null, true) ?>"
           class="form-horizontal bs-example" role="form">
         <fieldset>
-            <legend>Add New Distribution</legend>
+            <legend>Add New PT Event</legend>
 
             <div class="form-group">
-                <label class="col-lg-3 control-label">Distribution Code <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">PT Event Code <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
                     <input type="text" id="distributionCode" name="distributionCode" size="50" class="isRequired form-control"
                            title="Please enter a Unique Distribution Code here"
                            placeholder="Please enter a Unique Distribution Code here"
-                           onblur="checkDuplicate('distributions', 'distribution_code',this,null, 'This Code already exists for another Distribution. Please try something else.')"/>
+                           onblur="checkDuplicate('distributions', 'distribution_code',this,null, 'This Code already exists for another PT Event. Please try something else.')"/>
                 </div>
             </div>
 			
             <div class="form-group">
-                <label class="col-lg-3 control-label">Distribution Date <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">PT Event Date <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
 					<input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45"
                                              class="isRequired form-control datepicker"
                                              title="Please enter the Distribution date here"
                                              placeholder="Please enter the Distribution date here"/>
-					<span class="help-block">Dates already having a distribution will be disabled and marked with a red circle.</span>
+					<span class="help-block">Dates already having a PT Event will be disabled and marked with a red circle.</span>
 				</div>
 				
             </div>
@@ -61,7 +61,7 @@
     }
 
     function validateNow() {
-		checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another Distribution. Please try something else.')
+		checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Event. Please try something else.')
         flag = deforayValidator.init({
             formId: 'addDistributionForm'
         });

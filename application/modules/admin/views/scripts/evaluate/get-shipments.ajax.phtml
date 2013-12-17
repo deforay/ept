@@ -8,7 +8,7 @@ if($this->shipments == false && count($this->shipments) <= 0){
   
     <div class="modal-dialog" style="width:100%;">
         <div class="modal-header">
-          <h4 class="modal-title">Shipments Under Distribution <?php echo $this->shipments[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipments[0]['distribution_date']); ?>)</h4>
+          <h4 class="modal-title">Shipments Under PT Event <?php echo $this->shipments[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipments[0]['distribution_date']); ?>)</h4>
         </div>
         <div class="modal-body">
           <table class="table table-bordered table-striped table-hover">
@@ -30,7 +30,7 @@ if($this->shipments == false && count($this->shipments) <= 0){
 				?>
 				<tr>
 					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
-					<td style="text-align: center;"><?php echo strtoupper($shipment['scheme_type']) ?></td>
+					<td style="text-align: center;"><?php echo ($shipment['scheme_name']) ?></td>
 					<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
 					<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
 					<td style="text-align: center;"><?php echo $reported ?></td>

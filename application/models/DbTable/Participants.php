@@ -188,6 +188,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'phone' => $params['pphone1'],
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
+			'network_tier' => $params['network'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
 
@@ -240,6 +241,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'phone' => $params['pphone1'],
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
+            'network_tier' => $params['network'],
             'status' => $params['status'],
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->primary_email,

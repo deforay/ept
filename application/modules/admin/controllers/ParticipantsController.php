@@ -29,6 +29,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->_redirect("/admin/participants");
         }
         $this->view->affiliates = $participantService->getAffiliateList();
+        $this->view->networks = $participantService->getNetworkTierList();
         $dataManagerService = new Application_Service_DataManagers();
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
     }
@@ -48,6 +49,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             }
             $this->view->affiliates = $participantService->getAffiliateList();
             $dataManagerService = new Application_Service_DataManagers();
+            $this->view->networks = $participantService->getNetworkTierList();
             $this->view->dataManagers = $dataManagerService->getDataManagerList();            
         }
     }

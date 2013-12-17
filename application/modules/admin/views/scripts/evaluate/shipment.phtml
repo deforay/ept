@@ -10,7 +10,7 @@
 <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
 <div id="allShipmentList">
      
-          <legend><h4>All Shipments Under Distribution <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4></legend>
+          <legend><h4>All Shipments Under PT Event <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4></legend>
      
           <table class="table table-bordered table-striped table-hover">
 			<tr>
@@ -31,7 +31,7 @@
 				?>
 				<tr>
 					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
-					<td style="text-align: center;"><?php echo strtoupper($shipment['scheme_type']) ?></td>
+					<td style="text-align: center;"><?php echo $shipment['scheme_name'] ?></td>
 					<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
 					<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
 					<td style="text-align: center;"><?php echo $reported ?></td>
@@ -52,7 +52,7 @@
 				?>
 				<tr>
 					<td colspan="5" align="center" style="text-align:center">
-						No shipments for this distribution yet
+						No shipments for this PT Event yet
 					</td>
 				</tr>
 				<?php
@@ -62,11 +62,21 @@
     </div><!-- /.modal-dialog -->
 </div>	
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Evaluate Shipment <?php echo $this->shipment[0]['shipment_code']; ?> from Distribution <?php echo $this->shipment[0]['distribution_code']; ?> </div>
+	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently evaluating Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong></div>
 	<div style="margin-top:10px;">
 		<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
 	</div>
 </h4>
+<table class="table table-bordered" style="margin:0 auto;">
+	<tr>
+		<th style="text-align: right">Scheme Type</th>
+		<td><?php echo $this->shipment[0]['scheme_name']; ?></td>
+		<th style="text-align: right">PT Event Code</th>
+		<td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
+		<th style="text-align: right">PT Event/Shipment Date</th>
+		<td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
+	</tr>
+</table>
 <br/>
 
 	<table class="table table-bordered" style="width:95%;margin:10px auto;">
@@ -74,7 +84,7 @@
 		<td style="vertical-align: middle;">
 			Comment for all Participants of this shipment
 		</td>
-		<td style="width:65%;"><textarea class="form-control" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea></td>
+		<td style="width:55%;"><textarea class="form-control" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea></td>
 		<td style="vertical-align: middle;"><button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span>Update Comment</span></button></td>
 	</tr>
 </table>

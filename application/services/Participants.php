@@ -84,5 +84,9 @@ class Application_Service_Participants {
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		return $db->fetchAll($db->select()->from('r_participant_affiliates')->order('affiliate ASC'));
 	}
+	public function getNetworkTierList(){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		return $db->fetchAll($db->select()->from('r_network_tiers')->order('network_name ASC'));
+	}
 
 }
