@@ -98,6 +98,14 @@
                                              placeholder="Please enter the latitude here"
                                              value="<?php echo $this->participant['lat']; ?>"/></div>
             </div>
+			
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Shipping Address (include city and country)<span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><textarea id="shippingAddress" name="shippingAddress" size="50" 
+                                             class="isRequired form-control" title="Please enter the address here"
+                                             placeholder="Please enter the Shipping Address here"><?php echo $this->participant['shipping_address']; ?></textarea></div>
+            </div>
 			<hr style="border:1px solid #ccc;background: #ccc;width:90%;"/>
 
             <div class="form-group">

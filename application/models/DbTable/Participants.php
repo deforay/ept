@@ -151,6 +151,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = array();
+            $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'];
             $row[] = $aRow['last_name'];
             $row[] = $aRow['country'];
@@ -182,6 +183,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'zip' => $params['zip'],
             'long' => $params['long'],
 			'lat' => $params['lat'],			
+			'shipping_address' => $params['shippingAddress'],			
             'first_name' => $params['pfname'],
             'last_name' => $params['plname'],
             'mobile' => $params['pphone2'],
@@ -235,6 +237,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 			'country' => $params['country'],
             'long' => $params['long'],
 			'lat' => $params['lat'],
+			'shipping_address' => $params['shippingAddress'],			
             'first_name' => $params['pfname'],
             'last_name' => $params['plname'],
             'mobile' => $params['pphone2'],

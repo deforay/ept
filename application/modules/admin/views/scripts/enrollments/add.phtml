@@ -12,6 +12,13 @@
 					<?php
 				}
 				?>
+				<?php
+				foreach($this->enrolled as $participant){
+					?>
+					<option value="<?php echo $participant['participant_id']; ?>" selected='selected'><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<?php
+				}
+				?>
 			</select>
 			<input type="hidden" name="schemeId" id="schemeId" value="<?php echo $this->scheme;?>" />
 			<br/>

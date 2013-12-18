@@ -143,7 +143,6 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $row[] = $aRow['first_name'];
             $row[] = $aRow['last_name'];
             $row[] = $aRow['country'];
-            $row[] = $aRow['scheme_id'];
             $row[] = $aRow['scheme_name'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['enrolled_on']);
             $row[] = '<a href="/admin/enrollments/view/pid/' . $aRow['participant_id'] . '/sid/' . strtolower($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-eye-open"></i> Know More</a>';
@@ -155,10 +154,14 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
     }
     
     public function enrollParticipants($params){
+		
+		$this->delete("scheme_id='".$params['schemeId']."'");
+		
         foreach($params['participants'] as $participant){
             $data = array('participant_id'=>$participant,'scheme_id'=>$params['schemeId'],'status'=>'enrolled','enrolled_on'=>new Zend_Db_Expr('now()'));
             $this->insert($data);
         }
+		
     }
 
 

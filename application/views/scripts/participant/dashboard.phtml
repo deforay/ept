@@ -126,20 +126,22 @@
 				}
 				?>
 			</table>
+			
+			<?php if(count($this->rsShipDef) > 0){ ?>
 		  <br>
              <span class="txt">Defaulted Schemes</span>
            
           <table style="width: 100%;margin: auto;" id="defaultedTable">
 				<thead>
 					<tr>
-					<th>Year</th>
-					<th>Shipment Date</th>
-					<th>Scheme</th>
-					<th> Participant</th>
-					<th>Last Date</th>
-					<th>Status</th>
-					<th>Response Date</th>
-					<th></th>
+						<th>Year</th>
+						<th>Shipment Date</th>
+						<th>Scheme</th>
+						<th> Participant</th>
+						<th>Last Date</th>
+						<th>Status</th>
+						<th>Response Date</th>
+						<th></th>
 					</tr>
 				</thead>
 				
@@ -162,14 +164,14 @@
 				} else{
 					?>
 					<tr>
-						<td colspan="7" style="text-align:center;padding:5px;font-size:14px;background:#dee;"> No data to show. </td>
+						<td colspan="8" style="text-align:center;padding:5px;font-size:14px;background:#dee;"> No data to show. </td>
 					</tr>
 					<?php						
 				}
 				?>
 				
 			</table>
-			
+			<?php } ?>
 			<br>
              <span class="txt">All Schemes</span>
            
@@ -188,7 +190,7 @@
 					<th>Report</th>
 					</tr>
 				</thead>
-				 <tfoot>
+				 <tfo	ot>
 <!--            <tr>
                 <td colspan="7">
                 	< ?php echo $this->paginationControl($this->rsShipAll, 'Sliding', 'partial/paginate.phtml'); ?>
@@ -249,19 +251,8 @@
             "aaSorting": [[ 0, "asc" ]],
             "bProcessing": true
         });
-		$("#currentTable").dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
-            "bJQueryUI": false,
-            "bAutoWidth": false,
-            "bInfo": true,
-            "bScrollCollapse": true,
-            "sPaginationType": "full_numbers",
-            "bRetrieve": true,
-            "aaSorting": [[ 0, "asc" ]],
-            "bProcessing": true
-        });
+		
+		<?php if(count($this->rsShipDef) > 0){ ?>
 		$("#defaultedTable").dataTable({
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"
@@ -275,6 +266,7 @@
             "aaSorting": [[ 0, "asc" ]],
             "bProcessing": true
         });
+		<?php } ?>
 		$("#allSchemeTable").dataTable({
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"

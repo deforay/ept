@@ -37,7 +37,7 @@ var deforayValidator = {
 	init: function (settings) {
 		this.settings = settings;
 		this.form = document.getElementById(this.settings["formId"]);
-		formInputs = $("input[type='text'],input[type='password'],textarea,select");
+		formInputs = jQuery("input[type='text'],input[type='password'],textarea,select");
 
 		// change color of inputs on focus
 		for(i=0;i<formInputs.length;i++)
@@ -73,22 +73,23 @@ var deforayValidator = {
 };
 // returns true if the string is not empty
 function isRequired(str){
-	if(str == null || str.length == 0){
-		return true;
-	}
-	else{
-		return false;
-	}
-	//return (str == null) || (str.length == 0);
+    if(str == null || str.length == 0){
+        return true;
+    }
+    else{
+        return false;
+    }
+//return (str == null) || (str.length == 0);
 }
 // returns true if the string is a valid email
 function isEmail(str,required){
     if(required){
-	if(isRequired(str))
+        if((str == null || str.length == 0))
             return false;
     }
     else if(str != null && str.length != 0){
-        var re = /^[^\s()<>@,;:\/]+@\w[\w\.-]+\.[a-z]{2,}$/i
+//        var re = /^[^\s()<>@,;:\/]+@\w[\w\.-]+\.[a-z]{2,}$/i
+        var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
         return re.test(str);
     }
     return true; // else return true
@@ -97,28 +98,31 @@ function isEmail(str,required){
 // returns true if the string only contains characters 0-9 and is not null
 function isNumeric(str,required){
     if(required){
-	if(isRequired(str))
+        if((str == null || str.length == 0))
             return false;
+    }else{
+        if(str!="")
+        return !isNaN(parseFloat(str)) && isFinite(str);
     }
-    return !isNaN(parseFloat(str)) && isFinite(str);
+    return true;
 }
 // returns true if the string only contains characters A-Z or a-z
 function isAlpha(str,required){
     if(required){
-	if(isRequired(str))
+        if((str == null || str.length == 0))
             return false;
     }
-    var re = /[a-zA-Z]/
+    var re = /[a-zA-Z]/;
     if (re.test(str)) return true;
     return false;
 }
 // returns true if the string only contains characters 0-9 A-Z or a-z
 function isAlphaNum(str,required){
     if(required){
-	if(isRequired(str))
+        if((str == null || str.length == 0))
             return false;
     }
-   // var re = /[0-9a-zA-Z]/
+    // var re = /[0-9a-zA-Z]/
     var re =  /^[0-9A-Za-z]+$/;
     if (re.test(str)) return true;
     return false;
@@ -126,73 +130,73 @@ function isAlphaNum(str,required){
 // returns true if the string only contains characters OTHER THAN 0-9 A-Z or a-z
 function isSymbol(str,required){
     if(required){
-	if(isRequired(str))
+        if((str == null || str.length == 0))
             return false;
     }
-    var re = /[^0-9a-zA-Z]/
+    var re = /[^0-9a-zA-Z]/;
     if (re.test(str)) return true;
     return false;
 }
 // checks if the string is of a specified minimum length or not
 function minLength(str,len){
-	if(isRequired(str)) return false;
-	if(str.length < len){
-            return false;
-        }
-        else{
-            return true;
-        }
+    if((str == null || str.length == 0)) return false;
+    if(str.length < len){
+        return false;
+    }
+    else{
+        return true;
+    }
 }
 // checks if the string is within a specified maximum length or not
 function maxLength(str,len){
-	if(isRequired(str)) return false;
-	if(str.length > len){
-            return false;
-        }
-        else{
-            return true;
-        }
+    if((str == null || str.length == 0)) return false;
+    if(str.length > len){
+        return false;
+    }
+    else{
+        return true;
+    }
 }
 // checks if the string is exactly equal to the specified length or not
 function exactLength(str,len){
-	if(isRequired(str)) return false;
-	if(str.length == len){
-            return true;
-        }
-        else{
-            return false;
-        }
+    if((str == null || str.length == 0)) return false;
+    if(str.length == len){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 //confirm password validation
 function confirmPassword(name){
-	var elements = document.getElementsByName(name);
-	//assuming that there will be only 2 fields with this name
+    var elements = document.getElementsByName(name);
+    //assuming that there will be only 2 fields with this name
 
-	if(elements[0].value == elements[1].value){
-		return true;
-	}
-	else{
-		return false;
-	}
+    if(elements[0].value == elements[1].value){
+        return true;
+    }
+    else{
+        return false;
+    }
 
 }
 //checkbox or radio required validation
 function isRequiredCheckBox(name){
-	var flag = false;
-	var elements = document.getElementsByName(name);
-	size = elements.length;
-	count = 0;
+    var flag = false;
+    var elements = document.getElementsByName(name);
+    size = elements.length;
+    count = 0;
 
-	for(var i=0;i <size;i++){
-		if(elements[i].checked){
-			flag = true;
-			break;
-		}
-		else{
-			continue;
-		}
-	}
-	return flag;
+    for(var i=0;i <size;i++){
+        if(elements[i].checked){
+            flag = true;
+            break;
+        }
+        else{
+            continue;
+        }
+    }
+    return flag;
 }
 function findPos(obj) {
 

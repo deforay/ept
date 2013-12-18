@@ -46,6 +46,7 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
                 $participants = new Application_Service_Participants();
                 $this->view->scheme = $scheme = $this->_getParam('scheme');
                 $this->view->participants = $participants->getUnEnrolled($scheme);
+                $this->view->enrolled = $participants->getEnrolledBySchemeCode($scheme);
             }            
         }
 
