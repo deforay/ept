@@ -10,28 +10,28 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label">Lab Name or First Name<span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="pfname" name="pfname" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" 
                                              class="isRequired form-control" title="Please enter the Lab Name or First Name here"
                                              placeholder="Please enter the Lab Name or First Name here"/></div>
             </div>
 	    <div class="form-group">
                 <label class="col-lg-3 control-label">Last Name <br/> <small>(Leave blank if Participant is Lab)</small></label>
 
-                <div class="col-lg-5"><input type="text" id="plname" name="plname" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="plname" name="plname" size="50" maxlength="255" 
                                              class="form-control" title="Please enter the last name here"
                                              placeholder="Please enter the last name here"/></div>
             </div>	    
             <div class="form-group">
                 <label class="col-lg-3 control-label">Institute Name <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="instituteName" name="instituteName" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="instituteName" name="instituteName" size="50" maxlength="255" 
                                              class="isRequired form-control" title="Please enter the Institute Name here"
                                              placeholder="Please enter the Institute Name here"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Department Name <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="departmentName" name="departmentName" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="departmentName" name="departmentName" size="50" maxlength="255" 
                                              class="isRequired form-control" title="Please enter the Department Name here"
                                              placeholder="Please enter the Department Name here"/></div>
             </div>
@@ -45,42 +45,42 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label">City <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="city" name="city" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="city" name="city" size="50" maxlength="255" 
                                              class="isRequired form-control" title="Please enter the city here"
                                              placeholder="Please enter the city here"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">State (if applicable)</label>
 
-                <div class="col-lg-5"><input type="text" id="state" name="state" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="state" name="state" size="50" maxlength="255" 
                                              class="form-control" title="Please enter the state here"
                                              placeholder="Please enter the state here"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Country <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="country" name="country" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="country" name="country" size="50" maxlength="255" 
                                              class="isRequired form-control" title="Please enter the country here"
                                              placeholder="Please enter the country here"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Zip/Postal Code (if applicable)</label>
 
-                <div class="col-lg-5"><input type="text" id="zip" name="zip" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="zip" name="zip" size="50" maxlength="255" 
                                              class="form-control" title="Please enter the Zip/Postal here"
                                              placeholder="Please enter the Zip/Postal here"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Longitude </label>
 
-                <div class="col-lg-5"><input type="text" id="long" name="long" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="long" name="long" size="50" maxlength="255" 
                                              class="form-control" title="Please enter the longitude here"
                                              placeholder="Please enter the longitude here"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Latitude </label>
 
-                <div class="col-lg-5"><input type="text" id="lat" name="lat" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="lat" name="lat" size="50" maxlength="255" 
                                              class="form-control" title="Please enter the latitude here"
                                              placeholder="Please enter the latitude here"/></div>
             </div>
@@ -107,10 +107,10 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Data Manager <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">PT Participant Login <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-                    <select class="form-control isRequired" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more Data Managers" data-selected-text-format="count>3">
+                    <select class="form-control isRequired" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more PT Participant Logins" data-selected-text-format="count>3">
 						<?php foreach($this->dataManagers as $dm){
 							?>
 							<option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name']. " " . $dm['last_name']; ?></option>
@@ -123,7 +123,7 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label">E-mail Address <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="pemail" name="pemail" size="50" maxlength="45"
+                <div class="col-lg-5"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" 
                                              class="isRequired isEmail form-control"
                                              title="Please enter the email id here"
                                              placeholder="Please enter the email id here"/></div>
@@ -131,7 +131,7 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label">Cell/Mobile Number <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input id="phone1" type="text" id="pphone2" name="pphone2" size="50" maxlength="45"
+                <div class="col-lg-5"><input id="phone1" type="text" id="pphone2" name="pphone2" size="50" maxlength="255" 
                                              class="isRequired form-control isNumeric"
                                              title="Please enter mobile/cell number here"
                                              placeholder="Please enter mobile/cell number here"/></div>
@@ -139,7 +139,7 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label">Phone Number</label>
 
-                <div class="col-lg-5"><input id="phone2" type="text" id="pphone1" name="pphone1" size="50" maxlength="45"
+                <div class="col-lg-5"><input id="phone2" type="text" id="pphone1" name="pphone1" size="50" maxlength="255" 
                                              placeholder="Please enter phone number here" class="form-control isNumeric"/></div>
             </div>
             <div class="form-group">

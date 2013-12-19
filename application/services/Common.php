@@ -83,21 +83,26 @@ class Application_Service_Common {
 		$message .= "Name : ".$params['name']."<br/>";
 		$message .= "Email : ".$params['email']."<br/>";
 		$message .= "Phone/Mobile : ".$params['phone']."<br/>";
+		$message .= "Selected Reason to Contact : ".$params['reason']."<br/>";
 		$message .= "Lab/Agency : ".$params['agency']."<br/>";
 		$message .= "Additional Info : ".$params['additionalInfo']."<br/>";
+		
+		$db = new Application_Model_DbTable_ContactUs();
+		
+		$data = array('name'=>$params['name'],'email'=>$params['email'],'phone'=>$params['phone'],'reason'=>$params['reason'],'lab'=>$params['agency'],'additional_info'=>$params['additionalInfo'], 'contacted_on' => new Zend_Db_Expr('now()'),'ip_address'=>$_SERVER['REMOTE_ADDR']);
+		$db->addContact($data);
 		
 		$fromEmail = $params['email'];
 		$fromName = $params['name'];
 		
 		$to = Application_Service_Common::getConfig('admin-email');
 		
-		$mailSent = $this->sendMail($to,null,null,"New enquiry for ePT",$message,$fromEmail,$fromName);
+		$mailSent = $this->sendMail($to,null,null,"New contact message from the ePT program",$message,$fromEmail,$fromName);
 		if($mailSent){
-			return "Thank you for showing interest in this Program. We will contact you shortly";
+			return 1;
 		}else{
-			return "Sorry, unable to send your message now. Please try again later;";
-		}
-		
+			return 0;
+		}		
     }
     public function checkDuplicate($params) {
         $session = new Zend_Session_Namespace('credo');

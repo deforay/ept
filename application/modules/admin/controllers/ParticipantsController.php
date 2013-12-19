@@ -28,6 +28,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $participantService->addParticipant($params);
             $this->_redirect("/admin/participants");
         }
+        
         $this->view->affiliates = $participantService->getAffiliateList();
         $this->view->networks = $participantService->getNetworkTierList();
         $dataManagerService = new Application_Service_DataManagers();

@@ -94,6 +94,7 @@
           <dbTableFile dbTableName="Distribution"/>
           <dbTableFile dbTableName="Shipments"/>
           <dbTableFile dbTableName="ShipmentParticipantMap"/>
+          <dbTableFile dbTableName="ContactUs"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>
@@ -155,6 +156,9 @@
               <actionMethod actionName="view"/>
               <actionMethod actionName="edit"/>
               <actionMethod actionName="updateShipmentComment"/>
+            </controllerFile>
+            <controllerFile controllerName="ContactUs">
+              <actionMethod actionName="index"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -267,6 +271,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Evaluate">
                 <viewScriptFile forActionName="updateShipmentComment"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="ContactUs">
+                <viewScriptFile forActionName="index"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -544,6 +551,9 @@
                 <testApplicationActionMethod forActionName="view"/>
                 <testApplicationActionMethod forActionName="edit"/>
                 <testApplicationActionMethod forActionName="updateShipmentComment"/>
+              </testApplicationControllerFile>
+              <testApplicationControllerFile forControllerName="ContactUs">
+                <testApplicationActionMethod forActionName="index"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>
           </testApplicationModuleDirectory>

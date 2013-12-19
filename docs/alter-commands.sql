@@ -1309,3 +1309,4 @@ ALTER TABLE  `shipment_participant_map` CHANGE  `final_result`  `final_result` I
 CREATE TABLE IF NOT EXISTS `r_network_tiers` ( `network_id` int(11) NOT NULL AUTO_INCREMENT, `network_name` varchar(255) DEFAULT NULL, PRIMARY KEY (`network_id`)) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ALTER TABLE  `participant` ADD  `network_tier` INT NOT NULL AFTER  `affiliation`;
+ALTER TABLE  `data_manager` ADD  `institute` VARCHAR( 500 ) NULL DEFAULT NULL AFTER  `password`;

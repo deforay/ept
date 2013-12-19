@@ -9,8 +9,9 @@
 			Select Scheme Type (Optional)
 		</td>
 		<td style="width:200px;text-align: center;font-weight:bold;">
-			Select Data Manager (Optional)
-		</td>		
+			Select PT Participant Login (Optional)
+		</td>
+		<td style="width:40px;text-align: center;font-weight:bold;"></td>
 	</tr>
 	<tr>
 		<td>
@@ -30,7 +31,7 @@
 		</td>
 		<td>
 			<select id="dataManager" name="dataManager" onchange="drawTable();" class="form-control input-sm">
-				<option value=""> -- Select a Data Manager --</option>
+				<option value=""> -- Select a PT Participant Login --</option>
 				<?php
 				  foreach($this->dataManagers as $dm){
 					?>
@@ -40,6 +41,7 @@
 				?>
 			</select>			
 		</td>
+		<td><button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button></td>
 	</tr>
 </table>
 

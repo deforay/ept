@@ -1,0 +1,71 @@
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">List of All Contact Us Messages</div>
+</h4>
+
+
+<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="contactsTable">
+    <thead>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Reason</th>
+        <th>Lab/Agency Name</th>
+        <th>Additional Info</th>
+        <th>Contacted On</th>
+        <th>IP Address</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td colspan="9" class="dataTables_empty">Loading data from server</td>
+    </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" charset="utf-8">
+    /* Table initialisation */
+    var oTable = null;
+    $(document).ready(function() {
+        oTable = $('#contactsTable').dataTable( {
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "full_numbers",
+            "bRetrieve": true,
+            "aoColumns": [
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center","bSortable":false}
+            ],
+            "aaSorting": [[ 0, "asc" ]],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'contact-us', 'action' => 'index', 'format' => 'html')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+
+    } );
+
+</script>

@@ -20,10 +20,18 @@
 		</tr>
         <tr> 
             <th>
-				<label for="name" class="name" data-icon="u"> Your Name <span class="mandatory">*</span> </label>
+				<label for="name" class="name" data-icon="u"> First Name <span class="mandatory">*</span> </label>
 			</th>
             <td>
-				<input id="name" name="name" class="isRequired" title="Please enter your name" type="text" placeholder="your name"/>
+				<input id="name" name="name" class="isRequired" title="Please enter your first name" type="text" placeholder="your first name"/>
+			</td>
+        </tr>
+        <tr> 
+            <th>
+				<label for="name" class="name" data-icon="u"> Last Name <span class="mandatory">*</span> </label>
+			</th>
+            <td>
+				<input id="name" name="name" class="isRequired" title="Please enter your last name" type="text" placeholder="your last name"/>
 			</td>
         </tr>
         <tr>
@@ -40,6 +48,20 @@
 			</th>
             <td>
 				<input id="phone" name="phone" class="isRequired" title="Please enter your contact number" type="text" placeholder="your contact number"/>
+			</td>
+        </tr>
+        <tr>
+            <th>
+				<label for="agency" class="agency" data-icon="u">How can we help you? <span class="mandatory">*</span></label>
+			</th>
+            <td>
+				<select name="reasonId" id="reasonId" onchange='fillreason()' title="Please choose an option">
+					<option>--Select--</toption>
+					<option value="1">Request to participate in PT program</option>
+					<option value="2">Add New tester to Current PT Program</option>
+					<option value="3">Other</option>
+				</select>
+				<input type="hidden" name="reason" id="reason" />
 			</td>
         </tr>
         <tr>
@@ -94,6 +116,16 @@
         <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
         <script type="text/javascript">
 			$("#tableCss").remove();
+			
+			function fillreason(){
+				if ($("#reasonId").val() != "") {
+					$("#reason").val($("#reasonId option:selected").text());	
+				}else{
+					$("#reason").val('');	
+				}
+				
+			}
+			
             function getCaptcha(captchaDivId){
                 $.blockUI();
                 var d = new Date();
@@ -121,11 +153,16 @@
                             }else{
 								$.blockUI();
                                 $.post( "<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>",
-									   { name: $("#name").val(), email: $("#email").val(),phone: $("#phone").val(),agency: $("#agency").val(),additionalInfo: $("#additionalInfo").val(), format : "html" })
+									   { name: $("#name").val(), email: $("#email").val(),phone: $("#phone").val(),agency: $("#agency").val(),reasonId: $("#reasonId").val(),reason: $("#reason").val(),additionalInfo: $("#additionalInfo").val(), format : "html" })
 								.done(function( data ) {
 								 $.unblockUI();
-								  alert( data );
-								  
+								 if (data == 1 || data == '1') {
+									alert('Thank you for showing interest in this Program. We will contact you shortly');
+									document.location.href = document.location;
+								 }else{
+									alert("Sorry, unable to send your message now. Please try again later");
+								 }
+								  								  
 								});
                             }
                         });

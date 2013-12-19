@@ -295,3 +295,7 @@ button, input, select, textarea {
 .fg-toolbar{
 	padding:5px;
 }
+
+ul.sf-menu > li > a,section h2,.info, h3,.link-2, h1,.list1,.info span{
+	font-family: 'PT Sans', sans-serif;
+}

@@ -10,6 +10,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
      $data = array(
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
+            'institute' => $params['institute'],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
             'secondary_email' => $params['semail'],
@@ -28,7 +29,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name','last_name', 'phone', 'primary_email', 'secondary_email','p.first_name', 'status');
+        $aColumns = array('u.first_name','u.last_name', 'u.phone', 'u.primary_email', 'u.secondary_email','p.first_name', 'u.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "dm_id";
@@ -182,6 +183,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             'last_name' => $params['lname'],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
+			'institute' => $params['institute'],
             'secondary_email' => $params['semail']
         );
         

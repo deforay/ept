@@ -1,14 +1,14 @@
 <div class="well">
 <form name="addUserForm" id="addUserForm" method="post" action="<?php echo $this->url(array("module"=>"admin", "controller" => "data-managers", "action" => "add"), null, true) ?>" class="form-horizontal bs-example" role="form">
 <fieldset>
-                  <legend>Add New Data Manager</legend>
+                  <legend>Add New PT Participant Login</legend>
     
     
 
         <div class="form-group">
             <label class="col-lg-3 control-label">Login (Primary e-mail) <span class="mandatory">*</span></label>
             <div class="col-lg-5">
-                <input type="text" id="userId" name="userId"  size="50" class="isRequired isEmail form-control" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('users','primary_email',this,null,'This email already exists as a primary email for another user. Please choose another email.')"/>
+                <input type="text" id="userId" name="userId"  size="50" class="isRequired isEmail form-control" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('data_manager','primary_email',this,null,'This email already exists as a primary email for another user. Please choose another email.')" value="<?php echo (isset($this->contact['email'])) ? $this->contact['email'] : "" ?>"/>
             </div>
         </div>
         <div class="form-group">
@@ -24,32 +24,35 @@
             </div>
         </div>
         <div class="form-group">
+            <label class="col-lg-3 control-label">Institute <span class="mandatory">*</span></label>
+            <div class="col-lg-5"><input type="text" id="institute" name="institute" size="50" maxlength="255" class="isRequired form-control"  title="Please enter the institute name here" placeholder="Please enter the institute name here"  value="<?php echo (isset($this->contact['lab'])) ? $this->contact['lab'] : "" ?>"/></div>
+        </div>
+        <div class="form-group">
             <label class="col-lg-3 control-label">User First Name <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input id="fname" type="text" id="fname" name="fname" size="50" maxlength="45" class="isRequired form-control"  title="Please enter the first name here" placeholder="Please enter the first name here"  /></div>
+            <div class="col-lg-5"><input type="text" id="fname" name="fname" size="50" maxlength="255" class="isRequired form-control"  title="Please enter the first name here" placeholder="Please enter the first name here"  value="<?php echo (isset($this->contact['first_name'])) ? $this->contact['first_name'] : "" ?>"/></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">User Last Name <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input id="lname" type="text" id="lname" name="lname" size="50" maxlength="45" class="isRequired form-control" title="Please enter the last name here" placeholder="Please enter the last name here"  /></div>
+            <div class="col-lg-5"><input type="text" id="lname" name="lname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the last name here" placeholder="Please enter the last name here"  value="<?php echo (isset($this->contact['last_name'])) ? $this->contact['last_name'] : "" ?>"/></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">Secondary e-mail Address <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input id="semail" type="text" id="semail" name="semail" size="50" maxlength="45" class="isRequired isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></div>
+            <div class="col-lg-5"><input type="text" id="semail" name="semail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">Cell Phone Number <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45" class="isRequired form-control"   title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here"  /></div>
+            <div class="col-lg-5"><input type="text" id="phone1" name="phone1" size="50" maxlength="255" class="isRequired form-control"   title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here"  value="<?php echo (isset($this->contact['phone'])) ? $this->contact['phone'] : "" ?>"/></div>
         </div>
         <div class="form-group"> 
             <label class="col-lg-3 control-label">Phone Number</label>
-            <div class="col-lg-5"><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['UserPhoneNumber']; ?>" placeholder="Please enter phone number here" class=" form-control"/></div>
+            <div class="col-lg-5"><input type="text" id="phone2" name="phone2" size="50" maxlength="255" value="<?php echo $this->rsUser['UserPhoneNumber']; ?>" placeholder="Please enter phone number here" class=" form-control"/></div>
         </div>
         <div class="form-group"> 
             <label class="col-lg-3 control-label">Status</label>
             <div class="col-lg-5">
 				<select type="text" id="status" name="status" class="isRequired form-control" title="Please select user status here">
-					<option value="">--Select--</option>
-					<option value="active" <?php echo ($this->rsUser['status'] == "active") ? "selected='selected'" : ""; ?>>Active</option>
-					<option value="inactive" <?php echo ($this->rsUser['status'] == "inactive") ? "selected='selected'" : ""; ?>>Inactive</option>
+					<option value="active">Active</option>
+					<option value="inactive">Inactive</option>
 				</select>
 			</div>
         </div>
@@ -58,7 +61,7 @@
     <br>
     <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
         <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Add"  /> 
-        <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/data-managers';" tabindex="8" value="Cancel" /> 
+        <input class="btn btn-danger" type="button" onclick="window.history.go(-1)" tabindex="8" value="Cancel" /> 
     </div>
 </fieldset>
 </form>
@@ -67,7 +70,7 @@
 	var duplicated = false;
     function checkDuplicate(tableName,fieldName,obj,fnct,msg)
     {
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName,fieldName : fieldName ,value : obj.value,fnct : fnct, format: "html" },
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName,fieldName : fieldName ,value : $(obj).val(),fnct : fnct, format: "html" },
         function(data){
             if(data>0)
             {
@@ -82,7 +85,7 @@
     }
 	
     function validateNow(){
-		checkDuplicate('users','primary_email',$("#userId"),null,'This email already exists as a primary email for another user. Please choose another email.')
+		checkDuplicate('data_manager','primary_email',$("#userId"),null,'This email already exists as a primary email for another user. Please choose another email.')
         flag = deforayValidator.init({
             formId: 'addUserForm'
         });

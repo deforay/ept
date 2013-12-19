@@ -3,42 +3,46 @@
 <form name="editUserForm" id="editUserForm" method="post" action="<?php echo $this->url(array("module"=>"admin", "controller" => "data-managers", "action" => "edit"), null, true) ?>" class="form-horizontal bs-example" role="form">
 
     <fieldset>
-                  <legend>Edit Data Manager</legend>
+                  <legend>Edit PT Participant Login</legend>
 
         <div class="form-group">
             <label class="col-lg-3 control-label">Login (Primary e-mail) <span class="mandatory">*</span></label>
             <div class="col-lg-5">
-                <input type="text" id="userId" name="userId"  size="50" value="<?php echo $this->rsUser['primary_email']; ?>" class="isRequired isEmail form-control" title="Please enter the primary email id here" onblur="checkDuplicate('users','primary_email',this,'<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>','This email already exists as a primary email for another user. Please choose another email.')"/>
+                <input type="text" id="userId" name="userId"  size="50" value="<?php echo $this->rsUser['primary_email']; ?>" class="isRequired isEmail form-control" title="Please enter the primary email id here" onblur="checkDuplicate('data_manager','primary_email',this,'<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>','This email already exists as a primary email for another user. Please choose another email.')"/>
                 <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
             </div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">Password <br/> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
-            <div class="col-lg-5"><input type="text" id="password" name="password" size="50" maxlength="45" value="" class="form-control"  title="" placeholder="Please enter new password here"  /></div>
+            <div class="col-lg-5"><input type="text" id="password" name="password" size="50" maxlength="255" value="" class="form-control"  title="" placeholder="Please enter new password here"  /></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">Confirm Password <br/> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
-            <div class="col-lg-5"><input type="text" id="password1" name="password" size="50" maxlength="45" value="" class="confirmPassword form-control"  title="" placeholder="Please re-enter new password here"  /></div>
+            <div class="col-lg-5"><input type="text" id="password1" name="password" size="50" maxlength="255" value="" class="confirmPassword form-control"  title="" placeholder="Please re-enter new password here"  /></div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-3 control-label">Institute <span class="mandatory">*</span></label>
+            <div class="col-lg-5"><input type="text" id="institute" name="institute" size="50" maxlength="255" class="isRequired form-control"  title="Please enter the institute name here" placeholder="Please enter the institute name here"  value="<?php echo $this->rsUser['institute']; ?>" /></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">User First Name <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control"  title="Please enter the first name here" placeholder="Please enter the first name here"  /></div>
+            <div class="col-lg-5"><input type="text" id="fname" name="fname" size="50" maxlength="255" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control"  title="Please enter the first name here" placeholder="Please enter the first name here"  /></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">User Last Name <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="lname" name="lname" size="50" maxlength="45" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter the last name here" placeholder="Please enter the last name here" class="isRequired form-control" /></div>
+            <div class="col-lg-5"><input type="text" id="lname" name="lname" size="50" maxlength="255" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter the last name here" placeholder="Please enter the last name here" class="isRequired form-control" /></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">Secondary e-mail Address <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="semail" name="semail" size="50" maxlength="45" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></div>
+            <div class="col-lg-5"><input type="text" id="semail" name="semail" size="50" maxlength="255" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">Cell Phone Number <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired form-control"   title="Please enter the contact number here" placeholder="Please enter the contact number here"  /></div>
+            <div class="col-lg-5"><input type="text" id="phone1" name="phone1" size="50" maxlength="255" value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired form-control"   title="Please enter the contact number here" placeholder="Please enter the contact number here"  /></div>
         </div>
         <div class="form-group"> 
             <label class="col-lg-3 control-label">Phone Number</label>
-            <div class="col-lg-5"><input type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['phone']; ?>" class=" form-control"/></div>
+            <div class="col-lg-5"><input type="text" id="phone2" name="phone2" size="50" maxlength="255" value="<?php echo $this->rsUser['phone']; ?>" class=" form-control"/></div>
         </div>
         <div class="form-group">
             <label class="col-lg-3 control-label">Status</label>

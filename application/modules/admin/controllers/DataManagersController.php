@@ -27,9 +27,14 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $params = $this->_request->getPost();
             $userService->addUser($params);
             $this->_redirect("/admin/data-managers");
-        }else{
+        }
 
-        }  
+        
+        if($this->_hasParam('contact')){
+            $contact = new Application_Model_DbTable_ContactUs();
+            $this->view->contact = $contact->getContact($this->_getParam('contact'));
+        }        
+          
     }
 
     public function editAction()

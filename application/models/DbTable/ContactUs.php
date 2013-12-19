@@ -1,21 +1,27 @@
 <?php
 
-class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
+class Application_Model_DbTable_ContactUs extends Zend_Db_Table_Abstract
 {
 
-    protected $_name = 'distributions';
-    protected $_primary = 'distribution_id';
-
+    protected $_name = 'contact_us';
+    protected $_primary = 'contact_id';
     
-    public function getAllDistributions($parameters)
-    {
+    
+    public function addContact($data){
+        return $this->insert($data);
+    }
+    
+    public function getContact($contactId){
+        return $this->fetchRow($this->select()->where('contact_id = ?',$contactId));
+    }
+    
+    public function getAllContacts($parameters)  {
 
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('d.distribution_id',"DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code' ,'d.status');
-        $orderColumns = array('d.distribution_id','distribution_date', 'distribution_code', 's.shipment_code' ,'d.status');
+        $aColumns = array('first_name','last_name', 'email','phone', 'reason', 'lab', 'additional_info', 'contacted_on', 'ip_address');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -38,7 +44,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
 				 	" . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
@@ -65,9 +71,6 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
                 $colSize = count($aColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
-                    if($aColumns[$i] == "" || $aColumns[$i] == null){
-                        continue;
-                    }
                     if ($i < $colSize - 1) {
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
                     } else {
@@ -96,9 +99,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('d' => $this->_name))
-				     ->joinLeft(array('s'=>'shipment'),'s.distribution_id=d.distribution_id',array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
-				     ->group('d.distribution_id');
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name));
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -112,7 +113,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //die($sQuery);
+        //error_log($sQuery);
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
@@ -138,68 +139,27 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
 
-        
-        $shipmentDb = new Application_Model_DbTable_Shipments();
-
+        //$aColumns = array('name', 'email','phone', 'reason', 'lab', 'additional_info', 'contacted_on', 'IP Address');
         foreach ($rResult as $aRow) {
-            
-            $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
-            
             $row = array();
-            $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/'.$aRow['distribution_id'].'"><span><i class="icon-search"></i></span></a>';
-            $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-            $row[] = $aRow['distribution_code'];
-            $row[] = $aRow['shipments'];
-            $row[] = ucwords($aRow['status']);
-            if(isset($aRow['status']) && $aRow['status'] == 'configured'){
-                $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\''.base64_encode($aRow['distribution_id']).'\')"><span><i class="icon-ambulance"></i> Ship Now</span></a>';	    
-            }else if(isset($aRow['status']) && $aRow['status'] == 'shipped'){
-                $row[] = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';	    
-            }else{
-                $row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-plus"></i> Add Scheme</span></a>';
-            }
-            
+            $row[] = $aRow['first_name'];
+            $row[] = $aRow['last_name'];
+            $row[] = $aRow['email'];
+            $row[] = $aRow['phone'];
+            $row[] = $aRow['reason'];
+            $row[] = $aRow['lab'];
+            $row[] = $aRow['additional_info'];
+            $row[] = $aRow['contacted_on'];
+            $row[] = $aRow['ip_address'];
+            $row[] = '<a href="/admin/data-managers/add/contact/' . $aRow['contact_id'] . '" class="btn btn-primary btn-xs" style="margin-right: 2px;"><i class="icon-plus"></i> Add PT Participant</a>';
 
             $output['aaData'][] = $row;
         }
 
         echo json_encode($output);
     }
-    
-    public function addDistribution($params){
-        $data = array('distribution_code'=>$params['distributionCode'],
-                      'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']),
-                      'status' => 'created');
-        return $this->insert($data);
-    }
-    
-    public function shipDistribution($params){
 
-    }
-    
-    public function getDistributionDates(){
-        return $this->getAdapter()->fetchCol($this->select()->from($this->_name,new Zend_Db_Expr("DATE_FORMAT(distribution_date,'%d-%b-%Y')")));
-    }
-    
-    public function getDistribution($did){
-        return $this->fetchRow("distribution_id = ".$did);
-    }
-    
-    public function updateDistribution($params){
-        $data = array('distribution_code'=>$params['distributionCode'],
-                      'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']));
-        return $this->update($data,"distribution_id=".$params['distributionId']);
-    }
-    public function getUnshippedDistributions(){
-        return $this->fetchAll($this->select()->where("status != 'shipped'"));
-    }
-    public function updateDistributionStatus($distributionId,$status){
-        if(isset($status) && $status != null && $status != ""){
-            return $this->update(array('status'=>$status),"distribution_id=".$distributionId);
-        }else{
-            return 0;
-        }
-    }
+
 
 }
 
