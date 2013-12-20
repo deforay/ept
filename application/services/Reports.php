@@ -222,20 +222,5 @@ class Application_Service_Reports {
 
         echo json_encode($output);
     }
-	
-	public function getShipments($distributionId){
-	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('s'=>'shipment'))
-							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
-							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
-							->join(array('rr'=>'r_results'),'sp.final_result=rr.result_id')
-							->where("s.distribution_id = ?",$distributionId)
-							->group('s.shipment_id');
-			  
-	    $result = $db->fetchAll($sql);
-		$session = new Zend_Session_Namespace('tempSpace');
-		$session->shipments = $result;
-		return $result;
-	}	
 }
 

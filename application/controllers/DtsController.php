@@ -15,12 +15,10 @@ class DtsController extends Zend_Controller_Action
 
     public function responseAction()
     {	
-		$dtsResponseDb = new Application_Model_DTSResponse();
 		
 		$schemeService = new Application_Service_Schemes();
 		$shipmentService = new Application_Service_Shipments();		
-		if($this->_request->isPost())
-		{		
+		if($this->_request->isPost()){		
 			$data = $this->getRequest()->getPost();			
 			$shipmentService->updateDtsResults($data);			
 			$this->_redirect("/participant/dashboard");    				
@@ -40,7 +38,7 @@ class DtsController extends Zend_Controller_Action
 			$this->view->shipment = $shipment;
 			
 			//Zend_Debug::dump($this->view->shipment);
-			$this->view->allTestKits = $dtsResponseDb->getAllDtsTestKit();
+			$this->view->allTestKits = $schemeService->getAllDtsTestKit();
 			$this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts');
 			$this->view->shipId = $sID;
 			$this->view->participantId = $pID;

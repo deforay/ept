@@ -204,101 +204,204 @@ else if($this->scheme == 'dts'){
 			<th>Samples Tested on</th>
 			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_test_date']); ?></td>
 		</tr>
+		<tr>
+			<th>Sample Rehydration Date</th>
+			<td><?php echo $this->dateFormat($attributes['sample_rehydration_date']); ?></td>
+			<th>Algorithm Used</th>
+			<td><?php echo ucfirst($attributes['algorithm']); ?></td>
+		</tr>
 	</table>
 	
 	<?php
 	
 	
-	$possibleResults = array();
+	$possibleResults ='';
+	foreach($this->evaluateData['possibleResults'] as $pr){
+		if($pr['scheme_sub_group'] == 'DTS_TEST'){
+			$possibleResults[$pr['id']]= $pr['response'];
+		}
+	}
+	$possibleFinalResults ='';
 	foreach($this->evaluateData['possibleResults'] as $pr){
 		if($pr['scheme_sub_group'] == 'DTS_FINAL'){
-			$possibleResults[$pr['id']]= $pr['response'];
+			$possibleFinalResults[$pr['id']]= $pr['response'];
 		}
 	}	
 	
 ?>
 
-	<?php
-		if(isset($this->evaluateData['controlResults']) && sizeof($this->evaluateData['controlResults'])){
-	?>		
-		<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
-			<caption><legend>Controls</legend></caption>
-		<tr>
-			<th style="text-align: center;font-size:17px;">Control</th>
-			<th style="text-align: center;font-size:17px;">Results</th>
-		</tr>
-		<?php
-			$counter = 1;
-			foreach($this->evaluateData['controlResults'] as $result){
-				if(($counter%2) == 0){
-				$class = "evenResult";
-			}else{
-				$class = "oddResult";
-			}
-				?>
-				<tr class="<?php echo $class ?>">
-					<td style="vertical-align: middle;text-align: center;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
-					<td style="vertical-align: middle;text-align: center;"><?php echo $this->dropdownSelectedText($possibleResults,$result['reference_result'],true); ?></td>
-					
-				</tr>
-				<tr class="<?php echo $class ?>">
-					<th style="vertical-align: middle;text-align: center;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
-					<td style="vertical-align: middle;text-align: center;">
-						<?php echo $this->dropdownSelectedText($possibleResults,$result['reported_result'],true); ?>
-						<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
-					</td>
-				</tr>
-				<?php
-				$counter++;
-			}
-		
-		?>
-		</table>
-			<br/><br/>
-			
-	<?php		
-		}
-	?>
 
-	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
-		<caption><legend>Samples</legend></caption>
-		<tr>
-			<th style="text-align: center;font-size:17px;">Sample</th>
-			<th style="text-align: center;font-size:17px;">Results</th>
-			<th style="text-align: center;font-size:17px;">Score</th>
-		</tr>
+<table class="table table-striped table-bordered">
+	
+	<thead>
+	<tr align="CENTER" class="dark" >
+		<th></th>
+		<th style="text-align: center" >Test-1</th>
+		<th  style="text-align: center">Test-2</th>
+		<th  style="text-align: center">Test-3</th>
+		
+	</tr>
+</thead>
+	<tr style="text-align:center" >
+		<th> Kit Name</th>
+		<td style="vertical-align: middle;">
+		 	<?php $this->dropdownSelectedText($this->allTestKits,$this->evaluateData['results'][0]["test_kit_name_1"],true); ?>
+		</td>
+		<td style="vertical-align: middle;">
+		
+		 	<?php $this->dropdownSelectedText($this->allTestKits,$this->evaluateData['results'][0]["test_kit_name_2"],true); ?>
+        
+		</td>
+        <td style="vertical-align: middle;">
+        
+		 	<?php $this->dropdownSelectedText($this->allTestKits,$this->evaluateData['results'][0]["test_kit_name_3"],true); ?>
+        
+		</td>
+        
+		
+		
+	</tr>
+	<tr align="CENTER" class="dark" >
+		<th>Lot No.</th>
+		<td style="vertical-align: middle;"><?php echo( $this->evaluateData['results'][0]["lot_no_1"]); ?></td>
+		<td style="vertical-align: middle;"><?php echo( $this->evaluateData['results'][0]["lot_no_2"]); ?></td>
+		<td style="vertical-align: middle;"><?php echo( $this->evaluateData['results'][0]["lot_no_3"]); ?></td>
+		
+		
+		
+	</tr>
+
+	<tr style="text-align:center">
+		<th>Exp Date</th>
+		<td style="vertical-align: middle;"><?php  echo $this->dateFormat($this->evaluateData['results'][0]["exp_date_1"]); ?></td>
+		<td style="vertical-align: middle;"><?php  echo $this->dateFormat($this->evaluateData['results'][0]["exp_date_2"]); ?></td>
+		<td style="vertical-align: middle;"><?php  echo $this->dateFormat($this->evaluateData['results'][0]["exp_date_3"]); ?></td>
+		
+	</tr>
+	<thead> 
+	<tr align="CENTER" class="dark" >
+		<th></th>
+		<th style="text-align: center">Result-1</th>
+		<th style="text-align: center">Result-2</th>
+		<th style="text-align: center">Result-3</th>
+		<th style="text-align: center">Reported Result</th>
+		<th style="text-align: center">Reference Result</th>
+		<th style="text-align: center">Score</th>
+	</tr>
+	</thead>
 	
 <?php
-$total = 0;
-$counter = 1;
-foreach($this->evaluateData['results'] as $result){
-	if(($counter%2) == 0){
-		$class = "evenResult";
-	}else{
-		$class = "oddResult";
-	}
-	?>
-		<tr class="<?php echo $class ?>">
-			<td style="vertical-align: middle;text-align:center;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
-			<td style="vertical-align: middle;text-align:center;"><?php echo $this->dropdownSelectedText($possibleResults,$result['reference_result'],true); ?></td>
-			<td rowspan="2" style="vertical-align: middle;text-align: center;"><h2><?php echo $score = ($result['reference_result'] == $result['reported_result']) ? $result['sample_score'] : 0; $total+= $score; ?></h2></td>
-		</tr>
-		<tr class="<?php echo $class ?>">
-			<th style="vertical-align: middle;text-align:center;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
-			<td style="vertical-align: middle;text-align:center;">
-				<?php echo $this->dropdownSelectedText($possibleResults,$result['reported_result'],true); ?>
-				<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
+	
+	
+	$count = 1;
+	if(count($this->evaluateData['controlResults']) > 0){
+		?>
+		<tr>
+			<td colspan="7" style="text-align: center;">
+				<strong>Controls</strong>
 			</td>
 		</tr>
+		<?php
+	}
+	
+	 foreach($this->evaluateData['controlResults'] as $sample){
+		$count++;
+		
+		
+		
+	 ?>
+	
+	<tr style="text-align:center;vertical-align: middle;" >
+		
+		<th style="white-space: nowrap;vertical-align: middle;">
+			<?php echo ($sample['sample_label']); ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
+		</th>
+		
+		<td style="vertical-align: middle;">
+		 	<?php $this->dropdownSelectedText($possibleResults,$sample['test_result_1'],true); ?>
+        </td>
+		<td style="vertical-align: middle;">
+         	<?php $this->dropdownSelectedText($possibleResults,$sample['test_result_2'],true); ?>
+        
+        </td>
+        <td style="vertical-align: middle;">
+        		 	<?php $this->dropdownSelectedText($possibleResults,$sample['test_result_3'],true); ?>
+                </td>
+		
+		<td style="vertical-align: middle;">
+		 	<?php $this->dropdownSelectedText($possibleFinalResults,$sample['reported_result'],true); ?>
+        </td>
+		
+		<td style="vertical-align: middle;">
+        
+		 	<?php $this->dropdownSelectedText($possibleFinalResults,$sample['reference_result'],true); ?>
+        
+        </td>
+		<td style="vertical-align: middle;">-</td>
+	</tr>
+	<?php }?>	
+	
+	
+		<tr>
+			<td colspan="7" style="text-align: center;">
+				<strong>Samples</strong>
+			</td>
+		</tr>	
 	<?php
-	$counter++;
-}
-?>
-<tr class="totalResult">
-	<td colspan="2" style="vertical-align: middle;text-align:right;"><h3>Total Score</h3></td>
-	<td style="vertical-align: middle;text-align:center;"><h3><?php echo $total; ?></h3></td>
-</tr>
+	
+	$total = 0;
+$count = 1;
+	
+	 foreach($this->evaluateData['results'] as $sample){
+		$count++;
+		
+		
+		
+	 ?>
+	
+	<tr style="text-align:center" >
+		
+		<th style="white-space: nowrap;vertical-align: middle;">
+			<?php echo ($sample['sample_label']); ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
+		</th>
+		
+		<td style="vertical-align: middle;">
+		 	<?php $this->dropdownSelectedText($possibleResults,$sample['test_result_1'],true); ?>
+        </td>
+		<td style="vertical-align: middle;">
+		 	<?php $this->dropdownSelectedText($possibleResults,$sample['test_result_2'],true); ?>
+        </td>
+        <td style="vertical-align: middle;">
+		 	<?php $this->dropdownSelectedText($possibleResults,$sample['test_result_3'],true); ?>
+        </td>
+		
+		<td style="vertical-align: middle;">
+		 	<?php $this->dropdownSelectedText($possibleFinalResults,$sample['reported_result'],true); ?>
+        </td>
+		
+		<td style="vertical-align: middle;">
+        
+		 	<?php $this->dropdownSelectedText($possibleFinalResults,$sample['reference_result'],true); ?>
+        
+        </td>
+		<td style="vertical-align: middle;">
+			<?php echo $score = ($sample['reference_result'] == $sample['reported_result']) ? $sample['sample_score'] : 0; $total+= $score; ?>
+		</td>
+	</tr>
+	<?php }?>
+	<tr style="text-align:center" >
+		<td colspan="6" style="text-align: right;">Total</td>
+		<td style="vertical-align: middle;"><?php echo $total; ?></td>
+	</tr>
 </table>
+
+
+
+
+
+
 
 
 <?php

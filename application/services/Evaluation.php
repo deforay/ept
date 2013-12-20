@@ -169,10 +169,7 @@ class Application_Service_Evaluation {
 							->where("s.distribution_id = ?",$distributionId)
 							->group('s.shipment_id');
 			  
-	    $result = $db->fetchAll($sql);
-		$session = new Zend_Session_Namespace('tempSpace');
-		$session->shipments = $result;
-		return $result;
+	    return $db->fetchAll($sql);
 	}
 	
 	public function getShipmentToEvaluate($shipmentId){
@@ -181,7 +178,6 @@ class Application_Service_Evaluation {
 							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
 							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id')
 							->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type')
-							->joinLeft(array('rr'=>'r_results'),'sp.final_result=rr.result_id')
 							->join(array('p'=>'participant'),'p.participant_id=sp.participant_id')
 							->where("s.shipment_id = ?",$shipmentId)
 							->where("substring(sp.evaluation_status,4,1) != '0'");
@@ -487,16 +483,21 @@ class Application_Service_Evaluation {
 				}
 				$shipmentResult[$counter]['shipment_score'] = $totalScore;
 				$shipmentResult[$counter]['max_score'] = $maxScore;
-				$shipmentResult[$counter]['final_result'] = $finalResult;
+				
+				$fRes = $db->fetchCol($db->select()->from('r_results',array('result_name'))->where('result_id = '.$finalResult));
+				
+				$shipmentResult[$counter]['display_result'] = $fRes[0];
 				$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
+				
+				
+				
 				// let us update the total score in DB
-				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
+				$countopa = $db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
 				$counter++;
 			}
 			$db->update('shipment',array('max_score' => $maxScore), "shipment_id = ".$shipmentId);
 		}
 		
-		//Zend_Debug::dump($shipmentResult);
 		return $shipmentResult;
 		
 		
@@ -649,7 +650,22 @@ class Application_Service_Evaluation {
 		 }
 		 else if($params['scheme'] == 'dts'){
 			for($i=0;$i<$size;$i++){
-			   $db->update('response_result_dts',array('reported_result' => $params['reported'][$i], 'updated_by'=>$admin , 'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = ".$params['smid']. " AND sample_id = ".$params['sampleId'][$i]);
+			   $db->update('response_result_dts',array(
+													   'test_kit_name_1' => $params['test_kit_name_1'],
+													   'lot_no_1' => $params['lot_no_1'],
+													   'exp_date_1' => Pt_Commons_General::dateFormat($params['exp_date_1']),
+													   'test_result_1' => $params['test_result_1'][$i],
+													   'test_kit_name_2' => $params['test_kit_name_2'],
+													   'lot_no_2' => $params['lot_no_2'],
+													   'exp_date_2' => Pt_Commons_General::dateFormat($params['exp_date_2']),
+													   'test_result_2' => $params['test_result_2'][$i],
+													   'test_kit_name_3' => $params['test_kit_name_3'],
+													   'lot_no_3' => $params['lot_no_3'],
+													   'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
+													   'test_result_3' => $params['test_result_3'][$i],
+													   'reported_result' => $params['reported_result'][$i],
+													   'updated_by'=>$admin ,
+													   'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = ".$params['smid']. " AND sample_id = ".$params['sampleId'][$i]);
 			}
 		 }
 		 

@@ -38,7 +38,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
         if($this->_hasParam('sid')){            
             $id = (int)base64_decode($this->_getParam('sid'));
             $evalService = new Application_Service_Evaluation();
-            $this->view->shipment = $evalService->getShipmentToEvaluate($id);
+            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id);
+            $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
         }else{
             $this->_redirect("/admin/evaluate/");
         }
@@ -57,6 +58,10 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
                     $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
                     
+                }
+                if($scheme == 'dts'){
+                    $schemeService = new Application_Service_Schemes(); 
+                    $this->view->allTestKits = $schemeService->getAllDtsTestKit();                    
                 }
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->viewEvaluation($sid,$pid,$scheme);
@@ -82,7 +87,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             if(isset($params['whereToGo']) && $params['whereToGo'] != ""){
                $this->_redirect($params['whereToGo']); 
             }else{
-                $this->_redirect("/admin/evaluate/edit/sid/$shipmentId/pid/$participantId/scheme/$scheme");    
+                $this->_redirect("/admin/evaluate/shipment/sid/$shipmentId");    
             }
             
             
@@ -101,6 +106,10 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
                     $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
                     
+                }
+                if($scheme == 'dts'){
+                    $schemeService = new Application_Service_Schemes(); 
+                    $this->view->allTestKits = $schemeService->getAllDtsTestKit();                    
                 }
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sid,$pid,$scheme);

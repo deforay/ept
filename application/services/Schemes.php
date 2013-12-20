@@ -7,6 +7,20 @@ class Application_Service_Schemes {
 		$schemeListDb = new Application_Model_DbTable_SchemeList();
 		return $schemeListDb->getAllSchemes();
 	}
+	
+	
+	public function getAllDtsTestKit(){
+	
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('r_testkitname_dts'),array('TESTKITNAMEID'=>'TESTKITNAME_ID', 'TESTKITNAME'=>'TESTKIT_NAME'))
+						->where('COUNTRYADAPTED = 1');
+		$stmt = $db->fetchAll($sql);
+		
+		foreach($stmt as $kitName){
+			$retval[$kitName['TESTKITNAMEID']] = $kitName['TESTKITNAME'];	
+		}
+		return $retval;
+	}	
 
 	public function getEidExtractionAssay(){
 		
