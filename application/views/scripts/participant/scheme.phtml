@@ -1,17 +1,32 @@
 <div id="view-content">
-<span class="txt" style="margin-left:5em">Participant/Laboratory Information</span>
+<span class="txt">Participant/Laboratory Information</span>
 	<br>
-			<table style="width: 95%;margin: auto;">
+			<table>
 				<thead>
 					<tr>
-					<th>Scheme Code</th>
+					<th>Participant ID</th>
+					<th>Lab/Participant Name</th>
 					<th>Scheme Name</th>
 					</tr>
 				</thead>
-				<tr align="left"  class="dark">
-					<td>1</td>
-					<td>2</td>
-				</tr>
+				<?php
+				$count = 1;
+				foreach ($this->participantSchemes as $ps){
+						if($count%2 == 0){
+								$class='class="dark"';
+						}else{
+								$class='class="light"';
+						}
+				?>
+						<tr <?php echo $class; ?>>
+								<td><?php echo $ps['unique_identifier'] ?></td>
+								<td><?php echo $ps['first_name'] . ' '.$ps['last_name'] ?></td>
+								<td><?php echo $ps['scheme_name'] ?></td>
+						</tr>
+				<?php
+				$count++;
+				}
+				?>
 							
 			</table>
 			

@@ -66,9 +66,11 @@ class Application_Service_DataManagers {
 		if($newPassword != false){
 			$sessionAlert->message = "Your password has been updated.";
 			$sessionAlert->status = "success";
+			return true;
 		}else{
 			$sessionAlert->message = "Sorry, we could not update your password. Please try again";
 			$sessionAlert->status = "failure";
+			return false;
 		}
 	}
 	

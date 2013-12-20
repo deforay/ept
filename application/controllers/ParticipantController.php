@@ -84,7 +84,9 @@ class ParticipantController extends Zend_Controller_Action
 
     public function schemeAction()
     {
-        
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $dbUsersProfile = new Application_Service_Participants();
+		$this->view->participantSchemes = $dbUsersProfile->getParticipantSchemes($authNameSpace->dm_id);
     }
 
     public function passwordAction()
@@ -93,7 +95,10 @@ class ParticipantController extends Zend_Controller_Action
 		$user = new Application_Service_DataManagers();
 		$newPassword = $this->getRequest()->getPost('newpassword');
 		$oldPassword = $this->getRequest()->getPost('oldpassword');
-		$user->changePassword($oldPassword,$newPassword);
+		$response = $user->changePassword($oldPassword,$newPassword);
+		if($response){
+			$this->_redirect("/participant/dashboard");
+		}
 	}
     }
 

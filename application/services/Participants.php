@@ -45,6 +45,18 @@ class Application_Service_Participants {
 				  ->where("p.participant_id=".$pid);
 	    return $db->fetchAll($sql);
 	}
+	public function getParticipantSchemes($dmId){
+	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+	    $sql = $db->select()->from(array('p'=>'participant'))
+				  ->joinLeft(array('pmm'=>'participant_manager_map'),'p.participant_id=pmm.participant_id')
+				  ->joinLeft(array('sp'=>'shipment_participant_map'),'p.participant_id=sp.participant_id')
+				  ->joinLeft(array('s'=>'shipment'),'s.shipment_id=sp.shipment_id')
+				  ->joinLeft(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type')
+				  ->where("pmm.dm_id= ?",$dmId)
+				  ->group(array("sp.participant_id","s.scheme_type"))
+				  ->order("p.first_name");
+	    return $db->fetchAll($sql);
+	}
 	public function getUnEnrolled($scheme){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('e'=>'enrollments'), 'participant_id')->where("scheme_id = ?", $scheme);
