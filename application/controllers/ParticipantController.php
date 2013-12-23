@@ -106,18 +106,19 @@ class ParticipantController extends Zend_Controller_Action
     {
         // action body
         // Get
-    	$dbParticipant = new Application_Service_Participants();
+    	$participantService = new Application_Service_Participants();
     	if($this->getRequest()->isPost())
     	{
     		$data = $this->getRequest()->getPost();
-    		$dbParticipant->updateParticipant($data);
+    		$participantService->updateParticipant($data);
     		$this->_redirect('/participant/testers');	    	
     	}
     	else {
-	    	$this->view->rsParticipant = $dbParticipant->getParticipantDetails($this->_getParam('psid'));    		
+	    	$this->view->rsParticipant = $participantService->getParticipantDetails($this->_getParam('psid'));    		
     	}
     	
-    	$this->view->affiliates = $dbParticipant->getAffiliateList();
+    	$this->view->affiliates = $participantService->getAffiliateList();
+		$this->view->networks = $participantService->getNetworkTierList();
     }
 
     public function schemeinfoAction()
@@ -125,8 +126,24 @@ class ParticipantController extends Zend_Controller_Action
         // action body
     }
 
+    public function addAction()
+    {
+		$participantService = new Application_Service_Participants();
+    	if($this->getRequest()->isPost())
+    	{
+    		$data = $this->getRequest()->getPost();
+    		$participantService->addParticipantForDataManager($data);
+    		$this->_redirect('/participant/testers');	    	
+    	}
+    	
+    	$this->view->affiliates = $participantService->getAffiliateList();
+		$this->view->networks = $participantService->getNetworkTierList();
+    }
+
 
 }
+
+
 
 
 

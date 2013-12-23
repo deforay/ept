@@ -11,7 +11,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     {
 		return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
 				     ->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id',array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
-					 ->where("pmm.dm_id = $userSystemId")
+					 ->where("pmm.dm_id = ?" , $userSystemId)
+					 //->where("p.status = 'active'")
 				     ->group('p.participant_id'));	
     }
 
@@ -19,7 +20,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     {
         return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('p' => $this->_name))
 				     ->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id',array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
-					 ->where("p.participant_id = '" . $partSysId . "'")
+					 ->where("p.participant_id = ?", $partSysId)
 				     ->group('p.participant_id'));
     }
 
@@ -30,7 +31,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name', 'last_name','country', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier','first_name', 'last_name','country', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -210,13 +211,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $noOfRows = $this->update($data, "participant_id = " . $params['participantId']);
 		
-		
-		
-		$db = Zend_Db_Table_Abstract::getAdapter();
-		$db->delete('participant_manager_map',"participant_id = " . $params['participantId']);
-		
-		foreach($params['dataManager'] as $dataManager){
-			$db->insert('participant_manager_map',array('dm_id'=>$dataManager,'participant_id'=>$params['participantId']));
+		if(isset($params['dataManager']) && $params['dataManager'] != ""){
+			$db = Zend_Db_Table_Abstract::getAdapter();
+			$db->delete('participant_manager_map',"participant_id = " . $params['participantId']);
+			
+			foreach($params['dataManager'] as $dataManager){
+				$db->insert('participant_manager_map',array('dm_id'=>$dataManager,'participant_id'=>$params['participantId']));
+			}
 		}
 
 		return $noOfRows;
@@ -227,7 +228,46 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
 
         $data = array(
-            'unique_identifier' => $params['participantId'],
+            'unique_identifier' => $params['pid'],
+            'institute_name' => $params['instituteName'],
+            'department_name' => $params['departmentName'],
+            'address' => $params['address'],
+            'city' => $params['city'],
+            'state' => $params['state'],
+            'country' => $params['country'],
+            'zip' => $params['zip'],
+            'long' => $params['long'],
+			'lat' => $params['lat'],			
+			'shipping_address' => $params['shippingAddress'],			
+            'first_name' => $params['pfname'],
+            'last_name' => $params['plname'],
+            'mobile' => $params['pphone2'],
+            'phone' => $params['pphone1'],
+            'email' => $params['pemail'],
+            'affiliation' => $params['partAff'],
+			'network_tier' => $params['network'],
+            'created_on' => new Zend_Db_Expr('now()'),
+			'created_by' => $authNameSpace->primary_email
+        );
+		
+		//Zend_Debug::dump($data);die;
+        $participantId = $this->insert($data);
+		
+		$db = Zend_Db_Table_Abstract::getAdapter();
+		
+		foreach($params['dataManager'] as $dataManager){
+			$db->insert('participant_manager_map',array('dm_id'=>$dataManager,'participant_id'=>$participantId));
+		}				
+		
+		return $participantId;
+    }
+
+    public function addParticipantForDataManager($params)
+    {
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+
+        $data = array(
+            'unique_identifier' => $params['pid'],
             'institute_name' => $params['instituteName'],
             'department_name' => $params['departmentName'],
             'address' => $params['address'],
@@ -245,19 +285,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
             'network_tier' => $params['network'],
-            'status' => $params['status'],
+            'status' => 'pending',
             'created_on' => new Zend_Db_Expr('now()'),
-            'created_by' => $authNameSpace->primary_email,
+            'created_by' => $authNameSpace->UserID,
         );
 		
 		//Zend_Debug::dump($data);die;
+	//Zend_Debug::dump($data);die;
         $participantId = $this->insert($data);
 		
 		$db = Zend_Db_Table_Abstract::getAdapter();
-		
-		foreach($params['dataManager'] as $dataManager){
-			$db->insert('participant_manager_map',array('dm_id'=>$dataManager,'participant_id'=>$participantId));
-		}				
+		$db->insert('participant_manager_map',array('dm_id'=>$authNameSpace->dm_id,'participant_id'=>$participantId));
+			
 		
 		return $participantId;
     }

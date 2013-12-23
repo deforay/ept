@@ -17,8 +17,8 @@
                       <?php if(isset($authNameSpace->dm_id)){ ?>
                     <li><a href="javascript:void(0);">My Account</a>
                     	<ul>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"user-info"),null,true) ?>">My Information</a></li>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">Laboratory Information</a></li>
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"user-info"),null,true) ?>">My Login Information</a></li>
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">PT Participant Information</a></li>
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"scheme"),null,true) ?>">Scheme Information</a></li>
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"password"),null,true) ?>">Change Password</a></li>                                
                			</ul>
@@ -32,7 +32,7 @@
                         </ul>
                     </li>
                     
-                    <li><a href="<?php echo $this->url(array("controller"=>"provider","action"=>"contact"),null,true) ?>">contacts</a></li>
+                    <li><a href="<?php echo $this->url(array("controller"=>"contact-us"),null,true) ?>">contacts</a></li>
                     <?php }?>
                 </ul>
             </nav>

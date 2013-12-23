@@ -100,10 +100,10 @@
                 <label class="col-lg-3 control-label">Participant ID <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-                    <input type="text" id="participantId" name="participantId" size="50" class="isRequired form-control"
+                    <input type="text" id="pid" name="pid" size="50" class="isRequired form-control"
                            title="Please enter a unique identifier here"
                            placeholder="Please enter a unique identifier here"
-                           onblur="checkDuplicate('participants','unique_identifier',this,null,'This Participant ID already exists for another Participant. Please try something else.')"/>
+                           onblur="checkDuplicate('participant','unique_identifier',this,null,'This Participant ID already exists for another Participant. Please try something else.')"/>
                 </div>
             </div>
             <div class="form-group">
@@ -218,7 +218,7 @@
 
     function validateNow() {
 		$(".bootstrap-select").removeClass('isRequired');
-        checkDuplicate('participants', 'unique_identifier', $("#participantId"), null, 'This Participant ID already exists for another Participant. Please try something else.')
+        checkDuplicate('participant', 'unique_identifier', $("#pid"), null, 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'addParticipantForm'
         });

@@ -1,26 +1,31 @@
-<form name="participantEdit" id="participantEdit" method="post"   action="<?php echo $this->url(array("controller"=>"participant","action"=>"testeredit"),null,true) ?>">
+<form name="participantEdit" id="participantEdit" method="post"   action="<?php echo $this->url(array("controller"=>"participant","action"=>"add","module"=>"default"),null,true) ?>">
 <div id="view-content">
 <span class="txt" style="margin-left:5em">Participant/Laboratory Information</span>
 
 <input type="hidden" id ="PartSysID" name="participantId" value="<?php echo $this->rsParticipant['participant_id']; ?>" />
+<input type="hidden" id ="UsrSysID" name="dataManager" value="<?php echo $this->rsParticipant['data_manager']; ?>" />
+
 
 
 	<br>
 	
 	       <table style="width: 65%;margin: auto;">
 				<tr align="left"  class="light">
-					<td>Participant System Id</td>
-					<td><?php echo $this->rsParticipant['unique_identifier']; ?></td>
+					<td>Participant System Id <span class="mandatory">*</span></td>
+					<td>
+					 <input type="text" id="pid" name="pid" size="50" maxlength="45" class="isRequired" title="Please enter the Participant's ID here" placeholder="Please enter the Participant's Unique ID here"
+                           onblur="checkDuplicate('participant','unique_identifier',this,null,'This Participant ID already exists for another Participant. Please try something else.')" />
+					</td>
 				</tr>
 				
  
 				<tr align="left" class="dark">
 					<td>Participant Lab/First Name <span class="mandatory">*</span></td>
-					<td><input type="text" id="pfname" name="pfname" size="50" maxlength="45" value="<?php echo $this->rsParticipant['first_name']; ?>" class="isRequired"  title="Please enter the Participant's Lab/First Name here"/></td>
+					<td><input type="text" id="pfname" name="pfname" size="50" maxlength="45"  class="isRequired"  title="Please enter the Participant's Lab/First Name here" placeholder="Please enter the Participant's Lab/First Name here" /></td>
 				</tr>
 				<tr align="left" class="light">
-					<td>Participant Last Name</td>
-					<td><input type="text" id="plname" name="plname" size="50" maxlength="45" value="<?php echo $this->rsParticipant['last_name']; ?>" title="Please enter the Participant's Last Name here" /></td>
+					<td>Participant Last Name (optional)</td>
+					<td><input type="text" id="plname" name="plname" size="50" maxlength="45" title="Please enter the Participant's Last Name here" placeholder="Please enter the Participant's Last Name here" /></td>
 				</tr>
             </tr>
             <tr align="left"  class="dark"> <td>
@@ -28,23 +33,21 @@
 
                </td><td><input type="text" id="instituteName" name="instituteName" size="50" maxlength="45"
                                              class="isRequired" title="Please enter the Institute Name here"
-                                             placeholder="Please enter the Institute Name here"
-                                             value="<?php echo $this->rsParticipant['institute_name']; ?>"/></td>
+                                             placeholder="Please enter the Institute Name here" /></td>
             </tr>
             <tr align="left"  class="light"> <td>
                 <label>Department Name <span class="mandatory">*</span></label>
 
                </td><td><input type="text" id="departmentName" name="departmentName" size="50" maxlength="45"
                                              class="isRequired" title="Please enter the Department Name here"
-                                             placeholder="Please enter the Department Name here"
-                                             value="<?php echo $this->rsParticipant['department_name']; ?>"/></td>
+                                             placeholder="Please enter the Department Name here" /></td>
             </tr>
             <tr align="left"  class="dark"> <td>
                 <label>Physical Address <span class="mandatory">*</span></label>
 
                </td><td><textarea id="address" name="address" size="50" 
                                              class="isRequired" title="Please enter the address here"
-                                             placeholder="Please enter the address here"><?php echo $this->rsParticipant['address']; ?></textarea></td>
+                                             placeholder="Please enter the address here"></textarea></td>
             </tr>
             <tr align="left"  class="light"> <td>
                 <label>City <span class="mandatory">*</span></label>
@@ -59,40 +62,35 @@
 
                </td><td><input type="text" id="state" name="state" size="50" maxlength="45"
                                              class="" title="Please enter the state here"
-                                             placeholder="Please enter the state here"
-                                             value="<?php echo $this->rsParticipant['state']; ?>"/></td>
+                                             placeholder="Please enter the state here" /></td>
             </tr>
             <tr align="left"  class="light"> <td>
                 <label>Country <span class="mandatory">*</span></label>
 
                </td><td><input type="text" id="country" name="country" size="50" maxlength="45"
                                              class="isRequired" title="Please enter the country here"
-                                             placeholder="Please enter the country here"
-                                             value="<?php echo $this->rsParticipant['country']; ?>"/></td>
+                                             placeholder="Please enter the country here" /></td>
             </tr>
             <tr align="left"  class="dark"> <td>
                 <label>Zip Code (if applicable)</label>
 
                </td><td><input type="text" id="zip" name="zip" size="50" maxlength="45"
                                              class="" title="Please enter the zip here"
-                                             placeholder="Please enter the zip here"
-                                             value="<?php echo $this->rsParticipant['zip']; ?>"/></td>
+                                             placeholder="Please enter the zip here" /></td>
             </tr>
             <tr align="left"  class="light"> <td>
                 <label>Longitude </label>
 
                </td><td><input type="text" id="long" name="long" size="50" maxlength="45"
                                              class="" title="Please enter the longitude here"
-                                             placeholder="Please enter the longitude here"
-                                             value="<?php echo $this->rsParticipant['long']; ?>"/></td>
+                                             placeholder="Please enter the longitude here" /></td>
             </tr>
             <tr align="left"  class="dark"> <td>
                 <label>Latitude </label>
 
                </td><td><input type="text" id="lat" name="lat" size="50" maxlength="45"
                                              class="" title="Please enter the latitude here"
-                                             placeholder="Please enter the latitude here"
-                                             value="<?php echo $this->rsParticipant['lat']; ?>"/>
+                                             placeholder="Please enter the latitude here" />
 											 </td>
             </tr>				
 				
@@ -100,34 +98,29 @@
 					<td>Shipping Address (include city and country) <span class="mandatory">*</span></td>
 					<td><textarea id="shippingAddress" name="shippingAddress" size="50" 
                                              class="isRequired form-control" title="Please enter the address here"
-                                             placeholder="Please enter the Shipping Address here"><?php echo $this->rsParticipant['shipping_address']; ?></textarea></td>
-				</tr>			
-				
-				<tr align="left"  class="dark">
-					<td>Lab or Participant ID <span class="mandatory">*</span></td>
-					<td><input type="text" id="pid" name="pid" size="50" maxlength="45" value="<?php echo $this->rsParticipant['unique_identifier']; ?>" class="isRequired" title="Please enter the Participant's ID here" /></td>
+                                             placeholder="Please enter the Shipping Address here"></textarea></td>
 				</tr>
 
-				<tr align="left" class="light">
+				<tr align="left" class="dark">
 					<td>Participant e-mail Address</td>
-					<td><input type="text" id="pemail" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsParticipant['email']; ?>" title="Please enter the Participant's Email here" /></td>
-				</tr>
-				<tr align="left" class="dark">
-					<td>Participant Phone Number</td>
-					<td><input type="text" id="pphone1" name="pphone1" size="50" maxlength="45" value="<?php echo $this->rsParticipant['phone']; ?>" title="Please enter the Participant's Phone here" class="isNumeric" /></td>
+					<td><input type="text" id="pemail" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsParticipant['email']; ?>" title="Please enter the Participant's Email here" placeholder="Please enter the Participant's Email here" /></td>
 				</tr>
 				<tr align="left" class="light">
-					<td>Participant Cell/Mobile Number <span class="mandatory">*</span></td>
-					<td><input type="text" id="pphone2" name="pphone2" size="50" maxlength="45" value="<?php echo $this->rsParticipant['mobile']; ?>" class="isRequired isNumeric" title="Please enter the Participant's Mobile Number here" /></td>
+					<td>Participant Phone Number</td>
+					<td><input type="text" id="pphone1" name="pphone1" size="50" maxlength="45" value="<?php echo $this->rsParticipant['phone']; ?>" title="Please enter the Participant's Phone here" placeholder="Please enter the Participant's Phone here" class="isNumeric" /></td>
 				</tr>
 				<tr align="left" class="dark">
+					<td>Participant Cell/Mobile Number <span class="mandatory">*</span></td>
+					<td><input type="text" id="pphone2" name="pphone2" size="50" maxlength="45" value="<?php echo $this->rsParticipant['mobile']; ?>" class="isRequired isNumeric" title="Please enter the Participant's Mobile Number here" placeholder="Please enter the Participant's Mobile Number here" /></td>
+				</tr>
+				<tr align="left" class="light">
 					<td>Network <span class="mandatory">*</span></td>
 					<td>
-					<select name="network" id="network"  class="form-control isRequired" title="Please select network">
+					<select name="network" id="network"  class="form-control isRequired" title="Please select Network">
 						<option value="">--Select--</option>
 						<?php foreach($this->networks as $nw){
 						?>
-						<option value="<?php echo $nw['network_id']; ?>"  <?php echo ($this->rsParticipant['network_tier'] == $nw['network_id']) ? "selected='selected'" : "" ?>><?php echo $nw['network_name']; ?></option>
+						<option value="<?php echo $nw['network_id']; ?>"><?php echo $nw['network_name']; ?></option>
 						<?php	
 						} ?>
 					</select>
@@ -136,11 +129,11 @@
 				<tr align="left" class="dark">
 					<td>Participant Affiliation <span class="mandatory">*</span></td>
 					<td>
-					<select name="partAff" id="partAff"  class="form-control isRequired" title="Please select Affiliation">
+					<select name="partAff" id="partAff"  class="form-control isRequired" title="Please select affiliation">
 						<option value="">--Select--</option>
 						<?php foreach($this->affiliates as $aff){
 						?>
-						<option value="<?php echo $aff['affiliate']; ?>" <?php echo ($this->rsParticipant['affiliation'] == $aff['affiliate']) ? "selected='selected'" : "" ?>><?php echo $aff['affiliate']; ?></option>
+						<option value="<?php echo $aff['affiliate']; ?>"><?php echo $aff['affiliate']; ?></option>
 						<?php	
 						} ?>
 					</select>
@@ -169,13 +162,28 @@ function goto_testers(){
 	window.history.back();
 }
 
-
+    var duplicated = false;
+	
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html" },
+            function (data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    obj.focus();
+                }
+                else {
+                    duplicated = false;
+                }
+            });
+    }
     function validateNow(){
+	   checkDuplicate('participant', 'unique_identifier', $("#participantId"), null, 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'participantEdit'
         });
-        if(flag){
-            //$.blockUI();
+        if (flag && !duplicated) {
+            $.blockUI();
             document.getElementById('participantEdit').submit();
         }
     }	 

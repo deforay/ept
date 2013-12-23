@@ -1,5 +1,5 @@
 <div id="view-content">
-<span class="txt">Participant/Laboratory Information <input class="button button-rounded" type="button" onclick="javascript:void(0);return false;" style="float:right;" tabindex="7" value="Add PT Participant"></span>
+<span class="txt">Participant/Laboratory Information <input class="button button-rounded" type="button" onclick="document.location='/participant/add'" style="float:right;" tabindex="7" value="Add PT Participant"></span>
 
 	<br>
 	<br>
@@ -31,7 +31,13 @@
 					<td><?php echo $tester['email']; ?></td>
 					
 					<!--<td>< ?php echo $tester['TESTGROUP']; ?></td>-->
-					<td style="text-decoration : underline;"><a href="<?php  echo $this->url(array("controller"=>"participant","action"=>"testeredit","psid"=>$tester['participant_id']),null,true,false); ?>">Edit</a></td>
+					<td >
+						<?php if ($tester['status'] == 'active') { ?>
+						<a style="text-decoration : underline;" href="<?php  echo $this->url(array("controller"=>"participant","action"=>"testeredit","psid"=>$tester['participant_id']),null,true,false); ?>">Edit</a>
+						<?php } else { 
+								echo ucfirst($tester['status'])."<br/><hr/> Contact PT Admin to activate";
+						 } ?>
+					</td>
 									
 				</tr>	
 				<?php }?>								

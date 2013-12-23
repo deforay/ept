@@ -180,7 +180,7 @@
 						<option value="">--Select--</option>
 						<?php foreach($this->networks as $nw){
 						?>
-						<option value="<?php echo $nw['network_id']; ?>" <?php echo ($this->participant['network_tier'] == $nw['network_tier']) ? "selected='selected'" : "" ?>><?php echo $nw['network_name']; ?></option>
+						<option value="<?php echo $nw['network_id']; ?>" <?php echo ($this->participant['network_tier'] == $nw['network_id']) ? "selected='selected'" : "" ?>><?php echo $nw['network_name']; ?></option>
 						<?php	
 						} ?>
 					</select>
