@@ -20,18 +20,18 @@
 		</tr>
         <tr> 
             <th>
-				<label for="name" class="name" data-icon="u"> First Name <span class="mandatory">*</span> </label>
+				<label for="first_name" class="first_name" data-icon="u"> First Name <span class="mandatory">*</span> </label>
 			</th>
             <td>
-				<input id="name" name="name" class="isRequired" title="Please enter your first name" type="text" placeholder="your first name"/>
+				<input id="first_name" name="first_name" class="isRequired" title="Please enter your first name" type="text" placeholder="your first name"/>
 			</td>
         </tr>
         <tr> 
             <th>
-				<label for="name" class="name" data-icon="u"> Last Name <span class="mandatory">*</span> </label>
+				<label for="last_name" class="last_name" data-icon="u"> Last Name <span class="mandatory">*</span> </label>
 			</th>
             <td>
-				<input id="name" name="name" class="isRequired" title="Please enter your last name" type="text" placeholder="your last name"/>
+				<input id="last_name" name="last_name" class="isRequired" title="Please enter your last name" type="text" placeholder="your last name"/>
 			</td>
         </tr>
         <tr>
@@ -153,7 +153,7 @@
                             }else{
 								$.blockUI();
                                 $.post( "<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>",
-									   { name: $("#name").val(), email: $("#email").val(),phone: $("#phone").val(),agency: $("#agency").val(),reasonId: $("#reasonId").val(),reason: $("#reason").val(),additionalInfo: $("#additionalInfo").val(), format : "html" })
+									   { first_name: $("#first_name").val(), last_name: $("#last_name").val(), email: $("#email").val(),phone: $("#phone").val(),agency: $("#agency").val(),reasonId: $("#reasonId").val(),reason: $("#reason").val(),additionalInfo: $("#additionalInfo").val(), format : "html" })
 								.done(function( data ) {
 								 $.unblockUI();
 								 if (data == 1 || data == '1') {

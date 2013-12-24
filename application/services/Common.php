@@ -79,8 +79,8 @@ class Application_Service_Common {
 		return $gc->getValue($name);
     }		
 	public function contactForm($params) {
-		$message = "<h3>The following details were entered by ".$params['name']."</h3>";
-		$message .= "Name : ".$params['name']."<br/>";
+		$message = "<h3>The following details were entered by ".$params['first_name']." " .$params['last_name']."</h3>";
+		$message .= "Name : ".$params['first_name']." " .$params['last_name']."<br/>";
 		$message .= "Email : ".$params['email']."<br/>";
 		$message .= "Phone/Mobile : ".$params['phone']."<br/>";
 		$message .= "Selected Reason to Contact : ".$params['reason']."<br/>";
@@ -89,11 +89,11 @@ class Application_Service_Common {
 		
 		$db = new Application_Model_DbTable_ContactUs();
 		
-		$data = array('name'=>$params['name'],'email'=>$params['email'],'phone'=>$params['phone'],'reason'=>$params['reason'],'lab'=>$params['agency'],'additional_info'=>$params['additionalInfo'], 'contacted_on' => new Zend_Db_Expr('now()'),'ip_address'=>$_SERVER['REMOTE_ADDR']);
+		$data = array('first_name'=>$params['first_name'],'last_name'=>$params['last_name'],'email'=>$params['email'],'phone'=>$params['phone'],'reason'=>$params['reason'],'lab'=>$params['agency'],'additional_info'=>$params['additionalInfo'], 'contacted_on' => new Zend_Db_Expr('now()'),'ip_address'=>$_SERVER['REMOTE_ADDR']);
 		$db->addContact($data);
 		
 		$fromEmail = $params['email'];
-		$fromName = $params['name'];
+		$fromName = $params['first_name']." " .$params['last_name'];
 		
 		$to = Application_Service_Common::getConfig('admin-email');
 		
