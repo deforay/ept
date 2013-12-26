@@ -140,6 +140,7 @@
               <actionMethod actionName="add"/>
               <actionMethod actionName="viewShipment"/>
               <actionMethod actionName="shipDistribution"/>
+              <actionMethod actionName="edit"/>
             </controllerFile>
             <controllerFile controllerName="Shipment">
               <actionMethod actionName="index"/>
@@ -274,6 +275,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="ContactUs">
                 <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Distributions">
+                <viewScriptFile forActionName="edit"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -536,6 +540,7 @@
                 <testApplicationActionMethod forActionName="add"/>
                 <testApplicationActionMethod forActionName="viewShipment"/>
                 <testApplicationActionMethod forActionName="shipDistribution"/>
+                <testApplicationActionMethod forActionName="edit"/>
               </testApplicationControllerFile>
               <testApplicationControllerFile forControllerName="Shipment">
                 <testApplicationActionMethod forActionName="index"/>

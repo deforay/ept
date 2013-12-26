@@ -77,6 +77,10 @@
 
 	
 	function shipDistribution(did) {
+		var choice = confirm("Are you sure you want to ship this PT Event ? \n You cannot undo this !")
+		if (!choice) {
+			return false;
+		}
 		$.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'ship-distribution')); ?>", { did: did, format: "html" },
             function (data) {

@@ -63,8 +63,15 @@ class Admin_DistributionsController extends Zend_Controller_Action
         }
     }
 
+    public function editAction()
+    {
+        // action body
+    }
+
 
 }
+
+
 
 
 

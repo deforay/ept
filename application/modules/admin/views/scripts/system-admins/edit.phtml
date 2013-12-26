@@ -34,7 +34,7 @@
                            title="Please enter the primary email id here"
                            placeholder="Please enter the primary email id here"
 						   value="<?php echo $this->admin['primary_email']; ?>"
-                           onblur="checkDuplicate('admin', 'primary_email',this,'<?php echo "admin_id##" . $this->admin['admin_id']; ?>', 'This Email already exists for another Admin. Please try something else.')"/>
+                           onblur="checkDuplicate('system_admin', 'primary_email',this,'<?php echo "admin_id##" . $this->admin['admin_id']; ?>', 'This Email already exists for another Admin. Please try something else.')"/>
                 </div>
             </div>
 			<div class="form-group">
@@ -113,7 +113,7 @@
     }
 
     function validateNow() {
-        checkDuplicate('admin', 'primary_email', $("#primaryEmail"), '<?php echo "admin_id##" . $this->admin['admin_id']; ?>', 'This Email already exists for another Admin. Please try something else.')
+        checkDuplicate('system_admin', 'primary_email', $("#primaryEmail"), '<?php echo "admin_id##" . $this->admin['admin_id']; ?>', 'This Email already exists for another Admin. Please try something else.')
         flag = deforayValidator.init({
             formId: 'editSystemAdminForm'
         });
