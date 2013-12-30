@@ -7,7 +7,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     protected $_primary = 'scheme_id';
 
     public function getAllSchemes(){
-        return $this->fetchAll();
+        return $this->fetchAll($this->select()->where("status='active'"));
     }
 
 

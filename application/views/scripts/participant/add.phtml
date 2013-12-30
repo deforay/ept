@@ -1,3 +1,4 @@
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <form name="participantEdit" id="participantEdit" method="post"   action="<?php echo $this->url(array("controller"=>"participant","action"=>"add","module"=>"default"),null,true) ?>">
 <div id="view-content">
 <span class="txt" style="margin-left:5em">Participant/Laboratory Information</span>
@@ -139,8 +140,20 @@
 					</select>
 					</td>
 				</tr>
-				
-				
+				<tr align="left" class="light">
+					<td>Schemes <span class="mandatory">*</span></td>
+					<td>
+							<select id="scheme" name="scheme[]" multiple="multiple" style="width:300px;">
+								<?php
+								  foreach($this->schemes as $scheme){
+									?>
+										<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
+									<?php
+								  }
+								?>
+							</select>
+					</td>
+				</tr>				
 			</table>
 			<br>
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
@@ -156,7 +169,15 @@
 
 
 
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script>
+	   
+	   $(document).ready(function(){
+			  $("#scheme").select2({
+    placeholder: "Select one or more schemes",
+    allowClear: true
+});
+	   })
 
 function goto_testers(){
 	window.history.back();

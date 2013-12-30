@@ -124,6 +124,7 @@
               <actionMethod actionName="index"/>
               <actionMethod actionName="add"/>
               <actionMethod actionName="edit"/>
+              <actionMethod actionName="pending"/>
             </controllerFile>
             <controllerFile controllerName="SystemAdmins">
               <actionMethod actionName="index"/>
@@ -278,6 +279,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Distributions">
                 <viewScriptFile forActionName="edit"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Participants">
+                <viewScriptFile forActionName="pending"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -525,6 +529,7 @@
                 <testApplicationActionMethod forActionName="index"/>
                 <testApplicationActionMethod forActionName="add"/>
                 <testApplicationActionMethod forActionName="edit"/>
+                <testApplicationActionMethod forActionName="pending"/>
               </testApplicationControllerFile>
               <testApplicationControllerFile forControllerName="SystemAdmins">
                 <testApplicationActionMethod forActionName="index"/>

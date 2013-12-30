@@ -1310,3 +1310,6 @@ CREATE TABLE IF NOT EXISTS `r_network_tiers` ( `network_id` int(11) NOT NULL AUT
 
 ALTER TABLE  `participant` ADD  `network_tier` INT NOT NULL AFTER  `affiliation`;
 ALTER TABLE  `data_manager` ADD  `institute` VARCHAR( 500 ) NULL DEFAULT NULL AFTER  `password`;
+
+-- by Amit Dec 30 2013
+ALTER TABLE  `scheme_list` ADD  `status` VARCHAR( 255 ) NULL DEFAULT NULL;

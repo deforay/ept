@@ -138,6 +138,8 @@ class ParticipantController extends Zend_Controller_Action
     	
     	$this->view->affiliates = $participantService->getAffiliateList();
 		$this->view->networks = $participantService->getNetworkTierList();
+		$scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();		
     }
 
 

@@ -201,8 +201,25 @@
 					</select>
 				</div>
             </div>
+			<?php if($this->participant['status'] == "pending"){ ?>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Status</label>
+                <label class="col-lg-3 control-label">Schemes <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5">
+					<select id="scheme" name="scheme[]"  class="form-control isRequired" multiple="multiple" title="Please choose one or more Schemes" data-selected-text-format="count>3">
+						<?php
+						  foreach($this->schemes as $scheme){
+							?>
+								<option value="<?php echo $scheme['scheme_id']; ?>" <?php echo (in_array($scheme['scheme_id'],$this->participantSchemes) ? "selected='selected'" : ""); ?>><?php echo $scheme['scheme_name']; ?></option>	
+							<?php
+						  }
+						?>
+					</select>
+				</div>
+            </div>
+			<?php } ?>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Status <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
                     <select type="text" id="status" name="status" class="isRequired form-control"
@@ -238,6 +255,7 @@
 	
 	$(document).ready(function(){
 		$('#dataManager').selectpicker();
+		$('#scheme').selectpicker();
 	});
 	
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {

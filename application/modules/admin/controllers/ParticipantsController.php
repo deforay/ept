@@ -53,10 +53,20 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->view->networks = $participantService->getNetworkTierList();
             $this->view->dataManagers = $dataManagerService->getDataManagerList();            
         }
+		$scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
+        $this->view->participantSchemes = $participantService->getSchemesByParticipantId($userId);
+    }
+
+    public function pendingAction()
+    {
+        // action body
     }
 
 
 }
+
+
 
 
 

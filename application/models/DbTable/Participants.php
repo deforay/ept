@@ -111,6 +111,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name));
 
+        if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
+            $sQuery = $sQuery->where("p.status = ? ",$parameters['withStatus']);
+        }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -135,7 +138,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+        $sQuery = $this->getAdapter()->select()->from(array("p"=>$this->_name), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+
+        if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
+            $sQuery = $sQuery->where("p.status = ? ",$parameters['withStatus']);
+        }		
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -219,6 +226,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 				$db->insert('participant_manager_map',array('dm_id'=>$dataManager,'participant_id'=>$params['participantId']));
 			}
 		}
+		
+		if(isset($params['scheme']) && $params['scheme'] != ""){
+			$enrollDb = new Application_Model_DbTable_Enrollments();
+			$enrollDb->enrollParticipantToSchemes($params['participantId'],$params['scheme']);
+		}
 
 		return $noOfRows;
     }
@@ -293,6 +305,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 		//Zend_Debug::dump($data);die;
 	//Zend_Debug::dump($data);die;
         $participantId = $this->insert($data);
+		
+		
+		if(isset($params['scheme']) && $params['scheme'] != ""){
+			$enrollDb = new Application_Model_DbTable_Enrollments();
+			$enrollDb->enrollParticipantToSchemes($participantId,$params['scheme']);
+		}		
 		
 		$db = Zend_Db_Table_Abstract::getAdapter();
 		$db->insert('participant_manager_map',array('dm_id'=>$authNameSpace->dm_id,'participant_id'=>$participantId));

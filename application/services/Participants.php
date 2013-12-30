@@ -65,30 +65,42 @@ class Application_Service_Participants {
 	public function getUnEnrolled($scheme){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('e'=>'enrollments'), 'participant_id')->where("scheme_id = ?", $scheme);
-		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id NOT IN ?", $subSql);
+		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id NOT IN ?", $subSql)->where("p.status='active'");
 		return $db->fetchAll($sql);
 	}
 	public function getEnrolledBySchemeCode($scheme){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('e'=>'enrollments'), array())
-							   ->join(array('p'=>'participant'),"p.participant_id=e.participant_id")->where("scheme_id = ?", $scheme);
+							   ->join(array('p'=>'participant'),"p.participant_id=e.participant_id")->where("scheme_id = ?", $scheme)->where("p.status='active'");
 		return $db->fetchAll($sql);
 	}
+	
 	public function getEnrolledByShipmentId($shipmentId){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('p'=>'participant'))
 				       ->join(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array())
 					   ->join(array('s'=>'shipment'),'sp.shipment_id=s.shipment_id',array())
-				       ->where("s.shipment_id = ?", $shipmentId);
+				       ->where("s.shipment_id = ?", $shipmentId)
+					   ->where("p.status='active'");
 
 		return $db->fetchAll($sql);
+	}
+	public function getSchemesByParticipantId($pid){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('p'=>'participant'),array())
+				       ->joinLeft(array('e'=>'enrollments'),'e.participant_id=p.participant_id',array())
+				       ->joinLeft(array('sl'=>'scheme_list'),'sl.scheme_id=e.scheme_id',array('scheme_id'))					   
+				       ->where("p.participant_id = ?", $pid);
+
+		return $db->fetchCol($sql);
 	}
 	public function getUnEnrolledByShipmentId($shipmentId){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('p'=>'participant'),array('participant_id'))
 				       ->join(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array())
 					   ->join(array('s'=>'shipment'),'sp.shipment_id=s.shipment_id',array())
-				       ->where("s.shipment_id = ?", $shipmentId);
+				       ->where("s.shipment_id = ?", $shipmentId)
+				       ->where("p.status='active'");
 		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id NOT IN ?", $subSql);
 		return $db->fetchAll($sql);
 	}

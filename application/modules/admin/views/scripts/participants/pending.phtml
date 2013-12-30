@@ -1,11 +1,4 @@
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">List of All PT Participants</div>
-    <div style="margin-top:10px;">
-        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New Participant</a>
-    </div>
-</h4>
-
-<a href="/admin/participants/pending" class="btn btn-warning">Show only Pending Participants</a>
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;"><div style="font-size:22.5px;line-height:36px;color:#333;float:left;">List of All Pending PT Participants</div><div style="margin-top:10px;"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Bact to All Participants</a></div></h4>
 
 <br/>
 <br/>
@@ -57,6 +50,9 @@
                 {"sClass":"center"},
                 {"sClass":"center","bSortable":false}
             ],
+			"fnServerParams": function ( aoData ) {
+				aoData.push( { "name": "withStatus", "value": "pending" } );
+			},
             "aaSorting": [[ 0, "asc" ]],
             "bProcessing": true,
             "bServerSide": true,

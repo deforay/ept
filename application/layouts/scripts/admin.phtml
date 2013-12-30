@@ -1,6 +1,5 @@
 <?php
-$adminSession = new Zend_Session_Namespace('admin');
-
+  $adminSession = new Zend_Session_Namespace('admin');
 ?>
 
 <!DOCTYPE html>
@@ -46,11 +45,13 @@ $adminSession = new Zend_Session_Namespace('admin');
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
               <ul class="dropdown-menu">
 				<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'system-admins'),'default',true); ?>">PT Manager</a></li>
+				<li class="divider"></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'data-managers'),'default',true); ?>">PT Participant Login</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'participants'),'default',true); ?>">PT Participants</a></li>
-                
-                <li class="divider"></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments'),'default',true); ?>">Enrollments</a></li>
+                <li class="divider"></li>
+				<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'contact-us'),'default',true); ?>">Contact Messages</a></li>
+                
               </ul>
             </li>
             <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'configurations') ? "class='active dropdown'" : "class='dropdown'"; ?>>
@@ -58,6 +59,7 @@ $adminSession = new Zend_Session_Namespace('admin');
               <ul class="dropdown-menu">
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'distributions'),'default',true); ?>">PT Event</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'shipment'),'default',true); ?>">Shipments</a></li>
+				<li class="divider"></li>
                 <li><a href="javascript:void(0);">Packaging</a></li>
               </ul>
             </li>
@@ -68,8 +70,6 @@ $adminSession = new Zend_Session_Namespace('admin');
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments'),'default',true); ?>">Shipments Report</a></li>
               </ul>
             </li>
-			<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'contact-us') ? "class='active'" : ""; ?> ><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'contact-us'),'default',true); ?>">Contact Messages</a></li>
-			
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'login','action'=>'log-out')); ?>"><i class="icon-signout"></i> Logout</a></li>
