@@ -817,6 +817,37 @@ group by SHIP_YEAR
 
 union
 
+
+Select year(shipment_date) as SHIP_YEAR,   
+'DBS' AS SCHEME,
+count(substr(b.evaluation_status,1,1)) as TOTALSHIPMEN,  
+count(
+	CASE  substr(b.evaluation_status,3,1)
+	WHEN 1 THEN   'T'
+	END 
+	) as 'ONTIME' ,
+  
+count(
+	CASE  substr(b.evaluation_status,2,1)
+	WHEN 1 THEN   'R'
+	END 
+	) as 'RESPOND' ,
+
+count(
+	CASE  substr(b.evaluation_status,2,1)
+	WHEN 9 THEN   'N'
+	END
+	)  as 'NORESPONSE' 
+from shipment  as a , shipment_participant_map as b, participant_manager_map pmm
+where (year(shipment_date)  + 5 > year(CURDATE())) AND scheme_type='dbs'
+and a.shipment_id = b.shipment_id
+and a.status != 'pending'
+and pmm.participant_id = b.participant_id
+and pmm.dm_id = uId
+group by SHIP_YEAR 
+
+union
+
 Select year(shipment_date) as SHIP_YEAR,   
 'VL' AS SCHEME,
 count(substr(b.evaluation_status,1,1)) as TOTLASHIPPED,  
@@ -885,7 +916,8 @@ Select year(a.shipment_date) as SHIP_YEAR,
 'DTS' AS SCHEME,
 b.first_name as FNAME,b.last_name as LNAME,
 spm.participant_id,
-a.shipment_date, 
+a.shipment_date,
+a.shipment_code,
 DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
 a.lastdate_response, 
 a.shipment_id as SHIPID,
@@ -910,13 +942,48 @@ and a.lastdate_response >= CURDATE()
 and a.scheme_type = 'dts'
 and a.status != 'pending'
 and pmm.dm_id = uId
+
+union
+
+Select year(a.shipment_date) as SHIP_YEAR,   
+'DBS' AS SCHEME,
+b.first_name as FNAME,b.last_name as LNAME,
+spm.participant_id,
+a.shipment_date,
+a.shipment_code,
+DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
+a.lastdate_response, 
+a.shipment_id as SHIPID,
+spm.evaluation_status as EVALUATIONSTATUS, 
+
+	CASE  substr(spm.evaluation_status,3,1)
+	WHEN '1' THEN   'View'
+	WHEN '9' THEN   'Enter Result'
+	END 
+	as 'RESPONSE'  ,
+
+
+	CASE  substr(spm.evaluation_status,3,1)
+	WHEN '1' THEN   'Report'
+	END
+	as 'REPORTSTATUS' 
+from shipment  as a , shipment_participant_map spm, participant as b, participant_manager_map pmm
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE()) 
+and a.lastdate_response >= CURDATE()
+and a.scheme_type = 'dbs'
+and a.status != 'pending'
+and pmm.dm_id = uId
+
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
 'VL' AS SCHEME,
 b.first_name as FNAME,b.last_name as LNAME,
 spm.participant_id,
-a.shipment_date, 
+a.shipment_date,
+a.shipment_code,
 DATE_FORMAT(spm.shipment_test_report_date, '%Y-%m-%d') as RESPONSEDATE,
 a.lastdate_response, 
 a.shipment_id as SHIPID,
@@ -947,7 +1014,8 @@ Select year(a.shipment_date) as SHIP_YEAR,
 'EID' AS SCHEME,
 b.first_name as FNAME,b.last_name as LNAME,
 spm.participant_id,
-a.shipment_date, 
+a.shipment_date,
+a.shipment_code,
 DATE_FORMAT(spm.shipment_test_report_date, '%Y-%m-%d') as RESPONSEDATE,
 a.lastdate_response, 
 a.shipment_id as SHIPID,
@@ -978,16 +1046,16 @@ order by SHIP_YEAR, participant_id ;
 END $$
 
 
+DELIMITER ;;
 
-DELIMITER $$
-
-DROP PROCEDURE IF EXISTS `SHIPMENT_DEFAULTED` $$
+DROP PROCEDURE IF EXISTS `SHIPMENT_DEFAULTED` ;;
 CREATE PROCEDURE `SHIPMENT_DEFAULTED`(IN uId varchar(255) )
 BEGIN
 Select year(a.shipment_date) as SHIP_YEAR,   
 'DTS' AS SCHEME,
 b.first_name as FNAME,b.last_name as LNAME,
-a.shipment_date, 
+a.shipment_date,
+a.shipment_code,
 spm.shipment_test_report_date as RESPONSEDATE,
 a.lastdate_response, 
 spm.participant_id as PARTICIPANT_ID,
@@ -1015,11 +1083,43 @@ and a.scheme_type = 'dts'
 and a.status != 'pending'
 and pmm.dm_id = uId
 union
+Select year(a.shipment_date) as SHIP_YEAR,   
+'DBS' AS SCHEME,
+b.first_name as FNAME,b.last_name as LNAME,
+a.shipment_date,
+a.shipment_code,
+spm.shipment_test_report_date as RESPONSEDATE,
+a.lastdate_response, 
+spm.participant_id as PARTICIPANT_ID,
+spm.evaluation_status as EVALUATIONSTATUS, 
 
+	CASE  substr(spm.evaluation_status,2,1)
+	WHEN '1' THEN   'View'
+	WHEN '9' THEN   'Enter Result'
+	END 
+	as 'ACTION' ,
+
+
+	CASE  substr(spm.evaluation_status,3,1)
+	WHEN '1' THEN   'On Time'
+	WHEN '2' THEN   'Late'
+	WHEN '0' THEN   'No Response'
+	END
+	as 'STATUS' 
+from shipment  as a , shipment_participant_map spm, participant as b, participant_manager_map pmm
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE()) 
+and a.lastdate_response < CURDATE() and  substr(spm.evaluation_status,3,1) <> '1'
+and a.scheme_type = 'dbs'
+and a.status != 'pending'
+and pmm.dm_id = uId
+union
 Select year(a.shipment_date) as SHIP_YEAR,   
 'VL' AS SCHEME,
 b.first_name as FNAME,b.last_name as LNAME,
-a.shipment_date, 
+a.shipment_date,
+a.shipment_code,
 spm.shipment_test_report_date as RESPONSEDATE,
 a.lastdate_response, 
 spm.participant_id as PARTICIPANT_ID,
@@ -1051,7 +1151,8 @@ union
 Select year(a.shipment_date) as SHIP_YEAR,   
 'EID' AS SCHEME,
 b.first_name as FNAME,b.last_name as LNAME,
-a.shipment_date, 
+a.shipment_date,
+a.shipment_code,
 spm.shipment_test_report_date as RESPONSEDATE,
 a.lastdate_response, 
 spm.participant_id as PARTICIPANT_ID,
@@ -1080,7 +1181,7 @@ and a.status != 'pending'
 and pmm.dm_id = uId
 order by SHIP_YEAR, PARTICIPANT_ID ;
 
-END $$
+END ;;
 
 DELIMITER $$
 
@@ -1101,6 +1202,7 @@ Select year(a.shipment_date) as SHIP_YEAR,
 'DTS' AS SCHEME,
 b.first_name as FNAME,b.last_name as LNAME,
 a.shipment_date, 
+a.shipment_code, 
 -- spm.shipment_test_report_date as RESPONSEDATE,
 DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
 a.lastdate_response, 
@@ -1129,9 +1231,41 @@ and pmm.dm_id = uId
 union
 
 Select year(a.shipment_date) as SHIP_YEAR,   
+'DBS' AS SCHEME,
+b.first_name as FNAME,b.last_name as LNAME,
+a.shipment_date,
+a.shipment_code, 
+-- spm.shipment_test_report_date as RESPONSEDATE,
+DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
+a.lastdate_response, 
+spm.participant_id as PARTICIPANT_ID,
+spm.evaluation_status as EVALUATIONSTATUS, 
+ a.shipment_id as SHIPID,
+
+	CASE  substr(spm.evaluation_status,2,1)
+	WHEN '1' THEN   'View'
+	WHEN '9' THEN   'Enter Result'
+	END 
+	as 'RESPONSE' ,
+
+
+	CASE  substr(spm.evaluation_status,2,1)
+	WHEN '1' THEN   'Report'
+	END
+	as 'REPORT' 
+from shipment  as a , shipment_participant_map spm, participant as b, participant_manager_map pmm
+where spm.participant_id = b.participant_id
+and a.shipment_id = spm.shipment_id
+and year(a.shipment_date)  + 5 > year(CURDATE())
+and scheme_type = 'dbs'
+and a.status != 'pending'
+and pmm.dm_id = uId
+union
+Select year(a.shipment_date) as SHIP_YEAR,   
 'VL' AS SCHEME,
 b.first_name as FNAME,b.last_name as LNAME,
-a.shipment_date, 
+a.shipment_date,
+a.shipment_code, 
 -- spm.shipment_test_report_date as RESPONSEDATE,
 DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
 a.lastdate_response, 
@@ -1161,7 +1295,8 @@ union
 Select year(a.shipment_date) as SHIP_YEAR,   
 'EID' AS SCHEME,
 b.first_name as FNAME,b.last_name as LNAME,
-a.shipment_date, 
+a.shipment_date,
+a.shipment_code, 
 -- spm.shipment_test_report_date as RESPONSEDATE,
 DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
 a.lastdate_response, 

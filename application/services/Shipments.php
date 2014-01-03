@@ -254,8 +254,50 @@ class Application_Service_Shipments {
 			
 			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid'],$params['hdLastDate']);
 			
-			$eidResponseDb = new Application_Model_DbTable_ResponseDts();
-			$eidResponseDb->updateResults($params);
+			$dtsResponseDb = new Application_Model_DbTable_ResponseDts();
+			$dtsResponseDb->updateResults($params);
+			$db->commit();
+		 
+		} catch (Exception $e) {
+			// If any of the queries failed and threw an exception,
+			// we want to roll back the whole transaction, reversing
+			// changes made in the transaction, even those that succeeded.
+			// Thus all changes are committed together, or none are.
+			$db->rollBack();
+			error_log($e->getMessage());
+			error_log($e->getTraceAsString());
+		}
+		
+	}
+	public function updateDbsResults($params){
+		
+		if(!$this->isShipmentEditable($params['shipmentId'],$params['participantId'])){
+			return false;
+		}		
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		
+		$db->beginTransaction();
+		try {
+			$shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+			$authNameSpace = new Zend_Session_Namespace('datamanagers');
+			$attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
+			$attributes = json_encode($attributes);
+			$data = array(
+						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
+						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
+						  "attributes" => $attributes,
+						  "shipment_test_report_date"=>new Zend_Db_Expr('now()'),
+						  "supervisor_approval"=>$params['supervisorApproval'],
+						  "participant_supervisor"=>$params['participantSupervisor'],
+						  "user_comment"=>$params['userComments'],
+						  "updated_by_user"=>$authNameSpace->dm_id,
+						  "updated_on_user"=>new Zend_Db_Expr('now()')
+						  );
+			
+			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid'],$params['hdLastDate']);
+			
+			$dbsResponseDb = new Application_Model_DbTable_ResponseDbs();
+			$dbsResponseDb->updateResults($params);
 			$db->commit();
 		 
 		} catch (Exception $e) {
@@ -386,6 +428,21 @@ class Application_Service_Shipments {
 			}
 
 		}
+		else if($params['schemeId'] == 'dbs'){
+			for($i = 0;$i < $size;$i++){
+				$dbAdapter->insert('reference_result_dbs',array(
+									'shipment_id'=>$lastId,
+									'sample_id'=>($i+1),
+									'sample_label'=>$params['sampleName'][$i],
+									'reference_result'=>$params['possibleResults'][$i],
+									'control'=>$params['control'][$i],
+									'mandatory'=>$params['mandatory'][$i],
+									'sample_score'=>$params['score'][$i]
+									)
+								  );
+			}
+
+		}
 		
 		$distroService->updateDistributionStatus($params['distribution'],'pending');
 	}
@@ -408,6 +465,8 @@ class Application_Service_Shipments {
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			if($row['scheme_type'] == 'dts'){
 				$db->delete("reference_result_dts",'shipment_id='.$sid);	
+			}else if($row['scheme_type'] == 'dbs'){
+				$db->delete("reference_result_dbs",'shipment_id='.$sid);	
 			}else if($row['scheme_type'] == 'vl'){
 				$db->delete("reference_result_vl",'shipment_id='.$sid);	
 			}else if($row['scheme_type'] == 'eid'){
@@ -450,6 +509,12 @@ class Application_Service_Shipments {
 													->where("s.shipment_id = ?",$sid));
 			$schemeService = new Application_Service_Schemes();
 			$possibleResults = $schemeService->getPossibleResults('dts');		
+		}else if($shipment['scheme_type'] == 'dbs'){			
+			$reference = $db->fetchAll($db->select()->from(array('s'=>'shipment'))
+													->join(array('ref'=>'reference_result_dbs'),'ref.shipment_id=s.shipment_id')
+													->where("s.shipment_id = ?",$sid));
+			$schemeService = new Application_Service_Schemes();
+			$possibleResults = $schemeService->getPossibleResults('dbs');		
 		}
 		else if($shipment['scheme_type'] == 'eid'){			
 			$reference = $db->fetchAll($db->select()->from(array('s'=>'shipment'))
@@ -531,6 +596,20 @@ class Application_Service_Shipments {
 								  );
 			}
 
+		} else if($scheme == 'dbs'){
+			$dbAdapter->delete('reference_result_dbs','shipment_id = '.$params['shipmentId']);
+			for($i = 0;$i < $size;$i++){
+				$dbAdapter->insert('reference_result_dbs',array(
+									'shipment_id'=>$params['shipmentId'],
+									'sample_id'=>($i+1),
+									'sample_label'=>$params['sampleName'][$i],
+									'reference_result'=>$params['possibleResults'][$i],
+									'control'=>$params['control'][$i],
+									'mandatory'=>$params['mandatory'][$i],
+									'sample_score'=>$params['score'][$i]
+									)
+								  );
+			}
 		}
 		
 		$dbAdapter->update('shipment',array('number_of_samples' => $size),'shipment_id = '.$params['shipmentId']);

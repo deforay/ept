@@ -47,7 +47,7 @@ class Application_Service_Distribution {
 			$disrtibutionDb = new Application_Model_DbTable_Distribution();		
 			$disrtibutionDb->updateDistributionStatus($distributionId,"shipped");
 			$db->commit();
-			return "Distribution shipped!";
+			return "PT Event shipped!";
 		}catch(Exception $e){
 			$db->rollBack();
 			error_log($e->getMessage());

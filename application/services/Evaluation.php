@@ -526,6 +526,10 @@ class Application_Service_Evaluation {
 				$possibleResults = $schemeService->getPossibleResults('dts');
 				$evalComments = $schemeService->getSchemeEvaluationComments('dts');
 				$results = $schemeService->getDtsSamples($shipmentId,$participantId);								
+			} else if($scheme == 'dbs'){
+				$possibleResults = $schemeService->getPossibleResults('dbs');
+				$evalComments = $schemeService->getSchemeEvaluationComments('dbs');
+				$results = $schemeService->getDtsSamples($shipmentId,$participantId);								
 			}
 				
 
@@ -545,14 +549,15 @@ class Application_Service_Evaluation {
 			
 			$controlRes = array();
 			$sampleRes = array();
-			
-			foreach($results as $res){
-				if($res['control'] == 1){
-					$controlRes[] = $res;
-				}else{
-					$sampleRes[] = $res;
+			if(isset($results) && count($results)>0){
+				foreach($results as $res){
+					if($res['control'] == 1){
+						$controlRes[] = $res;
+					}else{
+						$sampleRes[] = $res;
+					}
 				}
-			}			
+			}
 			
 			
 
@@ -593,19 +598,25 @@ class Application_Service_Evaluation {
 				$possibleResults = $schemeService->getPossibleResults('dts');
 				$evalComments = $schemeService->getSchemeEvaluationComments('dts');
 				$results = $schemeService->getDtsSamples($shipmentId,$participantId);								
+			}else if($scheme == 'dbs'){
+				$possibleResults = $schemeService->getPossibleResults('dbs');
+				$evalComments = $schemeService->getSchemeEvaluationComments('dbs');
+				$results = $schemeService->getDtsSamples($shipmentId,$participantId);								
 			}
 				
 			
 			$controlRes = array();
 			$sampleRes = array();
 			
-			foreach($results as $res){
-				if($res['control'] == 1){
-					$controlRes[] = $res;
-				}else{
-					$sampleRes[] = $res;
+			if(isset($results) && count($results)>0){
+				foreach($results as $res){
+					if($res['control'] == 1){
+						$controlRes[] = $res;
+					}else{
+						$sampleRes[] = $res;
+					}
 				}
-			}
+			}			
 
 				
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();

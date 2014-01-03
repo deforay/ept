@@ -22,7 +22,8 @@ class ParticipantController extends Zend_Controller_Action
     	
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
     	$this->view->authNameSpace = $authNameSpace;
-    	//echo $authNameSpace->UserID; 
+    	//echo $authNameSpace->UserID;
+		$authNameSpace->dm_id = 1;
     	// get overview Info and pass to view 
     	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
     	$stmt = $db->prepare("call SHIPMENT_OVERVIEW(?)");

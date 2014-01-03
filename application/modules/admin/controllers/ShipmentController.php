@@ -64,6 +64,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $scheme = new Application_Service_Schemes();
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
             }
+            else if($sid == 'dbs'){
+                $scheme = new Application_Service_Schemes();
+                $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
+            }
         }        
     }
 

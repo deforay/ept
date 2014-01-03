@@ -420,7 +420,7 @@ $count = 1;
 <?php
 }
 else{
-	echo "<br/><br/><br/><h4 style='text-align:center;'>VL not yet implemented</h4><br/><br/><br/>";
+	echo "<br/><br/><br/><h4 style='text-align:center;'>Evaluation for this scheme is not yet implemented</h4><br/><br/><br/>";
 }
 
 ?>
@@ -428,8 +428,10 @@ else{
 <?php
 
 	$evalComments = array();
-	foreach($this->evaluateData['evalComments'] as $ec){
-		$evalComments[$ec['comment_id']]= $ec['comment'];
+	if(isset($this->evaluateData['evalComments'])){
+		foreach($this->evaluateData['evalComments'] as $ec){
+			$evalComments[$ec['comment_id']]= $ec['comment'];
+		}
 	}
 
 ?>

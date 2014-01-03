@@ -68,6 +68,10 @@
         <controllerFile controllerName="PtServices">
           <actionMethod actionName="index"/>
         </controllerFile>
+        <controllerFile controllerName="Dbs">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="response"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory enabled="false"/>
       <layoutsDirectory>
@@ -95,6 +99,7 @@
           <dbTableFile dbTableName="Shipments"/>
           <dbTableFile dbTableName="ShipmentParticipantMap"/>
           <dbTableFile dbTableName="ContactUs"/>
+          <dbTableFile dbTableName="ResponseDbs"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>
@@ -437,6 +442,12 @@
           <viewControllerScriptsDirectory forControllerName="PtServices">
             <viewScriptFile forActionName="index"/>
           </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Dbs">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Dbs">
+            <viewScriptFile forActionName="response"/>
+          </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
         <viewFiltersDirectory enabled="false"/>
@@ -503,6 +514,10 @@
           </testApplicationControllerFile>
           <testApplicationControllerFile forControllerName="PtServices">
             <testApplicationActionMethod forActionName="index"/>
+          </testApplicationControllerFile>
+          <testApplicationControllerFile forControllerName="Dbs">
+            <testApplicationActionMethod forActionName="index"/>
+            <testApplicationActionMethod forActionName="response"/>
           </testApplicationControllerFile>
         </testApplicationControllerDirectory>
         <testApplicationModulesDirectory>
