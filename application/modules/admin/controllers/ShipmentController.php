@@ -51,6 +51,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             
             $this->view->scheme = $sid = strtolower($this->_getParam('sid'));
+                          
             if($sid == 'vl'){
                 $scheme = new Application_Service_Schemes();
                 $this->view->vlControls = $scheme->getSchemeControls($sid);
@@ -63,10 +64,15 @@ class Admin_ShipmentController extends Zend_Controller_Action
             else if($sid == 'dts'){
                 $scheme = new Application_Service_Schemes();
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
+                $this->view->allTestKits = $scheme->getAllDtsTestKit();    
             }
             else if($sid == 'dbs'){
                 $scheme = new Application_Service_Schemes();
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
+                
+                
+                $this->view->wb = $scheme->getDbsWb();
+                $this->view->eia = $scheme->getDbsEia();
             }
         }        
     }
@@ -117,6 +123,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $sid = (int)base64_decode($this->_getParam('sid'));
                 $shipmentService = new Application_Service_Shipments();
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
+                $schemeService = new Application_Service_Schemes();
+                $this->view->wb = $schemeService->getDbsWb();
+                $this->view->eia = $schemeService->getDbsEia();
+                $this->view->allTestKits = $schemeService->getAllDtsTestKit();
                 if($response === false){
                     $this->_redirect("/admin/shipment");        
                 }

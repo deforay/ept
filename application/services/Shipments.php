@@ -417,8 +417,12 @@ class Application_Service_Shipments {
 			for($i = 0;$i < $size;$i++){
 				$dbAdapter->insert('reference_result_dts',array(
 									'shipment_id'=>$lastId,
+									'test_kit_name'=>$params['test_kit_name'],
+									'lot'=>$params['lot'],
+									'exp_date'=>Pt_Commons_General::dateFormat($params['exp_date']),									
 									'sample_id'=>($i+1),
 									'sample_label'=>$params['sampleName'][$i],
+									'test_result'=>$params['possibleTestResults'][$i],
 									'reference_result'=>$params['possibleResults'][$i],
 									'control'=>$params['control'][$i],
 									'mandatory'=>$params['mandatory'][$i],
@@ -586,8 +590,12 @@ class Application_Service_Shipments {
 			for($i = 0;$i < $size;$i++){
 				$dbAdapter->insert('reference_result_dts',array(
 									'shipment_id'=>$params['shipmentId'],
+									'test_kit_name'=>$params['test_kit_name'],
+									'lot'=>$params['lot'],
+									'exp_date'=>Pt_Commons_General::dateFormat($params['exp_date']),
 									'sample_id'=>($i+1),
 									'sample_label'=>$params['sampleName'][$i],
+									'test_result'=>$params['possibleTestResults'][$i],
 									'reference_result'=>$params['possibleResults'][$i],
 									'control'=>$params['control'][$i],
 									'mandatory'=>$params['mandatory'][$i],
@@ -601,11 +609,16 @@ class Application_Service_Shipments {
 			for($i = 0;$i < $size;$i++){
 				$dbAdapter->insert('reference_result_dbs',array(
 									'shipment_id'=>$params['shipmentId'],
+									'eia'=>$params['eia'],
+									'lot'=>$params['lot'],
+									'exp_date'=>Pt_Commons_General::dateFormat($params['exp_date']),
 									'sample_id'=>($i+1),
 									'sample_label'=>$params['sampleName'][$i],
 									'reference_result'=>$params['possibleResults'][$i],
 									'control'=>$params['control'][$i],
 									'mandatory'=>$params['mandatory'][$i],
+									'od'=>$params['od'][$i],
+									'cutoff'=>$params['cutoff'][$i],
 									'sample_score'=>$params['score'][$i]
 									)
 								  );

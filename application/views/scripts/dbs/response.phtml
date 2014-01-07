@@ -27,9 +27,9 @@
 <table>
 	<tr class="dark">
 		<td>Shipment Date</td>
-		<td><?php echo ($this->shipment['shipment_date']);?></td>
+		<td><?php echo $this->dateFormat($this->shipment['shipment_date']);?></td>
 		<td>Last Response Date <?php  ?></td>
-		<td><?php echo ($this->shipment['lastdate_response']);?> </td>
+		<td><?php echo $this->dateFormat($this->shipment['lastdate_response']);?> </td>
 	</tr>
 	
 	
@@ -157,15 +157,70 @@
 		<td><input type="text" size="5" name="cutoff_2[]" id="cutoff_2" value="<?php echo $sample['cutoff_2']; ?>"/></td>
 		<td><input type="text" size="5" name="od_3[]" id="od_3" value="<?php echo $sample['od_3']; ?>"/></td>
 		<td><input type="text" size="5" name="cutoff_3[]" id="cutoff_3" value="<?php echo $sample['cutoff_3']; ?>"/></td>
-		<td><input type="text" size="5" name="wb_160[]" id="wb_160" value="<?php echo $sample['wb_160']; ?>"/></td>
-		<td><input type="text" size="5" name="wb_120[]" id="wb_120" value="<?php echo $sample['wb_120']; ?>"/></td>
-		<td><input type="text" size="5" name="wb_66[]" id="wb_66" value="<?php echo $sample['wb_66']; ?>"/></td>
-		<td><input type="text" size="5" name="wb_55[]" id="wb_55" value="<?php echo $sample['wb_55']; ?>"/></td>
-		<td><input type="text" size="5" name="wb_51[]" id="wb_51" value="<?php echo $sample['wb_51']; ?>"/></td>
-		<td><input type="text" size="5" name="wb_41[]" id="wb_41" value="<?php echo $sample['wb_41']; ?>"/></td>
-		<td><input type="text" size="5" name="wb_31[]" id="wb_31" value="<?php echo $sample['wb_31']; ?>"/></td>
-		<td><input type="text" size="5" name="wb_24[]" id="wb_24" value="<?php echo $sample['wb_24']; ?>"/></td>
-		<td><input type="text" size="5" name="wb_17[]" id="wb_17" value="<?php echo $sample['wb_17']; ?>"/></td>
+		
+		<td>
+			<select name="wb_160[]" id="wb_160" style="width:42px;font-weight:bold;">
+				<option value=""></option>
+				<option value="1" <?php echo (isset($sample['wb_160']) && $sample['wb_160'] == 1) ? "selected='selected'" : ""; ?>>+</option>
+				<option value="0" <?php echo (isset($sample['wb_160']) && $sample['wb_160'] == 0) ? "selected='selected'" : ""; ?>>-</option>
+			</select>
+		</td>
+		<td>
+			<select name="wb_120[]" id="wb_120" style="width:42px;font-weight:bold;">
+				<option value=""></option>
+				<option value="1" <?php echo (isset($sample['wb_120']) && $sample['wb_120'] == 1) ? "selected='selected'" : ""; ?>>+</option>
+				<option value="0" <?php echo (isset($sample['wb_120']) && $sample['wb_120'] == 0) ? "selected='selected'" : ""; ?>>-</option>
+			</select>			
+		</td>
+		<td>
+			<select name="wb_66[]" id="wb_66" style="width:42px;font-weight:bold;">
+				<option value=""></option>
+				<option value="1" <?php echo (isset($sample['wb_66']) && $sample['wb_66'] == 1) ? "selected='selected'" : ""; ?>>+</option>
+				<option value="0" <?php echo (isset($sample['wb_66']) && $sample['wb_66'] == 0) ? "selected='selected'" : ""; ?>>-</option>
+			</select>
+		</td>
+		<td>
+			<select name="wb_55[]" id="wb_55" style="width:42px;font-weight:bold;">
+				<option value=""></option>
+				<option value="1" <?php echo (isset($sample['wb_55']) && $sample['wb_55'] == 1) ? "selected='selected'" : ""; ?>>+</option>
+				<option value="0" <?php echo (isset($sample['wb_55']) && $sample['wb_55'] == 0) ? "selected='selected'" : ""; ?>>-</option>
+			</select>
+		</td>
+		<td>
+			<select name="wb_51[]" id="wb_51" style="width:42px;font-weight:bold;">
+				<option value=""></option>
+				<option value="1" <?php echo (isset($sample['wb_51']) && $sample['wb_51'] == 1) ? "selected='selected'" : ""; ?>>+</option>
+				<option value="0" <?php echo (isset($sample['wb_51']) && $sample['wb_51'] == 0) ? "selected='selected'" : ""; ?>>-</option>
+			</select>
+		</td>
+		<td>
+			<select name="wb_41[]" id="wb_41" style="width:42px;font-weight:bold;">
+				<option value=""></option>
+				<option value="1" <?php echo (isset($sample['wb_41']) && $sample['wb_41'] == 1) ? "selected='selected'" : ""; ?>>+</option>
+				<option value="0" <?php echo (isset($sample['wb_41']) && $sample['wb_41'] == 0) ? "selected='selected'" : ""; ?>>-</option>
+			</select>
+		</td>
+		<td>
+			<select name="wb_31[]" id="wb_31" style="width:42px;font-weight:bold;">
+				<option value=""></option>
+				<option value="1" <?php echo (isset($sample['wb_31']) && $sample['wb_31'] == 1) ? "selected='selected'" : ""; ?>>+</option>
+				<option value="0" <?php echo (isset($sample['wb_31']) && $sample['wb_31'] == 0) ? "selected='selected'" : ""; ?>>-</option>
+			</select>
+		</td>
+		<td>
+			<select name="wb_24[]" id="wb_24" style="width:42px;font-weight:bold;">
+				<option value=""></option>
+				<option value="1" <?php echo (isset($sample['wb_24']) && $sample['wb_24'] == 1) ? "selected='selected'" : ""; ?>>+</option>
+				<option value="0" <?php echo (isset($sample['wb_24']) && $sample['wb_24'] == 0) ? "selected='selected'" : ""; ?>>-</option>
+			</select>
+		</td>
+		<td>
+			<select name="wb_17[]" id="wb_17" style="width:42px;font-weight:bold;">
+				<option value=""></option>
+				<option value="1" <?php echo (isset($sample['wb_17']) && $sample['wb_17'] == 1) ? "selected='selected'" : ""; ?>>+</option>
+				<option value="0" <?php echo (isset($sample['wb_17']) && $sample['wb_17'] == 0) ? "selected='selected'" : ""; ?>>-</option>
+			</select>
+		</td>
 
 		<td>
         <select name="reported_result[]" id="<?php echo "testresultf_" . $count ; ?>" style="width: 150px" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" >

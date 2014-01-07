@@ -10,7 +10,7 @@
 
 
 		
-<form name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>">
+<form name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>" onsubmit="validateLogin();return false;">
 
     <table style="width: 60%;margin: auto;" cellspacing="15" cellpadding="15">
 		<tr>
@@ -48,7 +48,7 @@
 							<td style="padding-top:3px;" align="center">
 								<input type="text" style="margin:0;width:200px;padding:3px;margin-top:8px" id="challengeResponse" placeholder="Enter text from image on left" class="isRequired" title="Please enter the text from the image." maxlength="40">
 									<br/>
-								<button onclick="getCaptcha('capChaw');return false;" class="button button-rounded button-small" style="font-size:12px;margin:5px;"><i class="icon-refresh icon-white"></i> Get New Image</button>
+								<a onclick="getCaptcha('capChaw');return false;" style="cursor:pointer;font-size:12px;margin:5px;"><i class="icon-refresh icon-white"></i> Get New Image</a>
 							</td>
 							
 						</tr>
@@ -58,7 +58,8 @@
 		</tr>
 		<tr>
 			<td colspan="2" align="center">
-				<button class="button button-rounded button-primary" onclick="validateLogin();return false;">Login</button>
+				
+				<input type="submit" class="btn btn-lg btn-primary btn-block" value="Sign in"/>
 				<a href="/auth/reset-password" style="font-size:0.8em;color:red;">Forgot Password ?</a>
 				<br/><br/>
 				<a href="/contact-us" style="">Don't have a login ? Click here to contact us</a>
