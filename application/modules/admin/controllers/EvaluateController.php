@@ -90,8 +90,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $this->_redirect("/admin/evaluate/shipment/sid/$shipmentId");    
             }
             
-            
-            
         }else{
             if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){
                 
@@ -107,9 +105,14 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
                     
                 }
-                if($scheme == 'dts'){
+                else if($scheme == 'dts'){
                     $schemeService = new Application_Service_Schemes(); 
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();                    
+                }
+                else if($scheme == 'dbs'){
+                    $schemeService = new Application_Service_Schemes(); 
+                    $this->view->wb = $schemeService->getDbsWb();
+                    $this->view->eia = $schemeService->getDbsEia();              
                 }
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sid,$pid,$scheme);

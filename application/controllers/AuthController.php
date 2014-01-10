@@ -70,7 +70,7 @@ class AuthController extends Zend_Controller_Action
     {
         Zend_Auth::getInstance()->clearIdentity();
         Zend_Session::destroy();
-        $this->_redirect('/index/index');
+        $this->_redirect('/');
     }
 
     public function resetPasswordAction()

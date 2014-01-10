@@ -20,37 +20,11 @@
 	$possibleResults .= "</select>";
 	
 ?>
-
-
-<div class="form-group">
-		<label class="col-lg-3 control-label">TestKit </label>
-	
-		<div class="col-lg-5">
-			<select name="test_kit_name" id="test_kit_name"  class ='form-control isRequired'  title="Please Choose Test Kit">
-				<?php echo $this->dropdownSelection($this->allTestKits,'',true); ?>
-			</select>						   
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="col-lg-3 control-label">Lot Number </label>
-	
-		<div class="col-lg-5">
-			<input type='text' name="lot" id="lot" class ='form-control' />
-		</div>
-	</div>	
-	<div class="form-group">
-		<label class="col-lg-3 control-label">Expiry Date </label>
-	
-		<div class="col-lg-5">
-			<input type='text' name="exp_date" id="exp_date" class ='form-control datepicker' />
-		</div>
-	</div>
 	
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 	<thead>
 		<tr align="center">
 			<th style="width:25%;text-align: center;">Sample</th>
-			<th style="text-align: center;">Test Result</th>
 			<th style="text-align: center;">Final Result</th>
 			<th style="width:10%;text-align: center;">Control ?</th>
 			<th style="text-align: center;">Mandatory ?</th>
@@ -64,9 +38,6 @@
 				<td style="text-align: center">
 					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/>
 					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
-				</td>
-				<td>
-					<?php echo $possibleTestResults; ?>
 				</td>
 				<td>
 					<?php echo $possibleResults; ?>
@@ -103,9 +74,6 @@
 				<td style="text-align: center"> \
 					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
 				</td>  \
-				<td> \
-					<?php echo $possibleTestResults; ?> \
-				</td>\
 				<td> \
 					<?php echo $possibleResults; ?> \
 				</td>\
