@@ -6,19 +6,34 @@ $possibleResults ='<select name="possibleResults[]" class="isRequired form-contr
 		}
 	}
 	
-	$possibleResults .= "</select>";
-	
-	?>
-			
+$possibleResults .= "</select>";
+
+$eiaChoices ='<option value="">--Select--</option>';
+foreach($this->eia as $eiaId => $eiaName){
+	$eiaChoices .= '<option value="'.$eiaId.'">'.$eiaName.'</option>';
+}
+
+
+$vHelper = $this->getHelper('DateFormat');
+$dtFormat=  $vHelper->getDateFormat();
+?>
+<style type="text/css">
+	.modal-scrollable{
+		z-index: 1000 !important;
+	}
+	.modal-backdrop{
+		z-index: 900 !important;
+	}
+</style>
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 	<thead>
 		<tr align="center">
-			<th style="width:25%;text-align: center;">Sample</th>
-			<th style="text-align: center;">Final Result</th>
+			<th style="width:20%;text-align: center;">Sample</th>
+			<th style="width:10%;text-align: center;">Final Result</th>
 			<th style="width:10%;text-align: center;">Control ?</th>
-			<th style="text-align: center;">Mandatory ?</th>
-			<th style="width:10%;text-align: center;">Score</th>			
-			<th style="width:15%;text-align: center;">Add/Remove Row</th>
+			<th style="width:10%;text-align: center;">Mandatory ?</th>
+			<th style="width:10%;text-align: center;">Score</th>
+			<th style="width:20%;text-align: center;">Options</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -49,15 +64,22 @@ $possibleResults ='<select name="possibleResults[]" class="isRequired form-contr
 					<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" />
 				</td>
 				<td>
-					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+					<a data-toggle="modal" href="#sampleEia1" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> EIA </a>
+					<a data-toggle="modal" href="#responsive2" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> WB</a>
+					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i>Sample/Control</a>
+					
 				</td>
 			</tr>
 	</tbody>
 </table>
 <br>
+<div id="eiaBlockHolder">
 
+</div> <!-- eiaBlockHolder -->
 <script type="text/javascript">
-	function addDtsRow(obj) {
+	var sampleCounter = 1;
+	function addDbsRow(obj) {
+		sampleCounter++;
 		//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
 		$(obj.parentNode.parentNode).after('<tr align="center"> \
 				<td style="text-align: center"> \
@@ -76,14 +98,88 @@ $possibleResults ='<select name="possibleResults[]" class="isRequired form-contr
 				</td> \
 				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 				<td> \
-					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a> \
+					<a data-toggle="modal" href="#sampleEia'+sampleCounter+'" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> EIA </a> \
+					<a data-toggle="modal" href="#sampleWb'+sampleCounter+'" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> WB </a> \
+					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
 					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 				</td> \
 			</tr>');
+		addNewEiaBlock(sampleCounter);
 	}
+	
 	function removeRow(obj) {
 		$(obj.parentNode.parentNode).fadeOut("normal",function(){
 			$(this).remove();
 		});
-	}	
+	}
+	
+	function addNewEiaBlock(sampleId) {
+		$("#eiaBlockHolder").after('<div id="sampleEia'+sampleId+'" class="modal fade" tabindex="-1" data-width="860" style="display: none;">\
+				  <div class="modal-header">\
+					<h4 class="modal-title">EIA</h4>\
+				  </div>\
+				  <div class="modal-body">\
+					<div class="row">\
+					  <div >\
+						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
+							<thead>\
+								<tr align="center">\
+									<th style="width:20%;text-align: center;">EIA</th>\
+									<th style="width:10%;text-align: center;">Lot</th>\
+									<th style="width:12%;text-align: center;">Expiry</th>\
+									<th style="width:10%;text-align: center;">OD</th>\
+									<th style="width:10%;text-align: center;">Cutoff</th>\
+									<th style="width:10%;text-align: center;">Options</th>\
+								</tr>\
+							</thead>\
+							<tbody>\
+								<tr>\
+									<td><select class="form-control" name="eia['+sampleId+'][eia][]"><?php echo $eiaChoices; ?></select></td>\
+									<td><input type="text" name="eia['+sampleId+'][lot][]" class="form-control"/></td>\
+									<td><input type="text" name="eia['+sampleId+'][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
+									<td><input type="text" name="eia['+sampleId+'][od][]" class="form-control"/></td>\
+									<td><input type="text" name="eia['+sampleId+'][cutoff][]" class="form-control"/></td>\
+									<td>\
+										<a href="javascript:void(0);" onclick="addNewEiaRow(this,'+sampleId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+									</td>\
+								</tr>\
+							</tbody>\
+						</table>\
+					  </div>\
+					</div>\
+				  </div>\
+				  <div class="modal-footer">\
+					<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>\
+				  </div>\
+				</div>');
+		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+		
+	}
+	
+	function addNewEiaRow(obj,sampleId) {
+		$(obj.parentNode.parentNode).after('<tr> \
+							<td><select class="form-control" name="eia['+sampleId+'][eia][]"><?php echo $eiaChoices; ?></select></td> \
+							<td><input type="text" name="eia['+sampleId+'][lot][]" class="form-control"/></td> \
+							<td><input type="text" name="eia['+sampleId+'][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
+							<td><input type="text" name="eia['+sampleId+'][od][]" class="form-control"/></td> \
+							<td><input type="text" name="eia['+sampleId+'][cutoff][]" class="form-control"/></td> \
+							<td> \
+								<a href="javascript:void(0);" onclick="addNewEiaRow(this,'+sampleId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
+								<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+							</td> \
+						</tr>');
+		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+	}
+	
+	function removeDbsRow(obj,sampleId) {
+		$(obj.parentNode.parentNode).fadeOut("normal",function(){
+			$(this).remove();
+			$('#sampleEia'+sampleId).remove();
+		});
+	}
+	
+	$(document).ready(function(){
+		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+		addNewEiaBlock('1');
+	});
 </script>

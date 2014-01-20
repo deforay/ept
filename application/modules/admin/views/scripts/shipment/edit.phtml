@@ -2,8 +2,17 @@
 
 //Zend_Debug::dump($this->shipmentData);
 $shipmentData = $this->shipmentData;
-
+$vHelper = $this->getHelper('DateFormat');
+$dtFormat=  $vHelper->getDateFormat();
 ?>
+<style type="text/css">
+	.modal-scrollable{
+		z-index: 1000 !important;
+	}
+	.modal-backdrop{
+		z-index: 900 !important;
+	}
+</style>
 <div class="well">
 	<fieldset>
 		<legend>Update Shipment Sample Details - <?php echo $shipmentData['shipment']['shipment_code']; ?></legend>
@@ -174,14 +183,16 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 	$possibleResults .= "</select>";
 	$eiaChoices ='<option value="">--Select--</option>';
 	foreach($this->eia as $eiaId => $eiaName){
-			$eiaChoices .= '<option value="'.$eiaId.'">'.$eiaName.'</option>';
+		$eiaChoices .= '<option value="'.$eiaId.'">'.$eiaName.'</option>';
+	}
+	$allEia=array();
+	foreach($shipmentData['eia'] as $eia){
+		$allEia[]=$eia['sample_id'];
 	}
 	
-
-	
 	?>
-	
-	
+
+
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="dbsSampleTable">
 	<thead>
 		<tr align="center">
@@ -248,6 +259,76 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 					?>
 				</td>
 			</tr>
+			<tr>
+				<td colspan="6">
+					<div id="sampleEia<?php echo $reference['sample_id'];?>" class="modal fade" tabindex="-1" data-width="860" style="display: none;">
+						<div class="modal-header">
+						      <h4 class="modal-title">EIA</h4>
+						</div>
+						<div class="modal-body">
+						      <div class="row">
+							      <div>
+								      <table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">
+									      <thead>
+										      <tr align="center">
+											      <th style="width:20%;text-align: center;">EIA</th>
+											      <th style="width:10%;text-align: center;">Lot</th>
+											      <th style="width:12%;text-align: center;">Expiry</th>
+											      <th style="width:10%;text-align: center;">OD</th>
+											      <th style="width:10%;text-align: center;">Cutoff</th>
+											      <th style="width:10%;text-align: center;">Options</th>
+										      </tr>
+									      </thead>
+									      <tbody>
+										      <?php
+											if (in_array($reference['sample_id'], $allEia)){
+												$k=0;
+											foreach($shipmentData['eia'] as $eia){
+												//if($eia['sample_id']==$reference['sample_id']){
+										      ?>
+										      <tr>
+											      <td><select class="form-control" name="eia[<?php echo $eia['sample_id'];?>][eia][]" id="sample<?php echo $eia['sample_id'];?>-eia-eia"><?php $this->dropdownSelection($this->eia,$eia['eia'],true); ?></select></td>
+											      <td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][lot][]" id="sample<?php echo $eia['sample_id'];?>-eia-lot" class="form-control" value="<?php echo $eia['lot']; ?>"/></td>
+											      <td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][expiry][]" id="sample<?php echo $eia['sample_id'];?>-eia-expiry" class="form-control datepicker" readonly="readonly" value="<?php echo $this->dateFormat($eia['exp_date']); ?>"/></td>
+											      <td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][od][]" id="sample<?php echo $eia['sample_id'];?>-eia-od" class="form-control" value="<?php echo $eia['od']; ?>"/></td>
+											      <td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][cutoff][]" id="sample<?php echo $eia['sample_id'];?>-eia-cutoff" class="form-control" value="<?php echo $eia['cutoff']; ?>"/></td>
+											      <td>
+												      <a href="javascript:void(0);" onclick="addNewEiaRow(this,<?php echo $eia['sample_id'];?>)" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>
+												      <?php
+												      if($k > 0){
+												      ?>
+												      <a href="javascript:void(0);" onclick="removeDbsRow(this,'<?php echo $eia['sample_id'];?>')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+												      <?php } ?>
+											      </td>
+										      </tr>
+										      <?php
+												//}
+												$k++;
+											}
+											}else{
+										      ?>
+										      <tr>
+											      <td><select class="form-control" name="eia[<?php echo $reference['sample_id'];?>][eia][]" id="sample<?php echo $reference['sample_id'];?>-eia-eia"><?php echo $eiaChoices; ?></select></td>
+											      <td><input type="text" name="eia[<?php echo $reference['sample_id'];?>][lot][]" id="sample<?php echo $eia['sample_id'];?>-eia-lot" class="form-control" value=""/></td>
+											      <td><input type="text" name="eia[<?php echo $reference['sample_id'];?>][expiry][]" id="sample<?php echo $eia['sample_id'];?>-eia-expiry" class="form-control datepicker" readonly="readonly" value=""/></td>
+											      <td><input type="text" name="eia[<?php echo $reference['sample_id'];?>][od][]" id="sample<?php echo $eia['sample_id'];?>-eia-od" class="form-control" value=""/></td>
+											      <td><input type="text" name="eia[<?php echo $reference['sample_id'];?>][cutoff][]" id="sample<?php echo $eia['sample_id'];?>-eia-cutoff" class="form-control" value=""/></td>
+											      <td>
+												      <a href="javascript:void(0);" onclick="addNewEiaRow(this,<?php echo $reference['sample_id'];?>)" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>
+											      </td>
+										      </tr>
+										      <?php } ?>
+									      </tbody>
+								      </table>
+							      </div>
+						      </div>
+						</div>
+						<div class="modal-footer">
+						      <button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>
+						</div>
+					</div>
+				</td>
+			</tr>
 		 <?php
 		 $counter++;
 		 }
@@ -256,57 +337,22 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 </table>
 <br>
 <div id="eiaBlockHolder">
-<?php
-foreach($shipmentData['eia'] as $eia){
-	
-	//Zend_Debug::dump($reference);
-	
-	?>
-				<div id="sampleEia<?php echo $eia['sample_id'];?>" class="modal fade" tabindex="-1" data-width="860" style="display: none;">
-				  <div class="modal-header">
-					<h4 class="modal-title">EIA</h4>
-				  </div>
-				  <div class="modal-body">
-					<div class="row">
-					  <div >
-						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">
-							<thead>
-								<tr align="center">
-									<th style="width:20%;text-align: center;">EIA</th>
-									<th style="width:10%;text-align: center;">Lot</th>
-									<th style="width:10%;text-align: center;">Expiry</th>
-									<th style="width:10%;text-align: center;">OD</th>
-									<th style="width:10%;text-align: center;">Cutoff</th>
-									<th style="width:10%;text-align: center;">Options</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td><select class="form-control" name="eia[<?php echo $eia['sample_id'];?>][eia][]" id="sample<?php echo $eia['sample_id'];?>-eia-eia"><?php $this->dropdownSelection($this->eia,$eia['eia'],true); ?></select></td>
-									<td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][lot][]" id="sample<?php echo $eia['sample_id'];?>-eia-lot" class="form-control"/></td>
-									<td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][expiry][]" id="sample<?php echo $eia['sample_id'];?>-eia-expiry" class="form-control datepicker"/></td>
-									<td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][od][]" id="sample<?php echo $eia['sample_id'];?>-eia-od" class="form-control"/></td>
-									<td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][cutoff][]" id="sample<?php echo $eia['sample_id'];?>-eia-cutoff" class="form-control"/></td>
-									<td>
-										<a href="javascript:void(0);" onclick="addNewEiaRow(this,<?php echo $eia['sample_id'];?>)" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					  </div>
-					</div>
-				  </div>
-				  <div class="modal-footer">
-					<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>
-				  </div>
-				</div>
-<?php } ?>
-			</div> <!-- eiaBlockHolder -->
+
+</div> <!-- eiaBlockHolder -->
 
 <script type="text/javascript">
 	var sampleCounter = 0;
+	
 	$(document).ready(function(){
 		sampleCounter = $("#dbsSampleTable tbody tr").length;
+		<?php
+		$i=1;
+		foreach($shipmentData['reference'] as $reference){
+		?>
+		addNewEiaBlock('<?php echo $i; ?>');
+		<?php
+		$i++;
+		} ?>
 	})
 	function addDbsRow(obj) {
 		sampleCounter++;
@@ -335,12 +381,13 @@ foreach($shipmentData['eia'] as $eia){
 				</td> \
 			</tr>');
 		addNewEiaBlock(sampleCounter);
+		
 	}
 	function addNewEiaRow(obj,sampleId) {
 		$(obj.parentNode.parentNode).after('<tr> \
 									<td><select class="form-control" name="eia['+sampleId+'][eia][]"><?php echo $eiaChoices; ?></select></td> \
 									<td><input type="text" name="eia['+sampleId+'][lot][]" class="form-control"/></td> \
-									<td><input type="text" name="eia['+sampleId+'][expiry][]" class="form-control datepicker"/></td> \
+									<td><input type="text" name="eia['+sampleId+'][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
 									<td><input type="text" name="eia['+sampleId+'][od][]" class="form-control"/></td> \
 									<td><input type="text" name="eia['+sampleId+'][cutoff][]" class="form-control"/></td> \
 									<td> \
@@ -348,6 +395,7 @@ foreach($shipmentData['eia'] as $eia){
 										<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 									</td> \
 								</tr>');
+		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 	}
 	function addNewEiaBlock(sampleId) {
 		$("#eiaBlockHolder").after('<div id="sampleEia'+sampleId+'" class="modal fade" tabindex="-1" data-width="860" style="display: none;">\
@@ -362,10 +410,10 @@ foreach($shipmentData['eia'] as $eia){
 								<tr align="center">\
 									<th style="width:20%;text-align: center;">EIA</th>\
 									<th style="width:10%;text-align: center;">Lot</th>\
-									<th style="width:10%;text-align: center;">Expiry</th>\
+									<th style="width:12%;text-align: center;">Expiry</th>\
 									<th style="width:10%;text-align: center;">OD</th>\
 									<th style="width:10%;text-align: center;">Cutoff</th>\
-									<th style="width:20%;text-align: center;">Options</th>\
+									<th style="width:10%;text-align: center;">Options</th>\
 								</tr>\
 							</thead>\
 							<tbody>\
@@ -388,6 +436,7 @@ foreach($shipmentData['eia'] as $eia){
 					<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>\
 				  </div>\
 				</div>');
+		
 	}
 	function removeRow(obj) {
 		$(obj.parentNode.parentNode).fadeOut("normal",function(){
@@ -674,7 +723,7 @@ $vHelper = $this->getHelper('DateFormat');
 $dtFormat=  $vHelper->getDateFormat();
 ?>	
 	$(document).ready(function(){
-		 $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 		$("body").on("change",'select.controlOrNot',function(){
 			var scoreElem = $(this).parent().parent().find('.score');
 			if ($(this).val() == 1) {
