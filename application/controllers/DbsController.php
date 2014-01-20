@@ -31,7 +31,7 @@ class DbsController extends Zend_Controller_Action
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
 			$response =$schemeService->getDbsSamples($sID,$pID);
-            Zend_Debug::dump($response);
+            //Zend_Debug::dump($response);
 			$this->view->allSamples = $response;
 			
 			$shipment = $schemeService->getShipmentData($sID,$pID);

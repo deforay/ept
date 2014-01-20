@@ -502,7 +502,8 @@ class Application_Service_Shipments {
 									 ->where("s.shipment_id = ?",$sid));
 		
 	
-		
+		$eia = '';
+		$wb = '';
 		if($shipment['scheme_type'] == 'dts'){			
 			$reference = $db->fetchAll($db->select()->from(array('s'=>'shipment'))
 													->join(array('ref'=>'reference_result_dts'),'ref.shipment_id=s.shipment_id')
@@ -514,7 +515,11 @@ class Application_Service_Shipments {
 													->join(array('ref'=>'reference_result_dbs'),'ref.shipment_id=s.shipment_id')
 													->where("s.shipment_id = ?",$sid));
 			$schemeService = new Application_Service_Schemes();
-			$possibleResults = $schemeService->getPossibleResults('dbs');		
+			$possibleResults = $schemeService->getPossibleResults('dbs');
+			
+			$eia = $db->fetchAll($db->select()->from('reference_dbs_eia')->where("shipment_id = ?",$sid));			
+			//$wb = $db->fetchAll($db->select()->from('reference_dbs_wb')->where("shipment_id = ?",$sid));			
+			
 		}
 		else if($shipment['scheme_type'] == 'eid'){			
 			$reference = $db->fetchAll($db->select()->from(array('s'=>'shipment'))
@@ -532,12 +537,12 @@ class Application_Service_Shipments {
 			return false;
 		}
 		
-		return array('shipment'=>$shipment, 'reference'=>$reference,'possibleResults'=>$possibleResults);
+		return array('shipment'=>$shipment, 'reference'=>$reference,'possibleResults'=>$possibleResults , 'eia' => $eia , 'wb' => $wb);
 		
 	}
 	
 	
-		public function updateShipment($params){
+	public function updateShipment($params){
 		//Zend_Debug::dump($params);die;
 		
 		

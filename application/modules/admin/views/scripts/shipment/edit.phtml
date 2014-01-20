@@ -164,7 +164,7 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 	
 	
-		$possibleResults ='<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
+	$possibleResults ='<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 	foreach($shipmentData['possibleResults'] as $pr){
 		if($pr['scheme_sub_group'] == 'DBS_FINAL'){
 			$possibleResults .= '<option value="'.$pr['id'].'">'.$pr['response'].'</option>';
@@ -172,19 +172,25 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 	}
 	
 	$possibleResults .= "</select>";
+	$eiaChoices ='<option value="">--Select--</option>';
+	foreach($this->eia as $eiaId => $eiaName){
+			$eiaChoices .= '<option value="'.$eiaId.'">'.$eiaName.'</option>';
+	}
+	
+
 	
 	?>
 	
 	
-<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="dbsSampleTable">
 	<thead>
 		<tr align="center">
-			<th style="width:25%;text-align: center;">Sample</th>
+			<th style="width:20%;text-align: center;">Sample</th>
 			<th style="width:10%;text-align: center;">Final Result</th>
 			<th style="width:10%;text-align: center;">Control ?</th>
 			<th style="width:10%;text-align: center;">Mandatory ?</th>
 			<th style="width:10%;text-align: center;">Score</th>
-			<th style="width:10%;text-align: center;">Add/Remove Row</th>
+			<th style="width:20%;text-align: center;">Options</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -230,11 +236,13 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 					<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample"  value="<?php echo $reference['sample_score'];?>" />
 				</td>
 				<td>
-					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+					<a data-toggle="modal" href="#sampleEia<?php echo $reference['sample_id'];?>" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> EIA </a>
+					<a data-toggle="modal" href="#responsive2" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> WB</a>
+					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a>
 					<?php
 					if($counter > 1){
 						?>
-						<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+						<a  href="javascript:void(0);" onclick="removeDbsRow(this,<?php echo $reference['sample_id'];?>)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
 						<?php
 					}
 					?>
@@ -247,9 +255,61 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 	</tbody>
 </table>
 <br>
+<div id="eiaBlockHolder">
+<?php
+foreach($shipmentData['eia'] as $eia){
+	
+	//Zend_Debug::dump($reference);
+	
+	?>
+				<div id="sampleEia<?php echo $eia['sample_id'];?>" class="modal fade" tabindex="-1" data-width="860" style="display: none;">
+				  <div class="modal-header">
+					<h4 class="modal-title">EIA</h4>
+				  </div>
+				  <div class="modal-body">
+					<div class="row">
+					  <div >
+						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">
+							<thead>
+								<tr align="center">
+									<th style="width:20%;text-align: center;">EIA</th>
+									<th style="width:10%;text-align: center;">Lot</th>
+									<th style="width:10%;text-align: center;">Expiry</th>
+									<th style="width:10%;text-align: center;">OD</th>
+									<th style="width:10%;text-align: center;">Cutoff</th>
+									<th style="width:10%;text-align: center;">Options</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><select class="form-control" name="eia[<?php echo $eia['sample_id'];?>][eia][]" id="sample<?php echo $eia['sample_id'];?>-eia-eia"><?php $this->dropdownSelection($this->eia,$eia['eia'],true); ?></select></td>
+									<td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][lot][]" id="sample<?php echo $eia['sample_id'];?>-eia-lot" class="form-control"/></td>
+									<td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][expiry][]" id="sample<?php echo $eia['sample_id'];?>-eia-expiry" class="form-control datepicker"/></td>
+									<td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][od][]" id="sample<?php echo $eia['sample_id'];?>-eia-od" class="form-control"/></td>
+									<td><input type="text" name="eia[<?php echo $eia['sample_id'];?>][cutoff][]" id="sample<?php echo $eia['sample_id'];?>-eia-cutoff" class="form-control"/></td>
+									<td>
+										<a href="javascript:void(0);" onclick="addNewEiaRow(this,<?php echo $eia['sample_id'];?>)" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					  </div>
+					</div>
+				  </div>
+				  <div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>
+				  </div>
+				</div>
+<?php } ?>
+			</div> <!-- eiaBlockHolder -->
 
 <script type="text/javascript">
-	function addDtsRow(obj) {
+	var sampleCounter = 0;
+	$(document).ready(function(){
+		sampleCounter = $("#dbsSampleTable tbody tr").length;
+	})
+	function addDbsRow(obj) {
+		sampleCounter++;
 		//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
 		$(obj.parentNode.parentNode).after('<tr align="center"> \
 				<td style="text-align: center"> \
@@ -268,14 +328,76 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 				</td> \
 				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 				<td> \
-					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a> \
-					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+					<a data-toggle="modal" href="#sampleEia'+sampleCounter+'" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> EIA </a> \
+					<a data-toggle="modal" href="#sampleWb'+sampleCounter+'" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> WB </a> \
+					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
+					<a href="javascript:void(0);" onclick="removeDbsRow(this,'+sampleCounter+')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 				</td> \
 			</tr>');
+		addNewEiaBlock(sampleCounter);
+	}
+	function addNewEiaRow(obj,sampleId) {
+		$(obj.parentNode.parentNode).after('<tr> \
+									<td><select class="form-control" name="eia['+sampleId+'][eia][]"><?php echo $eiaChoices; ?></select></td> \
+									<td><input type="text" name="eia['+sampleId+'][lot][]" class="form-control"/></td> \
+									<td><input type="text" name="eia['+sampleId+'][expiry][]" class="form-control datepicker"/></td> \
+									<td><input type="text" name="eia['+sampleId+'][od][]" class="form-control"/></td> \
+									<td><input type="text" name="eia['+sampleId+'][cutoff][]" class="form-control"/></td> \
+									<td> \
+										<a href="javascript:void(0);" onclick="addNewEiaRow(this,'+sampleId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
+										<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+									</td> \
+								</tr>');
+	}
+	function addNewEiaBlock(sampleId) {
+		$("#eiaBlockHolder").after('<div id="sampleEia'+sampleId+'" class="modal fade" tabindex="-1" data-width="860" style="display: none;">\
+				  <div class="modal-header">\
+					<h4 class="modal-title">EIA</h4>\
+				  </div>\
+				  <div class="modal-body">\
+					<div class="row">\
+					  <div >\
+						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
+							<thead>\
+								<tr align="center">\
+									<th style="width:20%;text-align: center;">EIA</th>\
+									<th style="width:10%;text-align: center;">Lot</th>\
+									<th style="width:10%;text-align: center;">Expiry</th>\
+									<th style="width:10%;text-align: center;">OD</th>\
+									<th style="width:10%;text-align: center;">Cutoff</th>\
+									<th style="width:20%;text-align: center;">Options</th>\
+								</tr>\
+							</thead>\
+							<tbody>\
+								<tr>\
+									<td><select class="form-control" name="eia['+sampleId+'][eia][]"><?php echo $eiaChoices; ?></select></td>\
+									<td><input type="text" name="eia['+sampleId+'][lot][]" class="form-control"/></td>\
+									<td><input type="text" name="eia['+sampleId+'][expiry][]" class="form-control datepicker"/></td>\
+									<td><input type="text" name="eia['+sampleId+'][od][]" class="form-control"/></td>\
+									<td><input type="text" name="eia['+sampleId+'][cutoff][]" class="form-control"/></td>\
+									<td>\
+										<a href="javascript:void(0);" onclick="addNewEiaRow(this,'+sampleId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+									</td>\
+								</tr>\
+							</tbody>\
+						</table>\
+					  </div>\
+					</div>\
+				  </div>\
+				  <div class="modal-footer">\
+					<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>\
+				  </div>\
+				</div>');
 	}
 	function removeRow(obj) {
 		$(obj.parentNode.parentNode).fadeOut("normal",function(){
 			$(this).remove();
+		});
+	}	
+	function removeDbsRow(obj,sampleId) {
+		$(obj.parentNode.parentNode).fadeOut("normal",function(){
+			$(this).remove();
+			$('#sampleEia'+sampleId).remove();
 		});
 	}	
 </script>
@@ -319,16 +441,16 @@ if($shipmentData['shipment']['scheme_type'] == 'eid'){
 				</td>
 				<td>
 					
-	<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>
-		<?php
-		 
-			foreach($shipmentData['possibleResults'] as $pr){
-				?>
-				<option value="<?php echo $pr['id']; ?>" <?php echo ($reference['reference_result'] == $pr['id']) ? "selected='selected'" : ""; ?>><?php echo $pr['response']; ?></option>
-				<?php
-			}
-		?>
-	</select>
+					<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>
+						<?php
+						 
+							foreach($shipmentData['possibleResults'] as $pr){
+								?>
+								<option value="<?php echo $pr['id']; ?>" <?php echo ($reference['reference_result'] == $pr['id']) ? "selected='selected'" : ""; ?>><?php echo $pr['response']; ?></option>
+								<?php
+							}
+						?>
+					</select>
 				</td>
 				<td>
 					<input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values"  title="Please enter the HIV CT/OD values here" value="<?php echo $reference['reference_hiv_ct_od'] ?>"/>
