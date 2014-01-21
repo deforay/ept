@@ -258,8 +258,8 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 					<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample"  value="<?php echo $reference['sample_score'];?>" />
 				</td>
 				<td>
-					<a data-toggle="modal" href="#sampleEia<?php echo $reference['sample_id'];?>" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> EIA </a>
-					<a data-toggle="modal" href="#sampleWb<?php echo $reference['sample_id'];?>" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> WB</a>
+					<a data-toggle="modal" href="#sampleEia<?php echo $reference['sample_id'];?>" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a>
+					<a data-toggle="modal" href="#sampleWb<?php echo $reference['sample_id'];?>" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB</a>
 					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a>
 					<?php
 					if($counter > 1){
@@ -453,6 +453,11 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 	var sampleCounter = 0;
 	
 	$(document).ready(function(){
+		
+
+	$(".datepicker").on("click",function(){
+		$(this).datepicker({dateFormat: '<?php echo $dtFormat;?>'})
+	});		
 		sampleCounter = $("#dbsSampleTable tbody tr").length;
 		<?php
 		$i=1;
@@ -484,8 +489,8 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 				</td> \
 				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 				<td> \
-					<a data-toggle="modal" href="#sampleEia'+sampleCounter+'" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> EIA </a> \
-					<a data-toggle="modal" href="#sampleWb'+sampleCounter+'" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> WB </a> \
+					<a data-toggle="modal" href="#sampleEia'+sampleCounter+'" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a> \
+					<a data-toggle="modal" href="#sampleWb'+sampleCounter+'" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB </a> \
 					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
 					<a href="javascript:void(0);" onclick="removeDbsRow(this,'+sampleCounter+')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 				</td> \
@@ -647,6 +652,10 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 		});
 	}
 	
+	function loadCal() {
+		$(".datepicker").removeClass("hasDatepicker");
+		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'})
+	}
 </script>
 <?php
 }

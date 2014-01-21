@@ -526,6 +526,7 @@ class Application_Service_Shipments {
 			}else if($row['scheme_type'] == 'dbs'){
 				$db->delete("reference_result_dbs",'shipment_id='.$sid);
 				$db->delete('reference_dbs_eia','shipment_id='.$sid);
+				$db->delete('reference_dbs_wb','shipment_id='.$sid);
 			}else if($row['scheme_type'] == 'vl'){
 				$db->delete("reference_result_vl",'shipment_id='.$sid);	
 			}else if($row['scheme_type'] == 'eid'){

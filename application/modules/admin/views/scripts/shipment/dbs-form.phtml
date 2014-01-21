@@ -68,8 +68,8 @@ $dtFormat=  $vHelper->getDateFormat();
 					<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" />
 				</td>
 				<td>
-					<a data-toggle="modal" href="#sampleEia1" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> EIA </a>
-					<a data-toggle="modal" href="#sampleWb1" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> WB</a>
+					<a data-toggle="modal" href="#sampleEia1" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a>
+					<a data-toggle="modal" href="#sampleWb1" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB</a>
 					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i>Sample/Control</a>
 					
 				</td>
@@ -105,8 +105,8 @@ $dtFormat=  $vHelper->getDateFormat();
 				</td> \
 				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 				<td> \
-					<a data-toggle="modal" href="#sampleEia'+sampleCounter+'" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> EIA </a> \
-					<a data-toggle="modal" href="#sampleWb'+sampleCounter+'" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> WB </a> \
+					<a data-toggle="modal" href="#sampleEia'+sampleCounter+'" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a> \
+					<a data-toggle="modal" href="#sampleWb'+sampleCounter+'" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB </a> \
 					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
 					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 				</td> \
@@ -276,5 +276,10 @@ $dtFormat=  $vHelper->getDateFormat();
 			$(this).remove();
 			//$('#sampleWb'+sampleId).remove();
 		});
+	}
+	
+	function loadCal() {
+		$(".datepicker").removeClass("hasDatepicker");
+		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'})
 	}
 </script>
