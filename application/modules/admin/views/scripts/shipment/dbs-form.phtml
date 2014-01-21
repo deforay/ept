@@ -13,6 +13,10 @@ foreach($this->eia as $eiaId => $eiaName){
 	$eiaChoices .= '<option value="'.$eiaId.'">'.$eiaName.'</option>';
 }
 
+$wbChoices ='<option value="">--Select--</option>';
+foreach($this->wb as $wbId => $wbName){
+	$wbChoices .= '<option value="'.$wbId.'">'.$wbName.'</option>';
+}
 
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat=  $vHelper->getDateFormat();
@@ -65,7 +69,7 @@ $dtFormat=  $vHelper->getDateFormat();
 				</td>
 				<td>
 					<a data-toggle="modal" href="#sampleEia1" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> EIA </a>
-					<a data-toggle="modal" href="#responsive2" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> WB</a>
+					<a data-toggle="modal" href="#sampleWb1" class="btn btn-xs btn-primary"><i class="icon-beaker"></i> WB</a>
 					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i>Sample/Control</a>
 					
 				</td>
@@ -76,6 +80,9 @@ $dtFormat=  $vHelper->getDateFormat();
 <div id="eiaBlockHolder">
 
 </div> <!-- eiaBlockHolder -->
+<div id="wbBlockHolder">
+
+</div> <!-- wbBlockHolder -->
 <script type="text/javascript">
 	var sampleCounter = 1;
 	function addDbsRow(obj) {
@@ -105,6 +112,7 @@ $dtFormat=  $vHelper->getDateFormat();
 				</td> \
 			</tr>');
 		addNewEiaBlock(sampleCounter);
+		addNewWbBlock(sampleCounter);
 	}
 	
 	function removeRow(obj) {
@@ -168,7 +176,7 @@ $dtFormat=  $vHelper->getDateFormat();
 								<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 							</td> \
 						</tr>');
-		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 	}
 	
 	function removeDbsRow(obj,sampleId) {
@@ -179,7 +187,94 @@ $dtFormat=  $vHelper->getDateFormat();
 	}
 	
 	$(document).ready(function(){
-		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 		addNewEiaBlock('1');
+		addNewWbBlock('1');
+		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 	});
+	
+	function addNewWbBlock(sampleWbId) {
+		$("#wbBlockHolder").after('<div id="sampleWb'+sampleWbId+'" class="modal fade" tabindex="-1" data-width="960" style="display: none;">\
+				  <div class="modal-header">\
+					<h4 class="modal-title">WB</h4>\
+				  </div>\
+				  <div class="modal-body">\
+					<div class="row" style="overflow-x:scroll;">\
+					  <div >\
+						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
+							<thead>\
+								<tr align="center">\
+									<th style="text-align: center;">WB</th>\
+									<th style="text-align: center;">Lot</th>\
+									<th style="text-align: center;">Expiry</th>\
+									<th style="text-align: center;">160</th>\
+									<th style="text-align: center;">120</th>\
+									<th style="text-align: center;">66</th>\
+									<th style="text-align: center;">55</th>\
+									<th style="text-align: center;">51</th>\
+									<th style="text-align: center;">41</th>\
+									<th style="text-align: center;">31</th>\
+									<th style="text-align: center;">24</th>\
+									<th style="text-align: center;">17</th>\
+									<th style="text-align: center;">Options</th>\
+								</tr>\
+							</thead>\
+							<tbody>\
+								<tr>\
+									<td><select class="form-control" name="wb['+sampleWbId+'][wb][]" style="width:125px;"><?php echo $wbChoices; ?></select></td>\
+									<td><input type="text" name="wb['+sampleWbId+'][lot][]" class="form-control" style="width:100px;"/></td>\
+									<td><input type="text" name="wb['+sampleWbId+'][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;"/></td>\
+									<td><select name="wb['+sampleWbId+'][160][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleWbId+'][120][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleWbId+'][66][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleWbId+'][55][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleWbId+'][51][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleWbId+'][41][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleWbId+'][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleWbId+'][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleWbId+'][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td>\
+										<a href="javascript:void(0);" onclick="addNewWbRow(this,'+sampleWbId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+									</td>\
+								</tr>\
+							</tbody>\
+						</table>\
+					  </div>\
+					</div>\
+				  </div>\
+				  <div class="modal-footer">\
+					<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>\
+				  </div>\
+				</div>');
+		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+		
+	}
+	
+	function addNewWbRow(obj,sampleWbId) {
+		$(obj.parentNode.parentNode).after('<tr> \
+							<td><select class="form-control" name="wb['+sampleWbId+'][wb][]" style="width:125px;"><?php echo $wbChoices; ?></select></td>\
+							<td><input type="text" name="wb['+sampleWbId+'][lot][]" class="form-control" style="width:100px;"/></td>\
+							<td><input type="text" name="wb['+sampleWbId+'][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;"/></td>\
+							<td><select name="wb['+sampleWbId+'][160][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb['+sampleWbId+'][120][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb['+sampleWbId+'][66][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb['+sampleWbId+'][55][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb['+sampleWbId+'][51][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb['+sampleWbId+'][41][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb['+sampleWbId+'][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb['+sampleWbId+'][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb['+sampleWbId+'][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td> \
+								<a href="javascript:void(0);" onclick="addNewWbRow(this,'+sampleWbId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
+								<a  href="javascript:void(0);" onclick="removeWbRow(this,'+sampleWbId+')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+							</td> \
+						</tr>');
+		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+	}
+	
+	function removeWbRow(obj,sampleId) {
+		$(obj.parentNode.parentNode).fadeOut("normal",function(){
+			$(this).remove();
+			//$('#sampleWb'+sampleId).remove();
+		});
+	}
 </script>
