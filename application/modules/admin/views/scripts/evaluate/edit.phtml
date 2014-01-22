@@ -40,6 +40,9 @@ else if($this->scheme == 'dts'){
 else if($this->scheme == 'dbs'){
 	include('edit-dbs-evaluation.phtml');
 }
+else if($this->scheme == 'vl'){
+	include('edit-vl-evaluation.phtml');
+}
 else{
 	echo "<br/><br/><br/><h4 style='text-align:center;'>Evaluation for this scheme is not yet implemented</h4><br/><br/><br/>";
 }

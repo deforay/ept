@@ -37,8 +37,14 @@ class Admin_EvaluateController extends Zend_Controller_Action
     {
         if($this->_hasParam('sid')){            
             $id = (int)base64_decode($this->_getParam('sid'));
+            $reEvaluate = false;
+            if($this->_hasParam('re')){
+                if(base64_decode($this->_getParam('re')) == 'yes'){
+                    $reEvaluate = true;
+                }
+            }
             $evalService = new Application_Service_Evaluation();
-            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id);
+            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id,$reEvaluate);
             $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
         }else{
             $this->_redirect("/admin/evaluate/");
@@ -62,6 +68,11 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 if($scheme == 'dts'){
                     $schemeService = new Application_Service_Schemes(); 
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();                    
+                }
+                else if($scheme == 'vl'){
+                    $schemeService = new Application_Service_Schemes();
+                    $this->view->vlRange = $schemeService->getVlRange($sid);
+                    $this->view->vlAssay = $schemeService->getVlAssay();              
                 }
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->viewEvaluation($sid,$pid,$scheme);
@@ -113,6 +124,11 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $schemeService = new Application_Service_Schemes(); 
                     $this->view->wb = $schemeService->getDbsWb();
                     $this->view->eia = $schemeService->getDbsEia();              
+                }
+                else if($scheme == 'vl'){
+                    $schemeService = new Application_Service_Schemes();
+                    $this->view->vlRange = $schemeService->getVlRange($sid);
+                    $this->view->vlAssay = $schemeService->getVlAssay();              
                 }
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sid,$pid,$scheme);

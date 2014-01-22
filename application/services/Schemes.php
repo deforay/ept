@@ -149,6 +149,133 @@ class Application_Service_Schemes {
 		return $db->fetchAll($sql);
 		
 	}
+	public function getVlRange($sId){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$res = $db->fetchAll($db->select()->from('reference_vl_calculation',array('sample_id','low_limit','high_limit'))->where('shipment_id = ?', $sId));
+		$response = array();
+		foreach($res as $row){
+			$response[$row['sample_id']]['low'] = $row['low_limit'];
+			$response[$row['sample_id']]['high'] = $row['high_limit'];
+		}
+		
+		return $response;
+	}
+	public function setVlRange($sId){
+		
+		
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+		
+		$vlAssayArray = $this->getVlAssay();
+		
+		foreach($vlAssayArray as $vlAssay){
+			$sql = $db->select()->from(array('ref'=>'reference_result_vl'),array('shipment_id','sample_id'))
+									->join(array('s'=>'shipment'),'s.shipment_id=ref.shipment_id',array())
+									->join(array('sp'=>'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('participant_id'))
+									->joinLeft(array('res'=>'response_result_vl'),'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+									->where('sp.shipment_id = ? ',$sId)
+									->where('sp.attributes like ? ','%"vl_assay":"'.$vlAssay['id'].'"%');
+	
+			$response = $db->fetchAll($sql);
+			$sampleWise = array();
+			foreach($response as $row){
+				$sampleWise[$vlAssay['id']][$row['sample_id']][] = $row['reported_viral_load'];
+			}
+			if(!isset($sampleWise[$vlAssay['id']])){
+				continue;
+			}
+			foreach($sampleWise[$vlAssay['id']] as $sample => $reportedVl){
+
+				if($reportedVl != "" && $reportedVl != null  && count($reportedVl) > 7){
+						$inputArray = $origArray = $reportedVl;
+						
+						sort($inputArray);
+						$q1 = $this->getQuartile($inputArray,0.25);
+						$q3 = $this->getQuartile($inputArray,0.75);
+						$iqr = $q3 - $q1;
+						$quartileLowLimit = $q1 - ($iqr*1.5);
+						$quartileHighLimit = $q3 + ($iqr*1.5);
+						
+						$newArray = array();
+						foreach($inputArray as $a){
+						  if($a >= $quartileLowLimit && $a <= $quartileHighLimit){
+							$newArray[] = $a;
+						  }
+						}
+						$avg = $this->getAverage($newArray);
+						$sd = $this->getStdDeviation($newArray);
+						
+						$cv = $sd/$avg;
+						
+						$finalLow = $avg - (3*$sd);
+						$finalHigh = $avg + (3*$sd);
+						
+						//
+						//$newArray = array();
+						//foreach($origArray as $a){
+						//  if($a >= $finalLow && $a <= $finalHigh){
+						//	$newArray[] = $a;
+						//  }else{
+						//	$newArray[] = 'fail';
+						//  }
+						//}
+						
+						$data = array('shipment_id'=>$sId,
+									  'vl_assay'=>$vlAssay['id'],
+									  'sample_id'=>$sample,
+									  'q1'=>$q1,
+									  'q3'=>$q3,
+									  'iqr'=>$iqr,
+									  'quartile_low'=>$quartileLowLimit,
+									  'quartile_high'=>$quartileHighLimit,
+									  'mean'=>$avg,
+									  'sd'=>$sd,
+									  'cv'=>$cv,
+									  'low_limit'=>$finalLow,
+									  'high_limit'=>$finalHigh,
+									  );
+						
+						$db->delete('reference_vl_calculation',"sample_id=$sample and shipment_id=$sId");
+						$db->insert('reference_vl_calculation',$data);
+				}
+			}
+		}
+		
+	}
+	
+	
+	public function getQuartile($inputArray, $quartile) {
+	  $pos = (count($inputArray) - 1) * $quartile;
+	 
+	  $base = floor($pos);
+	  $rest = $pos - $base;
+	 
+	  if( isset($inputArray[$base+1]) ) {
+		return $inputArray[$base] + $rest * ($inputArray[$base+1] - $inputArray[$base]);
+	  } else {
+		return $inputArray[$base];
+	  }
+	}
+	 
+	public function getAverage($inputArray) {
+	  return array_sum($inputArray) / count($inputArray);
+	}
+	 
+	public function getStdDeviation($inputArray) {
+	  if( count($inputArray) < 2 ) {
+		return;
+	  }
+	 
+	  $avg = $this->getAverage($inputArray);
+	 
+	  $sum = 0;
+	  foreach($inputArray as $value) {
+		$sum += pow($value - $avg, 2);
+	  }
+	 
+	  return sqrt((1 / (count($inputArray) - 1)) * $sum);
+	}	
+		
 	
 	public function getShipmentData($sId,$pId){
 		
