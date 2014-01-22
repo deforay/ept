@@ -72,7 +72,7 @@
 					foreach($this->rsOverview as $site){  ?>
 					<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">
 						<td><?php echo $site['SHIP_YEAR']; ?></td>
-						<td><?php echo $site['SCHEME']; ?></td>
+						<td><?php echo strtoupper($site['scheme_type']); ?></td>
 						<td><?php echo $site['TOTALSHIPMEN']; ?></td>
 						<td><?php echo $site['ONTIME']; ?></td>
 						<td><?php echo $site['NORESPONSE']; ?></td>

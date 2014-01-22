@@ -859,6 +859,12 @@ class Application_Service_Shipments {
 		
 		$dbAdapter->update('shipment',array('number_of_samples' => $size),'shipment_id = '.$params['shipmentId']);
 	}
+	
+	
+	public function getShipmentOverview($dmId){
+		$shipmentDb = new Application_Model_DbTable_Shipments();
+		return $shipmentDb->getShipmentOverviewDetails($dmId);
+	}
 
 }
 
