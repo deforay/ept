@@ -55,7 +55,7 @@
     </div><!-- /.modal-dialog -->
 </div>	
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently evaluating Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong></div>
+	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently evaluating Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> <a href="<?php echo $this->url(array('re'=>base64_encode('yes'))); ?>" onclick="$.blockUI()" class="btn btn-primary btn-xs btn-danger"><span><i class="icon-refresh"></i>&nbsp;&nbsp;Re-Evaluate</span></a></div>
 	<div style="margin-top:10px;">
 		<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
 	</div>

@@ -51,15 +51,12 @@
 	
 </table>
 <?php
-
 	$possibleFinalResults ='';
 	foreach($this->possibleResults as $pr){
 		if($pr['scheme_sub_group'] == 'DBS_FINAL'){
 			$possibleFinalResults[$pr['id']]= $pr['response'];
 		}
 	}
-	
-
 ?>
 
 
@@ -95,9 +92,6 @@
 				<?php $this->dropdownSelection($this->wb,$this->allSamples[0]["wb"],true); ?>
 			</select>
 		</td>
-        
-		
-		
 	</tr>
 	<tr align="CENTER" class="dark" >
 		<th>Lot No.</th>
@@ -105,9 +99,6 @@
 		<td colspan="2"><input type="text" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo( $this->allSamples[0]["lot_no_2"]); ?>" style="width: 90%" class="isRequired" title="Please enter Lot No. 2" placeholder="Please enter Lot No. 2"/></td>
 		<td colspan="2"><input type="text" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo( $this->allSamples[0]["lot_no_3"]); ?>" style="width: 90%" class="isRequired" title="Please enter Lot No. 3" placeholder="Please enter Lot No. 3"/></td>
 		<td colspan="9"><input type="text" size="40" maxlength="40" name="wb_lot" id="wb_lot" value="<?php echo( $this->allSamples[0]["wb_lot"]); ?>" style="width: 90%" class="" title="Please enter Western Blot Lot" placeholder="Please enter Western Blot Lot"/></td>
-		
-		
-		
 	</tr>
 
 	<tr align="CENTER" class="light">
@@ -116,7 +107,6 @@
 		<td colspan="2"><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php  echo $this->dateFormat($this->allSamples[0]["exp_date_2"]); ?>" style="width: 90%"  class="datepicker" readonly="readonly" placeholder="Select a date" /></td>
 		<td colspan="2"><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php  echo $this->dateFormat($this->allSamples[0]["exp_date_3"]); ?>" style="width: 90%"  class="datepicker" readonly="readonly" placeholder="Select a date" /></td>
 		<td colspan="9"><input id="wb_exp_date" type="text" id="wb_exp_date" name="wb_exp_date" value="<?php  echo $this->dateFormat($this->allSamples[0]["wb_exp_date"]); ?>" style="width: 90%"  class="datepicker" readonly="readonly" placeholder="Select a date" /></td>
-		
 	</tr>
 	<thead> 
 	<tr align="CENTER" class="dark" >

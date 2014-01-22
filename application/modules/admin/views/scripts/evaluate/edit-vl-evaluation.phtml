@@ -1,0 +1,129 @@
+<?php
+	
+	$attributes = json_decode($this->evaluateData['shipment']['attributes'],true);
+	
+	?>
+
+	<table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
+		<tr>
+			<th>Shipment Code</th>
+			<td><?php echo $this->evaluateData['shipment']['shipment_code']; ?></td>
+			<th>Scheme Type</th>
+			<td><?php echo strtoupper($this->evaluateData['shipment']['scheme_type']); ?></td>
+		</tr>
+		<tr>
+			<th>Shipment Date</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_date']); ?></td>
+			<th>Last Response Date</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?></td>
+		</tr>
+		<tr>
+			<th>Shipment Received on</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_receipt_date']); ?></td>
+			<th>Samples Tested on</th>
+			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_test_date']); ?></td>
+		</tr>
+		<tr>
+			<th>VL Assay</th>
+			<td>
+
+			<?php
+			foreach($this->vlAssay as $vlAssay){
+				if(isset($attributes['vl_assay']) && $attributes['vl_assay'] == $vlAssay['id']){
+				   echo $vlAssay['name'];
+				   break;
+				}
+			}
+			?>			
+			</td>
+			<th></th>
+			<td></td>
+		</tr>
+	</table>
+	
+	<?php
+
+	
+?>
+<br/>
+
+	<?php
+		if(isset($this->evaluateData['controlResults']) && sizeof($this->evaluateData['controlResults'])){
+	?>
+		<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+			<caption><legend>Controls</legend></caption>
+				<tr>
+					<th style="text-align: center;font-size:17px;">Control</th>
+					<th style="text-align: center;font-size:17px;">Results</th>
+				</tr>
+					
+				<?php
+				$counter = 1;
+				foreach($this->evaluateData['controlResults'] as $result){
+					if(($counter%2) == 0){
+						$class = "evenResult";
+					}else{
+						$class = "oddResult";
+					}
+					?>
+						<tr class="<?php echo $class ?>">
+							<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
+							<td style="vertical-align: middle;"></td>
+						</tr>
+						<tr class="<?php echo $class ?>">
+							<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
+							<td style="vertical-align: middle;">
+								<select class="form-control" name="reported[]"><?php echo $result['reported_viral_load	']; ?></select>
+								<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
+							</td>
+						</tr>
+					<?php
+					$counter++;
+				}
+				?>
+		</table>
+		<br/><br/>
+	<?php
+		}
+	?>
+
+	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+		<caption><legend>Samples</legend></caption>
+		<tr>
+			<th style="text-align: center;font-size:17px;">Sample</th>
+			<th style="text-align: center;font-size:17px;width:220px;">Results</th>
+			<th style="text-align: center;font-size:17px;">Score</th>
+		</tr>
+			
+		<?php
+		
+		$total = 0;
+		$counter = 1;
+		foreach($this->evaluateData['results'] as $result){
+			if(($counter%2) == 0){
+				$class = "evenResult";
+			}else{
+				$class = "oddResult";
+			}
+			?>
+				<tr class="<?php echo $class ?>">
+					<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
+					<td style="vertical-align: middle;text-align:center;"><?php echo "<strong>Min</strong> : ".$this->vlRange[$result['sample_id']]['low'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . "<strong>Max</strong> : ".$this->vlRange[$result['sample_id']]['high']  ?></td>
+					<td rowspan="2" style="vertical-align: middle;text-align: center;"><h1><?php echo $score = ($this->vlRange[$result['sample_id']]['low'] <= $result['reported_viral_load'] && $this->vlRange[$result['sample_id']]['high'] >= $result['reported_viral_load']) ? $result['sample_score'] : 0; $total+= $score; ?></h1></td>
+				</tr>
+				<tr class="<?php echo $class ?>">
+					<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
+					<td style="vertical-align: middle;text-align:center;">
+						<input type="text" name="reported[]" value="<?php echo $result['reported_viral_load']; ?>" class="form-control" />
+						<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
+					</td>
+				</tr>
+			<?php
+			$counter++;
+		}
+		?>
+		<tr class="totalResult">
+			<td colspan="2" style="vertical-align: middle;text-align:right;"><h3>Total Score</h3></td>
+			<td style="vertical-align: middle;text-align:center;"><h1><?php echo $total; ?></h1></td>
+		</tr>
+</table>

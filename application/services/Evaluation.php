@@ -172,7 +172,7 @@ class Application_Service_Evaluation {
 	    return $db->fetchAll($sql);
 	}
 	
-	public function getShipmentToEvaluate($shipmentId){
+	public function getShipmentToEvaluate($shipmentId,$reEvaluate = false){
 	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s'=>'shipment'))
 							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
@@ -663,13 +663,91 @@ class Application_Service_Evaluation {
 				$counter++;
 			}
 			$db->update('shipment',array('max_score' => $maxScore), "shipment_id = ".$shipmentId);
+		} else if($shipmentResult[0]['scheme_type'] == 'vl'){
+			$counter = 0;
+			foreach($shipmentResult as $shipment){
+				$results = $schemeService->getVlSamples($shipmentId,$shipment['participant_id']);
+				$totalScore = 0;
+				$maxScore = 0;
+				$mandatoryResult = "";
+
+				$scoreResult = "";
+				$failureReason = "";
+				
+				$vlRange = $schemeService->getVlRange($shipmentId);
+				if($reEvaluate || $vlRange == null || $vlRange == "" || count($vlRange) == 0){
+					$schemeService->setVlRange($shipmentId);
+					$vlRange = $schemeService->getVlRange($shipmentId);
+				}
+				
+				//Zend_Debug::dump($vlRange);
+				$attributes = json_decode($shipment['attributes'],true);
+				
+				foreach($results as $result){
+					// matching reported and low/high limits
+					if(isset($result['reported_viral_load']) && $result['reported_viral_load'] !=null){
+						if($vlRange[$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$result['sample_id']]['high'] >= $result['reported_viral_load']){
+							$totalScore += $result['sample_score'];
+						}else{
+							if($result['sample_score'] > 0){
+								$failureReason[] = "Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+							}
+						}
+					}
+					$maxScore  += $result['sample_score'];
+					
+					// checking if mandatory fields were entered and were entered right
+					if($result['mandatory'] == 1){
+						if((!isset($result['reported_viral_load']) || $result['reported_viral_load'] == "" || $result['reported_viral_load'] == null)){
+							$mandatoryResult = 'Fail';
+							$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was not reported";
+						}
+						else if(($result['reported_viral_load'] != $result['reported_viral_load'])){
+							$mandatoryResult = 'Fail';
+							$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+						}
+					}
+				}
+				
+				
+				// checking if total score and maximum scores are the same
+				if($totalScore != $maxScore){
+					$scoreResult = 'Fail';
+					$failureReason[]= "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
+				}else{
+					$scoreResult = 'Pass';
+				}				
+				
+				
+				// if any of the results have failed, then the final result is fail
+				if($scoreResult == 'Fail' || $mandatoryResult == 'Fail'){
+					$finalResult = 2;
+				}else{
+					$finalResult = 1;
+				}
+				$shipmentResult[$counter]['shipment_score'] = $totalScore;
+				$shipmentResult[$counter]['max_score'] = $maxScore;
+				
+				$fRes = $db->fetchCol($db->select()->from('r_results',array('result_name'))->where('result_id = '.$finalResult));
+				
+				$shipmentResult[$counter]['display_result'] = $fRes[0];
+				$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
+				
+				
+				
+				// let us update the total score in DB
+				$nofOfRowsUpdated = $db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
+				$counter++;
+			}
+			$db->update('shipment',array('max_score' => $maxScore), "shipment_id = ".$shipmentId);			
 		}
 		
 		return $shipmentResult;
 		
 		
 	}
-	
+		
+
 	public function editEvaluation($shipmentId,$participantId,$scheme){
 
 
@@ -789,7 +867,7 @@ class Application_Service_Evaluation {
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			$sql = $db->select()->from(array('s'=>'shipment'))
 							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
-							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id', array('fullscore'=>new Zend_Db_Expr("SUM(if(s.max_score = sp.shipment_score, 1, 0))")))
+							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id', array('fullscore'=>new Zend_Db_Expr("(if(s.max_score = sp.shipment_score, 1, 0))")))
 							->join(array('p'=>'participant'),'p.participant_id=sp.participant_id')
 							->where("sp.shipment_id = ?",$shipmentId)
 							->where("substring(sp.evaluation_status,4,1) != '0'")
@@ -798,7 +876,11 @@ class Application_Service_Evaluation {
 			
 			
 			$noOfParticipants = count($shipmentOverall);
-			$numScoredFull = $shipmentOverall[0]['fullscore'];
+			$numScoredFull = 0;
+			foreach($shipmentOverall as $shipment){
+				$numScoredFull += $shipment['fullscore'];	
+			}
+			
 			$maxScore = $shipmentOverall[0]['max_score'];
 			
 			
@@ -842,6 +924,16 @@ class Application_Service_Evaluation {
 													   'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
 													   'test_result_3' => $params['test_result_3'][$i],
 													   'reported_result' => $params['reported_result'][$i],
+													   'updated_by'=>$admin ,
+													   'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = ".$params['smid']. " AND sample_id = ".$params['sampleId'][$i]);
+			}
+		 }
+		 else if($params['scheme'] == 'vl'){
+			
+			for($i=0;$i<$size;$i++){
+								
+			   $db->update('response_result_vl',array(
+													   'reported_viral_load' => $params['reported'][$i],
 													   'updated_by'=>$admin ,
 													   'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = ".$params['smid']. " AND sample_id = ".$params['sampleId'][$i]);
 			}
