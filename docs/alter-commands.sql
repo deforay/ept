@@ -1448,3 +1448,57 @@ ALTER TABLE  `data_manager` ADD  `institute` VARCHAR( 500 ) NULL DEFAULT NULL AF
 
 -- by Amit Dec 30 2013
 ALTER TABLE  `scheme_list` ADD  `status` VARCHAR( 255 ) NULL DEFAULT NULL;
+
+--by Ilahir JAN 22 2014
+
+CREATE TABLE IF NOT EXISTS `reference_dbs_wb` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `shipment_id` int(11) NOT NULL,
+  `sample_id` int(11) NOT NULL,
+  `wb` int(11) NOT NULL,
+  `lot` varchar(255) DEFAULT NULL,
+  `exp_date` date DEFAULT NULL,
+  `160` int(11) DEFAULT NULL,
+  `120` int(11) DEFAULT NULL,
+  `66` int(11) DEFAULT NULL,
+  `55` int(11) DEFAULT NULL,
+  `51` int(11) DEFAULT NULL,
+  `41` int(11) DEFAULT NULL,
+  `31` int(11) DEFAULT NULL,
+  `24` int(11) DEFAULT NULL,
+  `17` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
+
+
+CREATE TABLE IF NOT EXISTS `reference_dts_eia` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `shipment_id` int(11) NOT NULL,
+  `sample_id` int(11) NOT NULL,
+  `eia` int(11) NOT NULL,
+  `lot` varchar(255) DEFAULT NULL,
+  `exp_date` date DEFAULT NULL,
+  `od` varchar(255) DEFAULT NULL,
+  `cutoff` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
+
+
+CREATE TABLE IF NOT EXISTS `reference_dts_wb` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `shipment_id` int(11) NOT NULL,
+  `sample_id` int(11) NOT NULL,
+  `wb` int(11) NOT NULL,
+  `lot` varchar(255) DEFAULT NULL,
+  `exp_date` date DEFAULT NULL,
+  `160` int(11) DEFAULT NULL,
+  `120` int(11) DEFAULT NULL,
+  `66` int(11) DEFAULT NULL,
+  `55` int(11) DEFAULT NULL,
+  `51` int(11) DEFAULT NULL,
+  `41` int(11) DEFAULT NULL,
+  `31` int(11) DEFAULT NULL,
+  `24` int(11) DEFAULT NULL,
+  `17` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;

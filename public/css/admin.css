@@ -55,3 +55,7 @@ text-align:center;
 	.totalResult td, .totalResult th{
 		background:#ECF0F1;
 	}
+	.datepicker{
+	 background: #ffffff !important;
+	 cursor: pointer !important;
+	}

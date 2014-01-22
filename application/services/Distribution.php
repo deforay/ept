@@ -29,14 +29,17 @@ class Application_Service_Distribution {
 										  
 	    return $db->fetchAll($sql);
 	}
+	
 	public function getUnshippedDistributions(){
 		$disrtibutionDb = new Application_Model_DbTable_Distribution();
 		return $disrtibutionDb->getUnshippedDistributions();		
 	}
+	
 	public function updateDistributionStatus($distributionId,$status){
 		$disrtibutionDb = new Application_Model_DbTable_Distribution();
 		return $disrtibutionDb->updateDistributionStatus($distributionId,$status);		
 	}
+	
 	public function shipDistribution($distributionId){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$db->beginTransaction();
@@ -54,8 +57,8 @@ class Application_Service_Distribution {
 			error_log($e->getTraceAsString());
 			return "Unable to ship. Please try again later or contact system admin for help";		
 		}
-
 	}
+	
 
 }
 

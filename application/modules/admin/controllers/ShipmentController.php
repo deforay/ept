@@ -120,7 +120,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $params = $this->getRequest()->getPost();
             $shipmentService->updateShipment($params);
-            $this->_redirect("/admin/shipment"); 
+            $this->_redirect("/admin/shipment");
         }else{
             if($this->_hasParam('sid')){
                 $sid = (int)base64_decode($this->_getParam('sid'));

@@ -53,7 +53,6 @@ class Admin_DistributionsController extends Zend_Controller_Action
     public function shipDistributionAction()
     {
         if($this->_hasParam('did')){
-            
             $id = (int)base64_decode($this->_getParam('did'));
             $distributionService = new Application_Service_Distribution();
             $this->view->message = $distributionService->shipDistribution($id);
@@ -65,7 +64,20 @@ class Admin_DistributionsController extends Zend_Controller_Action
 
     public function editAction()
     {
-        // action body
+        $distributionService = new Application_Service_Distribution();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();            
+            $distributionService->updateDistribution($params);
+            $this->_redirect("/admin/distributions");
+        }
+        else if($this->_hasParam('d8s5_8d')){
+            $id = (int)base64_decode($this->_getParam('d8s5_8d'));
+            $this->view->result = $distributionService->getDistribution($id);
+            $this->view->distributionDates = $distributionService->getDistributionDates();
+        }else{
+            $this->_redirect('admin/distributions/index');
+        }
+        
     }
 
 

@@ -151,12 +151,13 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];
             $row[] = ucwords($aRow['status']);
+	    $edit='<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-pencil"></i> Edit</span></a>';
             if(isset($aRow['status']) && $aRow['status'] == 'configured'){
                 $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\''.base64_encode($aRow['distribution_id']).'\')"><span><i class="icon-ambulance"></i> Ship Now</span></a>';	    
             }else if(isset($aRow['status']) && $aRow['status'] == 'shipped'){
                 $row[] = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';	    
             }else{
-                $row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-plus"></i> Add Scheme</span></a>';
+                $row[] = $edit.'<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-plus"></i> Add Scheme</span></a>';
             }
             
 
@@ -188,11 +189,12 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
     public function updateDistribution($params){
         $data = array('distribution_code'=>$params['distributionCode'],
                       'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']));
-        return $this->update($data,"distribution_id=".$params['distributionId']);
+        return $this->update($data,"distribution_id=".base64_decode($params['distributionId']));
     }
     public function getUnshippedDistributions(){
         return $this->fetchAll($this->select()->where("status != 'shipped'"));
     }
+    
     public function updateDistributionStatus($distributionId,$status){
         if(isset($status) && $status != null && $status != ""){
             return $this->update(array('status'=>$status),"distribution_id=".$distributionId);
@@ -200,6 +202,6 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             return 0;
         }
     }
-
+    
 }
 

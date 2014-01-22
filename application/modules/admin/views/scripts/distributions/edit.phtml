@@ -1,4 +1,96 @@
-<br /><br />
-<div id="view-content">
-	<p>View script for controller <b>Distributions</b> and script/action name <b>edit</b></p>
+<?php
+$ptEveDate=$this->dateFormat($this->result['distribution_date']);
+$this->distributionDates = array_diff($this->distributionDates, array($ptEveDate));
+?>
+<div class="well">
+    <form name="addDistributionForm" id="addDistributionForm" method="post"
+          action="<?php echo $this->url(array("module" => "admin", "controller" => "distributions", "action" => "edit"), null, true) ?>"
+          class="form-horizontal bs-example" role="form">
+        <fieldset>
+            <legend>Edit PT Event</legend>
+
+            <div class="form-group">
+                <label class="col-lg-3 control-label">PT Event Code <span class="mandatory">*</span></label>
+
+                <div class="col-lg-6">
+                    <input type="text" id="distributionCode" name="distributionCode" size="50" class="isRequired form-control" title="Please enter a Unique PT Event Code here"
+                           placeholder="Please enter a Unique PT Event Code here"
+                           onblur="checkDuplicate('distributions', 'distribution_code',this,'<?php echo "distribution_id##" .$this->result['distribution_id']; ?>', 'This Code already exists for another PT Event. Please try something else.')" value="<?php echo $this->result['distribution_code']; ?>"/>
+			<input type="hidden" name="distributionId" id="distributionId " value="<?php echo base64_encode($this->result['distribution_id']); ?>"/>
+                </div>
+            </div>
+			
+            <div class="form-group">
+                <label class="col-lg-3 control-label">PT Event Date <span class="mandatory">*</span></label>
+
+                <div class="col-lg-6">
+					<input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45"
+                                             class="isRequired form-control datepicker"
+                                             title="Please enter the PT Event date here"
+                                             placeholder="Please enter the PT Event date here" value="<?php echo $this->dateFormat($this->result['distribution_date']); ?>" readonly="readonly"/>
+					<span class="help-block">Dates already having a PT Event will be disabled and marked with a red circle.</span>
+				</div>
+				
+            </div>
+
+            </table>
+            <br>
+
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
+                       tabindex="7" value="Update"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/distributions';"
+                       tabindex="8" value="Cancel"/>
+            </div>
+        </fieldset>
+    </form>
 </div>
+<script type="text/javascript">
+    var duplicated = false;
+	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+		if (obj.value == "" || obj.value == null) {
+			return;
+		}		
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html" },
+			function (data) {
+			if (data > 0) {
+			    alert(msg, "err");
+			    duplicated = true;
+			    obj.focus();
+			}
+			else {
+			    duplicated = false;
+			}
+		});
+	}
+
+    function validateNow() {
+		checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Event. Please try something else.')
+        flag = deforayValidator.init({
+            formId: 'addDistributionForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('addDistributionForm').submit();
+        }
+    }
+	
+
+	
+	var disabledDates = [<?php echo '"'.implode('","', $this->distributionDates).'"' ?>];
+	
+	
+	$(function() {
+  	    //$(".datepicker" ).datepicker({dateFormat: '<?php echo $this->defaultDateFormat();?>'});
+		$('.datepicker').datepicker({
+				dateFormat: '<?php echo $this->defaultDateFormat();?>',
+				beforeShowDay: function(date){
+					var string = jQuery.datepicker.formatDate('dd-M-yy', date);
+					return [ disabledDates.indexOf(string) == -1 ]
+				}
+		});			
+	});
+	
+
+		
+</script>
