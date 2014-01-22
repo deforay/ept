@@ -425,6 +425,64 @@ class Application_Service_Shipments {
 									'sample_score'=>$params['score'][$i]
 									)
 								);
+				
+				// <------ Insert reference_dts_eia table
+				$eiaSize=sizeof($params['eia'][$i+1]['eia']);
+				for($e=0;$e<$eiaSize;$e++){
+					if(isset($params['eia'][$i+1]['eia'][$e]) && trim($params['eia'][$i+1]['eia'][$e])!=""){
+						$expDate='';
+						if(trim($params['eia'][$i+1]['expiry'][$e])!=""){
+							$expDate=Pt_Commons_General::dateFormat($params['eia'][$i+1]['expiry'][$e]);
+						}
+						
+						$dbAdapter->insert('reference_dts_eia',
+							array('shipment_id'=>$lastId,
+								'sample_id'=>($i+1),
+								'eia'=>$params['eia'][$i+1]['eia'][$e],
+								'lot'=>$params['eia'][$i+1]['lot'][$e],
+								'exp_date'=>$expDate,
+								'od'=>$params['eia'][$i+1]['od'][$e],
+								'cutoff'=>$params['eia'][$i+1]['cutoff'][$e]
+							)
+						);
+						
+					}
+				}
+				
+				//------------->
+				
+				// <------ Insert reference_dts_wb table
+				
+				$wbSize=sizeof($params['wb'][$i+1]['wb']);
+				for($e=0;$e<$wbSize;$e++){
+					if(isset($params['wb'][$i+1]['wb'][$e]) && trim($params['wb'][$i+1]['wb'][$e])!=""){
+						$expDate='';
+						if(trim($params['wb'][$i+1]['expiry'][$e])!=""){
+							$expDate=Pt_Commons_General::dateFormat($params['wb'][$i+1]['expiry'][$e]);
+						}
+						$dbAdapter->insert('reference_dts_wb',
+							array('shipment_id'=>$lastId,
+								'sample_id'=>($i+1),
+								'wb'=>$params['wb'][$i+1]['wb'][$e],
+								'lot'=>$params['wb'][$i+1]['lot'][$e],
+								'exp_date'=>$expDate,
+								'160'=>$params['wb'][$i+1]['160'][$e],
+								'120'=>$params['wb'][$i+1]['120'][$e],
+								'66'=>$params['wb'][$i+1]['66'][$e],
+								'55'=>$params['wb'][$i+1]['55'][$e],
+								'51'=>$params['wb'][$i+1]['51'][$e],
+								'41'=>$params['wb'][$i+1]['41'][$e],
+								'31'=>$params['wb'][$i+1]['31'][$e],
+								'24'=>$params['wb'][$i+1]['24'][$e],
+								'17'=>$params['wb'][$i+1]['17'][$e]
+							)
+						);
+						
+					}
+					
+				}
+				
+				// ------------------>
 			}
 
 		}
@@ -522,11 +580,13 @@ class Application_Service_Shipments {
 			$row = $shipmentDb->fetchRow('shipment_id='.$sid);
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			if($row['scheme_type'] == 'dts'){
-				$db->delete("reference_result_dts",'shipment_id='.$sid);	
+				$db->delete('reference_dts_eia','shipment_id='.$sid);
+				$db->delete('reference_dts_wb','shipment_id='.$sid);
+				$db->delete("reference_result_dts",'shipment_id='.$sid);
 			}else if($row['scheme_type'] == 'dbs'){
-				$db->delete("reference_result_dbs",'shipment_id='.$sid);
 				$db->delete('reference_dbs_eia','shipment_id='.$sid);
 				$db->delete('reference_dbs_wb','shipment_id='.$sid);
+				$db->delete("reference_result_dbs",'shipment_id='.$sid);
 			}else if($row['scheme_type'] == 'vl'){
 				$db->delete("reference_result_vl",'shipment_id='.$sid);	
 			}else if($row['scheme_type'] == 'eid'){
@@ -570,6 +630,9 @@ class Application_Service_Shipments {
 						->where("s.shipment_id = ?",$sid));
 			$schemeService = new Application_Service_Schemes();
 			$possibleResults = $schemeService->getPossibleResults('dts');
+			
+			$eia = $db->fetchAll($db->select()->from('reference_dts_eia')->where("shipment_id = ?",$sid));
+			$wb = $db->fetchAll($db->select()->from('reference_dts_wb')->where("shipment_id = ?",$sid));
 			
 		}else if($shipment['scheme_type'] == 'dbs'){
 			
@@ -650,6 +713,8 @@ class Application_Service_Shipments {
 		}
 		else if($scheme == 'dts'){
 			$dbAdapter->delete('reference_result_dts','shipment_id = '.$params['shipmentId']);
+			$dbAdapter->delete('reference_dts_eia','shipment_id = '.$params['shipmentId']);
+			$dbAdapter->delete('reference_dts_wb','shipment_id = '.$params['shipmentId']);
 			for($i = 0;$i < $size;$i++){
 				$dbAdapter->insert('reference_result_dts',array(
 									'shipment_id'=>$params['shipmentId'],
@@ -660,7 +725,62 @@ class Application_Service_Shipments {
 									'mandatory'=>$params['mandatory'][$i],
 									'sample_score'=>$params['score'][$i]
 									)
-								  );
+								);
+				
+				$eiaSize=sizeof($params['eia'][$i+1]['eia']);
+				for($e=0;$e<$eiaSize;$e++){
+					if(isset($params['eia'][$i+1]['eia'][$e]) && trim($params['eia'][$i+1]['eia'][$e])!=""){
+						$expDate='';
+						if(trim($params['eia'][$i+1]['expiry'][$e])!=""){
+							$expDate=Pt_Commons_General::dateFormat($params['eia'][$i+1]['expiry'][$e]);
+						}
+						$dbAdapter->insert('reference_dts_eia',
+							array('shipment_id'=>$params['shipmentId'],
+								'sample_id'=>($i+1),
+								'eia'=>$params['eia'][$i+1]['eia'][$e],
+								'lot'=>$params['eia'][$i+1]['lot'][$e],
+								'exp_date'=>$expDate,
+								'od'=>$params['eia'][$i+1]['od'][$e],
+								'cutoff'=>$params['eia'][$i+1]['cutoff'][$e]
+							)
+						);
+						
+					}
+					
+				}
+			
+				// <------ Insert reference_dbs_wb table
+				
+				$wbSize=sizeof($params['wb'][$i+1]['wb']);
+				for($e=0;$e<$wbSize;$e++){
+					if(isset($params['wb'][$i+1]['wb'][$e]) && trim($params['wb'][$i+1]['wb'][$e])!=""){
+						$expDate='';
+						if(trim($params['wb'][$i+1]['expiry'][$e])!=""){
+							$expDate=Pt_Commons_General::dateFormat($params['wb'][$i+1]['expiry'][$e]);
+						}
+						$dbAdapter->insert('reference_dts_wb',
+							array('shipment_id'=>$params['shipmentId'],
+								'sample_id'=>($i+1),
+								'wb'=>$params['wb'][$i+1]['wb'][$e],
+								'lot'=>$params['wb'][$i+1]['lot'][$e],
+								'exp_date'=>$expDate,
+								'160'=>$params['wb'][$i+1]['160'][$e],
+								'120'=>$params['wb'][$i+1]['120'][$e],
+								'66'=>$params['wb'][$i+1]['66'][$e],
+								'55'=>$params['wb'][$i+1]['55'][$e],
+								'51'=>$params['wb'][$i+1]['51'][$e],
+								'41'=>$params['wb'][$i+1]['41'][$e],
+								'31'=>$params['wb'][$i+1]['31'][$e],
+								'24'=>$params['wb'][$i+1]['24'][$e],
+								'17'=>$params['wb'][$i+1]['17'][$e]
+							)
+						);
+						
+					}
+					
+				}
+				
+				// ------------------>
 			}
 
 		} else if($scheme == 'dbs'){

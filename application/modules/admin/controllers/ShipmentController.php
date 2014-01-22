@@ -64,7 +64,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
             else if($sid == 'dts'){
                 $scheme = new Application_Service_Schemes();
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
-                $this->view->allTestKits = $scheme->getAllDtsTestKit();    
+                $this->view->allTestKits = $scheme->getAllDtsTestKit();
+                
+                $this->view->wb = $scheme->getDbsWb();
+                $this->view->eia = $scheme->getDbsEia();
             }
             else if($sid == 'dbs'){
                 $scheme = new Application_Service_Schemes();
@@ -134,7 +137,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->_redirect("/admin/shipment");    
             }
         }
-
     }
 
 
