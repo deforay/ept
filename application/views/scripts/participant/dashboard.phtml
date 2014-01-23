@@ -112,12 +112,12 @@
 				foreach($this->rsShipCurr as $curr){ ?>
 				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">				
 					<td><?php echo $this->dateFormat($curr['shipment_date']); ?></td>
-					<td><?php echo $curr['SCHEME']; ?></td>
+					<td><?php echo strtoupper($curr['scheme_type']); ?></td>
 					<td><?php echo $curr['shipment_code']; ?></td>					
-					<td align="left"><?php echo $curr['FNAME'] . ' ' . $curr['LNAME'] ;?></td>
+					<td align="left"><?php echo $curr['first_name'] . ' ' . $curr['last_name'] ;?></td>
 					<td><?php echo $this->dateFormat($curr['lastdate_response']); ?></td>					
 					<td><?php echo $this->dateFormat($curr['RESPONSEDATE']); ?></td>
-					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($curr['SCHEME']),"action"=>"response","sid"=>$curr['SHIPID'],"pid"=>$curr['participant_id'],"eid"=>$curr['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $curr['RESPONSE']; ?></a></td>
+					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($curr['scheme_type']),"action"=>"response","sid"=>$curr['shipment_id'],"pid"=>$curr['participant_id'],"eid"=>$curr['evaluation_status']),null,true,false); ?>"><?php echo $curr['RESPONSE']; ?></a></td>
 				</tr>
 				<?php }
 				}else{

@@ -25,8 +25,9 @@ class ParticipantController extends Zend_Controller_Action
 	
 	// Shipment Overview
 	$shipmentService = new Application_Service_Shipments();
-	$this->view->rsOverview=$shipmentService->getShipmentOverview($authNameSpace->dm_id);
+	$this->view->rsOverview=$shipmentService->getShipmentOverview();
 	
+	$this->view->rsShipCurr=$shipmentService->getShipmentCurrent();
     	//echo $authNameSpace->UserID;
     	// get overview Info and pass to view 
     	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -34,7 +35,7 @@ class ParticipantController extends Zend_Controller_Action
     	$stmt = $db->prepare("call SHIPMENT_CURRENT(?)");
 		
     	$stmt->execute(array( $authNameSpace->dm_id));
-    	$this->view->rsShipCurr = $stmt->fetchAll();
+    	//$this->view->rsShipCurr = $stmt->fetchAll();
     	 
     	$stmt = $db->prepare("call SHIPMENT_DEFAULTED(?)");
     	$stmt->execute(array( $authNameSpace->dm_id));

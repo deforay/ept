@@ -861,10 +861,14 @@ class Application_Service_Shipments {
 	}
 	
 	
-	public function getShipmentOverview($dmId){
+	public function getShipmentOverview(){
 		$shipmentDb = new Application_Model_DbTable_Shipments();
-		return $shipmentDb->getShipmentOverviewDetails($dmId);
+		return $shipmentDb->getShipmentOverviewDetails();
 	}
-
+	
+	public function getShipmentCurrent(){
+		$shipmentDb = new Application_Model_DbTable_Shipments();
+		return $shipmentDb->getShipmentCurrentDetails();
+	}
 }
 
