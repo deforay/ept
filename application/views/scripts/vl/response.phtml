@@ -55,13 +55,13 @@ $count++;  ?>
 	<tr class ="dark">
 		<td>Viral Load Assay:</td>
 		<td>
-			<select id="vlAssay" name="vlAssay">
+		<select id="vlAssay" name="vlAssay">
 			<option>--Select--</option>
 			<?php
 			foreach($this->vlAssay as $vlAssay){
-				?>
+			?>
 				<option value="<?php echo $vlAssay['id']; ?>"  <?php echo ($this->shipment['attributes']['vl_assay'] == $vlAssay['id']) ? "selected='selected'" : "";?>><?php echo $vlAssay['name']; ?></option>	
-				<?php
+			<?php
 			}
 			?>
 		</select>

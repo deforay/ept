@@ -514,8 +514,27 @@ $count = 1;
 			?>
 				<tr class="<?php echo $class ?>">
 					<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
-					<td style="vertical-align: middle;text-align:center;"><?php echo "<strong>Min</strong> : ".$this->vlRange[$result['sample_id']]['low'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . "<strong>Max</strong> : ".$this->vlRange[$result['sample_id']]['high']  ?></td>
-					<td rowspan="2" style="vertical-align: middle;text-align: center;"><h1><?php echo $score = ($this->vlRange[$result['sample_id']]['low'] <= $result['reported_viral_load'] && $this->vlRange[$result['sample_id']]['high'] >= $result['reported_viral_load']) ? $result['sample_score'] : 0; $total+= $score; ?></h1></td>
+					<td style="vertical-align: middle;text-align:center;">
+						<?php
+							if(isset($this->vlRange[$attributes['vl_assay']])){
+								echo "<strong>Min</strong> : ".$this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . "<strong>Max</strong> : ".$this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+							}else{
+								echo "Not enough responses for this VL Assay";
+							}
+						?>
+					</td>
+					<td rowspan="2" style="vertical-align: middle;text-align: center;">
+						<h1>
+							<?php
+							if(isset($this->vlRange[$attributes['vl_assay']])){
+								echo $score = ($this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'] >= $result['reported_viral_load']) ? $result['sample_score'] : 0; $total+= $score;
+							}else{
+								echo "-";
+								$total = "N/A";
+							}
+							?>
+						</h1>
+					</td>
 				</tr>
 				<tr class="<?php echo $class ?>">
 					<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>

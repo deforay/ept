@@ -151,11 +151,11 @@ class Application_Service_Schemes {
 	}
 	public function getVlRange($sId){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$res = $db->fetchAll($db->select()->from('reference_vl_calculation',array('sample_id','low_limit','high_limit'))->where('shipment_id = ?', $sId));
+		$res = $db->fetchAll($db->select()->from('reference_vl_calculation',array('sample_id','vl_assay','low_limit','high_limit'))->where('shipment_id = ?', $sId));
 		$response = array();
 		foreach($res as $row){
-			$response[$row['sample_id']]['low'] = $row['low_limit'];
-			$response[$row['sample_id']]['high'] = $row['high_limit'];
+			$response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
+			$response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];
 		}
 		
 		return $response;
