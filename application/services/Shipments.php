@@ -870,5 +870,15 @@ class Application_Service_Shipments {
 		$shipmentDb = new Application_Model_DbTable_Shipments();
 		return $shipmentDb->getShipmentCurrentDetails();
 	}
+	
+	public function getShipmentDefault(){
+		$shipmentDb = new Application_Model_DbTable_Shipments();
+		return $shipmentDb->getShipmentDefaultDetails();
+	}
+	
+	public function getShipmentAll(){
+		$shipmentDb = new Application_Model_DbTable_Shipments();
+		return $shipmentDb->getShipmentAllDetails();
+	}
 }
 

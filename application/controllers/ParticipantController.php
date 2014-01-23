@@ -23,44 +23,21 @@ class ParticipantController extends Zend_Controller_Action
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
     	$this->view->authNameSpace = $authNameSpace;
 	
-	// Shipment Overview
+	//S HIPMENT_OVERVIEW
 	$shipmentService = new Application_Service_Shipments();
 	$this->view->rsOverview=$shipmentService->getShipmentOverview();
 	
+	//SHIPMENT_CURRENT
 	$this->view->rsShipCurr=$shipmentService->getShipmentCurrent();
-    	//echo $authNameSpace->UserID;
-    	// get overview Info and pass to view 
-    	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+	
+	//SHIPMENT_DEFAULTED
+	$this->view->rsShipDef=$shipmentService->getShipmentDefault();
+	
+	//SHIPMENT_ALL
+	$this->view->rsShipAll=$shipmentService->getShipmentAll();
+	
     	
-    	$stmt = $db->prepare("call SHIPMENT_CURRENT(?)");
-		
-    	$stmt->execute(array( $authNameSpace->dm_id));
-    	//$this->view->rsShipCurr = $stmt->fetchAll();
-    	 
-    	$stmt = $db->prepare("call SHIPMENT_DEFAULTED(?)");
-    	$stmt->execute(array( $authNameSpace->dm_id));
-    	$this->view->rsShipDef = $stmt->fetchAll();
     	
-    	$currentPage = $this->_getParam('page',1);
-    	//$noOfItems = 4;
-    	
-    	$stmt = $db->prepare("call SHIPMENT_ALL(?,?,?)");
-    	
-    	$stmt->execute(array($this->noOfItems * $currentPage ,$this->noOfItems,$authNameSpace->dm_id));
-    	//`$this->view->rsShipAll = $stmt->fetchAll();
-
-    	//$pag = Zend_Paginator::factory($stmt->fetchAll());
-    	//$pag->setItemCountPerPage($this->noOfItems);
-    	//$pag->setCurrentPageNumber($currentPage);
-    	//$this->view->rsShipAll = $pag;
-    	$this->view->rsShipAll = $stmt->fetchAll();
-
-    	
-    	//Zend_Debug::dump($this->view->rs);
-    	//foreach($this->view->rs as $site){
-    		//echo $site['SCHEME'];
-    	//}
-    	//echo $this->view->rs['SCHEME'];
     }
 
     public function reportAction()

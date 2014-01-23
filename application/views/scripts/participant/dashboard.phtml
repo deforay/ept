@@ -157,13 +157,13 @@
 				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">
 					<td><?php echo $def['SHIP_YEAR']; ?></td>
 					<td><?php echo $this->dateFormat($def['shipment_date']); ?></td>
-					<td><?php echo $def['SCHEME']; ?></td>
+					<td><?php echo strtoupper($def['scheme_type']); ?></td>
 					<td><?php echo $def['shipment_code']; ?></td>
-					<td align="left"><?php echo $def['FNAME'] . ' ' . $def['LNAME'] ;?></td>					
+					<td align="left"><?php echo $def['first_name'] . ' ' . $def['last_name'] ;?></td>					
 					<td><?php echo $this->dateFormat($def['lastdate_response']); ?></td>					
 					<td><?php echo $def['STATUS']; ?></td>
 					<td><b><?php echo $def['RESPONSEDATE']; ?></b></td>
-					<td style="text-decoration: underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($curr['SCHEME']),"action"=>"response","sid"=>$curr['SHIPID'],"pid"=>$curr['participant_id'],"eid"=>$curr['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $curr['RESPONSE']; ?></a></td>				
+					<td style="text-decoration: underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($def['scheme_type']),"action"=>"response","sid"=>$def['shipment_id'],"pid"=>$def['participant_id'],"eid"=>$def['evaluation_status']),null,true,false); ?>"><?php echo $def['ACTION']; ?></a></td>				
 				</tr>
 				<?php }
 				} else{
@@ -209,11 +209,11 @@
 				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">					
 					<td><?php echo $all['SHIP_YEAR']; ?></td>
 					<td><?php echo $this->dateFormat($all['shipment_date']); ?></td>
-					<td><?php echo $all['SCHEME']; ?></td>
+					<td><?php echo strtoupper($def['scheme_type']); ?></td>
 					<td><?php echo $all['shipment_code']; ?></td>
-					<td align="left"><?php echo $all['FNAME'] . ' ' . $all['LNAME'] ;?></td>
+					<td align="left"><?php echo $all['first_name'] . ' ' . $all['last_name'] ;?></td>
 					<td><?php echo $this->dateFormat($all['RESPONSEDATE']); ?></td>
-					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($all['SCHEME']),"action"=>"response","sid"=>$all['SHIPID'],"pid"=>$all['PARTICIPANT_ID'],"eid"=>$all['EVALUATIONSTATUS']),null,true,false); ?>"><?php echo $all['RESPONSE']; ?></a></td>
+					<td style="text-decoration : underline;"><a href="<?php echo $this->url(array("controller"=>strtolower($all['scheme_type']),"action"=>"response","sid"=>$all['shipment_id'],"pid"=>$all['participant_id'],"eid"=>$all['evaluation_status']),null,true,false); ?>"><?php echo $all['RESPONSE']; ?></a></td>
 					<td style="text-decoration : underline;"><a href="#"><?php echo $all['REPORT']; ?></a></td>					
 				</tr>	
 				<?php }
