@@ -680,19 +680,24 @@ class Application_Service_Evaluation {
 					$vlRange = $schemeService->getVlRange($shipmentId);
 				}
 				
-				//Zend_Debug::dump($vlRange);
+				
 				$attributes = json_decode($shipment['attributes'],true);
 				
 				foreach($results as $result){
-					// matching reported and low/high limits
-					if(isset($result['reported_viral_load']) && $result['reported_viral_load'] !=null){
-						if($vlRange[$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$result['sample_id']]['high'] >= $result['reported_viral_load']){
-							$totalScore += $result['sample_score'];
-						}else{
-							if($result['sample_score'] > 0){
-								$failureReason[] = "Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+					$responseAssay = json_decode($result['attributes'],true)['vl_assay'];
+					if(isset($vlRange[$responseAssay])){
+						// matching reported and low/high limits
+						if(isset($result['reported_viral_load']) && $result['reported_viral_load'] !=null){
+							if($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']){
+								$totalScore += $result['sample_score'];
+							}else{
+								if($result['sample_score'] > 0){
+									$failureReason[] = "Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+								}
 							}
 						}
+					}else{
+						$totalScore = "N/A";
 					}
 					$maxScore  += $result['sample_score'];
 					
@@ -709,9 +714,12 @@ class Application_Service_Evaluation {
 					}
 				}
 				
-				
 				// checking if total score and maximum scores are the same
-				if($totalScore != $maxScore){
+				if($totalScore == 'N/A'){
+					$failureReason[] = "Could not determine score. Not enough responses found in the chosen VL Assay.";
+					$scoreResult = 'Fail';
+				}
+				else if($totalScore != $maxScore){
 					$scoreResult = 'Fail';
 					$failureReason[]= "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
 				}else{
