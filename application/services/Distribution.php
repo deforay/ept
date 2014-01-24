@@ -25,7 +25,7 @@ class Application_Service_Distribution {
 	public function getShipments($distroId){
 	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s'=>'shipment'))
-										  ->where("distribution_id = ?",$distroId);
+				->where("distribution_id = ?",$distroId);
 										  
 	    return $db->fetchAll($sql);
 	}

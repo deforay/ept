@@ -5,6 +5,7 @@ $shipmentData = $this->shipmentData;
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat=  $vHelper->getDateFormat();
 ?>
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-modal.css"); ?>" type="text/css" media="all">
 <style type="text/css">
 	.modal-scrollable{
 		z-index: 1000 !important;
@@ -583,7 +584,9 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 	</thead>
 	<tbody>
 		<?php
+		
 		$counter = 1;
+		if(count($shipmentData['reference'])>0){
 		foreach($shipmentData['reference'] as $reference){
 	    ?>
 		 <tr align="center">
@@ -802,10 +805,43 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 					</div>
 				</td>
 			</tr>
-		 <?php
-		 $counter++;
-		 }
-		 ?>
+		<?php
+		$counter++;
+		}
+		}else{
+		?>
+		 <tr align="center">
+			<td style="text-align: center">
+				<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/>
+			</td>
+			<td>
+				<?php echo $possibleResults; ?>
+			</td>
+			<td>
+				<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
+					<option value="">--Select--</option>
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</select>
+			</td>
+			<td>
+				<select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory">
+					<option value="">--Select--</option>
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</select>
+			</td>
+			<td>
+				<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" />
+			</td>
+			<td>
+				<a data-toggle="modal" href="#sampleEia1" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a>
+				<a data-toggle="modal" href="#sampleWb1" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB</a>
+				<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i>Sample/Control</a>
+				
+			</td>
+		</tr>
+		<?php } ?>
 	</tbody>
 </table>
 <br>
@@ -816,7 +852,7 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 
 </div> <!-- wbBlockHolder -->
 <script type="text/javascript">
-	var sampleCounter = 0;
+	var sampleCounter = 1;
 	
 	$(document).ready(function(){
 		$(".datepicker").on("click",function(){
@@ -827,13 +863,21 @@ if($shipmentData['shipment']['scheme_type'] == 'dbs'){
 		sampleCounter = $("#dbsSampleTable tbody tr").length;
 		<?php
 		$i=1;
+		if(count($shipmentData['reference'])>0){
 		foreach($shipmentData['reference'] as $reference){
 		?>
 		addNewEiaBlock('<?php echo $i; ?>');
 		addNewWbBlock('<?php echo $i; ?>');
 		<?php
 		$i++;
-		} ?>
+		}
+		}else{
+		?>
+		addNewEiaBlock(sampleCounter);
+		addNewWbBlock(sampleCounter);
+		<?php
+		}
+		?>
 	})
 	function addDbsRow(obj) {
 		sampleCounter++;

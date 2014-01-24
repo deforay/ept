@@ -684,7 +684,8 @@ class Application_Service_Evaluation {
 				$attributes = json_decode($shipment['attributes'],true);
 				
 				foreach($results as $result){
-					$responseAssay = json_decode($result['attributes'],true)['vl_assay'];
+					$responseAssay = json_decode($result['attributes'],true);
+					$responseAssay = $responseAssay['vl_assay'];
 					if(isset($vlRange[$responseAssay])){
 						// matching reported and low/high limits
 						if(isset($result['reported_viral_load']) && $result['reported_viral_load'] !=null){

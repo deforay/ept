@@ -1,5 +1,7 @@
 <?php
   $adminSession = new Zend_Session_Namespace('admin');
+  $controllerName=Zend_Controller_Front::getInstance()->getRequest()->getControllerName();
+  $actionName=Zend_Controller_Front::getInstance()->getRequest()->getActionName();
 ?>
 
 <!DOCTYPE html>
@@ -14,7 +16,7 @@
   <link rel="stylesheet" href="<?php echo $this->baseUrl("css/admin.css"); ?>" type="text/css" media="all">
   
   
-  <link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-modal.css"); ?>" type="text/css" media="all">
+  
   <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
   <link rel="stylesheet" href="<?php echo $this->baseUrl("css/offline-theme-slide.css"); ?>" type="text/css" media="all">
 
@@ -94,7 +96,11 @@
 <script src="<?php echo $this->baseUrl("js/extra.js"); ?>" type="text/javascript"></script>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/bootstrap-modalmanager.js");?>"></script>
+<?php
+if($controllerName.$actionName!='distributionsindex'){
+?>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/bootstrap-modal.js");?>"></script>
+<?php } ?>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/hoverIntent.js");?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
