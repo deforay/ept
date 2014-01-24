@@ -7,14 +7,25 @@ class ParticipantController extends Zend_Controller_Action
 
     public function init()
     {
-    	//if(!Zend_Auth::getInstance()->hasIdentity()){
-    	//	$this->_redirect('login/login');
-        /* Initialize action controller here */
+	$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext->addActionContext('index', 'html')
+		->addActionContext('default-scheme', 'html')
+		->addActionContext('current-schemes', 'html')
+		->addActionContext('all-schemes', 'html')
+                ->initContext();
     }
 
     public function indexAction()
     {
-        $this->_redirect("/participant/dashboard");
+	if($this->getRequest()->isPost()){
+	    //SHIPMENT_OVERVIEW
+            $params = $this->_getAllParams();
+	    $shipmentService = new Application_Service_Shipments();
+	    $shipmentService->getShipmentOverview($params);
+        }else{
+	    $this->_redirect("/participant/dashboard");
+	}
+        
     }
 
     public function dashboardAction()
@@ -23,21 +34,6 @@ class ParticipantController extends Zend_Controller_Action
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
     	$this->view->authNameSpace = $authNameSpace;
 	
-	//S HIPMENT_OVERVIEW
-	$shipmentService = new Application_Service_Shipments();
-	$this->view->rsOverview=$shipmentService->getShipmentOverview();
-	
-	//SHIPMENT_CURRENT
-	$this->view->rsShipCurr=$shipmentService->getShipmentCurrent();
-	
-	//SHIPMENT_DEFAULTED
-	$this->view->rsShipDef=$shipmentService->getShipmentDefault();
-	
-	//SHIPMENT_ALL
-	$this->view->rsShipAll=$shipmentService->getShipmentAll();
-	
-    	
-    	
     }
 
     public function reportAction()
@@ -108,7 +104,7 @@ class ParticipantController extends Zend_Controller_Action
 
     public function addAction()
     {
-		$participantService = new Application_Service_Participants();
+	$participantService = new Application_Service_Participants();
     	if($this->getRequest()->isPost())
     	{
     		$data = $this->getRequest()->getPost();
@@ -122,21 +118,38 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->schemes = $scheme->getAllSchemes();		
     }
 
+    public function defaultSchemeAction()
+    {
+        if($this->getRequest()->isPost()){
+	    //SHIPMENT_DEFAULTED
+            $params = $this->_getAllParams();
+	    $shipmentService = new Application_Service_Shipments();
+	    $shipmentService->getShipmentDefault($params);
+        }
+    }
+
+    public function currentSchemesAction()
+    {
+        if($this->getRequest()->isPost()){
+	    //SHIPMENT_CURRENT
+            $params = $this->_getAllParams();
+	    $shipmentService = new Application_Service_Shipments();
+	    $shipmentService->getShipmentCurrent($params);
+        }
+    }
+
+    public function allSchemesAction()
+    {
+        if($this->getRequest()->isPost()){
+	    //SHIPMENT_ALL
+            $params = $this->_getAllParams();
+	    $shipmentService = new Application_Service_Shipments();
+	    $shipmentService->getShipmentAll($params);
+        }
+    }
+
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

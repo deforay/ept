@@ -27,6 +27,9 @@
           <actionMethod actionName="password"/>
           <actionMethod actionName="testeredit"/>
           <actionMethod actionName="schemeinfo"/>
+          <actionMethod actionName="defaultScheme"/>
+          <actionMethod actionName="currentSchemes"/>
+          <actionMethod actionName="allSchemes"/>
         </controllerFile>
         <controllerFile controllerName="DTS">
           <actionMethod actionName="index"/>
@@ -447,6 +450,15 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Dbs">
             <viewScriptFile forActionName="response"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Participant">
+            <viewScriptFile forActionName="defaultScheme"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Participant">
+            <viewScriptFile forActionName="currentSchemes"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Participant">
+            <viewScriptFile forActionName="allSchemes"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

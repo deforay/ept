@@ -861,24 +861,24 @@ class Application_Service_Shipments {
 	}
 	
 	
-	public function getShipmentOverview(){
+	public function getShipmentOverview($parameters){
 		$shipmentDb = new Application_Model_DbTable_Shipments();
-		return $shipmentDb->getShipmentOverviewDetails();
+		return $shipmentDb->getShipmentOverviewDetails($parameters);
 	}
 	
-	public function getShipmentCurrent(){
+	public function getShipmentCurrent($parameters){
 		$shipmentDb = new Application_Model_DbTable_Shipments();
-		return $shipmentDb->getShipmentCurrentDetails();
+		return $shipmentDb->getShipmentCurrentDetails($parameters);
 	}
 	
-	public function getShipmentDefault(){
+	public function getShipmentDefault($parameters){
 		$shipmentDb = new Application_Model_DbTable_Shipments();
-		return $shipmentDb->getShipmentDefaultDetails();
+		return $shipmentDb->getShipmentDefaultDetails($parameters);
 	}
 	
-	public function getShipmentAll(){
+	public function getShipmentAll($parameters){
 		$shipmentDb = new Application_Model_DbTable_Shipments();
-		return $shipmentDb->getShipmentAllDetails();
+		return $shipmentDb->getShipmentAllDetails($parameters);
 	}
 }
 
