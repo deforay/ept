@@ -128,7 +128,7 @@
                            title="Please enter the Participant id here"
                            placeholder="Please enter the Participant id here"
                            value="<?php echo $this->participant['unique_identifier']; ?>"
-                           onblur="checkDuplicate('participants','unique_identifier',this,'<?php echo "participant_id##" . $this->participant['participant_id']; ?>','This Participant ID already exists for another Participant. Please try something else.')"/>
+                           onblur="checkDuplicate('participant','unique_identifier',this,'<?php echo "participant_id##" . $this->participant['participant_id']; ?>','This Participant ID already exists for another Participant. Please try something else.')"/>
                 </div>
             </div>
             <div class="form-group">
