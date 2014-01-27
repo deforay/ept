@@ -274,7 +274,7 @@
 
     function validateNow() {
 		$(".bootstrap-select").removeClass('isRequired');
-        checkDuplicate('participants', 'unique_identifier', $("#pid"), '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')
+        //checkDuplicate('participants', 'unique_identifier', $("#pid"), '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'editParticipantForm'
         });

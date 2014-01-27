@@ -8,7 +8,7 @@
         <div class="form-group">
             <label class="col-lg-3 control-label">Login (Primary e-mail) <span class="mandatory">*</span></label>
             <div class="col-lg-5">
-                <input type="text" id="userId" name="userId"  size="50" class="isRequired isEmail form-control" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('data_manager','primary_email',this,null,'This email already exists as a primary email for another user. Please choose another email.')" value="<?php echo (isset($this->contact['email'])) ? $this->contact['email'] : "" ?>"/>
+                <input type="text" id="userId" name="userId"  size="50" class="isRequired isEmail form-control" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('data_manager','primary_email','userId',null,'This email already exists as a primary email for another user. Please choose another email.')" value="<?php echo (isset($this->contact['email'])) ? $this->contact['email'] : "" ?>"/>
             </div>
         </div>
         <div class="form-group">
@@ -68,30 +68,32 @@
 </div>
 <script type="text/javascript">
 	var duplicated = false;
-    function checkDuplicate(tableName,fieldName,obj,fnct,msg)
-    {
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName,fieldName : fieldName ,value : $(obj).val(),fnct : fnct, format: "html" },
-        function(data){
-            if(data>0)
-            {
-                alert(msg,"err");
-                duplicated=true;
-				obj.focus();
-            }
-            else{
-                duplicated=false;
-            }
-        });
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+	objValue=document.getElementById(obj).value;
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: objValue, fnct: fnct, format: "html" },
+            function (data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+		    $("#"+obj).focus();
+                }
+                else {
+                    duplicated = false;
+                }
+		return duplicated;
+            });
     }
 	
     function validateNow(){
-		checkDuplicate('data_manager','primary_email',$("#userId"),null,'This email already exists as a primary email for another user. Please choose another email.')
-        flag = deforayValidator.init({
-            formId: 'addUserForm'
-        });
-        if(flag && !duplicated){
-            $.blockUI();
-            document.getElementById('addUserForm').submit();
-        }
+		  //checkDduplicateId=checkDuplicate('data_manager','primary_email','userId',null,'This email already exists as a primary email for another user. Please choose another email.')
+		  //if (!checkDduplicateId) {
+				    flag = deforayValidator.init({
+					formId: 'addUserForm'
+				    });
+				    if(flag && !duplicated){
+					$.blockUI();
+					document.getElementById('addUserForm').submit();
+				    }
+		  //}
     }	    
 </script>

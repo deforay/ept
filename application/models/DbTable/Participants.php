@@ -249,17 +249,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'country' => $params['country'],
             'zip' => $params['zip'],
             'long' => $params['long'],
-			'lat' => $params['lat'],			
-			'shipping_address' => $params['shippingAddress'],			
+	    'lat' => $params['lat'],
+	    'shipping_address' => $params['shippingAddress'],
             'first_name' => $params['pfname'],
             'last_name' => $params['plname'],
             'mobile' => $params['pphone2'],
             'phone' => $params['pphone1'],
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
-			'network_tier' => $params['network'],
+	    'network_tier' => $params['network'],
             'created_on' => new Zend_Db_Expr('now()'),
-			'created_by' => $authNameSpace->primary_email
+	    'created_by' => $authNameSpace->primary_email
         );
 		
 		//Zend_Debug::dump($data);die;

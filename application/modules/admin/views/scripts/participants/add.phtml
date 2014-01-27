@@ -217,8 +217,8 @@
     }
 
     function validateNow() {
-		$(".bootstrap-select").removeClass('isRequired');
-        checkDuplicate('participant', 'unique_identifier', $("#pid"), null, 'This Participant ID already exists for another Participant. Please try something else.')
+	$(".bootstrap-select").removeClass('isRequired');
+        //checkDuplicate('participant', 'unique_identifier', $("#pid"), null, 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'addParticipantForm'
         });

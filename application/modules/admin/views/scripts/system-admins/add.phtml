@@ -28,7 +28,7 @@
                     <input type="text" id="primaryEmail" name="primaryEmail" size="50" class="isRequired form-control isEmail"
                            title="Please enter the primary email id here"
                            placeholder="Please enter the primary email id here"
-                           onblur="checkDuplicate('system_admin', 'primary_email',this,null, 'This Email already exists for another Admin. Please try something else.')"/>
+                           onblur="checkDuplicate('system_admin', 'primary_email','primaryEmail',null, 'This Email already exists for another Admin. Please try something else.')"/>
                 </div>
             </div>
 			<div class="form-group">
@@ -85,27 +85,31 @@
 <script type="text/javascript">
     var duplicated = false;
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html" },
+	objValue=document.getElementById(obj).value;
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: objValue, fnct: fnct, format: "html" },
             function (data) {
                 if (data > 0) {
                     alert(msg, "err");
                     duplicated = true;
-                    obj.focus();
+		    $("#"+obj).focus();
                 }
                 else {
                     duplicated = false;
                 }
+		return duplicated;
             });
     }
 
     function validateNow() {
-        checkDuplicate('system_admin', 'primary_email', $("#primaryEmail"), null, 'This Email already exists for another Admin. Please try something else.')
-        flag = deforayValidator.init({
-            formId: 'addSystemAdminForm'
-        });
-        if (flag && !duplicated) {
-            $.blockUI();
-            document.getElementById('addSystemAdminForm').submit();
-        }
+        //checkDduplicateId=checkDuplicate('system_admin', 'primary_email', 'primaryEmail', null, 'This Email already exists for another Admin. Please try something else.')
+	//if (!checkDduplicateId) {
+	    flag = deforayValidator.init({
+		formId: 'addSystemAdminForm'
+	    });
+	    if (flag && !duplicated) {
+		$.blockUI();
+		document.getElementById('addSystemAdminForm').submit();
+	    }
+	//}
     }
 </script>

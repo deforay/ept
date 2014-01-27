@@ -2,184 +2,181 @@
 
 class Application_Service_Shipments {
 	
-	public function getAllShipments($parameters){
+	public function getAllShipments($parameters) {
+		/* Array of database columns which should be read and sent back to DataTables. Use a space where
+		 * you want to insert a non-database field (for example a counter or static image)
+		*/
+		
+		//$aColumns = array('project_name','project_code','e.employee_name','client_name','architect_name','project_value','building_type_name','DATE_FORMAT(p.project_date,"%d-%b-%Y")','DATE_FORMAT(p.deadline,"%d-%b-%Y")','refered_by','emp.employee_name');
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
-        $aColumns = array("sl.scheme_name","shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'number_of_samples','s.status');
-        $orderColumns = array("sl.scheme_name","shipment_code", 'distribution_code', 'distribution_date', 'number_of_samples','s.status');
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = "shipment_date";
-
-
-        /*
-         * Paging
-         */
-        $sLimit = "";
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
-
-        /*
-         * Ordering
-         */
-        $sOrder = "";
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
-                }
-            }
-
-            $sOrder = substr_replace($sOrder, "", -2);
-        }
-
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
-                } else {
-                    $sWhereSub .= " AND (";
-                }
-                $colSize = count($aColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
-                    } else {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
-                    }
-                }
-                $sWhereSub .= ")";
-            }
-            $sWhere .= $sWhereSub;
-        }
-
-        /* Individual column filtering */
-        for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
-                    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
-                } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
-                }
-            }
-        }
-
-
-        /*
-         * SQL queries
-         * Get data to display
-         */
+	
+		$aColumns = array("sl.scheme_name","shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'number_of_samples','s.status');
+		$orderColumns = array("sl.scheme_name","shipment_code", 'distribution_code', 'distribution_date', 'number_of_samples','s.status');
+	
+		
+		/* Indexed column (used for fast and accurate table cardinality) */
+		 $sIndexColumn = "shipment_id";
 		
 		
-		
-	$sQuery = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_date','s.shipment_code','s.number_of_samples','s.status'))
-							//->joinLeft(array('sp'=>'shipment_participant_map'),'s.shipment_id = sp.shipment_id',array())
-							->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'))
-							->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('SCHEME'=>'sl.scheme_name'));		
-
-	if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
-		$sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
-	}
-	if(isset($parameters['distribution']) && $parameters['distribution'] !="" && $parameters['distribution'] !=0){
-		$sQuery = $sQuery->where("s.distribution_id = ?",$parameters['distribution']);
-	}
-			
-
-        if (isset($sWhere) && $sWhere != "") {
-            $sQuery = $sQuery->where($sWhere);
-        }
-
-        if (isset($sOrder) && $sOrder != "") {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
-        }
-
-        //die($sQuery);
-
-        $rResult = $db->fetchAll($sQuery);
-
-
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $db->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-		
-		$sQuery = $db->select()->from('shipment', new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
-		
-		if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
-			$sQuery = $sQuery->where("scheme_type = ?",$parameters['scheme']);
+		/*
+		 * Paging
+		 */
+		$sLimit = "";
+		if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+		    $sOffset = $parameters['iDisplayStart'];
+		    $sLimit = $parameters['iDisplayLength'];
 		}
 		
-        $aResultTotal = $db->fetchCol($sQuery);
-        $iTotal = $aResultTotal[0];
-
-        /*
-         * Output
-         */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
-
-		//$aColumns = array("SCHEME","shipment_code","DATE_FORMAT(shipment_date,'%d-%b-%Y')", 'distribution_code', 'distibution_date', 'number_of_samples');
-        foreach ($rResult as $aRow) {
-			$row = array();
-			
-			if($aRow['status'] == 'ready'){
-				$btn = "btn-success";
-			}else if($aRow['status'] == 'pending'){
-				$btn = "btn-danger";
-			}else {
-				$btn = "btn-primary";
+		/*
+		 * Ordering
+		*/
+		
+		
+		
+		$sOrder = "";
+		if (isset($parameters['iSortCol_0'])) {
+		    $sOrder = "";
+		    for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+			if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+			    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+						" . ($parameters['sSortDir_' . $i]) . ", ";
 			}
-			
-			$row[] = $aRow['shipment_code'];
-			$row[] = $aRow['SCHEME'];	    
-			$row[] = $aRow['distribution_code'];
-			$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-			$row[] = $aRow['number_of_samples'];
-			$row[] = ucfirst($aRow['status']);
-			if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'closed'){
-				$row[] ='<a class="btn '.$btn.' btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>'
-						.'&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>'
-				        .'&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\''.base64_encode($aRow['shipment_id']).'\')"><span><i class="icon-remove"></i> Delete</span></a>';	
-			}
-			else if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] == 'shipped' && $aRow['status'] != 'closed'){
-				$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>';					
-			}
-			else{
-				$row[] = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';	
-			}
-			
-
-            $output['aaData'][] = $row;
-        }
-
-        echo json_encode($output);
+		    }
 	
+		    $sOrder = substr_replace($sOrder, "", -2);
+		}
+		/*
+		 * Filtering
+		 * NOTE this does not match the built-in DataTables filtering which does it
+		 * word by word on any field. It's possible to do here, but concerned about efficiency
+		 * on very large tables, and MySQL's regex functionality is very limited
+		*/
+		
+		$sWhere = "";
+		if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+		    $searchArray = explode(" ", $parameters['sSearch']);
+		    $sWhereSub = "";
+		    foreach ($searchArray as $search) {
+			if ($sWhereSub == "") {
+			    $sWhereSub .= "(";
+			} else {
+			    $sWhereSub .= " AND (";
+			}
+			$colSize = count($aColumns);
+			
+			for ($i = 0; $i < $colSize; $i++) {
+			    if ($i < $colSize - 1) {
+				$sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search ) . "%' OR ";
+			    } else {
+				$sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search ) . "%' ";
+			    }
+			}
+			$sWhereSub .= ")";
+		    }
+		    $sWhere .= $sWhereSub;
+		}
+		
+		/* Individual column filtering */
+		for ($i = 0; $i < count($aColumns); $i++) {
+		    if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+			if ($sWhere == "") {
+			    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+			} else {
+			    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+			}
+		    }
+		}
+		
+		/*
+		 * SQL queries
+		 * Get data to display
+		*/
+		
+		$sQuery=$db->select()->from(array('s'=>'shipment'))
+			->join(array('d'=>'distributions'),'d.distribution_id = s.distribution_id',array('distribution_code','distribution_date'))
+			->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('SCHEME'=>'sl.scheme_name'));
+			       
+		if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
+			$sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
+		}
+		
+		if(isset($parameters['distribution']) && $parameters['distribution'] !="" && $parameters['distribution'] !=0){
+			$sQuery = $sQuery->where("s.distribution_id = ?",$parameters['distribution']);
+		}
+		
+		if (isset($sWhere) && $sWhere != "") {
+		    $sQuery = $sQuery->where($sWhere);
+		}
+		
+		if (isset($sOrder) && $sOrder != "") {
+		    $sQuery = $sQuery->order($sOrder);
+		}
+		
+		if (isset($sLimit) && isset($sOffset)) {
+		    $sQuery = $sQuery->limit($sLimit, $sOffset);
+		}
+		//error_log($sQuery);
+		
+		$rResult = $db->fetchAll($sQuery);
+		
+		/* Data set length after filtering */
+		$sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
+		$sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+		$aResultFilterTotal = $db->fetchAll($sQuery);
+		$iFilteredTotal = count($aResultFilterTotal);
+	
+		/* Total data set length */
+		$sQuery = $db->select()->from('shipment', new Zend_Db_Expr("COUNT('shipment_id')"));
+		$aResultTotal = $db->fetchCol($sQuery);
+		$iTotal = $aResultTotal[0];
+	
+		/*
+		 * Output
+		*/
+		$output = array(
+		    "sEcho" => intval($parameters['sEcho']),
+		    "iTotalRecords" => $iTotal,
+		    "iTotalDisplayRecords" => $iFilteredTotal,
+		    "aaData" => array()
+		);
+        
+		foreach ($rResult as $aRow) {
+		    
+		    $row = array();
+		    if($aRow['status'] == 'ready'){
+					$btn = "btn-success";
+				}else if($aRow['status'] == 'pending'){
+					$btn = "btn-danger";
+				}else {
+					$btn = "btn-primary";
+				}
+				
+				$row[] = $aRow['shipment_code'];
+				$row[] = $aRow['SCHEME'];	    
+				$row[] = $aRow['distribution_code'];
+				$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
+				$row[] = $aRow['number_of_samples'];
+				$row[] = ucfirst($aRow['status']);
+				if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'closed'){
+					$row[] ='<a class="btn '.$btn.' btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>'
+							.'&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>'
+						.'&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\''.base64_encode($aRow['shipment_id']).'\')"><span><i class="icon-remove"></i> Delete</span></a>';	
+				}
+				else if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] == 'shipped' && $aRow['status'] != 'closed'){
+					$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>';					
+				}
+				else{
+					$row[] = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';	
+				}
+				
+		    
+		    $output['aaData'][] = $row;
+		}
+        
+		echo json_encode($output);
 	}
+    
+	
 
 	public function updateEidResults($params){
 		
@@ -427,61 +424,62 @@ class Application_Service_Shipments {
 								);
 				
 				// <------ Insert reference_dts_eia table
-				$eiaSize=sizeof($params['eia'][$i+1]['eia']);
-				for($e=0;$e<$eiaSize;$e++){
-					if(isset($params['eia'][$i+1]['eia'][$e]) && trim($params['eia'][$i+1]['eia'][$e])!=""){
-						$expDate='';
-						if(trim($params['eia'][$i+1]['expiry'][$e])!=""){
-							$expDate=Pt_Commons_General::dateFormat($params['eia'][$i+1]['expiry'][$e]);
+				if(isset($params['eia'][$i+1]['eia'])){
+					$eiaSize=sizeof($params['eia'][$i+1]['eia']);
+					for($e=0;$e<$eiaSize;$e++){
+						if(isset($params['eia'][$i+1]['eia'][$e]) && trim($params['eia'][$i+1]['eia'][$e])!=""){
+							$expDate='';
+							if(trim($params['eia'][$i+1]['expiry'][$e])!=""){
+								$expDate=Pt_Commons_General::dateFormat($params['eia'][$i+1]['expiry'][$e]);
+							}
+							
+							$dbAdapter->insert('reference_dts_eia',
+								array('shipment_id'=>$lastId,
+									'sample_id'=>($i+1),
+									'eia'=>$params['eia'][$i+1]['eia'][$e],
+									'lot'=>$params['eia'][$i+1]['lot'][$e],
+									'exp_date'=>$expDate,
+									'od'=>$params['eia'][$i+1]['od'][$e],
+									'cutoff'=>$params['eia'][$i+1]['cutoff'][$e]
+								)
+							);
+							
 						}
-						
-						$dbAdapter->insert('reference_dts_eia',
-							array('shipment_id'=>$lastId,
-								'sample_id'=>($i+1),
-								'eia'=>$params['eia'][$i+1]['eia'][$e],
-								'lot'=>$params['eia'][$i+1]['lot'][$e],
-								'exp_date'=>$expDate,
-								'od'=>$params['eia'][$i+1]['od'][$e],
-								'cutoff'=>$params['eia'][$i+1]['cutoff'][$e]
-							)
-						);
-						
 					}
 				}
-				
 				//------------->
 				
 				// <------ Insert reference_dts_wb table
-				
-				$wbSize=sizeof($params['wb'][$i+1]['wb']);
-				for($e=0;$e<$wbSize;$e++){
-					if(isset($params['wb'][$i+1]['wb'][$e]) && trim($params['wb'][$i+1]['wb'][$e])!=""){
-						$expDate='';
-						if(trim($params['wb'][$i+1]['expiry'][$e])!=""){
-							$expDate=Pt_Commons_General::dateFormat($params['wb'][$i+1]['expiry'][$e]);
+				if(isset($params['wb'][$i+1]['wb'])){
+					$wbSize=sizeof($params['wb'][$i+1]['wb']);
+					for($e=0;$e<$wbSize;$e++){
+						if(isset($params['wb'][$i+1]['wb'][$e]) && trim($params['wb'][$i+1]['wb'][$e])!=""){
+							$expDate='';
+							if(trim($params['wb'][$i+1]['expiry'][$e])!=""){
+								$expDate=Pt_Commons_General::dateFormat($params['wb'][$i+1]['expiry'][$e]);
+							}
+							$dbAdapter->insert('reference_dts_wb',
+								array('shipment_id'=>$lastId,
+									'sample_id'=>($i+1),
+									'wb'=>$params['wb'][$i+1]['wb'][$e],
+									'lot'=>$params['wb'][$i+1]['lot'][$e],
+									'exp_date'=>$expDate,
+									'160'=>$params['wb'][$i+1]['160'][$e],
+									'120'=>$params['wb'][$i+1]['120'][$e],
+									'66'=>$params['wb'][$i+1]['66'][$e],
+									'55'=>$params['wb'][$i+1]['55'][$e],
+									'51'=>$params['wb'][$i+1]['51'][$e],
+									'41'=>$params['wb'][$i+1]['41'][$e],
+									'31'=>$params['wb'][$i+1]['31'][$e],
+									'24'=>$params['wb'][$i+1]['24'][$e],
+									'17'=>$params['wb'][$i+1]['17'][$e]
+								)
+							);
+							
 						}
-						$dbAdapter->insert('reference_dts_wb',
-							array('shipment_id'=>$lastId,
-								'sample_id'=>($i+1),
-								'wb'=>$params['wb'][$i+1]['wb'][$e],
-								'lot'=>$params['wb'][$i+1]['lot'][$e],
-								'exp_date'=>$expDate,
-								'160'=>$params['wb'][$i+1]['160'][$e],
-								'120'=>$params['wb'][$i+1]['120'][$e],
-								'66'=>$params['wb'][$i+1]['66'][$e],
-								'55'=>$params['wb'][$i+1]['55'][$e],
-								'51'=>$params['wb'][$i+1]['51'][$e],
-								'41'=>$params['wb'][$i+1]['41'][$e],
-								'31'=>$params['wb'][$i+1]['31'][$e],
-								'24'=>$params['wb'][$i+1]['24'][$e],
-								'17'=>$params['wb'][$i+1]['17'][$e]
-							)
-						);
 						
 					}
-					
 				}
-				
 				// ------------------>
 			}
 
@@ -500,61 +498,62 @@ class Application_Service_Shipments {
 									)
 								  );
 				// <------ Insert reference_dbs_eia table
-				$eiaSize=sizeof($params['eia'][$i+1]['eia']);
-				for($e=0;$e<$eiaSize;$e++){
-					if(isset($params['eia'][$i+1]['eia'][$e]) && trim($params['eia'][$i+1]['eia'][$e])!=""){
-						$expDate='';
-						if(trim($params['eia'][$i+1]['expiry'][$e])!=""){
-							$expDate=Pt_Commons_General::dateFormat($params['eia'][$i+1]['expiry'][$e]);
+				if(isset($params['eia'][$i+1]['eia'])){
+					$eiaSize=sizeof($params['eia'][$i+1]['eia']);
+					for($e=0;$e<$eiaSize;$e++){
+						if(isset($params['eia'][$i+1]['eia'][$e]) && trim($params['eia'][$i+1]['eia'][$e])!=""){
+							$expDate='';
+							if(trim($params['eia'][$i+1]['expiry'][$e])!=""){
+								$expDate=Pt_Commons_General::dateFormat($params['eia'][$i+1]['expiry'][$e]);
+							}
+							
+							$dbAdapter->insert('reference_dbs_eia',
+								array('shipment_id'=>$lastId,
+									'sample_id'=>($i+1),
+									'eia'=>$params['eia'][$i+1]['eia'][$e],
+									'lot'=>$params['eia'][$i+1]['lot'][$e],
+									'exp_date'=>$expDate,
+									'od'=>$params['eia'][$i+1]['od'][$e],
+									'cutoff'=>$params['eia'][$i+1]['cutoff'][$e]
+								)
+							);
+							
 						}
-						
-						$dbAdapter->insert('reference_dbs_eia',
-							array('shipment_id'=>$lastId,
-								'sample_id'=>($i+1),
-								'eia'=>$params['eia'][$i+1]['eia'][$e],
-								'lot'=>$params['eia'][$i+1]['lot'][$e],
-								'exp_date'=>$expDate,
-								'od'=>$params['eia'][$i+1]['od'][$e],
-								'cutoff'=>$params['eia'][$i+1]['cutoff'][$e]
-							)
-						);
-						
 					}
 				}
-				
 				//------------->
 				
 				// <------ Insert reference_dbs_wb table
-				
-				$wbSize=sizeof($params['wb'][$i+1]['wb']);
-				for($e=0;$e<$wbSize;$e++){
-					if(isset($params['wb'][$i+1]['wb'][$e]) && trim($params['wb'][$i+1]['wb'][$e])!=""){
-						$expDate='';
-						if(trim($params['wb'][$i+1]['expiry'][$e])!=""){
-							$expDate=Pt_Commons_General::dateFormat($params['wb'][$i+1]['expiry'][$e]);
+				if(isset($params['wb'][$i+1]['wb'])){
+					$wbSize=sizeof($params['wb'][$i+1]['wb']);
+					for($e=0;$e<$wbSize;$e++){
+						if(isset($params['wb'][$i+1]['wb'][$e]) && trim($params['wb'][$i+1]['wb'][$e])!=""){
+							$expDate='';
+							if(trim($params['wb'][$i+1]['expiry'][$e])!=""){
+								$expDate=Pt_Commons_General::dateFormat($params['wb'][$i+1]['expiry'][$e]);
+							}
+							$dbAdapter->insert('reference_dbs_wb',
+								array('shipment_id'=>$lastId,
+									'sample_id'=>($i+1),
+									'wb'=>$params['wb'][$i+1]['wb'][$e],
+									'lot'=>$params['wb'][$i+1]['lot'][$e],
+									'exp_date'=>$expDate,
+									'160'=>$params['wb'][$i+1]['160'][$e],
+									'120'=>$params['wb'][$i+1]['120'][$e],
+									'66'=>$params['wb'][$i+1]['66'][$e],
+									'55'=>$params['wb'][$i+1]['55'][$e],
+									'51'=>$params['wb'][$i+1]['51'][$e],
+									'41'=>$params['wb'][$i+1]['41'][$e],
+									'31'=>$params['wb'][$i+1]['31'][$e],
+									'24'=>$params['wb'][$i+1]['24'][$e],
+									'17'=>$params['wb'][$i+1]['17'][$e]
+								)
+							);
+							
 						}
-						$dbAdapter->insert('reference_dbs_wb',
-							array('shipment_id'=>$lastId,
-								'sample_id'=>($i+1),
-								'wb'=>$params['wb'][$i+1]['wb'][$e],
-								'lot'=>$params['wb'][$i+1]['lot'][$e],
-								'exp_date'=>$expDate,
-								'160'=>$params['wb'][$i+1]['160'][$e],
-								'120'=>$params['wb'][$i+1]['120'][$e],
-								'66'=>$params['wb'][$i+1]['66'][$e],
-								'55'=>$params['wb'][$i+1]['55'][$e],
-								'51'=>$params['wb'][$i+1]['51'][$e],
-								'41'=>$params['wb'][$i+1]['41'][$e],
-								'31'=>$params['wb'][$i+1]['31'][$e],
-								'24'=>$params['wb'][$i+1]['24'][$e],
-								'17'=>$params['wb'][$i+1]['17'][$e]
-							)
-						);
 						
 					}
-					
 				}
-				
 				// ------------------>
 			}
 
@@ -726,60 +725,61 @@ class Application_Service_Shipments {
 									'sample_score'=>$params['score'][$i]
 									)
 								);
-				
-				$eiaSize=sizeof($params['eia'][$i+1]['eia']);
-				for($e=0;$e<$eiaSize;$e++){
-					if(isset($params['eia'][$i+1]['eia'][$e]) && trim($params['eia'][$i+1]['eia'][$e])!=""){
-						$expDate='';
-						if(trim($params['eia'][$i+1]['expiry'][$e])!=""){
-							$expDate=Pt_Commons_General::dateFormat($params['eia'][$i+1]['expiry'][$e]);
+				if(isset($params['eia'][$i+1]['eia'])){
+					$eiaSize=sizeof($params['eia'][$i+1]['eia']);
+					for($e=0;$e<$eiaSize;$e++){
+						if(isset($params['eia'][$i+1]['eia'][$e]) && trim($params['eia'][$i+1]['eia'][$e])!=""){
+							$expDate='';
+							if(trim($params['eia'][$i+1]['expiry'][$e])!=""){
+								$expDate=Pt_Commons_General::dateFormat($params['eia'][$i+1]['expiry'][$e]);
+							}
+							$dbAdapter->insert('reference_dts_eia',
+								array('shipment_id'=>$params['shipmentId'],
+									'sample_id'=>($i+1),
+									'eia'=>$params['eia'][$i+1]['eia'][$e],
+									'lot'=>$params['eia'][$i+1]['lot'][$e],
+									'exp_date'=>$expDate,
+									'od'=>$params['eia'][$i+1]['od'][$e],
+									'cutoff'=>$params['eia'][$i+1]['cutoff'][$e]
+								)
+							);
+							
 						}
-						$dbAdapter->insert('reference_dts_eia',
-							array('shipment_id'=>$params['shipmentId'],
-								'sample_id'=>($i+1),
-								'eia'=>$params['eia'][$i+1]['eia'][$e],
-								'lot'=>$params['eia'][$i+1]['lot'][$e],
-								'exp_date'=>$expDate,
-								'od'=>$params['eia'][$i+1]['od'][$e],
-								'cutoff'=>$params['eia'][$i+1]['cutoff'][$e]
-							)
-						);
 						
 					}
-					
 				}
-			
+				
 				// <------ Insert reference_dbs_wb table
-				
-				$wbSize=sizeof($params['wb'][$i+1]['wb']);
-				for($e=0;$e<$wbSize;$e++){
-					if(isset($params['wb'][$i+1]['wb'][$e]) && trim($params['wb'][$i+1]['wb'][$e])!=""){
-						$expDate='';
-						if(trim($params['wb'][$i+1]['expiry'][$e])!=""){
-							$expDate=Pt_Commons_General::dateFormat($params['wb'][$i+1]['expiry'][$e]);
+				if(isset($params['wb'][$i+1]['wb'])){
+					$wbSize=sizeof($params['wb'][$i+1]['wb']);
+					for($e=0;$e<$wbSize;$e++){
+						if(isset($params['wb'][$i+1]['wb'][$e]) && trim($params['wb'][$i+1]['wb'][$e])!=""){
+							$expDate='';
+							if(trim($params['wb'][$i+1]['expiry'][$e])!=""){
+								$expDate=Pt_Commons_General::dateFormat($params['wb'][$i+1]['expiry'][$e]);
+							}
+							$dbAdapter->insert('reference_dts_wb',
+								array('shipment_id'=>$params['shipmentId'],
+									'sample_id'=>($i+1),
+									'wb'=>$params['wb'][$i+1]['wb'][$e],
+									'lot'=>$params['wb'][$i+1]['lot'][$e],
+									'exp_date'=>$expDate,
+									'160'=>$params['wb'][$i+1]['160'][$e],
+									'120'=>$params['wb'][$i+1]['120'][$e],
+									'66'=>$params['wb'][$i+1]['66'][$e],
+									'55'=>$params['wb'][$i+1]['55'][$e],
+									'51'=>$params['wb'][$i+1]['51'][$e],
+									'41'=>$params['wb'][$i+1]['41'][$e],
+									'31'=>$params['wb'][$i+1]['31'][$e],
+									'24'=>$params['wb'][$i+1]['24'][$e],
+									'17'=>$params['wb'][$i+1]['17'][$e]
+								)
+							);
+							
 						}
-						$dbAdapter->insert('reference_dts_wb',
-							array('shipment_id'=>$params['shipmentId'],
-								'sample_id'=>($i+1),
-								'wb'=>$params['wb'][$i+1]['wb'][$e],
-								'lot'=>$params['wb'][$i+1]['lot'][$e],
-								'exp_date'=>$expDate,
-								'160'=>$params['wb'][$i+1]['160'][$e],
-								'120'=>$params['wb'][$i+1]['120'][$e],
-								'66'=>$params['wb'][$i+1]['66'][$e],
-								'55'=>$params['wb'][$i+1]['55'][$e],
-								'51'=>$params['wb'][$i+1]['51'][$e],
-								'41'=>$params['wb'][$i+1]['41'][$e],
-								'31'=>$params['wb'][$i+1]['31'][$e],
-								'24'=>$params['wb'][$i+1]['24'][$e],
-								'17'=>$params['wb'][$i+1]['17'][$e]
-							)
-						);
 						
 					}
-					
 				}
-				
 				// ------------------>
 			}
 
@@ -798,60 +798,60 @@ class Application_Service_Shipments {
 									'sample_score'=>$params['score'][$i]
 									)
 								);
-					
-				$eiaSize=sizeof($params['eia'][$i+1]['eia']);
-				for($e=0;$e<$eiaSize;$e++){
-					if(isset($params['eia'][$i+1]['eia'][$e]) && trim($params['eia'][$i+1]['eia'][$e])!=""){
-						$expDate='';
-						if(trim($params['eia'][$i+1]['expiry'][$e])!=""){
-							$expDate=Pt_Commons_General::dateFormat($params['eia'][$i+1]['expiry'][$e]);
+				if(isset($params['eia'][$i+1]['eia'])){
+					$eiaSize=sizeof($params['eia'][$i+1]['eia']);
+					for($e=0;$e<$eiaSize;$e++){
+						if(isset($params['eia'][$i+1]['eia'][$e]) && trim($params['eia'][$i+1]['eia'][$e])!=""){
+							$expDate='';
+							if(trim($params['eia'][$i+1]['expiry'][$e])!=""){
+								$expDate=Pt_Commons_General::dateFormat($params['eia'][$i+1]['expiry'][$e]);
+							}
+							$dbAdapter->insert('reference_dbs_eia',
+								array('shipment_id'=>$params['shipmentId'],
+									'sample_id'=>($i+1),
+									'eia'=>$params['eia'][$i+1]['eia'][$e],
+									'lot'=>$params['eia'][$i+1]['lot'][$e],
+									'exp_date'=>$expDate,
+									'od'=>$params['eia'][$i+1]['od'][$e],
+									'cutoff'=>$params['eia'][$i+1]['cutoff'][$e]
+								)
+							);
+							
 						}
-						$dbAdapter->insert('reference_dbs_eia',
-							array('shipment_id'=>$params['shipmentId'],
-								'sample_id'=>($i+1),
-								'eia'=>$params['eia'][$i+1]['eia'][$e],
-								'lot'=>$params['eia'][$i+1]['lot'][$e],
-								'exp_date'=>$expDate,
-								'od'=>$params['eia'][$i+1]['od'][$e],
-								'cutoff'=>$params['eia'][$i+1]['cutoff'][$e]
-							)
-						);
 						
 					}
-					
 				}
-			
 				// <------ Insert reference_dbs_wb table
-				
-				$wbSize=sizeof($params['wb'][$i+1]['wb']);
-				for($e=0;$e<$wbSize;$e++){
-					if(isset($params['wb'][$i+1]['wb'][$e]) && trim($params['wb'][$i+1]['wb'][$e])!=""){
-						$expDate='';
-						if(trim($params['wb'][$i+1]['expiry'][$e])!=""){
-							$expDate=Pt_Commons_General::dateFormat($params['wb'][$i+1]['expiry'][$e]);
+				if(isset($params['wb'][$i+1]['wb'])){
+					$wbSize=sizeof($params['wb'][$i+1]['wb']);
+					for($e=0;$e<$wbSize;$e++){
+						if(isset($params['wb'][$i+1]['wb'][$e]) && trim($params['wb'][$i+1]['wb'][$e])!=""){
+							$expDate='';
+							if(trim($params['wb'][$i+1]['expiry'][$e])!=""){
+								$expDate=Pt_Commons_General::dateFormat($params['wb'][$i+1]['expiry'][$e]);
+							}
+							$dbAdapter->insert('reference_dbs_wb',
+								array('shipment_id'=>$params['shipmentId'],
+									'sample_id'=>($i+1),
+									'wb'=>$params['wb'][$i+1]['wb'][$e],
+									'lot'=>$params['wb'][$i+1]['lot'][$e],
+									'exp_date'=>$expDate,
+									'160'=>$params['wb'][$i+1]['160'][$e],
+									'120'=>$params['wb'][$i+1]['120'][$e],
+									'66'=>$params['wb'][$i+1]['66'][$e],
+									'55'=>$params['wb'][$i+1]['55'][$e],
+									'51'=>$params['wb'][$i+1]['51'][$e],
+									'41'=>$params['wb'][$i+1]['41'][$e],
+									'31'=>$params['wb'][$i+1]['31'][$e],
+									'24'=>$params['wb'][$i+1]['24'][$e],
+									'17'=>$params['wb'][$i+1]['17'][$e]
+								)
+							);
+							
 						}
-						$dbAdapter->insert('reference_dbs_wb',
-							array('shipment_id'=>$params['shipmentId'],
-								'sample_id'=>($i+1),
-								'wb'=>$params['wb'][$i+1]['wb'][$e],
-								'lot'=>$params['wb'][$i+1]['lot'][$e],
-								'exp_date'=>$expDate,
-								'160'=>$params['wb'][$i+1]['160'][$e],
-								'120'=>$params['wb'][$i+1]['120'][$e],
-								'66'=>$params['wb'][$i+1]['66'][$e],
-								'55'=>$params['wb'][$i+1]['55'][$e],
-								'51'=>$params['wb'][$i+1]['51'][$e],
-								'41'=>$params['wb'][$i+1]['41'][$e],
-								'31'=>$params['wb'][$i+1]['31'][$e],
-								'24'=>$params['wb'][$i+1]['24'][$e],
-								'17'=>$params['wb'][$i+1]['17'][$e]
-							)
-						);
 						
 					}
-					
 				}
-				
 				// ------------------>
 			
 			}
