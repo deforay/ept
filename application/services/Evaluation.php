@@ -91,12 +91,12 @@ class Application_Service_Evaluation {
          * Get data to display
          */
 		
-		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+	$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))
-				     ->joinLeft(array('s'=>'shipment'),'s.distribution_id=d.distribution_id',array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
-					 ->where("d.status='shipped'")
-				     ->group('d.distribution_id');
+				->joinLeft(array('s'=>'shipment'),'s.distribution_id=d.distribution_id',array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
+				->where("d.status='shipped'")
+				->group('d.distribution_id');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -160,14 +160,14 @@ class Application_Service_Evaluation {
     }
 	
 	public function getShipments($distributionId){
-	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s'=>'shipment'))
-							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
-							->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
-							->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type')
-							->joinLeft(array('rr'=>'r_results'),'sp.final_result=rr.result_id')
-							->where("s.distribution_id = ?",$distributionId)
-							->group('s.shipment_id');
+					->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
+					->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
+					->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type')
+					->joinLeft(array('rr'=>'r_results'),'sp.final_result=rr.result_id')
+					->where("s.distribution_id = ?",$distributionId)
+					->group('s.shipment_id');
 			  
 	    return $db->fetchAll($sql);
 	}

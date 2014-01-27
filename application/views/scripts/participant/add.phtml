@@ -103,8 +103,8 @@
 				</tr>
 
 				<tr align="left" class="dark">
-					<td>Participant e-mail Address</td>
-					<td><input type="text" id="pemail" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsParticipant['email']; ?>" title="Please enter the Participant's Email here" placeholder="Please enter the Participant's Email here" /></td>
+					<td>Participant e-mail Address <span class="mandatory">*</span></td>
+					<td><input type="text" id="pemail" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsParticipant['email']; ?>" title="Please enter the Participant's Email here" placeholder="Please enter the Participant's Email here" class="isRequired isEmail"/></td>
 				</tr>
 				<tr align="left" class="light">
 					<td>Participant Phone Number</td>
@@ -199,7 +199,7 @@ function goto_testers(){
             });
     }
     function validateNow(){
-	   checkDuplicate('participant', 'unique_identifier', $("#participantId"), null, 'This Participant ID already exists for another Participant. Please try something else.')
+       //checkDuplicate('participant', 'unique_identifier', $("#participantId"), null, 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'participantEdit'
         });
