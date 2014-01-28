@@ -122,9 +122,17 @@ if($controllerName.$actionName!='distributionsindex'){
         unset($alertMsg->message);        
       }
       ?>
-      		
-		
 	});
+	function checkNum(){
+            var carCode = event.keyCode;
+            if((carCode==46)){
+            
+            }
+            else if ((carCode < 48) || (carCode > 57)){
+                // event.cancelBubble = true
+                event.returnValue = false;
+            }
+        }
 </script>
 <img src="/images/loading.gif" style="display:none;"/>
 </body>

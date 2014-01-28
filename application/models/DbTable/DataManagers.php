@@ -29,7 +29,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('u.institute','u.first_name','u.last_name', 'u.phone', 'u.primary_email', 'u.secondary_email','p.first_name', 'u.status');
+        $aColumns = array('u.institute','u.first_name','u.last_name', 'u.mobile', 'u.primary_email', 'u.secondary_email','p.first_name', 'u.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "dm_id";
@@ -108,9 +108,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('u' => $this->_name))
-												->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.dm_id=u.dm_id',array())
-												->joinLeft(array('p'=>'participant'),'p.participant_id = pmm.participant_id',array('participants' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT(p.first_name,' ',p.last_name) SEPARATOR ', <br/>')")))
-												->group('u.dm_id');
+				    ->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.dm_id=u.dm_id',array())
+				    ->joinLeft(array('p'=>'participant'),'p.participant_id = pmm.participant_id',array('participants' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT(p.first_name,' ',p.last_name) SEPARATOR ', <br/>')")))
+				    ->group('u.dm_id');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
