@@ -10,8 +10,8 @@ class Application_Service_Reports {
          */
 
         $aColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,new Zend_Db_Expr('count("participant_id")'),new Zend_Db_Expr("SUM(shipment_test_date <> '')"),new Zend_Db_Expr("(SUM(shipment_test_date <> '')/count('participant_id'))*100"),new Zend_Db_Expr("SUM(final_result = 1)"),'s.status');
-        $searchColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples','s.status');
-        $havingColumns = array(new Zend_Db_Expr('count("participant_id")'),new Zend_Db_Expr("SUM(shipment_test_date <> '')"),new Zend_Db_Expr("(SUM(shipment_test_date <> '')/count('participant_id'))*100"),new Zend_Db_Expr("SUM(final_result = 1)"));
+        $searchColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples','participant_count','reported_count','reported_percentage','number_passed','s.status');
+        $havingColumns = array('participant_count','reported_count');
         $orderColumns = array('distribution_code','distribution_date', 's.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,new Zend_Db_Expr('count("participant_id")'),new Zend_Db_Expr("SUM(shipment_test_date <> '')"),new Zend_Db_Expr("(SUM(shipment_test_date <> '')/count('participant_id'))*100"),new Zend_Db_Expr("SUM(final_result = 1)"),'s.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
@@ -60,7 +60,7 @@ class Application_Service_Reports {
                     $sWhereSub .= " AND (";
                 }
                 $colSize = count($searchColumns);
-
+		
                 for ($i = 0; $i < $colSize; $i++) {
                     if($searchColumns[$i] == "" || $searchColumns[$i] == null){
                         continue;
@@ -75,7 +75,8 @@ class Application_Service_Reports {
             }
             $sWhere .= $sWhereSub;
         }
-
+	
+	//error_log($sHaving);
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
@@ -126,14 +127,14 @@ class Application_Service_Reports {
 		
 		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $sQuery = $dbAdapter->select()->from(array('s'=>'shipment'))
-							->join(array('sl'=>'scheme_list'),'s.scheme_type=sl.scheme_id')
-							->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
-							->joinLeft(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"),'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(shipment_test_date <> '')/count('participant_id'))*100,2)"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
-							->joinLeft(array('p'=>'participant'),'p.participant_id=sp.participant_id')
-							->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
-							->joinLeft(array('rr'=>'r_results'),'sp.final_result=rr.result_id')
-							->group('s.shipment_id');
+		$sQuery = $dbAdapter->select()->from(array('s'=>'shipment'))
+				->join(array('sl'=>'scheme_list'),'s.scheme_type=sl.scheme_id')
+				->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
+				->joinLeft(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"),'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(shipment_test_date <> '')/count('participant_id'))*100,2)"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
+				->joinLeft(array('p'=>'participant'),'p.participant_id=sp.participant_id')
+				->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
+				->joinLeft(array('rr'=>'r_results'),'sp.final_result=rr.result_id')
+				->group('s.shipment_id');
 							
 
 		if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
@@ -151,10 +152,9 @@ class Application_Service_Reports {
 		
 
         if (isset($sWhere) && $sWhere != "") {
-            $sQuery = $sQuery->where($sWhere);
+            $sQuery = $sQuery->having($sWhere);
         }
-		
-
+	
         //if (isset($sHaving) && $sHaving != "") {
            // $sQuery = $sQuery->having($sHaving);
        // }
@@ -168,7 +168,7 @@ class Application_Service_Reports {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //die($sQuery);
+        //error_log($sQuery);
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -201,23 +201,22 @@ class Application_Service_Reports {
 		//'sp.participant_count','sp.reported_count','sp.number_passed','s.status');
         foreach ($rResult as $aRow) {
             
-            $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
+		$shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
+		
+		$row = array();
+		$row[] = $aRow['distribution_code'];
+		$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
+		$row[] = $aRow['shipment_code'];
+		$row[] = $aRow['scheme_name'];
+		$row[] = $aRow['number_of_samples'];
+		$row[] = $aRow['participant_count'];
+		$row[] = ($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
+		$row[] = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
+		$row[] = $aRow['number_passed'];
+		$row[] = ucwords($aRow['status']);
             
-            $row = array();
-            $row[] = $aRow['distribution_code'];
-            $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-			$row[] = $aRow['shipment_code'];
-			$row[] = $aRow['scheme_name'];
-			$row[] = $aRow['number_of_samples'];
-            $row[] = $aRow['participant_count'];
-            $row[] = ($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
-            $row[] = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
-            $row[] = $aRow['number_passed'];
-            $row[] = ucwords($aRow['status']);
             
-            
-
-            $output['aaData'][] = $row;
+		$output['aaData'][] = $row;
         }
 
         echo json_encode($output);
