@@ -319,9 +319,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 			$dataManager = $authNameSpace->first_name . " " .$authNameSpace->last_name;
 			$common = new Application_Service_Common();
 			$message = "Hi,<br/>  A new participant ($participantName) was added by $dataManager <br/><small>This is a system generated email. Please do not reply.</small>";
-			$fromMail = Application_Service_Common::getConfig('admin-email');			
+			$toMail = Application_Service_Common::getConfig('admin-email');			
 			//$fromName = Application_Service_Common::getConfig('admin-name');			
-			$common->sendMail($fromMail,null,null,"New Participant Registered  ($participantName)",$message,$fromMail,"ePT Admin");			
+			$common->sendMail($toMail,null,null,"New Participant Registered  ($participantName)",$message,$fromMail,"ePT Admin");			
 		
 		return $participantId;
     }

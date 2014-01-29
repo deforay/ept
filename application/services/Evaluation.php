@@ -745,6 +745,9 @@ class Application_Service_Evaluation {
 				
 				
 				// let us update the total score in DB
+				if($totalScore == 'N/A'){
+					$totalScore = 0;
+				}
 				$nofOfRowsUpdated = $db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
 				$counter++;
 			}
