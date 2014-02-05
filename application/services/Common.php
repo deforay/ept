@@ -93,7 +93,7 @@ class Application_Service_Common {
 		$db->addContact($data);
 		
 		$fromEmail = $params['email'];
-		$fromName = $params['first_name']." " .$params['last_name'];
+		$fromName  = $params['first_name']." " .$params['last_name'];
 		
 		$to = Application_Service_Common::getConfig('admin-email');
 		

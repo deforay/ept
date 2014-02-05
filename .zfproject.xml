@@ -328,6 +328,9 @@
             <controllerFile controllerName="Shipments">
               <actionMethod actionName="index"/>
             </controllerFile>
+            <controllerFile controllerName="Distribution">
+              <actionMethod actionName="index"/>
+            </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
           <layoutsDirectory enabled="false">
@@ -339,6 +342,9 @@
           <viewsDirectory>
             <viewScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Shipments">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Distribution">
                 <viewScriptFile forActionName="index"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
@@ -604,6 +610,9 @@
           <testApplicationModuleDirectory forModuleName="reports">
             <testApplicationControllerDirectory>
               <testApplicationControllerFile forControllerName="Shipments">
+                <testApplicationActionMethod forActionName="index"/>
+              </testApplicationControllerFile>
+              <testApplicationControllerFile forControllerName="Distribution">
                 <testApplicationActionMethod forActionName="index"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>
