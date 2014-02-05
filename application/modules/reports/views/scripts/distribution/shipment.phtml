@@ -1,0 +1,230 @@
+<?php if (count($this->shipment) > 0) {  ?>
+<div class="well" style="clear: both;">
+<a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
+<div id="allShipmentList">
+     
+          <legend><h4>All Shipments Under PT Event <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4></legend>
+     
+          <table class="table table-bordered table-striped table-hover">
+			<tr>
+				<th style="text-align: center;">Shipment Code</th>
+				<th style="text-align: center;">Scheme</th>
+				<th style="text-align: center;">No. of Samples</th>
+				<th style="text-align: center;">No. of Participants</th>
+				<th style="text-align: center;">No. of Responses</th>
+				<th style="text-align: center;">Response %</th>
+				<th style="text-align: center;">Number Passed</th>
+				<th style="text-align: center;">Shipment Status</th>
+				<th style="text-align: center;">Action</th>
+			</tr>
+			<?php
+			if(count($this->shipmentsUnderDistro) > 0){
+			foreach($this->shipmentsUnderDistro as $shipment){
+				$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+				?>
+				<tr>
+					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
+					<td style="text-align: center;"><?php echo $shipment['scheme_name'] ?></td>
+					<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
+					<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
+					<td style="text-align: center;"><?php echo $reported ?></td>
+					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? (($reported/$shipment['participant_count'])*100) : 0; ?></td>					
+					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
+					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
+					<td style="text-align: center;">
+						<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
+						<a class="btn btn-success btn-xs" href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
+						<?php } else { ?>
+						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
+						<?php }?>
+					</td>
+				</tr>
+				<?php
+				}
+			}else{
+				?>
+				<tr>
+					<td colspan="5" align="center" style="text-align:center">
+						No shipments for this PT Event yet
+					</td>
+				</tr>
+				<?php
+			}
+			?>
+		  </table>
+    </div><!-- /.modal-dialog -->
+</div>	
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently evaluating Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> <a href="<?php echo $this->url(array('re'=>base64_encode('yes'))); ?>" onclick="$.blockUI()" class="btn btn-primary btn-xs btn-danger"><span><i class="icon-refresh"></i>&nbsp;&nbsp;Re-Evaluate</span></a></div>
+	<div style="margin-top:10px;">
+		<a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
+	</div>
+</h4>
+<table class="table table-bordered" style="margin:0 auto;">
+	<tr>
+		<th style="text-align: right">Scheme Type</th>
+		<td><?php echo $this->shipment[0]['scheme_name']; ?></td>
+		<th style="text-align: right">PT Event Code</th>
+		<td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
+		<th style="text-align: right">PT Event/Shipment Date</th>
+		<td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
+	</tr>
+</table>
+<br/>
+
+	<table class="table table-bordered" style="width:95%;margin:10px auto;">
+	<tr>
+		<td style="vertical-align: middle;">
+			Comment for all Participants of this shipment
+		</td>
+		<td style="width:55%;"><?php echo $this->shipment[0]['shipment_comment']; ?></td>
+		
+	</tr>
+</table>
+
+<br/><br/>
+<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
+    <thead>
+    <tr>
+        <th>Participant/Tester</th>
+        <th>Score</th>
+        <th>Max Score</th>
+        <th>Result</th>
+        <th>Comments (if any)</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+		<?php
+			$editList = array();
+			$viewList = array();
+			
+			
+			foreach($this->shipment as $shipment){
+				$editList[] = "/admin/evaluate/edit/sid/".base64_encode($shipment['shipment_id'])."/pid/".base64_encode($shipment['participant_id'])."/scheme/".base64_encode($shipment['scheme_type']);
+				$viewList[] = "/admin/evaluate/view/sid/".base64_encode($shipment['shipment_id'])."/pid/".base64_encode($shipment['participant_id'])."/scheme/".base64_encode($shipment['scheme_type']);
+				if(isset($shipment['failure_reason']) && $shipment['failure_reason'] != ""){
+					$shipment['failure_reason'] = "<ul><li>" .str_replace(",","</li><li>",$shipment['failure_reason']) . "</li></ul>";
+				}
+				?>
+				<tr>
+					<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['first_name'] . " " .$shipment['last_name'] ?></td>
+					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0' ?></td>
+					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['max_score']) && $shipment['max_score'] != "") ? $shipment['max_score'] : '-'; ?></td>
+					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['display_result']) && $shipment['display_result'] != "") ? $shipment['display_result'] : 'Not Evaluated'; ?></td>
+					<td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
+					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
+						<!--<a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/< ?php echo base64_encode($shipment['shipment_id']) ?>/pid/< ?php echo base64_encode($shipment['participant_id']) ?>/scheme/< ?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
+						<a class="btn btn-primary btn-xs" href="/admin/evaluate/view/sid/< ?php echo base64_encode($shipment['shipment_id']) ?>/pid/< ?php echo base64_encode($shipment['participant_id']) ?>/scheme/< ?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-search"></i> View</span></a>-->
+					</td>
+				</tr>
+				<?php
+			}
+			$evSession = new Zend_Session_Namespace('evalShipmentList');
+			$evSession->editUrlList = $editList;
+			$evSession->viewUrlList = $viewList;
+		?>
+    
+    </tbody>
+</table>
+
+<script type="text/javascript" charset="utf-8">
+	var oTable = null;
+	var nTr = null;
+	$(document).ready(function() {
+		
+	var nCloneTh = document.createElement( 'th' );
+	var nCloneTd = document.createElement( 'td' );
+	nCloneTd.innerHTML = '<a href="javascript:void(0);" class="btn btn-success btn-xs clicker"><i class="icon-plus"></i></a>';
+	nCloneTd.className = "center";		
+	
+	$('#shipmentEvaluation thead tr').each( function () {
+			this.insertBefore( nCloneTh, this.childNodes[0] );
+		} );
+
+	$('#shipmentEvaluation tbody tr').each( function () {
+		this.insertBefore(  nCloneTd.cloneNode( true ), this.childNodes[0] );
+	} );
+		
+	$('#shipmentEvaluation').on('click',".clicker", function () {
+        nTr = $(this).parents('tr')[0];
+        if ( oTable.fnIsOpen(nTr) )
+        {
+		/* This row is already open - close it */
+		$(this).find('i').addClass("icon-plus");
+		$(this).find('i').removeClass("icon-minus");
+		$(this).removeClass('btn-danger');
+		$(this).addClass('btn-success');
+		oTable.fnClose( nTr );
+        }
+        else
+        {
+            /* Open this row */
+
+			$(this).find('i').addClass("icon-minus");
+            $(this).find('i').removeClass("icon-add");
+			$(this).removeClass('btn-success');
+			$(this).addClass('btn-danger');			
+            oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details' );
+        }
+    } );		
+		
+		oTable = $("#shipmentEvaluation").dataTable({
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "full_numbers",
+            "bRetrieve": true,
+            "aoColumns": [
+		{ "bSortable": false, "aTargets": [ 0 ] },
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                { "bSearchable": false, "bVisible": false},
+                {"sClass":"center","bSortable":false}
+            ],
+            "aaSorting": [[ 1, "asc" ]],
+            "bProcessing": true,
+        } );
+	});
+	
+	function fnFormatDetails ( oTable, nTr )
+	{
+		var aData = oTable.fnGetData( nTr );
+		var sOut = "";
+		if (aData[5] != "" && aData[5] != null && aData[5] != undefined) {
+			sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
+			sOut += '<tr><td style="width:220px;">Failure Reasons & Warnings:</td><td>'+aData[5]+'</td></tr>';
+			sOut += '</table>';
+		}else{
+			sOut = 'No comments to show';
+		}
+		return sOut;
+
+	}	
+	
+	function updateComment(sid){
+		if ($.trim($("#shipmentComment").val()) == "") {
+			alert("Please enter comment to proceed");
+			return;
+		}
+		$.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'),'default',true); ?>", { sid: sid,comment: $("#shipmentComment").val(), format: "html" },
+		function (data) {               
+			$.unblockUI({  onUnblock: function(){ alert(data); }  });			   
+		});
+	}
+</script>
+
+<?php } else { ?>
+	
+	<br/><br/><br/>
+	<h3 style="text-align: center">No Shipment to evaluate. <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" >Click here to go back</a></h3>
+	
+<?php } ?>

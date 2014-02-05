@@ -144,7 +144,7 @@ class Application_Service_Evaluation {
             $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             
             $row = array();
-			$row['DT_RowId']="dist".$aRow['distribution_id'];
+	    $row['DT_RowId']="dist".$aRow['distribution_id'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];

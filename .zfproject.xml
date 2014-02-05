@@ -330,6 +330,8 @@
             </controllerFile>
             <controllerFile controllerName="Distribution">
               <actionMethod actionName="index"/>
+              <actionMethod actionName="getShipments"/>
+              <actionMethod actionName="shipment"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -346,6 +348,12 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Distribution">
                 <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Distribution">
+                <viewScriptFile forActionName="getShipments"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Distribution">
+                <viewScriptFile forActionName="shipment"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

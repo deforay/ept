@@ -56,7 +56,7 @@
             "bProcessing": true,
 			//"bSortClasses": false,
             "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index', 'format' => 'html')); ?>",
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'index', 'format' => 'html')); ?>",
             "fnServerData": function ( sSource, aoData, fnCallback ) {
                 $.ajax({
                     "dataType": 'json',
@@ -66,9 +66,9 @@
                     "success": function(json){
                         fnCallback(json);
                         if(currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0){
-							$("#dist"+currentHighlighted+" td").addClass("highliter");
-							getShipments(currentHighlighted);
-						}                       
+			$("#dist"+currentHighlighted+" td").addClass("highliter");
+			getShipmentInReports(currentHighlighted);
+			}
                     }
 
                 });
@@ -79,20 +79,19 @@
 
 	
 	
-	function getShipments(did) {
+	function getShipmentInReports(did) {
 		$.blockUI();
 		//oTable.fnStandingRedraw();
 		currentHighlighted = did;
 		setCookie('did', did);
-
 		$("#distroTable tr td").removeClass("highliter");
 		$("#dist"+currentHighlighted+" td").addClass("highliter");
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'get-shipments')); ?>", { did: did, format: "html" },
-            function (data) {
-               $("#shipments").html(data);
-			   //
-			   $.unblockUI();
-        });
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'get-shipments')); ?>", { did: did, format: "html" },
+		    function (data) {
+		       $("#shipments").html(data);
+			//
+			$.unblockUI();
+		});
 	}	
 
 </script>
