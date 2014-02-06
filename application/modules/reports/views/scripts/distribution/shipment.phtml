@@ -1,4 +1,4 @@
-<?php if (count($this->shipment) > 0) {  ?>
+<?php if (count($this->shipment) > 0) {	?>
 <div class="well" style="clear: both;">
 <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
 <div id="allShipmentList">
@@ -33,9 +33,9 @@
 					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
 					<td style="text-align: center;">
 						<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
-						<a class="btn btn-success btn-xs" href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
+						<a class="btn btn-success btn-xs" href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Report</span></a>
 						<?php } else { ?>
-						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
+						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Report</span></a>
 						<?php }?>
 					</td>
 				</tr>
@@ -55,7 +55,7 @@
     </div><!-- /.modal-dialog -->
 </div>	
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently evaluating Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> <a href="<?php echo $this->url(array('re'=>base64_encode('yes'))); ?>" onclick="$.blockUI()" class="btn btn-primary btn-xs btn-danger"><span><i class="icon-refresh"></i>&nbsp;&nbsp;Re-Evaluate</span></a></div>
+	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently evaluating Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> </div>
 	<div style="margin-top:10px;">
 		<a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
 	</div>
@@ -91,7 +91,7 @@
         <th>Max Score</th>
         <th>Result</th>
         <th>Comments (if any)</th>
-        <th>Action</th>
+       
     </tr>
     </thead>
     <tbody>
@@ -112,12 +112,9 @@
 					<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['first_name'] . " " .$shipment['last_name'] ?></td>
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0' ?></td>
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['max_score']) && $shipment['max_score'] != "") ? $shipment['max_score'] : '-'; ?></td>
-					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['display_result']) && $shipment['display_result'] != "") ? $shipment['display_result'] : 'Not Evaluated'; ?></td>
+					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "") ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
-					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
-						<!--<a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/< ?php echo base64_encode($shipment['shipment_id']) ?>/pid/< ?php echo base64_encode($shipment['participant_id']) ?>/scheme/< ?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
-						<a class="btn btn-primary btn-xs" href="/admin/evaluate/view/sid/< ?php echo base64_encode($shipment['shipment_id']) ?>/pid/< ?php echo base64_encode($shipment['participant_id']) ?>/scheme/< ?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-search"></i> View</span></a>-->
-					</td>
+					
 				</tr>
 				<?php
 			}
@@ -128,6 +125,9 @@
     
     </tbody>
 </table>
+<br/>
+
+<a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports','sId'=>base64_encode($this->shipment[0]['shipment_id']) ), 'default', true); ?>" target="_BLANK" class="btn btn-danger" style="margin-left: 30%;"><i class="icon-file-text"></i>&nbsp;&nbsp;Generate Report</a>
 
 <script type="text/javascript" charset="utf-8">
 	var oTable = null;
@@ -170,7 +170,7 @@
         }
     } );		
 		
-		oTable = $("#shipmentEvaluation").dataTable({
+	   oTable = $("#shipmentEvaluation").dataTable({
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"
             },
@@ -186,8 +186,7 @@
                 {"sClass":"center"},
                 {"sClass":"center"},
                 {"sClass":"center"},
-                { "bSearchable": false, "bVisible": false},
-                {"sClass":"center","bSortable":false}
+                { "bSearchable": false, "bVisible": false}
             ],
             "aaSorting": [[ 1, "asc" ]],
             "bProcessing": true,

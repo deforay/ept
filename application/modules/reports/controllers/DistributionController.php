@@ -37,21 +37,28 @@ class Reports_DistributionController extends Zend_Controller_Action
         if($this->_hasParam('sid')){            
             $id = (int)base64_decode($this->_getParam('sid'));
             $reEvaluate = false;
-            if($this->_hasParam('re')){
-                if(base64_decode($this->_getParam('re')) == 'yes'){
-                    $reEvaluate = true;
-                }
-            }
             $evalService = new Application_Service_Evaluation();
-            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id,$reEvaluate);
+            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id,$reEvaluate);
             $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
         }else{
-            $this->_redirect("/admin/evaluate/");
+            $this->_redirect("/report/distribution/");
+        }
+    }
+
+    public function generateReportsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if($this->_hasParam('sId')){
+            $id = (int)base64_decode($this->_getParam('sId'));
+            $evalService = new Application_Service_Evaluation();
+            $this->view->result = $evalService->getEvaluateReportsInPdf($id);
         }
     }
 
 
 }
+
+
 
 
 

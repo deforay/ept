@@ -332,6 +332,7 @@
               <actionMethod actionName="index"/>
               <actionMethod actionName="getShipments"/>
               <actionMethod actionName="shipment"/>
+              <actionMethod actionName="generateReports"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -354,6 +355,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Distribution">
                 <viewScriptFile forActionName="shipment"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Distribution">
+                <viewScriptFile forActionName="generateReports"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

@@ -761,8 +761,6 @@ class Application_Service_Evaluation {
 		
 
 	public function editEvaluation($shipmentId,$participantId,$scheme){
-
-
             $participantService = new Application_Service_Participants();
 			$schemeService = new Application_Service_Schemes();
 			$shipmentService = new Application_Service_Shipments();
@@ -1003,6 +1001,51 @@ class Application_Service_Evaluation {
 		
 	}
 	
+	public function getShipmentToEvaluateReports($shipmentId,$reEvaluate = false){
+	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('s'=>'shipment'))
+				->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
+				->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id')
+				->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type')
+				->join(array('p'=>'participant'),'p.participant_id=sp.participant_id')
+				->joinLeft(array('res'=>'r_results'),'res.result_id=sp.final_result')
+				->where("s.shipment_id = ?",$shipmentId)
+				->where("substring(sp.evaluation_status,4,1) != '0'");
+				
+		$shipmentResult = $db->fetchAll($sql);
+		return $shipmentResult;
+	}
 	
+	public function getEvaluateReportsInPdf($shipmentId){
+		$responseResult="";
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_code','s.scheme_type','s.shipment_date','s.lastdate_response'))
+				->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id',array('d.distribution_id','d.distribution_code','d.distribution_date'))
+				->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('sp.map_id','sp.participant_id','sp.shipment_test_date','sp.shipment_receipt_date','sp.shipment_test_report_date','sp.final_result','sp.failure_reason'))
+				->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('sl.scheme_id','sl.scheme_name'))
+				->join(array('p'=>'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
+				->joinLeft(array('res'=>'r_results'),'res.result_id=sp.final_result',array('result_name'))
+				->where("s.shipment_id = ?",$shipmentId)
+				->where("substring(sp.evaluation_status,4,1) != '0'");
+		//error_log($sql);die;
+		$shipmentResult = $db->fetchAll($sql);
+		$i=0;
+		foreach($shipmentResult as $res){
+			if($res['scheme_type']=='dbs'){
+				$sQuery=$db->select()->from(array('resdbs'=>'response_result_dbs'),array('resdbs.shipment_map_id','resdbs.sample_id','resdbs.reported_result'))
+					->join(array('respr'=>'r_possibleresult'),'respr.id=resdbs.reported_result',array('labResult'=>'respr.response'))
+					->join(array('sp'=>'shipment_participant_map'),'sp.map_id=resdbs.shipment_map_id',array('sp.shipment_id','sp.participant_id'))
+					->join(array('refdbs'=>'reference_result_dbs'),'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id',array('refdbs.reference_result','refdbs.sample_label'))
+					->join(array('refpr'=>'r_possibleresult'),'refpr.id=refdbs.reference_result',array('referenceResult'=>'refpr.response'))
+					->where("resdbs.shipment_map_id = ?",$res['map_id']);
+					
+				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+				
+			}
+		$i++;
+		}
+		//$result=array('shipment'=>$shipmentResult,'responseResult'=>$responseResult);
+		return $shipmentResult;
+	}
 }
 
