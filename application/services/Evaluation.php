@@ -1027,7 +1027,7 @@ class Application_Service_Evaluation {
 				->joinLeft(array('res'=>'r_results'),'res.result_id=sp.final_result',array('result_name'))
 				->where("s.shipment_id = ?",$shipmentId)
 				->where("substring(sp.evaluation_status,4,1) != '0'");
-		//error_log($sql);die;
+		
 		$shipmentResult = $db->fetchAll($sql);
 		$i=0;
 		foreach($shipmentResult as $res){
@@ -1044,6 +1044,36 @@ class Application_Service_Evaluation {
 			}
 			else if($res['scheme_type']=='dts'){
 				
+				$sQuery=$db->select()->from(array('resdts'=>'response_result_dts'),array('resdts.shipment_map_id','resdts.sample_id','resdts.reported_result'))
+					->join(array('respr'=>'r_possibleresult'),'respr.id=resdts.reported_result',array('labResult'=>'respr.response'))
+					->join(array('sp'=>'shipment_participant_map'),'sp.map_id=resdts.shipment_map_id',array('sp.shipment_id','sp.participant_id'))
+					->join(array('refdts'=>'reference_result_dts'),'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id',array('refdts.reference_result','refdts.sample_label'))
+					->join(array('refpr'=>'r_possibleresult'),'refpr.id=refdts.reference_result',array('referenceResult'=>'refpr.response'))
+					->where("resdts.shipment_map_id = ?",$res['map_id']);
+				//error_log($sQuery);
+				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+			}
+			else if($res['scheme_type']=='eid'){
+				
+				$sQuery=$db->select()->from(array('reseid'=>'response_result_eid'),array('reseid.shipment_map_id','reseid.sample_id','reseid.reported_result'))
+					->join(array('respr'=>'r_possibleresult'),'respr.id=reseid.reported_result',array('labResult'=>'respr.response'))
+					->join(array('sp'=>'shipment_participant_map'),'sp.map_id=reseid.shipment_map_id',array('sp.shipment_id','sp.participant_id'))
+					->join(array('refeid'=>'reference_result_eid'),'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id',array('refeid.reference_result','refeid.sample_label'))
+					->join(array('refpr'=>'r_possibleresult'),'refpr.id=refeid.reference_result',array('referenceResult'=>'refpr.response'))
+					->where("reseid.shipment_map_id = ?",$res['map_id']);
+				//error_log($sQuery);
+				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+			}
+			else if($res['scheme_type']=='vl'){
+				
+				$sQuery=$db->select()->from(array('resvl'=>'response_result_vl'),array('resvl.shipment_map_id','resvl.sample_id','resvl.reported_result'))
+					->join(array('respr'=>'r_possibleresult'),'respr.id=resvl.reported_result',array('labResult'=>'respr.response'))
+					->join(array('sp'=>'shipment_participant_map'),'sp.map_id=resvl.shipment_map_id',array('sp.shipment_id','sp.participant_id'))
+					->join(array('refvl'=>'reference_result_vl'),'refvl.shipment_id=sp.shipment_id and refvl.sample_id=resvl.sample_id',array('refvl.reference_result','refvl.sample_label'))
+					->join(array('refpr'=>'r_possibleresult'),'refpr.id=refvl.reference_result',array('referenceResult'=>'refpr.response'))
+					->where("resvl.shipment_map_id = ?",$res['map_id']);
+				//error_log($sQuery);
+				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 			}
 		$i++;
 		}

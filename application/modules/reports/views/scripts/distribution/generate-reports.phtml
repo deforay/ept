@@ -5,7 +5,9 @@
 require_once('tcpdf/tcpdf.php');
 
 if(sizeof($this->result)>0){
-	
+	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
+		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
+        }	
 class MYPDF extends TCPDF {
 
     //Page header
@@ -137,12 +139,13 @@ foreach($this->result as $result){
 	$html='<p>Thank you for participating in the HIV Serology '.strtoupper($result['scheme_type']).' Proficiency Testing Program. The final report and analysis summary of all participating labs will be distributed by <span style="font-weight:bold;">'.$result['distribution_date'].'.</span></p>';
 	$pdf->writeHTML($html, true, false, true, false, '');
 	
-	
+	ob_end_clean();
 	//Close and output PDF document
 	$attachFileName=$result['shipment_id'].$result['participant_id'];
 	$fileName = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR .$attachFileName.".pdf";
-	$pdf->Output($fileName, "F");
-	//$pdf->Output('example_003.pdf', 'I');
+	$created=$pdf->Output($fileName, "F");
+	
+	$pdf->Output($fileName, 'I');
 	
 	$i++;
 
