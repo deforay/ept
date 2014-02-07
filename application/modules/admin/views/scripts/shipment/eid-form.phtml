@@ -1,3 +1,5 @@
+<?php
+
 $possibleResults ='<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 	foreach($this->eidPossibleResults as $pr){
 		$possibleResults .= '<option value="'.$pr['id'].'">'.$pr['response'].'</option>';

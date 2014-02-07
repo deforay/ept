@@ -1042,6 +1042,9 @@ class Application_Service_Evaluation {
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				
 			}
+			else if($res['scheme_type']=='dts'){
+				
+			}
 		$i++;
 		}
 		//$result=array('shipment'=>$shipmentResult,'responseResult'=>$responseResult);
