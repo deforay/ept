@@ -1075,9 +1075,14 @@ class Application_Service_Evaluation {
 				//error_log($sQuery);
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 			}
+			
+			$db->update('shipment_participant_map',array('report_generated' => 'yes'), "map_id = ".$res['map_id']);
 		$i++;
 		}
 		//$result=array('shipment'=>$shipmentResult,'responseResult'=>$responseResult);
+		
+		
+		
 		return $shipmentResult;
 	}
 }

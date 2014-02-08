@@ -30,6 +30,7 @@
           <actionMethod actionName="defaultScheme"/>
           <actionMethod actionName="currentSchemes"/>
           <actionMethod actionName="allSchemes"/>
+          <actionMethod actionName="download"/>
         </controllerFile>
         <controllerFile controllerName="DTS">
           <actionMethod actionName="index"/>
@@ -477,6 +478,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Participant">
             <viewScriptFile forActionName="allSchemes"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Participant">
+            <viewScriptFile forActionName="download"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

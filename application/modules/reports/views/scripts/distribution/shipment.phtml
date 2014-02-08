@@ -127,7 +127,7 @@
 </table>
 <br/>
 
-<a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports','sId'=>base64_encode($this->shipment[0]['shipment_id']) ), 'default', true); ?>" target="_BLANK" class="btn btn-danger" style="margin-left: 30%;"><i class="icon-file-text"></i>&nbsp;&nbsp;Generate Report</a>
+<a href="javascript:void(0)" class="btn btn-danger" onclick="generateReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')" style="margin-left: 30%;"><i class="icon-file-text"></i>&nbsp;&nbsp;Generate Report</a>
 
 <script type="text/javascript" charset="utf-8">
 	var oTable = null;
@@ -214,9 +214,18 @@
 			return;
 		}
 		$.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'),'default',true); ?>", { sid: sid,comment: $("#shipmentComment").val(), format: "html" },
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'),'default',true); ?>", { sid: sid,comment: $("#shipmentComment").val(), format: "html" },
 		function (data) {               
 			$.unblockUI({  onUnblock: function(){ alert(data); }  });			   
+		});
+	}
+	
+	function generateReport(sId){
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'),'default',true); ?>", { sId: sId,format: "html" },
+		function (data) {
+			$.unblockUI();
+			alert(data);
 		});
 	}
 </script>

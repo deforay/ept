@@ -1,0 +1,32 @@
+<?php
+if($this->result!=""){
+	
+	if(isset($this->result['last_name']) && trim($this->result['last_name'])!=""){
+		$this->result['last_name']="_".$this->result['last_name'];
+	}
+	$fileName=$this->result['first_name'].$this->result['last_name']."-".$this->result['map_id'].".pdf";
+	
+	$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
+	$fileName = str_replace(" ", "-", $fileName);
+		
+	$file = UPLOAD_PATH.DIRECTORY_SEPARATOR."reports".DIRECTORY_SEPARATOR.$fileName;
+
+	if (file_exists($file)) {
+	    echo "<h2 align='center' style='margin-top:100px;font-family:arial;'>Requested image will be downloaded shortly, After downloaded please close the window </h2>";
+	    header('Content-Description: File Transfer');
+	    header('Content-Type: application/octet-stream');
+	    header('Content-Disposition: attachment; filename='.basename($file));
+	    header('Content-Transfer-Encoding: binary');
+	    header('Expires: 0');
+	    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+	    header('Pragma: public');
+	    header('Content-Length: ' . filesize($file));
+	    ob_clean();
+	    flush();
+	    readfile($file);
+	    exit;
+	}else{
+	    echo "<h2 align='center' style='margin-top:100px;font-family:arial;'>Requested file does not exist</h2>";
+	}
+}
+?>

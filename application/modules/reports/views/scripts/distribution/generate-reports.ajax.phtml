@@ -9,7 +9,12 @@ if(sizeof($this->result)>0){
 		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
         }	
 class MYPDF extends TCPDF {
+	public $scheme_name = '';
 
+	public function setSchemeName($schemeName) {
+		$this->scheme_name = $schemeName;
+	}
+    
     //Page header
     public function Header() {
         // Logo
@@ -29,7 +34,7 @@ class MYPDF extends TCPDF {
 	$y = $this->getY();
 	$this->writeHTMLCell(0, 0, 5, 14, $html, 0, 0, 0, true, 'J', true);
 	
-	$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using  Preliminary Evaluation</p><hr/>';
+	$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.' Preliminary Evaluation</p><hr/>';
 	//$result['scheme_name']
 	$this->writeHTMLCell(0, 0, 20, 30, $html, 0, 0, 0, true, 'J', true);
 	
@@ -48,7 +53,6 @@ class MYPDF extends TCPDF {
     }
 }
 
-$i=0;
 foreach($this->result as $result){
 	//error_log($i);
 	// Extend the TCPDF class to create custom Header and Footer
@@ -56,6 +60,7 @@ foreach($this->result as $result){
 	// create new PDF document
 	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	
+	$pdf->setSchemeName($result['scheme_name']);
 	// set document information
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('Nicola Asuni');
@@ -75,7 +80,7 @@ foreach($this->result as $result){
 	
 	// set margins
 	
-	$pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
+	$pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
 	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 	
@@ -111,9 +116,6 @@ foreach($this->result as $result){
 
 	// ---------------------------------------------------------
 	
-	
-	
-	
 	$labInfo='<table style="width:100%;"><tr><td style="font-weight:bold;">Laboratory Code </td><td style="text-align:left;width:20px;">:</td><td style="text-align:left;width:400px;">'.$result['unique_identifier'].'</td></tr>';
 	$labInfo.='<tr><td  style="font-weight:bold;">Performing Laboratory </td><td style="text-align:left">:</td><td style="text-align:left">'.$result['first_name']." ".$result['last_name'].'</td></tr>';
 	$labInfo.='<tr><td style="font-weight:bold;">Survey Name </td><td style="text-align:left">:</td><td style="text-align:left">'.$result['distribution_code'].'</td></tr>';
@@ -135,23 +137,29 @@ foreach($this->result as $result){
 		$pdf->SetLeftMargin(40);
 		$pdf->writeHTML($labRes, true, false, true, false, '');
 	}
+	if(trim($result['distribution_date'])!=""){
+		$result['distribution_date']=$this->dateFormat($result['distribution_date']);
+	}
 	$pdf->SetLeftMargin(15);
 	$html='<p>Thank you for participating in the HIV Serology '.strtoupper($result['scheme_type']).' Proficiency Testing Program. The final report and analysis summary of all participating labs will be distributed by <span style="font-weight:bold;">'.$result['distribution_date'].'.</span></p>';
 	$pdf->writeHTML($html, true, false, true, false, '');
 	
 	ob_end_clean();
 	//Close and output PDF document
-	$attachFileName=$result['shipment_id'].$result['participant_id'];
-	$fileName = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR .$attachFileName.".pdf";
-	$created=$pdf->Output($fileName, "F");
+	if(isset($result['last_name']) && trim($result['last_name'])!=""){
+		$result['last_name']="_".$result['last_name'];
+	}
+	$fileName=$result['first_name'].$result['last_name']."-".$result['map_id'].".pdf";
+	$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
+	$fileName = str_replace(" ", "-", $fileName);
+	$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR .$fileName;
+	$created=$pdf->Output($filePath, "F");
 	
-	$pdf->Output($fileName, 'I');
-	
-	$i++;
+	//$pdf->Output($fileName, 'I');
 
 }
 //============================================================+
 // END OF FILE
 //============================================================+
-
+echo "File generated successfully";
 }

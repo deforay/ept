@@ -1502,3 +1502,7 @@ CREATE TABLE IF NOT EXISTS `reference_dts_wb` (
   `17` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
+
+--ilahir 8-Feb-2014
+
+ALTER TABLE  `shipment_participant_map` ADD  `report_generated` VARCHAR( 100 ) NULL DEFAULT NULL;

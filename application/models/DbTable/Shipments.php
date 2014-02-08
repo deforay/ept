@@ -608,7 +608,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * Get data to display
         */
         $sQuery=$this->getAdapter()->select()->from(array('s'=>'shipment'),array('SHIP_YEAR'=>'year(s.shipment_date)','s.scheme_type','s.shipment_date','s.shipment_code','s.lastdate_response','s.shipment_id'))
-                        ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array("spm.evaluation_status","spm.participant_id","RESPONSEDATE"=>"DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')","RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"),"REPORT" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'Report' END")))
+                        ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('spm.map_id',"spm.evaluation_status","spm.participant_id","RESPONSEDATE"=>"DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')","RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"),"REPORT" => new Zend_Db_Expr("CASE spm.report_generated WHEN 'yes' THEN 'Report' END")))
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.first_name','p.last_name'))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
@@ -671,7 +671,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['first_name']." ".$aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);
             $row[] = '<a href="/'.$aRow['scheme_type'].'/response/sid/' . $aRow['shipment_id']. '/pid/'.$aRow['participant_id'].'/eid/'.$aRow['evaluation_status'].'" style="text-decoration : underline;">'.$aRow['RESPONSE'].'</a>';
-            $row[] = '<a href="javascript:void(0);" style="text-decoration : underline;">'.$aRow['REPORT'].'</a>';
+            $row[] = '<a href="/participant/download/d92nl9d8d/'.base64_encode($aRow['map_id']).'"  style="text-decoration : underline;" target="_BLANK">'.$aRow['REPORT'].'</a>';
            
             $output['aaData'][] = $row;
         }
