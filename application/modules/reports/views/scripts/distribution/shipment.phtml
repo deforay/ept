@@ -1,4 +1,5 @@
-<?php if (count($this->shipment) > 0) {	?>
+<?php if (count($this->shipment) > 0) {
+?>
 <div class="well" style="clear: both;">
 <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
 <div id="allShipmentList">
@@ -95,7 +96,6 @@
     </tr>
     </thead>
     <tbody>
-    
 		<?php
 			$editList = array();
 			$viewList = array();
@@ -132,6 +132,15 @@
 <script type="text/javascript" charset="utf-8">
 	var oTable = null;
 	var nTr = null;
+	checkReportDate=false;
+	<?php
+	$currentDate=date('Y-m-d');
+	if($this->shipment[0]['distribution_date']<$currentDate){
+	?>
+		checkReportDate=true;
+	<?php
+	}
+	?>
 	$(document).ready(function() {
 		
 	var nCloneTh = document.createElement( 'th' );
@@ -221,12 +230,17 @@
 	}
 	
 	function generateReport(sId){
-		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'),'default',true); ?>", { sId: sId,format: "html" },
-		function (data) {
-			$.unblockUI();
-			alert(data);
-		});
+		if (checkReportDate) {
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'),'default',true); ?>", { sId: sId,format: "html" },
+			function (data) {
+				$.unblockUI();
+				alert(data);
+			});
+		}else{
+			alert("Please check the event date");
+		}
+		
 	}
 </script>
 
