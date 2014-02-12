@@ -1019,9 +1019,9 @@ class Application_Service_Evaluation {
 	public function getEvaluateReportsInPdf($shipmentId){
 		$responseResult="";
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_code','s.scheme_type','s.shipment_date','s.lastdate_response'))
+		$sql = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_code','s.scheme_type','s.shipment_date','s.lastdate_response','s.max_score'))
 				->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id',array('d.distribution_id','d.distribution_code','d.distribution_date'))
-				->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('sp.map_id','sp.participant_id','sp.shipment_test_date','sp.shipment_receipt_date','sp.shipment_test_report_date','sp.final_result','sp.failure_reason'))
+				->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('sp.map_id','sp.participant_id','sp.shipment_test_date','sp.shipment_receipt_date','sp.shipment_test_report_date','sp.final_result','sp.failure_reason','sp.shipment_score','sp.final_result'))
 				->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('sl.scheme_id','sl.scheme_name'))
 				->join(array('p'=>'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
 				->joinLeft(array('res'=>'r_results'),'res.result_id=sp.final_result',array('result_name'))
@@ -1032,7 +1032,7 @@ class Application_Service_Evaluation {
 		$i=0;
 		foreach($shipmentResult as $res){
 			if($res['scheme_type']=='dbs'){
-				$sQuery=$db->select()->from(array('resdbs'=>'response_result_dbs'),array('resdbs.shipment_map_id','resdbs.sample_id','resdbs.reported_result'))
+				$sQuery=$db->select()->from(array('resdbs'=>'response_result_dbs'),array('resdbs.shipment_map_id','resdbs.sample_id','resdbs.reported_result','responseDate'=>'resdbs.created_on'))
 					->join(array('respr'=>'r_possibleresult'),'respr.id=resdbs.reported_result',array('labResult'=>'respr.response'))
 					->join(array('sp'=>'shipment_participant_map'),'sp.map_id=resdbs.shipment_map_id',array('sp.shipment_id','sp.participant_id'))
 					->join(array('refdbs'=>'reference_result_dbs'),'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id',array('refdbs.reference_result','refdbs.sample_label'))
@@ -1044,7 +1044,7 @@ class Application_Service_Evaluation {
 			}
 			else if($res['scheme_type']=='dts'){
 				
-				$sQuery=$db->select()->from(array('resdts'=>'response_result_dts'),array('resdts.shipment_map_id','resdts.sample_id','resdts.reported_result'))
+				$sQuery=$db->select()->from(array('resdts'=>'response_result_dts'),array('resdts.shipment_map_id','resdts.sample_id','resdts.reported_result','responseDate'=>'resdts.created_on'))
 					->join(array('respr'=>'r_possibleresult'),'respr.id=resdts.reported_result',array('labResult'=>'respr.response'))
 					->join(array('sp'=>'shipment_participant_map'),'sp.map_id=resdts.shipment_map_id',array('sp.shipment_id','sp.participant_id'))
 					->join(array('refdts'=>'reference_result_dts'),'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id',array('refdts.reference_result','refdts.sample_label'))
@@ -1055,7 +1055,7 @@ class Application_Service_Evaluation {
 			}
 			else if($res['scheme_type']=='eid'){
 				
-				$sQuery=$db->select()->from(array('reseid'=>'response_result_eid'),array('reseid.shipment_map_id','reseid.sample_id','reseid.reported_result'))
+				$sQuery=$db->select()->from(array('reseid'=>'response_result_eid'),array('reseid.shipment_map_id','reseid.sample_id','reseid.reported_result','responseDate'=>'reseid.created_on'))
 					->join(array('respr'=>'r_possibleresult'),'respr.id=reseid.reported_result',array('labResult'=>'respr.response'))
 					->join(array('sp'=>'shipment_participant_map'),'sp.map_id=reseid.shipment_map_id',array('sp.shipment_id','sp.participant_id'))
 					->join(array('refeid'=>'reference_result_eid'),'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id',array('refeid.reference_result','refeid.sample_label'))
@@ -1066,7 +1066,7 @@ class Application_Service_Evaluation {
 			}
 			else if($res['scheme_type']=='vl'){
 				
-				$sQuery=$db->select()->from(array('resvl'=>'response_result_vl'),array('resvl.shipment_map_id','resvl.sample_id','resvl.reported_result'))
+				$sQuery=$db->select()->from(array('resvl'=>'response_result_vl'),array('resvl.shipment_map_id','resvl.sample_id','resvl.reported_result','responseDate'=>'resvl.created_on'))
 					->join(array('respr'=>'r_possibleresult'),'respr.id=resvl.reported_result',array('labResult'=>'respr.response'))
 					->join(array('sp'=>'shipment_participant_map'),'sp.map_id=resvl.shipment_map_id',array('sp.shipment_id','sp.participant_id'))
 					->join(array('refvl'=>'reference_result_vl'),'refvl.shipment_id=sp.shipment_id and refvl.sample_id=resvl.sample_id',array('refvl.reference_result','refvl.sample_label'))
@@ -1080,8 +1080,6 @@ class Application_Service_Evaluation {
 		$i++;
 		}
 		//$result=array('shipment'=>$shipmentResult,'responseResult'=>$responseResult);
-		
-		
 		
 		return $shipmentResult;
 	}

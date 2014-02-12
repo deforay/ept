@@ -1506,3 +1506,10 @@ CREATE TABLE IF NOT EXISTS `reference_dts_wb` (
 --ilahir 8-Feb-2014
 
 ALTER TABLE  `shipment_participant_map` ADD  `report_generated` VARCHAR( 100 ) NULL DEFAULT NULL;
+
+--ilahir 12-Feb-2014
+
+CREATE TABLE IF NOT EXISTS `report_config` (
+  `name` varchar(255) DEFAULT NULL,
+  `value` text
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
