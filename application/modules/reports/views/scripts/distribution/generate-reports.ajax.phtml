@@ -1,9 +1,9 @@
 <?php
 
-//Zend_Debug::dump($this->result);
+//Zend_Debug::dump($this->result);die;
 
 require_once('tcpdf/tcpdf.php');
-
+$schemeType = $this->result[0]['scheme_type'];
 if(sizeof($this->result)>0){
 	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
 		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
@@ -65,8 +65,8 @@ foreach($this->result as $result){
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('Nicola Asuni');
 	$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
-	$pdf->SetSubject('TCPDF Tutorial');
-	$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+	//$pdf->SetSubject('TCPDF Tutorial');
+	//$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 	// set default header data
 	$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
@@ -126,6 +126,7 @@ foreach($this->result as $result){
 	$responseDate="";
 	$shipmentScore="";
 	$score="";
+
 	if(trim($result['responseResult'][0]['responseDate'])!=""){
 		$splitDate=explode(" ",$result['responseResult'][0]['responseDate']);
 		$responseDate=$this->dateFormat($splitDate[0]);
@@ -156,16 +157,54 @@ foreach($this->result as $result){
 	
 	
 	
-	$html='<p style="font-weight: bold;">Your laboratory test results</p><br/>';
+	$html='<p style="font-weight: bold;">Your laboratory test results : <br/></p>';
 	$pdf->writeHTML($html, true, false, true, false, '');
 	if(sizeof($result['responseResult'])>0){
-		$labRes='<table border="1" style="text-align:center;font-weight:bold;width:400px;"><tr><td style="background-color:#989898;">Specimen Panel ID </td><td style="background-color:#989898;">Your Results</td><td style="background-color:#989898;">Expected Results</td></tr>';
-		foreach($result['responseResult'] as $response){
-			$labRes.='<tr><td style="text-align:center;">'.$response['sample_label'].'</td><td>'.$response['labResult'].'</td><td>'.$response['referenceResult'].'</td></tr>';
+		if($schemeType != 'vl'){
+			$labRes='<table border="1" style="text-align:center;font-weight:bold;width:400px;">
+						<tr>
+							<td style="background-color:#989898;">Specimen Panel ID </td>
+							<td style="background-color:#989898;">Your Results</td>
+							<td style="background-color:#989898;">Expected Results</td>
+						</tr>';
+			foreach($result['responseResult'] as $response){
+				$labRes.='<tr>
+							<td style="text-align:center;">'.$response['sample_label'].'</td>
+							<td>'.$response['labResult'].'</td>
+							<td>'.$response['referenceResult'].'</td>
+						  </tr>';
+			}
+			$labRes.='</table>';
+			$pdf->SetLeftMargin(40);
+			$pdf->writeHTML($labRes, true, false, true, false, '');
+		}else{
+			$labRes='<h5>'.$result['responseResult'][0]['vl_assay'].'</h5>';
+			$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;">
+						<tr>
+							<td style="background-color:#989898;">Specimen ID </td>
+							<td style="background-color:#989898;">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
+							<td style="background-color:#989898;">Mean<br/>(log<sub>10</sub> copies/ml)</td>
+							<td style="background-color:#989898;">S.D.</td>
+							<td style="background-color:#989898;">Low</td>
+							<td style="background-color:#989898;">High</td>
+							<td style="background-color:#989898;">Your Grade</td>
+						</tr>';
+			foreach($result['responseResult'] as $response){
+				$labRes.='<tr>
+							<td style="text-align:center;">'.$response['sample_label'].'</td>
+							<td>'.$response['reported_viral_load'].'</td>
+							<td>'.$response['mean'].'</td>
+							<td>'.$response['sd'].'</td>
+							<td>'.$response['low'].'</td>
+							<td>'.$response['high'].'</td>
+							<td>'.$response['grade'].'</td>
+						  </tr>';
+			}
+			$labRes.='</table>';
+			$pdf->SetLeftMargin(15);
+			$pdf->writeHTML($labRes, true, false, true, false, '');
 		}
-		$labRes.='</table>';
-		$pdf->SetLeftMargin(40);
-		$pdf->writeHTML($labRes, true, false, true, false, '');
+
 	}
 	
 	$pdf->SetLeftMargin(15);
@@ -180,7 +219,7 @@ foreach($this->result as $result){
 	$html='<p>Thank you for participating in the HIV Serology '.strtoupper($result['scheme_type']).' Proficiency Testing Program.</p>';
 	$pdf->writeHTML($html, true, false, true, false, '');
 	
-	ob_end_clean();
+	if (ob_get_contents()) ob_end_clean();
 	//Close and output PDF document
 	if(isset($result['last_name']) && trim($result['last_name'])!=""){
 		$result['last_name']="_".$result['last_name'];
@@ -197,5 +236,5 @@ foreach($this->result as $result){
 //============================================================+
 // END OF FILE
 //============================================================+
-echo "File generated successfully";
+echo "Reports generated and can be downloaded by Participants.";
 }

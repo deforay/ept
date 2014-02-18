@@ -665,6 +665,12 @@ class Application_Service_Evaluation {
 			$db->update('shipment',array('max_score' => $maxScore), "shipment_id = ".$shipmentId);
 		} else if($shipmentResult[0]['scheme_type'] == 'vl'){
 			$counter = 0;
+			$vlRange = $schemeService->getVlRange($shipmentId);
+			if($reEvaluate || $vlRange == null || $vlRange == "" || count($vlRange) == 0){
+				$schemeService->setVlRange($shipmentId);
+				$vlRange = $schemeService->getVlRange($shipmentId);
+			}
+			
 			foreach($shipmentResult as $shipment){
 				$results = $schemeService->getVlSamples($shipmentId,$shipment['participant_id']);
 				$totalScore = 0;
@@ -672,13 +678,8 @@ class Application_Service_Evaluation {
 				$mandatoryResult = "";
 
 				$scoreResult = "";
-				$failureReason = "";
-				
-				$vlRange = $schemeService->getVlRange($shipmentId);
-				if($reEvaluate || $vlRange == null || $vlRange == "" || count($vlRange) == 0){
-					$schemeService->setVlRange($shipmentId);
-					$vlRange = $schemeService->getVlRange($shipmentId);
-				}
+				$failureReason = "";				
+
 				
 				
 				$attributes = json_decode($shipment['attributes'],true);
@@ -1021,7 +1022,7 @@ class Application_Service_Evaluation {
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_code','s.scheme_type','s.shipment_date','s.lastdate_response','s.max_score'))
 				->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id',array('d.distribution_id','d.distribution_code','d.distribution_date'))
-				->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('sp.map_id','sp.participant_id','sp.shipment_test_date','sp.shipment_receipt_date','sp.shipment_test_report_date','sp.final_result','sp.failure_reason','sp.shipment_score','sp.final_result'))
+				->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('sp.map_id','sp.participant_id','sp.shipment_test_date','sp.shipment_receipt_date','sp.shipment_test_report_date','sp.final_result','sp.failure_reason','sp.shipment_score','sp.final_result','sp.attributes'))
 				->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('sl.scheme_id','sl.scheme_name'))
 				->join(array('p'=>'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
 				->joinLeft(array('res'=>'r_results'),'res.result_id=sp.final_result',array('result_name'))
@@ -1065,21 +1066,80 @@ class Application_Service_Evaluation {
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 			}
 			else if($res['scheme_type']=='vl'){
+				$schemeService = new Application_Service_Schemes();
+				$vlAssayResultSet = $schemeService->getVlAssay();
+				$vlAssayList = array();
+				foreach($vlAssayResultSet as $vlAssayRow){
+					$vlAssayList[$vlAssayRow['id']] = $vlAssayRow['name'];
+				}
+				$vlRange = $schemeService->getVlRange($shipmentId);
+				$results = $schemeService->getVlSamples($shipmentId,$res['participant_id']);
 				
-				$sQuery=$db->select()->from(array('resvl'=>'response_result_vl'),array('resvl.shipment_map_id','resvl.sample_id','resvl.reported_result','responseDate'=>'resvl.created_on'))
-					->join(array('respr'=>'r_possibleresult'),'respr.id=resvl.reported_result',array('labResult'=>'respr.response'))
-					->join(array('sp'=>'shipment_participant_map'),'sp.map_id=resvl.shipment_map_id',array('sp.shipment_id','sp.participant_id'))
-					->join(array('refvl'=>'reference_result_vl'),'refvl.shipment_id=sp.shipment_id and refvl.sample_id=resvl.sample_id',array('refvl.reference_result','refvl.sample_label'))
-					->join(array('refpr'=>'r_possibleresult'),'refpr.id=refvl.reference_result',array('referenceResult'=>'refpr.response'))
-					->where("resvl.shipment_map_id = ?",$res['map_id']);
-				//error_log($sQuery);
-				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+				$attributes = json_decode($res['attributes'],true);
+				$counter = 0;
+				$toReturn = array();
+				foreach($results as $result){
+					//$toReturn = array();
+					$responseAssay = json_decode($result['attributes'],true);
+					$toReturn[$counter]['vl_assay'] = $vlAssayList[$responseAssay['vl_assay']];
+					$responseAssay = $responseAssay['vl_assay'];						
+					
+					$toReturn[$counter]['sample_label'] = $result['sample_label'];
+					$toReturn[$counter]['shipment_map_id'] = $result['map_id'];
+					$toReturn[$counter]['shipment_id'] = $result['shipment_id'];
+					$toReturn[$counter]['responseDate'] = $result['responseDate'];
+					$toReturn[$counter]['shipment_score'] = $result['shipment_score'];
+					$toReturn[$counter]['max_score'] = $result['max_score'];
+					$toReturn[$counter]['reported_viral_load'] = $result['reported_viral_load'];
+					if(isset($vlRange[$responseAssay])){
+						// matching reported and low/high limits
+						if(isset($result['reported_viral_load']) && $result['reported_viral_load'] !=null){
+							if($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']){
+								$grade = 'Acceptable';
+							}else{
+								$grade = 'Not Acceptable';
+							}
+						}
+						
+						if(isset($result['reported_viral_load']) && $result['reported_viral_load'] !=null){
+							if($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']){
+								$grade = 'Acceptable';
+							}else{
+								if($result['sample_score'] > 0){
+									$grade = 'Not Acceptable';
+								}else{
+									$grade = '-';
+								}
+							}
+						}
+						
+						$toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['low'];
+						$toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['high'];
+						$toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
+						$toReturn[$counter]['mean'] = $vlRange[$responseAssay][$result['sample_id']]['mean'];								
+						
+					}else{
+						$toReturn[$counter]['low'] = 'Not Applicable';
+						$toReturn[$counter]['high'] = 'Not Applicable';
+						$toReturn[$counter]['sd'] = 'Not Applicable';
+						$toReturn[$counter]['mean'] = 'Not Applicable';
+						$grade = 'Not Applicable';
+					}
+					$toReturn[$counter]['grade'] = $grade;
+
+					
+					$counter++;
+				}
+				
+				$shipmentResult[$i]['responseResult'] = $toReturn;							
+					
 			}
 			
-			$db->update('shipment_participant_map',array('report_generated' => 'yes'), "map_id = ".$res['map_id']);
-		$i++;
+			
+			$i++;
 		}
 		//$result=array('shipment'=>$shipmentResult,'responseResult'=>$responseResult);
+		
 		
 		return $shipmentResult;
 	}
