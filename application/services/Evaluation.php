@@ -1139,7 +1139,7 @@ class Application_Service_Evaluation {
 			$i++;
 		}
 		//$result=array('shipment'=>$shipmentResult,'responseResult'=>$responseResult);
-		
+		$db->update('shipment_participant_map',array('report_generated'=>'yes'),"shipment_id=$shipmentId");
 		
 		return $shipmentResult;
 	}
