@@ -31,7 +31,7 @@ class MYPDF extends TCPDF {
         
 	$html='<table><tr><td style="text-align:center;">International Laboratory Branch</td></tr><tr><td style="text-align:center;">Division of Global HIV/AIDS, CDC-Atlanta</td></tr><tr><td style="text-align:center;">December 11, 2013</td></tr></table>';
 	//$pdf->writeHTML($html, true, false, true, false, '');
-	$y = $this->getY();
+	//$y = $this->getY();
 	$this->writeHTMLCell(0, 0, 5, 14, $html, 0, 0, 0, true, 'J', true);
 	
 	$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p><hr/>';
@@ -224,10 +224,15 @@ foreach($this->result as $result){
 	if(isset($result['last_name']) && trim($result['last_name'])!=""){
 		$result['last_name']="_".$result['last_name'];
 	}
+	
+	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
+		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
+        }
+	
 	$fileName=$result['first_name'].$result['last_name']."-".$result['map_id'].".pdf";
 	$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
 	$fileName = str_replace(" ", "-", $fileName);
-	$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR .$fileName;
+	$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$result['shipment_code']. DIRECTORY_SEPARATOR .$fileName;
 	$created=$pdf->Output($filePath, "F");
 	
 	//$pdf->Output($fileName, 'I');

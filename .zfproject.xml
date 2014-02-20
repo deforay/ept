@@ -171,6 +171,9 @@
             <controllerFile controllerName="ContactUs">
               <actionMethod actionName="index"/>
             </controllerFile>
+            <controllerFile controllerName="ReportConfig">
+              <actionMethod actionName="index"/>
+            </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
           <layoutsDirectory enabled="false">
@@ -291,6 +294,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Participants">
                 <viewScriptFile forActionName="pending"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="ReportConfig">
+                <viewScriptFile forActionName="index"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

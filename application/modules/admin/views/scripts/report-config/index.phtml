@@ -1,0 +1,176 @@
+
+<link href="<?php echo $this->baseUrl('css/editor.css'); ?>" rel="stylesheet">
+
+
+<form class="form-horizontal" role="form" name="addCaseTypeDocuments" id="addCaseTypeDocuments"  method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>" autocomplete="off">
+	<legend>Edit Report Config <span class="muted pull-right" style="font-size:15px;"><span class="mandatory">*</span> indicates required field</span></legend>
+  
+	<div class="container">
+		
+		<div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
+			<div class="btn-group">
+			<a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i class="icon-font"></i><b class="caret"></b></a>
+			  <ul class="dropdown-menu"></ul>
+			</div>
+			<div class="btn-group">
+				<a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="icon-text-height"></i>&nbsp;<b class="caret"></b></a>
+				<ul class="dropdown-menu">
+				<li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+				<li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+				<li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+				</ul>
+			</div>
+			<div class="btn-group">
+			  <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="icon-bold"></i></a>
+			  <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="icon-italic"></i></a>
+			  <a class="btn" data-edit="strikethrough" title="Strikethrough"><i class="icon-strikethrough"></i></a>
+			  <a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="icon-underline"></i></a>
+			</div>
+			<div class="btn-group">
+			  <a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i class="icon-list-ul"></i></a>
+			  <a class="btn" data-edit="insertorderedlist" title="Number list"><i class="icon-list-ol"></i></a>
+			  <a class="btn" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="icon-indent-left"></i></a>
+			  <a class="btn" data-edit="indent" title="Indent (Tab)"><i class="icon-indent-right"></i></a>
+			</div>
+			<div class="btn-group">
+				<a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="icon-align-left"></i></a>
+				<a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="icon-align-center"></i></a>
+				<a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="icon-align-right"></i></a>
+				<a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="icon-align-justify"></i></a>
+			</div>
+			<div class="btn-group">
+				<a class="btn dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="icon-link"></i></a>
+				<div class="dropdown-menu input-append">
+					    <input class="span2" placeholder="URL" type="text" data-edit="createLink"/>
+					    <button class="btn" type="button">Add</button>
+				</div>
+				<a class="btn" data-edit="unlink" title="Remove Hyperlink"><i class="icon-cut"></i></a>
+			</div>
+			
+			<!--<div class="btn-group">
+			  <a class="btn" title="Insert picture (or just drag & drop)" id="pictureBtn"><i class="icon-picture"></i></a>
+			  <input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" />
+			</div>-->
+			<div class="btn-group">
+			  <a class="btn" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="icon-undo"></i></a>
+			  <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="icon-repeat"></i></a>
+			</div>
+
+			
+		</div>
+		<!--<input type="button" value="Spell Check" onclick="$Spelling.SpellCheckInWindow('editor')" />-->
+		<div id="editor" name="editor">
+			
+		</div>
+		
+		<textarea rows="2" name="content" id="content" cols="20" style="display:none;" class="isRequired"></textarea>
+		<br/>
+		
+	</div>
+
+  
+	<div class="form-group">
+	  <div class="col-lg-offset-2 col-lg-10">
+	      <input type="button" class="btn btn-info" value="Update" onclick="validateNow();return false;">
+	      <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>" class="btn btn-danger">Cancel</a>
+	  </div>
+	</div>
+
+</form>
+
+<script src="<?php echo $this->baseUrl('js/jquery.hotkeys.js'); ?>"></script>
+<script src="<?php echo $this->baseUrl('js/bootstrap-wysiwyg.js'); ?>"></script>
+
+<script type="text/javascript">
+	duplicateName=true;
+	
+	
+	function validateNow(){
+		desc = $("#editor").html();
+		$("#content").html(desc);
+		flag = deforayValidator.init({
+		    formId: 'addCaseTypeDocuments'
+		});
+		if(flag){
+		    if(duplicateName){
+			document.getElementById('addCaseTypeDocuments').submit();
+		    }
+		}
+	}
+	
+	
+	$(function(){
+		
+		$("#docListTable").dataTable();
+		
+		function initToolbarBootstrapBindings() {
+		var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier', 
+		    'Courier New', 'Comic Sans MS', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
+		    'Times New Roman', 'Verdana'],
+		    fontTarget = $('[title=Font]').siblings('.dropdown-menu');
+		$.each(fonts, function (idx, fontName) {
+		    fontTarget.append($('<li><a data-edit="fontName ' + fontName +'" style="font-family:\''+ fontName +'\'">'+fontName + '</a></li>'));
+		});
+		$('a[title]').tooltip({container:'body'});
+		$('.dropdown-menu input').click(function() {return false;})
+			
+		$('[data-role=magic-overlay]').each(function () { 
+		  var overlay = $(this), target = $(overlay.data('target')); 
+		  overlay.css('opacity', 0).css('position', 'absolute').offset(target.offset()).width(target.outerWidth()).height(target.outerHeight());
+		});
+	      
+		};
+		
+		function showErrorAlert (reason, detail) {
+			var msg='';
+			if (reason==='unsupported-file-type') { msg = "Unsupported format " +detail; }
+			else {
+				console.log("error uploading file", reason, detail);
+			}
+			$('<div class="alert"> <button type="button" class="close" data-dismiss="alert">&times;</button>'+ 
+			 '<strong>File upload error</strong> '+msg+' </div>').prependTo('#alerts');
+		};
+	
+		initToolbarBootstrapBindings();  
+		$('#editor').wysiwyg({ fileUploadError: showErrorAlert});
+		
+		
+	
+	});
+	
+	
+	function pasteHtmlAtCaret(html) {
+		var sel, range;
+		if (window.getSelection) {
+		    // IE9 and non-IE
+		    sel = window.getSelection();
+		    if (sel.getRangeAt && sel.rangeCount) {
+			range = sel.getRangeAt(0);
+			range.deleteContents();
+			
+			// Range.createContextualFragment() would be useful here but is
+			// non-standard and not supported in all browsers (IE9, for one)
+			var el = document.createElement("div");
+			el.innerHTML = html;
+			var frag = document.createDocumentFragment(), node, lastNode;
+			while ( (node = el.firstChild) ) {
+			    lastNode = frag.appendChild(node);
+			}
+			range.insertNode(frag);
+			
+			// Preserve the selection
+			if (lastNode) {
+			    range = range.cloneRange();
+			    range.setStartAfter(lastNode);
+			    range.collapse(true);
+			    sel.removeAllRanges();
+			    sel.addRange(range);
+			}
+		    }
+		} else if (document.selection && document.selection.type != "Control") {
+		    // IE < 9
+		    document.selection.createRange().pasteHTML(html);
+		}
+	}
+	
+</script>
