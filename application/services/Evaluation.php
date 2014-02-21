@@ -1152,49 +1152,63 @@ class Application_Service_Evaluation {
 		$sql = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_code','s.scheme_type','s.shipment_date','s.lastdate_response','s.max_score'))
 				->where("s.shipment_id = ?",$shipmentId);
 		//error_log($sql);
-		$shipmentResult = $db->fetchAll($sql);
+		$shipmentResult = $db->fetchRow($sql);
 		$i=0;
-		foreach($shipmentResult as $res){
+		if($shipmentResult!=""){
 			
-			if($res['scheme_type']=='dbs'){
+			if($shipmentResult['scheme_type']=='dbs'){
 				
 				
 			}
-			else if($res['scheme_type']=='dts'){
+			else if($shipmentResult['scheme_type']=='dts'){
 				
 				
 			}
-			else if($res['scheme_type']=='eid'){
+			else if($shipmentResult['scheme_type']=='eid'){
+				$schemeService = new Application_Service_Schemes();
 				
-				$j=0;
-				$sQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id','spm.shipment_score','spm.attributes'))
+				$extractionAssay = $schemeService->getEidExtractionAssay();
+				$detectionAssay = $schemeService->getEidDetectionAssay();
+				
+				foreach($extractionAssay as $extractionAssayVal){
+					foreach($detectionAssay as $detectionAssayVal){
+						$extId=$extractionAssayVal['id'];
+						$detId=$detectionAssayVal['id'];
+						
+						$sQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id','spm.shipment_score','spm.attributes'))
 						->join(array('refeid'=>'reference_result_eid'),'refeid.shipment_id=spm.shipment_id',array('refeid.sample_label'))
+						->join(array('eidExtrac'=>'r_eid_extraction_assay'),"eidExtrac.id=$extId",array('eidExtracName'=>'eidExtrac.name'))
+						->join(array('eidDetec'=>'r_eid_detection_assay'),"eidDetec.id=$detId",array('eidDetecName'=>'eidDetec.name'))
 						->where("spm.shipment_id = ?",$shipmentId)
-						->where("spm.attributes LIKE '%\"extraction_assay\":\"1\"%' ")
-						->where("spm.attributes LIKE '%\"detection_assay\":\"1\"%' ")
+						->where("spm.attributes LIKE '%\"extraction_assay\":\"$extId\"%' ")
+						->where("spm.attributes LIKE '%\"detection_assay\":\"$detId\"%' ")
 						->where("substring(spm.evaluation_status,4,1) != '0'")
 						->group('spm.map_id');
-				
-				//error_log($sQuery);
-				$sQueryRes= $db->fetchAll($sQuery);
-				$shipmentResult[$i]['summaryResult']=$sQueryRes;
-				
-				foreach($sQueryRes as $shipment){
-					
-					//$attr = json_decode($shipment['attributes'],true);
-					
-					//echo $extraction=$attr['extraction_assay'];
-					//echo $detection=$attr['detection_assay'];
-					$tQuery=$db->select()->from(array('refeid'=>'reference_result_eid'),array('refeid.sample_id','refeid.sample_label','refeid.reference_result','refeid.sample_score'))
-							->join(array('reseid'=>'response_result_eid'),'reseid.shipment_map_id='.$shipment['map_id'].' and reseid.sample_id=refeid.sample_id',array('reseid.calculated_score','reseid.reported_result'))
-							->where("refeid.shipment_id = ?",$shipment['shipment_id']);
-					//error_log($tQuery);
-					$shipmentResult[$i]['sample'][]=$db->fetchAll($tQuery);
-					$j++;
+						//echo $sQuery;
+						//echo "<br/>";
+						$sQueryRes= $db->fetchAll($sQuery);
+						
+						if(count($sQueryRes) > 0 ){
+							$tQuery=$db->select()->from(array('refeid'=>'reference_result_eid'),array('refeid.sample_id','refeid.sample_label'))
+									->join(array('reseid'=>'response_result_eid'),'reseid.sample_id=refeid.sample_id',
+									       array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN reseid.reported_result=refeid.reference_result THEN 1 ELSE 0 END)")))
+									->join(array('spm'=>'shipment_participant_map'),'reseid.shipment_map_id=spm.map_id and refeid.shipment_id=spm.shipment_id',array())
+									->where("spm.attributes LIKE '%\"extraction_assay\":\"$extId\"%' ")
+									->where("spm.attributes LIKE '%\"detection_assay\":\"$detId\"%' ")								
+									->where("spm.shipment_id = ?",$shipmentId)
+									->group(array("refeid.sample_id"));
+								
+							$shipmentResult['summaryResult'][]=$sQueryRes;
+							$shipmentResult['summaryResult'][count($shipmentResult['summaryResult'])-1]['correctCount']=$db->fetchAll($tQuery);
+						}
+						
+					}
 				}
+				//Zend_Debug::dump($shipmentResult);
+				//die;
 				
 			}
-			else if($res['scheme_type']=='vl'){
+			else if($shipmentResult['scheme_type']=='vl'){
 				
 			}
 			

@@ -1,17 +1,13 @@
 <?php
 
 //Zend_Debug::dump($this->result);
-foreach($this->result as $result){
-	//Zend_Debug::dump($result['sample'][0]);
-	
-	
-	//Zend_Debug::dump($sampResCount);
-}
-//$this->result[0]['max_score'];
 //die;
 require_once('tcpdf/tcpdf.php');
-$shipmentCode = $this->result[0]['shipment_code'];
-if(sizeof($this->result)>0){
+
+if($this->result!=""){
+	
+	$shipmentCode = $this->result['shipment_code'];
+	
 	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
 		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
         }	
@@ -79,29 +75,32 @@ if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
     $pdf->setLanguageArray($l);
 }
 
-// ---------------------------------------------------------
-foreach($this->result as $result){
 
+// add a page
+$pdf->AddPage();
+// ---------------------------------------------------------
+foreach($this->result['summaryResult'] as $result){
 	$maxScore=0;
 	$belowScore=0;
-	$partCount=count($result['summaryResult']);
-	foreach($result['summaryResult'] as $partRes){
-		if($result['max_score']==$partRes['shipment_score']){
+	$partCount=count($result)-1;
+	//Zend_Debug::dump($result['correctCount']);
+	for($i=0;$i<$partCount;$i++){
+		if($this->result['max_score']==$result[$i]['shipment_score']){
 			$maxScore++;
 		}else{
 			$belowScore++;
 		}
 	}
+	//echo $maxScore;
+	//echo "<br/>";
 	$scoringPer=round(($maxScore/$partCount)*100);
+
 // set font
 $pdf->SetFont('times', 'BI', 12);
 
-// add a page
-$pdf->AddPage();
-
 $html='<table><tr><td style="">Summary of All Laboratories using Amplicor/Amplicor</td></tr>';
-$html.='<tr><td style="">Extraction Assay - COBAS Ampliprep/Taqman HIV-1 Qual Test </td></tr>';
-$html.='<tr><td style="">Detection Assay - COBAS Ampliprep/Taqman HIV-1 Qual Test </td></tr></table>';
+$html.='<tr><td style="">Extraction Assay - '.$result[0]['eidExtracName'].'</td></tr>';
+$html.='<tr><td style="">Detection Assay - '.$result[0]['eidDetecName'].' </td></tr></table>';
 
 $pdf->writeHTML($html, true, false, true, false, '');
 
@@ -111,9 +110,9 @@ $pdf->writeHTML($html, true, false, true, false, '');
 $pdf->SetFont('times', 'B', 10);
 $html='<table border="1"><tr>';
 $html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Performing Assay Pair </td>';
-$html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring "'.$result['max_score'].'"</td>';
-$html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring Below "'.$result['max_score'].'" </td>';
-$html.='<td style="background-color:#dbe4ee;text-align:center;">Percentage of Laboratories Scoring "'.$result['max_score'].'"</td></tr>';
+$html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring "'.$this->result['max_score'].'"</td>';
+$html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring Below "'.$this->result['max_score'].'" </td>';
+$html.='<td style="background-color:#dbe4ee;text-align:center;">Percentage of Laboratories Scoring "'.$this->result['max_score'].'"</td></tr>';
 
 $html.='<tr>';
 $html.='<td style="text-align:center;">'.$partCount.'</td>';
@@ -127,25 +126,25 @@ $html.='</table>';
 $pdf->writeHTML($html, true, false, true, false, '');
 
 
-	$sampResCount[]='';
-	foreach($result['sample'] as $sampleRes){
-		$sampleCount=count($sampleRes);
-		$k=0;
-		foreach($sampleRes as $res){
-			if($res['reference_result']==$res['reported_result']){
-				if(isset($sampResCount[$k])){
-					$sampResCount[$k]=1+$sampResCount[$k];
-				}else{
-					$sampResCount[$k]=1;
-				}
-				
-			}
-			
-			$k++;
-		}
-		
-	}
-//Zend_Debug::dump($sampResCount);
+//	$sampResCount[]='';
+//	foreach($result['sample'] as $sampleRes){
+//		$sampleCount=count($sampleRes);
+//		$k=0;
+//		foreach($sampleRes as $res){
+//			if($res['reference_result']==$res['reported_result']){
+//				if(isset($sampResCount[$k])){
+//					$sampResCount[$k]=1+$sampResCount[$k];
+//				}else{
+//					$sampResCount[$k]=1;
+//				}
+//				
+//			}
+//			
+//			$k++;
+//		}
+//		
+//	}
+////Zend_Debug::dump($sampResCount);
 $sampleCode='<table border="1">';
 $sampleCode.='<tr>';
 $sampleCode.='<td rowspan="2"></td>';
@@ -154,9 +153,9 @@ $sampleCode.='<td></td>';
 $sampleCode.='</tr>';
 
 $sampleCode.='<tr>';
-
-foreach($result['sample'][0] as $sampleLabel){
-	$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">'.$sampleLabel['sample_label'].'</td>';
+$sampleCount=count($result['correctCount']);
+foreach($result['correctCount'] as $sample){
+	$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">'.$sample['sample_label'].'</td>';
 }
 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average</td>';
 $sampleCode.='</tr>';
@@ -164,21 +163,21 @@ $sampleCode.='<tr>';
 $sampAvg='0';
 $sampPerAvg='0';
 $sampleCode.='<td rowspan="2" style="background-color:#dbe4ee;">Correctly Reported</td>';
-for($n=0;$n<$sampleCount;$n++){
-	$sampAvg+=$sampResCount[$n];
-	$sampleCode.='<td style="text-align:center;">'.$sampResCount[$n].'</td>';
-	
+
+foreach($result['correctCount'] as $sample){
+	$sampAvg+=$sample["correctRes"];
+	$sampleCode.='<td style="text-align:center;">'.$sample["correctRes"].'</td>';
 }
 //$sampleCode.='<td>'.($sampResCount[$n]/$partCount).'</td>';
-
+//
 $sampleCode.='<td style="text-align:center;">'.round(($sampAvg/$sampleCount),2).'</td>';
 $sampleCode.='</tr>';
 
 
 $sampleCode.='<tr>';
-for($n=0;$n<$sampleCount;$n++){
-	$sampPerAvg+=(($sampResCount[$n]/$partCount)*100);
-	$sampleCode.='<td style="text-align:center;">'.(($sampResCount[$n]/$partCount)*100).'%</td>';
+foreach($result['correctCount'] as $sample){
+	$sampPerAvg+=(($sample["correctRes"]/$partCount)*100);
+	$sampleCode.='<td style="text-align:center;">'.(($sample["correctRes"]/$partCount)*100).'%</td>';
 	
 }
 $sampleCode.='<td style="text-align:center;">'.round(($sampPerAvg/$sampleCount)).'%</td>';
