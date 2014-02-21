@@ -237,6 +237,13 @@
 				$.unblockUI();
 				alert(data);
 			});
+			
+			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'),'default',true); ?>", { sId: sId,format: "html" },
+			function (data) {
+				//$.unblockUI();
+				//alert(data);
+				//document.getElementById("summaryDiv").innerHTML=data;
+			});
 		}else{
 			alert("Please check the event date");
 		}

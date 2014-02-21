@@ -1028,7 +1028,7 @@ class Application_Service_Evaluation {
 				->joinLeft(array('res'=>'r_results'),'res.result_id=sp.final_result',array('result_name'))
 				->where("s.shipment_id = ?",$shipmentId)
 				->where("substring(sp.evaluation_status,4,1) != '0'");
-		
+				
 		$shipmentResult = $db->fetchAll($sql);
 		$i=0;
 		foreach($shipmentResult as $res){
@@ -1064,6 +1064,7 @@ class Application_Service_Evaluation {
 					->where("reseid.shipment_map_id = ?",$res['map_id']);
 				//error_log($sQuery);
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+				
 			}
 			else if($res['scheme_type']=='vl'){
 				$schemeService = new Application_Service_Schemes();
@@ -1135,11 +1136,70 @@ class Application_Service_Evaluation {
 					
 			}
 			
+			$i++;
+			$db->update('shipment_participant_map',array('report_generated'=>'yes'),"map_id=".$res['map_id']);
+		}
+		//$result=array('shipment'=>$shipmentResult,'responseResult'=>$responseResult);
+		
+		
+		return $shipmentResult;
+	}
+	
+	
+	public function getSummaryReportsInPdf($shipmentId){
+		$responseResult="";
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_code','s.scheme_type','s.shipment_date','s.lastdate_response','s.max_score'))
+				->where("s.shipment_id = ?",$shipmentId);
+		//error_log($sql);
+		$shipmentResult = $db->fetchAll($sql);
+		$i=0;
+		foreach($shipmentResult as $res){
+			
+			if($res['scheme_type']=='dbs'){
+				
+				
+			}
+			else if($res['scheme_type']=='dts'){
+				
+				
+			}
+			else if($res['scheme_type']=='eid'){
+				
+				$j=0;
+				$sQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id','spm.shipment_score','spm.attributes'))
+						->join(array('refeid'=>'reference_result_eid'),'refeid.shipment_id=spm.shipment_id',array('refeid.sample_label'))
+						->where("spm.shipment_id = ?",$shipmentId)
+						->where("spm.attributes LIKE '%\"extraction_assay\":\"1\"%' ")
+						->where("spm.attributes LIKE '%\"detection_assay\":\"1\"%' ")
+						->where("substring(spm.evaluation_status,4,1) != '0'")
+						->group('spm.map_id');
+				
+				//error_log($sQuery);
+				$sQueryRes= $db->fetchAll($sQuery);
+				$shipmentResult[$i]['summaryResult']=$sQueryRes;
+				
+				foreach($sQueryRes as $shipment){
+					
+					//$attr = json_decode($shipment['attributes'],true);
+					
+					//echo $extraction=$attr['extraction_assay'];
+					//echo $detection=$attr['detection_assay'];
+					$tQuery=$db->select()->from(array('refeid'=>'reference_result_eid'),array('refeid.sample_id','refeid.sample_label','refeid.reference_result','refeid.sample_score'))
+							->join(array('reseid'=>'response_result_eid'),'reseid.shipment_map_id='.$shipment['map_id'].' and reseid.sample_id=refeid.sample_id',array('reseid.calculated_score','reseid.reported_result'))
+							->where("refeid.shipment_id = ?",$shipment['shipment_id']);
+					//error_log($tQuery);
+					$shipmentResult[$i]['sample'][]=$db->fetchAll($tQuery);
+					$j++;
+				}
+				
+			}
+			else if($res['scheme_type']=='vl'){
+				
+			}
 			
 			$i++;
 		}
-		//$result=array('shipment'=>$shipmentResult,'responseResult'=>$responseResult);
-		$db->update('shipment_participant_map',array('report_generated'=>'yes'),"shipment_id=$shipmentId");
 		
 		return $shipmentResult;
 	}

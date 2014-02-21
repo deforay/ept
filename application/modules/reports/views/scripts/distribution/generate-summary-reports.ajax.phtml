@@ -1,0 +1,202 @@
+<?php
+
+//Zend_Debug::dump($this->result);
+foreach($this->result as $result){
+	//Zend_Debug::dump($result['sample'][0]);
+	
+	
+	//Zend_Debug::dump($sampResCount);
+}
+//$this->result[0]['max_score'];
+//die;
+require_once('tcpdf/tcpdf.php');
+$shipmentCode = $this->result[0]['shipment_code'];
+if(sizeof($this->result)>0){
+	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
+		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
+        }	
+    
+// Extend the TCPDF class to create custom Header and Footer
+class MYPDF extends TCPDF {
+
+    //Page header
+    public function Header() {
+        // Logo
+        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+        //$this->Image($image_file, 10, 10, 15, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+        // Set font
+        //$this->SetY(10);
+        $this->SetFont('times', 'B', 12);
+        // Title
+        //$this->Cell(5, 5, 'CDC-ILB-PT', 0, false, 'L', 0, '', 0, false, 'M', 'M');
+       // $this->Cell(0, 5, 'HIV-1 Proficiency Testing Program for Early Infant Diagnosis', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+       // $this->Cell(0, 5, 'Panel 2013-I', 0, false, 'R', 0, '', 0, false, 'M', 'M');
+        
+        $header='<table><tr><td style="text-align:center;">CDC-ILB-PT</td><td style="text-align:center;">HIV-1 Proficiency Testing Program for Early Infant Diagnosis</td><td style="text-align:right;">Panel 2013-I</td></tr></table>';
+        
+	//$result['scheme_name']
+	$this->writeHTMLCell(0, 0, 0, 10, $header, 0, 0, 0, true, 'J', true);
+    }
+
+    // Page footer
+    public function Footer() {
+        // Position at 15 mm from bottom
+        $this->SetY(-15);
+        // Set font
+        $this->SetFont('helvetica', 'I', 8);
+        // Page number
+        $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+    }
+}
+
+// create new PDF document
+$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+// set default header data
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+// set header and footer fonts
+$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+// set default monospaced font
+$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+// set margins
+$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+// set auto page breaks
+$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+// set image scale factor
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+// set some language-dependent strings (optional)
+if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+    require_once(dirname(__FILE__).'/lang/eng.php');
+    $pdf->setLanguageArray($l);
+}
+
+// ---------------------------------------------------------
+foreach($this->result as $result){
+
+	$maxScore=0;
+	$belowScore=0;
+	$partCount=count($result['summaryResult']);
+	foreach($result['summaryResult'] as $partRes){
+		if($result['max_score']==$partRes['shipment_score']){
+			$maxScore++;
+		}else{
+			$belowScore++;
+		}
+	}
+	$scoringPer=round(($maxScore/$partCount)*100);
+// set font
+$pdf->SetFont('times', 'BI', 12);
+
+// add a page
+$pdf->AddPage();
+
+$html='<table><tr><td style="">Summary of All Laboratories using Amplicor/Amplicor</td></tr>';
+$html.='<tr><td style="">Extraction Assay - COBAS Ampliprep/Taqman HIV-1 Qual Test </td></tr>';
+$html.='<tr><td style="">Detection Assay - COBAS Ampliprep/Taqman HIV-1 Qual Test </td></tr></table>';
+
+$pdf->writeHTML($html, true, false, true, false, '');
+
+//$y = $pdf->getY();
+//$pdf->writeHTMLCell(0, 0, 0, $y, $html, array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0))), 0, 0, true, 'J', true);
+// set some text to print
+$pdf->SetFont('times', 'B', 10);
+$html='<table border="1"><tr>';
+$html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Performing Assay Pair </td>';
+$html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring "'.$result['max_score'].'"</td>';
+$html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring Below "'.$result['max_score'].'" </td>';
+$html.='<td style="background-color:#dbe4ee;text-align:center;">Percentage of Laboratories Scoring "'.$result['max_score'].'"</td></tr>';
+
+$html.='<tr>';
+$html.='<td style="text-align:center;">'.$partCount.'</td>';
+$html.='<td style="text-align:center;">'.$maxScore.'</td>';
+$html.='<td style="text-align:center;">'.$belowScore.'</td>';
+$html.='<td style="text-align:center;">'.$scoringPer.'%</td>';
+$html.='</tr>';
+
+$html.='</table>';
+
+$pdf->writeHTML($html, true, false, true, false, '');
+
+
+	$sampResCount[]='';
+	foreach($result['sample'] as $sampleRes){
+		$sampleCount=count($sampleRes);
+		$k=0;
+		foreach($sampleRes as $res){
+			if($res['reference_result']==$res['reported_result']){
+				if(isset($sampResCount[$k])){
+					$sampResCount[$k]=1+$sampResCount[$k];
+				}else{
+					$sampResCount[$k]=1;
+				}
+				
+			}
+			
+			$k++;
+		}
+		
+	}
+//Zend_Debug::dump($sampResCount);
+$sampleCode='<table border="1">';
+$sampleCode.='<tr>';
+$sampleCode.='<td rowspan="2"></td>';
+$sampleCode.='<td colspan="8" style="background-color:#dbe4ee;text-align:center;">Sample ID</td>';
+$sampleCode.='<td></td>';
+$sampleCode.='</tr>';
+
+$sampleCode.='<tr>';
+
+foreach($result['sample'][0] as $sampleLabel){
+	$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">'.$sampleLabel['sample_label'].'</td>';
+}
+$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average</td>';
+$sampleCode.='</tr>';
+$sampleCode.='<tr>';
+$sampAvg='0';
+$sampPerAvg='0';
+$sampleCode.='<td rowspan="2" style="background-color:#dbe4ee;">Correctly Reported</td>';
+for($n=0;$n<$sampleCount;$n++){
+	$sampAvg+=$sampResCount[$n];
+	$sampleCode.='<td style="text-align:center;">'.$sampResCount[$n].'</td>';
+	
+}
+//$sampleCode.='<td>'.($sampResCount[$n]/$partCount).'</td>';
+
+$sampleCode.='<td style="text-align:center;">'.round(($sampAvg/$sampleCount),2).'</td>';
+$sampleCode.='</tr>';
+
+
+$sampleCode.='<tr>';
+for($n=0;$n<$sampleCount;$n++){
+	$sampPerAvg+=(($sampResCount[$n]/$partCount)*100);
+	$sampleCode.='<td style="text-align:center;">'.(($sampResCount[$n]/$partCount)*100).'%</td>';
+	
+}
+$sampleCode.='<td style="text-align:center;">'.round(($sampPerAvg/$sampleCount)).'%</td>';
+$sampleCode.='</tr>';
+
+$sampleCode.='</table>';
+
+$pdf->writeHTML($sampleCode, true, false, true, false, '');
+// ---------------------------------------------------------
+}
+//Close and output PDF document
+$fileName="summary.pdf";
+$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$fileName;
+//$pdf->Output('example_003.pdf', 'I');
+$pdf->Output($filePath, "F");
+
+//============================================================+
+// END OF FILE
+//============================================================+
+echo "Reports generated and can be downloaded by Participants.";
+}

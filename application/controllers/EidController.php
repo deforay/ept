@@ -43,12 +43,12 @@ class EidController extends Zend_Controller_Action
             $this->view->participant = $participantService->getParticipantDetails($pID);
             //Zend_Debug::dump($schemeService->getEidSamples($sID,$pID));
 			
-			$this->view->eidPossibleResults = $schemeService->getPossibleResults('eid');
+	    $this->view->eidPossibleResults = $schemeService->getPossibleResults('eid');
 			
             $this->view->allSamples =$schemeService->getEidSamples($sID,$pID);
 			
             $shipment = $schemeService->getShipmentData($sID,$pID);
-			$shipment['attributes'] = json_decode($shipment['attributes'],true);
+	    $shipment['attributes'] = json_decode($shipment['attributes'],true);
             $this->view->shipment = $shipment;
             $this->view->shipId = $sID;
             $this->view->participantId = $pID;

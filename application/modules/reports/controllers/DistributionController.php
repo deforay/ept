@@ -9,6 +9,7 @@ class Reports_DistributionController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
                     ->addActionContext('get-shipments', 'html')
                     ->addActionContext('generate-reports', 'html')
+                    ->addActionContext('generate-summary-reports', 'html')
                     ->initContext();        
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -56,12 +57,18 @@ class Reports_DistributionController extends Zend_Controller_Action
         }
     }
 
+    public function generateSummaryReportsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if($this->_hasParam('sId')){
+            $id = (int)base64_decode($this->_getParam('sId'));
+            $evalService = new Application_Service_Evaluation();
+            $this->view->result = $evalService->getSummaryReportsInPdf($id);
+        }
+    }
+
 
 }
-
-
-
-
 
 
 

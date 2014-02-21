@@ -25,13 +25,13 @@ class Application_Service_Schemes {
 	public function getEidExtractionAssay(){
 		
 		$db = new Application_Model_DbTable_EidExtractionAssay();
-		return $db->fetchAll();
+		return $db->fetchAll()->toArray();
 		
 	}	
 	public function getEidDetectionAssay(){
 		
 		$db = new Application_Model_DbTable_EidDetectionAssay();
-		return $db->fetchAll();		
+		return $db->fetchAll()->toArray();		
 		
 	}	
 	public function getVlAssay(){

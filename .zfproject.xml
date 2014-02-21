@@ -340,6 +340,7 @@
               <actionMethod actionName="getShipments"/>
               <actionMethod actionName="shipment"/>
               <actionMethod actionName="generateReports"/>
+              <actionMethod actionName="generateSummaryReports"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -365,6 +366,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Distribution">
                 <viewScriptFile forActionName="generateReports"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Distribution">
+                <viewScriptFile forActionName="generateSummaryReports"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

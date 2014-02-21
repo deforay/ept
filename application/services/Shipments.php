@@ -195,16 +195,16 @@ class Application_Service_Shipments {
 						  "detection_assay"=>$params['detectionAssay']);
 			$attributes = json_encode($attributes);
 			$data = array(
-						  "shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
-						  "shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
-						  "shipment_test_report_date"=>new Zend_Db_Expr('now()'),
-						  "attributes" => $attributes,
-						  "supervisor_approval"=>$params['supervisorApproval'],
-						  "participant_supervisor"=>$params['participantSupervisor'],
-						  "user_comment"=>$params['userComments'],
-						  "updated_by_user"=>$authNameSpace->dm_id,
-						  "updated_on_user"=>new Zend_Db_Expr('now()')
-						  );
+					"shipment_receipt_date"=>Pt_Commons_General::dateFormat($params['receiptDate']),
+					"shipment_test_date"=>Pt_Commons_General::dateFormat($params['testDate']),
+					"shipment_test_report_date"=>new Zend_Db_Expr('now()'),
+					"attributes" => $attributes,
+					"supervisor_approval"=>$params['supervisorApproval'],
+					"participant_supervisor"=>$params['participantSupervisor'],
+					"user_comment"=>$params['userComments'],
+					"updated_by_user"=>$authNameSpace->dm_id,
+					"updated_on_user"=>new Zend_Db_Expr('now()')
+					);
 			
 			$noOfRowsAffected = $shipmentParticipantDb->updateShipment($data,$params['smid'],$params['hdLastDate']);
 			
