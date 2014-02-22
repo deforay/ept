@@ -1,17 +1,14 @@
 <?php
-
 //Zend_Debug::dump($this->result);
 //die;
 require_once('tcpdf/tcpdf.php');
 
 if($this->result!=""){
 	
-	$shipmentCode = $this->result['shipment_code'];
-	
 	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
 		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
         }	
-    
+
 // Extend the TCPDF class to create custom Header and Footer
 class MYPDF extends TCPDF {
 
@@ -22,7 +19,7 @@ class MYPDF extends TCPDF {
         //$this->Image($image_file, 10, 10, 15, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
         // Set font
         //$this->SetY(10);
-        $this->SetFont('times', 'B', 12);
+        $this->SetFont('times', 'B', 13);
         // Title
         //$this->Cell(5, 5, 'CDC-ILB-PT', 0, false, 'L', 0, '', 0, false, 'M', 'M');
        // $this->Cell(0, 5, 'HIV-1 Proficiency Testing Program for Early Infant Diagnosis', 0, false, 'C', 0, '', 0, false, 'M', 'M');
@@ -77,9 +74,11 @@ if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
 
 
 // add a page
-$pdf->AddPage();
+//$pdf->AddPage();
+$pdf->AddPage('L', 'A4');
 // ---------------------------------------------------------
 foreach($this->result['summaryResult'] as $result){
+	
 	$maxScore=0;
 	$belowScore=0;
 	$partCount=count($result)-1;
@@ -91,61 +90,41 @@ foreach($this->result['summaryResult'] as $result){
 			$belowScore++;
 		}
 	}
-	//echo $maxScore;
-	//echo "<br/>";
+	
 	$scoringPer=round(($maxScore/$partCount)*100);
 
 // set font
-$pdf->SetFont('times', 'BI', 12);
+$pdf->SetFont('times', 'B', 12);
+$sampleCode='<div style="border: 2px solid #000000;">';
 
-$html='<table><tr><td style="">Summary of All Laboratories using Amplicor/Amplicor</td></tr>';
-$html.='<tr><td style="">Extraction Assay - '.$result[0]['eidExtracName'].'</td></tr>';
-$html.='<tr><td style="">Detection Assay - '.$result[0]['eidDetecName'].' </td></tr></table>';
+$sampleCode.='<table style="margin-left:5px;"><tr><td style="">Summary of All Laboratories using '.$result[0]['eidExtracName'].' / '.$result[0]['eidDetecName'].'</td></tr>';
+$sampleCode.='<tr><td style="">Extraction Assay - '.$result[0]['eidExtracName'].'</td></tr>';
+$sampleCode.='<tr><td style="">Detection Assay - '.$result[0]['eidDetecName'].' </td></tr></table>';
 
-$pdf->writeHTML($html, true, false, true, false, '');
+//$pdf->writeHTML($html, true, false, true, false, '');
 
 //$y = $pdf->getY();
-//$pdf->writeHTMLCell(0, 0, 0, $y, $html, array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0))), 0, 0, true, 'J', true);
+
 // set some text to print
-$pdf->SetFont('times', 'B', 10);
-$html='<table border="1"><tr>';
-$html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Performing Assay Pair </td>';
-$html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring "'.$this->result['max_score'].'"</td>';
-$html.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring Below "'.$this->result['max_score'].'" </td>';
-$html.='<td style="background-color:#dbe4ee;text-align:center;">Percentage of Laboratories Scoring "'.$this->result['max_score'].'"</td></tr>';
 
-$html.='<tr>';
-$html.='<td style="text-align:center;">'.$partCount.'</td>';
-$html.='<td style="text-align:center;">'.$maxScore.'</td>';
-$html.='<td style="text-align:center;">'.$belowScore.'</td>';
-$html.='<td style="text-align:center;">'.$scoringPer.'%</td>';
-$html.='</tr>';
+$sampleCode.='<table border="1" style="margin-left:5px;"><tr>';
+$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Performing Assay Pair </td>';
+$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring "'.$this->result['max_score'].'"</td>';
+$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring Below "'.$this->result['max_score'].'" </td>';
+$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Percentage of Laboratories Scoring "'.$this->result['max_score'].'"</td></tr>';
 
-$html.='</table>';
+$sampleCode.='<tr>';
+$sampleCode.='<td style="text-align:center;">'.$partCount.'</td>';
+$sampleCode.='<td style="text-align:center;">'.$maxScore.'</td>';
+$sampleCode.='<td style="text-align:center;">'.$belowScore.'</td>';
+$sampleCode.='<td style="text-align:center;">'.$scoringPer.'%</td>';
+$sampleCode.='</tr>';
 
-$pdf->writeHTML($html, true, false, true, false, '');
+$sampleCode.='</table><br/><br/>';
 
+//$pdf->writeHTML($html, true, false, true, false, '');
 
-//	$sampResCount[]='';
-//	foreach($result['sample'] as $sampleRes){
-//		$sampleCount=count($sampleRes);
-//		$k=0;
-//		foreach($sampleRes as $res){
-//			if($res['reference_result']==$res['reported_result']){
-//				if(isset($sampResCount[$k])){
-//					$sampResCount[$k]=1+$sampResCount[$k];
-//				}else{
-//					$sampResCount[$k]=1;
-//				}
-//				
-//			}
-//			
-//			$k++;
-//		}
-//		
-//	}
-////Zend_Debug::dump($sampResCount);
-$sampleCode='<table border="1">';
+$sampleCode.='<table border="1">';
 $sampleCode.='<tr>';
 $sampleCode.='<td rowspan="2"></td>';
 $sampleCode.='<td colspan="8" style="background-color:#dbe4ee;text-align:center;">Sample ID</td>';
@@ -166,13 +145,11 @@ $sampleCode.='<td rowspan="2" style="background-color:#dbe4ee;">Correctly Report
 
 foreach($result['correctCount'] as $sample){
 	$sampAvg+=$sample["correctRes"];
-	$sampleCode.='<td style="text-align:center;">'.$sample["correctRes"].'</td>';
+	$sampleCode.='<td style="text-align:center;font-weight:normal;">'.$sample["correctRes"].'</td>';
 }
-//$sampleCode.='<td>'.($sampResCount[$n]/$partCount).'</td>';
-//
+
 $sampleCode.='<td style="text-align:center;">'.round(($sampAvg/$sampleCount),2).'</td>';
 $sampleCode.='</tr>';
-
 
 $sampleCode.='<tr>';
 foreach($result['correctCount'] as $sample){
@@ -184,13 +161,16 @@ $sampleCode.='<td style="text-align:center;">'.round(($sampPerAvg/$sampleCount))
 $sampleCode.='</tr>';
 
 $sampleCode.='</table>';
+$sampleCode.='</div>';
 
 $pdf->writeHTML($sampleCode, true, false, true, false, '');
+
 // ---------------------------------------------------------
 }
+
 //Close and output PDF document
 $fileName="summary.pdf";
-$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$fileName;
+$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$this->result['shipment_code']. DIRECTORY_SEPARATOR .$fileName;
 //$pdf->Output('example_003.pdf', 'I');
 $pdf->Output($filePath, "F");
 
