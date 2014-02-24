@@ -221,5 +221,32 @@ class Application_Service_Reports {
 
         echo json_encode($output);
     }
+    
+    public function updateReportConfigs($params){
+	$filterRules = array('*' => 'StripTags','*' => 'StringTrim');
+        $filter = new Zend_Filter_Input($filterRules, null, $params);
+        if ($filter->isValid()) {
+            //$params = $filter->getEscaped();
+            $db = new Application_Model_DbTable_ReportConfig();
+            $db->getAdapter()->beginTransaction();
+            try {
+                $result=$db->updateReportDetails($params);
+                //$alertMsg = new Zend_Session_Namespace('alert');
+                //$alertMsg->msg=" documents submitted successfully.";
+                
+                $db->getAdapter()->commit();
+                return $result;
+            } catch (Exception $exc) {
+                $db->getAdapter()->rollBack();
+                error_log($exc->getMessage());
+                error_log($exc->getTraceAsString());
+            }
+        }
+    }
+    
+    public function getReportConfigValue($name){
+	$db = new Application_Model_DbTable_ReportConfig();
+	return $db->getValue($name);
+    }
 }
 

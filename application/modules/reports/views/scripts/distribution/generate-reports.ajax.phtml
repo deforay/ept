@@ -11,8 +11,9 @@ if(sizeof($this->result)>0){
 class MYPDF extends TCPDF {
 	public $scheme_name = '';
 
-	public function setSchemeName($schemeName) {
+	public function setSchemeName($header,$schemeName) {
 		$this->scheme_name = $schemeName;
+		$this->header=$header;
 	}
     
     //Page header
@@ -22,20 +23,20 @@ class MYPDF extends TCPDF {
 	
         $this->Image($image_file, 10, 10, 15, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
         // Set font
-        $this->SetFont('times', 'B', 10);
-        // Title
-        $this->Cell(0, 15, 'DEPARTMENT OF HEALTH AND HUMAN SERVICES', 0, false, 'C', 0, '', 0, false, 'M', 'M');
-	
 	
 	$this->SetFont('times', '', 12);
         
-	$html='<table><tr><td style="text-align:center;">International Laboratory Branch</td></tr><tr><td style="text-align:center;">Division of Global HIV/AIDS, CDC-Atlanta</td></tr><tr><td style="text-align:center;">December 11, 2013</td></tr></table>';
-	//$pdf->writeHTML($html, true, false, true, false, '');
+	$this->header=str_replace("<div","<span",trim($this->header));
+	$this->header=str_replace("</div>","</span><br/>",$this->header);
+	
+	//error_log($this->header);
 	//$y = $this->getY();
-	$this->writeHTMLCell(0, 0, 5, 14, $html, 0, 0, 0, true, 'J', true);
+	$html=$this->header;
+	
+	$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
+	//$this->writeHTML($html, true, false, true, true, 'L');
 	
 	$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p><hr/>';
-	//$result['scheme_name']
 	$this->writeHTMLCell(0, 0, 20, 30, $html, 0, 0, 0, true, 'J', true);
 	
     }
@@ -60,7 +61,7 @@ foreach($this->result as $result){
 	// create new PDF document
 	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	
-	$pdf->setSchemeName($result['scheme_name']);
+	$pdf->setSchemeName($this->header,$result['scheme_name']);
 	// set document information
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('Nicola Asuni');

@@ -1,8 +1,5 @@
-
 <link href="<?php echo $this->baseUrl('css/editor.css'); ?>" rel="stylesheet">
-
-
-<form class="form-horizontal" role="form" name="addCaseTypeDocuments" id="addCaseTypeDocuments"  method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>" autocomplete="off">
+<form class="form-horizontal" role="form" name="addReportConfig" id="addReportConfig"  method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>" autocomplete="off">
 	<legend>Edit Report Config <span class="muted pull-right" style="font-size:15px;"><span class="mandatory">*</span> indicates required field</span></legend>
   
 	<div class="container">
@@ -12,14 +9,14 @@
 			<a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i class="icon-font"></i><b class="caret"></b></a>
 			  <ul class="dropdown-menu"></ul>
 			</div>
-			<div class="btn-group">
+			<!--<div class="btn-group">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="icon-text-height"></i>&nbsp;<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 				<li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
 				<li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
 				<li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
 				</ul>
-			</div>
+			</div>-->
 			<div class="btn-group">
 			  <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="icon-bold"></i></a>
 			  <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="icon-italic"></i></a>
@@ -60,7 +57,7 @@
 		</div>
 		<!--<input type="button" value="Spell Check" onclick="$Spelling.SpellCheckInWindow('editor')" />-->
 		<div id="editor" name="editor">
-			
+			<?php echo $this->result; ?>
 		</div>
 		
 		<textarea rows="2" name="content" id="content" cols="20" style="display:none;" class="isRequired"></textarea>
@@ -89,11 +86,11 @@
 		desc = $("#editor").html();
 		$("#content").html(desc);
 		flag = deforayValidator.init({
-		    formId: 'addCaseTypeDocuments'
+		    formId: 'addReportConfig'
 		});
 		if(flag){
 		    if(duplicateName){
-			document.getElementById('addCaseTypeDocuments').submit();
+			document.getElementById('addReportConfig').submit();
 		    }
 		}
 	}

@@ -104,6 +104,7 @@
           <dbTableFile dbTableName="ShipmentParticipantMap"/>
           <dbTableFile dbTableName="ContactUs"/>
           <dbTableFile dbTableName="ResponseDbs"/>
+          <dbTableFile dbTableName="ReportConfig"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>

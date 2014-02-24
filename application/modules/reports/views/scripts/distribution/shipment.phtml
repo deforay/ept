@@ -125,10 +125,15 @@
     
     </tbody>
 </table>
+
+
 <br/>
-
+<br/>
+<br/>
 <a href="javascript:void(0)" class="btn btn-danger" onclick="generateReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')" style="margin-left: 30%;"><i class="icon-file-text"></i>&nbsp;&nbsp;Generate Report</a>
+<span id="summaryDiv">
 
+</span>
 <script type="text/javascript" charset="utf-8">
 	var oTable = null;
 	var nTr = null;
@@ -140,7 +145,11 @@
 		checkReportDate=true;
 	<?php
 	}
+	if($shipment['report_generated']=='yes'){
+		if (file_exists(UPLOAD_PATH. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR . $shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf")) {
 	?>
+	document.getElementById("summaryDiv").innerHTML="<?php echo "<a href='".$this->baseUrl(). DIRECTORY_SEPARATOR."uploads". DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf' class='btn btn-danger' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a>"?>";
+	<?php }} ?>
 	$(document).ready(function() {
 		
 	var nCloneTh = document.createElement( 'th' );
@@ -234,15 +243,23 @@
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'),'default',true); ?>", { sId: sId,format: "html" },
 			function (data) {
-				$.unblockUI();
 				alert(data);
 			});
 			
 			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'),'default',true); ?>", { sId: sId,format: "html" },
 			function (data) {
 				//$.unblockUI();
-				//alert(data);
-				//document.getElementById("summaryDiv").innerHTML=data;
+				if (data=='Success') {
+					<?php
+					if (file_exists(UPLOAD_PATH. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR . $shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf")) {
+					?>
+					document.getElementById("summaryDiv").innerHTML="<?php echo "<a href='".$this->baseUrl(). DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf' class='btn btn-danger' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a>"?>";
+					<?php } ?>
+					$.unblockUI();
+				}else{
+					$.unblockUI();
+				}
+				
 			});
 		}else{
 			alert("Please check the event date");
