@@ -17,6 +17,7 @@ class Admin_ReportConfigController extends Zend_Controller_Action
             $this->_redirect("/admin/report-config/");
         }else{
             $reportService = new Application_Service_Reports();
+            $this->view->logo=$reportService->getReportConfigValue('logo');
             $this->view->result=$reportService->getReportConfigValue('report-header');
         }
     }

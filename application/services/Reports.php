@@ -233,7 +233,7 @@ class Application_Service_Reports {
                 $result=$db->updateReportDetails($params);
                 //$alertMsg = new Zend_Session_Namespace('alert');
                 //$alertMsg->msg=" documents submitted successfully.";
-                
+		
                 $db->getAdapter()->commit();
                 return $result;
             } catch (Exception $exc) {

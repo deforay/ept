@@ -45,7 +45,7 @@ div[data-role="editor-toolbar"] {
  http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css
 
 */
-.caret{display:inline-block;width:0;height:0;vertical-align:top;border-top:4px solid #000000;border-right:4px solid transparent;border-left:4px solid transparent;content:"";}
+.caret{display:inline-block;width:0;height:0;border-top:4px solid #000000;border-right:4px solid transparent;border-left:4px solid transparent;content:"";}
 .btn .caret{margin-top:8px;margin-left:0;}
 .btn-large .caret{margin-top:6px;}
 .btn-large .caret{border-left-width:5px;border-right-width:5px;border-top-width:5px;}

@@ -1,12 +1,13 @@
 <link href="<?php echo $this->baseUrl('css/editor.css'); ?>" rel="stylesheet">
-<form class="form-horizontal" role="form" name="addReportConfig" id="addReportConfig"  method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>" autocomplete="off">
+<link href="<?php echo $this->baseUrl('css/fileupload_style.css'); ?>" rel="stylesheet">
+<form class="form-horizontal" role="form" name="addReportConfig" id="addReportConfig"  method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>" autocomplete="off" enctype="multipart/form-data">
 	<legend>Edit Report Config <span class="muted pull-right" style="font-size:15px;"><span class="mandatory">*</span> indicates required field</span></legend>
   
 	<div class="container">
 		
 		<div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
 			<div class="btn-group">
-			<a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i class="icon-font"></i><b class="caret"></b></a>
+			<a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i class="icon-font"></i><b class="caret" style="vertical-align:top;"></b></a>
 			  <ul class="dropdown-menu"></ul>
 			</div>
 			<!--<div class="btn-group">
@@ -64,7 +65,29 @@
 		<br/>
 		
 	</div>
-
+	
+	<div class="col-md-8">
+		<input type="hidden" name="existImage" value="<?php echo $this->logo;?>"/>
+		<div class="fileupload fileupload-new" data-provides="fileupload">
+			
+			<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+				<?php if(trim($this->logo)!=""){ ?>
+					<img src="<?php echo $this->baseUrl('uploads/logo/'.$this->logo); ?>" />
+				<?php }else{ ?>
+					<img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&text=Logo Image" />
+				<?php } ?>
+				
+			</div>
+			
+			<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+			<div>
+			  <span class="btn btn-file"><span class="fileupload-new">Select image</span><span class="fileupload-exists">Change</span>
+			       
+			      <input type="file" name="logo_image" id="logo_image"/></span>
+			  <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+			</div>
+		</div>
+	</div>
   
 	<div class="form-group">
 	  <div class="col-lg-offset-2 col-lg-10">
@@ -72,11 +95,12 @@
 	      <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>" class="btn btn-danger">Cancel</a>
 	  </div>
 	</div>
-
+	
 </form>
 
 <script src="<?php echo $this->baseUrl('js/jquery.hotkeys.js'); ?>"></script>
 <script src="<?php echo $this->baseUrl('js/bootstrap-wysiwyg.js'); ?>"></script>
+<script src="<?php echo $this->baseUrl('js/bootstrap-fileupload.js'); ?>"></script>
 
 <script type="text/javascript">
 	duplicateName=true;
