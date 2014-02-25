@@ -1,10 +1,14 @@
 <?php
 
-//Zend_Debug::dump($this->result);die;
+//Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
 
+
+//Zend_Debug::dump($this->result);
+//die;
 require_once('tcpdf/tcpdf.php');
-$schemeType = $this->result[0]['scheme_type'];
-if(sizeof($this->result)>0){
+$schemeType = $this->result['shipment'][0]['scheme_type'];
+
+if(sizeof($this->result['shipment'])>0){
 	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
 		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
         }	
@@ -58,7 +62,7 @@ class MYPDF extends TCPDF {
     }
 }
 
-foreach($this->result as $result){
+foreach($this->result['shipment'] as $result){
 	//error_log($i);
 	// Extend the TCPDF class to create custom Header and Footer
 
@@ -182,6 +186,8 @@ foreach($this->result as $result){
 			$labRes.='</table>';
 			$pdf->SetLeftMargin(40);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
+			
+			
 		}else{
 			$labRes='<h5>'.$result['responseResult'][0]['vl_assay'].'</h5>';
 			$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;">
@@ -208,14 +214,52 @@ foreach($this->result as $result){
 			$labRes.='</table>';
 			$pdf->SetLeftMargin(15);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
+			
+			
+			
+			
 		}
-
 	}
 	
 	$pdf->SetLeftMargin(15);
 	
 	$pdf->writeHTML($wishes, true, false, true, false, '');
 	
+	if($schemeType='vl'){
+		if(count($this->result['vlCalculation'])>0){
+				
+			foreach($this->result['vlCalculation'] as $vlCal){
+				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results</h5>';
+				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;">
+				<tr>
+					<td style="background-color:#989898;">Specimen ID </td>
+					<td style="background-color:#989898;">Mean<br/>(log<sub>10</sub> copies/ml)</td>
+					<td style="background-color:#989898;">S.D.</td>
+					<td style="background-color:#989898;">CV</td>
+				</tr>';
+				//Zend_Debug::dump($vlCal[0]['low_limit']);
+				//Zend_Debug::dump(count($vlCal));
+				//Zend_Debug::dump($vlCal['vlAssay']);
+				$countCal=count($vlCal)-1;
+				for($c=0;$c<$countCal;$c++){
+					$calRes.='<tr>';
+					//if($c==0){
+					//$calRes.='<td style="text-align:center;" rowspan="'.$countCal.'">'.$vlCal['vlAssay'].'</td>';	
+					//}
+					
+					
+					$calRes.='<td>'.$vlCal[$c]['sample_label'].'</td>
+						<td>'.$vlCal[$c]['mean'].'</td>
+						<td>'.$vlCal[$c]['sd'].'</td>
+						<td>'.$vlCal[$c]['cv'].'</td>
+					  </tr>';
+				}
+				$calRes.='</table>';
+				
+				$pdf->writeHTML($calRes, true, false, true, false, '');
+			}
+		}
+	}
 	//if(trim($result['distribution_date'])!=""){
 	//	$result['distribution_date']=$this->dateFormat($result['distribution_date']);
 	//}

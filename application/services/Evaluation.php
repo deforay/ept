@@ -1019,6 +1019,7 @@ class Application_Service_Evaluation {
 	
 	public function getEvaluateReportsInPdf($shipmentId){
 		$responseResult="";
+		$vlCalculation="";
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_code','s.scheme_type','s.shipment_date','s.lastdate_response','s.max_score'))
 				->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id',array('d.distribution_id','d.distribution_code','d.distribution_date'))
@@ -1028,7 +1029,7 @@ class Application_Service_Evaluation {
 				->joinLeft(array('res'=>'r_results'),'res.result_id=sp.final_result',array('result_name'))
 				->where("s.shipment_id = ?",$shipmentId)
 				->where("substring(sp.evaluation_status,4,1) != '0'");
-				
+		//error_log($sql);die;
 		$shipmentResult = $db->fetchAll($sql);
 		$i=0;
 		foreach($shipmentResult as $res){
@@ -1073,6 +1074,7 @@ class Application_Service_Evaluation {
 				foreach($vlAssayResultSet as $vlAssayRow){
 					$vlAssayList[$vlAssayRow['id']] = $vlAssayRow['name'];
 				}
+				
 				$vlRange = $schemeService->getVlRange($shipmentId);
 				$results = $schemeService->getVlSamples($shipmentId,$res['participant_id']);
 				
@@ -1127,7 +1129,7 @@ class Application_Service_Evaluation {
 						$grade = 'Not Applicable';
 					}
 					$toReturn[$counter]['grade'] = $grade;
-
+					
 					
 					$counter++;
 				}
@@ -1139,10 +1141,26 @@ class Application_Service_Evaluation {
 			$i++;
 			$db->update('shipment_participant_map',array('report_generated'=>'yes'),"map_id=".$res['map_id']);
 		}
-		//$result=array('shipment'=>$shipmentResult,'responseResult'=>$responseResult);
+		if($res['scheme_type']=='vl'){
+			$schemeService = new Application_Service_Schemes();
+			$vlAssayResultSet = $schemeService->getVlAssay();
+			foreach($vlAssayResultSet as $vlAssayRow){
+				$vlCalRes=$db->fetchAll($db->select()->from(array('vlCal'=>'reference_vl_calculation'))
+							->join(array('refVl'=>'reference_result_vl'),'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id',array('refVl.sample_label'))
+							->where("vlCal.shipment_id=?",$res['shipment_id'])->where("vlCal.vl_assay=?",$vlAssayRow['id']));
+				
+				if(count($vlCalRes)>0){
+					$vlCalculation[$vlAssayRow['id']]=$vlCalRes;
+					$vlCalculation[$vlAssayRow['id']]['vlAssay']=$vlAssayRow['name'];
+				}
+			}
+		}
+		
+		   
+		$result=array('shipment'=>$shipmentResult,'vlCalculation'=>$vlCalculation);
 		
 		
-		return $shipmentResult;
+		return $result;
 	}
 	
 	
