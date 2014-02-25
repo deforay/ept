@@ -55,6 +55,7 @@
 				<tr>
 					<th style="text-align: center;font-size:17px;">Control</th>
 					<th style="text-align: center;font-size:17px;">Results</th>
+					<th style="text-align: center;font-size:17px;">Score</th>
 				</tr>
 					
 				<?php
@@ -66,14 +67,36 @@
 						$class = "oddResult";
 					}
 					?>
-						<tr class="<?php echo $class ?>">
-							<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
-							<td style="vertical-align: middle;"></td>
-						</tr>
+
+				<tr class="<?php echo $class ?>">
+					<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
+					<td style="vertical-align: middle;text-align:center;">
+						<?php
+							if(isset($this->vlRange[$attributes['vl_assay']])){
+								echo "<strong>Min</strong> : ".$this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . "<strong>Max</strong> : ".$this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+							}else{
+								echo "Not enough responses for this VL Assay";
+							}
+						?>
+					</td>
+					<td rowspan="2" style="vertical-align: middle;text-align: center;">
+						<h1>
+							<?php
+							if(isset($this->vlRange[$attributes['vl_assay']])){
+								//echo $score = ($this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'] >= $result['reported_viral_load']) ? $result['sample_score'] : 0;
+								//$total+= $score;
+								echo "-";
+							}else{
+								echo "-";
+							}
+							?>
+						</h1>
+					</td>
+				</tr>
 						<tr class="<?php echo $class ?>">
 							<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
 							<td style="vertical-align: middle;">
-								<select class="form-control" name="reported[]"><?php echo $result['reported_viral_load	']; ?></select>
+								<input type="text" name="reported[]" value="<?php echo $result['reported_viral_load']; ?>" class="form-control" />
 								<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
 							</td>
 						</tr>
