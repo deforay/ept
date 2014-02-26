@@ -1179,7 +1179,33 @@ class Application_Service_Evaluation {
 				
 			}
 			else if($shipmentResult['scheme_type']=='dts'){
+				$sql=$db->select()->from(array('refdts'=>'reference_result_dts'),array('refdts.reference_result','refdts.sample_label'))
+					->join(array('refpr'=>'r_possibleresult'),'refpr.id=refdts.reference_result',array('referenceResult'=>'refpr.response'))
+					->where("refdts.shipment_id = ?",$shipmentResult['shipment_id']);
+				$sqlRes= $db->fetchAll($sql);
 				
+				$shipmentResult['referenceResult']=$sqlRes;
+				
+				$sQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id','spm.shipment_score','spm.attributes'))
+				->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
+				->joinLeft(array('res'=>'r_results'),'res.result_id=spm.final_result',array('result_name'))
+				->where("spm.shipment_id = ?",$shipmentId)
+				->where("substring(spm.evaluation_status,4,1) != '0'")
+				->group('spm.map_id');
+				$sQueryRes= $db->fetchAll($sQuery);
+				if(count($sQueryRes) > 0 ){
+					
+					$tQuery=$db->select()->from(array('refdts'=>'reference_result_dts'),array('refdts.sample_id','refdts.sample_label'))
+						->join(array('resdts'=>'response_result_dts'),'resdts.sample_id=refdts.sample_id',array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN resdts.reported_result=refdts.reference_result THEN 1 ELSE 0 END)")))
+						->join(array('spm'=>'shipment_participant_map'),'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id',array())
+						->where("spm.shipment_id = ?",$shipmentId)
+						->where("substring(spm.evaluation_status,4,1) != '0'")
+						->group(array("refdts.sample_id"));
+					
+					$shipmentResult['summaryResult'][]=$sQueryRes;
+					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult'])-1]['correctCount']=$db->fetchAll($tQuery);
+					
+				}
 				
 			}
 			else if($shipmentResult['scheme_type']=='eid'){
@@ -1217,7 +1243,7 @@ class Application_Service_Evaluation {
 									->group(array("refeid.sample_id"));
 								
 							$shipmentResult['summaryResult'][]=$sQueryRes;
-							$shipmentResult['summaryResult'][count($shipmentResult['summaryResult'])-1]['correctCount']=$db->fetchAll($tQuery);
+							$shipmentResult['summaryResult']['correctCount']=$db->fetchAll($tQuery);
 						}
 						
 					}

@@ -249,6 +249,7 @@
 			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'),'default',true); ?>", { sId: sId,format: "html" },
 			function (data) {
 				//$.unblockUI();
+				//document.getElementById("summaryDiv").innerHTML=data;
 				if (data=='Success') {
 					<?php
 					if (file_exists(UPLOAD_PATH. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR . $shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf")) {

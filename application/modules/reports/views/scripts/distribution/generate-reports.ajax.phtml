@@ -225,7 +225,7 @@ foreach($this->result['shipment'] as $result){
 	
 	$pdf->writeHTML($wishes, true, false, true, false, '');
 	
-	if($schemeType='vl'){
+	if($schemeType=='vl'){
 		if(count($this->result['vlCalculation'])>0){
 				
 			foreach($this->result['vlCalculation'] as $vlCal){

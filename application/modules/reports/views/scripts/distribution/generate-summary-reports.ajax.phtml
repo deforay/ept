@@ -75,8 +75,10 @@ if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
 
 // add a page
 //$pdf->AddPage();
-$pdf->AddPage('L', 'A4');
+
 // ---------------------------------------------------------
+if($this->result['scheme_type']=='eid'){
+	$pdf->AddPage('L', 'A4');
 if(isset($this->result['summaryResult']) && sizeof($this->result['summaryResult'])>0){
 foreach($this->result['summaryResult'] as $result){
 	
@@ -125,15 +127,16 @@ $sampleCode.='</table><br/><br/>';
 
 //$pdf->writeHTML($html, true, false, true, false, '');
 
+$sampleCount=count($result['correctCount']);
 $sampleCode.='<table border="1">';
 $sampleCode.='<tr>';
 $sampleCode.='<td rowspan="2"></td>';
-$sampleCode.='<td colspan="8" style="background-color:#dbe4ee;text-align:center;">Sample ID</td>';
+$sampleCode.='<td colspan="'.$sampleCount.'" style="background-color:#dbe4ee;text-align:center;">Sample ID</td>';
 $sampleCode.='<td></td>';
 $sampleCode.='</tr>';
 
 $sampleCode.='<tr>';
-$sampleCount=count($result['correctCount']);
+
 foreach($result['correctCount'] as $sample){
 	$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">'.$sample['sample_label'].'</td>';
 }
@@ -168,6 +171,104 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 
 // ---------------------------------------------------------
 }
+}
+}else{
+	$pdf->AddPage('L', 'A4');
+	$pdf->SetFont('times', 'B', 12);
+	if(count($this->result['referenceResult'])>0){
+		$referenceRes='<p style="font-weight: bold;">'.$this->result['shipment_code'].' Reference </p>';
+		$referenceRes.='<table border="1" style="text-align:center;font-weight:bold;" align="center">';
+		$referenceRes.='<tr>';
+		$referenceRes.='<td style="background-color:#989898;">Speciman Panel ID</td>';
+		$referenceRes.='<td style="background-color:#989898;">Results</td>';
+		$referenceRes.='</tr>';
+		foreach($this->result['referenceResult'] as $refRes){
+			$referenceRes.='<tr>';
+			$referenceRes.='<td>'.$refRes['sample_label'].'</td>';
+			$referenceRes.='<td>'.$refRes['referenceResult'].'</td>';
+			$referenceRes.='</tr>';
+		}
+		$referenceRes.='</table>';
+		$pdf->writeHTML($referenceRes, true, false, true, false, '');
+	}
+	foreach($this->result['summaryResult'] as $result){
+		$maxScore=0;
+		$belowScore=0;
+		$partCount=count($result)-1;
+		//Zend_Debug::dump($result['correctCount']);
+		for($i=0;$i<$partCount;$i++){
+			if($this->result['max_score']==$result[$i]['shipment_score']){
+				$maxScore++;
+			}else{
+				$belowScore++;
+			}
+		}
+		
+		$scoringPer=round(($maxScore/$partCount)*100);
+	}	
+		// set font
+		$pdf->SetFont('times', 'B', 12);
+		
+		$sampleCode='<table border="1" style="margin-left:5px;"><tr>';
+		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Performing Assay Pair </td>';
+		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring "'.$this->result['max_score'].'"</td>';
+		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring Below "'.$this->result['max_score'].'" </td>';
+		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Percentage of Laboratories Scoring "'.$this->result['max_score'].'"</td></tr>';
+		
+		$sampleCode.='<tr>';
+		$sampleCode.='<td style="text-align:center;">'.$partCount.'</td>';
+		$sampleCode.='<td style="text-align:center;">'.$maxScore.'</td>';
+		$sampleCode.='<td style="text-align:center;">'.$belowScore.'</td>';
+		$sampleCode.='<td style="text-align:center;">'.$scoringPer.'%</td>';
+		$sampleCode.='</tr>';
+		
+		$sampleCode.='</table><br/><br/>';
+		
+		$sampleCount=count($result['correctCount']);
+		
+		$sampleCode.='<table border="1">';
+		$sampleCode.='<tr>';
+		$sampleCode.='<td rowspan="2"></td>';
+		$sampleCode.='<td colspan="'.$sampleCount.'" style="background-color:#dbe4ee;text-align:center;">Sample ID</td>';
+		$sampleCode.='<td></td>';
+		$sampleCode.='</tr>';
+		
+		$sampleCode.='<tr>';
+		
+		foreach($result['correctCount'] as $sample){
+			$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">'.$sample['sample_label'].'</td>';
+		}
+		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average</td>';
+		$sampleCode.='</tr>';
+		$sampleCode.='<tr>';
+		$sampAvg='0';
+		$sampPerAvg='0';
+		$sampleCode.='<td rowspan="2" style="background-color:#dbe4ee;">Correctly Reported</td>';
+		
+		foreach($result['correctCount'] as $sample){
+			$sampAvg+=$sample["correctRes"];
+			$sampleCode.='<td style="text-align:center;font-weight:normal;">'.$sample["correctRes"].'</td>';
+		}
+		
+		$sampleCode.='<td style="text-align:center;">'.round(($sampAvg/$sampleCount),2).'</td>';
+		$sampleCode.='</tr>';
+		
+		$sampleCode.='<tr>';
+		foreach($result['correctCount'] as $sample){
+			$sampPerAvg+=(($sample["correctRes"]/$partCount)*100);
+			$sampleCode.='<td style="text-align:center;">'.(($sample["correctRes"]/$partCount)*100).'%</td>';
+			
+		}
+		$sampleCode.='<td style="text-align:center;">'.round(($sampPerAvg/$sampleCount)).'%</td>';
+		$sampleCode.='</tr>';
+		
+		$sampleCode.='</table>';
+		
+		
+		$pdf->writeHTML($sampleCode, true, false, true, false, '');
+	
+	
+	
 }
 //Close and output PDF document
 $fileName="summary.pdf";
