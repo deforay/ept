@@ -191,6 +191,7 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 		$referenceRes.='</table>';
 		$pdf->writeHTML($referenceRes, true, false, true, false, '');
 	}
+	if(count($this->result['summaryResult'])){
 	foreach($this->result['summaryResult'] as $result){
 		$maxScore=0;
 		$belowScore=0;
@@ -264,10 +265,8 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 		
 		$sampleCode.='</table>';
 		
-		
 		$pdf->writeHTML($sampleCode, true, false, true, false, '');
-	
-	
+	}
 	
 }
 //Close and output PDF document

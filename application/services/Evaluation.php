@@ -1175,8 +1175,34 @@ class Application_Service_Evaluation {
 		if($shipmentResult!=""){
 			
 			if($shipmentResult['scheme_type']=='dbs'){
+				$sql=$db->select()->from(array('refdbs'=>'reference_result_dbs'),array('refdbs.reference_result','refdbs.sample_label'))
+					->join(array('refpr'=>'r_possibleresult'),'refpr.id=refdbs.reference_result',array('referenceResult'=>'refpr.response'))
+					->where("refdbs.shipment_id = ?",$shipmentResult['shipment_id']);
+				$sqlRes= $db->fetchAll($sql);
 				
+				$shipmentResult['referenceResult']=$sqlRes;
 				
+				$sQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id','spm.shipment_score','spm.attributes'))
+				->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
+				->joinLeft(array('res'=>'r_results'),'res.result_id=spm.final_result',array('result_name'))
+				->where("spm.shipment_id = ?",$shipmentId)
+				->where("substring(spm.evaluation_status,4,1) != '0'")
+				->group('spm.map_id');
+				$sQueryRes= $db->fetchAll($sQuery);
+				
+				if(count($sQueryRes) > 0 ){
+					
+					$tQuery=$db->select()->from(array('refdbs'=>'reference_result_dbs'),array('refdbs.sample_id','refdbs.sample_label'))
+						->join(array('resdbs'=>'response_result_dbs'),'resdbs.sample_id=refdbs.sample_id',array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN resdbs.reported_result=refdbs.reference_result THEN 1 ELSE 0 END)")))
+						->join(array('spm'=>'shipment_participant_map'),'resdbs.shipment_map_id=spm.map_id and refdbs.shipment_id=spm.shipment_id',array())
+						->where("spm.shipment_id = ?",$shipmentId)
+						->where("substring(spm.evaluation_status,4,1) != '0'")
+						->group(array("refdbs.sample_id"));
+					
+					$shipmentResult['summaryResult'][]=$sQueryRes;
+					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult'])-1]['correctCount']=$db->fetchAll($tQuery);
+					
+				}
 			}
 			else if($shipmentResult['scheme_type']=='dts'){
 				$sql=$db->select()->from(array('refdts'=>'reference_result_dts'),array('refdts.reference_result','refdts.sample_label'))
