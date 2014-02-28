@@ -2,6 +2,7 @@
 //Zend_Debug::dump($this->result);
 //die;
 require_once('tcpdf/tcpdf.php');
+//require_once('libchart/classes/libchart.php');
 
 if($this->result!=""){
 	
@@ -192,21 +193,21 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 		$pdf->writeHTML($referenceRes, true, false, true, false, '');
 	}
 	if(count($this->result['summaryResult'])){
-	foreach($this->result['summaryResult'] as $result){
-		$maxScore=0;
-		$belowScore=0;
-		$partCount=count($result)-1;
-		//Zend_Debug::dump($result['correctCount']);
-		for($i=0;$i<$partCount;$i++){
-			if($this->result['max_score']==$result[$i]['shipment_score']){
-				$maxScore++;
-			}else{
-				$belowScore++;
+		foreach($this->result['summaryResult'] as $result){
+			$maxScore=0;
+			$belowScore=0;
+			$partCount=count($result)-1;
+			//Zend_Debug::dump($result['correctCount']);
+			for($i=0;$i<$partCount;$i++){
+				if($this->result['max_score']==$result[$i]['shipment_score']){
+					$maxScore++;
+				}else{
+					$belowScore++;
+				}
 			}
-		}
-		
-		$scoringPer=round(($maxScore/$partCount)*100);
-	}	
+			
+			$scoringPer=round(($maxScore/$partCount)*100);
+		}	
 		// set font
 		$pdf->SetFont('times', 'B', 12);
 		
@@ -264,6 +265,23 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 		$sampleCode.='</tr>';
 		
 		$sampleCode.='</table>';
+			
+		//$chart = new VerticalBarChart();
+		//
+		//$dataSet = new XYDataSet();
+		//$dataSet->addPoint(new Point("Jan 2005", 273));
+		//$dataSet->addPoint(new Point("Feb 2005", 421));
+		//$dataSet->addPoint(new Point("March 2005", 642));
+		//$dataSet->addPoint(new Point("April 2005", 800));
+		//$dataSet->addPoint(new Point("May 2005", 1200));
+		//$dataSet->addPoint(new Point("June 2005", 1500));
+		//$dataSet->addPoint(new Point("July 2005", 2600));
+		//$chart->setDataSet($dataSet);
+		//
+		//$chart->setTitle("Monthly usage for www.example.com");
+		//$chart->render(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "demowww1.png");
+		
+		//$sampleCode .= "<div style='border:1px solid red;'><img src='/temporary/ept.jpg' /></div>";
 		
 		$pdf->writeHTML($sampleCode, true, false, true, false, '');
 	}

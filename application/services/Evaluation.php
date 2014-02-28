@@ -239,6 +239,11 @@ class Application_Service_Evaluation {
 				$shipmentResult[$counter]['shipment_score'] = $totalScore;
 				$shipmentResult[$counter]['max_score'] = $maxScore;
 				$shipmentResult[$counter]['final_result'] = $finalResult;
+				
+				
+				$fRes = $db->fetchCol($db->select()->from('r_results',array('result_name'))->where('result_id = '.$finalResult));
+				
+				$shipmentResult[$counter]['display_result'] = $fRes[0];				
 				$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
 				// let us update the total score in DB
 				$db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
@@ -1135,7 +1140,10 @@ class Application_Service_Evaluation {
 				}
 				
 				$shipmentResult[$i]['responseResult'] = $toReturn;							
-					
+				
+				
+				
+				
 			}
 			
 			$i++;
@@ -1254,7 +1262,6 @@ class Application_Service_Evaluation {
 						->where("spm.attributes LIKE '%\"detection_assay\":\"$detId\"%' ")
 						->where("substring(spm.evaluation_status,4,1) != '0'")
 						->group('spm.map_id');
-						//echo $sQuery;
 						//echo "<br/>";
 						$sQueryRes= $db->fetchAll($sQuery);
 						
@@ -1267,9 +1274,8 @@ class Application_Service_Evaluation {
 									->where("spm.attributes LIKE '%\"detection_assay\":\"$detId\"%' ")								
 									->where("spm.shipment_id = ?",$shipmentId)
 									->group(array("refeid.sample_id"));
-								
 							$shipmentResult['summaryResult'][]=$sQueryRes;
-							$shipmentResult['summaryResult']['correctCount']=$db->fetchAll($tQuery);
+							$shipmentResult['summaryResult'][count($shipmentResult['summaryResult'])-1]['correctCount']=$db->fetchAll($tQuery);
 						}
 						
 					}
