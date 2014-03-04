@@ -245,7 +245,7 @@
 			function (data) {
 				alert(data);
 			});
-			
+			<?php if($shipment['scheme_type']!="vl"){ ?>
 			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'),'default',true); ?>", { sId: sId,format: "html" },
 			function (data) {
 				//$.unblockUI();
@@ -262,6 +262,9 @@
 				}
 				
 			});
+			<?php }else{ ?>
+			$.unblockUI();
+			<?php } ?>
 		}else{
 			alert("Please check the event date");
 		}

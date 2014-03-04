@@ -1176,6 +1176,8 @@ class Application_Service_Evaluation {
 		$responseResult="";
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_code','s.scheme_type','s.shipment_date','s.lastdate_response','s.max_score'))
+				->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('sl.scheme_name'))
+				->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id',array('d.distribution_code'))
 				->where("s.shipment_id = ?",$shipmentId);
 		//error_log($sql);
 		$shipmentResult = $db->fetchRow($sql);
@@ -1227,6 +1229,7 @@ class Application_Service_Evaluation {
 				->where("substring(spm.evaluation_status,4,1) != '0'")
 				->group('spm.map_id');
 				$sQueryRes= $db->fetchAll($sQuery);
+				//error_log($sQuery);
 				if(count($sQueryRes) > 0 ){
 					
 					$tQuery=$db->select()->from(array('refdts'=>'reference_result_dts'),array('refdts.sample_id','refdts.sample_label'))
@@ -1238,6 +1241,37 @@ class Application_Service_Evaluation {
 					
 					$shipmentResult['summaryResult'][]=$sQueryRes;
 					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult'])-1]['correctCount']=$db->fetchAll($tQuery);
+					
+					$kitNameRes=$db->fetchAll($db->select()->from('r_testkitname_dts'));
+					
+					$rQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id'))
+						->join(array('resdts'=>'response_result_dts'),'resdts.shipment_map_id=spm.map_id',array('resdts.test_kit_name_1','resdts.test_kit_name_2','resdts.test_kit_name_3'))
+						->where("spm.shipment_id = ?",$shipmentId)
+						->group('spm.map_id');
+					$rQueryRes= $db->fetchAll($rQuery);	
+					$p=0;
+					$kitName=array();
+					foreach($kitNameRes as $res){
+						$k=1;
+						foreach($rQueryRes as $rVal){
+							if($res['TestKitName_ID']==$rVal['test_kit_name_1']){
+								$kitName[$p]['kit_name']=$res['TestKit_Name'];
+								$kitName[$p]['count']=$k++;
+							}
+							if($res['TestKitName_ID']==$rVal['test_kit_name_2']){
+								$kitName[$p]['kit_name']=$res['TestKit_Name'];
+								$kitName[$p]['count']=$k++;
+							}
+							if($res['TestKitName_ID']==$rVal['test_kit_name_3']){
+								$kitName[$p]['kit_name']=$res['TestKit_Name'];
+								$kitName[$p]['count']=$k++;
+							}
+							
+						}
+						
+						$p++;
+					}
+					$shipmentResult['pieChart']=$kitName;
 					
 				}
 				
