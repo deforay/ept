@@ -6,8 +6,7 @@
     <thead>
     <tr>
         <th>Participant ID</th>
-        <th>Lab/First Name</th>
-        <th>Last Name</th>
+        <th>Lab Name/Participant Name</th>
         <th>Country</th>
         <th>Cell/Mobile</th>
         <th>Phone</th>
@@ -47,12 +46,11 @@
                 {"sClass":"center"},
                 {"sClass":"center"},
                 {"sClass":"center"},
-                {"sClass":"center"},
                 {"sClass":"center","bSortable":false}
             ],
-			"fnServerParams": function ( aoData ) {
-				aoData.push( { "name": "withStatus", "value": "pending" } );
-			},
+	    "fnServerParams": function ( aoData ) {
+		    aoData.push( { "name": "withStatus", "value": "pending" } );
+	    },
             "aaSorting": [[ 0, "asc" ]],
             "bProcessing": true,
             "bServerSide": true,
