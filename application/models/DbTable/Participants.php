@@ -257,7 +257,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'affiliation' => $params['partAff'],
 	    'network_tier' => $params['network'],
             'created_on' => new Zend_Db_Expr('now()'),
-	    'created_by' => $authNameSpace->primary_email
+	    'created_by' => $authNameSpace->primary_email,
+	    'status' => $params['status']
         );
 		
 		//Zend_Debug::dump($data);die;

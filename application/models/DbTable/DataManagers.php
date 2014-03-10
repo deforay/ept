@@ -182,7 +182,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             'last_name' => $params['lname'],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
-			'institute' => $params['institute'],
+	    'institute' => $params['institute'],
             'secondary_email' => $params['semail']
         );
         

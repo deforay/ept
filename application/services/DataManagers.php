@@ -3,7 +3,7 @@
 class Application_Service_DataManagers {
 
     public function addUser($params){
-		$userDb = new Application_Model_DbTable_DataManagers();
+	$userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->addUser($params);
     }
     
