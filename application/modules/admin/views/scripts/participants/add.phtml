@@ -1,8 +1,6 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <div class="well">
-    <form name="addParticipantForm" id="addParticipantForm" method="post"
-          action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "add"), null, true) ?>"
-          class="form-horizontal bs-example" role="form">
+    <form name="addParticipantForm" id="addParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "add"),'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
         <fieldset>
             <legend>Add New Participant</legend>
 
@@ -186,8 +184,7 @@
             <br>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
-                       tabindex="7" value="Add"/>
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add"/>
                 <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/participants';"
                        tabindex="8" value="Cancel"/>
             </div>

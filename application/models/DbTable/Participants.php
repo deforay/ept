@@ -31,7 +31,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('unique_identifier','first_name', 'last_name','country', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier','first_name','country', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -102,15 +102,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 }
             }
         }
-
-
+	
         /*
          * SQL queries
          * Get data to display
          */
-
-        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name));
-
+	
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name),array('p.participant_id','p.unique_identifier','p.country','p.mobile','p.phone','p.affiliation','p.email','p.status','participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+					->group("p.participant_id");
+	
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
             $sQuery = $sQuery->where("p.status = ? ",$parameters['withStatus']);
         }
@@ -129,8 +129,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         //error_log($sQuery);
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
-
-
+	
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
@@ -160,8 +159,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $row = array();
             $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['first_name'];
-            $row[] = $aRow['last_name'];
+            $row[] = $aRow['participantName'];
             $row[] = $aRow['country'];
             $row[] = $aRow['mobile'];
             $row[] = $aRow['phone'];
@@ -190,15 +188,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'country' => $params['country'],
             'zip' => $params['zip'],
             'long' => $params['long'],
-			'lat' => $params['lat'],			
-			'shipping_address' => $params['shippingAddress'],			
+	    'lat' => $params['lat'],
+	    'shipping_address' => $params['shippingAddress'],
             'first_name' => $params['pfname'],
             'last_name' => $params['plname'],
             'mobile' => $params['pphone2'],
             'phone' => $params['pphone1'],
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
-			'network_tier' => $params['network'],
+	    'network_tier' => $params['network'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
 

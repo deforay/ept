@@ -136,6 +136,15 @@ if($controllerName.$actionName!='distributionsindex'){
                 event.returnValue = false;
             }
         }
+    function validatePassword(obj) {
+	if (obj.vlaue!="") {
+	    var regex = /^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+	    if (!regex.test(obj.value)) {
+		obj.value="";
+		alert("Minimum 8 characters and enter atleast one number, one special character , one alphabet.");
+	    }
+	}
+    }
 </script>
 <img src="/images/loading.gif" style="display:none;"/>
 </body>

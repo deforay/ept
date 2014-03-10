@@ -217,9 +217,6 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 			
 			$scoringPer=round(($maxScore/$partCount)*100);
 			
-			
-			
-			
 		}
 		
 		
@@ -322,6 +319,7 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 	}
 	if($this->result['scheme_type']=='dbs'){
 			$chart = new PieChart(800,350);
+			
 			$dataSet = new XYDataSet();
 			
 			if(trim($this->result['dbsPieChart']['EIA/EIA/EIA/WB'])!=""){
