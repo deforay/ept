@@ -92,7 +92,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('e' => $this->_name))
                                      ->join(array('p'=>'participant'),'p.participant_id = e.participant_id')
                                      ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id')
-									 ->where("p.status='active'");
+				     ->where("p.status='active'");
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -123,7 +123,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         /* Total data set length */
         $sQuery = $this->getAdapter()->select()->from(array('e' => $this->_name), new Zend_Db_Expr("COUNT('e.scheme_id')"))
                                             ->join(array('p'=>'participant'),'p.participant_id = e.participant_id',array())
-											->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array());
+					    ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array())
+					    ->where("p.status='active'");
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
