@@ -92,7 +92,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('e' => $this->_name))
                                      ->join(array('p'=>'participant'),'p.participant_id = e.participant_id')
                                      ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id')
-				     ->where("p.status='active'");
+				     ->where("p.status='active'")
+				     ->order('e.enrolled_on desc');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);

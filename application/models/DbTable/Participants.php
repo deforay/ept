@@ -109,7 +109,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          */
 	
         $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name),array('p.participant_id','p.unique_identifier','p.country','p.mobile','p.phone','p.affiliation','p.email','p.status','participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-					->group("p.participant_id");
+					->group("p.participant_id")
+					->order('p.participant_id desc');
 	
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
             $sQuery = $sQuery->where("p.status = ? ",$parameters['withStatus']);

@@ -46,13 +46,17 @@ $.extend( $.fn.dataTableExt.oPagination, {
 			};
 			$(nPaging).append(
 				'<ul class="pagination">'+
-					'<li class="prev disabled"><a href="#"><i class="icon-double-angle-left"></i> '+oLang.sPrevious+'</a></li>'+
-					'<li class="next disabled"><a href="#">'+oLang.sNext+' <i class="icon-double-angle-right"></i></a></li>'+
+					'<li class="first disabled"><a href="#"><i class="icon-double-angle-left"></i> ' + oLang.sFirst + '</a></li>' +
+					'<li class="prev  disabled"><a href="#"><i class="icon-double-angle-left"></i> ' + oLang.sPrevious + '</a></li>' +
+					'<li class="next  disabled"><a href="#">' + oLang.sNext + '<i class="icon-double-angle-right"></i></a></li>' +
+					'<li class="last  disabled"><a href="#">' + oLang.sLast + '<i class="icon-double-angle-right"></i></a></li>' +
 				'</ul>'
 			);
 			var els = $('a', nPaging);
-			$(els[0]).bind( 'click.DT', { action: "previous" }, fnClickHandler );
-			$(els[1]).bind( 'click.DT', { action: "next" }, fnClickHandler );
+			$(els[0]).bind('click.DT', { action: "first" }, fnClickHandler);
+			$(els[1]).bind('click.DT', { action: "previous"}, fnClickHandler);
+			$(els[2]).bind('click.DT', { action: "next"}, fnClickHandler);
+			$(els[3]).bind('click.DT', { action: "last"}, fnClickHandler);
 		},
 
 		"fnUpdate": function ( oSettings, fnDraw ) {
@@ -95,14 +99,18 @@ $.extend( $.fn.dataTableExt.oPagination, {
 				// Add / remove disabled classes from the static elements
 				if ( oPaging.iPage === 0 ) {
 					$('li:first', an[i]).addClass('disabled');
+					$('li.prev').addClass('disabled');
 				} else {
 					$('li:first', an[i]).removeClass('disabled');
+					$('li.prev').removeClass('disabled');
 				}
 
 				if ( oPaging.iPage === oPaging.iTotalPages-1 || oPaging.iTotalPages === 0 ) {
 					$('li:last', an[i]).addClass('disabled');
+					$('li.next').addClass('disabled');
 				} else {
 					$('li:last', an[i]).removeClass('disabled');
+					$('li.next').removeClass('disabled');
 				}
 			}
 		}

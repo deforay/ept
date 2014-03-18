@@ -110,7 +110,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
         $sQuery = $this->getAdapter()->select()->from(array('u' => $this->_name))
 				    ->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.dm_id=u.dm_id',array())
 				    ->joinLeft(array('p'=>'participant'),'p.participant_id = pmm.participant_id',array('participants' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT(p.first_name,' ',p.last_name) SEPARATOR ', <br/>')")))
-				    ->group('u.dm_id');
+				    ->group('u.dm_id')
+				    ->order('u.dm_id desc');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
