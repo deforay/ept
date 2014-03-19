@@ -7,6 +7,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     {
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
+	            ->addActionContext('view-participants', 'html')
                 ->initContext();
         $this->_helper->layout()->pageName = 'manage';
     }
@@ -63,8 +64,21 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         // action body
     }
 
+    public function viewParticipantsAction()
+    {
+	$this->_helper->layout()->setLayout('modal');
+	 $participantService = new Application_Service_Participants();
+	 if($this->_hasParam('id')){
+		$dmId = (int)$this->_getParam('id');
+		$this->view->participant = $participantService->getAllParticipantDetails($dmId);
+	 }
+       
+    }
+
 
 }
+
+
 
 
 

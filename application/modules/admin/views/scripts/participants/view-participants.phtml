@@ -1,0 +1,40 @@
+<h4 class="modal-title">Participant Details</h4>
+<table class="table table-bordered table-striped table-hover">
+			<tr>
+				<th>Participant ID</th>
+				<th>Lab Name/Participant Name</th>
+				<th>Country</th>
+				<th>Cell/Mobile</th>
+				<th>Phone</th>
+				<th>Affiliation</th>
+				<th>Email</th>
+				<th>Status</th>
+			</tr>
+			<?php
+			if(count($this->participant) > 0){
+			foreach($this->participant as $participant){
+				?>
+				<tr>
+					<td><?php echo $participant['unique_identifier']; ?></td>
+					<td><?php echo $participant["institute_name"]; ?></td>
+					<td><?php echo $participant['country']; ?></td>
+					<td><?php echo $participant['mobile']; ?></td>
+					<td><?php echo $participant['phone']; ?></td>
+					<td><?php echo $participant['affiliation']; ?></td>
+					<td><?php echo $participant['email']; ?></td>
+					<td><?php echo ucwords($participant['status']); ?></td>
+				</tr>
+				<?php
+				}
+			}else{
+				?>
+				<tr>
+					<td colspan="8" align="center" style="text-align:center">
+						No Participants
+					</td>
+				</tr>
+				<?php
+			}
+			?>
+</table>
+  

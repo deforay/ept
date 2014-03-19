@@ -135,6 +135,7 @@
               <actionMethod actionName="add"/>
               <actionMethod actionName="edit"/>
               <actionMethod actionName="pending"/>
+              <actionMethod actionName="viewParticipants"/>
             </controllerFile>
             <controllerFile controllerName="SystemAdmins">
               <actionMethod actionName="index"/>
@@ -298,6 +299,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="ReportConfig">
                 <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Participants">
+                <viewScriptFile forActionName="viewParticipants"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

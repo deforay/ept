@@ -18,11 +18,13 @@
   
   
   <link rel="stylesheet" href="<?php echo $this->baseUrl("css/DT_bootstrap.css"); ?>" type="text/css" media="all">
+  <link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
   <link rel="stylesheet" href="<?php echo $this->baseUrl("css/offline-theme-slide.css"); ?>" type="text/css" media="all">
 
 	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+ 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js"></script>
@@ -86,11 +88,14 @@
 
     <div class="container">
 		<?php echo $this->layout()->content; ?>
-	</div> <!-- /container -->
+    </div> <!-- /container -->
+    <div id="dDiv" class="dialog"> 
+            <div style="text-align:center"><span onclick="closeLayoutModal();" style="float:right;clear:both;" class="closeModal"></span></div> 
+            <iframe id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0' >some problem</iframe> 
+    </div>
 <footer style="padding:40px 0 20px 0;color:grey;">
 	<div class="container">&copy; ePT Admin</div>
 </footer>
-
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 
@@ -107,8 +112,10 @@ if($controllerName.$actionName!='distributionsindex'){
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/hoverIntent.js");?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/deforayModal.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/offline.min.js"); ?>"></script>
+
 
 
 <script type="text/javascript">
@@ -136,6 +143,7 @@ if($controllerName.$actionName!='distributionsindex'){
                 event.returnValue = false;
             }
         }
+	
     function validatePassword(obj) {
 	if (obj.vlaue!="") {
 	    var regex = /^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
@@ -144,6 +152,19 @@ if($controllerName.$actionName!='distributionsindex'){
 		alert("Minimum 8 characters and enter atleast one number, one special character , one alphabet.");
 	    }
 	}
+    }
+    
+    function layoutModal(url,w,h){
+               showdefModal('dDiv',w,h);
+               document.getElementById('dFrame').style.height=h+'px';
+               document.getElementById('dFrame').style.width=w+'px';
+               document.getElementById('dFrame').src = url;
+    }
+	
+    function closeLayoutModal(){
+	document.getElementById('dFrame').src = "";
+	//window.location.reload(true);
+	hidedefModal();
     }
 </script>
 <img src="/images/loading.gif" style="display:none;"/>
