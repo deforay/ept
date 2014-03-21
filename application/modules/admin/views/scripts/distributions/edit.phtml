@@ -24,7 +24,7 @@ $this->distributionDates = array_diff($this->distributionDates, array($ptEveDate
                 <label class="col-lg-3 control-label">PT Event Date <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
-					<input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45"
+					<input type="text"  id="distributionDate" name="distributionDate" size="50" maxlength="45"
                                              class="isRequired form-control datepicker"
                                              title="Please enter the PT Event date here"
                                              placeholder="Please enter the PT Event date here" value="<?php echo $this->dateFormat($this->result['distribution_date']); ?>" readonly="readonly"/>
@@ -88,7 +88,14 @@ $this->distributionDates = array_diff($this->distributionDates, array($ptEveDate
 					var string = jQuery.datepicker.formatDate('dd-M-yy', date);
 					return [ disabledDates.indexOf(string) == -1 ]
 				}
-		});			
+		});
+		<?php
+		if(isset($this->fromStatus) && $this->fromStatus='shipped'){
+		    ?>
+		    $("#distributionDate").unbind();
+		    <?php
+		}
+		?>
 	});
 	
 

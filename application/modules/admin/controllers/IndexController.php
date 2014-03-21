@@ -10,7 +10,10 @@ class Admin_IndexController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        // action body
+       $distributionService = new Application_Service_Distribution();
+       $shipmentService = new Application_Service_Shipments();
+       $this->view->events=$distributionService->getAllDistributionStatus();
+       $this->view->shipmentScheme=$shipmentService->getShipmentsBasedOnScheme();
     }
 
 

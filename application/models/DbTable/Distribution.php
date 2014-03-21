@@ -153,11 +153,11 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['status']);
 	    $edit='<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-pencil"></i> Edit</span></a>';
             if(isset($aRow['status']) && $aRow['status'] == 'configured'){
-                $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\''.base64_encode($aRow['distribution_id']).'\')"><span><i class="icon-ambulance"></i> Ship Now</span></a>';	    
+                $row[] = $edit.' '.'<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\''.base64_encode($aRow['distribution_id']).'\')"><span><i class="icon-ambulance"></i> Ship Now</span></a>';	    
             }else if(isset($aRow['status']) && $aRow['status'] == 'shipped'){
-                $row[] = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';	    
+                $row[] = '<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/'.base64_encode($aRow['distribution_id']).'/5h8pp3t/shipped"><span><i class="icon-pencil"></i> Edit</span></a>'.' '.'<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';	    
             }else{
-                $row[] = $edit.'<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-plus"></i> Add Scheme</span></a>';
+                $row[] = $edit.' '.'<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-plus"></i> Add Scheme</span></a>';
             }
             
 
@@ -348,6 +348,9 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         }
 
         echo json_encode($output);
+    }
+    public function getAllDistributionStatusDetails(){
+        return $this->fetchAll($this->select());
     }
 }
 

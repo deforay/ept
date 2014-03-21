@@ -893,5 +893,19 @@ class Application_Service_Shipments {
 			  
 	    return $db->fetchAll($sql);
 	}
+	public function getShipmentsBasedOnScheme() {
+		$resultArray=array();
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$schemeService = new Application_Service_Schemes();
+                $schemeResult=$schemeService->getAllSchemes();
+		foreach($schemeResult as $schemeValue){
+			$sQuery1=$db->select()->from(array('s'=>'shipment'),array('s.scheme_type','s.shipment_code','s.shipment_id'))
+			->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('SCHEME'=>'sl.scheme_name','shippedStatus' => new Zend_Db_Expr("SUM(CASE WHEN s.status='shipped' THEN 1 ELSE 0 END)"),'readyStatus' => new Zend_Db_Expr("SUM(CASE WHEN s.status='ready' THEN 1 ELSE 0 END)")))
+			->where("s.scheme_type = ?",$schemeValue['scheme_id'])
+			->group('s.scheme_type');
+	         $resultArray[]=$db->fetchRow($sQuery1);
+		}
+		return $resultArray;
+	}
 }
 
