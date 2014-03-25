@@ -19,6 +19,8 @@ class Admin_DistributionsController extends Zend_Controller_Action
             $params = $this->_getAllParams();            
             $distributionService = new Application_Service_Distribution();
             $distributionService->getAllDistributions($params);
+        }else if($this->_hasParam('searchString')){
+           $this->view->searchData= $this->_getParam('searchString');
         }
     }
 

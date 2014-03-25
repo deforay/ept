@@ -69,6 +69,15 @@
                 });
             }
         } );
+	
+	<?php
+	if(isset($this->searchData) && $this->searchData!=''){
+	?>
+	oTable.fnFilter('<?php echo $this->searchData;?>');
+	<?php
+	}
+	?>
+	
 
     } );
 	

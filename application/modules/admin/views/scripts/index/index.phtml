@@ -32,7 +32,7 @@ foreach($this->events as $events){
 
 <div class="row">
     <div class="col-lg-3">
-            <div class="panel panel-info">
+            <div class="panel panel-primary">
               <div class="panel-heading">
                 <div class="row">
                   <div class="col-xs-5">
@@ -44,8 +44,8 @@ foreach($this->events as $events){
                   </div>
                 </div>
               </div>
-              <a href="javascript:void(0)">
-                <div class="panel-footer announcement-bottom" style="background-color:#b8e1fc">
+              <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'distributions','searchString'=>date("M", strtotime("-1 month")).'-'.date('Y').' '.'shipped'),'default',true); ?>">
+                <div class="panel-footer announcement-bottom" >
                   <div class="row">
                     <div class="col-xs-10" style="color:#2c3e50">
                       Shipped Events(Last Month)
@@ -60,7 +60,7 @@ foreach($this->events as $events){
     </div>
     
     <div class="col-lg-3">
-            <div class="panel panel-info">
+            <div class="panel panel-primary">
               <div class="panel-heading">
                 <div class="row">
                   <div class="col-xs-5">
@@ -72,8 +72,8 @@ foreach($this->events as $events){
                   </div>
                 </div>
               </div>
-              <a href="javascript:void(0)">
-                <div class="panel-footer announcement-bottom" style="background-color:#b8e1fc">
+              <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'distributions','searchString'=>'created'),'default',true); ?>">
+                <div class="panel-footer announcement-bottom" >
                   <div class="row">
                     <div class="col-xs-10" style="color:#2c3e50">
                      Created Events
@@ -87,7 +87,7 @@ foreach($this->events as $events){
             </div>
     </div>
     <div class="col-lg-3">
-            <div class="panel panel-info">
+            <div class="panel panel-primary">
               <div class="panel-heading">
                 <div class="row">
                   <div class="col-xs-5">
@@ -99,8 +99,8 @@ foreach($this->events as $events){
                   </div>
                 </div>
               </div>
-              <a href="javascript:void(0)">
-                <div class="panel-footer announcement-bottom" style="background-color:#b8e1fc">
+              <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'distributions','searchString'=>'Configured'),'default',true); ?>">
+                <div class="panel-footer announcement-bottom" >
                   <div class="row">
                     <div class="col-xs-10" style="color:#2c3e50">
                       Configured Events
@@ -114,7 +114,7 @@ foreach($this->events as $events){
             </div>
     </div>
     <div class="col-lg-3">
-            <div class="panel panel-info">
+            <div class="panel panel-primary">
               <div class="panel-heading">
                 <div class="row">
                   <div class="col-xs-5">
@@ -126,8 +126,8 @@ foreach($this->events as $events){
                   </div>
                 </div>
               </div>
-              <a href="javascript:void(0)">
-                <div class="panel-footer announcement-bottom" style="background-color:#b8e1fc">
+              <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'distributions','searchString'=>'shipped'),'default',true); ?>">
+                <div class="panel-footer announcement-bottom" >
                   <div class="row">
                     <div class="col-xs-10" style="color:#2c3e50">
                      Shipped Events (Till Today)
@@ -142,7 +142,7 @@ foreach($this->events as $events){
     </div>
 </div>
  <div class="col-lg-13">
-            <div class="panel panel-info">
+            <div class="panel panel-primary">
               <div class="panel-heading">
                 <h3 class="panel-title"><i class="icon-truck icon-2x"></i> Shipment Activity</h3>
               </div>
