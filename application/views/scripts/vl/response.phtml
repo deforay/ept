@@ -125,7 +125,7 @@ $count++;
 		</select>
 	</td>
 	<th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
-	<td><input name="participantSupervisor" id="participantSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?>  type="text"size="10" maxlength="10" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
+	<td><input name="participantSupervisor" id="participantSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?>  type="text" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
 	
 </tr>
 <tr>

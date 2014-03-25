@@ -230,7 +230,7 @@
 	<option value="NO" <?php if($this->shipment['supervisor_approval'] == 'NO') echo " selected "; ?>>NO</option></select></td>
 	<th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
 	<td>
-		<input name="participantSupervisor" id="participantSupervisor" type="text"size="10" maxlength="10" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?> value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/>
+		<input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?> value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/>
 	</td>
 	
 </tr>

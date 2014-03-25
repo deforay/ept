@@ -1519,3 +1519,6 @@ CREATE TABLE IF NOT EXISTS `report_config` (
 INSERT INTO `report_config` (`name`, `value`) VALUES
 ('report-header', '<div style=""><div style="text-align: center;"><b>DEPARTMENT OF HEALTH AND HUMAN SERVICES</b></div><div style="text-align: center;">International Laboratory Branch</div><div style="text-align: center;">Division of Global HIV/AIDS, CDC-Atlanta</div></div>\r\n\r\n'),
 ('logo', '');
+
+--Guna 25-Mar-2014
+ALTER TABLE  `shipment_participant_map` CHANGE  `participant_supervisor`  `participant_supervisor` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL
