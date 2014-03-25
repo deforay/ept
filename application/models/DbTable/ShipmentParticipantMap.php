@@ -81,14 +81,26 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     }
     
     public function isShipmentEditable($shipmentId,$participantId){
-
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();		
         $row =  $this->fetchRow("shipment_id = ". $shipmentId . " AND participant_id = ".$participantId);
-        $canEdit =  substr($row['evaluation_status'],2 ,1); // getting the 3rd character
-        if($canEdit == 9){
-            return true;
-        }else{
-            return false;
-        }
+        $shipment = $db->fetchRow($db->select()->from(array('s'=>'shipment'))
+                                               ->where("s.shipment_id = ?",$shipmentId));
+        $now= date("Y-m-d");
+        $todaydate= strtotime($now);
+        $lastResponseDate = strtotime($shipment["lastdate_response"]);
+        $dateDifference = $lastResponseDate - $todaydate;
+        $day=floor($dateDifference/3600/24);
+        //$canEdit =  substr($row['evaluation_status'],2 ,1); // getting the 3rd character
+       // if($canEdit == 9){
+            if($day<0){
+               return false; 
+            }else{
+               return true; 
+            }
+            
+      //  }else{
+      //      return false;
+     //   }
         
     }
 }
