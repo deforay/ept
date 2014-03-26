@@ -133,7 +133,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery=$this->getAdapter()->select()->from(array('s'=>'shipment'),array('s.scheme_type','SHIP_YEAR'=>'year(s.shipment_date)','TOTALSHIPMEN' => new Zend_Db_Expr("COUNT('s.shipment_id')")))
                     ->join(array('sp'=>'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('ONTIME' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)"),'NORESPONSE' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)")))
                     ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=sp.participant_id')
-                    ->where("s.status!='pending'")
+                    ->where("s.status='shipped'")
                     ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                     ->where("pmm.dm_id=?",$this->_session->dm_id)
                     ->group('s.scheme_type')
@@ -163,7 +163,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery=$this->getAdapter()->select()->from(array('s'=>'shipment'),array('s.scheme_type'))
                     ->join(array('sp'=>'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array(''))
                     ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=sp.participant_id',array(''))
-                    ->where("s.status!='pending'")
+                    ->where("s.status='shipped'")
                     ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                     ->where("pmm.dm_id=?",$this->_session->dm_id)
                     ->group('s.scheme_type');
@@ -288,7 +288,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.first_name','p.last_name'))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status!='pending'")
+                        ->where("s.status='shipped'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                         ->where("s.lastdate_response >=  CURDATE()")
                         //->order('s.shipment_date')
@@ -321,7 +321,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array(''))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id',array(''))
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status!='pending'")
+                        ->where("s.status='shipped'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                         ->where("s.lastdate_response >=  CURDATE()");
                         
@@ -341,6 +341,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = array();
+	    if($aRow['RESPONSE']=="View"){
+		$aRow['RESPONSE']="View";
+		if($aRow['lastdate_response']>date('Y-m-d')){
+		    $aRow['RESPONSE']="Edit/View";
+		}
+	    }
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = strtoupper($aRow['scheme_type']);
             $row[] = $aRow['shipment_code'];
@@ -447,7 +453,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.first_name','p.last_name'))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status!='pending'")
+                        ->where("s.status='shipped'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                         ->where("s.lastdate_response <  CURDATE()")
                         ->where("substr(spm.evaluation_status,3,1) <> '1'")
@@ -480,7 +486,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array(''))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id',array(''))
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status!='pending'")
+                        ->where("s.status='shipped'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                         ->where("s.lastdate_response <  CURDATE()")
                         ->where("substr(spm.evaluation_status,3,1) <> '1'")
@@ -504,6 +510,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = array();
+	    if($aRow['ACTION']=="View"){
+		$aRow['ACTION']="View";
+		if($aRow['lastdate_response']>date('Y-m-d')){
+		    $aRow['ACTION']="Edit/View";
+		}
+	    }
+	    
             $row[] = $aRow['SHIP_YEAR'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = strtoupper($aRow['scheme_type']);
@@ -612,11 +625,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.first_name','p.last_name'))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status!='pending'")
-                        ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
+                        ->where("s.status='shipped'")
+                        ->where("year(s.shipment_date)  + 5 > year(CURDATE())");
                         //->order('s.shipment_date')
                         //->order('spm.participant_id')
-                        ;
+                        
         
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -645,12 +658,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array(''))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id',array(''))
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status!='pending'")
+                        ->where("s.status='shipped'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())");
                         
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
-
+	
         /*
         * Output
         */
@@ -664,6 +677,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = array();
+	    if($aRow['RESPONSE']=="View"){
+		$aRow['RESPONSE']="View";
+		if($aRow['lastdate_response']>date('Y-m-d')){
+		    $aRow['RESPONSE']="Edit/View";
+		}
+	    }
+	    
+	    $aRow['lastdate_response'];
             $row[] = $aRow['SHIP_YEAR'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = strtoupper($aRow['scheme_type']);
@@ -671,7 +692,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['first_name']." ".$aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);
             $row[] = '<a href="/'.$aRow['scheme_type'].'/response/sid/' . $aRow['shipment_id']. '/pid/'.$aRow['participant_id'].'/eid/'.$aRow['evaluation_status'].'" style="text-decoration : underline;">'.$aRow['RESPONSE'].'</a>';
-            $row[] = '<a href="/participant/download/d92nl9d8d/'.base64_encode($aRow['map_id']).'"  style="text-decoration : underline;" target="_BLANK">'.$aRow['REPORT'].'</a>';
+            
+	    $row[] = '<a href="/participant/download/d92nl9d8d/'.base64_encode($aRow['map_id']).'"  style="text-decoration : underline;" target="_BLANK">'.$aRow['REPORT'].'</a>';
            
             $output['aaData'][] = $row;
         }
