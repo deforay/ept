@@ -57,6 +57,11 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     
     public function updateShipment($params,$shipmentMapId,$lastDate){
         $row =  $this->fetchRow("map_id = ". $shipmentMapId);
+        if($row!=""){
+            if(trim($row['created_on_user'])=="" || $row['created_on_user']==NULL){
+                $this->update(array('created_on_user'=>new Zend_Db_Expr('now()')),"map_id = ". $shipmentMapId);
+            }
+        }
         
         $params['evaluation_status'] = $row['evaluation_status'];
         
@@ -75,8 +80,8 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $params['evaluation_status'][3] = 2;
         }else{
             $params['evaluation_status'][3] = 1;  
-        }        
- 
+        }
+        
         return $this->update($params,"map_id = ". $shipmentMapId);
     }
     
@@ -85,18 +90,24 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $row =  $this->fetchRow("shipment_id = ". $shipmentId . " AND participant_id = ".$participantId);
         $shipment = $db->fetchRow($db->select()->from(array('s'=>'shipment'))
                                                ->where("s.shipment_id = ?",$shipmentId));
-        $now= date("Y-m-d");
-        $todaydate= strtotime($now);
-        $lastResponseDate = strtotime($shipment["lastdate_response"]);
-        $dateDifference = $lastResponseDate - $todaydate;
-        $day=floor($dateDifference/3600/24);
+        if($shipment["status"]=='evaluated'){
+            return false; 
+        }else{
+            return true; 
+        }
+        
+        //$now= date("Y-m-d");
+        //$todaydate= strtotime($now);
+        //$lastResponseDate = strtotime($shipment["lastdate_response"]);
+        //$dateDifference = $lastResponseDate - $todaydate;
+        //$day=floor($dateDifference/3600/24);
         //$canEdit =  substr($row['evaluation_status'],2 ,1); // getting the 3rd character
        // if($canEdit == 9){
-            if($day<0){
-               return false; 
-            }else{
-               return true; 
-            }
+            //if($day<0){
+            //   return false; 
+            //}else{
+            //   return true; 
+            //}
             
       //  }else{
       //      return false;

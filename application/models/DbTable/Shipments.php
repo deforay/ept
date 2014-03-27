@@ -133,7 +133,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery=$this->getAdapter()->select()->from(array('s'=>'shipment'),array('s.scheme_type','SHIP_YEAR'=>'year(s.shipment_date)','TOTALSHIPMEN' => new Zend_Db_Expr("COUNT('s.shipment_id')")))
                     ->join(array('sp'=>'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('ONTIME' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)"),'NORESPONSE' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)")))
                     ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=sp.participant_id')
-                    ->where("s.status='shipped'")
+                    ->where("s.status='shipped' OR s.status='evaluated'")
                     ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                     ->where("pmm.dm_id=?",$this->_session->dm_id)
                     ->group('s.scheme_type')
@@ -163,7 +163,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery=$this->getAdapter()->select()->from(array('s'=>'shipment'),array('s.scheme_type'))
                     ->join(array('sp'=>'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array(''))
                     ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=sp.participant_id',array(''))
-                    ->where("s.status='shipped'")
+                    ->where("s.status='shipped' OR s.status='evaluated'")
                     ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                     ->where("pmm.dm_id=?",$this->_session->dm_id)
                     ->group('s.scheme_type');
@@ -288,7 +288,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.first_name','p.last_name'))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status='shipped'")
+                        ->where("s.status='shipped' OR s.status='evaluated'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                         ->where("s.lastdate_response >=  CURDATE()")
                         //->order('s.shipment_date')
@@ -321,7 +321,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array(''))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id',array(''))
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status='shipped'")
+                        ->where("s.status='shipped' OR s.status='evaluated'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                         ->where("s.lastdate_response >=  CURDATE()");
                         
@@ -453,7 +453,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.first_name','p.last_name'))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status='shipped'")
+                        ->where("s.status='shipped' OR s.status='evaluated'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                         ->where("s.lastdate_response <  CURDATE()")
                         ->where("substr(spm.evaluation_status,3,1) <> '1'")
@@ -486,7 +486,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array(''))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id',array(''))
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status='shipped'")
+                        ->where("s.status='shipped' OR s.status='evaluated'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                         ->where("s.lastdate_response <  CURDATE()")
                         ->where("substr(spm.evaluation_status,3,1) <> '1'")
@@ -625,7 +625,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.first_name','p.last_name'))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status='shipped'")
+                        ->where("s.status='shipped' OR s.status='evaluated'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())");
                         //->order('s.shipment_date')
                         //->order('spm.participant_id')
@@ -658,7 +658,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array(''))
                         ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id',array(''))
                         ->where("pmm.dm_id=?",$this->_session->dm_id)
-                        ->where("s.status='shipped'")
+                        ->where("s.status='shipped' OR s.status='evaluated'")
                         ->where("year(s.shipment_date)  + 5 > year(CURDATE())");
                         
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);

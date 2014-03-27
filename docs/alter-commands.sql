@@ -1521,4 +1521,7 @@ INSERT INTO `report_config` (`name`, `value`) VALUES
 ('logo', '');
 
 --Guna 25-Mar-2014
-ALTER TABLE  `shipment_participant_map` CHANGE  `participant_supervisor`  `participant_supervisor` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL
+ALTER TABLE  `shipment_participant_map` CHANGE  `participant_supervisor`  `participant_supervisor` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
+--Ilahir 27-Mar-2014
+ALTER TABLE  `shipment_participant_map` ADD  `created_on_user` DATETIME NULL DEFAULT NULL AFTER  `created_by_admin`;

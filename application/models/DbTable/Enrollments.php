@@ -13,7 +13,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('p.unique_identifier','p.first_name', 'p.last_name','p.country','s.scheme_id', 's.scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')");
+        $aColumns = array('p.unique_identifier','p.first_name', 'p.last_name','p.country','s.scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')");
 
 
 
@@ -92,8 +92,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('e' => $this->_name))
                                      ->join(array('p'=>'participant'),'p.participant_id = e.participant_id')
                                      ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id')
-				     ->where("p.status='active'")
-				     ->order('e.enrolled_on desc');
+				     ->where("p.status='active'");
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);

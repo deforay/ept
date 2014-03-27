@@ -99,7 +99,7 @@ class Application_Model_DbTable_ContactUs extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name))->order('p.contact_id desc');
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name));
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);

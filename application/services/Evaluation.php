@@ -423,254 +423,254 @@ class Application_Service_Evaluation {
 			
 		}
 		else if($shipmentResult[0]['scheme_type'] == 'dts'){
+			
 			$counter = 0;
+			$maxScore = 0;
 			foreach($shipmentResult as $shipment){
-				$results = $schemeService->getDtsSamples($shipmentId,$shipment['participant_id']);
-				$totalScore = 0;
-				$maxScore = 0;
-				$mandatoryResult = "";
-				$lotResult = "";
-				$testKit1 = "";
-				$testKit2 = "";
-				$testKit3 = "";
-				$testKitRepeatResult = "";
-				$testKitExpiryResult = "";
-				$lotResult = "";
-				$scoreResult = "";
-				$failureReason = "";
-				$algoResult = "";
+				$updateUser=explode(" ",$shipment['created_on_user']);
 				
-				//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
-				//$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
-				
-
-				$attributes = json_decode($shipment['attributes'],true);
-				
-				
-				
-				foreach($results as $result){
-					$r1 = $r2 = $r3 = '';
-					if($result['test_result_1'] == 1){
-						$r1 = 'P';
-					} else if($result['test_result_1'] == 2){
-						$r1 = 'N';
-					} else if($result['test_result_1'] == 3){
-						$r2 = 'I';
-					}
-					if($result['test_result_2'] == 1){
-						$r2 = 'P';
-					} else if($result['test_result_2'] == 2){
-						$r2 = 'N';
-					} else if($result['test_result_2'] == 3){
-						$r2 = 'I';
-					}
-					if($result['test_result_3'] == 1){
-						$r3 = 'P';
-					} else if($result['test_result_3'] == 2){
-						$r3 = 'N';
-					} else if($result['test_result_3'] == 3){
-						$r3 = 'I';
-					}
+				//if(trim($updateUser[0])!="" && $shipment['lastdate_response']>$updateUser[0]){
 					
-					$algoString = $r1.$r2.$r3;
-
-					if($attributes['algorithm'] == 'serial'){
-						
-						if($r1 == 'N'){
-							if(($r2 == '') && ($r3 == '')){
-								$algoResult = 'Pass';	
-							}else{
-								$algoResult = 'Fail';
-								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";								
-							}							
-						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'N'){
-							$algoResult = 'Pass';
-						}else if($r1 == 'P' && $r2 == 'P'){
-							if(($r3 == '')){
-								$algoResult = 'Pass';	
-							}else{
-								$algoResult = 'Fail';
-								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";					
-							}
-						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'P'){
-							$algoResult = 'Pass';
-						}else{
-							$algoResult = 'Fail';
-							$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";	
+					$results = $schemeService->getDtsSamples($shipmentId,$shipment['participant_id']);
+					$totalScore = 0;
+					$maxScore = 0;
+					$mandatoryResult = "";
+					$lotResult = "";
+					$testKit1 = "";
+					$testKit2 = "";
+					$testKit3 = "";
+					$testKitRepeatResult = "";
+					$testKitExpiryResult = "";
+					$lotResult = "";
+					$scoreResult = "";
+					$failureReason = "";
+					$algoResult = "";
+					
+					//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
+					//$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
+					
+					$attributes = json_decode($shipment['attributes'],true);
+					
+					foreach($results as $result){
+						$r1 = $r2 = $r3 = '';
+						if($result['test_result_1'] == 1){
+							$r1 = 'P';
+						} else if($result['test_result_1'] == 2){
+							$r1 = 'N';
+						} else if($result['test_result_1'] == 3){
+							$r2 = 'I';
+						}
+						if($result['test_result_2'] == 1){
+							$r2 = 'P';
+						} else if($result['test_result_2'] == 2){
+							$r2 = 'N';
+						} else if($result['test_result_2'] == 3){
+							$r2 = 'I';
+						}
+						if($result['test_result_3'] == 1){
+							$r3 = 'P';
+						} else if($result['test_result_3'] == 2){
+							$r3 = 'N';
+						} else if($result['test_result_3'] == 3){
+							$r3 = 'I';
 						}
 						
-					} else if($attributes['algorithm'] == 'parallel'){
-						
-						if($r1 == 'P' && $r2 == 'P'){
-							if(($r3 == '')){
-								$algoResult = 'Pass';	
+						$algoString = $r1.$r2.$r3;
+	
+						if($attributes['algorithm'] == 'serial'){
+							
+							if($r1 == 'N'){
+								if(($r2 == '') && ($r3 == '')){
+									$algoResult = 'Pass';	
+								}else{
+									$algoResult = 'Fail';
+									$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";								
+								}							
+							}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'N'){
+								$algoResult = 'Pass';
+							}else if($r1 == 'P' && $r2 == 'P'){
+								if(($r3 == '')){
+									$algoResult = 'Pass';	
+								}else{
+									$algoResult = 'Fail';
+									$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";					
+								}
+							}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'P'){
+								$algoResult = 'Pass';
 							}else{
 								$algoResult = 'Fail';
-								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";									
+								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";	
 							}
-						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'P'){
-							$algoResult = 'Pass';
-						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'N'){
-							$algoResult = 'Pass';
-						}else if($r1 == 'N' && $r2 == 'N'){
-							if(($r3 == '')){
-								$algoResult = 'Pass';	
+							
+						} else if($attributes['algorithm'] == 'parallel'){
+							
+							if($r1 == 'P' && $r2 == 'P'){
+								if(($r3 == '')){
+									$algoResult = 'Pass';	
+								}else{
+									$algoResult = 'Fail';
+									$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";									
+								}
+							}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'P'){
+								$algoResult = 'Pass';
+							}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'N'){
+								$algoResult = 'Pass';
+							}else if($r1 == 'N' && $r2 == 'N'){
+								if(($r3 == '')){
+									$algoResult = 'Pass';	
+								}else{
+									$algoResult = 'Fail';
+									$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";	
+								}
+							}else if($r1 == 'N' && $r2 == 'P' && $r3 == 'N'){
+								$algoResult = 'Pass';
+							}else if($r1 == 'N' && $r2 == 'P' && $r3 == 'P'){
+								$algoResult = 'Pass';
 							}else{
 								$algoResult = 'Fail';
 								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";	
 							}
-						}else if($r1 == 'N' && $r2 == 'P' && $r3 == 'N'){
-							$algoResult = 'Pass';
-						}else if($r1 == 'N' && $r2 == 'P' && $r3 == 'P'){
-							$algoResult = 'Pass';
-						}else{
-							$algoResult = 'Fail';
-							$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";	
+							
 						}
 						
-					}
-					
-					// matching reported and reference results
-					if(isset($result['reported_result']) && $result['reported_result'] !=null){
-						if($result['reference_result'] == $result['reported_result']){
-							$totalScore += $result['sample_score'];
-						}else{
-							if($result['sample_score'] > 0){
-								$failureReason[] = "Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+						// matching reported and reference results
+						if(isset($result['reported_result']) && $result['reported_result'] !=null){
+							if($result['reference_result'] == $result['reported_result']){
+								$totalScore += $result['sample_score'];
+							}else{
+								if($result['sample_score'] > 0){
+									$failureReason[] = "Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+								}
 							}
 						}
-					}
-					$maxScore  += $result['sample_score'];
-					
-					// checking if mandatory fields were entered and were entered right
-					if($result['mandatory'] == 1){
-						if((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)){
-							$mandatoryResult = 'Fail';
-							$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was not reported";
+						$maxScore  += $result['sample_score'];
+						
+						// checking if mandatory fields were entered and were entered right
+						if($result['mandatory'] == 1){
+							if((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)){
+								$mandatoryResult = 'Fail';
+								$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was not reported";
+							}
+							else if(($result['reference_result'] != $result['reported_result'])){
+								$mandatoryResult = 'Fail';
+								$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+							}
 						}
-						else if(($result['reference_result'] != $result['reported_result'])){
-							$mandatoryResult = 'Fail';
-							$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+						
+						// checking if all LOT details were entered
+						if(!isset($result['lot_no_1']) || $result['lot_no_1'] == "" || $result['lot_no_1'] == null){
+							$lotResult = 'Fail';
+							$failureReason[]= "<strong>Lot No. 1</strong> was not reported";
+						}
+						if(!isset($result['lot_no_2']) || $result['lot_no_2'] == "" || $result['lot_no_2'] == null){
+							$lotResult = 'Fail';
+							$failureReason[]= "<strong>Lot No. 2</strong> was not reported";
+						}
+						if(!isset($result['lot_no_3']) || $result['lot_no_3'] == "" || $result['lot_no_3'] == null){
+							$lotResult = 'Fail';
+							$failureReason[]= "<strong>Lot No. 3</strong> was not reported";
 						}
 					}
-					
-					// checking if all LOT details were entered
-					if(!isset($result['lot_no_1']) || $result['lot_no_1'] == "" || $result['lot_no_1'] == null){
-						$lotResult = 'Fail';
-						$failureReason[]= "<strong>Lot No. 1</strong> was not reported";
-					}
-					if(!isset($result['lot_no_2']) || $result['lot_no_2'] == "" || $result['lot_no_2'] == null){
-						$lotResult = 'Fail';
-						$failureReason[]= "<strong>Lot No. 2</strong> was not reported";
-					}
-					if(!isset($result['lot_no_3']) || $result['lot_no_3'] == "" || $result['lot_no_3'] == null){
-						$lotResult = 'Fail';
-						$failureReason[]= "<strong>Lot No. 3</strong> was not reported";
-					}
-				}
 					// checking test kit expiry dates
 				
-				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
-				$testDate = $testedOn->toString('dd-MMM-YYYY');
-				$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
-				$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
-				$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
-				
-
-				$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_1']. "'"));
-				$testKit1 = $testKitName[0];
-				
-				$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_2']. "'"));
-				$testKit2 = $testKitName[0];
-				
-				$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_3']. "'"));
-				$testKit3 = $testKitName[0];
-
-				if($testedOn->isLater($expDate1)){
-					$difference = $testedOn->sub($expDate1);
+					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+					$testDate = $testedOn->toString('dd-MMM-YYYY');
+					$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
+					$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
+					$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
 					
-					$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-					$measure->convertTo(Zend_Measure_Time::DAY);
-
-					$testKitExpiryResult = 'Fail';
-					$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
-				}
-
-				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
-				$testDate = $testedOn->toString('dd-MMM-YYYY');
-				
-				if($testedOn->isLater($expDate2)){
-					$difference = $testedOn->sub($expDate2);
+	
+					$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_1']. "'"));
+					$testKit1 = $testKitName[0];
 					
-					$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-					$measure->convertTo(Zend_Measure_Time::DAY);
+					$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_2']. "'"));
+					$testKit2 = $testKitName[0];
+				
+					$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_3']. "'"));
+					$testKit3 = $testKitName[0];
 
-					$testKitExpiryResult = 'Fail';
-					$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
-				}
-				
-				
-				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
-				$testDate = $testedOn->toString('dd-MMM-YYYY');
-				
-				if($testedOn->isLater($expDate3)){
-					$difference = $testedOn->sub($expDate3);
-					
-					$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-					$measure->convertTo(Zend_Measure_Time::DAY);
-
-					$testKitExpiryResult = 'Fail';
-					$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
-				}				
-				
-				
-				//checking if testkits were repeated
-				if(($testKit1 == $testKit2) && ($testKit2 == $testKit3)){
-					//$testKitRepeatResult = 'Fail';
-					$failureReason[]= "<strong>$testKit1</strong> repeated for all three Test Kits";					
-				}else{
-					if(($testKit1 == $testKit2)){
-						//$testKitRepeatResult = 'Fail';
-						$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2";
+					if($testedOn->isLater($expDate1)){
+						$difference = $testedOn->sub($expDate1);
+						
+						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+						$measure->convertTo(Zend_Measure_Time::DAY);
+	
+						$testKitExpiryResult = 'Fail';
+						$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
 					}
-					if(($testKit2 == $testKit3)){
-						//$testKitRepeatResult = 'Fail';
-						$failureReason[]= "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3";
+
+					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+					$testDate = $testedOn->toString('dd-MMM-YYYY');
+				
+					if($testedOn->isLater($expDate2)){
+						$difference = $testedOn->sub($expDate2);
+						
+						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+						$measure->convertTo(Zend_Measure_Time::DAY);
+	
+						$testKitExpiryResult = 'Fail';
+						$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
 					}
-					if(($testKit1 == $testKit3)){
+				
+				
+					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+					$testDate = $testedOn->toString('dd-MMM-YYYY');
+				
+					if($testedOn->isLater($expDate3)){
+						$difference = $testedOn->sub($expDate3);
+						
+						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+						$measure->convertTo(Zend_Measure_Time::DAY);
+	
+						$testKitExpiryResult = 'Fail';
+						$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+					}
+				
+					//checking if testkits were repeated
+					if(($testKit1 == $testKit2) && ($testKit2 == $testKit3)){
 						//$testKitRepeatResult = 'Fail';
-						$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3";
-					}					
-				}
+						$failureReason[]= "<strong>$testKit1</strong> repeated for all three Test Kits";					
+					}else{
+						if(($testKit1 == $testKit2)){
+							//$testKitRepeatResult = 'Fail';
+							$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2";
+						}
+						if(($testKit2 == $testKit3)){
+							//$testKitRepeatResult = 'Fail';
+							$failureReason[]= "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3";
+						}
+						if(($testKit1 == $testKit3)){
+							//$testKitRepeatResult = 'Fail';
+							$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3";
+						}					
+					}
 				
-				// checking if total score and maximum scores are the same
-				if($totalScore != $maxScore){
-					$scoreResult = 'Fail';
-					$failureReason[]= "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
-				}else{
-					$scoreResult = 'Pass';
-				}				
+					// checking if total score and maximum scores are the same
+					if($totalScore != $maxScore){
+						$scoreResult = 'Fail';
+						$failureReason[]= "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
+					}else{
+						$scoreResult = 'Pass';
+					}				
 				
+					// if any of the results have failed, then the final result is fail
+					if($scoreResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail'){
+						$finalResult = 2;
+					}else{
+						$finalResult = 1;
+					}
+					$shipmentResult[$counter]['shipment_score'] = $totalScore;
+					$shipmentResult[$counter]['max_score'] = $maxScore;
+					
+					$fRes = $db->fetchCol($db->select()->from('r_results',array('result_name'))->where('result_id = '.$finalResult));
 				
-				// if any of the results have failed, then the final result is fail
-				if($scoreResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail'){
-					$finalResult = 2;
-				}else{
-					$finalResult = 1;
-				}
-				$shipmentResult[$counter]['shipment_score'] = $totalScore;
-				$shipmentResult[$counter]['max_score'] = $maxScore;
+					$shipmentResult[$counter]['display_result'] = $fRes[0];
+					$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
 				
-				$fRes = $db->fetchCol($db->select()->from('r_results',array('result_name'))->where('result_id = '.$finalResult));
-				
-				$shipmentResult[$counter]['display_result'] = $fRes[0];
-				$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
-				
-				
-				
-				// let us update the total score in DB
-				$nofOfRowsUpdated = $db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
-				$counter++;
+					// let us update the total score in DB
+					$nofOfRowsUpdated = $db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
+					$counter++;
+				//}
 			}
 			$db->update('shipment',array('max_score' => $maxScore), "shipment_id = ".$shipmentId);
 		} else if($shipmentResult[0]['scheme_type'] == 'vl'){
@@ -1188,7 +1188,7 @@ class Application_Service_Evaluation {
 		$shipmentResult = $db->fetchRow($sql);
 		$i=0;
 		if($shipmentResult!=""){
-			
+			$db->update('shipment',array('status' => 'evaluated'), "shipment_id = ".$shipmentId);
 			if($shipmentResult['scheme_type']=='dbs'){
 				$sql=$db->select()->from(array('refdbs'=>'reference_result_dbs'),array('refdbs.reference_result','refdbs.sample_label'))
 					->join(array('refpr'=>'r_possibleresult'),'refpr.id=refdbs.reference_result',array('referenceResult'=>'refpr.response'))
