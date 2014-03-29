@@ -186,9 +186,9 @@ foreach($this->events as $events){
     var neighborhoods = [
         <?php
         foreach($this->participants as $participants){
-            if(trim($participants['latitude'])!=""){
+            if(trim($participants['lat'])!=""){
         ?>
-        new google.maps.LatLng('<?php echo $participants['latitude']; ?>', '<?php echo $participants['longitude']; ?>'),
+        new google.maps.LatLng('<?php echo $participants['lat']; ?>', '<?php echo $participants['long']; ?>'),
         <?php
             }
         }
