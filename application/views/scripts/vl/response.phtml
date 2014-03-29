@@ -1,7 +1,7 @@
 <?php date_default_timezone_set('America/New_York');?>
 <form name="vlResponseForm" id="vlResponseForm" method="post"   action="<?php echo $this->url(array("controller"=>"vl","action"=>"response"),null,true) ?>">
 
-<input type="text" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response'];?>" />
+<input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response'];?>" />
 <input type="hidden" id ="smid" name="smid" value="<?php echo $this->shipment['map_id'];?>" />
 <input type="hidden" id ="shipmentId" name="shipmentId" value="<?php echo $this->shipId;?>" />
 <input type="hidden" id ="participantId" name="participantId" value="<?php echo $this->participantId;?>" />

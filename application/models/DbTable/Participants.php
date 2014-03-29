@@ -301,7 +301,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'created_by' => $authNameSpace->UserID,
         );
 		
-		//Zend_Debug::dump($data);die;
+	//Zend_Debug::dump($data);die;
 	//Zend_Debug::dump($data);die;
         $participantId = $this->insert($data);
 		
@@ -314,16 +314,19 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 		$db = Zend_Db_Table_Abstract::getAdapter();
 		$db->insert('participant_manager_map',array('dm_id'=>$authNameSpace->dm_id,'participant_id'=>$participantId));
 			
-			$participantName = $params['pfname']. " " .$params['plname'];
-			$dataManager = $authNameSpace->first_name . " " .$authNameSpace->last_name;
-			$common = new Application_Service_Common();
-			$message = "Hi,<br/>  A new participant ($participantName) was added by $dataManager <br/><small>This is a system generated email. Please do not reply.</small>";
-			$toMail = Application_Service_Common::getConfig('admin-email');			
-			//$fromName = Application_Service_Common::getConfig('admin-name');			
-			$common->sendMail($toMail,null,null,"New Participant Registered  ($participantName)",$message,$fromMail,"ePT Admin");			
-		
+		$participantName = $params['pfname']. " " .$params['plname'];
+		$dataManager = $authNameSpace->first_name . " " .$authNameSpace->last_name;
+		$common = new Application_Service_Common();
+		$message = "Hi,<br/>  A new participant ($participantName) was added by $dataManager <br/><small>This is a system generated email. Please do not reply.</small>";
+		$toMail = Application_Service_Common::getConfig('admin-email');			
+		//$fromName = Application_Service_Common::getConfig('admin-name');			
+		$common->sendMail($toMail,null,null,"New Participant Registered  ($participantName)",$message,$fromMail,"ePT Admin");			
+	
 		return $participantId;
     }
-
+    
+    public function fetchAllActiveParticipants(){
+	return $this->fetchAll($this->select()->where("status='active'"));
+    }
 }
 

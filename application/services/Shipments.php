@@ -225,9 +225,9 @@ class Application_Service_Shipments {
 	}
 	public function updateDtsResults($params){
 		
-		//if(!$this->isShipmentEditable($params['shipmentId'],$params['participantId'])){
-			//return false;
-		//}		
+		if(!$this->isShipmentEditable($params['shipmentId'],$params['participantId'])){
+			return false;
+		}		
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		
 		$db->beginTransaction();

@@ -127,5 +127,9 @@ class Application_Service_Participants {
 				  ->order("p.first_name");
 	    return $db->fetchAll($sql);
 	}
-
+	
+	public function getAllActiveParticipants(){
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchAllActiveParticipants();
+	}
 }

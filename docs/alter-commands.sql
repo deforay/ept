@@ -1525,3 +1525,6 @@ ALTER TABLE  `shipment_participant_map` CHANGE  `participant_supervisor`  `parti
 
 --Ilahir 27-Mar-2014
 ALTER TABLE  `shipment_participant_map` ADD  `created_on_user` DATETIME NULL DEFAULT NULL AFTER  `created_by_admin`;
+
+--Ilahir 29-Mar-2014
+ALTER TABLE  `participant` ADD  `latitude` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `updated_by`;
