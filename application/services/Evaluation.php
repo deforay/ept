@@ -1048,6 +1048,8 @@ class Application_Service_Evaluation {
 				->join(array('p'=>'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
 				->joinLeft(array('res'=>'r_results'),'res.result_id=sp.final_result',array('result_name'))
 				->where("s.shipment_id = ?",$shipmentId)
+				->where("sp.final_result IS NOT NULL")
+				->where("sp.final_result!=''")
 				->where("substring(sp.evaluation_status,4,1) != '0'");
 		//error_log($sql);die;
 		$shipmentResult = $db->fetchAll($sql);
@@ -1212,6 +1214,8 @@ class Application_Service_Evaluation {
 				->joinLeft(array('res'=>'r_results'),'res.result_id=spm.final_result',array('result_name'))
 				->where("spm.shipment_id = ?",$shipmentId)
 				->where("substring(spm.evaluation_status,4,1) != '0'")
+				->where("spm.final_result IS NOT NULL")
+				->where("spm.final_result!=''")
 				->group('spm.map_id');
 				$sQueryRes= $db->fetchAll($sQuery);
 				
@@ -1221,6 +1225,8 @@ class Application_Service_Evaluation {
 						->join(array('resdbs'=>'response_result_dbs'),'resdbs.sample_id=refdbs.sample_id',array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN resdbs.reported_result=refdbs.reference_result THEN 1 ELSE 0 END)")))
 						->join(array('spm'=>'shipment_participant_map'),'resdbs.shipment_map_id=spm.map_id and refdbs.shipment_id=spm.shipment_id',array())
 						->where("spm.shipment_id = ?",$shipmentId)
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
 						->where("substring(spm.evaluation_status,4,1) != '0'")
 						->group(array("refdbs.sample_id"));
 					
@@ -1230,6 +1236,9 @@ class Application_Service_Evaluation {
 					
 					$rQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id'))
 						->join(array('resdbs'=>'response_result_dbs'),'resdbs.shipment_map_id=spm.map_id',array('resdbs.eia_1','resdbs.eia_2','resdbs.eia_3','resdbs.wb'))
+						->where("substring(spm.evaluation_status,4,1) != '0'")
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
 						->where("spm.shipment_id = ?",$shipmentId)
 						->group('spm.map_id');
 					
@@ -1277,6 +1286,8 @@ class Application_Service_Evaluation {
 				->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
 				->joinLeft(array('res'=>'r_results'),'res.result_id=spm.final_result',array('result_name'))
 				->where("spm.shipment_id = ?",$shipmentId)
+				->where("spm.final_result IS NOT NULL")
+				->where("spm.final_result!=''")
 				->where("substring(spm.evaluation_status,4,1) != '0'")
 				->group('spm.map_id');
 				$sQueryRes= $db->fetchAll($sQuery);
@@ -1287,6 +1298,8 @@ class Application_Service_Evaluation {
 						->join(array('resdts'=>'response_result_dts'),'resdts.sample_id=refdts.sample_id',array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN resdts.reported_result=refdts.reference_result THEN 1 ELSE 0 END)")))
 						->join(array('spm'=>'shipment_participant_map'),'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id',array())
 						->where("spm.shipment_id = ?",$shipmentId)
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
 						->where("substring(spm.evaluation_status,4,1) != '0'")
 						->group(array("refdts.sample_id"));
 					
@@ -1297,6 +1310,9 @@ class Application_Service_Evaluation {
 					
 					$rQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id'))
 						->join(array('resdts'=>'response_result_dts'),'resdts.shipment_map_id=spm.map_id',array('resdts.test_kit_name_1','resdts.test_kit_name_2','resdts.test_kit_name_3'))
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
+						->where("substring(spm.evaluation_status,4,1) != '0'")
 						->where("spm.shipment_id = ?",$shipmentId)
 						->group('spm.map_id');
 					$rQueryRes= $db->fetchAll($rQuery);	
@@ -1351,6 +1367,8 @@ class Application_Service_Evaluation {
 						->where("spm.shipment_id = ?",$shipmentId)
 						->where("spm.attributes LIKE '%\"extraction_assay\":\"$extId\"%' ")
 						->where("spm.attributes LIKE '%\"detection_assay\":\"$detId\"%' ")
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
 						->where("substring(spm.evaluation_status,4,1) != '0'")
 						->group('spm.map_id');
 						//echo "<br/>";
@@ -1362,7 +1380,10 @@ class Application_Service_Evaluation {
 									       array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN reseid.reported_result=refeid.reference_result THEN 1 ELSE 0 END)")))
 									->join(array('spm'=>'shipment_participant_map'),'reseid.shipment_map_id=spm.map_id and refeid.shipment_id=spm.shipment_id',array())
 									->where("spm.attributes LIKE '%\"extraction_assay\":\"$extId\"%' ")
-									->where("spm.attributes LIKE '%\"detection_assay\":\"$detId\"%' ")								
+									->where("spm.attributes LIKE '%\"detection_assay\":\"$detId\"%' ")
+									->where("spm.final_result IS NOT NULL")
+									->where("spm.final_result!=''")
+									->where("substring(spm.evaluation_status,4,1) != '0'")
 									->where("spm.shipment_id = ?",$shipmentId)
 									->group(array("refeid.sample_id"));
 							$shipmentResult['summaryResult'][]=$sQueryRes;
