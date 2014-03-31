@@ -136,7 +136,7 @@ foreach($this->result['shipment'] as $result){
 	$shipmentScore="";
 	$score="";
 
-	if(trim($result['responseResult'][0]['responseDate'])!=""){
+	if(isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate'])!=""){
 		$splitDate=explode(" ",$result['responseResult'][0]['responseDate']);
 		$responseDate=$this->dateFormat($splitDate[0]);
 	}

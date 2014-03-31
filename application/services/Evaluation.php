@@ -321,13 +321,18 @@ class Application_Service_Evaluation {
 
 				$testKitName = $db->fetchCol($db->select()->from('r_dbs_eia','eia_name')->where("eia_id = '".$results[0]['eia_1']. "'"));
 				$testKit1 = $testKitName[0];
+				$testKit2="";
+				if(trim($results[0]['eia_2'])!=0){
+					$testKitName = $db->fetchCol($db->select()->from('r_dbs_eia','eia_name')->where("eia_id = '".$results[0]['eia_2']. "'"));
+					$testKit2 = $testKitName[0];
+				}
 				
-				$testKitName = $db->fetchCol($db->select()->from('r_dbs_eia','eia_name')->where("eia_id = '".$results[0]['eia_2']. "'"));
-				$testKit2 = $testKitName[0];
+				$testKit3="";
+				if(trim($results[0]['eia_3'])!=0){
+					$testKitName = $db->fetchCol($db->select()->from('r_dbs_eia','eia_name')->where("eia_id = '".$results[0]['eia_3']. "'"));
+					$testKit3 = $testKitName[0];
+				}
 				
-				$testKitName = $db->fetchCol($db->select()->from('r_dbs_eia','eia_name')->where("eia_id = '".$results[0]['eia_3']. "'"));
-				$testKit3 = $testKitName[0];
-
 				if($testedOn->isLater($expDate1)){
 					$difference = $testedOn->sub($expDate1);
 					
@@ -1211,6 +1216,42 @@ class Application_Service_Evaluation {
 					
 					$shipmentResult['summaryResult'][]=$sQueryRes;
 					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult'])-1]['correctCount']=$db->fetchAll($tQuery);
+					
+					
+					$rQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id'))
+						->join(array('resdbs'=>'response_result_dbs'),'resdbs.shipment_map_id=spm.map_id',array('resdbs.eia_1','resdbs.eia_2','resdbs.eia_3','resdbs.wb'))
+						->where("spm.shipment_id = ?",$shipmentId)
+						->group('spm.map_id');
+					
+					$rQueryRes= $db->fetchAll($rQuery);
+					$eiaEiaEiaWb='';
+					$eiaEiaEia='';
+					$eiaEiaWb='';
+					$eiaEia='';
+					$eiaWb='';
+					$eia='';
+					foreach($rQueryRes as $rVal){
+						if($rVal['eia_1']!=0 && $rVal['eia_2']!=0 && $rVal['eia_3']!=0 && $rVal['wb']!=0){
+							++$eiaEiaEiaWb;
+						}elseif($rVal['eia_1']!=0 && $rVal['eia_2']!=0 && $rVal['eia_3']!=0){
+							++$eiaEiaEia;
+						}elseif($rVal['eia_1']!=0 && ($rVal['eia_2']!=0 || $rVal['eia_3']!=0) && $rVal['wb']!=0){
+							++$eiaEiaWb;
+						}elseif($rVal['eia_1']!=0 && ($rVal['eia_2']!=0 || $rVal['eia_3']!=0)){
+							++$eiaEia;
+						}elseif($rVal['eia_1']!=0 && $rVal['wb']!=0){
+							++$eiaWb;
+						}elseif($rVal['eia_1']!=0){
+							++$eia;
+						}
+					}
+					
+					$shipmentResult['dbsPieChart']['EIA/EIA/EIA/WB']=$eiaEiaEiaWb;
+					$shipmentResult['dbsPieChart']['EIA/EIA/EIA']=$eiaEiaEia;
+					$shipmentResult['dbsPieChart']['EIA/EIA/WB']=$eiaEiaWb;
+					$shipmentResult['dbsPieChart']['EIA/EIA']=$eiaEia;
+					$shipmentResult['dbsPieChart']['EIA/WB']=$eiaWb;
+					$shipmentResult['dbsPieChart']['EIA']=$eia;
 					
 				}
 			}

@@ -320,6 +320,41 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 		}
 		
 	}
+	if($this->result['scheme_type']=='dbs'){
+			$chart = new PieChart(800,350);
+			$dataSet = new XYDataSet();
+			
+			if(trim($this->result['dbsPieChart']['EIA/EIA/EIA/WB'])!=""){
+				$dataSet->addPoint(new Point("EIA/EIA/EIA/WB", $this->result['dbsPieChart']['EIA/EIA/EIA/WB']));
+			}
+			
+			if(trim($this->result['dbsPieChart']['EIA/EIA/EIA'])!=""){
+				$dataSet->addPoint(new Point("EIA/EIA/EIA", $this->result['dbsPieChart']['EIA/EIA/EIA']));
+			}
+			if(trim($this->result['dbsPieChart']['EIA/EIA/WB'])!=""){
+				$dataSet->addPoint(new Point("EIA/EIA/WB", $this->result['dbsPieChart']['EIA/EIA/WB']));
+			}
+			if(trim($this->result['dbsPieChart']['EIA/EIA'])!=""){
+				$dataSet->addPoint(new Point("EIA/EIA", $this->result['dbsPieChart']['EIA/EIA']));
+			}
+			if(trim($this->result['dbsPieChart']['EIA/WB'])!=""){
+				$dataSet->addPoint(new Point("EIA/WB", $this->result['dbsPieChart']['EIA/WB']));
+			}
+			if(trim($this->result['dbsPieChart']['EIA'])!=""){
+				$dataSet->addPoint(new Point("EIA", $this->result['dbsPieChart']['EIA']));
+			}
+			
+			$piechart= UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$this->result['shipment_code']. DIRECTORY_SEPARATOR.'pieChart.png';
+			$chart->setDataSet($dataSet);
+			
+			$chart->setTitle("HIV Testing Algorithms used for DBS-based PT survey ".$this->result['distribution_code']);
+			$chart->render($piechart);
+			
+			$pdf->Image($piechart, 50, $y, '', '', '', '', '', false, 300);
+			if(file_exists($piechart)){
+				unlink($piechart);
+			}
+	}
 	
 }
 //Close and output PDF document
