@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.4.3.min.css">
 <?php
 //Zend_Debug::dump($this->shipmentScheme);die;
 $lastmonth=date("F",strtotime("-1 month"));
@@ -23,9 +24,8 @@ foreach($this->events as $events){
 ?>
 <div class="row">
           <div class="col-lg-12">
-            <h1>Dashboard <small>Statistics Overview</small></h1>
             <ol class="breadcrumb">
-              <li class="active"><i class="fa fa-dashboard"></i> Dashboard</li>
+              <li class="active" style="font-size:20px;color:#555"><i class="icon icon-dashboard"></i> Dashboard</li>
             </ol>
           </div>
 </div><!-- /.row -->
@@ -130,7 +130,7 @@ foreach($this->events as $events){
                 <div class="panel-footer announcement-bottom" >
                   <div class="row">
                     <div class="col-xs-10" style="color:#2c3e50">
-                     Shipped Events (Till Today)
+                     Shipped Events (This month)
                     </div>
                     <div class="col-xs-1 text-right">
                       <i class="fa fa-arrow-circle-right"></i>
@@ -141,61 +141,99 @@ foreach($this->events as $events){
             </div>
     </div>
 </div>
- <div class="col-lg-13">
-            <div class="panel panel-primary">
-              <div class="panel-heading">
-                <h3 class="panel-title"><i class="icon-truck icon-2x"></i> Shipment Activity</h3>
-              </div>
-              <div class="panel-body">
-              <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-condensed" id="shipActivity">
-                          <thead>
-                              <tr>
-                                  <th>Ship Code</th>
-                                  <th>Ship Name</th>
-                                  <th>Shipped</th>
-                                  <th>Ready</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                            <?php foreach($this->shipmentScheme as $shipment){ ?>
-                              <tr>
-                                   <td><?php echo $shipment['shipment_code'];?></td>
-                                   <td><?php echo $shipment['SCHEME'];?></td>
-                                   <td><?php echo $shipment['shippedStatus'];?></td>
-                                   <td><?php echo $shipment['readyStatus'];?></td>
-                              </tr>
-                              <?php } ?>
-                          </tbody>
-                      </table>
-                <div class="text-right">
-                  <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'shipment','action'=>'index'),'default',true); ?>" class="btn-sm btn-primary" style="text-decoration: none;">View All Shipment <i class="icon-forward"></i></a>
-                </div>
-              </div>
+<div class="row">
+    <div class="col-lg-6" style="">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="icon-user"></i> Participant Count Till Date (Scheme-wise)</h3>
             </div>
-</div>
+            <div class="panel-body">
+                <div id="participant-per-scheme" width="450" height="450"></div>
+                <?php
+                $dataScheme = array();
+                foreach($this->schemeCountResult as $pc){
+                    $dataScheme[] = "{ x: '".strtoupper($pc['SCHEME'])."', y: ".$pc['participantCount']." }";
+                }
+                ?>
 
- <div class="col-lg-13" id="map-canvas" style="width:100%; height: 350px;"></div>
+                <div class="text-right">
+                    <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'shipment','action'=>'index'),'default',true); ?>" class="btn-sm btn-primary" style="text-decoration: none;">View all Shipments <i class="icon-forward"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6" style="">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="icon-user"></i> Participant Count This Year (Shipment-wise)</h3>
+            </div>
+            <div class="panel-body">
+                <div id="participant-per-shipment" width="450" height="450"></div>
+                <?php
+                $code = array();
+                $dataShipment = array();
+                foreach($this->shipmentCountResult as $pc){
+                    $dataShipment[] = "{ x: '".strtoupper($pc['shipment_code'])."', y: ".$pc['participantCount']." }";
+                }
+                ?>
+
+                <div class="text-right">
+                    <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'shipment','action'=>'index'),'default',true); ?>" class="btn-sm btn-primary" style="text-decoration: none;">View all Shipments <i class="icon-forward"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br/>
+<div class="col-lg-13" id="map-canvas" style="width:100%; height: 450px;margin-top:10px !important;"></div>
+
+
+
+
+
+
  <?php
  //Zend_Debug::dump($this->participants);
  ?>
  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
- <script>
-    
-    var berlin = new google.maps.LatLng(0,0);
+<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="http://cdn.oesmith.co.uk/morris-0.4.3.min.js"></script>
 
-    var neighborhoods = [
-        <?php
-        foreach($this->participants as $participants){
-            if(trim($participants['lat'])!=""){
-        ?>
-        new google.maps.LatLng('<?php echo $participants['lat']; ?>', '<?php echo $participants['long']; ?>'),
-        <?php
-            }
+
+ <script>
+     Morris.Bar({
+         element: 'participant-per-scheme',
+         data: [
+             <?php echo implode(",",$dataScheme); ?>
+         ],
+         xLabelAngle: 45,
+         xkey: 'x',
+         ykeys: ['y'],
+         labels: ['Participants']
+     });
+
+     Morris.Bar({
+         element: 'participant-per-shipment',
+         data: [
+             <?php echo implode(",",$dataShipment); ?>
+         ],
+         xLabelAngle: 45,
+         xkey: 'x',
+         ykeys: ['y'],
+         labels: ['Participants']
+     });
+
+     var center = new google.maps.LatLng(0,0);
+    <?php
+    $neighbors= array();
+    foreach($this->participants as $participants){
+        if(trim($participants['lat'])!="" && trim($participants['long'])!=""){
+            $neighbors[] = "new google.maps.LatLng(".$participants['lat'].",".$participants['long'].")";
         }
-        ?>
-      //new google.maps.LatLng(17.675428, 83.236585),
-      //new google.maps.LatLng(18.338884, 81.933374)
-    ];
+    }
+    ?>
+
+    var neighborhoods = [<?php echo implode(",",$neighbors); ?>];
 
     var markers = [];
     var iterator = 0;
@@ -209,9 +247,7 @@ foreach($this->events as $events){
       "aaSorting": [[ 2, "desc" ]]
       
       });
-      
         initialize();
-        
     });
   
     
@@ -219,7 +255,7 @@ foreach($this->events as $events){
     function initialize() {
       var mapOptions = {
         zoom: 2,
-        center: berlin
+        center: center
       };
       map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
       

@@ -15,7 +15,8 @@ class Admin_IndexController extends Zend_Controller_Action
        $participantService = new Application_Service_Participants();
        
        $this->view->events=$distributionService->getAllDistributionStatus();
-       $this->view->shipmentScheme=$shipmentService->getShipmentsBasedOnScheme();
+       $this->view->schemeCountResult=$shipmentService->getParticipantCountBasedOnScheme();
+       $this->view->shipmentCountResult=$shipmentService->getParticipantCountBasedOnShipment();
        $this->view->participants=$participantService->getAllActiveParticipants();
        
     }

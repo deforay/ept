@@ -1326,6 +1326,12 @@ class Application_Service_Evaluation {
 					
 				}
 				
+				$sql = $db->select()->from(array('p'=>'participant'))
+									->join(array('spm'=>'shipment_participant_map'),'spm.participant_id=p.participant_id')
+									->where("spm.shipment_id = ?",$shipmentId);
+				
+				
+				$shipmentResult['participantScores'] = $db->fetchAll($sql);
 			}
 			else if($shipmentResult['scheme_type']=='eid'){
 				$schemeService = new Application_Service_Schemes();
