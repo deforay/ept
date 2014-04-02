@@ -80,6 +80,16 @@
                                              placeholder="Please enter the Zip/Postal here"
                                              value="<?php echo $this->participant['zip']; ?>"/></div>
             </div>
+	    
+	    <div class="form-group">
+                <label class="col-lg-3 control-label">Latitude</label>
+		
+                <div class="col-lg-5"><input type="text" id="lat" name="lat" size="50" maxlength="255" 
+                                             class="form-control" title="Please enter the latitude here"
+                                             placeholder="Please enter the latitude here"
+                                             value="<?php echo $this->participant['lat']; ?>"/></div>
+            </div>
+	    
             <div class="form-group">
                 <label class="col-lg-3 control-label">Longitude</label>
 
@@ -88,14 +98,7 @@
                                              placeholder="Please enter the longitude here"
                                              value="<?php echo $this->participant['long']; ?>"/></div>
             </div>
-            <div class="form-group">
-                <label class="col-lg-3 control-label">Latitude</label>
-
-                <div class="col-lg-5"><input type="text" id="lat" name="lat" size="50" maxlength="255" 
-                                             class="form-control" title="Please enter the latitude here"
-                                             placeholder="Please enter the latitude here"
-                                             value="<?php echo $this->participant['lat']; ?>"/></div>
-            </div>
+            
 			
             <div class="form-group">
                 <label class="col-lg-3 control-label">Shipping Address (include city and country)<span class="mandatory">*</span></label>

@@ -20,6 +20,7 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
+        $this->view->schemeCount = $scheme->countEnrollmentSchemes();
     }
 
     public function viewAction()

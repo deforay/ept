@@ -308,6 +308,10 @@ class Application_Service_Schemes {
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		return $db->fetchAll($db->select()->from('r_possibleresult')->where("scheme_id='$schemeId'"));
 	}
-
+	
+	public function countEnrollmentSchemes(){
+		$schemeListDb = new Application_Model_DbTable_SchemeList();
+		return $schemeListDb->countEnrollmentSchemes();
+	}
 }
 

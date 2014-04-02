@@ -88,8 +88,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          */
 	
 	$sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))
-                                     ->join(array('e'=>'enrollments'),'p.participant_id = e.participant_id')
-                                     ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array('scheme_name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.scheme_name ORDER BY s.scheme_name SEPARATOR ', ')")))
+                                     ->joinLeft(array('e'=>'enrollments'),'p.participant_id = e.participant_id')
+                                     ->joinLeft(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array('scheme_name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.scheme_name ORDER BY s.scheme_name SEPARATOR ', ')")))
 				     ->where("p.status='active'")
 				     ->group("p.participant_id");
 
@@ -121,8 +121,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         /* Total data set length */
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), new Zend_Db_Expr("COUNT('p.participant_id')"))
-                                            ->join(array('e'=>'enrollments'),'p.participant_id = e.participant_id',array())
-					    ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array())
+                                            ->joinLeft(array('e'=>'enrollments'),'p.participant_id = e.participant_id',array())
+					    ->joinLeft(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array())
 					    ->where("p.status='active'")
 					    ->group("p.participant_id");
 	
@@ -148,7 +148,11 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $row[] = $aRow['country'];
             $row[] = $aRow['scheme_name'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['enrolled_on']);
-            $row[] = '<a href="/admin/enrollments/view/pid/' . $aRow['participant_id'] . '/sid/' . strtolower($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-eye-open"></i> Know More</a>';
+	    if(trim($aRow['scheme_name'])!=""){
+		$row[] = '<a href="/admin/enrollments/view/pid/' . $aRow['participant_id'] . '/sid/' . strtolower($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-eye-open"></i> Know More</a>';
+	    }else{
+		$row[]="--";
+	    }
 
             $output['aaData'][] = $row;
         }

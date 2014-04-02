@@ -1,15 +1,18 @@
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 
 <div class="container">
 	<fieldset>
 		<legend><?php echo ucwords($this->enrollmentDetails[0]['first_name']. " " . $this->enrollmentDetails[0]['last_name']) ; ?> - Scheme <?php echo strtoupper($this->sid); ?></legend>
 		
-		<table class="table table-bordered table-striped table-hover" style="width:50%;margin:0 auto;">
+		<table class="table table-bordered table-striped table-hover display" id="shipmentTable" style="width: 100%;margin: auto;">
+			<thead>
 			<tr>
 				<th>Shipment Code</th>
 				<th>Shipment Date</th>
 				<th>Shipment Type</th>
 				<th>Status</th>
 			</tr>
+			</thead>
 			<?php
 				foreach($this->enrollmentDetails as $ed){
 					if($ed['shipment_date'] != "" && $ed['shipment_date'] != null){
@@ -18,7 +21,7 @@
 				<td><?php echo $ed['shipment_code']; ?></td>
 				<td><?php echo $this->dateFormat($ed['shipment_date']); ?></td>
 				<td><?php echo strtoupper($ed['scheme_type']); ?></td>				
-				<td>Coming Soon</td>
+				<td><?php echo ucwords($ed['status']); ?></td>
 			</tr>
 					<?php
 					}
@@ -28,3 +31,27 @@
 		
 	</fieldset>
 </div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		
+		
+		$("#shipmentTable").dataTable({
+		    "oLanguage": {
+			"sLengthMenu": "_MENU_ records per page"
+		    },
+		    "bJQueryUI": false,
+		    "bAutoWidth": false,
+		    "bInfo": true,
+		    "bScrollCollapse": true,
+		    "sPaginationType": "full_numbers",
+		    "bRetrieve": true,
+		    "aaSorting": [[ 0, "asc" ]],
+		    "bProcessing": true
+		});
+		
+	} );
+	
+	
+		
+</script>

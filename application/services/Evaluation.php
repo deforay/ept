@@ -322,8 +322,15 @@ class Application_Service_Evaluation {
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
 					$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
-					$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
-					$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
+					$expDate2="";
+					if(trim($results[0]['exp_date_2'])!=""){
+						$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
+					}
+					
+					$expDate3="";
+					if(trim($results[0]['exp_date_3'])!=""){
+						$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
+					}
 					
 	
 					$testKitName = $db->fetchCol($db->select()->from('r_dbs_eia','eia_name')->where("eia_id = '".$results[0]['eia_1']. "'"));
@@ -352,30 +359,31 @@ class Application_Service_Evaluation {
 						
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
-					
-					if($testedOn->isLater($expDate2)){
-						$difference = $testedOn->sub($expDate2);
-						
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-						
-						$testKitExpiryResult = 'Fail';
-						$failureReason[]= "EIA 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+					if($expDate2!=""){
+						if($testedOn->isLater($expDate2)){
+							$difference = $testedOn->sub($expDate2);
+							
+							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+							$measure->convertTo(Zend_Measure_Time::DAY);
+							
+							$testKitExpiryResult = 'Fail';
+							$failureReason[]= "EIA 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						}
 					}
 					
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
-					
-					if($testedOn->isLater($expDate3)){
-						$difference = $testedOn->sub($expDate3);
-						
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-						
-						$testKitExpiryResult = 'Fail';
-						$failureReason[]= "EIA 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+					if($expDate3!=""){
+						if($testedOn->isLater($expDate3)){
+							$difference = $testedOn->sub($expDate3);
+							
+							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+							$measure->convertTo(Zend_Measure_Time::DAY);
+							
+							$testKitExpiryResult = 'Fail';
+							$failureReason[]= "EIA 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						}
 					}
-					
 					//checking if testkits were repeated
 					if(($testKit1 == $testKit2) && ($testKit2 == $testKit3)){
 						//$testKitRepeatResult = 'Fail';
@@ -577,9 +585,18 @@ class Application_Service_Evaluation {
 				
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
+					
 					$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
-					$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
-					$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
+					
+					$expDate2="";
+					if(trim($results[0]['exp_date_2'])!=""){
+						$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
+					}
+					$expDate3="";
+					if(trim($results[0]['exp_date_3'])!=""){
+						$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
+					}
+					
 					
 				
 					$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_1']. "'"));
@@ -609,29 +626,31 @@ class Application_Service_Evaluation {
 
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
-				
-					if($testedOn->isLater($expDate2)){
-						$difference = $testedOn->sub($expDate2);
-						
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-	
-						$testKitExpiryResult = 'Fail';
-						$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+					if($expDate2!=""){
+						if($testedOn->isLater($expDate2)){
+							$difference = $testedOn->sub($expDate2);
+							
+							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+							$measure->convertTo(Zend_Measure_Time::DAY);
+		
+							$testKitExpiryResult = 'Fail';
+							$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						}
 					}
 				
 				
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
-				
-					if($testedOn->isLater($expDate3)){
-						$difference = $testedOn->sub($expDate3);
-						
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-	
-						$testKitExpiryResult = 'Fail';
-						$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+					if($expDate3!=""){
+						if($testedOn->isLater($expDate3)){
+							$difference = $testedOn->sub($expDate3);
+							
+							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+							$measure->convertTo(Zend_Measure_Time::DAY);
+							
+							$testKitExpiryResult = 'Fail';
+							$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						}
 					}
 				
 					//checking if testkits were repeated
