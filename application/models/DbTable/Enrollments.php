@@ -14,9 +14,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          */
 
         $aColumns = array('p.unique_identifier','p.first_name', 'p.last_name','p.country','s.scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')");
-
-
-
+	
         /*
          * Paging
          */
@@ -88,11 +86,12 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          * SQL queries
          * Get data to display
          */
-
-        $sQuery = $this->getAdapter()->select()->from(array('e' => $this->_name))
-                                     ->join(array('p'=>'participant'),'p.participant_id = e.participant_id')
-                                     ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id')
-				     ->where("p.status='active'");
+	
+	$sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))
+                                     ->join(array('e'=>'enrollments'),'p.participant_id = e.participant_id')
+                                     ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array('scheme_name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.scheme_name ORDER BY s.scheme_name SEPARATOR ', ')")))
+				     ->where("p.status='active'")
+				     ->group("p.participant_id");
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -121,12 +120,14 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('e' => $this->_name), new Zend_Db_Expr("COUNT('e.scheme_id')"))
-                                            ->join(array('p'=>'participant'),'p.participant_id = e.participant_id',array())
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), new Zend_Db_Expr("COUNT('p.participant_id')"))
+                                            ->join(array('e'=>'enrollments'),'p.participant_id = e.participant_id',array())
 					    ->join(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array())
-					    ->where("p.status='active'");
-        $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
-        $iTotal = $aResultTotal[0];
+					    ->where("p.status='active'")
+					    ->group("p.participant_id");
+	
+        $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
+        $iTotal = sizeof($aResultTotal);
 
         /*
          * Output
