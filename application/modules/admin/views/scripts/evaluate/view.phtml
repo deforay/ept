@@ -573,6 +573,18 @@ else{
 
 <table class="table table-bordered" style="width:70%;margin:0 auto;">
 	<tr>
+		<td style="width:25%;vertical-align: middle">Notes</td>
+		<td>
+			<?php 
+				if(isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != ""){
+					echo "<ul><li>" .str_replace(",","</li><li>",$this->evaluateData['shipment']['failure_reason']) . "</li></ul>";
+				}else{
+					echo "-";
+				}
+				?>
+		</td>		
+	</tr>	
+	<tr>
 		<td style="width:25%;vertical-align: middle">Evaluation Comment</td>
 		<td>
 			<?php echo $this->dropdownSelectedText($evalComments,$this->evaluateData['shipment']['evaluation_comment'],true); ?>

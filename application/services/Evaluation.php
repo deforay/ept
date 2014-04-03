@@ -189,8 +189,17 @@ class Application_Service_Evaluation {
 			$counter = 0;
 			$maxScore = 0;
 			foreach($shipmentResult as $shipment){
-				$createOnUser=explode(" ",$shipment['created_on_user']);
-				if(trim($createOnUser[0])!="" && $shipment['lastdate_response']>$createOnUser[0]){
+				$createdOnUser=explode(" ",$shipment['created_on_user']);
+				if(trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) !="0000-00-00"){
+					
+					$createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
+				}else{
+					$datearray = array('year' => 1970,'month' => 1,'day' => 01);
+					$createdOn = new Zend_Date($datearray);
+				}
+				
+				$lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
+				if($createdOn->isEarlier($lastDate)){
 					$results = $schemeService->getEidSamples($shipmentId,$shipment['participant_id']);
 					$totalScore = 0;
 					$maxScore = 0;
@@ -258,8 +267,17 @@ class Application_Service_Evaluation {
 			$counter = 0;
 			$maxScore = 0;
 			foreach($shipmentResult as $shipment){
-				$createOnUser=explode(" ",$shipment['created_on_user']);
-				if(trim($createOnUser[0])!="" && $shipment['lastdate_response']>$createOnUser[0]){
+				$createdOnUser=explode(" ",$shipment['created_on_user']);
+				if(trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) !="0000-00-00"){
+					
+					$createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
+				}else{
+					$datearray = array('year' => 1970,'month' => 1,'day' => 01);
+					$createdOn = new Zend_Date($datearray);
+				}
+				
+				$lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
+				if($createdOn->isEarlier($lastDate)){
 					
 					$results = $schemeService->getDbsSamples($shipmentId,$shipment['participant_id']);
 					$totalScore = 0;
@@ -297,10 +315,10 @@ class Application_Service_Evaluation {
 								$mandatoryResult = 'Fail';
 								$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was not reported";
 							}
-							else if(($result['reference_result'] != $result['reported_result'])){
-								$mandatoryResult = 'Fail';
-								$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
-							}
+							//else if(($result['reference_result'] != $result['reported_result'])){
+							//	$mandatoryResult = 'Fail';
+							//	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+							//}
 						}
 						
 						// checking if all LOT details were entered
@@ -561,10 +579,10 @@ class Application_Service_Evaluation {
 								$mandatoryResult = 'Fail';
 								$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was not reported";
 							}
-							else if(($result['reference_result'] != $result['reported_result'])){
-								$mandatoryResult = 'Fail';
-								$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
-							}
+							//else if(($result['reference_result'] != $result['reported_result'])){
+							//	$mandatoryResult = 'Fail';
+							//	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+							//}
 						}
 						
 						// checking if all LOT details were entered
@@ -710,8 +728,18 @@ class Application_Service_Evaluation {
 			}
 			
 			foreach($shipmentResult as $shipment){
-				$createOnUser=explode(" ",$shipment['created_on_user']);
-				if(trim($createOnUser[0])!="" && $shipment['lastdate_response']>$createOnUser[0]){
+				$createdOnUser=explode(" ",$shipment['created_on_user']);
+				if(trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) !="0000-00-00"){
+					
+					$createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
+				}else{
+					$datearray = array('year' => 1970,'month' => 1,'day' => 01);
+					$createdOn = new Zend_Date($datearray);
+				}
+				
+				$lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
+				//Zend_Debug::dump($createdOn->isEarlier($lastDate));die;
+				if($createdOn->isEarlier($lastDate)){
 					
 					$results = $schemeService->getVlSamples($shipmentId,$shipment['participant_id']);
 					$totalScore = 0;
@@ -739,6 +767,7 @@ class Application_Service_Evaluation {
 						}else{
 							$totalScore = "N/A";
 						}
+						
 						$maxScore  += $result['sample_score'];
 						
 						// checking if mandatory fields were entered and were entered right
@@ -747,10 +776,10 @@ class Application_Service_Evaluation {
 								$mandatoryResult = 'Fail';
 								$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was not reported";
 							}
-							else if(($result['reported_viral_load'] != $result['reported_viral_load'])){
-								$mandatoryResult = 'Fail';
-								$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
-							}
+							//else if(($result['reported_viral_load'] != $result['reported_viral_load'])){
+							//	$mandatoryResult = 'Fail';
+							//	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+							//}
 						}
 					}
 					
@@ -789,6 +818,16 @@ class Application_Service_Evaluation {
 					}
 					$nofOfRowsUpdated = $db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
 					$counter++;
+				}else{
+					$totalScore = 0;
+					$failureReason = "Response was submitted after the Last Response Date.";
+					$fRes = $db->fetchCol($db->select()->from('r_results',array('result_name'))->where('result_id = 2'));
+					
+					$shipmentResult[$counter]['display_result'] = $fRes[0];
+					$shipmentResult[$counter]['failure_reason'] = $failureReason;
+					
+					$nofOfRowsUpdated = $db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>2, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
+					$counter++;					
 				}
 			}
 			$db->update('shipment',array('max_score' => $maxScore), "shipment_id = ".$shipmentId);			

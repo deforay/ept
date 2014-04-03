@@ -145,19 +145,19 @@ foreach($this->events as $events){
     <div class="col-lg-6" style="">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h3 class="panel-title"><i class="icon-user"></i> Participant Count Till Date (Scheme-wise)</h3>
+                <h3 class="panel-title"><i class="icon-user"></i> Active Participants Enrolled (Scheme-wise)</h3>
             </div>
             <div class="panel-body">
                 <div id="participant-per-scheme" width="450" height="450"></div>
                 <?php
                 $dataScheme = array();
-                foreach($this->schemeCountResult as $pc){
-                    $dataScheme[] = "{ x: '".strtoupper($pc['SCHEME'])."', y: ".$pc['participantCount']." }";
+                foreach($this->schemeCountResult as $schemeName => $pCount){
+                    $dataScheme[] = "{ x: '".strtoupper($schemeName)."', y: ".$pCount." }";
                 }
                 ?>
 
                 <div class="text-right">
-                    <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'shipment','action'=>'index'),'default',true); ?>" class="btn-sm btn-primary" style="text-decoration: none;">View all Shipments <i class="icon-forward"></i></a>
+                    <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments','action'=>'index'),'default',true); ?>" class="btn-sm btn-primary" style="text-decoration: none;">View all Enrollments <i class="icon-forward"></i></a>
                 </div>
             </div>
         </div>
@@ -173,7 +173,7 @@ foreach($this->events as $events){
                 $code = array();
                 $dataShipment = array();
                 foreach($this->shipmentCountResult as $pc){
-                    $dataShipment[] = "{ x: '".strtoupper($pc['shipment_code'])."', y: ".$pc['participantCount']." }";
+                    $dataShipment[] = "{ y: '".strtoupper($pc['shipment_code'])."', a: ".$pc['participantCount']." , b: ".(isset($pc['receivedCount']) ? $pc['receivedCount'] : 0)." }";
                 }
                 ?>
 
@@ -212,16 +212,17 @@ foreach($this->events as $events){
          labels: ['Participants']
      });
 
-     Morris.Bar({
-         element: 'participant-per-shipment',
-         data: [
-             <?php echo implode(",",$dataShipment); ?>
-         ],
-         xLabelAngle: 45,
-         xkey: 'x',
-         ykeys: ['y'],
-         labels: ['Participants']
-     });
+     
+Morris.Bar({
+  element: 'participant-per-shipment',
+  data: [
+    <?php echo implode(",",$dataShipment); ?>
+  ],
+  xLabelAngle: 45,
+  xkey: 'y',
+  ykeys: ['a', 'b'],
+  labels: ['Shipped','Received']
+});     
 
      var center = new google.maps.LatLng(0,0);
     <?php
