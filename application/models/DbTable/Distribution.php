@@ -148,7 +148,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $row = array();
             $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/'.$aRow['distribution_id'].'"><span><i class="icon-search"></i></span></a>';
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-            $row[] = $aRow['distribution_code'];
+            $row[] = '<a href="/admin/shipment/index/searchString/'.$aRow['distribution_code'].'">'.$aRow['distribution_code'].'</a>';
             $row[] = $aRow['shipments'];
             $row[] = ucwords($aRow['status']);
 	    $edit='<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-pencil"></i> Edit</span></a>';

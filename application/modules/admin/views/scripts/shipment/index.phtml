@@ -223,9 +223,17 @@
             },"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
             /* Append the grade to the default row class name */
 				
-					$('td.sorting_1').addClass( 'goga' );
+		$('td.sorting_1').addClass( 'goga' );
 	        },
         } );
+	
+	<?php
+	if(isset($this->searchData) && $this->searchData!=''){
+	?>
+	oTable.fnFilter('<?php echo $this->searchData;?>');
+	<?php
+	}
+	?>
 
 	};
 	
