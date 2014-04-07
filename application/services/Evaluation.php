@@ -321,32 +321,38 @@ class Application_Service_Evaluation {
 							//}
 						}
 						
-						// checking if all LOT details were entered
-						if(!isset($result['lot_no_1']) || $result['lot_no_1'] == "" || $result['lot_no_1'] == null){
-							$lotResult = 'Fail';
-							$failureReason[]= "<strong>Lot No. 1</strong> was not reported";
-						}
-						if(!isset($result['lot_no_2']) || $result['lot_no_2'] == "" || $result['lot_no_2'] == null){
-							$lotResult = 'Fail';
-							$failureReason[]= "<strong>Lot No. 2</strong> was not reported";
-						}
-						if(!isset($result['lot_no_3']) || $result['lot_no_3'] == "" || $result['lot_no_3'] == null){
-							$lotResult = 'Fail';
-							$failureReason[]= "<strong>Lot No. 3</strong> was not reported";
-						}
+						
 					}
+					
+					// checking if all LOT details were entered
+					if(!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 1</strong> was not reported";
+					}
+					if(!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 2</strong> was not reported";
+					}
+					if(!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 3</strong> was not reported";
+					}
+					
 					// checking test kit expiry dates
 				
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
-					$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
+					$expDate1="";
+					if(trim(strtotime($results[0]['exp_date_1']))!=""){
+						$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
+					}
 					$expDate2="";
-					if(trim($results[0]['exp_date_2'])!=""){
+					if(trim(strtotime($results[0]['exp_date_2']))!=""){
 						$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
 					}
 					
 					$expDate3="";
-					if(trim($results[0]['exp_date_3'])!=""){
+					if(trim(strtotime($results[0]['exp_date_3']))!=""){
 						$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
 					}
 					
@@ -364,17 +370,17 @@ class Application_Service_Evaluation {
 						$testKitName = $db->fetchCol($db->select()->from('r_dbs_eia','eia_name')->where("eia_id = '".$results[0]['eia_3']. "'"));
 						$testKit3 = $testKitName[0];
 					}
-					
-					if($testedOn->isLater($expDate1)){
-						$difference = $testedOn->sub($expDate1);
-						
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-						
-						$testKitExpiryResult = 'Fail';
-						$failureReason[]= "EIA 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+					if($expDate1!=""){
+						if($testedOn->isLater($expDate1)){
+							$difference = $testedOn->sub($expDate1);
+							
+							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+							$measure->convertTo(Zend_Measure_Time::DAY);
+							
+							$testKitExpiryResult = 'Fail';
+							$failureReason[]= "EIA 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						}
 					}
-						
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
 					if($expDate2!=""){
@@ -407,15 +413,15 @@ class Application_Service_Evaluation {
 						//$testKitRepeatResult = 'Fail';
 						$failureReason[]= "<strong>$testKit1</strong> repeated for all three EIA";					
 					}else{
-						if(($testKit1 == $testKit2)){
+						if(($testKit1 == $testKit2) && $testKit1 !="" && $testKit2 != ""){
 							//$testKitRepeatResult = 'Fail';
 							$failureReason[]= "<strong>$testKit1</strong> repeated as EIA 1 and EIA 2";
 						}
-						if(($testKit2 == $testKit3)){
+						if(($testKit2 == $testKit3) && $testKit2 !="" && $testKit3 != ""){
 							//$testKitRepeatResult = 'Fail';
 							$failureReason[]= "<strong>$testKit2</strong> repeated as EIA 2 and EIA 3";
 						}
-						if(($testKit1 == $testKit3)){
+						if(($testKit1 == $testKit3) && $testKit1 !="" && $testKit3 != ""){
 							//$testKitRepeatResult = 'Fail';
 							$failureReason[]= "<strong>$testKit1</strong> repeated as EIA 1 and EIA 3";
 						}					
@@ -585,33 +591,37 @@ class Application_Service_Evaluation {
 							//}
 						}
 						
-						// checking if all LOT details were entered
-						if(!isset($result['lot_no_1']) || $result['lot_no_1'] == "" || $result['lot_no_1'] == null){
-							$lotResult = 'Fail';
-							$failureReason[]= "<strong>Lot No. 1</strong> was not reported";
-						}
-						if(!isset($result['lot_no_2']) || $result['lot_no_2'] == "" || $result['lot_no_2'] == null){
-							$lotResult = 'Fail';
-							$failureReason[]= "<strong>Lot No. 2</strong> was not reported";
-						}
-						if(!isset($result['lot_no_3']) || $result['lot_no_3'] == "" || $result['lot_no_3'] == null){
-							$lotResult = 'Fail';
-							$failureReason[]= "<strong>Lot No. 3</strong> was not reported";
-						}
+						
 					}
+					
+					// checking if all LOT details were entered
+					if(!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 1</strong> was not reported";
+					}
+					if(!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 2</strong> was not reported";
+					}
+					if(!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 3</strong> was not reported";
+					}
+						
 					// checking test kit expiry dates
 				
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
-					
-					$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
-					
+					$expDate1="";
+					if(trim(strtotime($results[0]['exp_date_1']))!=""){
+						$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
+					}
 					$expDate2="";
-					if(trim($results[0]['exp_date_2'])!=""){
+					if(trim(strtotime($results[0]['exp_date_2']))!=""){
 						$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
 					}
 					$expDate3="";
-					if(trim($results[0]['exp_date_3'])!=""){
+					if(trim(strtotime($results[0]['exp_date_3']))!=""){
 						$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
 					}
 					
@@ -631,17 +641,17 @@ class Application_Service_Evaluation {
 						$testKit3 = $testKitName[0];
 					}
 					
-
-					if($testedOn->isLater($expDate1)){
-						$difference = $testedOn->sub($expDate1);
-						
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-	
-						$testKitExpiryResult = 'Fail';
-						$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+					if($expDate1!=""){
+						if($testedOn->isLater($expDate1)){
+							$difference = $testedOn->sub($expDate1);
+							
+							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+							$measure->convertTo(Zend_Measure_Time::DAY);
+							
+							$testKitExpiryResult = 'Fail';
+							$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						}
 					}
-
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
 					if($expDate2!=""){
@@ -676,15 +686,15 @@ class Application_Service_Evaluation {
 						//$testKitRepeatResult = 'Fail';
 						$failureReason[]= "<strong>$testKit1</strong> repeated for all three Test Kits";					
 					}else{
-						if(($testKit1 == $testKit2)){
+						if(($testKit1 == $testKit2) && $testKit1 !="" && $testKit2 != ""){
 							//$testKitRepeatResult = 'Fail';
 							$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2";
 						}
-						if(($testKit2 == $testKit3)){
+						if(($testKit2 == $testKit3) && $testKit2 !="" && $testKit3 != ""){
 							//$testKitRepeatResult = 'Fail';
 							$failureReason[]= "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3";
 						}
-						if(($testKit1 == $testKit3)){
+						if(($testKit1 == $testKit3) && $testKit1 !="" && $testKit3 != ""){
 							//$testKitRepeatResult = 'Fail';
 							$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3";
 						}					

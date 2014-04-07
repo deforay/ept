@@ -135,7 +135,7 @@ foreach($this->result['shipment'] as $result){
 	$responseDate="";
 	$shipmentScore="";
 	$score="";
-
+	
 	if(isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate'])!=""){
 		$splitDate=explode(" ",$result['responseResult'][0]['responseDate']);
 		$responseDate=$this->dateFormat($splitDate[0]);
@@ -153,6 +153,16 @@ foreach($this->result['shipment'] as $result){
 		$wishes='<p>You have received a score of '.$score.'%.</p><br/>';
 	}
 	
+	//if($result['result_name']=='Fail'){
+	//	$wishes="";
+	//	$splStr=explode(",",$result['failure_reason']);
+	//	$k=sizeof($splStr);
+	//	for($c=0;$c<$k;$c++){
+	//		$wishes.='<p> '.$splStr[$c].'</p><br/>';
+	//	}
+	//	//$wishes = "<ul><li>" .str_replace(",","</li><li>",$result['failure_reason']) . "</li></ul>";
+	//	
+	//}
 	$labInfo='<table style="width:100%;"><tr><td style="font-weight:bold;">Participant Code </td><td style="text-align:left;width:20px;">:</td><td style="text-align:left;width:400px;">'.$result['unique_identifier'].'</td></tr>';
 	$labInfo.='<tr><td  style="font-weight:bold;">Performing Participant </td><td style="text-align:left">:</td><td style="text-align:left">'.$result['first_name']." ".$result['last_name'].'</td></tr>';
 	$labInfo.='<tr><td style="font-weight:bold;">PT Event Name </td><td style="text-align:left">:</td><td style="text-align:left">'.$result['distribution_code'].'</td></tr>';

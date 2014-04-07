@@ -239,6 +239,7 @@
 	}
 	
 	function generateReport(sId){
+	  //checkReportDate=true;
 		if (checkReportDate) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'),'default',true); ?>", { sId: sId,format: "html" },
@@ -252,10 +253,10 @@
 				//document.getElementById("summaryDiv").innerHTML=data;
 				if (data=='Success') {
 					<?php
-					if (file_exists(UPLOAD_PATH. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR . $shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf")) {
+					//if (file_exists(UPLOAD_PATH. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR . $shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf")) {
 					?>
 					document.getElementById("summaryDiv").innerHTML="<?php echo "<a href='".$this->baseUrl(). DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf' class='btn btn-danger' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a>"?>";
-					<?php } ?>
+					<?php //} ?>
 					$.unblockUI();
 				}else{
 					$.unblockUI();
