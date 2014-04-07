@@ -20,6 +20,9 @@ class Admin_IndexController extends Zend_Controller_Action
        $this->view->shipmentCountResult=$shipmentService->getParticipantCountBasedOnShipment();
        $this->view->participants=$participantService->getAllActiveParticipants();
        
+       $this->view->mapCenter = Application_Service_Common::getConfig('map-center');
+       $this->view->mapZoom = Application_Service_Common::getConfig('map-zoom');
+       
     }
 
     

@@ -1526,3 +1526,6 @@ ALTER TABLE  `shipment_participant_map` CHANGE  `participant_supervisor`  `parti
 --Ilahir 27-Mar-2014
 ALTER TABLE  `shipment_participant_map` ADD  `created_on_user` DATETIME NULL DEFAULT NULL AFTER  `created_by_admin`;
 
+--Ilahir 07-Apr-2014
+
+INSERT INTO `eanalyze`.`global_config` (`name`, `value`) VALUES ('map-center', '0,0'), ('map-zoom', '2');

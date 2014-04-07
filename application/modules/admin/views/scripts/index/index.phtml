@@ -224,18 +224,8 @@ Morris.Bar({
   labels: ['Shipped','Received']
 });     
 
-     var center = new google.maps.LatLng(0,0);
-    <?php
-    $neighbors= array();
-    foreach($this->participants as $participants){
-        if(trim($participants['lat'])!="" && trim($participants['long'])!=""){
-            $neighbors[] = "new google.maps.LatLng(".$participants['lat'].",".$participants['long'].")";
-        }
-    }
-    ?>
-
-    var neighborhoods = [<?php echo implode(",",$neighbors); ?>];
-
+    var center = new google.maps.LatLng(<?php echo $this->mapCenter; ?>);
+    
     var markers = [];
     var iterator = 0;
     
@@ -255,32 +245,44 @@ Morris.Bar({
 
     function initialize() {
       var mapOptions = {
-        zoom: 2,
+        zoom: <?php echo $this->mapZoom; ?> ,
         center: center
       };
       map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
       
+        
+  
       drop();
     }
 
     function drop() {
-      for (var i = 0; i < neighborhoods.length; i++) {
+        var infowindow = new google.maps.InfoWindow();
         
-        setTimeout(function() {
-          addMarker();
-        }, i * 200);
+      <?php
+      foreach($this->participants as $participants){
+        if(trim($participants['lat'])!="" && trim($participants['long'])!=""){
+        ?>
+        var myLatLng = new google.maps.LatLng(<?php echo $participants['lat']; ?>, <?php echo $participants['long']; ?>);
+        var marker = new google.maps.Marker({
+            position: myLatLng,
+            map: map,
+            info: "<?php echo str_replace(array("\r", "\n"), '', $participants['address']); ?>",
+            draggable: false,
+            animation: google.maps.Animation.DROP
+        });
+        
+        google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent(this.info);//set the content
+            infowindow.open(map,this);
+        });
+        
+        <?php
+        }
       }
+      ?>
+      
     }
-
-    function addMarker() {
-      markers.push(new google.maps.Marker({
-        position: neighborhoods[iterator],
-        map: map,
-        draggable: false,
-        animation: google.maps.Animation.DROP
-      }));
-      iterator++;
-    }
+   
 
 //google.maps.event.addDomListener(window, 'load', initialize);
 </script>
