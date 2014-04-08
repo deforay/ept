@@ -119,6 +119,7 @@
             </controllerFile>
             <controllerFile controllerName="Index">
               <actionMethod actionName="index"/>
+              <actionMethod actionName="getSchemeParticipants"/>
             </controllerFile>
             <controllerFile controllerName="Users">
               <actionMethod actionName="index"/>
@@ -174,6 +175,9 @@
               <actionMethod actionName="index"/>
             </controllerFile>
             <controllerFile controllerName="ReportConfig">
+              <actionMethod actionName="index"/>
+            </controllerFile>
+            <controllerFile controllerName="GlobalConfig">
               <actionMethod actionName="index"/>
             </controllerFile>
           </controllersDirectory>
@@ -302,6 +306,12 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Participants">
                 <viewScriptFile forActionName="viewParticipants"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Index">
+                <viewScriptFile forActionName="getSchemeParticipants"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="GlobalConfig">
+                <viewScriptFile forActionName="index"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

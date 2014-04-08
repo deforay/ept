@@ -1,0 +1,8 @@
+<?php
+$result="";
+    foreach($this->participants as $participants){
+        if(trim($participants['lat'])!="" && trim($participants['long'])!=""){
+           $result[]=$participants['lat']."#".$participants['long']."#".$participants['address'];
+        }
+    }
+echo json_encode($result);

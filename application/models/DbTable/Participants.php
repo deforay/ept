@@ -328,5 +328,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function fetchAllActiveParticipants(){
 	return $this->fetchAll($this->select()->where("status='active'"));
     }
+    
+    public function getSchemeWiseParticipants($schemeType){
+	if($schemeType!="all"){
+	    $result=$this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name),array('p.address','p.long','p.lat'))
+				->join(array('e'=>'enrollments'),'e.participant_id=p.participant_id')
+				->where("e.scheme_id = ?", $schemeType)
+				->where("p.status='active'")
+				->group('p.participant_id'));
+	}else{
+	    $result=$this->fetchAll($this->select()->where("status='active'"));
+	}
+	
+	return $result;
+    }
+    
 }
 

@@ -9,10 +9,10 @@ class Application_Service_Reports {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,new Zend_Db_Expr('count("participant_id")'),new Zend_Db_Expr("SUM(shipment_test_date <> '')"),new Zend_Db_Expr("(SUM(shipment_test_date <> '')/count('participant_id'))*100"),new Zend_Db_Expr("SUM(final_result = 1)"),'s.status');
-        $searchColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples','participant_count','reported_count','reported_percentage','number_passed','s.status');
+        $aColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code',"DATE_FORMAT(s.lastdate_response,'%d-%b-%Y')",'sl.scheme_name' ,'s.number_of_samples' ,new Zend_Db_Expr('count("participant_id")'),new Zend_Db_Expr("SUM(shipment_test_date <> '')"),new Zend_Db_Expr("(SUM(shipment_test_date <> '')/count('participant_id'))*100"),new Zend_Db_Expr("SUM(final_result = 1)"),'s.status');
+        $searchColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code',"DATE_FORMAT(s.lastdate_response,'%d-%b-%Y')",'sl.scheme_name' ,'s.number_of_samples','participant_count','reported_count','reported_percentage','number_passed','s.status');
         $havingColumns = array('participant_count','reported_count');
-        $orderColumns = array('distribution_code','distribution_date', 's.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,new Zend_Db_Expr('count("participant_id")'),new Zend_Db_Expr("SUM(shipment_test_date <> '')"),new Zend_Db_Expr("(SUM(shipment_test_date <> '')/count('participant_id'))*100"),new Zend_Db_Expr("SUM(final_result = 1)"),'s.status');
+        $orderColumns = array('distribution_code','distribution_date', 's.shipment_code','s.lastdate_response' ,'sl.scheme_name' ,'s.number_of_samples' ,new Zend_Db_Expr('count("participant_id")'),new Zend_Db_Expr("SUM(shipment_test_date <> '')"),new Zend_Db_Expr("(SUM(shipment_test_date <> '')/count('participant_id'))*100"),new Zend_Db_Expr("SUM(final_result = 1)"),'s.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = 'shipment_id';
@@ -207,6 +207,7 @@ class Application_Service_Reports {
 		$row[] = $aRow['distribution_code'];
 		$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
 		$row[] = $aRow['shipment_code'];
+		$row[] = Pt_Commons_General::humanDateFormat($aRow['lastdate_response']);
 		$row[] = $aRow['scheme_name'];
 		$row[] = $aRow['number_of_samples'];
 		$row[] = $aRow['participant_count'];

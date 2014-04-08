@@ -1,0 +1,47 @@
+<?php
+$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+?>
+<div class="well">
+    <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal bs-example" role="form">
+        <fieldset>
+            <legend>Update Global Config</legend>
+
+            <div class="form-group">
+                <label for="mapCenter" class="col-lg-3 control-label">Map Center <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <input type="text" id="mapCenter" name="mapCenter" size="50" class="isRequired form-control" placeholder="Please enter a map center" value="<?php echo $config->map->center; ?>"/>
+                </div>
+            </div>
+			
+            <div class="form-group">
+                <label for="mapZoom" class="col-lg-3 control-label">Map Zoom <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+			<input type="text" id="mapZoom" name="mapZoom" size="50" maxlength="45" class="isRequired form-control" placeholder="Please enter the map zoom" value="<?php echo $config->map->zoom; ?>"/>
+		</div>
+				
+            </div>
+
+            </table>
+            <br>
+
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Cancel"/>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<script type="text/javascript">
+	function validateNow() {
+	//checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Event. Please try something else.')
+        flag = deforayValidator.init({
+            formId: 'addDistributionForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('addDistributionForm').submit();
+        }
+	}
+</script>
