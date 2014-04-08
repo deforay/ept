@@ -151,7 +151,8 @@ class Application_Service_Shipments {
 					$btn = "btn-primary";
 				}
 				
-				$row[] = $aRow['shipment_code'];
+				//$row[] = $aRow['shipment_code'];
+				$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/shipment/view-enrollments/id/'.base64_encode($aRow['shipment_id']).'/shipmentCode/'.$aRow['shipment_code'].'\',\'980\',\'500\');">'.$aRow['shipment_code'].'</a>';
 				$row[] = $aRow['SCHEME'];	    
 				$row[] = $aRow['distribution_code'];
 				$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);

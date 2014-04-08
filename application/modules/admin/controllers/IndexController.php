@@ -20,8 +20,6 @@ class Admin_IndexController extends Zend_Controller_Action
         $this->view->events=$distributionService->getAllDistributionStatus();
         $this->view->schemeCountResult=$scheme->countEnrollmentSchemes();
         $this->view->shipmentCountResult=$shipmentService->getParticipantCountBasedOnShipment();
-        
-      
        
         $this->view->schemes = $scheme->getAllSchemes();
     }

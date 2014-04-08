@@ -162,6 +162,7 @@
               <actionMethod actionName="shipIt"/>
               <actionMethod actionName="remove"/>
               <actionMethod actionName="edit"/>
+              <actionMethod actionName="viewEnrollments"/>
             </controllerFile>
             <controllerFile controllerName="Evaluate">
               <actionMethod actionName="index"/>
@@ -312,6 +313,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="GlobalConfig">
                 <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="viewEnrollments"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

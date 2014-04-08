@@ -117,7 +117,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
     }
 
-    public function editAction(){
+    public function editAction()
+    {
         if($this->getRequest()->isPost()){
             $shipmentService = new Application_Service_Shipments();
             $params = $this->getRequest()->getPost();
@@ -141,8 +142,21 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
     }
 
+    public function viewEnrollmentsAction()
+    {
+        $this->_helper->layout()->setLayout('modal');
+        $participantService = new Application_Service_Participants();
+        if($this->_hasParam('id')){
+               $shipmentId = (int) base64_decode($this->_getParam('id'));
+               $this->view->shipmentCode= $this->_getParam('shipmentCode');
+               $this->view->selectedEnrollment = $participantService->getEnrolledByShipmentId($shipmentId);
+        }
+    }
+
 
 }
+
+
 
 
 

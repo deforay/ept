@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+
+<div class="container">
+	<fieldset>
+		<legend>Enrollments for Shipment Code - <?php echo $this->shipmentCode; ?></legend>
+		
+		<table class="table table-bordered table-striped table-hover display" id="enrollmentTable" style="width: 100%;margin: auto;">
+			<thead>
+			<tr>
+				<th>Lab Name / Participant Name</th>
+				<th>Country</th>
+				<th>Mobile</th>
+				<th>Email</th>
+				<th>Status</th>
+				
+			</tr>
+			</thead>
+			<?php
+				foreach($this->selectedEnrollment as $participants){
+			?>
+			<tr>
+				<td><?php echo $participants['first_name']." ".$participants['last_name']; ?></td>
+				<td><?php echo ucwords($participants['country']); ?></td>
+				<td><?php echo $participants['mobile']; ?></td>
+				<td><?php echo $participants['email']; ?></td>
+				<td><?php echo ucwords($participants['status']); ?></td>
+				
+			</tr>
+			<?php
+				}
+			?>
+		</table>
+		
+	</fieldset>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		
+		
+		$("#enrollmentTable").dataTable({
+		    "oLanguage": {
+			"sLengthMenu": "_MENU_ records per page"
+		    },
+		    "bJQueryUI": false,
+		    "bAutoWidth": false,
+		    "bInfo": true,
+		    "bScrollCollapse": true,
+		    "sPaginationType": "full_numbers",
+		    "bRetrieve": true,
+		    "aaSorting": [[ 0, "asc" ]],
+		    "bProcessing": true
+		});
+		
+	} );
+	
+	
+		
+</script>
