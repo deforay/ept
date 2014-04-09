@@ -1,23 +1,19 @@
-<?php
-$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-?>
 <div class="well">
-    <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal bs-example" role="form">
+    <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
             <legend>Update Global Config</legend>
 
             <div class="form-group">
                 <label for="mapCenter" class="col-lg-3 control-label">Map Center <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <input type="text" id="mapCenter" name="mapCenter" size="50" class="isRequired form-control" placeholder="Please enter a map center" value="<?php echo $config->map->center; ?>"/>
+                    <input type="text" id="mapCenter" name="mapCenter" size="50" class="isRequired form-control" placeholder="Please enter a map center" value="<?php echo $this->config->map->center; ?>"/>
                 </div>
             </div>
 			
             <div class="form-group">
                 <label for="mapZoom" class="col-lg-3 control-label">Map Zoom <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-			<input type="text" id="mapZoom" name="mapZoom" size="50" maxlength="45" class="isRequired form-control" placeholder="Please enter the map zoom" value="<?php echo $config->map->zoom; ?>"/>
+			<input type="text" id="mapZoom" name="mapZoom" size="50" maxlength="45" class="isRequired form-control" placeholder="Please enter the map zoom" value="<?php echo $this->config->map->zoom; ?>"/>
 		</div>
 				
             </div>
@@ -27,7 +23,7 @@ $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
                 <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update"/>
-                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Cancel"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back"/>
             </div>
         </fieldset>
     </form>
@@ -39,7 +35,7 @@ $config = new Zend_Config_Ini($file, APPLICATION_ENV);
         flag = deforayValidator.init({
             formId: 'addDistributionForm'
         });
-        if (flag && !duplicated) {
+        if (flag) {
             $.blockUI();
             document.getElementById('addDistributionForm').submit();
         }
