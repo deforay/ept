@@ -34,11 +34,11 @@
 			<select id="dataManager" name="dataManager" onchange="drawTable();" class="form-control input-sm">
 				<option value=""> -- Select a PT Participant Login --</option>
 				<?php
-				  foreach($this->dataManagers as $dm){
-					?>
-						<option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name']. " " . $dm['last_name']; ?></option>	
-					<?php
-				  }
+				foreach($this->dataManagers as $dm){
+				?>
+					<option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name']. " " . $dm['last_name']; ?></option>	
+				<?php
+				}
 				?>
 			</select>			
 		</td>
@@ -133,6 +133,7 @@
 				aoData.push( { "name": "scheme", "value": schemeType } );
 				aoData.push( { "name": "startDate", "value": startDate } );
 				aoData.push( { "name": "endDate", "value": endDate } );
+				aoData.push( { "name": "dataManager", "value": dataManager } );
 			},			
             "fnServerData": function ( sSource, aoData, fnCallback ) {
                 $.ajax({

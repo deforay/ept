@@ -35,7 +35,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function shipmentAction()
     {
-        if($this->_hasParam('sid')){            
+        if($this->_hasParam('sid')){
             $id = (int)base64_decode($this->_getParam('sid'));
             $reEvaluate = false;
             if($this->_hasParam('re')){
