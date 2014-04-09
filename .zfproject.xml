@@ -163,6 +163,9 @@
               <actionMethod actionName="remove"/>
               <actionMethod actionName="edit"/>
               <actionMethod actionName="viewEnrollments"/>
+              <actionMethod actionName="deleteShipmentParticipant"/>
+              <actionMethod actionName="unenrollments"/>
+              <actionMethod actionName="addEnrollments"/>
             </controllerFile>
             <controllerFile controllerName="Evaluate">
               <actionMethod actionName="index"/>
@@ -316,6 +319,15 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Shipment">
                 <viewScriptFile forActionName="viewEnrollments"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="deleteShipmentParticipant"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="unenrollments"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="addEnrollments"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

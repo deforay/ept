@@ -9,6 +9,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
                 ->addActionContext('get-sample-form', 'html')
                 ->addActionContext('remove', 'html')
+                ->addActionContext('view-enrollments', 'html')
+                ->addActionContext('delete-shipment-participant', 'html')
+                ->addActionContext('unenrollments', 'html')
                 ->initContext();
         $this->_helper->layout()->pageName = 'configurations';
     }
@@ -144,22 +147,54 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function viewEnrollmentsAction()
     {
-        $this->_helper->layout()->setLayout('modal');
+        //$this->_helper->layout()->setLayout('modal');
         $participantService = new Application_Service_Participants();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();            
+            $participantService->getShipmentEnrollement($params);
+        }
         if($this->_hasParam('id')){
-               $shipmentId = (int) base64_decode($this->_getParam('id'));
+               $this->view->shipmentId = (int) base64_decode($this->_getParam('id'));
                $this->view->shipmentCode= $this->_getParam('shipmentCode');
-               $this->view->selectedEnrollment = $participantService->getEnrolledByShipmentId($shipmentId);
+        }else{
+            $this->_redirect("/admin/index");
+        }
+    }
+
+    public function deleteShipmentParticipantAction()
+    {
+        if($this->_hasParam('mid')){
+            if ($this->getRequest()->isPost()) {
+                $mapId = (int)base64_decode($this->_getParam('mid'));
+                $shipmentService = new Application_Service_Shipments();
+                $this->view->result = $shipmentService->removeShipmentParticipant($mapId);
+            }
+        }else{
+            $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
+        }
+    }
+
+    public function unenrollmentsAction()
+    {
+        $participantService = new Application_Service_Participants();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $participantService->getShipmentUnEnrollements($params);
+        }
+    }
+
+    public function addEnrollmentsAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $shipmentService = new Application_Service_Shipments();
+            $shipmentService->addEnrollements($params);
+            $this->_redirect("/admin/shipment/view-enrollments/id/".$params['shipmentId']."/shipmentCode/".$params['shipmentCode']);
         }
     }
 
 
 }
-
-
-
-
-
 
 
 

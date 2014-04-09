@@ -152,7 +152,7 @@ class Application_Service_Shipments {
 				}
 				
 				//$row[] = $aRow['shipment_code'];
-				$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/shipment/view-enrollments/id/'.base64_encode($aRow['shipment_id']).'/shipmentCode/'.$aRow['shipment_code'].'\',\'980\',\'500\');">'.$aRow['shipment_code'].'</a>';
+				$row[] = '<a href="/admin/shipment/view-enrollments/id/'.base64_encode($aRow['shipment_id']).'/shipmentCode/'.$aRow['shipment_code'].'" target="_blank">'.$aRow['shipment_code'].'</a>';
 				$row[] = $aRow['SCHEME'];	    
 				$row[] = $aRow['distribution_code'];
 				$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
@@ -161,7 +161,7 @@ class Application_Service_Shipments {
 				if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated'  && $aRow['status'] != 'closed'){
 					$row[] ='<a class="btn '.$btn.' btn-xs" href="/admin/shipment/ship-it/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-user"></i> Enroll</span></a>'
 							.'&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>'
-						.'&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\''.base64_encode($aRow['shipment_id']).'\')"><span><i class="icon-remove"></i> Delete</span></a>';	
+						.'&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\''.base64_encode($aRow['shipment_id']).'\')"><span><i class="icon-remove"></i> Delete</span></a>';
 				}
 				else if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] == 'shipped' && $aRow['status'] != 'closed'){
 					$row[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/'.base64_encode($aRow['shipment_id']).'"><span><i class="icon-edit"></i> Edit</span></a>';					
@@ -911,19 +911,35 @@ class Application_Service_Shipments {
 		return $resultArray;
 	}
 
-    public function getParticipantCountBasedOnShipment() {
-        $resultArray=array();
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+	public function getParticipantCountBasedOnShipment() {
+		$resultArray=array();
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+	
+		$sQuery=$db->select()->from(array('s'=>'shipment'),array('s.shipment_code'))
+		    ->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participantCount' => new Zend_Db_Expr("count(sp.participant_id)"),'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')")))
+		    ->where("s.status!='pending'")
+		    ->where("YEAR(s.shipment_date) = YEAR(CURDATE())")
+		    ->group('s.shipment_id')
+		    ->order("s.shipment_id");
+		$resultArray=$db->fetchAll($sQuery);
+		//Zend_Debug::dump($resultArray);die;
+		return $resultArray;
+	}
+	
+	public function removeShipmentParticipant($mapId){
+		try{
+			$shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();			
+			return $shipmentParticipantMap->delete('map_id='.$mapId);
+		}catch(Exception $e){
+			return($e->getMessage());
+			return "Unable to delete. Please try again later or contact system admin for help";
+		}
 
-        $sQuery=$db->select()->from(array('s'=>'shipment'),array('s.shipment_code'))
-            ->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participantCount' => new Zend_Db_Expr("count(sp.participant_id)"),'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')")))
-            ->where("s.status!='pending'")
-            ->where("YEAR(s.shipment_date) = YEAR(CURDATE())")
-            ->group('s.shipment_id')
-            ->order("s.shipment_id");
-        $resultArray=$db->fetchAll($sQuery);
-        //Zend_Debug::dump($resultArray);die;
-        return $resultArray;
-    }
+	}
+	
+	public function addEnrollements($params){
+		$db = new Application_Model_DbTable_ShipmentParticipantMap();
+		return $db->addEnrollementDetails($params);
+	}
 }
 

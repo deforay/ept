@@ -103,6 +103,7 @@ class Application_Service_Participants {
 				       ->where("s.shipment_id = ?", $shipmentId)
 				       ->where("p.status='active'");
 		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id NOT IN ?", $subSql);
+		error_log($sql);
 		return $db->fetchAll($sql);
 	}
 	
@@ -138,4 +139,15 @@ class Application_Service_Participants {
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->getSchemeWiseParticipants($schemeType);
 	}
+	
+	public function getShipmentEnrollement($parameters){
+		$db = new Application_Model_DbTable_Participants();
+		$db->getEnrolledByShipmentDetails($parameters);
+	}
+	
+	public function getShipmentUnEnrollements($parameters){
+		$db = new Application_Model_DbTable_Participants();
+		$db->getUnEnrolledByShipments($parameters);
+	}
+	
 }

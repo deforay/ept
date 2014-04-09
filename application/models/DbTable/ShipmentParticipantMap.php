@@ -114,5 +114,29 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
      //   }
         
     }
+    
+    public function addEnrollementDetails($params){
+        try{
+            $this->getAdapter()->beginTransaction();
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $size = count($params['participants']);
+            for($i = 0;$i < $size;$i++){
+                $data = array('shipment_id'=>base64_decode($params['shipmentId']),
+                                  'participant_id'=>base64_decode($params['participants'][$i]),
+                                  'evaluation_status'=>'19901190',
+                                  'created_by_admin' => $authNameSpace->admin_id,
+                                  "created_on_admin"=>new Zend_Db_Expr('now()'));
+                $this->insert($data);
+            }
+            $this->getAdapter()->commit();
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message="Participants added successfully";
+        }catch(Exception $e){
+            $this->getAdapter()->rollBack();
+            die($e->getMessage());
+            error_log($e->getTraceAsString());
+            return false;
+        }
+    }
 }
 
