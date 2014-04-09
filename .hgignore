@@ -5,7 +5,6 @@ afq.komodoproject
 ^public/uploads/(?!index.php)
 ^public/temporary/cache(?!index.php)
 ^public/temporary/(?!index.php)
-^public/images/(?!index.php)
 error_log
 Thumbs.db
 Thumbs.db.orig

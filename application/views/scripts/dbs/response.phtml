@@ -18,7 +18,8 @@
 <div id=error></div>
 <table>
 <tr>
-	<td> <span class="txt"> Participant </span> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?></td>
+	<td> <span class="txt"> Participant Name </span> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?></td>
+		<td><span class="txt"> Participant Code </span> <?php echo $this->participant['unique_identifier'] ?></td>
 	<td><span class="txt"> Affiliation </span> <?php echo ( $this->participant['affiliation'] );?> </td>
 	<td><span class="txt"> Phone No </span> <?php  echo ( $this->participant['mobile']  . ' <br/> ' .   $this->participant['phone'] ); ?></td>
 </tr>
@@ -37,13 +38,14 @@
 	<tr class ="light">
 		<td>Shipment Receipt Date</td>
 		<td><input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" value="<?php  echo $this->dateFormat($this->shipment["shipment_receipt_date"]);  ?>" class="isRequired datepicker" readonly="readonly"   title="Please enter Test Receipt Date" /></td>
-		<td>Testing Date</td> 
-		<td><input type="text" id="testDate" name="testDate" size="11" maxlength="11" value="<?php  echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="isRequired datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /></td>
+		<td>Sample Rehydration Date</td>
+		<td><input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class="isRequired datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  /></td>
 	</tr>
 	
 	<tr class ="dark">
-		<td>Sample Rehydration Date</td>
-		<td><input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class="isRequired datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  /></td>
+		<td>Testing Date</td> 
+		<td><input type="text" id="testDate" name="testDate" size="11" maxlength="11" value="<?php  echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="isRequired datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /></td>
+
 		<td></td> 
 		<td>
 		</td>
