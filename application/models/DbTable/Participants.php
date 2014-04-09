@@ -328,7 +328,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     
     public function getSchemeWiseParticipants($schemeType){
 	if($schemeType!="all"){
-	    $result=$this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name),array('p.address','p.long','p.lat'))
+	    $result=$this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name),array('p.address','p.long','p.lat','p.first_name','p.last_name'))
 				->join(array('e'=>'enrollments'),'e.participant_id=p.participant_id')
 				->where("e.scheme_id = ?", $schemeType)
 				->where("p.status='active'")

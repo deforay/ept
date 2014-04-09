@@ -1,5 +1,6 @@
-<h4 class="modal-title">Participant Details</h4>
-<table class="table table-bordered table-striped table-hover">
+<br/><h4 class="modal-title">Participant Details</h4><br/>
+<table id="participants" class="table table-bordered table-striped table-hover" style="margin:0 auto;width:100%;">
+			<thead>
 			<tr>
 				<th>Participant ID</th>
 				<th>Lab Name/Participant Name</th>
@@ -8,8 +9,10 @@
 				<th>Phone</th>
 				<th>Affiliation</th>
 				<th>Email</th>
-				<th>Status</th>
+				<!--<th>Status</th>-->
 			</tr>
+			</thead>
+			<tbody>
 			<?php
 			if(count($this->participant) > 0){
 			foreach($this->participant as $participant){
@@ -22,7 +25,7 @@
 					<td><?php echo $participant['phone']; ?></td>
 					<td><?php echo $participant['affiliation']; ?></td>
 					<td><?php echo $participant['email']; ?></td>
-					<td><?php echo ucwords($participant['status']); ?></td>
+					<!--<td>< ?php echo ucwords($participant['status']); ?></td>-->
 				</tr>
 				<?php
 				}
@@ -36,5 +39,15 @@
 				<?php
 			}
 			?>
+			</tbody>
 </table>
-  
+<?php
+			if(count($this->participant) > 0){ ?>
+<script>
+			
+			$(document).ready(function(){
+			   $("#participants").dataTable();
+			})
+			
+</script>
+<?php } ?>  
