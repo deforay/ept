@@ -923,7 +923,7 @@ class Application_Service_Shipments {
             ->group('s.shipment_id')
             ->order("s.shipment_id");
         $resultArray=$db->fetchAll($sQuery);
-        Zend_Debug::dump($resultArray);die;
+        //Zend_Debug::dump($resultArray);die;
         return $resultArray;
     }
 }
