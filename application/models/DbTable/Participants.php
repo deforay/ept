@@ -424,7 +424,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         
 	$sQuery = $this->getAdapter()->select()->from(array('p'=>'participant'))
 				->join(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array('sp.map_id','sp.created_on_user','sp.attributes','sp.final_result'))
-				->join(array('s'=>'shipment'),'sp.shipment_id=s.shipment_id',array())
+				->join(array('s'=>'shipment'),'sp.shipment_id=s.shipment_id',array('shipmentStatus'=>'s.status'))
 				->where("p.status='active'");
 				
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -485,7 +485,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['mobile'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
-	    if(trim($aRow['created_on_user'])=="" && trim($aRow['final_result'])==""){
+	    
+	    if(trim($aRow['created_on_user'])=="" && trim($aRow['final_result'])=="" && $aRow['shipmentStatus']!='evaluated'){
 		$row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\''.base64_encode($aRow['map_id']).'\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
 	    }else{
 		$row[] = '';
@@ -579,7 +580,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          */
 	
         
-	$sQuery = $this->getAdapter()->select()->from(array('p'=>'participant'),array('participant_id'))
+	$sQuery = $this->getAdapter()->select()->from(array('p'=>'participant'),array('p.participant_id'))
 				->join(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array())
 				->join(array('s'=>'shipment'),'sp.shipment_id=s.shipment_id',array())
 				->where("p.status='active'");
@@ -615,7 +616,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Total data set length */
 	
 	
-        $sQuery = $this->getAdapter()->select()->from(array("p"=>$this->_name), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))
+        $sQuery = $this->getAdapter()->select()->from(array("p"=>$this->_name),array('p.participant_id'))
 				->join(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array())
 				->join(array('s'=>'shipment'),'sp.shipment_id=s.shipment_id',array())
 				->where("p.status='active'");
@@ -623,6 +624,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ? ",$parameters['shipmentId']);
         }
+	$sQuery = $this->getAdapter()->select()->from(array('p'=>'participant'),new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))->where("p.status='active'")->where("p.participant_id NOT IN ?", $sQuery);
 	
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];

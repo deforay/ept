@@ -3,19 +3,24 @@
 	#unEnrollmentTable_wrapper{
 		display: none;
 	}
+	<?php if($this->shipment['status']=="evaluated"){ ?>
+	.hide_column{
+		display : none;
+	}
+	<?php } ?>
 </style>
 <div class="container">
 	<form name="addParticipantForm" id="addParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "add-enrollments"),'default', true) ?>" class="form-horizontal bs-example" role="form">
 	<fieldset>
-		<legend>Enrollments for Shipment Code - <?php echo $this->shipmentCode; ?></legend>
-		<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo base64_encode($this->shipmentId); ?>">
-		<input type="hidden" name="shipmentCode" id="shipmentCode" value="<?php echo $this->shipmentCode; ?>">
+		<legend>Enrollments for Shipment Code - <?php echo $this->shipment['shipment_code']; ?></legend>
+		<?php if($this->shipment['status']!="evaluated"){ ?>
+		<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo base64_encode($this->shipment['shipment_id']); ?>">
 		<span class="col-md-6 col-xs-12" style="padding:5px 0;">
 		<button class="btn btn-primary btn-sm" onclick="showUnEnrollment();return false;" id="showBtn"><span>Add participants this shipment - <?php echo $this->shipmentCode; ?></span></button>
 		<button class="btn btn-primary btn-sm" onclick="hideUnEnrollment();return false;" id="closeBtn" style="display: none;"><span>Close participants this shipment - <?php echo $this->shipmentCode; ?></span></button>
-		<input name="submitbtn" id="submitbtn"  style="display: none;" class="btn btn-success btn-sm" type="button" onclick="validateNow();return false;" value="Add">
+		<input name="submitbtn" id="submitbtn" style="display: none;" class="btn btn-success btn-sm" type="button" onclick="validateNow();return false;" value="Add">
 		</span>
-		
+		<?php } ?>
 		
 		<table class="table table-bordered table-striped table-hover" id="unEnrollmentTable" style="width: 100%;margin: auto;">
 			<thead>
@@ -60,7 +65,9 @@
 	$(document).ready(function() {
 		
 		drawTable();
+		<?php if($this->shipment['status']!="evaluated"){ ?>
 		unEnrollDrawTable();
+		<?php } ?>
 		
 	} );
 	
@@ -82,14 +89,14 @@
 			    {"sClass":"center"},
 			    {"sClass":"center"},
 			    {"sClass":"center"},
-			    {"sClass":"center","bSortable":false}
+			    {"sClass":"hide_column","bSortable":false}
 			],
 			"aaSorting": [[ 0, "asc" ]],
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'view-enrollments', 'format' => 'html')); ?>",
 			"fnServerParams": function ( aoData ) {
-				aoData.push( { "name": "shipmentId", "value": '<?php echo $this->shipmentId ?>' } );
+				aoData.push( { "name": "shipmentId", "value": '<?php echo $this->shipment['shipment_id']; ?>' } );
 			},
 			"fnServerData": function ( sSource, aoData, fnCallback ) {
 			    $.ajax({
@@ -139,7 +146,7 @@
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'unenrollments', 'format' => 'html')); ?>",
 			"fnServerParams": function ( aoData ) {
-				aoData.push( { "name": "shipmentId", "value": '<?php echo $this->shipmentId ?>' } );
+				aoData.push( { "name": "shipmentId", "value": '<?php echo $this->shipment['shipment_id']; ?>' } );
 			},
 			"fnServerData": function ( sSource, aoData, fnCallback ) {
 			    $.ajax({

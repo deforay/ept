@@ -154,7 +154,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $participantService->getShipmentEnrollement($params);
         }
         if($this->_hasParam('id')){
-               $this->view->shipmentId = (int) base64_decode($this->_getParam('id'));
+               $shipmentId = (int) base64_decode($this->_getParam('id'));
+               $shipmentService = new Application_Service_Shipments();
+               $this->view->shipment = $shipmentService->getShipment($shipmentId);
                $this->view->shipmentCode= $this->_getParam('shipmentCode');
         }else{
             $this->_redirect("/admin/index");
@@ -189,7 +191,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $params = $this->_getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->addEnrollements($params);
-            $this->_redirect("/admin/shipment/view-enrollments/id/".$params['shipmentId']."/shipmentCode/".$params['shipmentCode']);
+            $this->_redirect("/admin/shipment/view-enrollments/id/".$params['shipmentId']);
         }
     }
 
