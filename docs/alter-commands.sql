@@ -1529,3 +1529,4 @@ ALTER TABLE  `shipment_participant_map` ADD  `created_on_user` DATETIME NULL DEF
 --Ilahir 07-Apr-2014
 
 INSERT INTO `eanalyze`.`global_config` (`name`, `value`) VALUES ('map-center', '0,0'), ('map-zoom', '2');
+ALTER TABLE  `shipment_participant_map` CHANGE  `evaluation_comment`  `evaluation_comment` INT( 11 ) NULL DEFAULT 0;

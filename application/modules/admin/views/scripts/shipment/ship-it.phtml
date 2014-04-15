@@ -3,30 +3,36 @@
 <legend><?php echo strtoupper($this->shipment->scheme_type); ?> Shipment : <?php echo $this->shipment->shipment_code . "(".$this->dateFormat($this->shipment->shipment_date).") "; ?></legend>
 <form method="post" action="" id="shipForm">
 	<div class="form-group">
+		<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections<br/><br/>
+			<div style="width:500px;margin:0 auto;clear:both;">
+			<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>  <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+			</div>
+		</div>
+		<br/>
 		<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
 			<?php
 			
 			if(isset($this->previouslySelected) && $this->previouslySelected != null){
 				foreach($this->previouslySelected as $participant){
 					?>
-					<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
 				}
 				
 				foreach($this->previouslyUnSelected as $participant){
 					?>
-					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
 				}				
 			}else{
 				foreach($this->enrolledParticipants as $participant){
 					?>
-					<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
 				}
 				foreach($this->unEnrolledParticipants as $participant){
 					?>
-					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
 				}				
 			}
@@ -67,8 +73,8 @@
 $('#participants').multiSelect({
 	selectableFooter: "<div class='custom-header'>Participants not yet enrolled for this scheme</div>",
 	selectionFooter: "<div class='custom-header'>Enrolled/Selected Participants</div>",
-	selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name To Filter'>",
-	selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name To Filter'>",
+	selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+	selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
 	afterInit: function(ms){
 	  var that = this,
 		  $selectableSearch = that.$selectableUl.prev(),
@@ -100,6 +106,16 @@ $('#participants').multiSelect({
     this.qs1.cache();
     this.qs2.cache();
   }
+});
+
+
+$('#select-all').click(function(){
+  $('#participants').multiSelect('select_all');
+  return false;
+});
+$('#deselect-all').click(function(){
+  $('#participants').multiSelect('deselect_all');
+  return false;
 });
 	});
 	

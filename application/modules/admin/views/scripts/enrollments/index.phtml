@@ -1,15 +1,7 @@
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;"><div style="font-size:22.5px;line-height:36px;color:#333;float:left;">List of All Enrollments</div></h4>
+
 <?php if(sizeof($this->schemeCount)>0){ ?>
-	<table>
-		<tr>
-			<td>Number of participants in each scheme : </td>
-			
-			<td> <?php echo implode(" , ", $this->schemeCount); ?> </td>
-			
-			
-		</tr>
-	</table>
-<?php } ?>
+
 <span class="col-md-3 col-xs-12" style="padding:10px 0;">
 <select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control input-sm">
 	<option value=""> -- Select Scheme Type --</option>
@@ -22,6 +14,7 @@
 	?>
 </select>
 </span>
+<?php } ?>
 <div style="clear:both;margin-bottom:10px;"> 
 	<table>
 		<tr>
@@ -38,7 +31,7 @@
 		</tr>
 	</table>
 </div>
-<span class="col-md-5 col-xs-12" id="btnSpan" style="padding:10px;display:none;">
+<span class="col-md-5 col-xs-12" id="btnSpan" style="padding:10px 0 20px 0;display:none;">
 <button class="btn btn-primary btn-sm" onclick="enroll();" id="enrollBtn"><span>Enroll Participants</span></button>
 <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location;"><span>Reset</span></button>
 </span>

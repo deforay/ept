@@ -3,19 +3,24 @@
 	<fieldset>
 		<legend>Enroll Participants</legend>
 		<form name="enroll" id="enroll" method="post" action="<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments','action'=>'add'),'default',true); ?>">
-		<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections</div>
+		<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections<br/><br/>
+			<div style="width:500px;margin:0 auto;clear:both;">
+			<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>  <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+			</div>
+		</div>
+		<br/>
 			<select id="participants" name="participants[]" multiple="multiple" >
 				<?php
 				foreach($this->participants as $participant){
 					?>
-					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
 				}
 				?>
 				<?php
 				foreach($this->enrolled as $participant){
 					?>
-					<option value="<?php echo $participant['participant_id']; ?>" selected='selected'><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?></option>
+					<option value="<?php echo $participant['participant_id']; ?>" selected='selected'><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
 				}
 				?>
@@ -40,8 +45,8 @@
 $('#participants').multiSelect({
 	selectableFooter: "<div class='custom-header'>Unenrolled Participants</div>",
 	selectionFooter: "<div class='custom-header'>Selected Participants</div>",
-	selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name To Filter'>",
-	selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name To Filter'>",
+	selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+	selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
 	afterInit: function(ms){
 	  var that = this,
 		  $selectableSearch = that.$selectableUl.prev(),
@@ -73,6 +78,16 @@ $('#participants').multiSelect({
     this.qs1.cache();
     this.qs2.cache();
   }
+});
+
+
+$('#select-all').click(function(){
+  $('#participants').multiSelect('select_all');
+  return false;
+});
+$('#deselect-all').click(function(){
+  $('#participants').multiSelect('deselect_all');
+  return false;
 });
 	});
 </script>

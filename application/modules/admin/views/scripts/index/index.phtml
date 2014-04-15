@@ -167,7 +167,7 @@ foreach($this->events as $events){
     <div class="col-lg-6" style="">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h3 class="panel-title"><i class="icon-user"></i> Participant Count for last 18 months (Shipment-wise)</h3>
+                <h3 class="panel-title"><i class="icon-user"></i> Participant Count for last 18 months (Unevaluated Shipments)</h3>
             </div>
             <div class="panel-body">
                 <div id="participant-per-shipment" width="450" height="450"></div>
@@ -176,6 +176,8 @@ foreach($this->events as $events){
                 $dataShipment = array();
                 foreach($this->shipmentCountResult as $pc){
                     $dataShipment[] = "{ y: '".strtoupper($pc['shipment_code'])."', a: ".$pc['participantCount']." , b: ".(isset($pc['receivedCount']) ? $pc['receivedCount'] : 0)." }";
+                    $ppsSchemeType[] = "'".strtoupper($pc['scheme_type'])."'";
+                    $ppsShipmentLastDate[] = "'".$this->dateFormat($pc['lastdate_response'])."'";
                 }
                 ?>
 
@@ -208,12 +210,15 @@ foreach($this->events as $events){
 
 
  <script>
+     var ppsSchemes = [<?php echo implode(",",$ppsSchemeType); ?>]
+     var ppsShipmentLastDate = [<?php echo implode(",",$ppsShipmentLastDate); ?>]
      Morris.Bar({
          element: 'participant-per-scheme',
          data: [
              <?php echo implode(",",$dataScheme); ?>
          ],
          xLabelAngle: 45,
+         hideHover : true,
          xkey: 'x',
          ykeys: ['y'],
          labels: ['Participants']
@@ -226,8 +231,13 @@ Morris.Bar({
     <?php echo implode(",",$dataShipment); ?>
   ],
   xLabelAngle: 45,
+  hideHover : true,
   xkey: 'y',
   ykeys: ['a', 'b'],
+  hoverCallback: function (index, options, content) {
+    var row = options.data[index];
+    return content + "<strong>Scheme Type : " + ppsSchemes[index] +  "<br />" + "Last Date : " + ppsShipmentLastDate[index] + "</strong>";
+  },  
   labels: ['Shipped','Received']
 });     
 

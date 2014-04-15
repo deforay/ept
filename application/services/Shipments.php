@@ -915,9 +915,9 @@ class Application_Service_Shipments {
         $resultArray=array();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $sQuery=$db->select()->from(array('s'=>'shipment'),array('s.shipment_code'))
+        $sQuery=$db->select()->from(array('s'=>'shipment'),array('s.shipment_code','s.scheme_type','s.lastdate_response'))
             ->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participantCount' => new Zend_Db_Expr("count(sp.participant_id)"),'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')")))
-            ->where("s.status!='pending'")
+            ->where("s.status='shipped'")
             //->where("YEAR(s.shipment_date) = YEAR(CURDATE())")
             ->where("s.shipment_date > DATE_SUB(now(), INTERVAL 18 MONTH)")
             ->group('s.shipment_id')

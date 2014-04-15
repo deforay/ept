@@ -1250,6 +1250,7 @@ class Application_Service_Evaluation {
 			
 			$i++;
 			$db->update('shipment_participant_map',array('report_generated'=>'yes'),"map_id=".$res['map_id']);
+			$db->update('shipment',array('status'=>'evaluated'),"shipment_id=".$shipmentId);
 		}
 		if($res['scheme_type']=='vl'){
 			$schemeService = new Application_Service_Schemes();
