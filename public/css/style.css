@@ -48,7 +48,19 @@ nav ul { border-style: none !important;}
 .link1{color:#000; background:url(../images/marker2.gif) center right no-repeat; padding-right:13px; text-decoration:none; font-weight:bold; font-family:Arial, Helvetica, sans-serif; font-size:12px }
 .link1:hover{text-decoration:underline }
 
-.da-button{color:#fff; background:#f07726; padding:0px 18px 0px 18px; line-height:32px; font-size:13px; font-weight:bold; display:block; text-decoration:none; border-style: solid; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; position: absolute; top:9px; right:14px  }
+.da-button{
+		color:#fff;
+		background:#f07726;
+		padding:0px 18px 0px 18px;
+		line-height:32px;
+		font-size:13px;
+		font-weight:bold;
+		display:inline-block;
+		text-decoration:none;
+		border-style: solid;
+		border-radius:5px;
+		-moz-border-radius:5px;
+		-webkit-border-radius:5px;  float:right; margin-top:5px; margin-right:10px;  }
 .da-button:hover{text-decoration:none; background:#0b799e }
 
 .link-1 { display:inline-block; float:right; line-height:31px; background:#3f3f3f; padding:0 27px 0 27px; color:#fff; text-transform:uppercase; text-decoration:none; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; cursor:pointer; position:relative; font-size:13px; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif}

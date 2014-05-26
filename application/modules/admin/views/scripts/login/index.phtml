@@ -71,8 +71,14 @@
 
       <form class="form-signin" name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("module"=>"admin","controller" => "login", "action" => "index"), null, true) ?>">
         <h2 class="form-signin-heading">PT Provider Sign In</h2>
+	<div class="form-group">
+        <label for="inputEmail">Email</label>
 		<input type="text" id="username" name="username" class="isRequired form-control isEmail" title="Please enter your registered email" placeholder="eg. mymail@mail.com" autofocus/>
+	</div>
+	<div class="form-group">
+        <label for="inputEmail">Password</label>
 		<input type="password" id="password" name="password" class="isRequired  form-control" title="Please enter your password" placeholder="eg. X8df!90EO" />
+	</div>
 		<table border="0" style="width:50%;margin-top: 10px;margin:0 auto;clear: both;">
 					<tbody>
 						<tr>

@@ -9,7 +9,9 @@
   		<?php }?>
         <div class="inside">
                       <?php if(!isset($authNameSpace->dm_id)){ ?>
-        	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>" class="da-button">Client Login</a>
+        	
+        	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>" class="da-button">Participant Login</a>
+		<a href="<?php echo $this->url(array("controller"=>"contact-us","action"=>"index"),null,true) ?>" class="da-button">Register as a PT Participant</a>
         <?php }?>
             <nav>
                 <ul class="sf-menu">
