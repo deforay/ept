@@ -105,6 +105,7 @@
           <dbTableFile dbTableName="ContactUs"/>
           <dbTableFile dbTableName="ResponseDbs"/>
           <dbTableFile dbTableName="ReportConfig"/>
+          <dbTableFile dbTableName="Countries"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>

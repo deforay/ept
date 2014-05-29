@@ -132,7 +132,12 @@ class Application_Service_Common {
             }
         }
         return $data;
-    }	
+    }
+    
+    public function getCountriesList(){
+		$countriesDb = new Application_Model_DbTable_Countries();
+		return $countriesDb->getAllCountries();
+	}
 
 }
 

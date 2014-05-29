@@ -83,6 +83,7 @@ class ParticipantController extends Zend_Controller_Action
         // action body
         // Get
     	$participantService = new Application_Service_Participants();
+	$commonService = new Application_Service_Common();
     	if($this->getRequest()->isPost())
     	{
     		$data = $this->getRequest()->getPost();
@@ -94,7 +95,8 @@ class ParticipantController extends Zend_Controller_Action
     	}
     	
     	$this->view->affiliates = $participantService->getAffiliateList();
-		$this->view->networks = $participantService->getNetworkTierList();
+        $this->view->countriesList = $commonService->getcountriesList();
+	$this->view->networks = $participantService->getNetworkTierList();
     }
 
     public function schemeinfoAction()
@@ -105,6 +107,7 @@ class ParticipantController extends Zend_Controller_Action
     public function addAction()
     {
 	$participantService = new Application_Service_Participants();
+	$commonService = new Application_Service_Common();
     	if($this->getRequest()->isPost())
     	{
     		$data = $this->getRequest()->getPost();
@@ -115,7 +118,8 @@ class ParticipantController extends Zend_Controller_Action
     	$this->view->affiliates = $participantService->getAffiliateList();
 		$this->view->networks = $participantService->getNetworkTierList();
 		$scheme = new Application_Service_Schemes();
-        $this->view->schemes = $scheme->getAllSchemes();		
+        $this->view->schemes = $scheme->getAllSchemes();
+	$this->view->countriesList = $commonService->getcountriesList();
     }
 
     public function defaultSchemeAction()

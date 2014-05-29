@@ -24,6 +24,8 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     public function addAction()
     {
         $participantService = new Application_Service_Participants();
+	$commonService = new Application_Service_Common();
+	$dataManagerService = new Application_Service_DataManagers();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $participantService->addParticipant($params);
@@ -32,14 +34,15 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         
         $this->view->affiliates = $participantService->getAffiliateList();
         $this->view->networks = $participantService->getNetworkTierList();
-        $dataManagerService = new Application_Service_DataManagers();
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
+        $this->view->countriesList = $commonService->getcountriesList();
     }
 
     public function editAction()
     {
 
         $participantService = new Application_Service_Participants();
+	$commonService = new Application_Service_Common();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $participantService->updateParticipant($params);
@@ -52,7 +55,8 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->view->affiliates = $participantService->getAffiliateList();
             $dataManagerService = new Application_Service_DataManagers();
             $this->view->networks = $participantService->getNetworkTierList();
-            $this->view->dataManagers = $dataManagerService->getDataManagerList();            
+            $this->view->dataManagers = $dataManagerService->getDataManagerList();
+	    $this->view->countriesList = $commonService->getcountriesList();
         }
 		$scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();

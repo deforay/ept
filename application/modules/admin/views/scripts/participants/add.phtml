@@ -57,16 +57,25 @@
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Country <span class="mandatory">*</span></label>
 
-                <div class="col-lg-8"><input type="text" id="country" name="country" size="50" maxlength="255" 
-                                             class="isRequired form-control" title="Please enter the country here"
-                                             placeholder="Please enter the country here"/></div>
+                <div class="col-lg-8">
+		<select class="form-control isRequired" name="country" id="country" title="Please choose the country here">
+		                                <option value=""></option>
+						<?php foreach($this->countriesList as $cou){
+							?>
+							<option value="<?php echo $cou['id']; ?>"><?php echo $cou['iso_name']; ?></option>
+							<?php
+						}
+						?>
+		    </select>
+		</div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Zip/Postal Code (if applicable)</label>
+                <label class="col-lg-4 control-label">Region</label>
 
-                <div class="col-lg-8"><input type="text" id="zip" name="zip" size="50" maxlength="255" 
-                                             class="form-control" title="Please enter the Zip/Postal here"
-                                             placeholder="Please enter the Zip/Postal here"/></div>
+                <div class="col-lg-8">
+		    <input type="text" id="region" name="region" size="50" maxlength="255" 
+                                             class="form-control" title="Please enter region here"
+                                             placeholder="Please enter the region here"/></div>
             </div>
 	    
 	    <div class="form-group col-lg-6">
@@ -84,6 +93,21 @@
                                              class="form-control" title="Please enter the longitude here"
                                              placeholder="Please enter the longitude here"/></div>
             </div>
+	    <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">Funding Source</label>
+
+                <div class="col-lg-8"><input type="text" id="fundingSource" name="fundingSource" size="50" maxlength="255" 
+                                             class="form-control" title="Please enter the funding source here"
+                                             placeholder="Please enter the funding source here"/></div>
+            </div>
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">Testing Volume</label>
+
+                <div class="col-lg-8">
+		    <input type="text" id="testingVolume" name="testingVolume" size="50" maxlength="255" 
+                                             class="form-control" title="Please enter testing volume here"
+                                             placeholder="Please enter the testing volume here"/></div>
+            </div>
 			
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Shipping Address (include city and country)<span class="mandatory">*</span></label>
@@ -92,6 +116,14 @@
                                              class="isRequired form-control" title="Please enter the address here"
                                              placeholder="Please enter the Shipping Address here"></textarea></div>
             </div>
+	    <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">Zip/Postal Code (if applicable)</label>
+
+                <div class="col-lg-8"><input type="text" id="zip" name="zip" size="50" maxlength="255" 
+                                             class="form-control" title="Please enter the Zip/Postal here"
+                                             placeholder="Please enter the Zip/Postal here"/></div>
+            </div>
+	    
 			<hr style="border:1px solid #ccc;background: #ccc;width:90%;"/>
 
             
@@ -117,7 +149,7 @@
 							<?php
 						}
 						?>
-					</select>
+		    </select>
                 </div>
             </div>
             <div class="form-group col-lg-6">
@@ -185,7 +217,7 @@
             </table>
             <br>
 
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="col-lg-12" align="center">
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
                 <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add"/>
                 <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/participants';"
                        tabindex="8" value="Cancel"/>
@@ -199,6 +231,7 @@
 	
 	$(document).ready(function(){
 		$('#dataManager').selectpicker();
+		$('#country').selectpicker();
 	});
 	
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {

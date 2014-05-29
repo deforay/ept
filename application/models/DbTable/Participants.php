@@ -30,7 +30,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('unique_identifier','first_name','country', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier','first_name','iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -106,6 +106,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          */
 	
         $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name),array('p.participant_id','p.unique_identifier','p.country','p.mobile','p.phone','p.affiliation','p.email','p.status','participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+	                                ->join(array('c'=>'countries'),'c.id=p.country')
 					->group("p.participant_id");
 	
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
@@ -157,7 +158,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row = array();
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['participantName'];
-            $row[] = $aRow['country'];
+            $row[] = $aRow['iso_name'];
             $row[] = $aRow['mobile'];
             $row[] = $aRow['phone'];
             $row[] = $aRow['affiliation'];
@@ -194,6 +195,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
 	    'network_tier' => $params['network'],
+	    'testing_volume' => $params['testingVolume'],
+	    'funding_source' => $params['fundingSource'],
+	    'region' => $params['region'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
 
@@ -253,12 +257,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
 	    'network_tier' => $params['network'],
+	    'testing_volume' => $params['testingVolume'],
+	    'funding_source' => $params['fundingSource'],
+	    'region' => $params['region'],
             'created_on' => new Zend_Db_Expr('now()'),
 	    'created_by' => $authNameSpace->primary_email,
 	    'status' => $params['status']
         );
 		
-		//Zend_Debug::dump($data);die;
+		
         $participantId = $this->insert($data);
 		
 		$db = Zend_Db_Table_Abstract::getAdapter();
@@ -272,6 +279,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function addParticipantForDataManager($params)
     {
+	//Zend_Debug::dump($params);die;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
         $data = array(
@@ -294,6 +302,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'affiliation' => $params['partAff'],
             'network_tier' => $params['network'],
             'status' => 'pending',
+	    'testing_volume' => $params['testingVolume'],
+	    'funding_source' => $params['fundingSource'],
+	    'region' => $params['region'],
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->UserID,
         );
