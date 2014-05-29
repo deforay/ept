@@ -13,7 +13,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('p.unique_identifier','p.first_name','p.country','s.scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')");
+        $aColumns = array('p.unique_identifier','p.first_name','iso_name','s.scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')");
 	
         /*
          * Paging
@@ -88,6 +88,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          */
 	
 	$sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))
+	                             ->join(array('c'=>'countries'),'c.id=p.country')
                                      ->joinLeft(array('e'=>'enrollments'),'p.participant_id = e.participant_id')
                                      ->joinLeft(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array('scheme_name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.scheme_name ORDER BY s.scheme_name SEPARATOR ', ')")))
 				     ->where("p.status='active'")
@@ -121,6 +122,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         /* Total data set length */
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), new Zend_Db_Expr("COUNT('p.participant_id')"))
+	                                    ->join(array('c'=>'countries'),'c.id=p.country')
                                             ->joinLeft(array('e'=>'enrollments'),'p.participant_id = e.participant_id',array())
 					    ->joinLeft(array('s'=>'scheme_list'),'e.scheme_id = s.scheme_id',array())
 					    ->where("p.status='active'")
@@ -144,7 +146,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $row = array();
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name']. " " .$aRow['last_name'];
-            $row[] = $aRow['country'];
+            $row[] = $aRow['iso_name'];
             $row[] = $aRow['scheme_name'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['enrolled_on']);
 	    if(trim($aRow['scheme_name'])!=""){

@@ -123,6 +123,7 @@ class Application_Service_Participants {
 	public function getAllParticipantDetails($dmId){
 	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 	    $sql = $db->select()->from(array('p'=>'participant'))
+	                          ->join(array('c'=>'countries'),'c.id=p.country')
 				  ->joinLeft(array('pmm'=>'participant_manager_map'),'p.participant_id=pmm.participant_id')
 				  ->where("pmm.dm_id= ?",$dmId)
 				  ->group(array("p.participant_id"))
