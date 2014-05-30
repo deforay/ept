@@ -376,6 +376,7 @@
             </controllerFile>
             <controllerFile controllerName="Detailed">
               <actionMethod actionName="index"/>
+              <actionMethod actionName="report"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -407,6 +408,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Detailed">
                 <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Detailed">
+                <viewScriptFile forActionName="report"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

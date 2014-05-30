@@ -8,6 +8,7 @@ class Reports_DetailedController extends Zend_Controller_Action
         /* Initialize action controller here */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
+                    ->addActionContext('report', 'html')
                     ->initContext();
         $this->_helper->layout()->pageName = 'detailed'; 
     }
@@ -25,6 +26,17 @@ class Reports_DetailedController extends Zend_Controller_Action
         $this->view->schemes = $scheme->getAllSchemes();
     }
 
+    public function reportAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();            
+            $shipmentService = new Application_Service_Reports();
+            $shipmentService->getAllParticipantDetailedReport($params);
+        }
+    }
+
 
 }
+
+
 
