@@ -374,6 +374,9 @@
               <actionMethod actionName="generateReports"/>
               <actionMethod actionName="generateSummaryReports"/>
             </controllerFile>
+            <controllerFile controllerName="Detailed">
+              <actionMethod actionName="index"/>
+            </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
           <layoutsDirectory enabled="false">
@@ -401,6 +404,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Distribution">
                 <viewScriptFile forActionName="generateSummaryReports"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Detailed">
+                <viewScriptFile forActionName="index"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

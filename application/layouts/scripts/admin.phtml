@@ -80,6 +80,7 @@
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments'),'default',true); ?>">Shipments Report</a></li>
               </ul>
             </li>
+	    <li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'detailed') ? "class='active'" : ""; ?> ><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'detailed'),'default',true); ?>">Detailed Report</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'login','action'=>'log-out')); ?>"><i class="icon-signout"></i> Logout</a></li>

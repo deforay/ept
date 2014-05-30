@@ -1,0 +1,85 @@
+<link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.4.3.min.css">
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<legend><h3>Detailed Report</h3></legend>
+<table  style="margin:20px 0;" class="table table-bordered">
+	<tr>
+<td style="width:200px;text-align: center;font-weight:bold;">
+			Pick a Date Range (Optional)
+		</td>		
+<td style="width:200px;text-align: center;font-weight:bold;">
+			Select Scheme Type (Optional)
+		</td>
+<td style="width:200px;text-align: center;font-weight:bold;">
+			Select Report Type
+		</td>
+		<td style="width:5px;text-align: center;font-weight:bold;"></td>
+	</tr>
+	<tr>
+		<td>
+			<input type="text" id="dateRange" name="dateRange"  class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder ="Click here to pick a Date Range"/>
+		</td>		
+		<td>
+			<select id="scheme" name="scheme"  class="form-control input-sm">
+				<option value=""> -- Select Scheme Type --</option>
+				<?php
+				  foreach($this->schemes as $scheme){
+					?>
+						<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
+					<?php
+				  }
+				?>
+			</select>			
+		</td>
+		<td>
+			<select id="reportType" name="reportType"  class="form-control input-sm">
+				<option value=""> -- Select Report Type --</option>
+				<option value="network">Network Tier</option>
+				<option value="affiliation">Affiliation</option>
+				<option value="region">Region</option>
+				
+			</select>			
+		</td>
+		<td><button class="btn btn-success btn-sm" onclick="drawGraph()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button></td>
+	</tr>
+</table>
+<div id="participant" width="450" height="450"></div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="http://cdn.oesmith.co.uk/morris-0.4.3.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript">
+	var startDate = "";
+	var endDate = "";
+	$(document).ready(function(){
+		$('#dateRange').daterangepicker({
+			format: 'DD-MMM-YYYY',
+			ranges: {
+					'Today': [moment(), moment()],
+					'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+					'Last 7 Days': [moment().subtract('days', 6), moment()],
+					'Last 30 Days': [moment().subtract('days', 29), moment()],
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+				}
+		},
+		function(start, end) {
+			startDate = start.format('YYYY-MM-DD');
+			endDate = end.format('YYYY-MM-DD');
+		});
+	});
+	function drawGraph(){
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed', 'action' => 'index'),"default",true); ?>", { startDate :startDate,endDate:endDate,scheme :$( "#scheme").val(),reportType :$( "#reportType").val(),format: "html" },
+		function(response){
+			$("#participant").html('');
+			dataValue=JSON.parse(response);
+			Morris.Bar({
+			element: 'participant',
+			data: dataValue,
+			xLabelAngle: 45,
+			hideHover : true,
+			xkey: 'y',
+			ykeys: ['a', 'b','c'], 
+			labels: ['Shipped','Received','Passed']
+		      });   
+		});
+	}
+</script>
