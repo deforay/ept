@@ -290,7 +290,7 @@ class Application_Service_Reports {
 	     * you want to insert a non-database field (for example a counter or static image)
 	     */
     
-	    $aColumns = array('s.shipment_code','s.scheme_type','distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
+	    $aColumns = array('s.shipment_code','sl.scheme_name','distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
 	    
 	    /*
 	     * Paging
@@ -369,27 +369,28 @@ class Application_Service_Reports {
 		
 	  
 		    
-		    $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-		    $sQuery = $dbAdapter->select()->from(array('s'=>'shipment'))
-				    ->join(array('sl'=>'scheme_list'),'s.scheme_type=sl.scheme_id')
-				    ->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
-				    ->group('s.shipment_id');
-		    if(isset($parameters['startDate']) && $parameters['startDate'] !="" && isset($parameters['endDate']) && $parameters['endDate'] !=""){
-			    $sQuery = $sQuery->where("s.shipment_date >= ?",$parameters['startDate']);
-			    $sQuery = $sQuery->where("s.shipment_date <= ?",$parameters['endDate']);
-		    }
+		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sQuery = $dbAdapter->select()->from(array('s'=>'shipment'))
+				->join(array('sl'=>'scheme_list'),'s.scheme_type=sl.scheme_id')
+				->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
+				->group('s.shipment_id');
+		if(isset($parameters['startDate']) && $parameters['startDate'] !="" && isset($parameters['endDate']) && $parameters['endDate'] !=""){
+			$sQuery = $sQuery->where("s.shipment_date >= ?",$parameters['startDate']);
+			$sQuery = $sQuery->where("s.shipment_date <= ?",$parameters['endDate']);
+		}
+		if (isset($sWhere) && $sWhere != "") {
+		    $sQuery = $sQuery->where($sWhere);
+		}
 		    
-	    if (isset($sOrder) && $sOrder != "") {
-		$sQuery = $sQuery->order($sOrder);
-	    }
-    
-	    if (isset($sLimit) && isset($sOffset)) {
-		$sQuery = $sQuery->limit($sLimit, $sOffset);
-	    }
-    
-	    //error_log($sQuery);
-    
-	    $rResult = $dbAdapter->fetchAll($sQuery);
+		if (isset($sOrder) && $sOrder != "") {
+		    $sQuery = $sQuery->order($sOrder);
+		}
+	
+		if (isset($sLimit) && isset($sOffset)) {
+		    $sQuery = $sQuery->limit($sLimit, $sOffset);
+		}
+	
+		$rResult = $dbAdapter->fetchAll($sQuery);
     
     
 	     /* Data set length after filtering */
@@ -416,7 +417,7 @@ class Application_Service_Reports {
 	    foreach ($rResult as $aRow) {
 		    $row = array();
 		    $row[] = $aRow['shipment_code'];
-		    $row[] = ucwords($aRow['scheme_type']);
+		    $row[] = ucwords($aRow['scheme_name']);
 		    $row[] = $aRow['distribution_code'];
 		    $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
 		    $output['aaData'][] = $row;
