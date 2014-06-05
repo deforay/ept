@@ -1,0 +1,14 @@
+<?php
+$totaltest=0;
+$result=array();
+if(isset($this->response) && $this->response!='' && count($this->response>0)){
+                foreach($this->response as $testkit){
+		   $totaltest+=$testkit['totalTest'];
+		}
+		foreach($this->response as $testkit){
+                    $percentage=($testkit['totalTest']/$totaltest)*100;
+		   $result[]=array(stripslashes(wordwrap($testkit['TestKit_Name'], 50, "<br />\n")),round($percentage, 2)) ;
+		}
+		echo json_encode($result);
+}
+?>

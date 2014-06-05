@@ -138,6 +138,14 @@ class Application_Service_Common {
 		$countriesDb = new Application_Model_DbTable_Countries();
 		return $countriesDb->getAllCountries();
 	}
+	public function getAllnetwork(){
+		$networkDb = new Application_Model_DbTable_NetworkTires();
+		return $networkDb->getAllnetwork();
+	}
+	public function getAllParticipantAffiliates(){
+		$participantAffiliateDb = new Application_Model_DbTable_ParticipantAffiliates();
+		return $participantAffiliateDb->getAllParticipantAffiliates();
+	}
 
 }
 

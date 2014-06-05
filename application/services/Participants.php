@@ -119,6 +119,12 @@ class Application_Service_Participants {
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		return $db->fetchAll($db->select()->from('r_network_tiers')->order('network_name ASC'));
 	}
+	public function getAllParticipantRegion(){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('p'=>'participant'),array('p.region'))
+		                  ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->order("p.region");
+	    return $db->fetchAll($sql);
+	}
 	
 	public function getAllParticipantDetails($dmId){
 	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();

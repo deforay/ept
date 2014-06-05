@@ -10,7 +10,7 @@ class Reports_DetailedController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
                     ->addActionContext('report', 'html')
                     ->initContext();
-        $this->_helper->layout()->pageName = 'detailed'; 
+        $this->_helper->layout()->pageName = 'report'; 
     }
 
     public function indexAction()

@@ -425,5 +425,50 @@ class Application_Service_Reports {
     
 	    echo json_encode($output);
 	}
+	public function getTestKitReport($params){
+	 $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+	$sQuery = $dbAdapter->select()->from(array('res'=>'response_result_dts'),array('totalTest'=>new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")))
+		->joinLeft(array('sp'=>'shipment_participant_map'),'sp.map_id=res.shipment_map_id',array())
+		->joinLeft(array('p'=>'participant'),'sp.participant_id=p.participant_id',array('p.region'))
+		->joinLeft(array('s'=>'shipment'),'s.shipment_id=sp.shipment_id',array());
+			
+	if(isset($params['kitType']) && $params['kitType']=="testkit1"){
+	$sQuery = $sQuery->joinLeft(array('tn'=>'r_testkitname_dts'),'tn.TestKitName_ID=res.test_kit_name_1',array('TestKit_Name'))
+			->group('tn.TestKitName_ID');
+	}
+	if(isset($params['kitType']) && $params['kitType']=="testkit2"){
+	$sQuery = $sQuery->joinLeft(array('tn'=>'r_testkitname_dts'),'tn.TestKitName_ID=res.test_kit_name_2',array('TestKit_Name'))
+			->group('tn.TestKitName_ID');
+	}
+	if(isset($params['reportType']) && $params['reportType']=="network"){
+		if(isset($params['networkValue']) && $params['networkValue']!=""){
+			$sQuery = $sQuery->where("p.network_tier = ?",$params['networkValue']);
+		}else{
+		 $sQuery = $sQuery->joinLeft(array('n'=>'r_network_tiers'),'p.network_tier=n.network_id',array())->group('n.network_id');
+		}
+		
+	}
+	if(isset($params['reportType']) && $params['reportType']=="affiliation"){
+		if(isset($params['affiliateValue']) && $params['affiliateValue']!=""){
+			$sQuery = $sQuery->where("p.affiliation= ?",$params['affiliateValue']);
+		}else{
+		 $sQuery = $sQuery->joinLeft(array('pa'=>'r_participant_affiliates'),'p.affiliation=pa.affiliate',array())->group('pa.aff_id');
+		}
+		
+	}
+	if(isset($params['reportType']) && $params['reportType']=="region"){
+		if(isset($params['regionValue']) && $params['regionValue']!=""){
+			$sQuery = $sQuery->where("p.region= ?",$params['regionValue']);
+		}else{
+		 $sQuery = $sQuery->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''");
+		}
+		
+	}
+	if(isset($params['startDate']) && $params['startDate'] !="" && isset($params['endDate']) && $params['endDate'] !=""){
+		$sQuery = $sQuery->where("s.shipment_date >= ?",$params['startDate']);
+		$sQuery = $sQuery->where("s.shipment_date <= ?",$params['endDate']);
+	}
+	return $dbAdapter->fetchAll($sQuery);
+    }
 }
 

@@ -1,0 +1,185 @@
+<style>
+    @media print {
+        .dontPrint{
+            display:none;
+        }
+    }
+
+</style>
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<legend class="hide legend"><h3>TestKit Report</h3></legend>
+<table  style="margin:20px 0;" class="table table-bordered">
+	<tr>
+<td style="width:200px;text-align: center;font-weight:bold;">
+			Pick a Date Range (Optional)
+		</td>		
+<td style="width:200px;text-align: center;font-weight:bold;">
+			Select Report Type
+		</td>
+<td style="width:200px;text-align: center;font-weight:bold;" class="hide network">
+			Select Netwok Tires
+		</td>
+<td style="width:200px;text-align: center;font-weight:bold;" class="hide affiliation">
+			Select Participant Affiliatiates
+		</td>
+<td style="width:200px;text-align: center;font-weight:bold;" class="hide region">
+			Select Region
+		</td>
+<td style="width:200px;text-align: center;font-weight:bold;">
+			Test Kit Type
+		</td>
+		<td class="dontPrint" style="width:200px;text-align: center;font-weight:bold;">Action</td>
+	</tr>
+	<tr>
+		<td>
+			<input type="text" id="dateRange" name="dateRange"  class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder ="Click here to pick a Date Range"/>
+		</td>		
+		<td>
+			<select id="reportType" name="reportType"  class="form-control input-sm" onchange="getTypeList(this.value)">
+				<option value=""> -- Select Report Type --</option>
+				<option value="network">Network Tier</option>
+				<option value="affiliation">Affiliation</option>
+				<option value="region">Region</option>
+				
+			</select>			
+		</td>
+		<td class="hide network">
+			<select id="networkValue" name="networkValue"  class="form-control input-sm">
+				<option value=""> -- Select Network Tires --</option>
+				<?php
+				  foreach($this->networkTierList as $network){
+					?>
+						<option value="<?php echo $network['network_id']; ?>"><?php echo ucwords($network['network_name']); ?></option>	
+					<?php
+				  }
+				?>
+			</select>			
+		</td>
+		<td class="hide affiliation">
+			<select id="affiliateValue" name="affiliateValue"  class="form-control input-sm">
+				<option value=""> -- Select Affiliates --</option>
+				<?php
+				  foreach($this->affiliateList as $affiliates){
+					?>
+						<option value="<?php echo $affiliates['aff_id']; ?>"><?php echo ucwords($affiliates['affiliate']); ?></option>	
+					<?php
+				  }
+				?>
+			</select>			
+		</td>
+		<td class="hide region">
+			<select id="regionValue" name="regionValue"  class="form-control input-sm">
+				<option value=""> -- Select Region --</option>
+				<?php
+				  foreach($this->regionList as $region){
+					?>
+						<option value="<?php echo $region['region']; ?>"><?php echo ucwords($region['region']); ?></option>	
+					<?php
+				  }
+				?>
+			</select>			
+		</td>
+		<td>
+			<select id="kitType" name="kitType"  class="form-control input-sm">
+				<option value=""> -- Select Test Kit--</option>
+				<option value="testkit1">Test Kit 1</option>
+				<option value="testkit2">Test Kit 2</option>
+			</select>			
+		</td>
+		<td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button> <button class="btn btn-primary btn-sm" onclick="window.print()"><span>Print</span></button></td>
+	</tr>
+</table>
+<div id="testKitChart" width="450" height="450"></div>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript">
+	var startDate = "";
+	var endDate = "";
+	$(document).ready(function(){
+		$('#dateRange').daterangepicker({
+			format: 'DD-MMM-YYYY',
+			ranges: {
+					'Today': [moment(), moment()],
+					'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+					'Last 7 Days': [moment().subtract('days', 6), moment()],
+					'Last 30 Days': [moment().subtract('days', 29), moment()],
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+				}
+		},
+		function(start, end) {
+			startDate = start.format('YYYY-MM-DD');
+			endDate = end.format('YYYY-MM-DD');
+		});
+		
+	});
+	function drawGraph(){
+		if($("#kitType").val()==''){
+		alert('Please select test kit to proceed');
+		return;
+		}
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'chart'),"default",true); ?>", { startDate :startDate,endDate:endDate,kitType :$("#kitType").val(),reportType :$("#reportType").val(),networkValue :$("#networkValue").val(),affiliateValue :$("#affiliateValue").val(),regionValue :$("#regionValue").val(),format: "html" },
+		function(response){
+			$(".legend").removeClass("hide");
+			
+				$('#testKitChart').highcharts({
+				    chart: {
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					plotShadow: false
+				    },
+				    
+				    title: {
+					text: 'Test Kit Report'
+				    },
+				    tooltip: {
+					pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+				    },
+				     plotOptions: {
+						pie: {
+						    allowPointSelect: true,
+						    cursor: 'pointer',
+						    dataLabels: {
+							enabled: false
+						    },
+						    showInLegend: true
+						}
+					    },
+					    legend: {
+					    enabled: true,
+					    layout: 'vertical',
+					    align: 'right',
+					    verticalAlign: 'middle',
+					     itemMarginTop: 10,
+					    itemMarginBottom: 10,
+					    labelFormatter: function() {
+						return this.name + ' ' + this.y + '%';
+					    }
+					},
+				    series: [{
+					type: 'pie',
+					name: 'Kit Used',
+					data: JSON.parse(response.stripSlashes())
+				    }]
+				});
+		});
+	}
+	function getTypeList(typeValue){
+		if(typeValue=='network'){
+			$(".network").removeClass("hide dontPrint");
+			$(".affiliation").addClass("hide dontPrint");
+			$(".region").addClass("hide dontPrint");
+		}else if(typeValue=='affiliation'){
+			$(".network").addClass("hide dontPrint");
+			$(".affiliation").removeClass("hide dontPrint");
+			$(".region").addClass("hide dontPrint");
+			
+		}else if(typeValue=='region'){
+			$(".network").addClass("hide dontPrint");
+			$(".affiliation").addClass("hide dontPrint");
+			$(".region").removeClass("hide dontPrint");
+			
+		}
+		
+	}
+</script>

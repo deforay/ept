@@ -378,6 +378,10 @@
               <actionMethod actionName="index"/>
               <actionMethod actionName="report"/>
             </controllerFile>
+            <controllerFile controllerName="Testkit">
+              <actionMethod actionName="index"/>
+              <actionMethod actionName="chart"/>
+            </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
           <layoutsDirectory enabled="false">
@@ -411,6 +415,12 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Detailed">
                 <viewScriptFile forActionName="report"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Testkit">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Testkit">
+                <viewScriptFile forActionName="chart"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
