@@ -1,7 +1,8 @@
 <style>
     @media print {
-        .dontPrint{
+        .dontPrint, #testKitTable_filter, #testKitTable_info{
             display:none;
+	    
         }
     }
 
@@ -26,7 +27,7 @@
 			Select Region
 		</td>
 <td style="width:200px;text-align: center;font-weight:bold;">
-			Test Kit Type
+			Test Kit
 		</td>
 		<td class="dontPrint" style="width:200px;text-align: center;font-weight:bold;">Action</td>
 	</tr>
@@ -84,17 +85,33 @@
 				<option value=""> -- Select Test Kit--</option>
 				<option value="testkit1">Test Kit 1</option>
 				<option value="testkit2">Test Kit 2</option>
+				<option value="testkit3">Test Kit 3</option>
 			</select>			
 		</td>
-		<td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button> <button class="btn btn-primary btn-sm" onclick="window.print()"><span>Print</span></button></td>
+		<td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button> <button class="btn btn-primary btn-sm" onclick="GetPrint()"><span>Print</span></button></td>
 	</tr>
 </table>
 <div id="testKitChart" width="450" height="450"></div>
+<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="testKitTable">
+    <thead>
+    <tr>
+		  
+		  <th style="text-align: center;">Lab Name/Participant Name</th>
+		  <th style="text-align: center;">Test Kit Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td colspan="10" class="dataTables_empty">Loading data from server</td>
+    </tr>
+    </tbody>
+</table>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript">
 	var startDate = "";
 	var endDate = "";
+	var paginate = true;
 	$(document).ready(function(){
 		$('#dateRange').daterangepicker({
 			format: 'DD-MMM-YYYY',
@@ -118,6 +135,7 @@
 		alert('Please select test kit to proceed');
 		return;
 		}
+		drawTable();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'chart'),"default",true); ?>", { startDate :startDate,endDate:endDate,kitType :$("#kitType").val(),reportType :$("#reportType").val(),networkValue :$("#networkValue").val(),affiliateValue :$("#affiliateValue").val(),regionValue :$("#regionValue").val(),format: "html" },
 		function(response){
 			$(".legend").removeClass("hide");
@@ -182,4 +200,63 @@
 		}
 		
 	}
+	function drawTable() {
+		$("#testKitTable").removeClass("hide");
+		$.blockUI;
+        oTable = $('#testKitTable').dataTable( {
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+				"sEmptyTable": "No data to show"
+            },
+	    "bPaginate": paginate,
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": false,
+            "bDestroy": true,
+            "aoColumns": [
+                {"sClass":"center"},
+                {"sClass":"center"}
+            ],
+            "aaSorting": [[ 1, "desc" ]],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'index', 'format' => 'html')); ?>",
+			"fnServerParams": function ( aoData ) {
+				
+				aoData.push( { "name": "startDate", "value": startDate } );
+				aoData.push( { "name": "endDate", "value": endDate } );
+				aoData.push( { "name": "regionValue", "value": $("#regionValue").val() } );
+				aoData.push( { "name": "affiliateValue", "value": $("#affiliateValue").val() } );
+				aoData.push( { "name": "networkValue", "value": $("#networkValue").val() } );
+				aoData.push( { "name": "reportType", "value": $("#reportType").val() } );
+				aoData.push( { "name": "kitType", "value": $("#kitType").val() } );
+			},			
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            },"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+				$.unblockUI;
+	        },
+        });
+
+	};
+	function GetPrint(){
+		paginate=false;
+		drawTable()
+		window.print();
+	}
+	jQuery(document).bind("keyup keydown", function(e){
+        if(e.ctrlKey && e.keyCode == 80){
+          paginate=false;
+	  drawTable()
+        }
+});
 </script>

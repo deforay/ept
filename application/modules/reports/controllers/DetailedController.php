@@ -17,8 +17,8 @@ class Reports_DetailedController extends Zend_Controller_Action
     {
         if ($this->getRequest()->isPost()) {
             $params = $this->_getAllParams();
-            $shipmentService = new Application_Service_Reports();
-            $response=$shipmentService->getParticipantDetailedReport($params);
+            $reportService = new Application_Service_Reports();
+            $response=$reportService->getParticipantDetailedReport($params);
             $this->view->response = $response;
             $this->view->type= $params['reportType'];
         }
@@ -30,8 +30,8 @@ class Reports_DetailedController extends Zend_Controller_Action
     {
         if ($this->getRequest()->isPost()) {
             $params = $this->_getAllParams();            
-            $shipmentService = new Application_Service_Reports();
-            $shipmentService->getAllParticipantDetailedReport($params);
+            $reportService = new Application_Service_Reports();
+            $reportService->getAllParticipantDetailedReport($params);
         }
     }
 

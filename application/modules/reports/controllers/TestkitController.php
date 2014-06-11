@@ -14,6 +14,11 @@ class Reports_TestkitController extends Zend_Controller_Action
 
     public function indexAction()
     {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $reportService->getTestKitDetailedReport($params);
+        }
         $participantService = new Application_Service_Participants();
             $this->view->networkTierList = $participantService->getNetworkTierList();
             $this->view->affiliateList = $participantService->getAffiliateList();
@@ -24,8 +29,8 @@ class Reports_TestkitController extends Zend_Controller_Action
     {
         if ($this->getRequest()->isPost()) {
             $params = $this->_getAllParams();
-            $shipmentService = new Application_Service_Reports();
-            $response=$shipmentService->getTestKitReport($params);
+            $reportService = new Application_Service_Reports();
+            $response=$reportService->getTestKitReport($params);
             $this->view->response = $response;
         }
     }
