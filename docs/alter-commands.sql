@@ -1816,3 +1816,8 @@ ADD  `created_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `created_on` ,
 ADD  `updated_on` DATETIME NULL DEFAULT NULL AFTER  `created_by` ,
 ADD  `updated_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `updated_on`;
 
+ALTER TABLE  `distributions` ADD  `created_on` DATETIME NULL DEFAULT NULL AFTER  `status` ,
+ADD  `created_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `created_on` ,
+ADD  `updated_on` DATETIME NULL DEFAULT NULL AFTER  `created_by` ,
+ADD  `updated_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `updated_on`;
+

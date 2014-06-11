@@ -168,9 +168,12 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
     }
     
     public function addDistribution($params){
+	$authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array('distribution_code'=>$params['distributionCode'],
                       'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']),
-                      'status' => 'created');
+                      'status' => 'created',
+		      'created_by' => $authNameSpace->admin_id,
+                      'created_on' => new Zend_Db_Expr('now()'));
         return $this->insert($data);
     }
     
@@ -187,8 +190,11 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
     }
     
     public function updateDistribution($params){
+	$authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array('distribution_code'=>$params['distributionCode'],
-                      'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']));
+                      'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']),
+		      'updated_by' => $authNameSpace->admin_id,
+                      'updated_on' => new Zend_Db_Expr('now()'));
         return $this->update($data,"distribution_id=".base64_decode($params['distributionId']));
     }
     public function getUnshippedDistributions(){
