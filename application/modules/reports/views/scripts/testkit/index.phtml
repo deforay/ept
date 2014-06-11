@@ -8,7 +8,7 @@
 
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
-<legend class="hide legend"><h3>TestKit Report</h3></legend>
+<legend><h3>TestKit Report For DTS</h3></legend>
 <table  style="margin:20px 0;" class="table table-bordered">
 	<tr>
 <td style="width:200px;text-align: center;font-weight:bold;">
@@ -27,7 +27,7 @@
 			Select Region
 		</td>
 <td style="width:200px;text-align: center;font-weight:bold;">
-			Test Kit
+			TestKit No.
 		</td>
 		<td class="dontPrint" style="width:200px;text-align: center;font-weight:bold;">Action</td>
 	</tr>
@@ -82,7 +82,7 @@
 		</td>
 		<td>
 			<select id="kitType" name="kitType"  class="form-control input-sm">
-				<option value=""> -- Select Test Kit--</option>
+				<option value=""> -- Select Test Kit Number--</option>
 				<option value="testkit1">Test Kit 1</option>
 				<option value="testkit2">Test Kit 2</option>
 				<option value="testkit3">Test Kit 3</option>
@@ -132,14 +132,12 @@
 	});
 	function drawGraph(){
 		if($("#kitType").val()==''){
-		alert('Please select test kit to proceed');
+		alert('Please select test kit number to proceed');
 		return;
 		}
 		drawTable();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'chart'),"default",true); ?>", { startDate :startDate,endDate:endDate,kitType :$("#kitType").val(),reportType :$("#reportType").val(),networkValue :$("#networkValue").val(),affiliateValue :$("#affiliateValue").val(),regionValue :$("#regionValue").val(),format: "html" },
 		function(response){
-			$(".legend").removeClass("hide");
-			
 				$('#testKitChart').highcharts({
 				    chart: {
 					plotBackgroundColor: null,
@@ -148,7 +146,7 @@
 				    },
 				    
 				    title: {
-					text: 'Test Kit Report'
+					text: 'Test Kit DTS Chart'
 				    },
 				    tooltip: {
 					pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'

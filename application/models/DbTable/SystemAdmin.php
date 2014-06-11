@@ -148,6 +148,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     }
     
     public function addSystemAdmin($params){
+	$authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
                       'first_name'=>$params['firstName'],
                       'last_name'=>$params['lastName'],
@@ -156,7 +157,9 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
                       'password'=>$params['password'],
                       'phone'=>$params['phone'],
                       'status'=>$params['status'],
-                      'force_password_reset'=>1
+                      'force_password_reset'=>1,
+		      'created_by' => $authNameSpace->admin_id,
+                      'created_on' => new Zend_Db_Expr('now()')
                       );
         return $this->insert($data);
     }
@@ -166,13 +169,16 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     }
     
     public function updateSystemAdmin($params){
+	$authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
                       'first_name'=>$params['firstName'],
                       'last_name'=>$params['lastName'],
                       'primary_email'=>$params['primaryEmail'],
                       'secondary_email'=>$params['secondaryEmail'],
                       'phone'=>$params['phone'],
-                      'status'=>$params['status']
+                      'status'=>$params['status'],
+		      'updated_by' => $authNameSpace->admin_id,
+                      'updated_on' => new Zend_Db_Expr('now()')
                       );
         if(isset($params['password']) && $params['password'] !=""){
             $data['password']= $params['password'];

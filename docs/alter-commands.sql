@@ -1805,3 +1805,14 @@ ALTER TABLE  `participant` ADD  `funding_source` VARCHAR( 255 ) NULL DEFAULT NUL
 ADD  `testing_volume` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `funding_source` ,
 ADD  `region` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `testing_volume`
 
+--Guna 11-june-2014
+ALTER TABLE  `data_manager` ADD  `created_on` DATETIME NULL DEFAULT NULL AFTER  `status` ,
+ADD  `created_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `created_on` ,
+ADD  `updated_on` DATETIME NULL DEFAULT NULL AFTER  `created_by` ,
+ADD  `updated_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `updated_on`;
+
+ALTER TABLE  `system_admin` ADD  `created_on` DATETIME NULL DEFAULT NULL AFTER  `status` ,
+ADD  `created_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `created_on` ,
+ADD  `updated_on` DATETIME NULL DEFAULT NULL AFTER  `created_by` ,
+ADD  `updated_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `updated_on`;
+

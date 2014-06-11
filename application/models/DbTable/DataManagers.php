@@ -6,7 +6,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
     protected $_primary = array('dm_id');
 
     public function addUser($params) {
-
+    $authNameSpace = new Zend_Session_Namespace('administrators');
      $data = array(
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
@@ -17,7 +17,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             'primary_email' => $params['userId'],
             'password' => $params['password'],
             'force_password_reset' => 1,
-            'status' => $params['status']
+            'status' => $params['status'],
+	    'created_by' => $authNameSpace->admin_id,
+            'created_on' => new Zend_Db_Expr('now()')
         );
 
         return $this->insert($data);
@@ -182,14 +184,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
     }
 
     public function updateUser($params) {
-
+       $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
 	    'institute' => $params['institute'],
-            'secondary_email' => $params['semail']
+            'secondary_email' => $params['semail'],
+	    'updated_by' => $authNameSpace->admin_id,
+            'updated_on' => new Zend_Db_Expr('now()')
         );
         
         if(isset($params['userId']) && $params['userId'] != ""){

@@ -60,6 +60,7 @@
     <div class="container">
 
       <form class="form-signin" name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("module"=>"admin","controller" => "login", "action" => "index"), null, true) ?>">
+      <a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>"><img alt="" src="<?php echo $this->baseUrl("images/logo.gif"); ?>" /></a>
         <h2 class="form-signin-heading">PT Provider Sign In</h2>
 	<div class="form-group">
         <label for="inputEmail">Email</label>
