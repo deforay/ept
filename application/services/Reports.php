@@ -566,8 +566,9 @@ class Application_Service_Reports {
 		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sQuery = $dbAdapter->select()->from(array('res'=>'response_result_dts'),array())
 			->joinLeft(array('sp'=>'shipment_participant_map'),'sp.map_id=res.shipment_map_id',array())
-			->joinLeft(array('p'=>'participant'),'sp.participant_id=p.participant_id',array('p.lab_name'))
-			->joinLeft(array('s'=>'shipment'),'s.shipment_id=sp.shipment_id',array());
+			->joinLeft(array('p'=>'participant'),'sp.participant_id=p.participant_id',array('p.lab_name','participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+			->joinLeft(array('s'=>'shipment'),'s.shipment_id=sp.shipment_id',array())
+                        ->group("p.participant_id");
 				
 		if(isset($parameters['kitType']) && $parameters['kitType']=="testkit1"){
 		$sQuery = $sQuery->joinLeft(array('tn'=>'r_testkitname_dts'),'tn.TestKitName_ID=res.test_kit_name_1',array('tn.TestKit_Name'))
@@ -646,7 +647,7 @@ class Application_Service_Reports {
 
 	    foreach ($rResult as $aRow) {
 		    $row = array();
-		    $row[] = $aRow['lab_name'];
+		    $row[] = $aRow['participantName'];
 		    $row[] = stripslashes($aRow['TestKit_Name']);
 		    $output['aaData'][] = $row;
 	    }
