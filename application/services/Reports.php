@@ -194,7 +194,7 @@ class Application_Service_Reports {
 	    foreach ($rResult as $aRow) {
 		
 		    $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
-		    
+		    $responseCount=($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
 		    $row = array();
 		    $row[] = $aRow['distribution_code'];
 		    $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
@@ -203,7 +203,8 @@ class Application_Service_Reports {
 		    $row[] = $aRow['scheme_name'];
 		    $row[] = $aRow['number_of_samples'];
 		    $row[] = $aRow['participant_count'];
-		    $row[] = ($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
+		    $row[] = '<a href="/reports/shipments/response-chart/id/'.base64_encode($aRow['shipment_id']).'/shipmentDate/'.base64_encode($aRow['distribution_date']).'/shipmentCode/'.base64_encode($aRow['distribution_code']).'" target="_blank">'.$responseCount.'</a>';
+		   // $row[] = ($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
 		    $row[] = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
 		    $row[] = $aRow['number_passed'];
 		    $row[] = ucwords($aRow['status']);
@@ -654,5 +655,38 @@ class Application_Service_Reports {
     
 	    echo json_encode($output);
 	}
+	
+	
+	public function getShipmentResponseCount($shipmentId, $date, $step=5,$maxDays = 60){
+	 $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+	$responseResult=array();
+        $initialStartDate=$date;
+	for($i=$step; $i<=$maxDays;$i+=$step){
+		
+	 $sQuery = $dbAdapter->select()->from(array('s'=>'shipment'),array(''))
+				       ->joinLeft(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')")))
+				      ->where("s.shipment_id = ?",$shipmentId)
+				       ->group('s.shipment_id');
+		$endDate = strftime("%Y-%m-%d", strtotime("$date + $i day"));
+		
+		if(isset($date) && $date !="" && $endDate!=''){
+			$sQuery = $sQuery->where("sp.shipment_test_date >= ?",$date);
+			$sQuery = $sQuery->where("sp.shipment_test_date <= ?",$endDate);
+			$result= $dbAdapter->fetchAll($sQuery);
+			$count = (isset($result[0]['reported_count'])&& $result[0]['reported_count'] != "") ? $result[0]['reported_count'] : 0;
+			$responseResult[] = (int)$count;
+			$date=strftime("%Y-%m-%d", strtotime("$endDate +1 day"));
+		}
+		if($i==$maxDays){
+			$sQuery = $sQuery->where("sp.shipment_test_date >= ?",$initialStartDate);
+			$result= $dbAdapter->fetchAll($sQuery);
+			$count = (isset($result[0]['reported_count'])&& $result[0]['reported_count'] != "") ? $result[0]['reported_count'] : 0;
+		        $responseResult[] = (int)$count;
+		}
+
+        }
+          return json_encode($responseResult);
+    }
 }
 

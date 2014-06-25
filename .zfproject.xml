@@ -366,6 +366,7 @@
           <controllersDirectory>
             <controllerFile controllerName="Shipments">
               <actionMethod actionName="index"/>
+              <actionMethod actionName="responseChart"/>
             </controllerFile>
             <controllerFile controllerName="Distribution">
               <actionMethod actionName="index"/>
@@ -421,6 +422,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Testkit">
                 <viewScriptFile forActionName="chart"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipments">
+                <viewScriptFile forActionName="responseChart"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

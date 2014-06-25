@@ -16,8 +16,8 @@ class Reports_ShipmentsController extends Zend_Controller_Action
         
         if ($this->getRequest()->isPost()) {
             $params = $this->_getAllParams();            
-            $shipmentService = new Application_Service_Reports();
-            $shipmentService->getAllShipments($params);
+            $reportService = new Application_Service_Reports();
+            $reportService->getAllShipments($params);
         }
         
         $scheme = new Application_Service_Schemes();
@@ -28,6 +28,22 @@ class Reports_ShipmentsController extends Zend_Controller_Action
         
     }
 
+    public function responseChartAction()
+    {
+        if($this->_hasParam('id')){
+            //Zend_Debug::dump(base64_decode($this->_getParam('shipmentCode')));die;
+               $shipmentId = (int) base64_decode($this->_getParam('id'));
+               $reportService = new Application_Service_Reports();
+               $this->view->responseCount = $reportService->getShipmentResponseCount($shipmentId,base64_decode($this->_getParam('shipmentDate')));
+               $this->view->shipmentDate= base64_decode($this->_getParam('shipmentDate'));
+               $this->view->shipmentCode= base64_decode($this->_getParam('shipmentCode'));
+        }else{
+            $this->_redirect("/admin/index");
+        }
+    }
+
 
 }
+
+
 
