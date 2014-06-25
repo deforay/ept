@@ -158,6 +158,17 @@
 						    dataLabels: {
 							enabled: false
 						    },
+						     point: {
+							events: {
+							    //legendItemClick: function() {
+								//oTable.fnFilter(this.name);
+							   // },
+							    click: function(event) {
+								oTable.fnFilter(this.name);
+							    }
+							},
+						    },
+						    
 						    showInLegend: true
 						}
 					    },
@@ -175,7 +186,7 @@
 				    series: [{
 					type: 'pie',
 					name: 'Test Used',
-					data: JSON.parse(response.stripSlashes())
+					data: JSON.parse(response.stripSlashes()),
 				    }]
 				});
 		});
