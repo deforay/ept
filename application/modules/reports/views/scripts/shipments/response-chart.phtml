@@ -14,10 +14,15 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		  // Set up the chart
-		  response=<?php echo $this->responseCount?>;
+		  <?php
+		  $result=explode('#',$this->responseCount);
+		  ?>
+		  response=<?php echo $result[0]?>;
+		  responseDate=<?php echo $result[1]?>;
+		 
 		  shipmentDate='<?php echo $this->dateFormat($this->shipmentDate)?>';
 		  shipmentCode='<?php echo $this->shipmentCode?>';
-		 console.log(shipmentCode);
+		
     var chart = new Highcharts.Chart({
         chart: {
             renderTo: 'container',
@@ -42,12 +47,15 @@
                 depth: 25
             }
         },
+	xAxis: {
+            categories: responseDate
+        },
         series: [{
 	    name: shipmentCode,
             data: response
         }]
     });
-    
+     
 
     // Activate the sliders
     $('#R0').on('change', function(){

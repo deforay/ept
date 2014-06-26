@@ -661,6 +661,7 @@ class Application_Service_Reports {
 	 $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 	$responseResult=array();
+	$responseDate=array();
         $initialStartDate=$date;
 	for($i=$step; $i<=$maxDays;$i+=$step){
 		
@@ -670,23 +671,26 @@ class Application_Service_Reports {
 				       ->group('s.shipment_id');
 		$endDate = strftime("%Y-%m-%d", strtotime("$date + $i day"));
 		
-		if(isset($date) && $date !="" && $endDate!=''){
+		if(isset($date) && $date !="" && $endDate!='' && $i<$maxDays){
 			$sQuery = $sQuery->where("sp.shipment_test_date >= ?",$date);
 			$sQuery = $sQuery->where("sp.shipment_test_date <= ?",$endDate);
 			$result= $dbAdapter->fetchAll($sQuery);
 			$count = (isset($result[0]['reported_count'])&& $result[0]['reported_count'] != "") ? $result[0]['reported_count'] : 0;
 			$responseResult[] = (int)$count;
-			$date=strftime("%Y-%m-%d", strtotime("$endDate +1 day"));
+			$responseDate[] = Pt_Commons_General::humanDateFormat($date).' '.Pt_Commons_General::humanDateFormat($endDate);
+		$date=strftime("%Y-%m-%d", strtotime("$endDate +1 day"));	
 		}
+		
 		if($i==$maxDays){
-			$sQuery = $sQuery->where("sp.shipment_test_date >= ?",$initialStartDate);
+			$sQuery = $sQuery->where("sp.shipment_test_date >= ?",$date);
 			$result= $dbAdapter->fetchAll($sQuery);
 			$count = (isset($result[0]['reported_count'])&& $result[0]['reported_count'] != "") ? $result[0]['reported_count'] : 0;
 		        $responseResult[] = (int)$count;
+			$responseDate[] = Pt_Commons_General::humanDateFormat($date).'  and Above';
 		}
 
         }
-          return json_encode($responseResult);
+          return json_encode($responseResult).'#'.json_encode($responseDate);
     }
 }
 
