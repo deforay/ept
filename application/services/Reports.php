@@ -194,7 +194,7 @@ class Application_Service_Reports {
 	    foreach ($rResult as $aRow) {
 		
 		    $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
-		    $responseCount=($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
+		    $responsePercentage=($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
 		    $row = array();
 		    $row[] = $aRow['distribution_code'];
 		    $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
@@ -203,9 +203,10 @@ class Application_Service_Reports {
 		    $row[] = $aRow['scheme_name'];
 		    $row[] = $aRow['number_of_samples'];
 		    $row[] = $aRow['participant_count'];
-		    $row[] = '<a href="/reports/shipments/response-chart/id/'.base64_encode($aRow['shipment_id']).'/shipmentDate/'.base64_encode($aRow['distribution_date']).'/shipmentCode/'.base64_encode($aRow['distribution_code']).'" target="_blank">'.$responseCount.'</a>';
-		   // $row[] = ($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
-		    $row[] = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
+		   // $row[] = '<a href="/reports/shipments/response-chart/id/'.base64_encode($aRow['shipment_id']).'/shipmentDate/'.base64_encode($aRow['distribution_date']).'/shipmentCode/'.base64_encode($aRow['distribution_code']).'" target="_blank">'.$responseCount.'</a>';
+		    $row[] = ($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
+		   // $row[] = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
+		    $row[] = '<a href="/reports/shipments/response-chart/id/'.base64_encode($aRow['shipment_id']).'/shipmentDate/'.base64_encode($aRow['distribution_date']).'/shipmentCode/'.base64_encode($aRow['distribution_code']).'" target="_blank">'.$responsePercentage.'</a>';
 		    $row[] = $aRow['number_passed'];
 		    $row[] = ucwords($aRow['status']);
 		
