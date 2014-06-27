@@ -125,9 +125,11 @@ class Application_Service_Reports {
 				    ->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
 				    ->joinLeft(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"),'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(shipment_test_date <> '')/count('participant_id'))*100,2)"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
 				    ->joinLeft(array('p'=>'participant'),'p.participant_id=sp.participant_id')
-				    ->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
+				    //->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
 				    ->joinLeft(array('rr'=>'r_results'),'sp.final_result=rr.result_id')
-				    ->group('s.shipment_id');
+				    ->group(array('s.shipment_id'));
+				  
+				    
 					
 		    if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
 			    $sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
@@ -139,7 +141,8 @@ class Application_Service_Reports {
 		    }
 		    
 		    if(isset($parameters['dataManager']) && $parameters['dataManager'] !=""){
-			    $sQuery = $sQuery->where("pmm.dm_id = ?",$parameters['dataManager']);
+				$sQuery=$sQuery->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id');
+				$sQuery = $sQuery->where("pmm.dm_id = ?",$parameters['dataManager']);
 		    }
 		    
     
@@ -203,7 +206,6 @@ class Application_Service_Reports {
 		    $row[] = $aRow['scheme_name'];
 		    $row[] = $aRow['number_of_samples'];
 		    $row[] = $aRow['participant_count'];
-		   // $row[] = '<a href="/reports/shipments/response-chart/id/'.base64_encode($aRow['shipment_id']).'/shipmentDate/'.base64_encode($aRow['distribution_date']).'/shipmentCode/'.base64_encode($aRow['distribution_code']).'" target="_blank">'.$responseCount.'</a>';
 		    $row[] = ($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
 		   // $row[] = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
 		    $row[] = '<a href="/reports/shipments/response-chart/id/'.base64_encode($aRow['shipment_id']).'/shipmentDate/'.base64_encode($aRow['distribution_date']).'/shipmentCode/'.base64_encode($aRow['distribution_code']).'" target="_blank">'.$responsePercentage.'</a>';

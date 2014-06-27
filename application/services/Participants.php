@@ -103,7 +103,6 @@ class Application_Service_Participants {
 				       ->where("s.shipment_id = ?", $shipmentId)
 				       ->where("p.status='active'");
 		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id NOT IN ?", $subSql);
-		error_log($sql);
 		return $db->fetchAll($sql);
 	}
 	
