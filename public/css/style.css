@@ -76,11 +76,11 @@ header .indent{ top:95px; right:3px; position:absolute; padding:0; width:191px}
 header .inside{background:url(../images/bg_m.png) top left no-repeat; top:135px; left:0; width:950px; position: absolute; padding:0; margin:0; z-index:90000}
 header .nav{position:relative; padding:0; margin:0; z-index:9000000}
 
-header h1 {position:absolute; left:0px; top:56px; text-indent:-9999px;}
-header h1 a { display:block; width:253px; height:67px; background:url(../images/logo.gif) no-repeat left top;	}
+header h1 {}
+header h1 a {}
 
 
-.button1{color:#fff; background:url(../images/button1.gif) top left no-repeat; width:114px; text-transform:uppercase; text-align:center; line-height:35px; font-weight:bold; display:block; text-decoration:none; position:absolute; right:3px; top:0px; font-size:18px; font-family: "Trebuchet MS", Arial, Helvetica, sans-serif; padding-bottom:21px}
+.button1{color:#fff; background:url(../images/button1.gif) top left no-repeat; width:114px; text-transform:uppercase; text-align:center; line-height:35px; font-weight:bold; display:block; text-decoration:none; position:absolute; right:120px; top:0px; font-size:18px; font-family: "Trebuchet MS", Arial, Helvetica, sans-serif; padding-bottom:21px}
 .button1:hover{text-decoration:none; color:#2fc5fc }
 
 
@@ -105,7 +105,7 @@ header h1 a { display:block; width:253px; height:67px; background:url(../images/
 .sf-menu ul {	width:167px; background:url(../images/bg_menu1.png); padding-top:20px; border-style: solid; border-radius:0 0 11px 11px; -moz-border-radius:0 0 11px 11px; -webkit-border-radius:0 0 11px 11px; padding-bottom:20px; behavior:url(js/PIE.htc); }
 .sf-menu ul li {  text-align:left; line-height:30px; padding: 0 0px 0 19px; width:148px;  z-index:9; float:left; background:url(../images/bg_li2.png) bottom left repeat-x; }
 .sf-menu ul li:hover {  text-align:left; line-height:30px; padding: 0 0px 0 19px; width:148px;  z-index:9; float:left; background:url(../images/bg_li2-act.png) bottom left repeat-x; }
-.sf-menu ul li a {line-height:30px; height:30px; text-align:left;  font-size:13px;  color:#fff; z-index:9;  text-transform:none; text-shadow:none; position:relative; background:none; padding:0}
+.sf-menu ul li a {line-height:30px; height:auto; text-align:left;  font-size:13px;  color:#fff; z-index:9;  text-transform:none; text-shadow:none; position:relative; background:none; padding:0}
 .sf-menu ul li a:hover { color:#fff; text-shadow:none; background:none }
 .sf-menu ul .li {  text-align:left; line-height:30px; padding: 0 0px 0 27px; width:139px;  z-index:9; float:left; background:url(../images/bg_li3.png) bottom left repeat-x; }
 .sf-menu ul .li:hover {  text-align:left; line-height:30px; padding: 0 0px 0 27px; width:139px;  z-index:9; float:left; background:url(../images/bg_li3-act.png) bottom left repeat-x; }

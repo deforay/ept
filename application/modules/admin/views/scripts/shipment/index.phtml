@@ -8,7 +8,8 @@
 </h4>
 
 
-<span class="col-md-3 col-xs-12" style="padding:10px 0;">
+<span class="col-md-4 col-xs-12" style="padding:10px 0;">
+	<label>To add a new scheme select a Scheme Type below</label>
 <select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control input-sm">
 	<option value=""> -- Select Scheme Type --</option>
 	<?php
@@ -21,7 +22,8 @@
 </select>
 </span>
 <span class="col-md-5 col-xs-12" id="btnSpan" style="padding:10px;display:none;">
-<button class="btn btn-primary btn-sm" onclick="newShipment();" id="enrollBtn"><span>New Shipment</span></button>
+	<label>Click on New Shipment to proceed adding Scheme</label>
+<button class="btn btn-primary btn-sm" onclick="newShipment();" id="enrollBtn"><span>New Scheme</span></button>
 <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location;"><span>Reset</span></button>
 </span>
 

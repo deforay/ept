@@ -610,25 +610,13 @@ class Application_Service_Evaluation {
 						
 					}
 					
-					// checking if all LOT details were entered
-					if(!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null){
-						$lotResult = 'Fail';
-						$failureReason[]= "<strong>Lot No. 1</strong> was not reported";
-					}
-					if(!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null){
-						$lotResult = 'Fail';
-						$failureReason[]= "<strong>Lot No. 2</strong> was not reported";
-					}
-					if(!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null){
-						$lotResult = 'Fail';
-						$failureReason[]= "<strong>Lot No. 3</strong> was not reported";
-					}
 						
 					// checking test kit expiry dates
 				
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
 					$expDate1="";
+					//die($results[0]['exp_date_1']);
 					if(trim(strtotime($results[0]['exp_date_1']))!=""){
 						$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
 					}
@@ -642,7 +630,7 @@ class Application_Service_Evaluation {
 					}
 					
 					
-				
+					$testKit1 = "";
 					$testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts','TestKit_Name')->where("TestKitName_ID = '".$results[0]['test_kit_name_1']. "'"));
 					if(isset($testKitName[0])){
 						$testKit1 = $testKitName[0];
@@ -663,7 +651,7 @@ class Application_Service_Evaluation {
 						}
 					}
 					
-					if($expDate1!=""){
+					if($testKit1!="" && $expDate1!=""){
 						if($testedOn->isLater($expDate1)){
 							$difference = $testedOn->sub($expDate1);
 							
@@ -673,10 +661,13 @@ class Application_Service_Evaluation {
 							$testKitExpiryResult = 'Fail';
 							$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
 						}
+					}else{
+						$testKitExpiryResult = 'Fail';
+						$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) reported without expiry date";						
 					}
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
-					if($expDate2!=""){
+					if($testKit2!="" && $expDate2!=""){
 						if($testedOn->isLater($expDate2)){
 							$difference = $testedOn->sub($expDate2);
 							
@@ -686,12 +677,15 @@ class Application_Service_Evaluation {
 							$testKitExpiryResult = 'Fail';
 							$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
 						}
+					}else{
+						$testKitExpiryResult = 'Fail';
+						$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) reported without expiry date";						
 					}
 				
 				
 					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
-					if($expDate3!=""){
+					if($testKit3!="" && $expDate3!=""){
 						if($testedOn->isLater($expDate3)){
 							$difference = $testedOn->sub($expDate3);
 							
@@ -701,26 +695,51 @@ class Application_Service_Evaluation {
 							$testKitExpiryResult = 'Fail';
 							$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
 						}
+					}else{
+						$testKitExpiryResult = 'Fail';
+						$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) reported without expiry date";						
 					}
-				
 					//checking if testkits were repeated
-					if(($testKit1 == $testKit2) && ($testKit2 == $testKit3)){
+					if(($testKit1 == "") && ($testKit2 == "") && ($testKit3 == "")){
+						$failureReason[]= "No Test Kit reported";					
+					}
+					else if(($testKit1 == "")){
+						$failureReason[]= "Test Kit 1 not reported";
+					}
+					else if(($testKit1 != "") && ($testKit2 != "") && ($testKit3 != "") && ($testKit1 == $testKit2) && ($testKit2 == $testKit3)){
 						//$testKitRepeatResult = 'Fail';
 						$failureReason[]= "<strong>$testKit1</strong> repeated for all three Test Kits";					
 					}else{
-						if(($testKit1 == $testKit2) && $testKit1 !="" && $testKit2 != ""){
+						if(($testKit1 != "") && ($testKit2 != "") && ($testKit1 == $testKit2) && $testKit1 !="" && $testKit2 != ""){
 							//$testKitRepeatResult = 'Fail';
 							$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2";
 						}
-						if(($testKit2 == $testKit3) && $testKit2 !="" && $testKit3 != ""){
+						if(($testKit2 != "") && ($testKit3 != "") && ($testKit2 == $testKit3) && $testKit2 !="" && $testKit3 != ""){
 							//$testKitRepeatResult = 'Fail';
 							$failureReason[]= "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3";
 						}
-						if(($testKit1 == $testKit3) && $testKit1 !="" && $testKit3 != ""){
+						if(($testKit1 != "") && ($testKit3 != "") && ($testKit1 == $testKit3) && $testKit1 !="" && $testKit3 != ""){
 							//$testKitRepeatResult = 'Fail';
 							$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3";
 						}					
 					}
+					
+					
+					
+
+					// checking if all LOT details were entered
+					if($testKit1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 1</strong> was not reported";
+					}
+					if($testKit2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 2</strong> was not reported";
+					}
+					if($testKit3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)){
+						$lotResult = 'Fail';
+						$failureReason[]= "<strong>Lot No. 3</strong> was not reported";
+					}					
 				
 					// checking if total score and maximum scores are the same
 					if($totalScore != $maxScore){

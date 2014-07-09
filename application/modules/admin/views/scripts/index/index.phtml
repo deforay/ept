@@ -152,6 +152,8 @@ foreach($this->events as $events){
             <div class="panel-body">
                 <div id="participant-per-scheme" width="450" height="450"></div>
                 <?php
+                
+                
                 $dataScheme = array();
                 foreach($this->schemeCountResult as $schemeName => $pCount){
                     $dataScheme[] = "{ x: '".strtoupper($schemeName)."', y: ".$pCount." }";
@@ -174,6 +176,8 @@ foreach($this->events as $events){
                 <?php
                 $code = array();
                 $dataShipment = array();
+                $ppsSchemeType = array();
+                $ppsShipmentLastDate = array();
                 foreach($this->shipmentCountResult as $pc){
                     $dataShipment[] = "{ y: '".strtoupper($pc['shipment_code'])."', a: ".$pc['participantCount']." , b: ".(isset($pc['receivedCount']) ? $pc['receivedCount'] : 0)." }";
                     $ppsSchemeType[] = "'".strtoupper($pc['scheme_type'])."'";
@@ -258,7 +262,7 @@ Morris.Bar({
     function showParticipantsLocation() {
         objVal=document.getElementById("scheme").value;
         var mapOptions = {
-            zoom: <?php echo $config->map->zoom; ?> ,
+            zoom: <?php echo (isset($config->map->zoom) && (int)$config->map->zoom > 0 ? $config->map->zoom : 5); ?> ,
             center: center
         };
         map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
