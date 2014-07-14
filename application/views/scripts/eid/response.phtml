@@ -194,7 +194,8 @@ $count++;
 
 
 	$(function() {
-  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $this->defaultDateFormat();?>'});
+  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $this->defaultDateFormat();?>',maxDate: '0'});
+  	    $(".expDatepicker" ).datepicker({dateFormat: '<?php echo $this->defaultDateFormat();?>'});
 		<?php if(!$this->isEditable){
 			?>
 			$("#eidResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");

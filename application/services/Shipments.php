@@ -156,6 +156,7 @@ class Application_Service_Shipments {
 				$row[] = $aRow['SCHEME'];	    
 				$row[] = $aRow['distribution_code'];
 				$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
+				$row[] = Pt_Commons_General::humanDateFormat($aRow['lastdate_response']);
 				$row[] = $aRow['number_of_samples'];
 				$row[] = ucfirst($aRow['status']);
 				if($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated'  && $aRow['status'] != 'closed'){
@@ -859,7 +860,7 @@ class Application_Service_Shipments {
 			}
 		}
 		
-		$dbAdapter->update('shipment',array('number_of_samples' => $size),'shipment_id = '.$params['shipmentId']);
+		$dbAdapter->update('shipment',array('number_of_samples' => $size,'shipment_code'=>$params['shipmentCode'],'lastdate_response'=>Pt_Commons_General::dateFormat($params['lastDate'])),'shipment_id = '.$params['shipmentId']);
 	}
 	
 	

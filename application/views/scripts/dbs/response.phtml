@@ -105,10 +105,10 @@
 
 	<tr align="CENTER" class="light">
 		<th>Exp Date</th>
-		<td colspan="2"><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php  echo $this->dateFormat($this->allSamples[0]["exp_date_1"]); ?>" style="width: 90%"  class="datepicker" readonly="readonly" placeholder="Select a date"/></td>
-		<td colspan="2"><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php  echo $this->dateFormat($this->allSamples[0]["exp_date_2"]); ?>" style="width: 90%"  class="datepicker" readonly="readonly" placeholder="Select a date" /></td>
-		<td colspan="2"><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php  echo $this->dateFormat($this->allSamples[0]["exp_date_3"]); ?>" style="width: 90%"  class="datepicker" readonly="readonly" placeholder="Select a date" /></td>
-		<td colspan="9"><input id="wb_exp_date" type="text" id="wb_exp_date" name="wb_exp_date" value="<?php  echo $this->dateFormat($this->allSamples[0]["wb_exp_date"]); ?>" style="width: 90%"  class="datepicker" readonly="readonly" placeholder="Select a date" /></td>
+		<td colspan="2"><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php  echo $this->dateFormat($this->allSamples[0]["exp_date_1"]); ?>" style="width: 90%"  class="expDatepicker" readonly="readonly" placeholder="Select a date"/></td>
+		<td colspan="2"><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php  echo $this->dateFormat($this->allSamples[0]["exp_date_2"]); ?>" style="width: 90%"  class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
+		<td colspan="2"><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php  echo $this->dateFormat($this->allSamples[0]["exp_date_3"]); ?>" style="width: 90%"  class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
+		<td colspan="9"><input id="wb_exp_date" type="text" id="wb_exp_date" name="wb_exp_date" value="<?php  echo $this->dateFormat($this->allSamples[0]["wb_exp_date"]); ?>" style="width: 90%"  class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
 	</tr>
 	<thead> 
 	<tr align="CENTER" class="dark" >
@@ -280,7 +280,8 @@ $dtFormat=  $vHelper->getDateFormat();
 
 
 	$(function() {
-  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>',maxDate: '0'});
+  	    $(".expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 		<?php if(!$this->isEditable){
 			?>
 			$("#dbsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");

@@ -33,7 +33,7 @@ $dtFormat=  $vHelper->getDateFormat();
                 <label class="col-lg-3 control-label">Shipment Code </label>
 
                 <div class="col-lg-5">
-					<input type='text' name="shipmentCode" id="shipmentCode" class ='form-control' value='<?php echo $shipmentData['shipment']['shipment_code']; ?>' />
+					<input type='text' name="shipmentCode" id="shipmentCode" class ='form-control isRequired' value='<?php echo $shipmentData['shipment']['shipment_code']; ?>' title="Please enter the Shipment Code" />
 				</div>
 				
 				
@@ -42,7 +42,7 @@ $dtFormat=  $vHelper->getDateFormat();
 			<label class="col-lg-3 control-label">Last Date</label>
 			
 			<div class="col-lg-5">
-				<input type='text' disabled='disabled' class ='form-control' value='<?php echo $this->dateFormat($shipmentData['shipment']['shipment_date']); ?>' />
+				<input type='text' readonly='readonly' name="lastDate" id="lastDate" class ='form-control datepicker isRequired' value='<?php echo $this->dateFormat($shipmentData['shipment']['lastdate_response']); ?>' title="Please choose the last response date" />
 			</div>
 				    
 				    
