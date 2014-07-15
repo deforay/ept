@@ -1116,7 +1116,9 @@ class Application_Service_Evaluation {
 			}
 		 }
 		 
-		$db->update('shipment_participant_map',array('evaluation_comment' => $params['comment'],'optional_eval_comment' => $params['optionalComments'], 'updated_by_admin'=>$admin , 'updated_on_admin' => new Zend_Db_Expr('now()')), "map_id = ".$params['smid']);
+		$params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] !="" ) ? $params['isFollowUp'] : "no";
+
+		$db->update('shipment_participant_map',array('evaluation_comment' => $params['comment'],'optional_eval_comment' => $params['optionalComments'],'is_followup' => $params['isFollowUp'], 'updated_by_admin'=>$admin , 'updated_on_admin' => new Zend_Db_Expr('now()')), "map_id = ".$params['smid']);
 		
 	}
 	
