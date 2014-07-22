@@ -1830,3 +1830,36 @@ ALTER TABLE  `shipment_participant_map` ADD  `is_followup` VARCHAR( 255 ) NULL D
 ---Guna 22-july-2014
 ALTER TABLE  `participant` ADD  `enrolled_programs` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `testing_volume` ,
 ADD  `site_type` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `enrolled_programs`;
+
+CREATE TABLE IF NOT EXISTS `r_site_type` (
+  `r_stid` int(11) NOT NULL AUTO_INCREMENT,
+  `site_type` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`r_stid`)
+) ;
+
+
+
+INSERT INTO `r_site_type` (`site_type`) VALUES
+('VCT'),
+('Mobile VCT'),
+('TB Center'),
+('Antenatal Clinic (PMTCT)'),
+('Outpatient Clinic'),
+('Hospital'),
+('Laboratory'),
+('District'),
+('Province'),
+('Region'),
+('Department'),
+('Other');
+
+CREATE TABLE IF NOT EXISTS `r_enrolled_programs` (
+  `r_epid` int(11) NOT NULL AUTO_INCREMENT,
+  `enrolled_programs` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`r_epid`)
+) ;
+
+
+INSERT INTO `r_enrolled_programs` (`r_epid`, `enrolled_programs`) VALUES
+('PEPFAR RTQI Program'),
+('PEPFAR');
