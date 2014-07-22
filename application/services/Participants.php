@@ -116,6 +116,14 @@ class Application_Service_Participants {
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		return $db->fetchAll($db->select()->from('r_participant_affiliates')->order('affiliate ASC'));
 	}
+	public function getEnrolledProgramsList(){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		return $db->fetchAll($db->select()->from('r_enrolled_programs')->order('enrolled_programs ASC'));
+	}
+	public function getSiteTypeList(){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		return $db->fetchAll($db->select()->from('r_site_type')->order('site_type ASC'));
+	}
 	public function getNetworkTierList(){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		return $db->fetchAll($db->select()->from('r_network_tiers')->order('network_name ASC'));

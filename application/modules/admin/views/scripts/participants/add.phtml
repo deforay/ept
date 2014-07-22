@@ -114,9 +114,12 @@
                 <div class="col-lg-8">
 		    <select name="enrolledProgram" id="enrolledProgram"  class="form-control">
 			    <option value="">--Select--</option>
-			    <option value="PEPFAR RTQI Program">PEPFAR RTQI Program</option>
-			    <option value="PEPFAR">PEPFAR</option>
-			    
+			    <?php foreach($this->enrolledPrograms as $enrolledPrograms){
+				    ?>
+				    <option value="<?php echo $enrolledPrograms['r_epid']; ?>"><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
+				    <?php
+			    }
+			    ?>
 		    </select>
 		</div>
             </div>
@@ -125,19 +128,12 @@
                 <div class="col-lg-8">
 		    <select name="siteType" id="siteType"  class="form-control">
 			    <option value="">--Select--</option>
-			    <option value='VCT'>VCT</option>
-			    <option value='Mobile VCT'>Mobile VCT</option>
-			    <option value='TB Center'>TB Center</option>
-			    <option value='Antenatal Clinic (PMTCT)'>Antenatal Clinic (PMTCT)</option>
-			    <option value='Outpatient Clinic'>Outpatient Clinic</option>
-			    <option value='Hospital'>Hospital</option>
-			    <option value='Laboratory'>Laboratory</option>
-			    <option value='District'>District</option>
-			    <option value='Province'>Province</option>
-			    <option value='Region'>Region</option>
-			    <option value='Department'>Department</option>
-			    <option value='Other'>Other</option>
-			    
+			    <?php foreach($this->siteType as $siteType){
+				    ?>
+				    <option value="<?php echo $siteType['r_stid']; ?>"><?php echo $siteType['site_type']; ?></option>
+				    <?php
+			    }
+			    ?>
 		    </select>
 		</div>
             </div>
