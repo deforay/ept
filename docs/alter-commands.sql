@@ -1528,7 +1528,7 @@ ALTER TABLE  `shipment_participant_map` ADD  `created_on_user` DATETIME NULL DEF
 
 --Ilahir 07-Apr-2014
 
-INSERT INTO `eanalyze`.`global_config` (`name`, `value`) VALUES ('map-center', '0,0'), ('map-zoom', '2');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('map-center', '0,0'), ('map-zoom', '2');
 
 
 ALTER TABLE  `shipment_participant_map` CHANGE  `evaluation_comment`  `evaluation_comment` INT( 11 ) NULL DEFAULT 0;
@@ -1800,10 +1800,10 @@ INSERT INTO `countries` (`id`, `iso_name`, `iso2`, `iso3`, `numeric_code`) VALUE
 (249, 'Zimbabwe', 'ZW', 'ZWE', 716);
 
 ALTER TABLE  `participant` CHANGE  `country`  `country` INT( 11 ) NOT NULL;
-UPDATE  `eanalyze`.`participant` SET  `country` =  '2' ;
+UPDATE  `participant` SET  `country` =  '2' ;
 ALTER TABLE  `participant` ADD  `funding_source` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `shipping_address` ,
 ADD  `testing_volume` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `funding_source` ,
-ADD  `region` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `testing_volume`
+ADD  `region` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `testing_volume`;
 
 --Guna 11-june-2014
 ALTER TABLE  `data_manager` ADD  `created_on` DATETIME NULL DEFAULT NULL AFTER  `status` ,
@@ -1821,3 +1821,8 @@ ADD  `created_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `created_on` ,
 ADD  `updated_on` DATETIME NULL DEFAULT NULL AFTER  `created_by` ,
 ADD  `updated_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `updated_on`;
 
+
+
+--- Amit 15-Jul-2014
+
+ALTER TABLE  `shipment_participant_map` ADD  `is_followup` VARCHAR( 255 ) NULL DEFAULT  'no' AFTER  `optional_eval_comment`;

@@ -77,7 +77,7 @@ $count++;  ?>
 	<tr class ="dark">
 		<td>Assay Expiration Date:</td>
 		<td>
-			<input type="text" name="assayExpirationDate" id="assayExpirationDate" class="isRequired datepicker" readonly="readonly"  value="<?php echo $this->dateFormat($this->shipment['attributes']['assay_expiration_date']);?>"/>
+			<input type="text" name="assayExpirationDate" id="assayExpirationDate" class="isRequired expDatepicker" readonly="readonly"  value="<?php echo $this->dateFormat($this->shipment['attributes']['assay_expiration_date']);?>"/>
 		</td>
 		<td>Specimen Volume:</td> 
 		<td>
@@ -173,7 +173,8 @@ $dtFormat=  $genderHelper->getDateFormat();
 	}
 
 	$(function() {
-  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>',maxDate: '0'});
+  	    $(".expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 		<?php if(!$this->isEditable){
 			?>
 			$("#vlResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");

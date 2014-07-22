@@ -1,13 +1,25 @@
 <header>
     <div class="main">
-        <h1><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>">e-PT</a></h1>
+	
+        <h1 style="border:none;padding:0;margin:0;padding-top:20px;">
+	    
+	    <a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>" style="float:left;"><img src="<?php echo $this->baseUrl(); ?>/images/logo.gif" style="margin-top:20px;"/></a>
+	    
+	    
+	    <!--<img src="./images/country/country-flag.jpg" style="max-height:100px;float:right;margin:3px;"/>-->
+	    <img src="<?php echo $this->baseUrl(); ?>/images/country/institute-logo.jpg" style="max-height:100px;float:right;margin:3px;"/>
+	
+	</h1>
                          <?php
 					   $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if(isset($authNameSpace->dm_id)){
 						?>
       	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"logout"),null,true) ?>" class="button1">logout</a>
   		<?php }?>
+		
+		
         <div class="inside">
+	    
                       <?php if(!isset($authNameSpace->dm_id)){ ?>
         	
         	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>" class="da-button">Participant Login</a>
@@ -20,7 +32,7 @@
                     <li><a href="javascript:void(0);">My Account</a>
                     	<ul>
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"user-info"),null,true) ?>">My Login Information</a></li>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">PT Participant Information</a></li>
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">PT Participant Info</a></li>
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"scheme"),null,true) ?>">Scheme Information</a></li>
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"password"),null,true) ?>">Change Password</a></li>                                
                			</ul>

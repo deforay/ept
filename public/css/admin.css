@@ -63,3 +63,11 @@ text-align:center;
 .dataTables_wrapper{
  clear:both !important;
 }
+
+.dataTables_empty{
+ text-align:center;
+}
+
+td.center{
+	vertical-align: middle !important;
+}
