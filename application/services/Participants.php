@@ -1,5 +1,4 @@
 <?php
-
 class Application_Service_Participants {
 	
 	public function getUsersParticipants($userSystemId = null){
