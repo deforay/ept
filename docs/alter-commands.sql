@@ -1826,3 +1826,7 @@ ADD  `updated_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `updated_on`;
 --- Amit 15-Jul-2014
 
 ALTER TABLE  `shipment_participant_map` ADD  `is_followup` VARCHAR( 255 ) NULL DEFAULT  'no' AFTER  `optional_eval_comment`;
+
+---Guna 22-july-2014
+ALTER TABLE  `participant` ADD  `enrolled_programs` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `testing_volume` ,
+ADD  `site_type` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `enrolled_programs`;

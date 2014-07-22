@@ -123,6 +123,39 @@
                                              class="form-control" title="Please enter testing volume here"
                                              placeholder="Please enter the testing volume here" value="<?php echo $this->participant['testing_volume']; ?>"/></div>
             </div>
+	    <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">Enrolled Programs </label>
+
+                <div class="col-lg-8">
+		    <select name="enrolledProgram" id="enrolledProgram"  class="form-control">
+			    <option value="">--Select--</option>
+			    <option value="PEPFAR RTQI Program" <?php echo ($this->participant['enrolled_programs'] == "PEPFAR RTQI Program") ? "selected='selected'" : ""; ?>>PEPFAR RTQI Program</option>
+			    <option value="PEPFAR" <?php echo ($this->participant['enrolled_programs'] == "PEPFAR") ? "selected='selected'" : ""; ?>>PEPFAR</option>
+			    
+		    </select>
+		</div>
+            </div>
+	    <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">Site Type</label>
+                <div class="col-lg-8">
+		    <select name="siteType" id="siteType"  class="form-control">
+			    <option value="">--Select--</option>
+			    <option value='VCT' <?php echo ($this->participant['site_type'] == "VCT") ? "selected='selected'" : ""; ?>>VCT</option>
+			    <option value='Mobile VCT' <?php echo ($this->participant['site_type'] == "Mobile VCT") ? "selected='selected'" : ""; ?>>Mobile VCT</option>
+			    <option value='TB Center' <?php echo ($this->participant['site_type'] == "TB Center") ? "selected='selected'" : ""; ?>>TB Center</option>
+			    <option value='Antenatal Clinic (PMTCT)' <?php echo ($this->participant['site_type'] == "Antenatal Clinic (PMTCT)") ? "selected='selected'" : ""; ?>>Antenatal Clinic (PMTCT)</option>
+			    <option value='Outpatient Clinic' <?php echo ($this->participant['site_type'] == "Outpatient Clinic") ? "selected='selected'" : ""; ?>>Outpatient Clinic</option>
+			    <option value='Hospital' <?php echo ($this->participant['site_type'] == "Hospital") ? "selected='selected'" : ""; ?>>Hospital</option>
+			    <option value='Laboratory' <?php echo ($this->participant['site_type'] == "Laboratory") ? "selected='selected'" : ""; ?>>Laboratory</option>
+			    <option value='District' <?php echo ($this->participant['site_type'] == "District") ? "selected='selected'" : ""; ?>>District</option>
+			    <option value='Province' <?php echo ($this->participant['site_type'] == "Province") ? "selected='selected'" : ""; ?>>Province</option>
+			    <option value='Region' <?php echo ($this->participant['site_type'] == "Region") ? "selected='selected'" : ""; ?>>Region</option>
+			    <option value='Department' <?php echo ($this->participant['site_type'] == "Department") ? "selected='selected'" : ""; ?>>Department</option>
+			    <option value='Other' <?php echo ($this->participant['site_type'] == "Other") ? "selected='selected'" : ""; ?>>Other</option>
+			    
+		    </select>
+		</div>
+            </div>
 		
 			    
 		<div class="form-group col-lg-6">

@@ -197,6 +197,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 	    'network_tier' => $params['network'],
 	    'testing_volume' => $params['testingVolume'],
 	    'funding_source' => $params['fundingSource'],
+	    'enrolled_programs' => $params['enrolledProgram'],
+	    'site_type' => $params['siteType'],
 	    'region' => $params['region'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
@@ -259,6 +261,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 	    'network_tier' => $params['network'],
 	    'testing_volume' => $params['testingVolume'],
 	    'funding_source' => $params['fundingSource'],
+	    'enrolled_programs' => $params['enrolledProgram'],
+	    'site_type' => $params['siteType'],
 	    'region' => $params['region'],
             'created_on' => new Zend_Db_Expr('now()'),
 	    'created_by' => $authNameSpace->primary_email,
