@@ -51,12 +51,12 @@ else{
 
 <?php
 
-	$evalComments = array();
-	if(isset($this->evaluateData['evalComments'])){
-		foreach($this->evaluateData['evalComments'] as $ec){
-			$evalComments[$ec['comment_id']]= $ec['comment'];
-		}
+$evalComments = array();
+if(isset($this->evaluateData['evalComments'])){
+	foreach($this->evaluateData['evalComments'] as $ec){
+		$evalComments[$ec['comment_id']]= $ec['comment'];
 	}
+}
 
 ?>
 
@@ -93,39 +93,67 @@ else{
 			<input type="radio" name="isFollowUp" id="followUpNo" <?php echo (isset($this->evaluateData['shipment']['is_followup']) && $this->evaluateData['shipment']['is_followup'] =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
 		</td>
 	</tr>
+	
 </table>
-	<br/>
+<table class="table table-bordered table-striped table-hover" style="width:70%;margin:30px auto 0 auto;">
+	<tr>
+		<td style="vertical-align: middle;" colspan="2">
+			<label style="float: left;margin-top:10px;">Do you want to exclude this response from evaluation ? </label>
+			<div style="width:80px;float:left;margin-left:10px;">
+				<select name="isExcluded" id="isExcluded" class="form-control isRequired"  title="Please choose whether this response is excluded from evaluation or not">
+					<option <?php echo (isset($this->evaluateData['shipment']['is_excluded']) && $this->evaluateData['shipment']['is_excluded'] =="no") ? " selected='selected' " : ""; ?> value="no">No</option>
+					<option <?php echo (isset($this->evaluateData['shipment']['is_excluded']) && $this->evaluateData['shipment']['is_excluded'] =="yes") ? " selected='selected' " : ""; ?> value="yes">Yes</option>
+				</select>
+			</div>
+		</td>
+	</tr>
+</table>
+<br/>
 <div id="respond" style="margin: 10px auto 10px auto; text-align: center;" align="center">
 	<h5>Currently editing result <?php echo $pos+1 . " of ".count($urlListArray); ?> </h5>
-				<?php
-				if(isset($previousLink) && $previousLink != ""){
-				?>	
-                <button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $previousLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span><i class="icon-chevron-left"></i> Update and Previous</span></button>					
-				<?php
-				}
-				?>
-				
-				<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update</span></button>
-				
-				<?php
-				if(isset($nextLink) && $nextLink != ""){
-				?>	
-				<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $nextLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update and Next <i class="icon-chevron-right"></i></span></button>									
-				<?php
-				}
-				?>
+	
+	<?php
+	if(isset($previousLink) && $previousLink != ""){
+		?>	
+		<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $previousLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span><i class="icon-chevron-left"></i> Update and Previous</span></button>					
+		<?php
+	}
+	?>
+	
+	<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update</span></button>
+	
+	<?php
+	if(isset($nextLink) && $nextLink != ""){
+		?>	
+		<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $nextLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update and Next <i class="icon-chevron-right"></i></span></button>									
+		<?php
+	}
+	?>
 
 
-                <input class="btn btn-danger" type="button" onclick="document.location='/admin/evaluate/shipment/sid/<?php echo base64_encode($this->evaluateData['shipment']['shipment_id']); ?>'"
-                       tabindex="8" value="Back to Listing "/>
+	<input class="btn btn-danger" type="button" onclick="document.location='/admin/evaluate/shipment/sid/<?php echo base64_encode($this->evaluateData['shipment']['shipment_id']); ?>'"
+	       tabindex="8" value="Back to Listing "/>
 </div>
 </form>
-<?php 
+<?php
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat=  $vHelper->getDateFormat();
 ?>
 <script type="text/javascript">
 	$(document).ready(function(){
-	 $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+	  $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+	});
+	
+	var lastValue;
+	
+	$("#isExcluded").on("click", function(e) {
+	    lastValue = $(this).val();
+	}).bind("change", function(e) {
+	    changeConfirmation = confirm("Are you sure you want to change this ?");
+	    if (changeConfirmation) {
+		// Proceed as planned
+	    } else {
+		$(this).val(lastValue);
+	    }
 	});
 </script>

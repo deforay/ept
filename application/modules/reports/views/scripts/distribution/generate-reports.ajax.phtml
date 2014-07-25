@@ -147,7 +147,10 @@ foreach($this->result['shipment'] as $result){
 		$score=100*round($shipmentScore/$result['max_score'],2);
 	}
 	
-	if($score==100){
+	if($result['is_excluded'] == 'yes'){
+		$wishes='<p>Your response was not considered for evaluation</p><br/>';
+	}
+	else if($score==100){
 		$wishes='<p>Congratulations! You have received a satisfactory score of '.$score.'%.</p><br/>';
 	}else{
 		$wishes='<p>You have received a score of '.$score.'%.</p><br/>';

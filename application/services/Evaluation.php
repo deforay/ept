@@ -467,8 +467,8 @@ class Application_Service_Evaluation {
 			
 			$counter = 0;
 			$maxScore = 0;
+			
 			foreach($shipmentResult as $shipment){
-				
 				$createdOnUser=explode(" ",$shipment['created_on_user']);
 				if(trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) !="0000-00-00"){
 					
@@ -661,53 +661,61 @@ class Application_Service_Evaluation {
 					}
 				}
 				
-				if($testKit1!="" && $expDate1!=""){
-					if($testedOn->isLater($expDate1)){
-						$difference = $testedOn->sub($expDate1);
-						
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-						
+				if($testKit1 != ""){
+					if($expDate1!=""){
+						if($testedOn->isLater($expDate1)){
+							$difference = $testedOn->sub($expDate1);
+							
+							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+							$measure->convertTo(Zend_Measure_Time::DAY);
+							
+							$testKitExpiryResult = 'Fail';
+							$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						}
+					}else{
 						$testKitExpiryResult = 'Fail';
-						$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) reported without expiry date";
 					}
-				}else{
-					$testKitExpiryResult = 'Fail';
-					$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) reported without expiry date";						
 				}
 				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 				$testDate = $testedOn->toString('dd-MMM-YYYY');
-				if($testKit2!="" && $expDate2!=""){
-					if($testedOn->isLater($expDate2)){
-						$difference = $testedOn->sub($expDate2);
-						
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-	
+				
+				if($testKit2 != ""){
+					if($expDate2!=""){
+						if($testedOn->isLater($expDate2)){
+							$difference = $testedOn->sub($expDate2);
+							
+							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+							$measure->convertTo(Zend_Measure_Time::DAY);
+							
+							$testKitExpiryResult = 'Fail';
+							$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						}
+					}else{
 						$testKitExpiryResult = 'Fail';
-						$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) reported without expiry date";
 					}
-				}else{
-					$testKitExpiryResult = 'Fail';
-					$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) reported without expiry date";						
 				}
 			
 			
 				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 				$testDate = $testedOn->toString('dd-MMM-YYYY');
-				if($testKit3!="" && $expDate3!=""){
-					if($testedOn->isLater($expDate3)){
-						$difference = $testedOn->sub($expDate3);
-						
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
-						
+				
+				if($testKit3 != ""){
+					if($expDate3!=""){
+						if($testedOn->isLater($expDate3)){
+							$difference = $testedOn->sub($expDate3);
+							
+							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+							$measure->convertTo(Zend_Measure_Time::DAY);
+							
+							$testKitExpiryResult = 'Fail';
+							$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						}
+					}else{
 						$testKitExpiryResult = 'Fail';
-						$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
+						$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) reported without expiry date";
 					}
-				}else{
-					$testKitExpiryResult = 'Fail';
-					$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) reported without expiry date";						
 				}
 				//checking if testkits were repeated
 				if(($testKit1 == "") && ($testKit2 == "") && ($testKit3 == "")){
@@ -759,20 +767,30 @@ class Application_Service_Evaluation {
 					$scoreResult = 'Pass';
 				}				
 			
-				// if any of the results have failed, then the final result is fail
-				if($scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail'){
-					$finalResult = 2;
+
+				// if we are excluding this result, then let us not give pass/fail				
+				if($shipment['is_excluded'] == 'yes'){
+					$finalResult = '';
+					$shipmentResult[$counter]['shipment_score'] = $totalScore = 0;
+					$shipmentResult[$counter]['display_result'] = '';
+					$shipmentResult[$counter]['failure_reason'] = $failureReason = 'Excluded from Evaluation';
 				}else{
-					$finalResult = 1;
+					// if any of the results have failed, then the final result is fail
+					if($scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail'){
+						$finalResult = 2;
+					}else{
+						$finalResult = 1;
+					}					
+					$shipmentResult[$counter]['shipment_score'] = $totalScore;
+					
+					$fRes = $db->fetchCol($db->select()->from('r_results',array('result_name'))->where('result_id = '.$finalResult));
+				
+					$shipmentResult[$counter]['display_result'] = $fRes[0];
+					$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
 				}
-				$shipmentResult[$counter]['shipment_score'] = $totalScore;
+				
 				$shipmentResult[$counter]['max_score'] = $maxScore;
 				
-				$fRes = $db->fetchCol($db->select()->from('r_results',array('result_name'))->where('result_id = '.$finalResult));
-			
-				$shipmentResult[$counter]['display_result'] = $fRes[0];
-				$shipmentResult[$counter]['failure_reason'] = $failureReason = ($failureReason != "" ? implode(",",$failureReason) : "");
-			
 				// let us update the total score in DB
 				$nofOfRowsUpdated = $db->update('shipment_participant_map',array('shipment_score' => $totalScore,'final_result'=>$finalResult, 'failure_reason' => $failureReason), "map_id = ".$shipment['map_id']);
 				$counter++;
@@ -1118,7 +1136,7 @@ class Application_Service_Evaluation {
 		 
 		$params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] !="" ) ? $params['isFollowUp'] : "no";
 
-		$db->update('shipment_participant_map',array('evaluation_comment' => $params['comment'],'optional_eval_comment' => $params['optionalComments'],'is_followup' => $params['isFollowUp'], 'updated_by_admin'=>$admin , 'updated_on_admin' => new Zend_Db_Expr('now()')), "map_id = ".$params['smid']);
+		$db->update('shipment_participant_map',array('evaluation_comment' => $params['comment'],'optional_eval_comment' => $params['optionalComments'],'is_followup' => $params['isFollowUp'],'is_excluded' => $params['isExcluded'], 'updated_by_admin'=>$admin , 'updated_on_admin' => new Zend_Db_Expr('now()')), "map_id = ".$params['smid']);
 		
 	}
 	
@@ -1156,13 +1174,13 @@ class Application_Service_Evaluation {
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s'=>'shipment'),array('s.shipment_id','s.shipment_code','s.scheme_type','s.shipment_date','s.lastdate_response','s.max_score'))
 				->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id',array('d.distribution_id','d.distribution_code','d.distribution_date'))
-				->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('sp.map_id','sp.participant_id','sp.shipment_test_date','sp.shipment_receipt_date','sp.shipment_test_report_date','sp.final_result','sp.failure_reason','sp.shipment_score','sp.final_result','sp.attributes'))
+				->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('sp.map_id','sp.participant_id','sp.shipment_test_date','sp.shipment_receipt_date','sp.shipment_test_report_date','sp.final_result','sp.failure_reason','sp.shipment_score','sp.final_result','sp.attributes','sp.is_followup','sp.is_excluded'))
 				->join(array('sl'=>'scheme_list'),'sl.scheme_id=s.scheme_type',array('sl.scheme_id','sl.scheme_name'))
 				->join(array('p'=>'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
 				->joinLeft(array('res'=>'r_results'),'res.result_id=sp.final_result',array('result_name'))
 				->where("s.shipment_id = ?",$shipmentId)
-				->where("sp.final_result IS NOT NULL")
-				->where("sp.final_result!=''")
+				//->where("(sp.final_result IS NOT NULL OR is_excluded='yes')")
+				//->where("sp.final_result!=''")
 				->where("substring(sp.evaluation_status,4,1) != '0'");
 		//error_log($sql);die;
 		$shipmentResult = $db->fetchAll($sql);

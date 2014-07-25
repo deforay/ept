@@ -82,9 +82,8 @@
             <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'analyze') ? "class='active dropdown'" : "class='dropdown'"; ?>>
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Analyze <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'evaluate'),'default',true); ?>">Evaluate</a></li>
-                <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'distribution'),'default',true); ?>">Report</a></li>
-                <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments'),'default',true); ?>">Shipments Report</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'evaluate'),'default',true); ?>">Evaluate Responses</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'distribution'),'default',true); ?>">Generate Reports</a></li>
               </ul>
             </li>
 	    <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'report') ? "class='active dropdown'" : "class='dropdown'"; ?>>
@@ -92,6 +91,7 @@
               <ul class="dropdown-menu">
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'detailed'),'default',true); ?>">Participant Response Report</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'testkit'),'default',true); ?>">TestKit Report For DTS</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments'),'default',true); ?>">Shipments Report</a></li>		
               </ul>
             </li>
           </ul>
