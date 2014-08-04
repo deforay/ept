@@ -493,69 +493,95 @@ class Application_Service_Evaluation {
 				$failureReason = "";
 				$algoResult = "";
 				$lastDateResult = "";
-
-				$lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
-				
-				if(!$createdOn->isEarlier($lastDate)){
-					$lastDateResult = 'Fail';
-					$failureReason[] = "Response was submitted after the last response date.";
-				}				
-				//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
-				//$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
 				
 				$attributes = json_decode($shipment['attributes'],true);
 				
+				$sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
+				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+				
+				
+				// Testing should be done within 24 hours of rehydration.
+				$diff = $testedOn->sub($sampleRehydrationDate)->toValue();
+				$days = ceil($diff/60/60/24) +1;				
+				if($days > 1){
+				   $failureReason[] = "Testing should be done within 24 hours of rehydration.";
+				}
+				
+				
+				//Response was submitted after the last response date.
+				$lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);				
+				if(!$createdOn->isEarlier($lastDate)){
+					$lastDateResult = 'Fail';
+					$failureReason[] = "Response was submitted after the last response date.";
+				}
+				
+				
+				//Please make sure your result is approved by supervisor
+				if($shipment['supervisor_approval'] == "" || $shipment['supervisor_approval'] == NULL || strtolower($shipment['supervisor_approval']) == 'no'){
+					$failureReason[] = "Please make sure your result is approved by supervisor.";
+				}
+				
+				
+				
+				//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
+				//$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
+				
+				
+				
 				foreach($results as $result){
+					
+					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+					
 					$r1 = $r2 = $r3 = '';
 					if($result['test_result_1'] == 1){
-						$r1 = 'P';
+						$r1 = 'R';
 					} else if($result['test_result_1'] == 2){
-						$r1 = 'N';
+						$r1 = 'NR';
 					} else if($result['test_result_1'] == 3){
 						$r1 = 'I';
 					}else{
 						$r1 = '-';
 					}
 					if($result['test_result_2'] == 1){
-						$r2 = 'P';
+						$r2 = 'R';
 					} else if($result['test_result_2'] == 2){
-						$r2 = 'N';
+						$r2 = 'NR';
 					} else if($result['test_result_2'] == 3){
 						$r2 = 'I';
 					}else{
 						$r2 = '-';
 					}
 					if($result['test_result_3'] == 1){
-						$r3 = 'P';
+						$r3 = 'R';
 					} else if($result['test_result_3'] == 2){
-						$r3 = 'N';
+						$r3 = 'NR';
 					} else if($result['test_result_3'] == 3){
 						$r3 = 'I';
 					}else{
 						$r3 = '-';
 					}
 					
-					$algoString = $r1.$r2.$r3;
+					$algoString = "Wrongly reported in the pattern : <strong>". $r1."</strong> <strong>".$r2."</strong> <strong>".$r3."</strong>";
 
 					if($attributes['algorithm'] == 'serial'){
 						
-						if($r1 == 'N'){
-							if(($r2 == '') && ($r3 == '')){
+						if($r1 == 'NR'){
+							if(($r2 == '-') && ($r3 == '-')){
 								$algoResult = 'Pass';	
 							}else{
 								$algoResult = 'Fail';
 								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";								
 							}							
-						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'N'){
+						}else if($r1 == 'R' && $r2 == 'NR' && $r3 == 'NR'){
 							$algoResult = 'Pass';
-						}else if($r1 == 'P' && $r2 == 'P'){
-							if(($r3 == '')){
+						}else if($r1 == 'R' && $r2 == 'R'){
+							if(($r3 == '-')){
 								$algoResult = 'Pass';	
 							}else{
 								$algoResult = 'Fail';
 								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Serial Algorithm was not followed ($algoString)";					
 							}
-						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'P'){
+						}else if($r1 == 'R' && $r2 == 'NR' && $r3 == 'R'){
 							$algoResult = 'Pass';
 						}else{
 							$algoResult = 'Fail';
@@ -564,33 +590,33 @@ class Application_Service_Evaluation {
 						
 					} else if($attributes['algorithm'] == 'parallel'){
 						
-						if($r1 == 'P' && $r2 == 'P'){
-							if(($r3 == '')){
+						if($r1 == 'R' && $r2 == 'R'){
+							if(($r3 == '-')){
 								$algoResult = 'Pass';	
 							}else{
+								
 								$algoResult = 'Fail';
 								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";									
 							}
-						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'P'){
+						}else if($r1 == 'R' && $r2 == 'NR' && $r3 == 'R'){
 							$algoResult = 'Pass';
-						}else if($r1 == 'P' && $r2 == 'N' && $r3 == 'N'){
+						}else if($r1 == 'R' && $r2 == 'NR' && $r3 == 'NR'){
 							$algoResult = 'Pass';
-						}else if($r1 == 'N' && $r2 == 'N'){
-							if(($r3 == '')){
+						}else if($r1 == 'NR' && $r2 == 'NR'){
+							if(($r3 == '-')){
 								$algoResult = 'Pass';	
 							}else{
 								$algoResult = 'Fail';
 								$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";	
 							}
-						}else if($r1 == 'N' && $r2 == 'P' && $r3 == 'N'){
+						}else if($r1 == 'NR' && $r2 == 'R' && $r3 == 'NR'){
 							$algoResult = 'Pass';
-						}else if($r1 == 'N' && $r2 == 'P' && $r3 == 'P'){
+						}else if($r1 == 'NR' && $r2 == 'R' && $r3 == 'R'){
 							$algoResult = 'Pass';
 						}else{
 							$algoResult = 'Fail';
 							$failureReason[]= "For <strong>".$result['sample_label']."</strong> Parallel Algorithm was not followed ($algoString)";	
 						}
-						
 					}
 					
 					// matching reported and reference results
@@ -623,7 +649,6 @@ class Application_Service_Evaluation {
 					
 				// checking test kit expiry dates
 			
-				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 				$testDate = $testedOn->toString('dd-MMM-YYYY');
 				$expDate1="";
 				//die($results[0]['exp_date_1']);
@@ -668,16 +693,18 @@ class Application_Service_Evaluation {
 							
 							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
 							$measure->convertTo(Zend_Measure_Time::DAY);
-							
-							$testKitExpiryResult = 'Fail';
+							if(isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null){
+								$testKitExpiryResult = 'Fail';
+							}
 							$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
 						}
 					}else{
-						$testKitExpiryResult = 'Fail';
+						if(isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null){
+							$testKitExpiryResult = 'Fail';
+						}
 						$failureReason[]= "Test Kit 1 (<strong>".$testKit1."</strong>) reported without expiry date";
 					}
 				}
-				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 				$testDate = $testedOn->toString('dd-MMM-YYYY');
 				
 				if($testKit2 != ""){
@@ -687,18 +714,20 @@ class Application_Service_Evaluation {
 							
 							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
 							$measure->convertTo(Zend_Measure_Time::DAY);
-							
-							$testKitExpiryResult = 'Fail';
+							if(isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null){
+								$testKitExpiryResult = 'Fail';
+							}
 							$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
 						}
 					}else{
-						$testKitExpiryResult = 'Fail';
+						if(isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null){
+							$testKitExpiryResult = 'Fail';
+						}
 						$failureReason[]= "Test Kit 2 (<strong>".$testKit2."</strong>) reported without expiry date";
 					}
 				}
 			
 			
-				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 				$testDate = $testedOn->toString('dd-MMM-YYYY');
 				
 				if($testKit3 != ""){
@@ -708,12 +737,15 @@ class Application_Service_Evaluation {
 							
 							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
 							$measure->convertTo(Zend_Measure_Time::DAY);
-							
-							$testKitExpiryResult = 'Fail';
+							if(isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null){
+								$testKitExpiryResult = 'Fail';
+							}
 							$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) expired ".round($measure->getValue()). " days before the test date ".$testDate;
 						}
 					}else{
-						$testKitExpiryResult = 'Fail';
+						if(isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null){
+							$testKitExpiryResult = 'Fail';
+						}
 						$failureReason[]= "Test Kit 3 (<strong>".$testKit3."</strong>) reported without expiry date";
 					}
 				}
@@ -741,8 +773,6 @@ class Application_Service_Evaluation {
 						$failureReason[]= "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3";
 					}					
 				}
-				
-				
 				
 
 				// checking if all LOT details were entered
@@ -776,7 +806,7 @@ class Application_Service_Evaluation {
 					$shipmentResult[$counter]['failure_reason'] = $failureReason = 'Excluded from Evaluation';
 				}else{
 					// if any of the results have failed, then the final result is fail
-					if($scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail'){
+					if($algoResult== 'Fail' || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail'){
 						$finalResult = 2;
 					}else{
 						$finalResult = 1;
