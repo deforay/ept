@@ -260,7 +260,7 @@
 		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-sample-form')); ?>", { sid: $("#scheme").val(), format: "html" },
 		    function (data) {
 		       $("#sampleFormFragment").html(data);
-				   $.unblockUI();
+                        $.unblockUI();
 		});
 	}
 		

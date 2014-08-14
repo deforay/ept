@@ -1,25 +1,25 @@
 <footer>      
     <div class="main">
-       <div class="inside">
+        <div class="inside">
             <div class="row">
                 <div class="container p1">
-                    
-                    
-                        <div class="container">
-			    <div style="text-align:center;">
-				<img src="<?php echo $this->baseUrl(); ?>/images/country/country-flag.jpg" style="max-height:100px;margin:0 auto;clear:both;"/>
-			    </div>
-			    
-			    <span>e-PT</span> &copy; 2011 - <?php echo date('Y'); ?> | <a href="/privacy-policy">Privacy policy</a>
+
+
+                    <div class="container">
+                        <div style="text-align:center;">
+                            <img src="<?php echo $this->baseUrl(); ?>/images/country/country-flag.jpg" style="max-height:100px;margin:0 auto;clear:both;"/>
+                        </div>
+
+                        <span>e-PT</span> &copy; 2011 - <?php echo date('Y'); ?> | <a href="/privacy-policy">Privacy policy</a>
                         <ul class="list-1" style="float:right;">
-                            <li class="first"><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>" class="current">Home</a></li>
+                            <li class="first"><a href="<?php echo $this->url(array("controller" => "index", "action" => "index"), null, true) ?>" class="current">Home</a></li>
                             <li><a href="/about-us">About Us</a></li>
                             <li><a href="/pt-services">PT Services</a></li>
-			    <li><a href="/resources">Resources</a></li>
+                            <li><a href="/resources">Resources</a></li>
                             <li><a href="/contact-us">Contacts</a></li>
                         </ul>              
                     </div>  
-                  
+
                 </div> 
             </div>     
         </div>
@@ -32,49 +32,63 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.validate.js"); ?>"></script> 
 
 
-   
+
 <script src="<?php echo $this->baseUrl("js/loopedslider.js"); ?>" type="text/javascript"></script>
 
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/hoverIntent.js");?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/hoverIntent.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/superfish.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
-
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayModal.js"); ?>"></script>
 <script type="text/javascript">
-$(document).ready(function() {
-   $('ul.sf-menu').superfish();
-});
+    $(document).ready(function() {
+        $('ul.sf-menu').superfish();
+    });
 </script>  
-<script src="<?php echo $this->baseUrl("js/imagepreloader.js")?>" type="text/javascript"></script>
+<script src="<?php echo $this->baseUrl("js/imagepreloader.js") ?>" type="text/javascript"></script>
 <script type="text/javascript">
-	preloadImages([
-		"<?php echo $this->baseUrl("images/bg_link.png"); ?>", 
-		"<?php echo $this->baseUrl("images/button-1-act.png"); ?>", 
-		"<?php echo $this->baseUrl("images/button-2-act.png"); ?>"]);
+    preloadImages([
+        "<?php echo $this->baseUrl("images/bg_link.png"); ?>",
+        "<?php echo $this->baseUrl("images/button-1-act.png"); ?>",
+        "<?php echo $this->baseUrl("images/button-2-act.png"); ?>"]);
 
-	$(function(){
-		$('#loopedSlider').loopedSlider({
-			autoStart: 5000,
-			restart: 5000
-		});
-		
-		
+    $(function() {
+        $('#loopedSlider').loopedSlider({
+            autoStart: 5000,
+            restart: 5000
+        });
 
-   
-      <?php
-      $alertMsg = new Zend_Session_Namespace('alertSpace');
-      if(isset($alertMsg->message) && $alertMsg->message != ""){
-      ?>
-        alert("<?php echo $alertMsg->message;?>");
-      <?php
-		$alertMsg->message="";
-        unset($alertMsg->message);        
-      }
-      ?>
-      		
-		
-	});
+
+
+
+<?php
+$alertMsg = new Zend_Session_Namespace('alertSpace');
+if (isset($alertMsg->message) && $alertMsg->message != "") {
+    ?>
+            alert("<?php echo $alertMsg->message; ?>");
+    <?php
+    $alertMsg->message = "";
+    unset($alertMsg->message);
+}
+?>
+
+
+    });
+
+    function showModal(url, w, h) {
+        showdefModal('dDiv', w, h);
+        document.getElementById('dFrame').style.height = h + 'px';
+        document.getElementById('dFrame').style.width = w + 'px';
+        document.getElementById('dFrame').src = url;
+    }
+    function closeModal() {
+        document.getElementById('dFrame').src = "";
+        //window.location.reload(true);
+        hidedefModal();
+    }
+    
+    
 </script>
 <img src="/images/loading.gif" style="display:none;"/>
 </body>
