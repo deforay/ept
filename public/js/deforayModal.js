@@ -95,6 +95,36 @@ function showdefModal(obl, wd, ht) {
     var obol = getEl('ol');
     var obbxd = getEl('mbd');
     obbxd.innerHTML = getEl(obl).innerHTML;
+    
+    $("#"+obl + " input:text" ).each(function(i, obj) {
+	$("#mbd input:text:eq("+i+")").val($(this).val());
+    });
+    
+    $("#"+obl + " input:checkbox" ).each(function(i, obj) {
+	if ($(this).is(':checked')) {
+	    $("#mbd input:checkbox:eq("+i+")").prop('checked', true);
+	}else{
+	    $("#mbd input:checkbox:eq("+i+")").prop('checked', false);
+	}
+	
+    });
+    $("#"+obl + " input:radio" ).each(function(i, obj) {
+	if ($(this).is(':checked')) {
+	    $("#mbd input:radio:eq("+i+")").prop('checked', true);
+	}else{
+	    $("#mbd input:radio:eq("+i+")").prop('checked', false);
+	}
+	
+    });
+    
+    $("#"+obl + " select" ).each(function(i, obj) {
+	$("#mbd select:eq("+i+")").val($(this).val());
+    });
+    
+    $("#"+obl + " textarea" ).each(function(i, obj) {
+	$("#mbd textarea:eq("+i+")").val($(this).val());
+    });
+    
     obol.style.height =  jQuery(document).height() + p;
     obol.style.width = document.body.offsetWidth + p;
     //obol.style.top = posTop() + p;

@@ -1,4 +1,3 @@
-
 <?php
 
 	$possibleTestResults ='<select name="possibleTestResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
@@ -79,8 +78,7 @@
 					<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" />
 				</td>
 				<td>
-					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="loadCal();showdefModal('sampleEia1', 900,600)"><i class="icon-beaker"></i> EIA </a>
-<!--					<a data-toggle="modal" href="#sampleWb1" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB</a>-->
+					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleEia1', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a>
 					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a>
 					
 				</td>
@@ -116,7 +114,7 @@
 				</td> \
 				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 				<td> \
-					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="loadCal();showdefModal(\'sampleEia'+sampleCounter+'\', 900,600);"><i class="icon-beaker"></i> EIA </a> \
+					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia'+sampleCounter+'\', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a> \
 					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
 					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 				</td> \
@@ -221,8 +219,6 @@
 					<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleEia'+sampleId+'\')">OK</button>\
 				  </div>\
 				</div>');
-		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-		
 	}
 	
 	function addNewEiaRow(obj,sampleId) {
@@ -289,8 +285,16 @@
 		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'})
 	}
         
-        function closeShipmentModal(divId) {
-            document.getElementById(divId).innerHTML=getEl("mbd").innerHTML;
-            hidedefModal();
+	function closeShipmentModal(divId) {
+		document.getElementById(divId).innerHTML=getEl("mbd").innerHTML;
+		
+		$("#mbd input:text" ).each(function(i, obj) {
+		    $("#"+divId+" input:text:eq("+i+")").val($(this).val());
+		});
+		$("#mbd select" ).each(function(i, obj) {
+		    $("#"+divId+" select:eq("+i+")").val($(this).val());
+		});
+	    
+		hidedefModal();
         }
 </script>

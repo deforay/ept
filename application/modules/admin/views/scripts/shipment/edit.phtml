@@ -138,8 +138,7 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 				<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample"  value="<?php echo $reference['sample_score'];?>" />
 			</td>
 			<td>
-				<a data-toggle="modal" href="#sampleEia<?php echo $reference['sample_id'];?>" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a>
-				<a data-toggle="modal" href="#sampleWb<?php echo $reference['sample_id'];?>" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB</a>
+				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleEia<?php echo $reference['sample_id'];?>', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a>
 				<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a>
 				<?php
 				if($counter > 1){
@@ -148,11 +147,11 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 					<?php
 				}
 				?>
-			</td>
-		</tr>
-			<tr style="display: none;">
-				<td colspan="6">
-					<div id="sampleEia<?php echo $reference['sample_id'];?>" class="modal fade" tabindex="-1" data-width="860" style="display: none;">
+				
+				
+				
+					<div id="sampleEia<?php echo $reference['sample_id'];?>" class="dialog" tabindex="-1" data-width="860">
+					<span onClick="hidedefModal()" class="closeModal"></span>
 						<div class="modal-header">
 						      <h4 class="modal-title">EIA</h4>
 						</div>
@@ -214,19 +213,13 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 							      </div>
 						      </div>
 						</div>
-						<div class="modal-footer">
-						      <button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>
-						</div>
-					</div>
-				</td>
-			</tr>
-			<tr style="display: none;">
-				<td colspan="6">
-					
-					<div id="sampleWb<?php echo $reference['sample_id'];?>" class="modal fade" tabindex="-1" data-width="960" style="display: none;">
+						
 						<div class="modal-header">
 							<h4 class="modal-title">WB</h4>
 						</div>
+						
+						
+						
 						<div class="modal-body">
 						      <div class="row" style="overflow-x:scroll;">
 							      <div>
@@ -310,12 +303,19 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 							      </div>
 						      </div>
 						</div>
+
 						<div class="modal-footer">
-						      <button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>
+						      <button type="button" onclick="closeShipmentModal('sampleEia<?php echo $reference['sample_id'];?>');return false;" class="btn btn-primary">OK</button>
 						</div>
 					</div>
-				</td>
-			</tr>
+				
+				
+				
+				
+				
+			</td>
+		</tr>
+
 		<?php
 		$counter++;
 		}}else{
@@ -347,7 +347,6 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 				</td>
 				<td>
 					<a data-toggle="modal" href="#sampleEia1" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a>
-					<a data-toggle="modal" href="#sampleWb1" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB</a>
 					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a>
 					
 				</td>
@@ -383,6 +382,7 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 	});
 	
 	function addDtsRow(obj) {
+            sampleCounter++;
 		//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
 		$(obj.parentNode.parentNode).after('<tr align="center"> \
 				<td style="text-align: center"> \
@@ -401,12 +401,14 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 				</td> \
 				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 				<td> \
-				<a data-toggle="modal" href="#sampleEia'+sampleCounter+'" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a> \
-					<a data-toggle="modal" href="#sampleWb'+sampleCounter+'" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB </a> \
+					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia'+sampleCounter+'\', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a> \
 					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
 					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 				</td> \
 			</tr>');
+		addNewEiaBlock(sampleCounter);
+		
+                
 	}
 	function removeRow(obj) {
 		$(obj.parentNode.parentNode).fadeOut("normal",function(){
@@ -418,8 +420,23 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 	});
 	
-	function addNewEiaBlock(sampleId) {
-		$("#eiaBlockHolder").after('<div id="sampleEia'+sampleId+'" class="modal fade" tabindex="-1" data-width="860" style="display: none;">\
+        
+	function closeShipmentModal(divId) {
+		document.getElementById(divId).innerHTML=getEl("mbd").innerHTML;
+		
+		$("#mbd input:text" ).each(function(i, obj) {
+		    $("#"+divId+" input:text:eq("+i+")").val($(this).val());
+		});
+		$("#mbd select" ).each(function(i, obj) {
+		    $("#"+divId+" select:eq("+i+")").val($(this).val());
+		});
+	    
+		hidedefModal();
+        }	
+	
+function addNewEiaBlock(sampleId) {
+		$("#eiaBlockHolder").after('<div id="sampleEia'+sampleId+'" class="closeModal">\
+                                  <span onClick="hidedefModal()" class="closeModal"></span>\
 				  <div class="modal-header">\
 					<h4 class="modal-title">EIA</h4>\
 				  </div>\
@@ -453,12 +470,59 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 					  </div>\
 					</div>\
 				  </div>\
-				  <div class="modal-footer">\
-					<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>\
+				  \
+                                   \<div class="modal-header">\
+					<h4 class="modal-title">WB</h4>\
+				  </div>\
+				  <div class="modal-body">\
+					<div class="row" style="overflow-x:scroll;">\
+					  <div >\
+						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
+							<thead>\
+								<tr align="center">\
+									<th style="text-align: center;">WB</th>\
+									<th style="text-align: center;">Lot</th>\
+									<th style="text-align: center;">Expiry</th>\
+									<th style="text-align: center;">160</th>\
+									<th style="text-align: center;">120</th>\
+									<th style="text-align: center;">66</th>\
+									<th style="text-align: center;">55</th>\
+									<th style="text-align: center;">51</th>\
+									<th style="text-align: center;">41</th>\
+									<th style="text-align: center;">31</th>\
+									<th style="text-align: center;">24</th>\
+									<th style="text-align: center;">17</th>\
+									<th style="text-align: center;">Options</th>\
+								</tr>\
+							</thead>\
+							<tbody>\
+								<tr>\
+									<td><select class="form-control" name="wb['+sampleId+'][wb][]" style="width:125px;"><?php echo $wbChoices; ?></select></td>\
+									<td><input type="text" name="wb['+sampleId+'][lot][]" class="form-control" style="width:100px;"/></td>\
+									<td><input type="text" name="wb['+sampleId+'][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;"/></td>\
+									<td><select name="wb['+sampleId+'][160][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleId+'][120][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleId+'][66][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleId+'][55][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleId+'][51][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleId+'][41][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleId+'][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleId+'][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb['+sampleId+'][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td>\
+										<a href="javascript:void(0);" onclick="addNewWbRow(this,'+sampleId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+									</td>\
+								</tr>\
+							</tbody>\
+						</table>\
+					  </div>\
+					</div>\
+				  </div>\
+                                    \
+                                     <div class="modal-footer">\
+					<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleEia'+sampleId+'\')">OK</button>\
 				  </div>\
 				</div>');
-		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-		
 	}
 	
 	function addNewEiaRow(obj,sampleId) {
