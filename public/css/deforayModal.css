@@ -6,6 +6,7 @@
     border-radius: 8px;
     -webkit-border-radius: 8px;
     -moz-border-radius: 8px;
+    
 }
 
 #mbm{
@@ -36,4 +37,5 @@
     position: absolute;
     right:-20px;
     top:-20px;
+    z-index:9999;
 }

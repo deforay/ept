@@ -73,6 +73,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
+               
             }
             else if($sid == 'dbs'){
                 $scheme = new Application_Service_Schemes();
@@ -132,9 +133,12 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $sid = (int)base64_decode($this->_getParam('sid'));
                 $shipmentService = new Application_Service_Shipments();
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
+                
                 $schemeService = new Application_Service_Schemes();
                 $this->view->wb = $schemeService->getDbsWb();
                 $this->view->eia = $schemeService->getDbsEia();
+                $this->view->dtsPossibleResults= $schemeService->getPossibleResults('dts');
+                //Zend_Debug::dump($d);die;
                 $this->view->allTestKits = $schemeService->getAllDtsTestKit();
                 if($response === false){
                     $this->_redirect("/admin/shipment");        

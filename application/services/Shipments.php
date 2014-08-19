@@ -359,6 +359,7 @@ class Application_Service_Shipments {
 	}
 		
 	public function addShipment($params){
+		
 		//Zend_Debug::dump($params);die;
 		$scheme = $params['schemeId'];
 		$authNameSpace = new Zend_Session_Namespace('administrators');
@@ -483,6 +484,32 @@ class Application_Service_Shipments {
 						
 					}
 				}
+				// ------------------>
+				
+				// <------ Insert reference_dts_rapid_hiv table
+				if(isset($params['rhiv'][$i+1]['kit'])){
+					$eiaSize=sizeof($params['rhiv'][$i+1]['kit']);
+					for($e=0;$e<$eiaSize;$e++){
+						if(isset($params['rhiv'][$i+1]['kit'][$e]) && trim($params['rhiv'][$i+1]['kit'][$e])!=""){
+							$expDate='';
+							if(trim($params['rhiv'][$i+1]['expiry'][$e])!=""){
+								$expDate=Pt_Commons_General::dateFormat($params['rhiv'][$i+1]['expiry'][$e]);
+							}
+							
+							$dbAdapter->insert('reference_dts_rapid_hiv',
+								array('shipment_id'=>$lastId,
+									'sample_id'=>($i+1),
+									'testkit'=>$params['rhiv'][$i+1]['kit'][$e],
+									'lot_no'=>$params['rhiv'][$i+1]['lot'][$e],
+									'expiry_date'=>$expDate,
+									'result'=>$params['rhiv'][$i+1]['result'][$e]
+								)
+							);
+							
+						}
+					}
+				}
+				
 				// ------------------>
 			}
 
@@ -626,6 +653,7 @@ class Application_Service_Shipments {
 	
 		$eia = '';
 		$wb = '';
+		$rhiv = '';
 		if($shipment['scheme_type'] == 'dts'){			
 			$reference = $db->fetchAll($db->select()->from(array('s'=>'shipment'))
 						->join(array('ref'=>'reference_result_dts'),'ref.shipment_id=s.shipment_id')
@@ -635,6 +663,7 @@ class Application_Service_Shipments {
 			
 			$eia = $db->fetchAll($db->select()->from('reference_dts_eia')->where("shipment_id = ?",$sid));
 			$wb = $db->fetchAll($db->select()->from('reference_dts_wb')->where("shipment_id = ?",$sid));
+			$rhiv = $db->fetchAll($db->select()->from('reference_dts_rapid_hiv')->where("shipment_id = ?",$sid));
 			
 		}else if($shipment['scheme_type'] == 'dbs'){
 			
@@ -664,7 +693,7 @@ class Application_Service_Shipments {
 			return false;
 		}
 		
-		return array('shipment'=>$shipment, 'reference'=>$reference,'possibleResults'=>$possibleResults , 'eia' => $eia , 'wb' => $wb);
+		return array('shipment'=>$shipment, 'reference'=>$reference,'possibleResults'=>$possibleResults , 'eia' => $eia , 'wb' => $wb,'rhiv'=>$rhiv);
 		
 	}
 	
@@ -717,6 +746,7 @@ class Application_Service_Shipments {
 			$dbAdapter->delete('reference_result_dts','shipment_id = '.$params['shipmentId']);
 			$dbAdapter->delete('reference_dts_eia','shipment_id = '.$params['shipmentId']);
 			$dbAdapter->delete('reference_dts_wb','shipment_id = '.$params['shipmentId']);
+			$dbAdapter->delete('reference_dts_rapid_hiv','shipment_id = '.$params['shipmentId']);
 			for($i = 0;$i < $size;$i++){
 				$dbAdapter->insert('reference_result_dts',array(
 									'shipment_id'=>$params['shipmentId'],
@@ -783,6 +813,32 @@ class Application_Service_Shipments {
 						
 					}
 				}
+				// ------------------>
+				
+				// <------ Insert reference_dts_rapid_hiv table
+				if(isset($params['rhiv'][$i+1]['kit'])){
+					$eiaSize=sizeof($params['rhiv'][$i+1]['kit']);
+					for($e=0;$e<$eiaSize;$e++){
+						if(isset($params['rhiv'][$i+1]['kit'][$e]) && trim($params['rhiv'][$i+1]['kit'][$e])!=""){
+							$expDate='';
+							if(trim($params['rhiv'][$i+1]['expiry'][$e])!=""){
+								$expDate=Pt_Commons_General::dateFormat($params['rhiv'][$i+1]['expiry'][$e]);
+							}
+							
+							$dbAdapter->insert('reference_dts_rapid_hiv',
+								array('shipment_id'=>$params['shipmentId'],
+									'sample_id'=>($i+1),
+									'testkit'=>$params['rhiv'][$i+1]['kit'][$e],
+									'lot_no'=>$params['rhiv'][$i+1]['lot'][$e],
+									'expiry_date'=>$expDate,
+									'result'=>$params['rhiv'][$i+1]['result'][$e]
+								)
+							);
+							
+						}
+					}
+				}
+				
 				// ------------------>
 			}
 

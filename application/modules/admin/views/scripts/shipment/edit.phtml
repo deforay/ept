@@ -13,6 +13,10 @@ $dtFormat=  $vHelper->getDateFormat();
 	.modal-backdrop{
 		z-index: 900 !important;
 	}
+	#mbd{
+    overflow-y:scroll;
+    max-height:100%;
+}
 </style>
 <div class="well">
 	<fieldset>
@@ -80,6 +84,20 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 	$allWb=array();
 	foreach($shipmentData['wb'] as $wb){
 		$allWb[]=$wb['sample_id'];
+	}
+	$allRhiv=array();
+	foreach($shipmentData['rhiv'] as $rhiv){
+		$allRhiv[]=$rhiv['sample_id'];
+	}
+	$dtskit ='<option value="">--Select--</option>';
+	foreach($this->allTestKits as $kitId => $kitName){
+		$dtskit .= '<option value="'.$kitId.'">'.$kitName.'</option>';
+	}
+	$testResults ='<option value="">--Select--</option>';
+	foreach($this->dtsPossibleResults as $pr){
+		if($pr['scheme_sub_group'] == 'DTS_TEST'){
+			$testResults .= '<option value="'.$pr['id'].'">'.$pr['response'].'</option>';
+		}
 	}
 	
 	?>
@@ -303,6 +321,82 @@ if($shipmentData['shipment']['scheme_type'] == 'dts'){
 							      </div>
 						      </div>
 						</div>
+						
+						
+						<div class="modal-header">
+						      <h4 class="modal-title">RAPID HIV TESTING</h4>
+						</div>
+						<div class="modal-body">
+						      <div class="row">
+							      <div>
+								      <table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">
+									      <thead>
+										      <tr align="center">
+											        <th style="width:20%;text-align: center;">Kit Name</th>
+												<th style="width:10%;text-align: center;">Lot</th>
+												<th style="width:12%;text-align: center;">Expiry</th>
+												<th style="width:15%;text-align: center;">Result</th>
+												<th style="width:5%;text-align: center;">Options</th>
+										      </tr>
+									      </thead>
+									      <tbody>
+										      <?php
+											if (in_array($reference['sample_id'], $allRhiv)){
+												$k=0;
+											foreach($shipmentData['rhiv'] as $rhiv){
+												if($rhiv['sample_id']==$reference['sample_id']){
+										      ?>
+										      <tr>
+											      <td><select class="form-control" name="rhiv[<?php echo $rhiv['sample_id'];?>][kit][]" ><?php $this->dropdownSelection($this->allTestKits,$rhiv['testkit'],true); ?></select></td>
+											      <td><input type="text" name="rhiv[<?php echo $rhiv['sample_id'];?>][lot][]" class="form-control" value="<?php echo $rhiv['lot_no']; ?>"/></td>
+											      <td><input type="text" name="rhiv[<?php echo $rhiv['sample_id'];?>][expiry][]"  class="form-control datepicker" readonly="readonly" value="<?php echo $this->dateFormat($rhiv['expiry_date']); ?>"/></td>
+											      <td>
+												<select class="form-control" name="rhiv[<?php echo $rhiv['sample_id'];?>][result][]">
+												<option value="">--Select--</option>
+												<?php
+												foreach($this->dtsPossibleResults as $pr){
+													if($pr['scheme_sub_group'] == 'DTS_TEST'){
+												?>
+												<option value='<?php echo $pr['id'];?>' <?php echo (isset($pr['id']) && $pr['id'] == $rhiv['result']) ? "selected='selected'" : ""; ?>><?php echo $pr['response'];?></option>
+												<?php
+												}
+												}
+												?>
+											      </select>
+											      </td>
+											      <td>
+												      <a href="javascript:void(0);" onclick="addNewHivRow(this,<?php echo $rhiv['sample_id'];?>)" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>
+												      <?php
+												      if($k > 0){
+												      ?>
+												      <a href="javascript:void(0);" onclick="removeHivRow(this,'<?php echo $rhiv['sample_id'];?>')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+												      <?php } ?>
+											      </td>
+										      </tr>
+										      <?php
+												}
+												$k++;
+											}
+											}else{
+										      ?>
+										      <tr>
+											        <td><select class="form-control" name="rhiv[<?php echo $reference['sample_id'];?>][kit][]"><?php echo $dtskit; ?></select></td> 
+												<td><input type="text" name="rhiv[<?php echo $reference['sample_id'];?>][lot][]" class="form-control"/></td> 
+												<td><input type="text" name="rhiv[<?php echo $reference['sample_id'];?>'][expiry][]" class="form-control datepicker" readonly="readonly"/></td> 
+												<td><select class="form-control" name="rhiv[<?php echo $reference['sample_id'];?>][result][]"><?php echo $testResults; ?></select></td>
+											      <td>
+												      <a href="javascript:void(0);" onclick="addNewHivRow(this,<?php echo $reference['sample_id'];?>)" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>
+											      </td>
+										      </tr>
+										      <?php } ?>
+									      </tbody>
+								      </table>
+							      </div>
+						      </div>
+						</div>
+						
+						
+						
 
 						<div class="modal-footer">
 						      <button type="button" onclick="closeShipmentModal('sampleEia<?php echo $reference['sample_id'];?>');return false;" class="btn btn-primary">OK</button>
@@ -518,7 +612,38 @@ function addNewEiaBlock(sampleId) {
 					  </div>\
 					</div>\
 				  </div>\
-                                    \
+				     \
+				    <div class="modal-header">\
+					<h4 class="modal-title"> RAPID HIV TESTING</h4>\
+				  </div>\
+				  <div class="modal-body">\
+					<div class="row">\
+					  <div >\
+						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
+							<thead>\
+								<tr align="center">\
+									<th style="width:20%;text-align: center;">Kit Name</th>\
+									<th style="width:10%;text-align: center;">Lot</th>\
+									<th style="width:12%;text-align: center;">Expiry</th>\
+									<th style="width:10%;text-align: center;">Result</th>\
+									<th style="width:10%;text-align: center;">Options</th>\
+								</tr>\
+							</thead>\
+							<tbody>\
+								<tr>\
+									<td><select class="form-control" name="rhiv['+sampleId+'][kit][]"><?php echo $dtskit; ?></select></td>\
+									<td><input type="text" name="rhiv['+sampleId+'][lot][]" class="form-control"/></td>\
+									<td><input type="text" name="rhiv['+sampleId+'][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
+									<td><select class="form-control" name="rhiv['+sampleId+'][result][]"><?php echo $testResults; ?></select></td>\
+									<td>\
+										<a href="javascript:void(0);" onclick="addNewHivRow(this,'+sampleId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+									</td>\
+								</tr>\
+							</tbody>\
+						</table>\
+					  </div>\
+					</div>\
+				  </div>\
                                      <div class="modal-footer">\
 					<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleEia'+sampleId+'\')">OK</button>\
 				  </div>\
@@ -624,6 +749,26 @@ function addNewEiaBlock(sampleId) {
 							</td> \
 						</tr>');
 		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+	}
+	function addNewHivRow(obj,sampleId) {
+		$(obj.parentNode.parentNode).after('<tr> \
+							<td><select class="form-control" name="rhiv['+sampleId+'][kit][]"><?php echo $dtskit; ?></select></td> \
+							<td><input type="text" name="rhiv['+sampleId+'][lot][]" class="form-control"/></td> \
+							<td><input type="text" name="rhiv['+sampleId+'][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
+							<td><select class="form-control" name="rhiv['+sampleId+'][result][]"><?php echo $testResults; ?></select></td>\
+							<td> \
+								<a href="javascript:void(0);" onclick="addNewHivRow(this,'+sampleId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
+								<a  href="javascript:void(0);" onclick="removeHivRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+							</td> \
+						</tr>');
+		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+	}
+	
+	function removeHivRow(obj,sampleId) {
+		$(obj.parentNode.parentNode).fadeOut("normal",function(){
+			$(this).remove();
+			//$('#sampleWb'+sampleId).remove();
+		});
 	}
 	
 	function removeWbRow(obj,sampleId) {
