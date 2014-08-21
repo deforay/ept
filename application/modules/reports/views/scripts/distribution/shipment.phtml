@@ -4,7 +4,7 @@
 <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
 <div id="allShipmentList">
      
-          <legend><h4>All Shipments Under PT Event <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4></legend>
+          <legend><h4>All Shipments Under PT Survey <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4></legend>
      
           <table class="table table-bordered table-striped table-hover">
 			<tr>
@@ -46,7 +46,7 @@
 				?>
 				<tr>
 					<td colspan="5" align="center" style="text-align:center">
-						No shipments for this PT Event yet
+						No shipments for this PT Survey yet
 					</td>
 				</tr>
 				<?php
@@ -65,9 +65,9 @@
 	<tr>
 		<th style="text-align: right">Scheme Type</th>
 		<td><?php echo $this->shipment[0]['scheme_name']; ?></td>
-		<th style="text-align: right">PT Event Code</th>
+		<th style="text-align: right">PT Survey Code</th>
 		<td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
-		<th style="text-align: right">PT Event/Shipment Date</th>
+		<th style="text-align: right">PT Survey/Shipment Date</th>
 		<td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
 	</tr>
 </table>

@@ -34,8 +34,8 @@
  
         <th>Shipment Code</th>
 	<th>Scheme Type</th>
-        <th>PT Event Code</th>
-        <th>PT Event Date</th>
+        <th>PT Survey Code</th>
+        <th>PT Survey Date</th>
         <th>Last Date</th>
         <th>No. Of Samples</th>
         <th>Status</th>
@@ -55,10 +55,10 @@
 	
 	<form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'add')); ?>" autocomplete="off">
             <div class="form-group">
-                <label class="col-lg-3 control-label">PT Event (Unshipped) <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">PT Survey (Unshipped) <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-					<select id="distribution" name="distribution" class="isRequired form-control input-sm" title="Please select a PT Event">
+					<select id="distribution" name="distribution" class="isRequired form-control input-sm" title="Please select a PT Survey">
 						<option value="">--Select--</option>
 						<?php
 							foreach($this->unshippedDistro as $dist){
