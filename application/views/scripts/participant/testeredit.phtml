@@ -63,9 +63,9 @@
             </select></td>
     </tr>
     <tr>
-        <th>Region</th>
+        <th>Region <span class="mandatory">*</span></th>
         <td>
-            <input type="text" id="region" size="25" maxlength="45" name="region" class="form-control" title="Please enter region here" placeholder="Please enter region here" value="<?php echo $this->rsParticipant['region']; ?>"/>
+            <input type="text" id="region" size="25" maxlength="45" name="region" class="form-control isRequired" title="Please enter region here" placeholder="Please enter region here" value="<?php echo $this->rsParticipant['region']; ?>"/>
         </td>
         <th>
             <label>Zip Code (if applicable)</label></th>
@@ -157,7 +157,7 @@
     <tr>
         <th>Participant Affiliation <span class="mandatory">*</span></th>
         <td>
-            <select name="partAff" id="partAff"  class="isRequired" title="Please select affiliation" style="width: 285px">
+            <select name="partAff" id="partAff"  class="isRequired" title="Please choose the affiliation here" style="width: 285px">
                 <option value="">--Select--</option>
                 <?php foreach ($this->affiliates as $aff) {
                     ?>
@@ -168,7 +168,7 @@
         </td>
         <th>Network <span class="mandatory">*</span></th>
         <td>
-            <select name="network" id="network"  class="isRequired" title="Please select Network">
+            <select name="network" id="network"  class="isRequired" title="Please choose the network here">
                 <option value="">--Select--</option>
                 <?php foreach ($this->networks as $nw) {
                     ?>
