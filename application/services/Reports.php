@@ -123,7 +123,7 @@ class Application_Service_Reports {
 		    $sQuery = $dbAdapter->select()->from(array('s'=>'shipment'))
 				    ->join(array('sl'=>'scheme_list'),'s.scheme_type=sl.scheme_id')
 				    ->join(array('d'=>'distributions'),'d.distribution_id=s.distribution_id')
-				    ->joinLeft(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"),'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(shipment_test_date <> '')/count('participant_id'))*100,2)"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
+				    ->joinLeft(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('report_generated','participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"),'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(shipment_test_date <> '')/count('participant_id'))*100,2)"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
 				    ->joinLeft(array('p'=>'participant'),'p.participant_id=sp.participant_id')
 				    //->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
 				    ->joinLeft(array('rr'=>'r_results'),'sp.final_result=rr.result_id')
@@ -195,7 +195,12 @@ class Application_Service_Reports {
 		    //'s.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,
 		    //'sp.participant_count','sp.reported_count','sp.number_passed','s.status');
 	    foreach ($rResult as $aRow) {
-		
+                $download='';
+		    if(isset($aRow['report_generated']) && $aRow['report_generated']=='yes'){
+                        if (file_exists(UPLOAD_PATH. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR . $aRow['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf")) {
+                            $download='<a href="/uploads/reports/'. $aRow['shipment_code'].'/summary.pdf" class=\'btn btn-info\'><i class=\'icon-file-text\'></i></a>';
+                        }
+                    }
 		    $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
 		    $responsePercentage=($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
 		    $row = array();
@@ -211,6 +216,7 @@ class Application_Service_Reports {
 		    $row[] = '<a href="/reports/shipments/response-chart/id/'.base64_encode($aRow['shipment_id']).'/shipmentDate/'.base64_encode($aRow['distribution_date']).'/shipmentCode/'.base64_encode($aRow['distribution_code']).'" target="_blank">'.$responsePercentage.'</a>';
 		    $row[] = $aRow['number_passed'];
 		    $row[] = ucwords($aRow['status']);
+		    $row[] = $download;
 		
 		
 		    $output['aaData'][] = $row;
