@@ -109,12 +109,13 @@
                     for (var ln = 0; ln < JSON.parse(response[1]).length; ln++) {
                         passedvalues.push(parseInt(JSON.parse(response[1])[ln]));
                         failedvalues.push(parseInt(JSON.parse(response[2])[ln]));
+                        
                         othervalues.push(parseInt(JSON.parse(response[3])[ln]));
                     }
                     $("#participant").html('');
                     $('#participant').highcharts({
                         colors: [
-                            '#318047','#FF0000','#FFFF66'
+                            '#82BF97','#F86161','#606060'
                         ],
                         chart: {
                             type: 'column'
