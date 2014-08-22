@@ -2,6 +2,21 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/var/www/ept/application/models/DbTable/DataManagers.php</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/ParticipantsController.php</file>
+            <file>file:/var/www/ept/application/layouts/scripts/admin.phtml</file>
+            <file>file:/var/www/ept/docs/alter-commands.sql</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/EnrollmentsController.php</file>
+            <file>file:/var/www/ept/application/models/DbTable/Participants.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/get-datamanager.ajax.phtml</file>
+            <file>file:/var/www/ept/application/models/DbTable/Enrollments.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/participant-manager-map.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/enrollments/add.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/edit.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/get-participant.ajax.phtml</file>
+            <file>file:/var/www/ept/application/services/Participants.php</file>
+            <file>file:/var/www/ept/application/services/DataManagers.php</file>
+        </group>
     </open-files>
 </project-private>

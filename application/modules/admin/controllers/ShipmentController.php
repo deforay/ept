@@ -8,6 +8,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
                 ->addActionContext('get-sample-form', 'html')
+                ->addActionContext('get-shipment-code', 'html')
                 ->addActionContext('remove', 'html')
                 ->addActionContext('view-enrollments', 'html')
                 ->addActionContext('delete-shipment-participant', 'html')
@@ -199,8 +200,19 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
     }
 
+    public function getShipmentCodeAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $sid = strtolower($this->_getParam('sid'));
+            $shipmentService = new Application_Service_Shipments();
+            $this->view->code= $shipmentService->getShipmentCode($sid);
+        }   
+    }
+
 
 }
+
+
 
 
 

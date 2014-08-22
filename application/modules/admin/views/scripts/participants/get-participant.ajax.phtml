@@ -1,0 +1,13 @@
+<?php
+$result= '';
+foreach ($this->participants as $key => $participants) {
+    $selected = "";
+    foreach ($this->mappedParticipant as $mappedParticipant) {
+       
+        if ($mappedParticipant['participant_id'] == $participants['participant_id']) {
+            $selected = "selected='selected'";
+        }
+    }
+        $result.='<option value="' . $participants['participant_id'] . '"'.$selected.'>' . $participants['first_name'] . " " . $participants['last_name'] .'('.$participants['unique_identifier'] .')'.'</option>';
+}
+echo $result;

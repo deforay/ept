@@ -243,6 +243,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             return false;
         }
     }
+    
 
 }
 

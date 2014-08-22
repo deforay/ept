@@ -58,6 +58,14 @@ class Application_Service_DataManagers {
 		$userDb = new Application_Model_DbTable_DataManagers();
 		return $userDb->getAllDataManagers();
 	}
+        public function getParticipantDatamanagerList($participantId){
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            return $db->fetchAll($db->select()->from('participant_manager_map')->where("participant_id= ?",$participantId));
+        }
+        public function getDatamanagerParticipantList($datamanagerId){
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            return $db->fetchAll($db->select()->from('participant_manager_map')->where("dm_id= ?",$datamanagerId)->group('participant_id'));
+        }
 	
 	public function changePassword($oldPassword,$newPassword){
 		$userDb = new Application_Model_DbTable_DataManagers();
@@ -73,6 +81,7 @@ class Application_Service_DataManagers {
 			return false;
 		}
 	}
+        
 	
 }
 

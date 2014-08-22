@@ -112,6 +112,10 @@ class Application_Service_Participants {
 		$enrollments = new Application_Model_DbTable_Enrollments();
 		return $enrollments->enrollParticipants($params);
 	}
+        public function addParticipantManagerMap($params){
+		$db = new Application_Model_DbTable_Participants();
+		return $db->addParticipantManager($params);
+	}
 	public function getAffiliateList(){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		return $db->fetchAll($db->select()->from('r_participant_affiliates')->order('affiliate ASC'));
@@ -145,6 +149,7 @@ class Application_Service_Participants {
 				  ->order("p.first_name");
 	    return $db->fetchAll($sql);
 	}
+        
 	
 	public function getAllActiveParticipants(){
 		$participantDb = new Application_Model_DbTable_Participants();

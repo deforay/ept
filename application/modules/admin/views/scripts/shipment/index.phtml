@@ -1,112 +1,114 @@
 
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <style>
-	
+
 </style>
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Shipments</div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Shipments</div>
 </h4>
 
 
 <span class="col-md-4 col-xs-12" style="padding:10px 0;">
-	<label>To add a new scheme select a Scheme Type below</label>
-<select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control input-sm">
-	<option value=""> -- Select Scheme Type --</option>
-	<?php
-	  foreach($this->schemes as $scheme){
-		?>
-			<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
-		<?php
-	  }
-	?>
-</select>
+    <label>To add a new scheme select a Scheme Type below</label>
+    <select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control input-sm">
+        <option value=""> -- Select Scheme Type --</option>
+        <?php
+        foreach ($this->schemes as $scheme) {
+            ?>
+            <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
+            <?php
+        }
+        ?>
+    </select>
 </span>
 <span class="col-md-5 col-xs-12" id="btnSpan" style="padding:10px;display:none;">
-	<label>Click on New Shipment to proceed adding Scheme</label>
-<button class="btn btn-primary btn-sm" onclick="newShipment();" id="enrollBtn"><span>New Scheme</span></button>
-<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location;"><span>Reset</span></button>
+    <label>Click on New Shipment to proceed adding Scheme</label>
+    <button class="btn btn-primary btn-sm" onclick="newShipment();" id="enrollBtn"><span>New Scheme</span></button>
+    <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location;"><span>Reset</span></button>
 </span>
 
 
 <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentTable">
     <thead>
-    <tr>
- 
-        <th>Shipment Code</th>
-	<th>Scheme Type</th>
-        <th>PT Event Code</th>
-        <th>PT Event Date</th>
-        <th>Last Date</th>
-        <th>No. Of Samples</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
+        <tr>
+
+            <th>Shipment Code</th>
+            <th>Scheme Type</th>
+            <th>PT Event Code</th>
+            <th>PT Event Date</th>
+            <th>Last Date</th>
+            <th>No. Of Samples</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
     </thead>
     <tbody>
-    <tr>
-        <td colspan="10" class="dataTables_empty">Loading data from server</td>
-    </tr>
+        <tr>
+            <td colspan="10" class="dataTables_empty">Loading data from server</td>
+        </tr>
     </tbody>
 </table>
 <br/><br/><br/>
 <div style="display:none;clear:both;padding:30px;" id="configShipment">
-	<fieldset>
-		<legend style="font-size:17px;">Add Shipment Details</legend>
-	
-	<form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'add')); ?>" autocomplete="off">
+    <fieldset>
+        <legend style="font-size:17px;">Add Shipment Details</legend>
+
+        <form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'add')); ?>" autocomplete="off">
             <div class="form-group">
                 <label class="col-lg-3 control-label">PT Event (Unshipped) <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-					<select id="distribution" name="distribution" class="isRequired form-control input-sm" title="Please select a PT Event">
-						<option value="">--Select--</option>
-						<?php
-							foreach($this->unshippedDistro as $dist){
-								?>
-								<option value="<?php echo $dist['distribution_id']; ?>" <?php echo ($dist['distribution_id'] == $this->selectedDistribution) ? "selected='selected'" : "" ?>><?php echo $dist['distribution_code'] . "   (". $this->dateFormat($dist['distribution_date']) .")"; ?></option>		
-								<?php
-							}
-						?>
-					</select>
-				</div>
-				
-				<input type="hidden" name="schemeId" id="schemeId" class="isRequired" title="Please choose a Scheme Type on the top of this page"/>
-				<input type="hidden" name="selectedDistribution" id="selectedDistribution" class="" value="<?php echo $this->selectedDistribution; ?>"/>
-				
+                    <select id="distribution" name="distribution" class="isRequired form-control input-sm" title="Please select a PT Event">
+                        <option value="">--Select--</option>
+                        <?php
+                        foreach ($this->unshippedDistro as $dist) {
+                            ?>
+                            <option value="<?php echo $dist['distribution_id']; ?>" <?php echo ($dist['distribution_id'] == $this->selectedDistribution) ? "selected='selected'" : "" ?>><?php echo $dist['distribution_code'] . "   (" . $this->dateFormat($dist['distribution_date']) . ")"; ?></option>		
+                            <?php
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <input type="hidden" name="schemeId" id="schemeId" class="isRequired" title="Please choose a Scheme Type on the top of this page"/>
+                <input type="hidden" name="selectedDistribution" id="selectedDistribution" class="" value="<?php echo $this->selectedDistribution; ?>"/>
+
             </div>		
             <div class="form-group">
                 <label class="col-lg-3 control-label">Shipment Code <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="shipmentCode" name="shipmentCode" size="50" maxlength="45"
-                                             class="isRequired form-control input-sm"
-											 title="Please enter the shipment code here"
-                                             placeholder="Please enter the shipment code here"
-											 onblur="checkDuplicate('shipment', 'shipment_code',$('#shipmentCode'),null, 'This Code already exists for another Shipment. Please try something else.')"/></div>
-				
-				
+                <div class="col-lg-5">
+                    <input type="text" id="shipmentCode" name="shipmentCode" size="50" maxlength="45"
+                           class="isRequired form-control input-sm"
+                           title="Please enter the shipment code here"
+                           placeholder="Please enter the shipment code here"
+                           onblur="checkDuplicate('shipment', 'shipment_code', $('#shipmentCode'), null, 'This Code already exists for another Shipment. Please try something else.')"/></div>
+
+
             </div>		
             <div class="form-group">
                 <label class="col-lg-3 control-label">Last Date <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5"><input type="text" id="lastDate" name="lastDate" size="50" maxlength="45" readonly="readonly"
                                              class="isRequired form-control input-sm datepicker"
-					     title="Please enter the last date here"
+                                             title="Please enter the last date here"
                                              placeholder="Please enter the last date here"/></div>
-				
-				
+
+
             </div>		
-			<div class="form-group" id="sampleFormFragment">
-				
-			</div>
-			
+            <div class="form-group" id="sampleFormFragment">
+
+            </div>
+
             <div style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();return false;"
+                <input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();
+                        return false;"
                        tabindex="7" value="Add Shipment"/>
-                <input class="btn btn-danger btn-sm" type="button" onclick="document.location.href=document.location;"
+                <input class="btn btn-danger btn-sm" type="button" onclick="document.location.href = document.location;"
                        tabindex="8" value="Cancel"/>
             </div>			
-	</form>
-	</fieldset>
+        </form>
+    </fieldset>
 </div>
 
 
@@ -114,45 +116,45 @@
     /* Table initialisation */
     var oTable = null;
     var duplicated = false;
-	
+
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-		if (obj.val() == "" || obj.val() == null) {
-			return;
-		}		
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: obj.val(), fnct: fnct, format: "html" },
-            function (data) {
-                if (data > 0) {
-                    alert(msg, "err");
-                    duplicated = true;
-                    obj.focus();
-                }
-                else {
-                    duplicated = false;
-                }
-            });
-    }	
-	
-	
+        if (obj.val() == "" || obj.val() == null) {
+            return;
+        }
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {tableName: tableName, fieldName: fieldName, value: obj.val(), fnct: fnct, format: "html"},
+        function(data) {
+            if (data > 0) {
+                alert(msg, "err");
+                duplicated = true;
+                obj.focus();
+            }
+            else {
+                duplicated = false;
+            }
+        });
+    }
+
+
     $(document).ready(function() {
-		
-		$("body").on("change",'select.controlOrNot',function(){
-			var scoreElem = $(this).parent().parent().find('.score');
-			if ($(this).val() == 1) {
-				$(scoreElem).val(0); 
-				$(scoreElem).attr('readonly','readonly'); 
-			}else{
-				$(scoreElem).removeAttr('readonly'); 
-			}
-			
-		});		
-		
-       //drawTable();
-	   schemeSelected($("#scheme").val());
-	   $(".datepicker" ).datepicker({dateFormat: '<?php echo $this->defaultDateFormat();?>'});
+
+        $("body").on("change", 'select.controlOrNot', function() {
+            var scoreElem = $(this).parent().parent().find('.score');
+            if ($(this).val() == 1) {
+                $(scoreElem).val(0);
+                $(scoreElem).attr('readonly', 'readonly');
+            } else {
+                $(scoreElem).removeAttr('readonly');
+            }
+
+        });
+
+        //drawTable();
+        schemeSelected($("#scheme").val());
+        $(".datepicker").datepicker({dateFormat: '<?php echo $this->defaultDateFormat(); ?>'});
     });
-	
+
     function validateNow() {
-		checkDuplicate('shipment', 'shipment_code',$('#shipmentCode'),null, 'This Code already exists for another Shipment. Please try something else.');
+        checkDuplicate('shipment', 'shipment_code', $('#shipmentCode'), null, 'This Code already exists for another Shipment. Please try something else.');
         flag = deforayValidator.init({
             formId: 'shipmentForm'
         });
@@ -161,38 +163,38 @@
             document.getElementById('shipmentForm').submit();
         }
     }
-	
-	function schemeSelected(scheme) {
-		drawTable();
-		$("#schemeId").val(scheme)
-		$("#configShipment").hide();
-		if (scheme !="" && scheme !=null) {
-			$("#enrollBtn span").text("New Shipment : " + $("#scheme option:selected").text());
-			$("#btnSpan").fadeIn();			
-		}else{
-			$("#btnSpan").fadeOut();
-		}
-		
-	}
-	
-	function removeShipment(sid){
-		if (window.confirm("Are you sure you wish to delete? This cannot be undone !")) { 
-			$.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'remove')); ?>", { sid: sid, format: "html" },
-			    function (data) {
-			       alert(data);
-					   drawTable();
-					   $.unblockUI();
-			});
-		}		
-		
-	}
-	
+
+    function schemeSelected(scheme) {
+        drawTable();
+        $("#schemeId").val(scheme)
+        $("#configShipment").hide();
+        if (scheme != "" && scheme != null) {
+            $("#enrollBtn span").text("New Shipment : " + $("#scheme option:selected").text());
+            $("#btnSpan").fadeIn();
+        } else {
+            $("#btnSpan").fadeOut();
+        }
+
+    }
+
+    function removeShipment(sid) {
+        if (window.confirm("Are you sure you wish to delete? This cannot be undone !")) {
+            $.blockUI();
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'remove')); ?>", {sid: sid, format: "html"},
+            function(data) {
+                alert(data);
+                drawTable();
+                $.unblockUI();
+            });
+        }
+
+    }
+
     function drawTable() {
-        oTable = $('#shipmentTable').dataTable( {
+        oTable = $('#shipmentTable').dataTable({
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page",
-				"sEmptyTable": "No shipment schemes under this Distribution yet"
+                "sEmptyTable": "No shipment schemes under this Distribution yet"
             },
             "bJQueryUI": false,
             "bAutoWidth": false,
@@ -202,25 +204,25 @@
             "bRetrieve": false,
             "bDestroy": true,
             "aoColumns": [
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center","bSortable":false}
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center", "bSortable": false}
             ],
-            "aaSorting": [[ 3, "desc" ]],
+            "aaSorting": [[3, "desc"]],
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'index', 'format' => 'html')); ?>",
-			"fnServerParams": function ( aoData ) {
-				schemeId = $("#scheme").val();
-				aoData.push( { "name": "scheme", "value": schemeId } );
-				aoData.push( { "name": "distribution", "value": '<?php echo $this->selectedDistribution ?>' } );
-			},			
-            "fnServerData": function ( sSource, aoData, fnCallback ) {
+            "fnServerParams": function(aoData) {
+                schemeId = $("#scheme").val();
+                aoData.push({"name": "scheme", "value": schemeId});
+                aoData.push({"name": "distribution", "value": '<?php echo $this->selectedDistribution ?>'});
+            },
+            "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -228,42 +230,52 @@
                     "data": aoData,
                     "success": fnCallback
                 });
-            },"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
-            /* Append the grade to the default row class name */
-				
-		$('td.sorting_1').addClass( 'goga' );
-	        },
-        } );
-	
-	<?php
-	if(isset($this->searchData) && $this->searchData!=''){
-	?>
-	oTable.fnFilter('<?php echo $this->searchData;?>');
-	<?php
-	}
-	?>
+            }, "fnRowCallback": function(nRow, aData, iDisplayIndex) {
+                /* Append the grade to the default row class name */
 
-	};
-	
-	function newShipment() {
-		getSampleForm();
-		$("#configShipment").fadeIn('fast',function(){
-			$('html body').animate({scrollTop: ($("#configShipment").offset().top-50)}, 1300, function(){
-				$("#configShipment").effect( "highlight", 2000 );				
-			});
-			
-		});
-	}
-	
-	function getSampleForm() {
-		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-sample-form')); ?>", { sid: $("#scheme").val(), format: "html" },
-		    function (data) {
-		       $("#sampleFormFragment").html(data);
-                       $.unblockUI();		       
-		       
-		});
-	}
-		
+                $('td.sorting_1').addClass('goga');
+            },
+        });
+
+<?php
+if (isset($this->searchData) && $this->searchData != '') {
+    ?>
+            oTable.fnFilter('<?php echo $this->searchData; ?>');
+    <?php
+}
+?>
+
+    }
+    ;
+
+    function newShipment() {
+        getSampleForm();
+        $("#configShipment").fadeIn('fast', function() {
+            $('html body').animate({scrollTop: ($("#configShipment").offset().top - 50)}, 1300, function() {
+                $("#configShipment").effect("highlight", 2000);
+                $("#shipmentCode").val('');
+                $.blockUI();
+                $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-shipment-code')); ?>", {sid: $("#scheme").val(), format: "html"},
+                function(data) {
+                    $("#shipmentCode").val(data);
+                    $.unblockUI();
+
+                });
+                $.unblockUI();
+            });
+
+        });
+    }
+
+    function getSampleForm() {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-sample-form')); ?>", {sid: $("#scheme").val(), format: "html"},
+        function(data) {
+            $("#sampleFormFragment").html(data);
+            $.unblockUI();
+
+        });
+    }
+
 
 </script>

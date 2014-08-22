@@ -1,0 +1,14 @@
+<?php
+$result= '';
+foreach ($this->dataManagers as $key => $dataManagers) {
+     $selected = "";
+    foreach ($this->paticipantManagers as $paticipantManagers) {
+       
+        if ($paticipantManagers['dm_id'] == $dataManagers['dm_id']) {
+            $selected = "selected='selected'";
+        }
+    }
+        $result.='<option value="' . $dataManagers['dm_id'] . '"'.$selected.'>' . $dataManagers['first_name'] . " " . $dataManagers['last_name'] . '</option>';
+   
+}
+echo $result;
