@@ -58,8 +58,8 @@
 
             <th style="text-align: center;">Shipment Code</th>
             <th style="text-align: center;">Shipment Type</th>
-            <th style="text-align: center;">PT Event Code</th>
-            <th style="text-align: center;">PT Event Date</th>
+            <th style="text-align: center;">PT Survey Code</th>
+            <th style="text-align: center;">PT Survey Date</th>
         </tr>
     </thead>
     <tbody>
@@ -113,6 +113,9 @@
                     }
                     $("#participant").html('');
                     $('#participant').highcharts({
+                        colors: [
+                            '#318047','#FF0000','#FFFF66'
+                        ],
                         chart: {
                             type: 'column'
                         },
@@ -131,8 +134,7 @@
                             stackLabels: {
                                 enabled: true,
                                 style: {
-                                    fontWeight: 'bold',
-                                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                                    fontWeight: 'bold'
                                 }
                             }
                         },
