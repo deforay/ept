@@ -9,16 +9,23 @@
         <br>
         <table class="table table-striped table-bordered">
             <tr>
+                
+                <th colspan="2" style="text-align: center;">
+                    <input type="checkbox" name="individualParticipant" checked="checked" onclick="checkIndividualParticipant(this)"> <span style="">Individual Participant</span>
+                </th>
+                <th colspan="2"></th>
+            </tr>
+            <tr>
                 <th>Participant System Id <span class="mandatory">*</span></th>
                 <td><?php echo $this->rsParticipant['unique_identifier']; ?></td>
-                <th>Participant Lab/First Name <span class="mandatory">*</span></th>
+                <th id="firstNameLable">Participant First Name <span class="mandatory">*</span></th>
                 <td><input type="text" id="pfname" name="pfname" size="25" maxlength="45"  class="form-control isRequired"  title="Please enter the Participant's Lab/First Name here" placeholder="Please enter the Participant's Lab/First Name here" value="<?php echo $this->rsParticipant['first_name']; ?>"/></td>
 
             </tr>
             <tr>
 
-                <th>Participant Last Name (optional)</th>
-                <td style="width:285px;"><input type="text" id="plname" name="plname" size="25" maxlength="45" title="Please enter the Participant's Last Name here" placeholder="Please enter the Participant's Last Name here" class="form-control" value="<?php echo $this->rsParticipant['last_name']; ?>"/></td>
+                <th id="lastNameLable">Participant Last Name (optional)</th>
+                <td style="width:285px;" id="lastNameLableTd"><input type="text" id="plname" name="plname" size="25" maxlength="45" title="Please enter the Participant's Last Name here" placeholder="Please enter the Participant's Last Name here" class="form-control" value="<?php echo $this->rsParticipant['last_name']; ?>"/></td>
                 <th><label>Institute Name <span class="mandatory">*</span></label></th>
                 <td><input type="text" id="instituteName" name="instituteName" size="25" maxlength="45"
                            class="form-control isRequired" title="Please enter the Institute Name here"
@@ -211,4 +218,22 @@
             document.getElementById('participantEdit').submit();
         }
     }
+    function checkIndividualParticipant(obj) {
+                if (obj.checked) {
+                    tag = 'Participant First Name <span class="mandatory">*</span>';
+                    $("#lastNameLable").show();
+                    $("#lastNameLableTd").show();
+                    $("#pfname").attr("title","Please enter the Participant's First Name here");
+                    $("#pfname").attr("placeholder","Please enter the Participant's First Name here");
+                } else {
+                    tag = 'Lab Name <span class="mandatory">*</span>';
+                    $("#lastNameLable").hide();
+                    $("#lastNameLableTd").hide();
+                    $("#plname").val('');
+                    $("#pfname").attr("title","Please enter the Lab Name here");
+                    $("#pfname").attr("placeholder","Please enter the Lab Name here");
+                    
+                }
+                $("#firstNameLable").html(tag);
+            }
 </script>
