@@ -84,125 +84,125 @@
                         $('#allparticipant').selectpicker();
                         $('#alldatamangers').selectpicker();
                     });
-                    
+
                     function getDataManager(participantId) {
-                         $('#alldatamangers').val('');
-                         $('#alldatamangers').selectpicker('refresh');
+                        $('#alldatamangers').val('');
+                        $('#alldatamangers').selectpicker('refresh');
                         $('#datamangers').multiSelect('deselect_all');
-                     $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager')); ?>", { participantId: participantId, format: "html" },
-                        function (data) {
+                        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager')); ?>", {participantId: participantId, format: "html"},
+                        function(data) {
                             $('#participantId').val(participantId);
-                            $('#submitParticipant').addClass('hide'); 
-                           $('#submitdatamanager').removeClass('hide'); 
+                            $('#submitParticipant').addClass('hide');
+                            $('#submitdatamanager').removeClass('hide');
                             $('#datamangers').html(data);
                             $('#datamangers').multiSelect({
-                            selectableFooter: "<div class='custom-header'>Unselected Datamanager</div>",
-                            selectionFooter: "<div class='custom-header'>Selected Datamanager</div>",
-                            selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Datamanager Name To Filter'>",
-                            selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Datamanager Name To Filter'>",
-                            afterInit: function(ms) {
-                                var that = this,
-                                        $selectableSearch = that.$selectableUl.prev(),
-                                        $selectionSearch = that.$selectionUl.prev(),
-                                        selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-                                        selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+                                selectableFooter: "<div class='custom-header'>Unselected Datamanager</div>",
+                                selectionFooter: "<div class='custom-header'>Selected Datamanager</div>",
+                                selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Datamanager Name To Filter'>",
+                                selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Datamanager Name To Filter'>",
+                                afterInit: function(ms) {
+                                    var that = this,
+                                            $selectableSearch = that.$selectableUl.prev(),
+                                            $selectionSearch = that.$selectionUl.prev(),
+                                            selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
+                                            selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
 
-                                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-                                        .on('keydown', function(e) {
-                                            if (e.which === 40) {
-                                                that.$selectableUl.focus();
-                                                return false;
-                                            }
-                                        });
+                                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                                            .on('keydown', function(e) {
+                                                if (e.which === 40) {
+                                                    that.$selectableUl.focus();
+                                                    return false;
+                                                }
+                                            });
 
-                                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-                                        .on('keydown', function(e) {
-                                            if (e.which == 40) {
-                                                that.$selectionUl.focus();
-                                                return false;
-                                            }
-                                        });
-                            },
-                            afterSelect: function() {
-                                this.qs1.cache();
-                                this.qs2.cache();
-                            },
-                            afterDeselect: function() {
-                                this.qs1.cache();
-                                this.qs2.cache();
-                            }
-                        });
+                                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                                            .on('keydown', function(e) {
+                                                if (e.which == 40) {
+                                                    that.$selectionUl.focus();
+                                                    return false;
+                                                }
+                                            });
+                                },
+                                afterSelect: function() {
+                                    this.qs1.cache();
+                                    this.qs2.cache();
+                                },
+                                afterDeselect: function() {
+                                    this.qs1.cache();
+                                    this.qs2.cache();
+                                }
+                            });
 
 
-                        $('#select-all-datamanager').click(function() {
-                            $('#datamangers').multiSelect('select_all');
-                            return false;
-                        });
-                        $('#deselect-all-datamanager').click(function() {
-                            $('#datamangers').multiSelect('deselect_all');
-                            return false;
-                        });
-                            
+                            $('#select-all-datamanager').click(function() {
+                                $('#datamangers').multiSelect('select_all');
+                                return false;
+                            });
+                            $('#deselect-all-datamanager').click(function() {
+                                $('#datamangers').multiSelect('deselect_all');
+                                return false;
+                            });
+
                         });
                     }
                     function getParticipants(datamanagerId) {
-                    $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant')); ?>", { datamanagerId: datamanagerId, format: "html" },
-                        function (data) {
+                        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant')); ?>", {datamanagerId: datamanagerId, format: "html"},
+                        function(data) {
                             $('#datamanagerId').val(datamanagerId);
-                         $('#allparticipant').val('');
-                        $('#allparticipant').selectpicker('refresh');
-                        
-                        $('#submitdatamanager').addClass('hide'); 
-                        $('#submitParticipant').removeClass('hide'); 
-                          $('#participants').html(data);
-                            $('#participants').multiSelect({
-                            selectableFooter: "<div class='custom-header'>Unselected Participants</div>",
-                            selectionFooter: "<div class='custom-header'>Selected Participants</div>",
-                            selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-                            selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-                            afterInit: function(ms) {
-                                var that = this,
-                                        $selectableSearch = that.$selectableUl.prev(),
-                                        $selectionSearch = that.$selectionUl.prev(),
-                                        selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-                                        selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
-
-                                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-                                        .on('keydown', function(e) {
-                                            if (e.which === 40) {
-                                                that.$selectableUl.focus();
-                                                return false;
-                                            }
-                                        });
-
-                                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-                                        .on('keydown', function(e) {
-                                            if (e.which == 40) {
-                                                that.$selectionUl.focus();
-                                                return false;
-                                            }
-                                        });
-                            },
-                            afterSelect: function() {
-                                this.qs1.cache();
-                                this.qs2.cache();
-                            },
-                            afterDeselect: function() {
-                                this.qs1.cache();
-                                this.qs2.cache();
-                            }
-                        });
-
-
-                        $('#select-all-participant').click(function() {
-                            $('#participants').multiSelect('select_all');
-                            return false;
-                        });
-                        $('#deselect-all-participant').click(function() {
+                            $('#allparticipant').val('');
+                            $('#allparticipant').selectpicker('refresh');
                             $('#participants').multiSelect('deselect_all');
-                            return false;
-                        });
+                            $('#submitdatamanager').addClass('hide');
+                            $('#submitParticipant').removeClass('hide');
+                            $('#participants').html(data);
+                            $('#participants').multiSelect({
+                                selectableFooter: "<div class='custom-header'>Unselected Participants</div>",
+                                selectionFooter: "<div class='custom-header'>Selected Participants</div>",
+                                selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+                                selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+                                afterInit: function(ms) {
+                                    var that = this,
+                                            $selectableSearch = that.$selectableUl.prev(),
+                                            $selectionSearch = that.$selectionUl.prev(),
+                                            selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
+                                            selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+
+                                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                                            .on('keydown', function(e) {
+                                                if (e.which === 40) {
+                                                    that.$selectableUl.focus();
+                                                    return false;
+                                                }
+                                            });
+
+                                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                                            .on('keydown', function(e) {
+                                                if (e.which == 40) {
+                                                    that.$selectionUl.focus();
+                                                    return false;
+                                                }
+                                            });
+                                },
+                                afterSelect: function() {
+                                    this.qs1.cache();
+                                    this.qs2.cache();
+                                },
+                                afterDeselect: function() {
+                                    this.qs1.cache();
+                                    this.qs2.cache();
+                                }
+                            });
+
+
+                            $('#select-all-participant').click(function() {
+                                $('#participants').multiSelect('select_all');
+                                return false;
+                            });
+                            $('#deselect-all-participant').click(function() {
+                                $('#participants').multiSelect('deselect_all');
+                                return false;
+                            });
                         });
                     }
-                    
+
 </script>
