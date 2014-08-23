@@ -350,7 +350,7 @@
                     }
                     
                     <?php
-                    if(isset($this->participant['last_name']) && trim($this->participant['last_name'])==""){
+                    if(isset($this->participant['individual']) && trim($this->participant['individual'])=='no'){
                     ?>
                         document.getElementById("individualParticipant").checked=false;
                         tag = '<label class="col-lg-4 control-label">Lab Name<span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="Please enter the Lab Name here" value="<?php echo $this->participant['first_name']; ?>"/></div>';

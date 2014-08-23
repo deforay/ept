@@ -102,20 +102,24 @@
                 drawTable();
                 $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed', 'action' => 'index'), "default", true); ?>", {startDate: startDate, endDate: endDate, scheme: $("#scheme").val(), reportType: $("#reportType").val(), format: "html"},
                 function(response) {
+                    console.log(response);
                     response = response.split('##');
+                    
                     var passedvalues = [];
                     var failedvalues = [];
                     var othervalues = [];
+                    var latevalues = [];
                     for (var ln = 0; ln < JSON.parse(response[1]).length; ln++) {
                         passedvalues.push(parseInt(JSON.parse(response[1])[ln]));
                         failedvalues.push(parseInt(JSON.parse(response[2])[ln]));
                         
                         othervalues.push(parseInt(JSON.parse(response[3])[ln]));
+                        latevalues.push(parseInt(JSON.parse(response[4])[ln]));
                     }
                     $("#participant").html('');
                     $('#participant').highcharts({
                         colors: [
-                            '#82BF97','#F86161','#606060'
+                            '#1a987e','#eb513c','#606060','#f2f760'
                         ],
                         chart: {
                             type: 'column'
@@ -178,6 +182,9 @@
                             }, {
                                 name: 'Others',
                                 data: othervalues
+                            }, {
+                                name: 'Late Response',
+                                data: latevalues
                             }]
 
                     });

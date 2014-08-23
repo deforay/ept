@@ -1,11 +1,16 @@
 <?php
                 $result = array();
+                $passed = array();
+                $failed = array();
+                $others = array();
+                $late = array();
                 if(isset($this->type) && $this->type=='network'){
                     foreach($this->response as $value){
                       // $result[]=array('y'=>strtoupper($value['network_name']),'a'=>(isset($value['participant_count']) ? $value['participant_count'] : 0),'b'=>(isset($value['reported_count']) ? $value['reported_count'] : 0),'c'=>(isset($value['number_passed']) ? $value['number_passed'] : 0)) ;
                        $result[]=strtoupper(stripslashes(wordwrap($value['network_name'], 50, "<br />\n"))) ;
                        $passed[]=(isset($value['number_passed']) ? $value['number_passed'] : 0) ;
                        $failed[]=(isset($value['number_failed']) ? $value['number_failed'] : 0) ;
+                       $late[]=(isset($value['number_late']) ? $value['number_late'] : 0) ;
                        $others[]=(isset($value['others']) ? $value['others'] : 0) ;
                     }
                 }else if(isset($this->type) && $this->type=='affiliation'){
@@ -25,5 +30,5 @@
                        $others[]=(isset($value['others']) ? $value['others'] : 0) ;
                     }
                 }
-                echo json_encode($result).'##'.json_encode($passed).'##'.json_encode($failed).'##'.json_encode($others);
+                echo json_encode($result).'##'.json_encode($passed).'##'.json_encode($failed).'##'.json_encode($others).'##'.json_encode($late);
 ?>

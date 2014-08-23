@@ -196,6 +196,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'region' => $params['region'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
+	if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
+	   $data['individual']='yes';
+	}else{
+	    $data['individual']='no';
+	}
 
         if (isset($params['status']) && $params['status'] != "" && $params['status'] != null) {
             $data['status'] = $params['status'];
@@ -231,6 +236,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
     }
 
     public function addParticipant($params) {
+	
         $authNameSpace = new Zend_Session_Namespace('administrators');
 
         $data = array(
@@ -261,6 +267,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'created_by' => $authNameSpace->primary_email,
             'status' => $params['status']
         );
+	if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
+	   $data['individual']='yes';
+	}else{
+	    $data['individual']='no';
+	}
 
 
         $participantId = $this->insert($data);
@@ -306,6 +317,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->UserID,
         );
+	if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
+	   $data['individual']='yes';
+	}else{
+	    $data['individual']='no';
+	}
 
         //Zend_Debug::dump($data);die;
         //Zend_Debug::dump($data);die;

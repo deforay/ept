@@ -1,3 +1,6 @@
+<?php
+//Zend_Debug::dump($this->rsParticipant);die;
+?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/admin.css"); ?>" type="text/css" media="all">
 <form name="participantEdit" id="participantEdit" method="post"   action="<?php echo $this->url(array("controller" => "participant", "action" => "testeredit"), null, true) ?>">
     <div id="view-content">
@@ -11,7 +14,7 @@
             <tr>
                 
                 <th colspan="2" style="text-align: center;">
-                    <input type="checkbox" name="individualParticipant" checked="checked" onclick="checkIndividualParticipant(this)"> <span style="">Individual Participant</span>
+                    <input type="checkbox" name="individualParticipant" id="individualParticipant" checked="checked" onclick="checkIndividualParticipant(this)"> <span style="">Individual Participant</span>
                 </th>
                 <th colspan="2"></th>
             </tr>
@@ -207,7 +210,21 @@
     function goto_testers() {
         window.history.back();
     }
-
+    $(document).ready(function() {
+        <?php
+        if(isset($this->rsParticipant["individual"]) && $this->rsParticipant["individual"]=='no'){
+        ?>
+            tag = 'Lab Name <span class="mandatory">*</span>';
+            $("#lastNameLable").hide();
+            $("#lastNameLableTd").hide();
+            $("#plname").val('');
+            $("#pfname").attr("title","Please enter the Lab Name here");
+            $("#pfname").attr("placeholder","Please enter the Lab Name here");
+            $('#individualParticipant').prop('checked', false);
+        <?php
+        }
+        ?>
+   });
 
     function validateNow() {
         flag = deforayValidator.init({

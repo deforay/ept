@@ -1868,3 +1868,6 @@ INSERT INTO `r_enrolled_programs` (`enrolled_programs`) VALUES
 -- Amit Jul 25 2014
 
 ALTER TABLE `shipment_participant_map` ADD `is_excluded` VARCHAR(255) NOT NULL DEFAULT 'no' AFTER `is_followup`;
+
+--Guna Agu 23 2014
+ALTER TABLE  `participant` ADD  `individual` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `unique_identifier`;

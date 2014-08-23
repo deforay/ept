@@ -210,8 +210,8 @@
 
     </p>
 </div>	
-</div>			
-</form>			
+</div>
+    </form>			
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script>
 
@@ -254,7 +254,7 @@
 
             function checkIndividualParticipant(obj) {
                 if (obj.checked) {
-                    tag = 'Participant First Name <span class="mandatory">*</span>';
+                   tag = 'Participant First Name <span class="mandatory">*</span>';
                     $("#lastNameLable").show();
                     $("#lastNameLableTd").show();
                     $("#pfname").attr("title","Please enter the Participant's First Name here");
