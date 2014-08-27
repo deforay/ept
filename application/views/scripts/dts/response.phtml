@@ -8,6 +8,10 @@
 <input type="hidden" id ="evId" name="evId" value="<?php echo $this->eID;?>" />
 <input type="hidden" id ="smid" name="smid" value="<?php echo $this->shipment['map_id'];?>" />
 
+<input type="hidden" id ="test_kit_other_name_update_1" name="test_kit_other_name_update_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" />
+<input type="hidden" id ="test_kit_other_name_update_2" name="test_kit_other_name_update_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" />
+<input type="hidden" id ="test_kit_other_name_update_3" name="test_kit_other_name_update_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" />
+
 
 <?php 
 //  $dt= DateTime::createFromFormat('Y-m-d',$this->shipment["shipment_receipt_date"]); echo $dt->format('d-M-Y'); 
@@ -73,7 +77,7 @@
 		}
 	}
 	
-
+	echo $this->allSamples[0]["test_kit_name_1"];
 ?>
 
 
@@ -91,17 +95,26 @@
 	<tr align="CENTER" class="light" >
 		<th> Kit Name</th>
 		<td  class="dark" width="20%" >
-		<select name="test_kit_name_1" id="test_kit_name_1"  style="width: 200px" class=""  title="Please Choose Test Kit 1">
+		<select name="test_kit_name_1" id="test_kit_name_1"  style="width: 200px" class=""  title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
 		 	<?php $this->dropdownSelection($this->allTestKits,$this->allSamples[0]["test_kit_name_1"],true); ?>
-        </select> </td>
+			<option value="other">Other</option>
+		</select>
+		<input type="text" size="40" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
+		</td>
 		<td width="20%" >
-		<select name="test_kit_name_2" id="test_kit_name_2"   style="width: 200px" class=""  title="Please Choose Test Kit 2">
+		<select name="test_kit_name_2" id="test_kit_name_2"   style="width: 200px" class=""  title="Please Choose Test Kit 2" onchange="selectTestKitName(this)">
 		 	<?php $this->dropdownSelection($this->allTestKits,$this->allSamples[0]["test_kit_name_2"],true); ?>
-        </select> </td>
+			<option value="other">Other</option>
+		</select>
+		<input type="text" size="40" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
+		</td>
         <td width="20%" >
-        <select name="test_kit_name_3" id="test_kit_name_3" style="width: 200px" class=""  title="Please Choose Test Kit 3">
-		 	<?php $this->dropdownSelection($this->allTestKits,$this->allSamples[0]["test_kit_name_3"],true); ?>
-        </select> </td>
+		<select name="test_kit_name_3" id="test_kit_name_3" style="width: 200px" class=""  title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
+			<?php $this->dropdownSelection($this->allTestKits,$this->allSamples[0]["test_kit_name_3"],true); ?>
+			<option value="other">Other</option>
+		</select>
+		<input type="text" size="40" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
+	</td>
         
 		
 		
@@ -276,7 +289,29 @@ $dtFormat=  $vHelper->getDateFormat();
 				  $('#participantSupervisor').hide();
 			  }
 			});		
+		if ($('#test_kit_name_1').val()=="") {
+			$('#test_kit_name_1').val('other');
+			document.getElementById("test_kit_other_name_1").style.display="block";
+		}else{
+			$("#test_kit_other_name_1").val('');
+			$("#test_kit_other_name_update_1").val('');
+		}
 		
+		if ($('#test_kit_name_2').val()=="") {
+			$('#test_kit_name_2').val('other');
+			document.getElementById("test_kit_other_name_2").style.display="block";
+		}else{
+			$("#test_kit_other_name_2").val('');
+			$("#test_kit_other_name_update_2").val('');
+		}
+		
+		if ($('#test_kit_name_3').val()=="") {
+			$('#test_kit_name_3').val('other');
+			document.getElementById("test_kit_other_name_3").style.display="block";
+		}else{
+			$("#test_kit_other_name_3").val('');
+			$("#test_kit_other_name_update_3").val('');
+		}
 	});
 
 	
@@ -295,4 +330,13 @@ $dtFormat=  $vHelper->getDateFormat();
 		}
 	}
 	
+	function selectTestKitName(obj) {
+		res= obj.id.split("_");
+		if (obj.value=='other') {
+			document.getElementById("test_kit_other_name_"+res[3]).style.display="block";
+		}else{
+			document.getElementById("test_kit_other_name_"+res[3]).style.display="none";
+			$("#test_kit_other_name_"+res[3]).val('');
+		}
+	}
   </script>

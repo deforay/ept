@@ -313,5 +313,43 @@ class Application_Service_Schemes {
 		$schemeListDb = new Application_Model_DbTable_SchemeList();
 		return $schemeListDb->countEnrollmentSchemes();
 	}
+	
+	public function addTestkit($params){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$db->beginTransaction();
+		try {
+			$testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+			$testkitsDb->addTestkitDetails($params);
+			$db->commit();
+			
+		}catch (Exception $e) {
+			$db->rollBack();
+			error_log($e->getMessage());
+		}
+	}
+	
+	public function updateTestkit($params){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$db->beginTransaction();
+		try {
+			$testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+			$testkitsDb->updateTestkitDetails($params);
+			$db->commit();
+			
+		}catch (Exception $e) {
+			$db->rollBack();
+			error_log($e->getMessage());
+		}
+	}
+	
+	public function getAllDtsTestKitInGrid($parameters){
+		$testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+		return $testkitsDb->getAllDtsTestKitDetails($parameters);
+	}
+	
+	public function getDtsTestkit($testkitId){
+		$testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+		return $testkitsDb->getDtsTestkitDetails($testkitId);
+	}
 }
 

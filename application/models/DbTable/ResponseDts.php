@@ -14,6 +14,22 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             //die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);
             $res = $this->fetchRow("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId );
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+            if(isset($params['test_kit_name_1']) && trim($params['test_kit_name_1'])=='other'){
+                $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_1'],$params['test_kit_other_name_1']);
+                $params['test_kit_name_1']=$params['test_kit_other_name_1'];
+            }
+            
+            if(isset($params['test_kit_name_2']) && trim($params['test_kit_name_2'])=='other'){
+                $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_2'],$params['test_kit_other_name_2']);
+                $params['test_kit_name_2']=$params['test_kit_other_name_2'];
+            }
+            
+            if(isset($params['test_kit_name_3']) && trim($params['test_kit_name_3'])=='other'){
+                $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_3'],$params['test_kit_other_name_3']);
+                $params['test_kit_name_3']=$params['test_kit_other_name_3'];
+            }
+            
             if($res == null || count($res) == 0){
                 $this->insert(array(
                                     'shipment_map_id'=>$params['smid'],
