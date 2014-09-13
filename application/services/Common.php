@@ -65,7 +65,7 @@ class Application_Service_Common {
     }
 	
 	public static function getRandomString($length = 8) {
-		$alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789!#$%^&{}()";
+		$alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
 		$randStr = "";
 		$alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
 		for ($i = 0; $i < $length; $i++) {
@@ -132,6 +132,18 @@ class Application_Service_Common {
             }
         }
         return $data;
+    }
+    public function removespecials($url)
+    {
+        $url=str_replace(" ","-",$url);
+        
+        $url = preg_replace('/[^a-zA-Z0-9\-]/', '', $url);
+        $url = preg_replace('/^[\-]+/', '', $url);
+        $url = preg_replace('/[\-]+$/', '', $url);
+        $url = preg_replace('/[\-]{2,}/', '', $url);
+        
+        return strtolower($url);
+	
     }
     
     public function getCountriesList(){

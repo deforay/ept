@@ -144,6 +144,9 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
+        if (isset($parameters['status']) && $parameters['status'] != "") {
+            $sQuery = $sQuery->where("Approval = ? ",$parameters['status']);
+        }
 
         if (isset($sOrder) && $sOrder != "") {
             $sQuery = $sQuery->order($sOrder);
@@ -220,14 +223,16 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
                           'Approval'=>'0',
                           'Created_On' => new Zend_Db_Expr('now()')
                         );
-                return $this->insert($data);
+                    $this->insert($data);
+                return $tkId;
             }else{
                 $result=$this->fetchRow($this->select()->where("TestKit_Name=?",$oldName));
                 if($result!=""){
                     $data = array(
                         'TestKit_Name'=>trim($testkitName)
                     );
-                    return  $this->update($data,"TestKitName_ID='".$result['TestKitName_ID']."'");
+                    $this->update($data,"TestKitName_ID='".$result['TestKitName_ID']."'");
+                    return $result['TestKitName_ID'];
                 }
             }
         }

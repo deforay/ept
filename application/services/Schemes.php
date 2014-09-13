@@ -9,11 +9,15 @@ class Application_Service_Schemes {
 	}
 	
 	
-	public function getAllDtsTestKit(){
+	public function getAllDtsTestKit($countryAdapted=false){
 	
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('r_testkitname_dts'),array('TESTKITNAMEID'=>'TESTKITNAME_ID', 'TESTKITNAME'=>'TESTKIT_NAME'))
-						->where('COUNTRYADAPTED = 1');
+		$sql = $db->select()->from(array('r_testkitname_dts'),array('TESTKITNAMEID'=>'TESTKITNAME_ID', 'TESTKITNAME'=>'TESTKIT_NAME'));
+                
+                if($countryAdapted){
+                    $sql = $sql->where('COUNTRYADAPTED = 1');
+                }
+						
 		$stmt = $db->fetchAll($sql);
 		
 		foreach($stmt as $kitName){

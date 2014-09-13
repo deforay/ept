@@ -7,7 +7,6 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
     protected $_primary = array('shipment_map_id','sample_id');
     
     public function updateResults($params){
-        //Zend_Debug::dump($params);die;
         $sampleIds = $params['sampleId'];
         
         foreach($sampleIds as $key => $sampleId){
@@ -16,18 +15,18 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
             if(isset($params['test_kit_name_1']) && trim($params['test_kit_name_1'])=='other'){
-                $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_1'],$params['test_kit_other_name_1']);
-                $params['test_kit_name_1']=$params['test_kit_other_name_1'];
+                $otherTestkitId1=$testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_1'],$params['test_kit_other_name_1']);
+                $params['test_kit_name_1']=$otherTestkitId1;
             }
             
             if(isset($params['test_kit_name_2']) && trim($params['test_kit_name_2'])=='other'){
-                $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_2'],$params['test_kit_other_name_2']);
-                $params['test_kit_name_2']=$params['test_kit_other_name_2'];
+                $otherTestkitId2=$testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_2'],$params['test_kit_other_name_2']);
+                $params['test_kit_name_2']=$otherTestkitId2;
             }
             
             if(isset($params['test_kit_name_3']) && trim($params['test_kit_name_3'])=='other'){
-                $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_3'],$params['test_kit_other_name_3']);
-                $params['test_kit_name_3']=$params['test_kit_other_name_3'];
+                $otherTestkitId3=$testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_3'],$params['test_kit_other_name_3']);
+                $params['test_kit_name_3']=$otherTestkitId3;
             }
             
             if($res == null || count($res) == 0){
