@@ -195,10 +195,10 @@ class Application_Service_Reports {
 		    //'s.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,
 		    //'sp.participant_count','sp.reported_count','sp.number_passed','s.status');
 	    foreach ($rResult as $aRow) {
-                $download='';
+                $download=' No Download Available ';
 		    if(isset($aRow['report_generated']) && $aRow['report_generated']=='yes'){
                         if (file_exists(UPLOAD_PATH. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR . $aRow['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf")) {
-                            $download='<a href="/uploads/reports/'. $aRow['shipment_code'].'/summary.pdf" class=\'btn btn-info\'><i class=\'icon-file-text\'></i></a>';
+                            $download='<a href="/uploads/reports/'. $aRow['shipment_code'].'/summary.pdf" class=\'btn btn-info btn-xs\'><i class=\'icon-download\'></i> Summary</a>';
                         }
                     }
 		    $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
@@ -213,7 +213,7 @@ class Application_Service_Reports {
 		    $row[] = $aRow['participant_count'];
 		    $row[] = ($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
 		   // $row[] = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
-		    $row[] = '<a href="/reports/shipments/response-chart/id/'.base64_encode($aRow['shipment_id']).'/shipmentDate/'.base64_encode($aRow['distribution_date']).'/shipmentCode/'.base64_encode($aRow['distribution_code']).'" target="_blank">'.$responsePercentage.'</a>';
+		    $row[] = '<a href="/reports/shipments/response-chart/id/'.base64_encode($aRow['shipment_id']).'/shipmentDate/'.base64_encode($aRow['distribution_date']).'/shipmentCode/'.base64_encode($aRow['distribution_code']).'" target="_blank" style="text-decoration:underline">'.$responsePercentage.' %</a>';
 		    $row[] = $aRow['number_passed'];
 		    $row[] = ucwords($aRow['status']);
 		    $row[] = $download;
