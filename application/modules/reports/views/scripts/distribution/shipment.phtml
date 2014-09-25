@@ -256,7 +256,7 @@
 			<?php if($shipment['scheme_type']!="vl"){ ?>
 			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'),'default',true); ?>", { sId: sId,format: "html" },
 			function (data) {
-			      
+			      //alert(data);
 			      if (data=='Success') {
 				      //document.getElementById("summaryDiv").innerHTML="<?php echo "<a href='".$this->baseUrl(). DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf' class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a>"?>";
 				      document.getElementById("summaryDiv").innerHTML="<a href=\"<?php echo $this->baseUrl("uploads/reports/".$shipment['shipment_code']."/summary.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a></a>";

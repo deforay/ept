@@ -1365,21 +1365,23 @@ class Application_Service_Evaluation {
 			$db->update('shipment',array('status' => 'evaluated'), "shipment_id = ".$shipmentId);
 			if($shipmentResult['scheme_type']=='dbs'){
 				$sql=$db->select()->from(array('refdbs'=>'reference_result_dbs'),array('refdbs.reference_result','refdbs.sample_label'))
-					->join(array('refpr'=>'r_possibleresult'),'refpr.id=refdbs.reference_result',array('referenceResult'=>'refpr.response'))
-					->where("refdbs.shipment_id = ?",$shipmentResult['shipment_id']);
+					         ->join(array('refpr'=>'r_possibleresult'),'refpr.id=refdbs.reference_result',array('referenceResult'=>'refpr.response'))
+					         ->where("refdbs.shipment_id = ?",$shipmentResult['shipment_id']);
 				$sqlRes= $db->fetchAll($sql);
 				
 				$shipmentResult['referenceResult']=$sqlRes;
+				//Zend_Debug::dump($shipmentResult['referenceResult']);die;
 				
 				$sQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id','spm.shipment_score','spm.attributes'))
-				->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
-				->joinLeft(array('res'=>'r_results'),'res.result_id=spm.final_result',array('result_name'))
-				->where("spm.shipment_id = ?",$shipmentId)
-				->where("substring(spm.evaluation_status,4,1) != '0'")
-				->where("spm.final_result IS NOT NULL")
-				->where("spm.final_result!=''")
-				->group('spm.map_id');
+						     ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
+						     ->joinLeft(array('res'=>'r_results'),'res.result_id=spm.final_result',array('result_name'))
+						     ->where("spm.shipment_id = ?",$shipmentId)
+						     ->where("substring(spm.evaluation_status,4,1) != '0'")
+						     ->where("spm.final_result IS NOT NULL")
+						     ->where("spm.final_result!=''")
+						     ->group('spm.map_id');
 				$sQueryRes= $db->fetchAll($sQuery);
+				//Zend_Debug::dump($sQueryRes);die;
 				
 				if(count($sQueryRes) > 0 ){
 					
@@ -1393,6 +1395,7 @@ class Application_Service_Evaluation {
 						->group(array("refdbs.sample_id"));
 					
 					$shipmentResult['summaryResult'][]=$sQueryRes;
+					//Zend_Debug::dump($shipmentResult['summaryResult']);die;
 					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult'])-1]['correctCount']=$db->fetchAll($tQuery);
 					
 					
@@ -1433,9 +1436,11 @@ class Application_Service_Evaluation {
 					$shipmentResult['dbsPieChart']['EIA/EIA']=$eiaEia;
 					$shipmentResult['dbsPieChart']['EIA/WB']=$eiaWb;
 					$shipmentResult['dbsPieChart']['EIA']=$eia;
-					
+					//Zend_Debug::dump($shipmentResult['dbsPieChart']);die;
 				}
+				//die;
 			}
+			
 			else if($shipmentResult['scheme_type']=='dts'){
 				$sql=$db->select()->from(array('refdts'=>'reference_result_dts'),array('refdts.reference_result','refdts.sample_label'))
 					->join(array('refpr'=>'r_possibleresult'),'refpr.id=refdts.reference_result',array('referenceResult'=>'refpr.response'))
@@ -1445,13 +1450,13 @@ class Application_Service_Evaluation {
 				$shipmentResult['referenceResult']=$sqlRes;
 				
 				$sQuery=$db->select()->from(array('spm'=>'shipment_participant_map'),array('spm.map_id','spm.shipment_id','spm.shipment_score','spm.attributes'))
-				->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
-				->joinLeft(array('res'=>'r_results'),'res.result_id=spm.final_result',array('result_name'))
-				->where("spm.shipment_id = ?",$shipmentId)
-				->where("spm.final_result IS NOT NULL")
-				->where("spm.final_result!=''")
-				->where("substring(spm.evaluation_status,4,1) != '0'")
-				->group('spm.map_id');
+						     ->join(array('p'=>'participant'),'p.participant_id=spm.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
+						     ->joinLeft(array('res'=>'r_results'),'res.result_id=spm.final_result',array('result_name'))
+						     ->where("spm.shipment_id = ?",$shipmentId)
+						     ->where("spm.final_result IS NOT NULL")
+						     ->where("spm.final_result!=''")
+						     ->where("substring(spm.evaluation_status,4,1) != '0'")
+						     ->group('spm.map_id');
 				$sQueryRes= $db->fetchAll($sQuery);
 				//error_log($sQuery);
 				if(count($sQueryRes) > 0 ){
@@ -1554,8 +1559,7 @@ class Application_Service_Evaluation {
 						
 					}
 				}
-				//Zend_Debug::dump($shipmentResult);
-				//die;
+				
 				
 			}
 			else if($shipmentResult['scheme_type']=='vl'){
@@ -1564,7 +1568,7 @@ class Application_Service_Evaluation {
 			
 			$i++;
 		}
-		
+		//Zend_Debug::dump($shipmentResult);die;
 		return $shipmentResult;
 	}
 }
