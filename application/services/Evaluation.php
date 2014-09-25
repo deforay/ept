@@ -1199,6 +1199,7 @@ class Application_Service_Evaluation {
 	}
 	
 	public function getEvaluateReportsInPdf($shipmentId){
+		//echo $shipmentId;die;
 		$responseResult="";
 		$vlCalculation="";
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1209,11 +1210,10 @@ class Application_Service_Evaluation {
 				->join(array('p'=>'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier','p.first_name','p.last_name','p.status'))
 				->joinLeft(array('res'=>'r_results'),'res.result_id=sp.final_result',array('result_name'))
 				->where("s.shipment_id = ?",$shipmentId)
-				//->where("(sp.final_result IS NOT NULL OR is_excluded='yes')")
-				//->where("sp.final_result!=''")
 				->where("substring(sp.evaluation_status,4,1) != '0'");
 		//error_log($sql);die;
 		$shipmentResult = $db->fetchAll($sql);
+		//Zend_Debug::dump($shipmentResult);die;
 		$i=0;
 		foreach($shipmentResult as $res){
 			if($res['scheme_type']=='dbs'){
