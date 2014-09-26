@@ -20,7 +20,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->_getAllParams();
+        //Zend_Debug::dump($params);die;
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getAllShipments($params);
         }else if($this->_hasParam('searchString')){

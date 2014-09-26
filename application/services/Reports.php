@@ -443,11 +443,12 @@ class Application_Service_Reports {
 	    echo json_encode($output);
 	}
 	public function getTestKitReport($params){
+		//Zend_Debug::dump($params);die;
 		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sQuery = $dbAdapter->select()->from(array('res'=>'response_result_dts'),array('totalTest'=>new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")))
-			->joinLeft(array('sp'=>'shipment_participant_map'),'sp.map_id=res.shipment_map_id',array())
-			->joinLeft(array('p'=>'participant'),'sp.participant_id=p.participant_id',array('p.region'))
-			->joinLeft(array('s'=>'shipment'),'s.shipment_id=sp.shipment_id',array());
+		  $sQuery = $dbAdapter->select()->from(array('res'=>'response_result_dts'),array('totalTest'=>new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")))
+						->joinLeft(array('sp'=>'shipment_participant_map'),'sp.map_id=res.shipment_map_id',array())
+						->joinLeft(array('p'=>'participant'),'sp.participant_id=p.participant_id',array())
+						->joinLeft(array('s'=>'shipment'),'s.shipment_id=sp.shipment_id',array());
 				
 		if(isset($params['kitType']) && $params['kitType']=="testkit1"){
 		$sQuery = $sQuery->joinLeft(array('tn'=>'r_testkitname_dts'),'tn.TestKitName_ID=res.test_kit_name_1',array('TestKit_Name'))
@@ -471,10 +472,15 @@ class Application_Service_Reports {
 		}
 		if(isset($params['reportType']) && $params['reportType']=="affiliation"){
 			if(isset($params['affiliateValue']) && $params['affiliateValue']!=""){
-				$sQuery = $sQuery->where("p.affiliation= ?",$params['affiliateValue']);
+				$iQuery= $dbAdapter->select()->from(array('rpa'=>'r_participant_affiliates'))
+				                             ->where('rpa.aff_id=?',$params['affiliateValue']);
+				$iResult=$dbAdapter->fetchRow($iQuery);
+				$appliate=$iResult['affiliate'];
+				$sQuery = $sQuery->where('p.affiliation="'.$appliate.'"OR p.affiliation='.$params['affiliateValue']);
 			}else{
-			 $sQuery = $sQuery->joinLeft(array('pa'=>'r_participant_affiliates'),'p.affiliation=pa.affiliate',array())->group('pa.aff_id');
+			 $sQuery = $sQuery->joinLeft(array('pa'=>'r_participant_affiliates'),'p.affiliation=pa.affiliate',array());
 			}
+			//echo $sQuery;die;
 			
 		}
 		if(isset($params['reportType']) && $params['reportType']=="region"){
@@ -489,6 +495,8 @@ class Application_Service_Reports {
 			$sQuery = $sQuery->where("s.shipment_date >= ?",$params['startDate']);
 			$sQuery = $sQuery->where("s.shipment_date <= ?",$params['endDate']);
 		}
+		$sQuery=$sQuery->where("tn.TestKit_Name IS NOT NULL");
+		//echo $sQuery;die;
 		return $dbAdapter->fetchAll($sQuery);
         }
 	public function getTestKitDetailedReport($parameters)
@@ -606,9 +614,13 @@ class Application_Service_Reports {
 		}
 		if(isset($parameters['reportType']) && $parameters['reportType']=="affiliation"){
 			if(isset($parameters['affiliateValue']) && $parameters['affiliateValue']!=""){
-				$sQuery = $sQuery->where("p.affiliation= ?",$parameters['affiliateValue']);
+				$iQuery= $dbAdapter->select()->from(array('rpa'=>'r_participant_affiliates'))
+				                             ->where('rpa.aff_id=?',$parameters['affiliateValue']);
+				$iResult=$dbAdapter->fetchRow($iQuery);
+				$appliate=$iResult['affiliate'];
+				$sQuery = $sQuery->where('p.affiliation="'.$appliate.'"OR p.affiliation='.$parameters['affiliateValue']);
 			}else{
-			 $sQuery = $sQuery->joinLeft(array('pa'=>'r_participant_affiliates'),'p.affiliation=pa.affiliate',array())->group('pa.aff_id');
+			 $sQuery = $sQuery->joinLeft(array('pa'=>'r_participant_affiliates'),'p.affiliation=pa.affiliate',array());
 			}
 			
 		}
@@ -624,6 +636,7 @@ class Application_Service_Reports {
 			$sQuery = $sQuery->where("s.shipment_date >= ?",$parameters['startDate']);
 			$sQuery = $sQuery->where("s.shipment_date <= ?",$parameters['endDate']);
 		}
+		$sQuery=$sQuery->where("tn.TestKit_Name IS NOT NULL");
 		if (isset($sWhere) && $sWhere != "") {
 		    $sQuery = $sQuery->where($sWhere);
 		}
