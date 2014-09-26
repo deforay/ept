@@ -266,7 +266,7 @@ $dtFormat=  $vHelper->getDateFormat();
 
 
 	$(function() {
-  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>',maxDate: '0'});
+  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
   	    $(".expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 		<?php if(!$this->isEditable){
 			?>
