@@ -2,13 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/var/www/ept/application/views/scripts/participant/add.phtml</file>
-            <file>file:/var/www/ept/application/views/scripts/participant/testeredit.phtml</file>
-            <file>file:/var/www/ept/application/modules/reports/views/scripts/detailed/index.phtml</file>
-            <file>file:/var/www/ept/application/modules/reports/views/scripts/detailed/index.ajax.phtml</file>
-            <file>file:/var/www/ept/application/modules/reports/controllers/DetailedController.php</file>
-            <file>file:/var/www/ept/application/services/Reports.php</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
