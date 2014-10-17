@@ -165,33 +165,7 @@ foreach($this->result['shipment'] as $result){
 	//}
 	
 	//Coment Details
-	$comment='<table style="width:100%;">';
-	if(trim($result['shipment_comment'])!=""){
-	$comment.='<tr>';
-	$comment.='<td style="text-align:left;width:150px;">Participants Comments</td>';
-	$comment.='<td style="text-align:left;width:20px;">:</td>';
-	$comment.='<td>'.$result['shipment_comment'].'</td>';
-	$comment.='</tr>';
-	}
 	
-	if(trim($result['evaluationComments'])!=""){
-	$comment.='<tr>';
-	$comment.='<td>Evaluation Comments</td>';
-	$comment.='<td>:</td>';
-	$comment.='<td>'.$result['evaluationComments'].'</td>';
-	$comment.='</tr>';
-	}
-	
-	if(trim($result['optional_eval_comment'])!=""){
-	$comment.='<tr>';
-	$comment.='<td>Optional Evaluation  Comments</td>';
-	$comment.='<td>:</td>';
-	$comment.='<td>'.$result['optional_eval_comment'].'</td>';
-	$comment.='</tr>';
-	}
-	
-	$comment.='</table>';
-	$pdf->writeHTML($comment, true, false, true, false, '');
 	
 	$labInfo='<table style="width:100%;"><tr><td style="font-weight:bold;">Participant Code </td><td style="text-align:left;width:20px;">:</td><td style="text-align:left;width:400px;">'.$result['unique_identifier'].'</td></tr>';
 	$labInfo.='<tr><td  style="font-weight:bold;">Performing Participant </td><td style="text-align:left">:</td><td style="text-align:left">'.$result['first_name']." ".$result['last_name'].'</td></tr>';
@@ -303,7 +277,33 @@ foreach($this->result['shipment'] as $result){
 	//if(trim($result['distribution_date'])!=""){
 	//	$result['distribution_date']=$this->dateFormat($result['distribution_date']);
 	//}
+$comment='<table style="width:100%;">';
+	if(trim($result['shipment_comment'])!=""){
+	$comment.='<tr>';
+	$comment.='<td style="text-align:left;width:200px;">Message from the PT Admin</td>';
+	$comment.='<td style="text-align:left;width:20px;">:</td>';
+	$comment.='<td>'.$result['shipment_comment'].'</td>';
+	$comment.='</tr>';
+	}
 	
+	if(trim($result['evaluationComments'])!=""){
+	$comment.='<tr>';
+	$comment.='<td>Evaluation Comments </td>';
+	$comment.='<td>:</td>';
+	$comment.='<td>'.$result['evaluationComments'].'</td>';
+	$comment.='</tr>';
+	}
+	
+	if(trim($result['optional_eval_comment'])!=""){
+	$comment.='<tr>';
+	$comment.='<td>Specific Comments/Feedback</td>';
+	$comment.='<td>:</td>';
+	$comment.='<td>'.$result['optional_eval_comment'].'</td>';
+	$comment.='</tr>';
+	}
+	
+	$comment.='</table>';
+	$pdf->writeHTML($comment, true, false, true, false, '');	
 	
 	$html='<p>Thank you for participating in the HIV Serology '.strtoupper($result['scheme_type']).' Proficiency Testing Program.</p>';
 	$pdf->writeHTML($html, true, false, true, false, '');
