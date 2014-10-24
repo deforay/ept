@@ -8,7 +8,7 @@
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"></label>
                 <div class="col-lg-8">
-                    <input type="checkbox" name="individualParticipant" checked="checked" onclick="checkIndividualParticipant(this)"><b> Individual Participant</b>
+                    <input type="checkbox" name="individualParticipant"  onclick="checkIndividualParticipant(this)"><b> Individual Participant</b>
                 </div>
             </div>
             <div class="form-group col-lg-6">
@@ -263,6 +263,10 @@
                     $(document).ready(function() {
                         $('#dataManager').selectpicker();
                         $('#country').selectpicker();
+                        tag = '<label class="col-lg-4 control-label">Lab Name<span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="Please enter the Lab Name here"/></div>';
+                            $("#lastNameDiv").hide();
+                            $("#plname").val('');
+                            $("#firstNameDiv").html(tag);
                     });
 
                     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
