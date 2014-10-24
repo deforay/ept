@@ -42,8 +42,10 @@ class MYPDF extends TCPDF {
 	$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
 	//$this->writeHTML($html, true, false, true, true, 'L');
 	
-	$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p><hr/>';
-	$this->writeHTMLCell(0, 0, 20, 30, $html, 0, 0, 0, true, 'J', true);
+	$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p>';
+	$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
+	$html='<hr/>';
+	$this->writeHTMLCell(0, 0, 10, 45, $html, 0, 0, 0, true, 'J', true);
 	
     }
 
