@@ -476,7 +476,7 @@ class Application_Service_Reports {
 				                             ->where('rpa.aff_id=?',$params['affiliateValue']);
 				$iResult=$dbAdapter->fetchRow($iQuery);
 				$appliate=$iResult['affiliate'];
-				$sQuery = $sQuery->where('p.affiliation="'.$appliate.'"OR p.affiliation='.$params['affiliateValue']);
+				$sQuery = $sQuery->where('p.affiliation="'.$appliate.'" OR p.affiliation='.$params['affiliateValue']);
 			}else{
 			 $sQuery = $sQuery->joinLeft(array('pa'=>'r_participant_affiliates'),'p.affiliation=pa.affiliate',array());
 			}
@@ -618,7 +618,7 @@ class Application_Service_Reports {
 				                             ->where('rpa.aff_id=?',$parameters['affiliateValue']);
 				$iResult=$dbAdapter->fetchRow($iQuery);
 				$appliate=$iResult['affiliate'];
-				$sQuery = $sQuery->where('p.affiliation="'.$appliate.'"OR p.affiliation='.$parameters['affiliateValue']);
+				$sQuery = $sQuery->where('p.affiliation="'.$appliate.'" OR p.affiliation='.$parameters['affiliateValue']);
 			}else{
 			 $sQuery = $sQuery->joinLeft(array('pa'=>'r_participant_affiliates'),'p.affiliation=pa.affiliate',array());
 			}

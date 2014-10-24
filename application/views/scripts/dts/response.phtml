@@ -263,11 +263,10 @@ $dtFormat=  $vHelper->getDateFormat();
 	function goto_dashboard(){
 		window.history.back();
 	}	 
-
-
+	
 	$(function() {
-  	    $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
-  	    $(".expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+  	    //$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
+  	    $(".datepicker,.expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 		<?php if(!$this->isEditable){
 			?>
 			$("#dtsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
