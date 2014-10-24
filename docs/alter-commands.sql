@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `global_config` (
   PRIMARY KEY (`name`)
 ) ENGINE=InnoDB;
 
-INSERT INTO `global_config` (`name`, `value`) VALUES ('admin-name', 'ePT Admin'), ('admin-email', 'admin@ept.com');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('admin-name', 'ePT Admin'), ('admin_email', 'admin@ept.com');
 ALTER TABLE  `users` ADD  `force_password_reset` INT NOT NULL DEFAULT  '0';
 
 
@@ -1882,3 +1882,7 @@ CREATE TABLE IF NOT EXISTS `reference_dts_rapid_hiv` (
   `result` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 );
+
+--Guna Oct 24 2014
+UPDATE  `eanalyze`.`global_config` SET  `name` =  'admin_email' WHERE  `global_config`.`name` =  'admin-email';
+INSERT INTO `eanalyze`.`global_config` (`name`, `value`) VALUES ('response_after_evaluate', 'yes');

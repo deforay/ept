@@ -2,7 +2,20 @@
     <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
             <legend>Update Global Config</legend>
-
+            <div class="form-group">
+			<label for="admin_email" class="col-lg-3 control-label">Admin Email <span class="mandatory">*</span></label>
+			<div class="col-lg-6">
+				<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?php echo $this->admin_email; ?>" />
+			</div>
+	     </div>
+            <div class="form-group">
+			<label for="admin_email" class="col-lg-3 control-label">Response After Evaluation <span class="mandatory">*</span></label>
+			<div class="col-lg-6">
+				<input type="radio" name="response_after_evaluate" id="response_after_evaluate_yes" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate=="yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether enter response after eveluate"/> Yes
+	                        <input type="radio" name="response_after_evaluate" id="response_after_evaluate_no" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
+			</div>
+	     </div>
+            
             <div class="form-group">
                 <label for="mapCenter" class="col-lg-3 control-label">Map Center <span class="mandatory">*</span></label>
                 <div class="col-lg-6">

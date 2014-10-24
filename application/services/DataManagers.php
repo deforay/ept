@@ -42,7 +42,7 @@ class Application_Service_DataManagers {
 		if($newPassword != false){
 			$common = new Application_Service_Common();
 			$message = "Hi,<br/> We have reset your password. Please use <strong>$newPassword</strong> as your new password.<br/><small>This is a system generated email. Please do not reply.</small>";
-			$fromMail = Application_Service_Common::getConfig('admin-email');
+			$fromMail = Application_Service_Common::getConfig('admin_email');
 			$fromName = Application_Service_Common::getConfig('admin-name');
 			$common->sendMail($email,null,null,"Password Reset - e-PT",$message,$fromMail,$fromName);
 			$sessionAlert->message = "Your password has been reset. Please check your registered mail id for the instructions.";

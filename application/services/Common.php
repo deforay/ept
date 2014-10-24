@@ -95,7 +95,7 @@ class Application_Service_Common {
 		$fromEmail = $params['email'];
 		$fromName  = $params['first_name']." " .$params['last_name'];
 		
-		$to = Application_Service_Common::getConfig('admin-email');
+		$to = Application_Service_Common::getConfig('admin_email');
 		
 		$mailSent = $this->sendMail($to,null,null,"New contact message from the ePT program",$message,$fromEmail,$fromName);
 		if($mailSent){
@@ -158,6 +158,20 @@ class Application_Service_Common {
 		$participantAffiliateDb = new Application_Model_DbTable_ParticipantAffiliates();
 		return $participantAffiliateDb->getAllParticipantAffiliates();
 	}
+        public function getGlobalConfigDetails() {
+        $db = new Application_Model_DbTable_GlobalConfig();
+        return $db->getGlobalConfig();
+    }
+    public function getGlobalConfigValue($name) {
+        $db = new Application_Model_DbTable_GlobalConfig();
+        return $db->getValue($name);
+    }
+    public function updateConfig($params) {
+
+    $db = new Application_Model_DbTable_GlobalConfig();
+    $db->updateConfigDetails($params);
+    
+    }
 
 }
 

@@ -10,6 +10,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
 
     public function indexAction()
     {
+        $commonServices = new Application_Service_Common();
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if($this->getRequest()->isPost()){
 
@@ -23,10 +24,16 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
                    ->setFilename($file)
                    ->write();
                    
-            $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);       
+            $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);    
+            
+            $params = $this->_getAllParams();
+            $commonServices->updateConfig($params);
         }
         
         $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        
+        $assign=$commonServices->getGlobalConfigDetails();
+        $this->view->assign($assign);
 
     }
 
