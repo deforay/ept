@@ -1871,3 +1871,14 @@ ALTER TABLE `shipment_participant_map` ADD `is_excluded` VARCHAR(255) NOT NULL D
 
 --Guna Agu 23 2014
 ALTER TABLE  `participant` ADD  `individual` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `unique_identifier`;
+--Guna oct 2 2014
+CREATE TABLE IF NOT EXISTS `reference_dts_rapid_hiv` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `shipment_id` varchar(255) NOT NULL,
+  `sample_id` varchar(255) NOT NULL,
+  `testkit` varchar(255) NOT NULL,
+  `lot_no` varchar(255) NOT NULL,
+  `expiry_date` date NOT NULL,
+  `result` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+);
