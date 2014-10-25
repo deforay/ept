@@ -3,12 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/var/www/ept/application/modules/admin/views/scripts/index/index.phtml</file>
-            <file>file:/var/www/ept/application/modules/admin/controllers/IndexController.php</file>
-            <file>file:/var/www/ept/application/services/Shipments.php</file>
-            <file>file:/var/www/ept/application/modules/admin/controllers/ShipmentController.php</file>
-            <file>file:/var/www/ept/application/modules/admin/views/scripts/shipment/index.phtml</file>
-            <file>file:/var/www/ept/application/modules/admin/views/scripts/shipment/get-sample-form.ajax.phtml</file>
+            <file>file:/var/www/ept/application/modules/reports/views/scripts/distribution/shipment.phtml</file>
+            <file>file:/var/www/ept/application/modules/reports/controllers/DistributionController.php</file>
+            <file>file:/var/www/ept/application/services/Evaluation.php</file>
+            <file>file:/var/www/ept/application/modules/reports/views/scripts/distribution/generate-reports.ajax.phtml</file>
         </group>
     </open-files>
 </project-private>

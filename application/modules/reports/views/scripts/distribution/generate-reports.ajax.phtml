@@ -4,7 +4,9 @@
 //Zend_Debug::dump($this->result);die;
 require_once('tcpdf/tcpdf.php');
 $schemeType = $this->result['shipment'][0]['scheme_type'];
-
+$pdfNew = new Zend_Pdf();
+$extractor = new Zend_Pdf_Resource_Extractor();
+$shipmentCode='';
 if(sizeof($this->result['shipment'])>0){
 	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
 		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
@@ -327,8 +329,17 @@ $comment='<table style="width:100%;">';
 	$created=$pdf->Output($filePath, "F");
 	
 	//$pdf->Output($fileName, 'I');
-
+        
+        $loadpdf = Zend_Pdf::load($filePath);
+        foreach($loadpdf->pages as $page){
+        $pdfExtract = $extractor->clonePage($page);
+        $pdfNew->pages[] = $pdfExtract;
+        }
+        $shipmentCode=$result['shipment_code'];
 }
+$mergePdf ="overallParticipantReport.pdf";
+$mergeFilePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$mergePdf;
+$pdfNew ->save($mergeFilePath);
 //============================================================+
 // END OF FILE
 //============================================================+
