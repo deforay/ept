@@ -6,6 +6,7 @@ require_once('tcpdf/tcpdf.php');
 $schemeType = $this->result['shipment'][0]['scheme_type'];
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
+$font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode='';
 if(sizeof($this->result['shipment'])>0){
 	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
@@ -58,11 +59,12 @@ class MYPDF extends TCPDF {
         // Set font
         $this->SetFont('helvetica', 'I', 8);
         // Page number
-        $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        //$this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
 	
     }
 }
-
+$totalPages=count($this->result['shipment']);
+        $j=1;
 foreach($this->result['shipment'] as $result){
 	//error_log($i);
 	// Extend the TCPDF class to create custom Header and Footer
@@ -331,11 +333,15 @@ $comment='<table style="width:100%;">';
 	//$pdf->Output($fileName, 'I');
         
         $loadpdf = Zend_Pdf::load($filePath);
+        
         foreach($loadpdf->pages as $page){
         $pdfExtract = $extractor->clonePage($page);
+        //$pdfExtract->setFont($font, 8) ->drawText('Page '.$j.' / '.$totalPages, 280, 50);
         $pdfNew->pages[] = $pdfExtract;
+        
         }
         $shipmentCode=$result['shipment_code'];
+        $j++;
 }
 $mergePdf ="overallParticipantReport.pdf";
 $mergeFilePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$mergePdf;
