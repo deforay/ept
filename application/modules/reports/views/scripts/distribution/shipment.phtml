@@ -131,7 +131,9 @@
     <br/>
     <div align="center">
         <a href="javascript:void(0)" class="btn btn-danger" onclick="generateReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate &amp Finalize Report for this Shipment</a>
-        <span id="summaryDiv">
+    </div>
+    <div align="center" style="padding-top:3px;">
+        <span id="summaryDiv" >
 
         </span>
     </div>
@@ -153,7 +155,7 @@
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . "overallParticipantReport.pdf")) {
                 ?>
                     //document.getElementById("summaryDiv").innerHTML="< ?php echo "<a href='".$this->baseUrl(). DIRECTORY_SEPARATOR."uploads". DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf' class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a>"?>";
-                    document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/summary.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a></a> <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/overallParticipantReport.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Participants Report</a></a>";
+                    document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/summary.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a></a> <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/overallParticipantReport.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Participants Report</a></a>";
                 <?php
             } else {
                 ?>
@@ -270,7 +272,7 @@
                         //alert(data);
                         if (data == 'Success') {
                             //document.getElementById("summaryDiv").innerHTML="< ?php echo "<a href='".$this->baseUrl(). DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf' class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a>"?>";
-                            document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/summary.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a></a> <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/overallParticipantReport.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Participants Report</a></a>";
+                            document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/summary.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a></a> <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/overallParticipantReport.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Participants Report</a></a>";
                             $.unblockUI();
                         }
                     });
