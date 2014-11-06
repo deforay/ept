@@ -44,8 +44,8 @@
 		
 		
 $('#participants').multiSelect({
-	selectableFooter: "<div class='custom-header'>Unenrolled Participants</div>",
-	selectionFooter: "<div class='custom-header'>Selected Participants</div>",
+	selectableFooter: "<div class='custom-header'>Unenrolled Participants (<span id='msUnselectedCountHolder'></span>)</div>",
+	selectionFooter: "<div class='custom-header'>Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
 	selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
 	selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
 	afterInit: function(ms){

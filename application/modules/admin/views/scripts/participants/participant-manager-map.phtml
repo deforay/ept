@@ -96,8 +96,8 @@
                             $('#submitdatamanager').removeClass('hide');
                             $('#datamangers').html(data);
                             $('#datamangers').multiSelect("destroy").multiSelect({
-                                selectableFooter: "<div class='custom-header'>Unselected PT Logins</div>",
-                                selectionFooter: "<div class='custom-header'>Selected PT Logins</div>",
+                                selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
+                                selectionFooter: "<div class='custom-header'>Selected PT Logins (<span id='msSelectedCountHolder'></span>)</div>",
                                 selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
                                 selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
                                 afterInit: function(ms) {
@@ -156,8 +156,8 @@
                             $('#submitParticipant').removeClass('hide');
                             $('#participants').html(data);
                             $('#participants').multiSelect("destroy").multiSelect({
-                                selectableFooter: "<div class='custom-header'>Unselected Participants</div>",
-                                selectionFooter: "<div class='custom-header'>Selected Participants</div>",
+                                selectableFooter: "<div class='custom-header'>Unselected Participants (<span id='msUnselectedCountHolder'></span>)</div>",
+                                selectionFooter: "<div class='custom-header'>Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
                                 selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
                                 selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
                                 afterInit: function(ms) {

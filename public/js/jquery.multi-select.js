@@ -9,6 +9,10 @@
 * http://sam.zoy.org/wtfpl/COPYING for more details.
 */
 
+var msTotalOptionCount = 0,
+    msSelectedOptionCount = 0,
+    msUnSelectedOptionCount = 0;
+
 !function ($) {
 
   "use strict";
@@ -95,6 +99,15 @@
       if (typeof that.options.afterInit === 'function') {
         that.options.afterInit.call(this, this.$container);
       }
+      this.updateCount(this);
+    },
+    
+    'updateCount' : function(that){
+      msTotalOptionCount = that.$selectableUl.find('.ms-elem-selectable').length;
+      msSelectedOptionCount = that.$selectionUl.find(".ms-elem-selection.ms-selected").length;
+      msUnSelectedOptionCount = msTotalOptionCount - msSelectedOptionCount;
+      that.$selectionContainer.find("#msSelectedCountHolder").text(msSelectedOptionCount);
+      that.$selectableContainer.find("#msUnselectedCountHolder").text(msUnSelectedOptionCount);
     },
 
     'generateLisFromOption' : function(option){
@@ -274,6 +287,7 @@
 
         $list.scrollTop(scrollTo);
       }
+      this.updateCount(this);
     },
 
     'selectHighlighted' : function($list){
@@ -315,11 +329,13 @@
     'refresh' : function() {
       this.destroy();
       this.$element.multiSelect(this.options);
+      this.updateCount(this);
     },
 
     'destroy' : function(){
       $("#ms-"+this.$element.attr("id")).remove();
       this.$element.removeData('multiselect');
+      this.updateCount(this);
     },
 
     'select' : function(value, method){
@@ -368,6 +384,7 @@
           }
         }
       }
+      this.updateCount(this);
     },
 
     'deselect' : function(value){
@@ -407,6 +424,7 @@
           that.options.afterDeselect.call(this, value);
         }
       }
+      this.updateCount(this);
     },
 
     'select_all' : function(){
@@ -426,6 +444,7 @@
         });
         this.options.afterSelect.call(this, selectedValues);
       }
+      this.updateCount(this);
     },
 
     'deselect_all' : function(){
@@ -442,6 +461,7 @@
       if (typeof this.options.afterDeselect === 'function') {
         this.options.afterDeselect.call(this, values);
       }
+      this.updateCount(this);
     },
 
     sanitize: function(value, reg){
