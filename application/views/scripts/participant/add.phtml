@@ -47,9 +47,9 @@
                                      placeholder="Please enter the Department Name here" style="width:285px;"/></td>
             </tr>
             <tr>
-                <th><label>Physical Address <span class="mandatory">*</span></label></th>
+                <th><label>Physical Address</label></th>
                 <td colspan=3><textarea id="address" name="address" size="50" 
-                                        class="isRequired" title="Please enter the address here"
+                                        class="" title="Please enter the address here"
                                         placeholder="Please enter the address here"></textarea></td>
             </tr>
             <tr>
@@ -146,9 +146,9 @@
     </tr>
 
     <tr>
-        <th>Shipping Address (include city and country) <span class="mandatory">*</span></th>
+        <th>Shipping Address (include city and country) </th>
         <td colspan=3><textarea id="shippingAddress" name="shippingAddress" size="50" 
-                                class="isRequired" title="Please enter the address here"
+                                class="" title="Please enter the address here"
                                 placeholder="Please enter the Shipping Address here"></textarea></td>
     </tr>
 
@@ -170,8 +170,8 @@
     <tr>
         <th>Participant Phone Number</th>
         <td><input type="text" id="pphone1" name="pphone1" size="25" maxlength="45" value="<?php echo $this->rsParticipant['phone']; ?>" title="Please enter the Participant's Phone here" placeholder="Please enter the Participant's Phone here" class=" form-control isNumeric" /></td>
-        <th>Participant Cell/Mobile Number <span class="mandatory">*</span></th>
-        <td><input type="text" id="pphone2" name="pphone2" size="25" maxlength="45" value="<?php echo $this->rsParticipant['mobile']; ?>" class="form-control isRequired isNumeric" title="Please enter the Participant's Mobile Number here" placeholder="Please enter the Participant's Mobile Number here" class=" form-control isNumeric"/></td>
+        <th>Participant Cell/Mobile Number</th>
+        <td><input type="text" id="pphone2" name="pphone2" size="25" maxlength="45" value="<?php echo $this->rsParticipant['mobile']; ?>" class="form-control" title="Please enter the Participant's Mobile Number here" placeholder="Please enter the Participant's Mobile Number here" class=" form-control isNumeric"/></td>
     </tr>
     <tr>
         <th>Participant Affiliation <span class="mandatory">*</span></th>

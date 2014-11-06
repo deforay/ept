@@ -102,7 +102,7 @@ foreach($this->result['summaryResult'] as $result){
 		}
 	}
 	
-	$scoringPer=round(($maxScore/$partCount)*100);
+	$scoringPer=round(($maxScore/$partCount)*100,2);
 
 // set font
 $pdf->SetFont('times', 'B', 12);
@@ -153,7 +153,7 @@ $sampleCode.='</tr>';
 $sampleCode.='<tr>';
 $sampAvg='0';
 $sampPerAvg='0';
-$sampleCode.='<td rowspan="2" style="background-color:#dbe4ee;">Correctly Reported</td>';
+$sampleCode.='<td rowspan="2" style="background-color:#dbe4ee;text-align:center;">Correctly Reported</td>';
 
 foreach($result['correctCount'] as $sample){
 	$sampAvg+=$sample["correctRes"];
@@ -169,7 +169,7 @@ foreach($result['correctCount'] as $sample){
 	$sampleCode.='<td style="text-align:center;">'.(($sample["correctRes"]/$partCount)*100).'%</td>';
 	
 }
-$sampleCode.='<td style="text-align:center;">'.round(($sampPerAvg/$sampleCount)).'%</td>';
+$sampleCode.='<td style="text-align:center;">'.round(($sampPerAvg/$sampleCount),2).'%</td>';
 $sampleCode.='</tr>';
 
 $sampleCode.='</table>';
@@ -216,7 +216,7 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 				$dataSet->addPoint(new Point($result[$i]['unique_identifier'], $per));
 			}
 			
-			$scoringPer=round(($maxScore/$partCount)*100);
+			$scoringPer=round(($maxScore/$partCount)*100,2);
 			
 		}
 		
@@ -264,7 +264,7 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 		$sampleCode.='<tr>';
 		$sampAvg='0';
 		$sampPerAvg='0';
-		$sampleCode.='<td rowspan="2" style="background-color:#dbe4ee;">Correctly Reported</td>';
+		$sampleCode.='<td rowspan="2" style="background-color:#dbe4ee;text-align:center;">Correctly Reported</td>';
 		
 		foreach($result['correctCount'] as $sample){
 			$sampAvg+=$sample["correctRes"];
@@ -277,10 +277,10 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 		$sampleCode.='<tr>';
 		foreach($result['correctCount'] as $sample){
 			$sampPerAvg+=(($sample["correctRes"]/$partCount)*100);
-			$sampleCode.='<td style="text-align:center;">'.(($sample["correctRes"]/$partCount)*100).'%</td>';
+			$sampleCode.='<td style="text-align:center;">'.round(($sample["correctRes"]/$partCount)*100,2).'%</td>';
 			
 		}
-		$sampleCode.='<td style="text-align:center;">'.round(($sampPerAvg/$sampleCount)).'%</td>';
+		$sampleCode.='<td style="text-align:center;">'.round(($sampPerAvg/$sampleCount),2).'%</td>';
 		$sampleCode.='</tr>';
 		
 		$sampleCode.='</table>';
