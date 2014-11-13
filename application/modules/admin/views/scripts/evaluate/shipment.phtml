@@ -88,8 +88,8 @@
     <tr>
         <th></th>
         <th>Participant/Tester</th>
-        <th>Score</th>
-        <th>Max Score</th>
+        <th>Response Score</th>
+        <th>Documentation Score</th>
         <th>Result</th>
         <th>Comments (if any)</th>
         <th>Action</th>
@@ -115,13 +115,15 @@
                                 }else if(isset($shipment['failure_reason']) && $shipment['failure_reason'] != ""){
                                     $btnClassName="btn-warning";
                                 }
-                                
+                                $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
+                                $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
+				
 				?>
 				<tr>
                                         <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
 					<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['first_name'] . " " .$shipment['last_name'] ?></td>
-					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0' ?></td>
-					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['max_score']) && $shipment['max_score'] != "") ? $shipment['max_score'] : '-'; ?></td>
+					<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
+					<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['display_result']) && $shipment['display_result'] != "") ? $shipment['display_result'] : 'Not Evaluated'; ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 					<td style="text-align:center;vertical-align:middle;white-space: nowrap">

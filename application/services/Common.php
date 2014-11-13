@@ -133,8 +133,7 @@ class Application_Service_Common {
         }
         return $data;
     }
-    public function removespecials($url)
-    {
+    public function removespecials($url){
         $url=str_replace(" ","-",$url);
         
         $url = preg_replace('/[^a-zA-Z0-9\-]/', '', $url);
@@ -147,30 +146,25 @@ class Application_Service_Common {
     }
     
     public function getCountriesList(){
-		$countriesDb = new Application_Model_DbTable_Countries();
-		return $countriesDb->getAllCountries();
-	}
-	public function getAllnetwork(){
-		$networkDb = new Application_Model_DbTable_NetworkTires();
-		return $networkDb->getAllnetwork();
-	}
-	public function getAllParticipantAffiliates(){
-		$participantAffiliateDb = new Application_Model_DbTable_ParticipantAffiliates();
-		return $participantAffiliateDb->getAllParticipantAffiliates();
-	}
-        public function getGlobalConfigDetails() {
-        $db = new Application_Model_DbTable_GlobalConfig();
-        return $db->getGlobalConfig();
+	$countriesDb = new Application_Model_DbTable_Countries();
+	return $countriesDb->getAllCountries();
     }
-    public function getGlobalConfigValue($name) {
-        $db = new Application_Model_DbTable_GlobalConfig();
-        return $db->getValue($name);
+    public function getAllnetwork(){
+	$networkDb = new Application_Model_DbTable_NetworkTires();
+	return $networkDb->getAllnetwork();
     }
-    public function updateConfig($params) {
-
-    $db = new Application_Model_DbTable_GlobalConfig();
-    $db->updateConfigDetails($params);
+    public function getAllParticipantAffiliates(){
+	$participantAffiliateDb = new Application_Model_DbTable_ParticipantAffiliates();
+	return $participantAffiliateDb->getAllParticipantAffiliates();
+    }
+    public function getGlobalConfigDetails() {
+	$db = new Application_Model_DbTable_GlobalConfig();
+	return $db->getGlobalConfig();
+    }
     
+    public function updateConfig($params) {	
+	$db = new Application_Model_DbTable_GlobalConfig();
+	$db->updateConfigDetails($params);
     }
 
 }

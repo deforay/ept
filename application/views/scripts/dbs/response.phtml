@@ -229,11 +229,11 @@
             <tr>
                 <th>Supervisor Review</th>
                 <td><select name="supervisorApproval" id="supervisorApproval" class="isRequired"  title="Please select if Supervisor Approval was conducted or not"><option value=""> -- Select -- </option>
-                        <option value="YES" <?php if ($this->shipment['supervisor_approval'] == 'YES') echo " selected "; ?>>YES</option>
-                        <option value="NO" <?php if ($this->shipment['supervisor_approval'] == 'NO') echo " selected "; ?>>NO</option></select></td>
-                <th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
+                        <option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>YES</option>
+                        <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>NO</option></select></td>
+                <th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
                 <td>
-                    <input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'YES') ? "" : "style='display:none;'" ?> value="<?php echo $this->shipment['participant_supervisor']; ?>"/>
+                    <input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> value="<?php echo $this->shipment['participant_supervisor']; ?>"/>
                 </td>
 
             </tr>
@@ -293,7 +293,7 @@
 
         $('#supervisorApproval').change(function () {
 
-            if ($('#supervisorApproval').val() == 'YES')
+            if ($('#supervisorApproval').val() == 'yes')
             {
                 $('#labSupervisor').show();
                 $('#participantSupervisor').val('');

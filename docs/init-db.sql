@@ -972,7 +972,7 @@ CREATE TABLE IF NOT EXISTS `shipment_dts` (
 --
 
 INSERT INTO `shipment_dts` (`DTSShipmentID`, `ParticipantID`, `ShipmentDate`, `EvaluationStatus`, `ShipmentScore`, `LastDateResponse`, `ShipmentTestDate`, `ShipmentReceiptDate`, `ShipmentTestReportDate`, `ParticipantSupervisor`, `supervisorApproval`, `ReviewDate`, `SampleRehydrationDate`, `NumberOfSample`, `UserComment`, `Create_on_admin`, `Update_on_admin`, `Update_by_admin`, `Update_on_user`, `Updated_by_user`, `created_by_admin`) VALUES
-('1', 'adhikari1', '2013-01-01', '11111110', NULL, '2015-06-02', '2013-07-02', '2013-07-01', '2013-07-15 16:07:32', 'ghffhgf', 'YES', NULL, '2013-07-02', NULL, 'ghfh', NULL, NULL, NULL, '2013-07-15 16:07:32', 'app0@cdc.gov', NULL),
+('1', 'adhikari1', '2013-01-01', '11111110', NULL, '2015-06-02', '2013-07-02', '2013-07-01', '2013-07-15 16:07:32', 'ghffhgf', 'yes', NULL, '2013-07-02', NULL, 'ghfh', NULL, NULL, NULL, '2013-07-15 16:07:32', 'app0@cdc.gov', NULL),
 ('1', 'amit1', '2013-01-01', '11900990', NULL, '2015-06-02', NULL, NULL, NULL, 'B', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 ('1', 'app01', '2013-01-01', '19000990', NULL, '2015-06-02', NULL, NULL, NULL, 'C', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 ('1', 'app02', '2013-01-01', '11123110', NULL, '2015-06-02', NULL, NULL, NULL, 'D', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
@@ -981,7 +981,7 @@ INSERT INTO `shipment_dts` (`DTSShipmentID`, `ParticipantID`, `ShipmentDate`, `E
 ('2', 'adhikari2', '2013-02-01', '11900990', NULL, '2014-06-02', NULL, NULL, NULL, 'G', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 ('2', 'app01', '2013-02-01', '19000990', NULL, '2013-06-02', NULL, NULL, NULL, 'H', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 ('2', 'app02', '2013-02-01', '11123110', NULL, '2013-06-02', NULL, NULL, NULL, 'I', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('3', 'amit1', '2013-03-01', '11110190', NULL, '2015-06-02', '2013-07-01', '2013-07-01', '2013-07-15 16:07:50', 'cxczxcx', 'YES', NULL, '2013-07-09', NULL, 'cxzcxz', NULL, NULL, NULL, '2013-07-15 16:07:50', 'app0@cdc.gov', NULL);
+('3', 'amit1', '2013-03-01', '11110190', NULL, '2015-06-02', '2013-07-01', '2013-07-01', '2013-07-15 16:07:50', 'cxczxcx', 'yes', NULL, '2013-07-09', NULL, 'cxzcxz', NULL, NULL, NULL, '2013-07-15 16:07:50', 'app0@cdc.gov', NULL);
 
 -- --------------------------------------------------------
 

@@ -215,7 +215,7 @@ jQuery.validator.addMethod("iban", function(value, element) {
 		'MD': "[\\dA-Z]{2}\\d{18}",
 		'ME': "\\d{18}",
 		'NL': "[A-Z]{4}\\d{10}",
-		'NO': "\\d{11}",
+		'no': "\\d{11}",
 		'PK': "[\\dA-Z]{4}\\d{16}",
 		'PS': "[\\dA-Z]{4}\\d{21}",
 		'PL': "\\d{24}",

@@ -17,7 +17,9 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
             $config = new Zend_Config_Ini($file, null,array('allowModifications'=>true));
             $sec = APPLICATION_ENV;
             $config->$sec->map->center=$this->getRequest()->getPost('mapCenter');
-            $config->$sec->map->zoom=$this->getRequest()->getPost('mapZoom');
+            $config->$sec->map->center=$this->getRequest()->getPost('mapCenter');
+            $config->$sec->evaluation->dts->passPercentage=$this->getRequest()->getPost('dtsPassPercentage');
+            $config->$sec->evaluation->dts->documentationScore=$this->getRequest()->getPost('dtsDocumentationScore');
             
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)

@@ -1714,7 +1714,7 @@ INSERT INTO `countries` (`id`, `iso_name`, `iso2`, `iso3`, `numeric_code`) VALUE
 (163, 'Niue', 'NU', 'NIU', 570),
 (164, 'Norfolk Island', 'NF', 'NFK', 574),
 (165, 'Northern Mariana Islands', 'MP', 'MNP', 580),
-(166, 'Norway', 'NO', 'NOR', 578),
+(166, 'Norway', 'no', 'NOR', 578),
 (167, 'Oman', 'OM', 'OMN', 512),
 (168, 'Pakistan', 'PK', 'PAK', 586),
 (169, 'Palau', 'PW', 'PLW', 585),
@@ -1884,5 +1884,10 @@ CREATE TABLE IF NOT EXISTS `reference_dts_rapid_hiv` (
 );
 
 --Guna Oct 24 2014
-UPDATE  `eanalyze`.`global_config` SET  `name` =  'admin_email' WHERE  `global_config`.`name` =  'admin-email';
-INSERT INTO `eanalyze`.`global_config` (`name`, `value`) VALUES ('response_after_evaluate', 'yes');
+UPDATE  `global_config` SET  `name` =  'admin_email' WHERE  `global_config`.`name` =  'admin-email';
+INSERT INTO `global_config` (`name`, `value`) VALUES ('response_after_evaluate', 'yes');
+
+
+--Amit Nov 06 2014
+ALTER TABLE  `shipment_participant_map` ADD  `documentation_score` DECIMAL( 5, 2 ) NULL AFTER  `shipment_score` ;
+ALTER TABLE  `shipment_participant_map` CHANGE  `shipment_score`  `shipment_score` DECIMAL( 5, 2 ) NULL DEFAULT NULL ;

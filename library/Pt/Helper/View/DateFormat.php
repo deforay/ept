@@ -8,7 +8,7 @@ class  Pt_Helper_View_DateFormat extends Zend_View_Helper_Abstract {
 		// $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications'=>true, 'nestSeparator'=>"#"));
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications' => false));
 		 
-		$formatDate= $config->participant->datefromat;
+		$formatDate= $config->participant->dateformat;
 		
 		if($dateIn == null || $dateIn == "" || $dateIn =="0000-00-00"){
 			return '';
@@ -33,7 +33,7 @@ class  Pt_Helper_View_DateFormat extends Zend_View_Helper_Abstract {
 		// $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications'=>true, 'nestSeparator'=>"#"));
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications' => false));
 			
-		return $config->participant->datefromat;
+		return $config->participant->dateformat;
 	}
 
 }

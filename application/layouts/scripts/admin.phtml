@@ -53,27 +53,28 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?> ><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'index'),'default',true); ?>">Dashboard</a></li>
+            <li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?> ><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'index'),'default',true); ?>"><i class="icon-dashboard"></i>&nbsp;&nbsp;Dashboard</a></li>
             <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manage') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i>&nbsp;&nbsp;Manage <b class="caret"></b></a>
               <ul class="dropdown-menu">
-		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'system-admins'),'default',true); ?>">PT Manager</a></li>
+		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'system-admins'),'default',true); ?>">PT Managers</a></li>
 		<li class="divider"></li>
 		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'participants'),'default',true); ?>">PT Participants</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'data-managers'),'default',true); ?>">PT Participant Login</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'participants','action'=>'participant-manager-map'),'default',true); ?>">Participant Login Map</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'participants','action'=>'pending'),'default',true); ?>">Pending PT Participants</a></li>
-                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments'),'default',true); ?>">Enrollments</a></li>
-                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'report-config'),'default',true); ?>">Report Config</a></li>
-                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'global-config'),'default',true); ?>">Global Config</a></li>
-                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'testkit'),'default',true); ?>">Testkit</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments'),'default',true); ?>">Scheme Enrollments</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'testkit'),'default',true); ?>">Testkits</a></li>
+		<li class="divider"></li>
+                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'global-config'),'default',true); ?>">ePT Global Settings</a></li>
+		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'report-config'),'default',true); ?>">PDF Report Settings</a></li>				
                 <li class="divider"></li>
 		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'contact-us'),'default',true); ?>">Contact Messages</a></li>
                 
               </ul>
             </li>
             <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'configurations') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configurations <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-beaker"></i>&nbsp;&nbsp;Configurations <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'distributions'),'default',true); ?>">PT Survey</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'shipment'),'default',true); ?>">Shipments</a></li>
@@ -82,14 +83,14 @@
               </ul>
             </li>
             <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'analyze') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Analyze <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-search"></i>&nbsp;&nbsp;Analyze <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'evaluate'),'default',true); ?>">Evaluate Responses</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'distribution'),'default',true); ?>">Generate Reports</a></li>
               </ul>
             </li>
 	    <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'report') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Report <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-bar-chart"></i>&nbsp;&nbsp;Reports <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'detailed'),'default',true); ?>">Participant Response Report</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'testkit'),'default',true); ?>">TestKit Report For DTS</a></li>
