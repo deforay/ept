@@ -17,26 +17,40 @@ if($this->result!=""){
 // Extend the TCPDF class to create custom Header and Footer
 class MYPDF extends TCPDF {
 
-	public function setSchemeName($schemeName) {
+	public function setSchemeName($header,$schemeName,$logo) {
 		$this->scheme_name = $schemeName;
+		$this->header=$header;
+		$this->logo=$logo;
 	}
     //Page header
     public function Header() {
         // Logo
         //$image_file = K_PATH_IMAGES.'logo_example.jpg';
-        //$this->Image($image_file, 10, 10, 15, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+	if(trim($this->logo)!=""){
+		if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo)) {
+			$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo;
+			$this->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+		}
+	}
+       
         // Set font
-        //$this->SetY(10);
-        $this->SetFont('times', 'B', 13);
-        // Title
-        //$this->Cell(5, 5, 'CDC-ILB-PT', 0, false, 'L', 0, '', 0, false, 'M', 'M');
-       // $this->Cell(0, 5, 'HIV-1 Proficiency Testing Program for Early Infant Diagnosis', 0, false, 'C', 0, '', 0, false, 'M', 'M');
-       // $this->Cell(0, 5, 'Panel 2013-I', 0, false, 'R', 0, '', 0, false, 'M', 'M');
+	$this->SetFont('times', '', 12);
         
-        $header='<table><tr><td style="text-align:center;">CDC-ILB-PT</td><td style="text-align:center;">HIV-1 Proficiency Testing Program for '.$this->scheme_name.'</td><td style="text-align:right;">Panel 2013-I</td></tr></table>';
-        
-	//$result['scheme_name']
-	$this->writeHTMLCell(0, 0, 0, 10, $header, 0, 0, 0, true, 'J', true);
+	$this->header=str_replace("<div","<span",trim($this->header));
+	$this->header=str_replace("</div>","</span><br/>",$this->header);
+	
+	//error_log($this->header);
+	//$y = $this->getY();
+	$html=$this->header;
+	
+	$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
+	//$this->writeHTML($html, true, false, true, true, 'L');
+	
+	$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p>';
+	$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
+	$html='<hr/>';
+	$this->writeHTMLCell(0, 0, 10, 45, $html, 0, 0, 0, true, 'J', true);
+	
     }
 
     // Page footer
@@ -54,33 +68,35 @@ class MYPDF extends TCPDF {
 $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+	$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+	
+	// set header and footer fonts
+	$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+	
+	// set default monospaced font
+	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+	
+	// set margins
+	
+	$pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+	
+	// set auto page breaks
+	$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+	
+	// set image scale factor
+	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	
+	// set some language-dependent strings (optional)
+	if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	    require_once(dirname(__FILE__).'/lang/eng.php');
+	    $pdf->setLanguageArray($l);
+	}
 
-// set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-
-// set default monospaced font
-$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-// set margins
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-
-// set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
-// set image scale factor
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-// set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-    require_once(dirname(__FILE__).'/lang/eng.php');
-    $pdf->setLanguageArray($l);
-}
-
-$pdf->setSchemeName($this->result['scheme_name']);
+//$pdf->setSchemeName($this->result['scheme_name']);
+$pdf->setSchemeName($this->header,$this->result['scheme_name'],$this->logo);
 // add a page
 //$pdf->AddPage();
 

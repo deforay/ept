@@ -65,6 +65,9 @@ class Reports_DistributionController extends Zend_Controller_Action
         $this->_helper->layout()->disableLayout();
         if($this->_hasParam('sId')){
             $id = (int)base64_decode($this->_getParam('sId'));
+            $reportService = new Application_Service_Reports();
+            $this->view->header=$reportService->getReportConfigValue('report-header');
+            $this->view->logo=$reportService->getReportConfigValue('logo');
             $evalService = new Application_Service_Evaluation();
             $this->view->result = $evalService->getSummaryReportsInPdf($id);
         }
