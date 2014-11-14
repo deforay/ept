@@ -599,15 +599,16 @@ else{
 </table>
 	<br/>
 	<?php
+	    $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);	
 	?>
 	
 <legend>Summary of all Laboratory Scores</legend>
 <table class="table table-bordered table-striped">
 	<tr>
 		<th style="text-align: center;">Total Number of Participants</th>
-		<th style="text-align: center;">Total Number of Participants Scoring "<?php echo $this->evaluateData['maxScore']; ?>" </th>
-		<th style="text-align: center;">Total Number of Participants Scoring Below "<?php echo $this->evaluateData['maxScore']; ?>" </th>
-		<th style="text-align: center;">Percentage of Participants Scoring "<?php echo $this->evaluateData['maxScore']; ?>" </th>
+		<th style="text-align: center;">Total Number of Participants Scoring "<?php echo $config->evaluation->dts->passPercentage; ?>" </th>
+		<th style="text-align: center;">Total Number of Participants Scoring Below "<?php echo $config->evaluation->dts->passPercentage; ?>" </th>
+		<th style="text-align: center;">Percentage of Participants Scoring "<?php echo $config->evaluation->dts->passPercentage; ?>" </th>
 	</tr>
 	<tr>
 		<td style="text-align: center;"><?php echo $this->evaluateData['totalParticipants']; ?></td>

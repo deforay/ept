@@ -86,7 +86,7 @@
 <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
     <thead>
     <tr>
-        <th></th>
+        <th style="width:40px;"></th>
         <th>Participant/Tester</th>
         <th>Response Score</th>
         <th>Documentation Score</th>
@@ -146,19 +146,7 @@
 	var nTr = null;
 	$(document).ready(function() {
 		
-	  var nCloneTh = document.createElement( 'th' );
-	  var nCloneTd = document.createElement( 'td' );
-	  nCloneTd.innerHTML = '<a href="javascript:void(0);" class="btn btn-success btn-xs clicker"><i class="icon-plus"></i></a>';
-	  nCloneTd.className = "center";
-		
-	  $('#shipmentEvaluation thead tr').each( function () {
-	     //this.insertBefore( nCloneTh, this.childNodes[0] );
-	  });
-     
-	  $('#shipmentEvaluation tbody tr').each( function () {
-	     //this.insertBefore(  nCloneTd.cloneNode( true ), this.childNodes[0] );
-	  });
-		
+	  
 	  $('#shipmentEvaluation').on('click',".clicker", function (){
 	       nTr = $(this).parents('tr')[0];
                aData = oTable.fnGetData( nTr );

@@ -87,9 +87,10 @@
     <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
         <thead>
             <tr>
+                <th style="width:40px;"></th>
                 <th>Participant/Tester</th>
-                <th>Score</th>
-                <th>Max Score</th>
+                <th>Response Score</th>
+                <th>Documentation Score</th>
                 <th>Result</th>
                 <th>Comments (if any)</th>
 
@@ -102,16 +103,26 @@
 
 
             foreach ($this->shipment as $shipment) {
+                $btnClassName="btn-success";
                 $editList[] = "/admin/evaluate/edit/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
                 $viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
                 if (isset($shipment['failure_reason']) && $shipment['failure_reason'] != "") {
                     $shipment['failure_reason'] = "<ul><li>" . str_replace(",", "</li><li>", $shipment['failure_reason']) . "</li></ul>";
                 }
+                                
+                if(isset($shipment['display_result']) && $shipment['display_result']=="Fail"){
+                    $btnClassName="btn-danger";
+                }else if(isset($shipment['failure_reason']) && $shipment['failure_reason'] != ""){
+                    $btnClassName="btn-warning";
+                }
+                $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
+                $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';                
                 ?>
                 <tr>
+                    <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?></td>
-                    <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0' ?></td>
-                    <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['max_score']) && $shipment['max_score'] != "") ? $shipment['max_score'] : '-'; ?></td>
+                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
+                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 
@@ -166,41 +177,37 @@
     }
     ?>
         $(document).ready(function () {
-            var nCloneTh = document.createElement('th');
-            var nCloneTd = document.createElement('td');
-            nCloneTd.innerHTML = '<a href="javascript:void(0);" class="btn btn-success btn-xs clicker"><i class="icon-plus"></i></a>';
-            nCloneTd.className = "center";
 
-            $('#shipmentEvaluation thead tr').each(function () {
-                this.insertBefore(nCloneTh, this.childNodes[0]);
-            });
 
-            $('#shipmentEvaluation tbody tr').each(function () {
-                this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
-            });
-
-            $('#shipmentEvaluation').on('click', ".clicker", function () {
-                nTr = $(this).parents('tr')[0];
-                if (oTable.fnIsOpen(nTr))
-                {
-                    /* This row is already open - close it */
-                    $(this).find('i').addClass("icon-plus");
-                    $(this).find('i').removeClass("icon-minus");
-                    $(this).removeClass('btn-danger');
-                    $(this).addClass('btn-success');
-                    oTable.fnClose(nTr);
-                }
-                else
-                {
-                    /* Open this row */
-
-                    $(this).find('i').addClass("icon-minus");
-                    $(this).find('i').removeClass("icon-add");
-                    $(this).removeClass('btn-success');
-                    $(this).addClass('btn-danger');
-                    oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
-                }
-            });
+            $('#shipmentEvaluation').on('click',".clicker", function (){
+	       nTr = $(this).parents('tr')[0];
+               aData = oTable.fnGetData( nTr );
+	       if ( oTable.fnIsOpen(nTr) ){
+                   //console.log(aData[5]);
+		   /* This row is already open - close it */
+		   $(this).find('i').addClass("icon-plus");
+		   $(this).find('i').removeClass("icon-minus");
+		   //$(this).removeClass('btn-danger');
+                   
+                   if(aData[4]=="Fail"){
+                       $(this).addClass('btn-danger');
+                   }else if(aData[5]==""){
+                       $(this).addClass('btn-success');
+                   }else{
+                       $(this).addClass('btn-warning');
+                   }
+		   
+		   oTable.fnClose( nTr );
+	       }
+	       else{
+		    /* Open this row */       
+		    $(this).find('i').addClass("icon-minus");
+		    $(this).find('i').removeClass("icon-add");
+		    //$(this).removeClass('btn-success');
+		    //$(this).addClass('btn-danger');			
+		    oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details' );
+	       }
+	  });	
 
 
 

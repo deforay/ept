@@ -1081,9 +1081,10 @@ class Application_Service_Evaluation {
 
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+	$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);	
         $sql = $db->select()->from(array('s' => 'shipment'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('fullscore' => new Zend_Db_Expr("(if(s.max_score = sp.shipment_score, 1, 0))")))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('fullscore' => new Zend_Db_Expr("(if((sp.shipment_score+sp.documentation_score) >= ".$config->evaluation->dts->passPercentage.", 1, 0))")))
                 ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
                 ->where("sp.shipment_id = ?", $shipmentId)
                 ->where("substring(sp.evaluation_status,4,1) != '0'")
@@ -1097,17 +1098,11 @@ class Application_Service_Evaluation {
             $numScoredFull += $shipment['fullscore'];
         }
 
-        $maxScore = $shipmentOverall[0]['max_score'];
-
-
-
-
         return array('participant' => $participantData,
             'shipment' => $shipmentData,
             'possibleResults' => $possibleResults,
             'totalParticipants' => $noOfParticipants,
             'fullScorers' => $numScoredFull,
-            'maxScore' => $maxScore,
             'evalComments' => $evalComments,
             'controlResults' => $controlRes,
             'results' => $sampleRes);
