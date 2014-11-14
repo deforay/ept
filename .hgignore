@@ -3,6 +3,7 @@ afq.komodoproject
 ^application/cache/(?!index.php)
 ^backup/(?!index.php)
 ^public/uploads/(?!index.php)
+^public/docs/(?!index.php)
 ^public/temporary/cache(?!index.php)
 ^public/temporary/(?!index.php)
 error_log

@@ -64,7 +64,7 @@ class MYPDF extends TCPDF {
     }
 }
 $totalPages=count($this->result['shipment']);
-        $j=1;
+$j=1;
 foreach($this->result['shipment'] as $result){
 	//error_log($i);
 	// Extend the TCPDF class to create custom Header and Footer
@@ -283,7 +283,7 @@ foreach($this->result['shipment'] as $result){
 	//if(trim($result['distribution_date'])!=""){
 	//	$result['distribution_date']=$this->dateFormat($result['distribution_date']);
 	//}
-$comment='<table style="width:100%;">';
+	$comment='<table style="width:100%;">';
 	if(trim($result['shipment_comment'])!=""){
 	$comment.='<tr>';
 	$comment.='<td style="text-align:left;width:200px;">Message from the PT Admin</td>';
@@ -343,11 +343,11 @@ $comment='<table style="width:100%;">';
         $shipmentCode=$result['shipment_code'];
         $j++;
 }
-$mergePdf ="overallParticipantReport.pdf";
+$mergePdf = $shipmentCode."-bulk-participant-report.pdf";
 $mergeFilePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$mergePdf;
 $pdfNew ->save($mergeFilePath);
 //============================================================+
 // END OF FILE
 //============================================================+
-echo "Reports generated and can be downloaded by Participants.";
+echo "Reports generated successfully.";
 }
