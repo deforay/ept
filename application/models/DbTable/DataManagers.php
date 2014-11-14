@@ -224,13 +224,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
         }
     }
 	
-	public function getAllDataManagers($active=true){
-		$sql = $this->select();
-		if($active){
-			$sql = $sql->where("status='active'");
-		}
-		return $this->fetchAll($sql);
+    public function getAllDataManagers($active=true){
+	$sql = $this->select()->order("first_name");
+	if($active){
+		$sql = $sql->where("status='active'");
 	}
+	return $this->fetchAll($sql);
+    }
 	
     public function updatePassword($oldpassword,$newpassword){
         $authNameSpace = new Zend_Session_Namespace('datamanagers');

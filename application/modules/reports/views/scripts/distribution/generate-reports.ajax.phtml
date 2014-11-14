@@ -137,6 +137,7 @@ foreach($this->result['shipment'] as $result){
 	
 	$responseDate="";
 	$shipmentScore="";
+	$documentationScore="";
 	$score="";
 	
 	if(isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate'])!=""){
@@ -146,14 +147,20 @@ foreach($this->result['shipment'] as $result){
 	if(trim($result['shipment_score'])!=""){
 		$shipmentScore=$result['shipment_score'];
 	}
+	
+	if(isset($result['documentation_score']) && trim($result['documentation_score'])!=""){
+		$documentationScore=$result['documentation_score'];
+	}
+	
 	if(trim($result['max_score'])!=""){
-		$score=100*round($shipmentScore/$result['max_score'],2);
+		$score=$shipmentScore+$documentationScore;
+		//$score=100*round($shipmentScore/$result['max_score'],2);
 	}
 	
 	if($result['is_excluded'] == 'yes'){
 		$wishes='<p>Your response was not considered for evaluation</p><br/>';
 	}
-	else if($score==100){
+	else if($score>=$this->passPercentage){
 		$wishes='<p>Congratulations! You have received a satisfactory score of '.$score.'%.</p><br/>';
 	}else{
 		$wishes='<p>You have received a score of '.$score.'%.</p><br/>';

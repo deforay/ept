@@ -348,7 +348,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
     }
 
     public function fetchAllActiveParticipants() {
-        return $this->fetchAll($this->select()->where("status='active'"));
+        return $this->fetchAll($this->select()->where("status='active'")->order("first_name"));
     }
 
     public function getSchemeWiseParticipants($schemeType) {
