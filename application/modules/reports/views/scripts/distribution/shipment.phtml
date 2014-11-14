@@ -286,7 +286,7 @@
     <?php } ?>
             } else {
                 $.unblockUI();
-                alert("Please check the event date");
+                alert("You cannot generate reports before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']);?>). \n\nYou can change the PT Survey Date and retry.");
             }
 
         }

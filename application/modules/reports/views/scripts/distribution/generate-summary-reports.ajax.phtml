@@ -3,7 +3,7 @@
 //die;
 require_once('tcpdf/tcpdf.php');
 //require_once('libchart/classes/libchart.php');
-
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);	
 if($this->result!=""){
 	if($this->result['scheme_type']!='eid'){
 		require_once('libchart/classes/libchart.php');
@@ -222,7 +222,7 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 			$partCount=count($result)-1;
 			//Zend_Debug::dump($result['correctCount']);
 			for($i=0;$i<$partCount;$i++){
-				if($this->result['max_score']==$result[$i]['shipment_score']){
+				if(($result[$i]['shipment_score'] + $result[$i]['documentation_score']) >= $config->evaluation->dts->passPercentage){
 					$maxScore++;
 				}else{
 					$belowScore++;
@@ -248,9 +248,9 @@ $pdf->writeHTML($sampleCode, true, false, true, false, '');
 		
 		$sampleCode='<table border="1" style="margin-left:5px;"><tr>';
 		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Performing Assay Pair </td>';
-		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring "'.$this->result['max_score'].'"</td>';
-		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring Below "'.$this->result['max_score'].'" </td>';
-		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Percentage of Laboratories Scoring "'.$this->result['max_score'].'"</td></tr>';
+		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring "'.$config->evaluation->dts->passPercentage.'" and above</td>';
+		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring Below "'.$config->evaluation->dts->passPercentage.'" </td>';
+		$sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Percentage of Laboratories Scoring "'.$config->evaluation->dts->passPercentage.'"</td></tr>';
 		
 		$sampleCode.='<tr>';
 		$sampleCode.='<td style="text-align:center;">'.$partCount.'</td>';

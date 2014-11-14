@@ -1377,7 +1377,7 @@ class Application_Service_Evaluation {
                 $shipmentResult['referenceResult'] = $sqlRes;
                 //Zend_Debug::dump($shipmentResult['referenceResult']);die;
 
-                $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.attributes'))
+                $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score','spm.documentation_score', 'spm.attributes'))
                         ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
                         ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
                         ->where("spm.shipment_id = ?", $shipmentId)
@@ -1452,7 +1452,7 @@ class Application_Service_Evaluation {
 
                 $shipmentResult['referenceResult'] = $sqlRes;
 
-                $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.attributes'))
+                $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'))
                         ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
                         ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
                         ->where("spm.shipment_id = ?", $shipmentId)
@@ -1527,7 +1527,7 @@ class Application_Service_Evaluation {
                         $extId = $extractionAssayVal['id'];
                         $detId = $detectionAssayVal['id'];
 
-                        $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.attributes'))
+                        $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score','spm.documentation_score', 'spm.attributes'))
                                 ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=spm.shipment_id', array('refeid.sample_label'))
                                 ->join(array('eidExtrac' => 'r_eid_extraction_assay'), "eidExtrac.id=$extId", array('eidExtracName' => 'eidExtrac.name'))
                                 ->join(array('eidDetec' => 'r_eid_detection_assay'), "eidDetec.id=$detId", array('eidDetecName' => 'eidDetec.name'))
