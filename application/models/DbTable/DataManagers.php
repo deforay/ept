@@ -6,8 +6,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
     protected $_primary = array('dm_id');
 
     public function addUser($params) {
-    $authNameSpace = new Zend_Session_Namespace('administrators');
-     $data = array(
+	$authNameSpace = new Zend_Session_Namespace('administrators');
+	$data = array(
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
             'institute' => $params['institute'],
@@ -21,10 +21,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
 	    'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()')
         );
-
         return $this->insert($data);
-
     }
+    
     public function getAllUsers($parameters) {
 
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
@@ -184,7 +183,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
     }
 
     public function updateUser($params) {
-       $authNameSpace = new Zend_Session_Namespace('administrators');
+	$authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
@@ -227,7 +226,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
     public function getAllDataManagers($active=true){
 	$sql = $this->select()->order("first_name");
 	if($active){
-		$sql = $sql->where("status='active'");
+	    $sql = $sql->where("status='active'");
 	}
 	return $this->fetchAll($sql);
     }
@@ -244,6 +243,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
         }
     }
     
-
+    
 }
 

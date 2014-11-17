@@ -1229,8 +1229,11 @@ class Application_Service_Evaluation {
                 ->where("substring(sp.evaluation_status,4,1) != '0'");
         //error_log($sql);die;
         $shipmentResult = $db->fetchAll($sql);
+	
         //Zend_Debug::dump($shipmentResult);die;
         $i = 0;
+	//$mapRes="";
+	$mapRes = array();
         foreach ($shipmentResult as $res) {
             if ($res['scheme_type'] == 'dbs') {
                 $sQuery = $db->select()->from(array('resdbs' => 'response_result_dbs'), array('resdbs.shipment_map_id', 'resdbs.sample_id', 'resdbs.reported_result', 'responseDate' => 'resdbs.created_on'))
@@ -1242,7 +1245,25 @@ class Application_Service_Evaluation {
 
                 $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
             } else if ($res['scheme_type'] == 'dts') {
-
+		
+		$dmResult=$db->fetchAll($db->select()->from(array('pmm'=>'participant_manager_map'))
+					->join(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('institute'))
+					->where("pmm.participant_id=".$res['participant_id']));
+		if(isset($res['last_name']) && trim($res['last_name'])!=""){
+			$res['last_name']="_".$res['last_name'];
+		}
+		
+		foreach($dmResult as $dmRes){
+			if(count($mapRes)==0){
+				$mapRes[$dmRes['dm_id']]=$dmRes['institute']."#".$dmRes['participant_id']."#".$res['first_name'].$res['last_name']."-".$res['map_id'];
+			}
+			else if (array_key_exists($dmRes['dm_id'], $mapRes)) {
+				$mapRes[$dmRes['dm_id']].=",".$dmRes['institute']."#".$dmRes['participant_id']."#".$res['first_name'].$res['last_name']."-".$res['map_id'];
+			}else{
+				$mapRes[$dmRes['dm_id']]=$dmRes['institute']."#".$dmRes['participant_id']."#".$res['first_name'].$res['last_name']."-".$res['map_id'];
+			}
+		}
+		
                 $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
                         ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
@@ -1348,10 +1369,8 @@ class Application_Service_Evaluation {
                 }
             }
         }
-
-
-        $result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation);
-
+	
+        $result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation,'dmResult'=>$mapRes);
 
         return $result;
     }

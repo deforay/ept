@@ -994,5 +994,9 @@ class Application_Service_Shipments {
         }
         return $code;
     }
-
+    
+    public function getShipmentReport($parameters) {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->getShipmentReportDetails($parameters);
+    }
 }

@@ -59,6 +59,10 @@ class Reports_DistributionController extends Zend_Controller_Action
             $this->view->result = $evalService->getEvaluateReportsInPdf($id);
             $commonService = new Application_Service_Common();
             $this->view->passPercentage = $commonService->getConfig('pass_percentage');
+            //$dataManagerService = new Application_Service_DataManagers();
+            //$this->view->dataManager = $dataManagerService->getAllParticipantManagers();
+            //Zend_Debug::dump($this->view->dataManager['map']);
+            //die;
         }
     }
 

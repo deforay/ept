@@ -10,6 +10,7 @@ class ParticipantController extends Zend_Controller_Action {
                 ->addActionContext('default-scheme', 'html')
                 ->addActionContext('current-schemes', 'html')
                 ->addActionContext('all-schemes', 'html')
+                ->addActionContext('shipment-report', 'html')
                 ->initContext();
     }
 
@@ -149,5 +150,13 @@ class ParticipantController extends Zend_Controller_Action {
             $this->_redirect("/participant/dashboard");
         }
     }
-
+    
+    public function shipmentReportAction() {
+        if ($this->getRequest()->isPost()) {
+            //SHIPMENT_ALL
+            $params = $this->_getAllParams();
+            $shipmentService = new Application_Service_Shipments();
+            $shipmentService->getShipmentReport($params);
+        }
+    }
 }
