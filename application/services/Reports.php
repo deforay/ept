@@ -724,6 +724,8 @@ class Application_Service_Reports {
 		
 		$excel = new PHPExcel();
 		//$sheet = $excel->getActiveSheet();
+		
+		
 		$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
 		$cacheSettings = array('memoryCacheSize' => '80MB');
 		
@@ -1227,8 +1229,7 @@ class Application_Service_Reports {
 		
 		
 		
-		//$firstSheet->getCellByColumnAndRow(0,12)->setValueExplicit(html_entity_decode("", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-		//$firstSheet->getCellByColumnAndRow(1,12)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+		$excel->setActiveSheetIndex(0);
 		
 		$writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
 		$filename = $shipmentCode.'-' . date('d-M-Y-H-i-s') . '.xls';
