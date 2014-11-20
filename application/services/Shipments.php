@@ -716,7 +716,7 @@ class Application_Service_Shipments {
                     'control' => $params['control'][$i],
                     'mandatory' => $params['mandatory'][$i],
                     'sample_score' => $params['score'][$i]
-                        )
+                    )
                 );
                 if (isset($params['eia'][$i + 1]['eia'])) {
                     $eiaSize = sizeof($params['eia'][$i + 1]['eia']);

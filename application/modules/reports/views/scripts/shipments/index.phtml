@@ -155,4 +155,14 @@
 
 	};
 	
+	function generateShipmentParticipantList(shipmentId){
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'get-shipment-participant-list')); ?>", {shipmentId: shipmentId, format: "html"},
+                function(data) {
+			if (data!="") {
+				document.location.href = '/temporary/'+data;
+			}
+			$.unblockUI();
+                });
+	}
 </script>

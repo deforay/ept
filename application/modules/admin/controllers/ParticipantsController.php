@@ -112,7 +112,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     {
         $participantService = new Application_Service_Participants();
         $dataManagerService = new Application_Service_DataManagers();
-        if($this->_hasParam('datamanagerId')){            
+        if($this->_hasParam('datamanagerId')){
             $datamanagerId = $this->_getParam('datamanagerId');
             $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantList($datamanagerId);
         }
@@ -121,17 +121,6 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

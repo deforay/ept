@@ -197,6 +197,16 @@ class Pt_Commons_General {
         $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone($conf->timezone));
         return $date->format('Y-m-d H:i:s');
     }
+    
+    public static function excelDateFormat($date) {
 
+        if ($date == null || $date == "" || $date == "0000-00-00") {
+            return "";
+        } else {
+            $dateArray = explode('-', $date);
+            $newDate = $dateArray[2] . "/";
+            return $newDate .= $dateArray[1] . "/" . $dateArray[0];
+        }
+    }
 }
 
