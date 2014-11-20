@@ -204,9 +204,9 @@ class Application_Service_Reports {
 		    $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
 		    $responsePercentage=($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
 		    $row = array();
-		    $row[] = "<a href='javascript:void(0);' onclick='generateShipmentParticipantList(\"".base64_encode($aRow['shipment_id'])."\")'>".$aRow['distribution_code']."</a>";
+		    $row[] = $aRow['distribution_code'];
 		    $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-		    $row[] = $aRow['shipment_code'];
+		    $row[] = "<a href='javascript:void(0);' onclick='generateShipmentParticipantList(\"".base64_encode($aRow['shipment_id'])."\")'>".$aRow['shipment_code']."</a>";
 		    $row[] = Pt_Commons_General::humanDateFormat($aRow['lastdate_response']);
 		    $row[] = $aRow['scheme_name'];
 		    $row[] = $aRow['number_of_samples'];
@@ -784,75 +784,85 @@ class Application_Service_Reports {
 		$firstSheetColNo = 0;
 		$firstSheetRow = 1;
 		
+		$firstSheetStyle = array(
+			'alignment' => array(
+			    //'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+			),
+			'borders' => array(
+			    'outline' => array(
+				'style' => PHPExcel_Style_Border::BORDER_THICK,
+			    ),
+			)
+		);
 		
 		foreach ($firstSheetHeading as $value) {
 			$firstSheet->getCellByColumnAndRow($firstSheetColNo, $firstSheetRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			$firstSheet->getStyleByColumnAndRow($firstSheetColNo,$firstSheetRow)->getFont()->setBold(true);
 			$cellName = $firstSheet->getCellByColumnAndRow($firstSheetColNo,$firstSheetRow)->getColumn();
-			$firstSheet->getStyle($cellName . $firstSheetRow)->applyFromArray($borderStyle);
+			$firstSheet->getStyle($cellName . $firstSheetRow)->applyFromArray($firstSheetStyle);
 			$firstSheetColNo++;
 		}
 		
 		$firstSheet->getCellByColumnAndRow(0,2)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		$firstSheet->getCellByColumnAndRow(1,2)->setValueExplicit(html_entity_decode("Includes dropdown lists for the following: region, department, position, RT, ELISA, received logbook", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		
-		$firstSheet->getStyle('A2')->applyFromArray($borderStyle);
-		$firstSheet->getStyle('B2')->applyFromArray($borderStyle);
-		$firstSheet->getDefaultRowDimension(0)->setRowHeight(10);
+		$firstSheet->getStyle('A2')->applyFromArray($firstSheetStyle);
+		$firstSheet->getStyle('B2')->applyFromArray($firstSheetStyle);
+		$firstSheet->getDefaultRowDimension()->setRowHeight(10);
 		$firstSheet->getColumnDimensionByColumn(0)->setWidth(20);
-		$firstSheet->getDefaultRowDimension(1)->setRowHeight(50);
+		$firstSheet->getDefaultRowDimension(1)->setRowHeight(70);
 		$firstSheet->getColumnDimensionByColumn(1)->setWidth(100);
 		
 		$firstSheet->getCellByColumnAndRow(0,3)->setValueExplicit(html_entity_decode("Results Reported", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		$firstSheet->getCellByColumnAndRow(1,3)->setValueExplicit(html_entity_decode("This tab should include no commentary from NPHRL or GHSS staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.  Dropdown menu legend is as followed: negative (NEG), positive (POS), invalid (INV), indeterminate (IND), not entered or reported (NE), not tested (NT) and should be used according to the way the site reported it.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-		$firstSheet->getStyle('A3')->applyFromArray($borderStyle);
-		$firstSheet->getStyle('B3')->applyFromArray($borderStyle);
+		$firstSheet->getStyle('A3')->applyFromArray($firstSheetStyle);
+		$firstSheet->getStyle('B3')->applyFromArray($firstSheetStyle);
 		
 		
 		$firstSheet->getCellByColumnAndRow(0,4)->setValueExplicit(html_entity_decode("Panel Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		$firstSheet->getCellByColumnAndRow(1,4)->setValueExplicit(html_entity_decode("This tab is automatically populated.  Panel score calculated 6/6.  If a panel member must be omitted from the calculation (ie, loss of sample, etc) you must revise the equation manually by changing the number 6 to 5,4,etc. accordingly. Example seen for Akai House Clinic.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-		$firstSheet->getStyle('A4')->applyFromArray($borderStyle);
-		$firstSheet->getStyle('B4')->applyFromArray($borderStyle);
+		$firstSheet->getStyle('A4')->applyFromArray($firstSheetStyle);
+		$firstSheet->getStyle('B4')->applyFromArray($firstSheetStyle);
 		
 		
 		$firstSheet->getCellByColumnAndRow(0,5)->setValueExplicit(html_entity_decode("Documentation Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		$firstSheet->getCellByColumnAndRow(1,5)->setValueExplicit(html_entity_decode("The points breakdown for this tab are listed in the row above the sites for each column.  Data should be entered in manually by PT staff.  A site scores 1.5/3 if they used the wrong test kits got a 100% panel score.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-		$firstSheet->getStyle('A5')->applyFromArray($borderStyle);
-		$firstSheet->getStyle('B5')->applyFromArray($borderStyle);
+		$firstSheet->getStyle('A5')->applyFromArray($firstSheetStyle);
+		$firstSheet->getStyle('B5')->applyFromArray($firstSheetStyle);
 		
 		$firstSheet->getCellByColumnAndRow(0,6)->setValueExplicit(html_entity_decode("Total Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		$firstSheet->getCellByColumnAndRow(1,6)->setValueExplicit(html_entity_decode("Columns C-F are populated automatically.  Columns G, H and I must be selected from the dropdown menu for each site based on the criteria listed in the 'Decision Tree' tab.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-		$firstSheet->getStyle('A6')->applyFromArray($borderStyle);
-		$firstSheet->getStyle('B6')->applyFromArray($borderStyle);
+		$firstSheet->getStyle('A6')->applyFromArray($firstSheetStyle);
+		$firstSheet->getStyle('B6')->applyFromArray($firstSheetStyle);
 		
 		
 		$firstSheet->getCellByColumnAndRow(0,7)->setValueExplicit(html_entity_decode("Follow-up Calls", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		$firstSheet->getCellByColumnAndRow(1,7)->setValueExplicit(html_entity_decode("Final comments or outcomes should be updated continuously with receipt dates included.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-		$firstSheet->getStyle('A7')->applyFromArray($borderStyle);
-		$firstSheet->getStyle('B7')->applyFromArray($borderStyle);
+		$firstSheet->getStyle('A7')->applyFromArray($firstSheetStyle);
+		$firstSheet->getStyle('B7')->applyFromArray($firstSheetStyle);
 		
 		$firstSheet->getCellByColumnAndRow(0,8)->setValueExplicit(html_entity_decode("Dropdown Lists", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		$firstSheet->getCellByColumnAndRow(1,8)->setValueExplicit(html_entity_decode("This tab contains all of the dropdown lists included in the rest of the database, any modifications should be performed with caution.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-		$firstSheet->getStyle('A8')->applyFromArray($borderStyle);
-		$firstSheet->getStyle('B8')->applyFromArray($borderStyle);
+		$firstSheet->getStyle('A8')->applyFromArray($firstSheetStyle);
+		$firstSheet->getStyle('B8')->applyFromArray($firstSheetStyle);
 		
 		
 		$firstSheet->getCellByColumnAndRow(0,9)->setValueExplicit(html_entity_decode("Decision Tree", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		$firstSheet->getCellByColumnAndRow(1,9)->setValueExplicit(html_entity_decode("Lists all of the appropriate corrective actions and scoring critieria.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-		$firstSheet->getStyle('A9')->applyFromArray($borderStyle);
-		$firstSheet->getStyle('B9')->applyFromArray($borderStyle);
+		$firstSheet->getStyle('A9')->applyFromArray($firstSheetStyle);
+		$firstSheet->getStyle('B9')->applyFromArray($firstSheetStyle);
 		
 		
 		$firstSheet->getCellByColumnAndRow(0,10)->setValueExplicit(html_entity_decode("Feedback Report", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		$firstSheet->getCellByColumnAndRow(1,10)->setValueExplicit(html_entity_decode("This tab is populated automatically and used to export data into the Feedback Reports generated in MS Word.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-		$firstSheet->getStyle('A10')->applyFromArray($borderStyle);
-		$firstSheet->getStyle('B10')->applyFromArray($borderStyle);
+		$firstSheet->getStyle('A10')->applyFromArray($firstSheetStyle);
+		$firstSheet->getStyle('B10')->applyFromArray($firstSheetStyle);
 		
 		
 		$firstSheet->getCellByColumnAndRow(0,11)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		$firstSheet->getCellByColumnAndRow(1,11)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-		$firstSheet->getStyle('A11')->applyFromArray($borderStyle);
-		$firstSheet->getStyle('B11')->applyFromArray($borderStyle);
+		$firstSheet->getStyle('A11')->applyFromArray($firstSheetStyle);
+		$firstSheet->getStyle('B11')->applyFromArray($firstSheetStyle);
 		
 		
 		for($counter=1;$counter<=11;$counter++){
