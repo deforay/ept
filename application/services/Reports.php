@@ -118,7 +118,7 @@ class Application_Service_Reports {
 		    
     
 	    if (isset($sWhere) && $sWhere != "") {
-		$sQuery = $sQuery->where($sWhere);
+		$sQuery = $sQuery->having($sWhere);
 	    }
 	    
 	    //if (isset($sHaving) && $sHaving != "") {
@@ -527,7 +527,7 @@ class Application_Service_Reports {
 		    
     
 	    if (isset($sWhere) && $sWhere != "") {
-		$sQuery = $sQuery->where($sWhere);
+		$sQuery = $sQuery->having($sWhere);
 	    }
     
     
@@ -595,6 +595,217 @@ class Application_Service_Reports {
 		    $row[] = $aRow['total_responses'];
 		    $row[] = $aRow['valid_responses'];
 		    $row[] = round($aRow['average_score'],2);
+		
+		
+		    $output['aaData'][] = $row;
+	    }
+    
+	    echo json_encode($output);
+	}
+	
+    public function getShipmentResponseReport($parameters)
+    {
+	    /* Array of database columns which should be read and sent back to DataTables. Use a space where
+	     * you want to insert a non-database field (for example a counter or static image)
+	     */
+    
+	    $aColumns = array('sl.scheme_name',"ref.sample_label", 'ref.reference_result','positive_responses','negative_responses',new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),new Zend_Db_Expr("SUM(sp.final_result = 1) + SUM(sp.final_result = 2)"));
+    
+	    /* Indexed column (used for fast and accurate table cardinality) */
+	    $sIndexColumn = 'shipment_id';
+	    /*
+	     * Paging
+	     */
+	    $sLimit = "";
+	    if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+		$sOffset = $parameters['iDisplayStart'];
+		$sLimit = $parameters['iDisplayLength'];
+	    }
+    
+	    /*
+	     * Ordering
+	     */
+	    $sOrder = "";
+	    if (isset($parameters['iSortCol_0'])) {
+		$sOrder = "";
+		for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+		    if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+			$sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
+					    " . ($parameters['sSortDir_' . $i]) . ", ";
+		    }
+		}
+    
+		$sOrder = substr_replace($sOrder, "", -2);
+	    }
+    
+	    /*
+	     * Filtering
+	     * NOTE this does not match the built-in DataTables filtering which does it
+	     * word by word on any field. It's possible to do here, but concerned about efficiency
+	     * on very large tables, and MySQL's regex functionality is very limited
+	     */
+	    $sWhere = "";
+	    if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+		$searchArray = explode(" ", $parameters['sSearch']);
+		$sWhereSub = "";
+		foreach ($searchArray as $search) {
+		    if ($sWhereSub == "") {
+			$sWhereSub .= "(";
+		    } else {
+			$sWhereSub .= " AND (";
+		    }
+		    $colSize = count($aColumns);
+		    
+		    for ($i = 0; $i < $colSize; $i++) {
+			if($aColumns[$i] == "" || $aColumns[$i] == null){
+			    continue;
+			}
+			if ($i < $colSize - 1) {
+			    $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+			} else {
+			    $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+			}
+		    }
+		    $sWhereSub .= ")";
+		}
+		$sWhere .= $sWhereSub;
+	    }
+	    
+	    //error_log($sHaving);
+	    /* Individual column filtering */
+	    for ($i = 0; $i < count($aColumns); $i++) {
+		if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+		    if ($sWhere == "") {
+			$sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+		    } else {
+			$sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+		    }
+		}
+	    }		
+		
+	    /*
+	     * SQL queries
+	     * Get data to display
+	     */
+		    if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
+			    $refTable = "reference_result_".$parameters['scheme'];
+			    $resTable = "response_result_".$parameters['scheme'];
+		    
+		    
+			// to count the total positive and negative, we need to know which r_possibleresults are positive and negative
+			// so the following ...
+			if($parameters['scheme'] == 'dts'){
+			    $rPositive = 4;
+			    $rNegative = 5;
+			}else if($parameters['scheme'] == 'dbs'){
+			    $rPositive = 7;
+			    $rNegative = 8;			
+			}else if($parameters['scheme'] == 'eid'){
+			    $rPositive = 10;
+			    $rNegative = 11;			
+			}
+		    
+		    
+		    }
+	    
+		    $aColumns = array('sl.scheme_name',"ref.sample_label", 'ref.reference_result','positive_responses','negative_responses',new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),new Zend_Db_Expr("SUM(sp.final_result = 1) + SUM(sp.final_result = 2)"));
+		    $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+		    $sQuery = $dbAdapter->select()->from(array('s'=>'shipment'),array('shipment_code'))
+				    ->join(array('sl'=>'scheme_list'),'s.scheme_type=sl.scheme_id')
+				    ->joinLeft(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array("total_responses"=>new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),"valid_responses"=>new Zend_Db_Expr("(SUM(final_result = 1) + SUM(final_result = 2))")))
+				    ->joinLeft(array('p'=>'participant'),'p.participant_id=sp.participant_id')
+				    ->joinLeft(array('ref'=>$refTable),'s.shipment_id=ref.shipment_id')
+				    ->joinLeft(array('res'=>$resTable),'sp.map_id=res.shipment_map_id',array("positive_responses"=>new Zend_Db_Expr('SUM(if(res.reported_result = '.$rPositive.', 1, 0))'),"negative_responses"=>new Zend_Db_Expr('SUM(if(res.reported_result = '.$rNegative.', 1, 0))')))
+				    ->joinLeft(array('rr'=>'r_results'),'sp.final_result=rr.result_id')
+				    ->joinLeft(array('rp'=>'r_possibleresult'),'ref.reference_result=rp.id')
+				    ->group(array('s.shipment_id','ref.sample_label'));
+				  
+				    
+					
+		    if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
+			    $sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
+		    }
+		    
+		    if(isset($parameters['startDate']) && $parameters['startDate'] !="" && isset($parameters['endDate']) && $parameters['endDate'] !=""){
+			    $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?",$parameters['startDate']);
+			    $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?",$parameters['endDate']);
+		    }
+		    
+		    if(isset($parameters['shipmentId']) && $parameters['shipmentId'] !=""){
+				$sQuery = $sQuery->where("s.shipment_id = ?",$parameters['shipmentId']);
+		    }
+		    
+    
+	    if (isset($sWhere) && $sWhere != "") {
+		$sQuery = $sQuery->having($sWhere);
+	    }
+    
+    
+	    if (isset($sOrder) && $sOrder != "") {
+		$sQuery = $sQuery->order($sOrder);
+	    }
+    
+	    if (isset($sLimit) && isset($sOffset)) {
+		$sQuery = $sQuery->limit($sLimit, $sOffset);
+	    }
+    
+	    //die($sQuery);
+    
+	    $rResult = $dbAdapter->fetchAll($sQuery);
+    
+    
+	    /* Data set length after filtering */
+	    $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
+	    $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+	    $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
+	    $iFilteredTotal = count($aResultFilterTotal);
+    
+	    /* Total data set length */
+	    $sWhere ="";
+	    $sQuery = $dbAdapter->select()->from(array('s'=>'shipment'), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+		if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
+			$sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
+		}
+		
+		if(isset($parameters['startDate']) && $parameters['startDate'] !="" && isset($parameters['endDate']) && $parameters['endDate'] !=""){
+			$sQuery = $sQuery->where("DATE(s.shipment_date) >= ?",$parameters['startDate']);
+			$sQuery = $sQuery->where("DATE(s.shipment_date) <= ?",$parameters['endDate']);
+		}
+		
+		if(isset($parameters['shipmentId']) && $parameters['shipmentId'] !=""){
+			    $sQuery = $sQuery->where("s.shipment_id = ?",$parameters['shipmentId']);
+		}
+	
+		if (isset($sWhere) && $sWhere != "") {
+		    $sQuery = $sQuery->where($sWhere);
+		}
+		    
+	    $aResultTotal = $dbAdapter->fetchCol($sQuery);
+	    $iTotal = $aResultTotal[0];
+    
+	    /*
+	     * Output
+	     */
+	    $output = array(
+		"sEcho" => intval($parameters['sEcho']),
+		"iTotalRecords" => $iTotal,
+		"iTotalDisplayRecords" => $iFilteredTotal,
+		"aaData" => array()
+	    );
+    
+	    
+	    foreach ($rResult as $aRow) {
+
+
+		    $row = array();
+		    $row[] = $aRow['scheme_name'];
+		    $row[] = $aRow['shipment_code'];
+		    $row[] = $aRow['sample_label'];
+		    $row[] = $aRow['response'];
+		    $row[] = $aRow['positive_responses'];
+		    $row[] = $aRow['negative_responses'];
+		    $row[] = $aRow['total_responses'];
+		    $row[] = $aRow['valid_responses'];
 		
 		
 		    $output['aaData'][] = $row;

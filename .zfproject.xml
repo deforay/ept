@@ -421,6 +421,9 @@
               <actionMethod actionName="index"/>
               <actionMethod actionName="getShipmentsByScheme"/>
             </controllerFile>
+            <controllerFile controllerName="ShipmentResponse">
+              <actionMethod actionName="index"/>
+            </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
           <layoutsDirectory enabled="false">
@@ -472,6 +475,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Common">
                 <viewScriptFile forActionName="getShipmentsByScheme"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="ShipmentResponse">
+                <viewScriptFile forActionName="index"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -750,6 +756,9 @@
               <testApplicationControllerFile forControllerName="Common">
                 <testApplicationActionMethod forActionName="index"/>
                 <testApplicationActionMethod forActionName="getShipmentsByScheme"/>
+              </testApplicationControllerFile>
+              <testApplicationControllerFile forControllerName="ShipmentResponse">
+                <testApplicationActionMethod forActionName="index"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>
           </testApplicationModuleDirectory>
