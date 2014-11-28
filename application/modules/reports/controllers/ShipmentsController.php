@@ -9,7 +9,7 @@ class Reports_ShipmentsController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
                     ->addActionContext('get-shipment-participant-list', 'html')
                     ->initContext();
-        $this->_helper->layout()->pageName = 'analyze';                
+        $this->_helper->layout()->pageName = 'report';                
     }
 
     public function indexAction()

@@ -93,6 +93,7 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-bar-chart"></i>&nbsp;&nbsp;Reports <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'detailed'),'default',true); ?>">Participant Response Report</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'participant-performance'),'default',true); ?>">Participant Performance Report</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'testkit'),'default',true); ?>">TestKit Report For DTS</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments'),'default',true); ?>">Shipments Report</a></li>		
               </ul>
@@ -142,23 +143,22 @@ if($controllerName.$actionName!='distributionsindex'){
 <script type="text/javascript">
 	
 
-	$(function(){
-	  
-$(".checkNum").keydown(function (e) {
-				// Allow: backspace, delete, tab, escape, enter and .
-				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
-					 // Allow: Ctrl+A
-					(e.keyCode == 65 && e.ctrlKey === true) || 
-					 // Allow: home, end, left, right
-					(e.keyCode >= 35 && e.keyCode <= 39)) {
-						 // let it happen, don't do anything
-						 return;
-				}
-				// Ensure that it is a number and stop the keypress
-				if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-					e.preventDefault();
-				}
-			});			  
+  $(function(){
+	$(".checkNum").keydown(function (e) {
+	      // Allow: backspace, delete, tab, escape, enter and .
+	      if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+		       // Allow: Ctrl+A
+		      (e.keyCode == 65 && e.ctrlKey === true) || 
+		       // Allow: home, end, left, right
+		      (e.keyCode >= 35 && e.keyCode <= 39)) {
+			       // let it happen, don't do anything
+			       return;
+	      }
+	      // Ensure that it is a number and stop the keypress
+	      if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+		      e.preventDefault();
+	      }
+	});
 	  
       <?php
       $alertMsg = new Zend_Session_Namespace('alertSpace');
@@ -170,30 +170,30 @@ $(".checkNum").keydown(function (e) {
         unset($alertMsg->message);        
       }
       ?>
-	});
-	
-    function validatePassword(obj) {
-	if (obj.vlaue!="") {
-	    var regex = /^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
-	    if (!regex.test(obj.value)) {
-		obj.value="";
-		alert("Minimum 8 characters and enter atleast one number, one special character , one alphabet.");
-	    }
-	}
-    }
-    
-    function layoutModal(url,w,h){
-               showdefModal('dDiv',w,h);
-               document.getElementById('dFrame').style.height=h+'px';
-               document.getElementById('dFrame').style.width=w+'px';
-               document.getElementById('dFrame').src = url;
-    }
-	
-    function closeLayoutModal(){
-	document.getElementById('dFrame').src = "";
-	//window.location.reload(true);
-	hidedefModal();
-    }
+  });
+
+  function validatePassword(obj) {
+      if (obj.vlaue!="") {
+	  var regex = /^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+	  if (!regex.test(obj.value)) {
+	      obj.value="";
+	      alert("Minimum 8 characters and enter atleast one number, one special character , one alphabet.");
+	  }
+      }
+  }
+
+  function layoutModal(url,w,h){
+	     showdefModal('dDiv',w,h);
+	     document.getElementById('dFrame').style.height=h+'px';
+	     document.getElementById('dFrame').style.width=w+'px';
+	     document.getElementById('dFrame').src = url;
+  }
+      
+  function closeLayoutModal(){
+      document.getElementById('dFrame').src = "";
+      //window.location.reload(true);
+      hidedefModal();
+  }
 </script>
 <img src="/images/loading.gif" style="display:none;"/>
 </body>

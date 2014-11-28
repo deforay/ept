@@ -70,4 +70,6 @@ text-align:center;
 
 td.center{
 	vertical-align: middle !important;
+	text-align:center !important;
 }
+

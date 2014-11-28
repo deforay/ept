@@ -414,6 +414,13 @@
               <actionMethod actionName="index"/>
               <actionMethod actionName="chart"/>
             </controllerFile>
+            <controllerFile controllerName="ParticipantPerformance">
+              <actionMethod actionName="index"/>
+            </controllerFile>
+            <controllerFile controllerName="Common">
+              <actionMethod actionName="index"/>
+              <actionMethod actionName="getShipmentsByScheme"/>
+            </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
           <layoutsDirectory enabled="false">
@@ -456,6 +463,15 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Shipments">
                 <viewScriptFile forActionName="responseChart"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="ParticipantPerformance">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Common">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Common">
+                <viewScriptFile forActionName="getShipmentsByScheme"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
@@ -727,6 +743,13 @@
               </testApplicationControllerFile>
               <testApplicationControllerFile forControllerName="Distribution">
                 <testApplicationActionMethod forActionName="index"/>
+              </testApplicationControllerFile>
+              <testApplicationControllerFile forControllerName="ParticipantPerformance">
+                <testApplicationActionMethod forActionName="index"/>
+              </testApplicationControllerFile>
+              <testApplicationControllerFile forControllerName="Common">
+                <testApplicationActionMethod forActionName="index"/>
+                <testApplicationActionMethod forActionName="getShipmentsByScheme"/>
               </testApplicationControllerFile>
             </testApplicationControllerDirectory>
           </testApplicationModuleDirectory>

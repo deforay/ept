@@ -684,6 +684,7 @@ class Application_Service_Evaluation {
                             $testKitExpiryResult = 'Fail';
                         }
                         $failureReason[] = "Test Kit 1 (<strong>" . $testKit1 . "</strong>) reported without expiry date.";
+			$shipment['is_excluded'] = 'yes';
                     }
                 }
                 $testDate = $testedOn->toString('dd-MMM-YYYY');
@@ -705,6 +706,7 @@ class Application_Service_Evaluation {
                             $testKitExpiryResult = 'Fail';
                         }
                         $failureReason[] = "Test Kit 2 (<strong>" . $testKit2 . "</strong>) reported without expiry date";
+			$shipment['is_excluded'] = 'yes';
                     }
                 }
 
@@ -728,11 +730,13 @@ class Application_Service_Evaluation {
                             $testKitExpiryResult = 'Fail';
                         }
                         $failureReason[] = "Test Kit 3 (<strong>" . $testKit3 . "</strong>) reported without expiry date";
+			$shipment['is_excluded'] = 'yes';
                     }
                 }
                 //checking if testkits were repeated
                 if (($testKit1 == "") && ($testKit2 == "") && ($testKit3 == "")) {
                     $failureReason[] = "No Test Kit reported";
+		    $shipment['is_excluded'] = 'yes';
                 } else if (($testKit1 == "")) {
                     $failureReason[] = "Test Kit 1 not reported";
                 } else if (($testKit1 != "") && ($testKit2 != "") && ($testKit3 != "") && ($testKit1 == $testKit2) && ($testKit2 == $testKit3)) {
@@ -759,18 +763,21 @@ class Application_Service_Evaluation {
 		    if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
                             $lotResult = 'Fail';
 			    $failureReason[] = "<strong>Lot No. 1</strong> was not reported";
+			    $shipment['is_excluded'] = 'yes';
                     }
                 }
                 if ($testKit2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)) {
 		    if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
                             $lotResult = 'Fail';
 			    $failureReason[] = "<strong>Lot No. 2</strong> was not reported";
+			    $shipment['is_excluded'] = 'yes';
                     }
                 }
                 if ($testKit3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)) {
 		    if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
 			$lotResult = 'Fail';
 			$failureReason[] = "<strong>Lot No. 3</strong> was not reported";
+			$shipment['is_excluded'] = 'yes';
                     }
                 }
 
@@ -830,7 +837,8 @@ class Application_Service_Evaluation {
                     $shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
 		    $shipmentResult[$counter]['documentation_score'] = 0;
                     $shipmentResult[$counter]['display_result'] = '';
-                    $shipmentResult[$counter]['failure_reason'] = $failureReason = 'Excluded from Evaluation';
+		    $failureReason[] = 'Excluded from Evaluation';
+                    $shipmentResult[$counter]['failure_reason'] = $failureReason;
                 } else {
                     // if any of the results have failed, then the final result is fail
                     if ($algoResult == 'Fail' || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
