@@ -105,12 +105,12 @@
     </div>
 
     <div class="container">
-
+      <?php $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini",APPLICATION_ENV); ?>
       <form class="form-signin" name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("module"=>"admin","controller" => "login", "action" => "index"), null, true) ?>">
       
 	    <div style="text-align:center;">
 	      <img src="<?php echo $this->baseUrl(); ?>/images/country/institute-logo.jpg" style="max-height:120px;margin:0 auto !important;"/>
-	      <h3 class="form-signin-heading"><span>GHS</span><br/>PT Admin Sign in</h3>
+	      <h3 class="form-signin-heading"><span><?php echo $config->instituteName; ?></span><br/>PT Admin Sign in</h3>
 	    </div>
       
         

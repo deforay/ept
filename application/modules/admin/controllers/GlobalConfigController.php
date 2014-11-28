@@ -18,6 +18,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
             $sec = APPLICATION_ENV;
             $config->$sec->map->center=$this->getRequest()->getPost('mapCenter');
             $config->$sec->map->center=$this->getRequest()->getPost('mapCenter');
+            $config->$sec->instituteName=$this->getRequest()->getPost('instituteName');
             $config->$sec->evaluation->dts->passPercentage=$this->getRequest()->getPost('dtsPassPercentage');
             $config->$sec->evaluation->dts->documentationScore=$this->getRequest()->getPost('dtsDocumentationScore');
             
