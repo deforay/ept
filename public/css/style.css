@@ -265,7 +265,7 @@ textarea{
 	overflow:auto}
 
 
-	#loopedSlider .container{ width:950px; height:404px;  overflow:hidden; position:relative; cursor:pointer}
+	/*#loopedSlider .container{ width:950px; height:404px;  overflow:hidden; position:relative; cursor:pointer}
 	.slides { position:absolute; top:0; left:0; }
 	ul.slides { position:absolute; top:0; left:0; list-style:none; padding:0; margin:0; }
 	.slides .div,ul.slides li { position:absolute; top:0; width:950px; display:none; padding:0; margin:0; }
@@ -280,19 +280,19 @@ textarea{
 	ul.pagination li a:hover { color:#3e1f23; background:url(../images/button-act.png) top left no-repeat; border:none; text-decoration:none}
 
 
-
+*/
 	
 /* * Required */
-#loopedCarousel{ width:880px; position:relative; clear:both; margin-left:40px}
+/*#loopedCarousel{ width:880px; position:relative; clear:both; margin-left:40px}
 #loopedCarousel {height:210px;  }
 #loopedCarousel .container2 { width:880px; height:210px; overflow:hidden; position:relative; margin:0; }
 #loopedCarousel .slides { position:absolute; top:0; left:0; }
-#loopedCarousel .slides .div { position:absolute; top:0; width:176px; margin-right:10px; display:none;}
+#loopedCarousel .slides .div { position:absolute; top:0; width:176px; margin-right:10px; display:none;}*/
 /* * Optional*/
 .but1{ position:absolute; left:0; top:48px; }
-#loopedCarousel .previous{background:url(../images/button-1.gif) top left no-repeat; width:26px; height:105px; display:block; float:left; text-decoration:none; margin-left:-43px; position:relative}
+/*#loopedCarousel .previous{background:url(../images/button-1.gif) top left no-repeat; width:26px; height:105px; display:block; float:left; text-decoration:none; margin-left:-43px; position:relative}
 #loopedCarousel .next{background:url(../images/button-2.gif) top left no-repeat; text-decoration:none; width:26px; height:105px; display:block; float:right; margin-left:884px; position:relative; }
-
+*/
 
 button, input, select, textarea {
   font-family : inherit;
