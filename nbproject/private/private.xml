@@ -3,10 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/var/www/ept/application/modules/reports/views/scripts/distribution/shipment.phtml</file>
-            <file>file:/var/www/ept/application/modules/reports/controllers/DistributionController.php</file>
-            <file>file:/var/www/ept/application/services/Evaluation.php</file>
-            <file>file:/var/www/ept/application/modules/reports/views/scripts/distribution/generate-reports.ajax.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/get-datamanager.ajax.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/TestkitController.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/enrollments/add.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/participant-manager-map.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/testkit/standard-kit.phtml</file>
+            <file>file:/var/www/ept/application/controllers/DtsController.php</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/ParticipantsController.php</file>
+            <file>file:/var/www/ept/application/services/Schemes.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/testkit/index.phtml</file>
+            <file>file:/var/www/ept/application/services/DataManagers.php</file>
         </group>
     </open-files>
 </project-private>

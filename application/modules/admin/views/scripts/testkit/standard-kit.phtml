@@ -1,0 +1,103 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<div class="well">
+    <fieldset>
+        <legend>Testkit Mapping</legend>
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">Choose a Test Kit</label>
+
+                <div class="col-lg-8">
+                    <select class="form-control isRequired" name="testStages" id="testStages" title="Please choose a test stage" onchange="getTestKit(this.value)">
+                        <option value="">Select Test Kit</option>
+                        <option value="testkit_1">Test 1</option>
+                        <option value="testkit_2">Test 2</option>
+                        <option value="testkit_3">Test 3</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <form name="submitdatamanager" id="submitdatamanager" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'standard-kit'), 'default', true); ?>" class="hide">
+
+            <div class="text-info" style="text-align:center;padding:10px 0;">Click on the Testkit Name to move them between the two sections<br/><br/>
+                <div style="width:500px;margin:0 auto;clear:both;">
+                    <a href='#' id='select-all-testkit' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>  <a href='#' id='deselect-all-testkit' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+                </div>
+            </div>
+            <br/>
+            <select id="testKitData" name="testKitData[]" multiple="multiple" >
+            </select>
+            <input type="hidden" name="testKitStage" id="testKitStage" value="">
+            <br/>
+            <div class="col-md-12 col-xs-12" style="" align="center">
+                <input type="submit" class="btn btn-primary" value="Save Selected" />
+                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'standard-kit'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
+            </div>
+        </form>
+
+    </fieldset>
+
+</div>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
+<script>
+
+                    function getTestKit(stage) {
+                        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'get-testkit')); ?>", {stage: stage, format: "html"},
+                        function(data) {
+                            $('#testKitStage').val(stage);
+                            $('#submitdatamanager').removeClass('hide');
+                            $('#testKitData').html(data);
+                            $('#testKitData').multiSelect("destroy").multiSelect({
+                                selectableFooter: "<div class='custom-header'>Unselected Testkits (<span id='msUnselectedCountHolder'></span>)</div>",
+                                selectionFooter: "<div class='custom-header'>Selected Testkits (<span id='msSelectedCountHolder'></span>)</div>",
+                                selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Testkit Name To Filter'>",
+                                selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Testkit Name To Filter'>",
+                                afterInit: function(ms) {
+                                    var that = this,
+                                            $selectableSearch = that.$selectableUl.prev(),
+                                            $selectionSearch = that.$selectionUl.prev(),
+                                            selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
+                                            selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+
+                                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                                            .on('keydown', function(e) {
+                                                if (e.which === 40) {
+                                                    that.$selectableUl.focus();
+                                                    return false;
+                                                }
+                                            });
+
+                                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                                            .on('keydown', function(e) {
+                                                if (e.which == 40) {
+                                                    that.$selectionUl.focus();
+                                                    return false;
+                                                }
+                                            });
+                                },
+                                afterSelect: function() {
+                                    this.qs1.cache();
+                                    this.qs2.cache();
+                                },
+                                afterDeselect: function() {
+                                    this.qs1.cache();
+                                    this.qs2.cache();
+                                }
+                            });
+
+
+                            $('#select-all-testkit').click(function() {
+                                $('#testKitData').multiSelect('select_all');
+                                return false;
+                            });
+                            $('#deselect-all-testkit').click(function() {
+                                $('#testKitData').multiSelect('deselect_all');
+                                return false;
+                            });
+
+                        });
+                    }
+
+</script>

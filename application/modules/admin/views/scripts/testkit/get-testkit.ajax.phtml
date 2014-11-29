@@ -1,0 +1,14 @@
+<?php
+$result = ''; 
+foreach ($this->testkitList as $key => $testkitList) {
+    $selected = "";
+    if($this->testkitStage=='testkit_1' && $testkitList['testkit_1']==1){
+        $selected = "selected='selected'";
+    }else if($this->testkitStage=='testkit_2' && $testkitList['testkit_2']==1){
+        $selected = "selected='selected'";
+    }else if($this->testkitStage=='testkit_3' && $testkitList['testkit_3']==1){
+        $selected = "selected='selected'";
+    }
+    $result.='<option value="' . $testkitList['TESTKITNAMEID'] . '"' . $selected . '>' . $testkitList['TESTKITNAME']. '</option>';
+}
+echo $result;
