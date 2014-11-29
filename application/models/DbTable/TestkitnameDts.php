@@ -1,76 +1,76 @@
 <?php
 
-class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
-{
+class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
 
     protected $_name = 'r_testkitname_dts';
     protected $_primary = 'TestKitName_ID';
 
-    public function addTestkitDetails($params){
-	$commonService = new Application_Service_Common();
-        $randomStr=$commonService->getRandomString(13);
-        $testkitId="tk".$randomStr;
-        $tkId=$this->checkTestkitId($testkitId);
-        
+    public function addTestkitDetails($params) {
+        $commonService = new Application_Service_Common();
+        $randomStr = $commonService->getRandomString(13);
+        $testkitId = "tk" . $randomStr;
+        $tkId = $this->checkTestkitId($testkitId);
+
         $data = array(
-                      'TestKitName_ID'=>$tkId,
-                      'TestKit_Name'=>$params['testKitName'],
-                      'TestKit_Name_Short'=>$params['shortTestKitName'],
-                      'TestKit_Comments'=>$params['comments'],
-                      'TestKit_Manufacturer'=>$params['manufacturer'],
-                      'TestKit_ApprovalAgency'=> $params['approvalAgency'],
-                      'source_reference'=> $params['sourceReference'],
-                      'CountryAdapted'=> $params['countryAdapted'],
-                      'Approval' => '1',
-                      'Created_On' => new Zend_Db_Expr('now()'));
+            'TestKitName_ID' => $tkId,
+            'TestKit_Name' => $params['testKitName'],
+            'TestKit_Name_Short' => $params['shortTestKitName'],
+            'TestKit_Comments' => $params['comments'],
+            'TestKit_Manufacturer' => $params['manufacturer'],
+            'TestKit_ApprovalAgency' => $params['approvalAgency'],
+            'source_reference' => $params['sourceReference'],
+            'CountryAdapted' => $params['countryAdapted'],
+            'Approval' => '1',
+            'Created_On' => new Zend_Db_Expr('now()'));
         return $this->insert($data);
     }
-    
-    public function updateTestkitDetails($params){
-        if(trim($params['testkitId'])!=""){
+
+    public function updateTestkitDetails($params) {
+        if (trim($params['testkitId']) != "") {
             $data = array(
-                'TestKit_Name'=>$params['testKitName'],
-                'TestKit_Name_Short'=>$params['shortTestKitName'],
-                'TestKit_Comments'=>$params['comments'],
-                'TestKit_Manufacturer'=>$params['manufacturer'],
-                'TestKit_ApprovalAgency'=> $params['approvalAgency'],
-                'source_reference'=> $params['sourceReference'],
-                'CountryAdapted'=> $params['countryAdapted'],
+                'TestKit_Name' => $params['testKitName'],
+                'TestKit_Name_Short' => $params['shortTestKitName'],
+                'TestKit_Comments' => $params['comments'],
+                'TestKit_Manufacturer' => $params['manufacturer'],
+                'TestKit_ApprovalAgency' => $params['approvalAgency'],
+                'source_reference' => $params['sourceReference'],
+                'CountryAdapted' => $params['countryAdapted'],
                 'Approval' => $params['approved']
-                );
-            return  $this->update($data,"TestKitName_ID='".$params['testkitId']."'");
+            );
+            return $this->update($data, "TestKitName_ID='" . $params['testkitId'] . "'");
         }
     }
-    public function updateTestkitStageDetails($params){
-        if(trim($params['testKitStage'])!="" && isset($params["testKitData"])&& $params["testKitData"]!='' && count($params["testKitData"])>0){
-            $this->update(array($params['testKitStage']=>'0'),array());
-            foreach($params["testKitData"] as $data){
-               $this->update(array($params['testKitStage']=>'1'),"TestKitName_ID='".$data."'"); 
+
+    public function updateTestkitStageDetails($params) {
+        if (trim($params['testKitStage']) != "") {
+            $this->update(array($params['testKitStage'] => '0'), array());
+            if (isset($params["testKitData"]) && $params["testKitData"] != '' && count($params["testKitData"]) > 0) {
+                foreach ($params["testKitData"] as $data) {
+                    $this->update(array($params['testKitStage'] => '1'), "TestKitName_ID='" . $data . "'");
+                }
             }
         }
-        
     }
-    
-    public function checkTestkitId($testkitId){
-        $result=$this->fetchRow($this->select()->where("TestKitName_ID='".$testkitId."'"));
-        if($result!=""){
+
+    public function checkTestkitId($testkitId) {
+        $result = $this->fetchRow($this->select()->where("TestKitName_ID='" . $testkitId . "'"));
+        if ($result != "") {
             $commonService = new Application_Service_Common();
-            $randomStr=$commonService->getRandomString(13);
-            $testkitId="tk".$randomStr;
+            $randomStr = $commonService->getRandomString(13);
+            $testkitId = "tk" . $randomStr;
             $this->checkTestkitId($testkitId);
-        }else{
+        } else {
             return $testkitId;
         }
     }
-    
-    public function getAllDtsTestKitDetails($parameters)
-    {
+
+    public function getAllDtsTestKitDetails($parameters) {
 
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('TestKit_Name', 'TestKit_Manufacturer', 'TestKit_ApprovalAgency', 'Approval','DATE_FORMAT(Created_On,"%d-%b-%Y %T")');
+        $aColumns = array('TestKit_Name', 'TestKit_Manufacturer', 'TestKit_ApprovalAgency', 'Approval', 'DATE_FORMAT(Created_On,"%d-%b-%Y %T")');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -149,12 +149,12 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name));
-	
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
         if (isset($parameters['status']) && $parameters['status'] != "") {
-            $sQuery = $sQuery->where("Approval = ? ",$parameters['status']);
+            $sQuery = $sQuery->where("Approval = ? ", $parameters['status']);
         }
 
         if (isset($sOrder) && $sOrder != "") {
@@ -190,61 +190,61 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
             "iTotalDisplayRecords" => $iFilteredTotal,
             "aaData" => array()
         );
-            
+
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = array();
-            $approved='No';
-            if(trim($aRow['Approval'])==1){
-                $approved='Yes';
+            $approved = 'No';
+            if (trim($aRow['Approval']) == 1) {
+                $approved = 'Yes';
             }
-            $createdDate=explode(" ",$aRow['Created_On']);
+            $createdDate = explode(" ", $aRow['Created_On']);
             $row[] = ucwords($aRow['TestKit_Name']);
             $row[] = $aRow['TestKit_Manufacturer'];
             $row[] = $aRow['TestKit_ApprovalAgency'];
             $row[] = $approved;
-            $row[] = $general->humanDateFormat($createdDate[0])." ".$createdDate[1];
-            $row[] = '<a href="/admin/testkit/edit/53s5k85_8d/' .base64_encode($aRow['TestKitName_ID']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = $general->humanDateFormat($createdDate[0]) . " " . $createdDate[1];
+            $row[] = '<a href="/admin/testkit/edit/53s5k85_8d/' . base64_encode($aRow['TestKitName_ID']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
             $output['aaData'][] = $row;
         }
 
         echo json_encode($output);
     }
-    
-    public function getDtsTestkitDetails($testkitId){
-        $result=$this->fetchRow($this->select()->where("TestKitName_ID=?",$testkitId));
+
+    public function getDtsTestkitDetails($testkitId) {
+        $result = $this->fetchRow($this->select()->where("TestKitName_ID=?", $testkitId));
         return $result;
     }
-    
-    public function addTestkitInParticipant($oldName,$testkitName){
-        if(trim($testkitName)!=""){
+
+    public function addTestkitInParticipant($oldName, $testkitName) {
+        if (trim($testkitName) != "") {
             $commonService = new Application_Service_Common();
-            $randomStr=$commonService->getRandomString(13);
-            $testkitId="tk".$randomStr;
-            $tkId=$this->checkTestkitId($testkitId);
-            $result=$this->fetchRow($this->select()->where("TestKit_Name=?",$testkitName));
-            
-            if($result=="" && trim($oldName)==""){
+            $randomStr = $commonService->getRandomString(13);
+            $testkitId = "tk" . $randomStr;
+            $tkId = $this->checkTestkitId($testkitId);
+            $result = $this->fetchRow($this->select()->where("TestKit_Name=?", $testkitName));
+
+            if ($result == "" && trim($oldName) == "") {
                 $data = array(
-                          'TestKitName_ID'=>$tkId,
-                          'TestKit_Name'=>trim($testkitName),
-                          'Approval'=>'0',
-                          'Created_On' => new Zend_Db_Expr('now()')
-                        );
-                    $this->insert($data);
+                    'TestKitName_ID' => $tkId,
+                    'TestKit_Name' => trim($testkitName),
+                    'Approval' => '0',
+                    'Created_On' => new Zend_Db_Expr('now()')
+                );
+                $this->insert($data);
                 return $tkId;
-            }else{
-                $result=$this->fetchRow($this->select()->where("TestKit_Name=?",$oldName));
-                if($result!=""){
+            } else {
+                $result = $this->fetchRow($this->select()->where("TestKit_Name=?", $oldName));
+                if ($result != "") {
                     $data = array(
-                        'TestKit_Name'=>trim($testkitName)
+                        'TestKit_Name' => trim($testkitName)
                     );
-                    $this->update($data,"TestKitName_ID='".$result['TestKitName_ID']."'");
+                    $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");
                     return $result['TestKitName_ID'];
                 }
             }
         }
     }
-}
 
+}

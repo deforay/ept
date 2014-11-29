@@ -1,5 +1,4 @@
 <?php date_default_timezone_set('America/New_York');?>
-
 <form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller"=>"dts","action"=>"response"),null,true) ?>">
 
 <input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response'];?>" />
@@ -101,7 +100,7 @@
                     foreach($this->allTestKits as $key=>$testkit){
                         if($testkit['testkit_1']=='1'){
                         ?>
-                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>"><?php echo $testkit['TESTKITNAME']?></option>
+                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME']?></option>
                         <?php
                         }
                     }
@@ -117,7 +116,7 @@
                     foreach($this->allTestKits as $key=>$testkit){
                         if($testkit['testkit_2']=='1'){
                         ?>
-                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>"><?php echo $testkit['TESTKITNAME']?></option>
+                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME']?></option>
                         <?php
                         }
                     }
@@ -133,7 +132,7 @@
                     foreach($this->allTestKits as $key=>$testkit){
                         if($testkit['testkit_3']=='1'){
                         ?>
-                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>"><?php echo $testkit['TESTKITNAME']?></option>
+                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME']?></option>
                         <?php
                         }
                     }
