@@ -96,21 +96,48 @@
 		<th> Kit Name</th>
 		<td  class="dark" width="20%" >
 		<select name="test_kit_name_1" id="test_kit_name_1"  style="width: 200px" class=""  title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
-		 	<?php $this->dropdownSelection($this->allTestKits,$this->allSamples[0]["test_kit_name_1"],true); ?>
+                    <option value="">   ---Select Kit---</option>
+                    <?php
+                    foreach($this->allTestKits as $key=>$testkit){
+                        if($testkit['testkit_1']=='1'){
+                        ?>
+                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>"><?php echo $testkit['TESTKITNAME']?></option>
+                        <?php
+                        }
+                    }
+                    ?>
 			<option value="other">Other</option>
 		</select>
 		<input type="text" size="40" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
 		</td>
 		<td width="20%" >
 		<select name="test_kit_name_2" id="test_kit_name_2"   style="width: 200px" class=""  title="Please Choose Test Kit 2" onchange="selectTestKitName(this)">
-		 	<?php $this->dropdownSelection($this->allTestKits,$this->allSamples[0]["test_kit_name_2"],true); ?>
+		 	<option value="">   ---Select Kit---</option>
+                    <?php
+                    foreach($this->allTestKits as $key=>$testkit){
+                        if($testkit['testkit_2']=='1'){
+                        ?>
+                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>"><?php echo $testkit['TESTKITNAME']?></option>
+                        <?php
+                        }
+                    }
+                    ?>
 			<option value="other">Other</option>
 		</select>
 		<input type="text" size="40" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
 		</td>
         <td width="20%" >
 		<select name="test_kit_name_3" id="test_kit_name_3" style="width: 200px" class=""  title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
-			<?php $this->dropdownSelection($this->allTestKits,$this->allSamples[0]["test_kit_name_3"],true); ?>
+			<option value="">   ---Select Kit---</option>
+                    <?php
+                    foreach($this->allTestKits as $key=>$testkit){
+                        if($testkit['testkit_3']=='1'){
+                        ?>
+                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>"><?php echo $testkit['TESTKITNAME']?></option>
+                        <?php
+                        }
+                    }
+                    ?>
 			<option value="other">Other</option>
 		</select>
 		<input type="text" size="40" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>

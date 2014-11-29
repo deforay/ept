@@ -41,6 +41,15 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
             return  $this->update($data,"TestKitName_ID='".$params['testkitId']."'");
         }
     }
+    public function updateTestkitStageDetails($params){
+        if(trim($params['testKitStage'])!="" && isset($params["testKitData"])&& $params["testKitData"]!='' && count($params["testKitData"])>0){
+            $this->update(array($params['testKitStage']=>'0'),array());
+            foreach($params["testKitData"] as $data){
+               $this->update(array($params['testKitStage']=>'1'),"TestKitName_ID='".$data."'"); 
+            }
+        }
+        
+    }
     
     public function checkTestkitId($testkitId){
         $result=$this->fetchRow($this->select()->where("TestKitName_ID='".$testkitId."'"));

@@ -194,6 +194,8 @@
               <actionMethod actionName="index"/>
               <actionMethod actionName="add"/>
               <actionMethod actionName="edit"/>
+              <actionMethod actionName="standardKit"/>
+              <actionMethod actionName="getTestkit"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -360,6 +362,12 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Testkit">
                 <viewScriptFile forActionName="edit"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Testkit">
+                <viewScriptFile forActionName="standardKit"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Testkit">
+                <viewScriptFile forActionName="getTestkit"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
