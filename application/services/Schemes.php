@@ -68,6 +68,15 @@ class Application_Service_Schemes {
         }
         return $response;
     }
+    public function getDtsCorrectiveActions() {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $res = $db->fetchAll($db->select()->from('r_dts_corrective_actions'));
+        $response = array();
+        foreach ($res as $row) {
+            $response[$row['action_id']] = $row['corrective_action'];
+        }
+        return $response;
+    }
 
     public function getDbsWb() {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

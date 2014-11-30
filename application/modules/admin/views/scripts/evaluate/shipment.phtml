@@ -107,7 +107,14 @@
 				$editList[] = "/admin/evaluate/edit/sid/".base64_encode($shipment['shipment_id'])."/pid/".base64_encode($shipment['participant_id'])."/scheme/".base64_encode($shipment['scheme_type']);
 				$viewList[] = "/admin/evaluate/view/sid/".base64_encode($shipment['shipment_id'])."/pid/".base64_encode($shipment['participant_id'])."/scheme/".base64_encode($shipment['scheme_type']);
 				if(isset($shipment['failure_reason']) && $shipment['failure_reason'] != ""){
-					$shipment['failure_reason'] = "<ul><li>" .str_replace(",","</li><li>",$shipment['failure_reason']) . "</li></ul>";
+					$failureReasonJson = $shipment['failure_reason'];
+					$shipment['failure_reason'] = "<table class='table table-bordered'>";
+					$shipment['failure_reason'] .= "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
+					$warnings = json_decode($failureReasonJson,true);
+					foreach($warnings as $warning){	
+						  $shipment['failure_reason'] .= "<tr><td>".(isset($warning['warning']) ? $warning['warning'] : "")."</td><td>".(isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "")."</td></tr>";
+					}
+					$shipment['failure_reason'] .=  "</table>";;
 				}
                                 
                                 if(isset($shipment['display_result']) && $shipment['display_result']=="Fail"){

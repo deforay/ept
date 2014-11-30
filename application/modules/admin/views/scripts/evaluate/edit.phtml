@@ -66,7 +66,18 @@ if(isset($this->evaluateData['evalComments'])){
 		<td>
 			<?php 
 				if(isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != ""){
-					echo "<ul><li>" .str_replace(",","</li><li>",$this->evaluateData['shipment']['failure_reason']) . "</li></ul>";
+					echo "<table class='table table-bordered'>";
+					echo "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
+					$warnings = json_decode($this->evaluateData['shipment']['failure_reason'],true);
+					foreach($warnings as $warning){
+						?>
+						<tr>
+						   <td><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
+						   <td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
+						</tr>
+						<?php
+					}
+					echo "</table>";
 				}else{
 					echo "-";
 				}

@@ -1894,3 +1894,31 @@ ALTER TABLE  `shipment_participant_map` CHANGE  `shipment_score`  `shipment_scor
 
 --Guna Nov 29 2014
 ALTER TABLE `r_testkitname_dts`  ADD `testkit_1` INT(11) NOT NULL DEFAULT '0' AFTER `CountryAdapted`,  ADD `testkit_2` INT(11) NOT NULL DEFAULT '0' AFTER `testkit_1`,  ADD `testkit_3` INT(11) NOT NULL DEFAULT '0' AFTER `testkit_2`;
+
+-- Amit Nov 30 2014
+
+CREATE TABLE IF NOT EXISTS `r_dts_corrective_actions` (
+  `action_id` int(11) NOT NULL AUTO_INCREMENT,
+  `corrective_action` text NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY (`action_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 ;
+
+
+INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES
+(1, 'Please submit response before last date', 'Late response, response not evaluated. Your response reported after last date and hence you are result is evaluated. Reference result for PT panel is provided for your reference. '),
+(2, 'Please see the link on the PT website for the country approved algorithm. ', 'For SAMPLE-X Country Approved Algorithm not followed'),
+(3, 'Please follow correct procedure for sample testing. Please contact your superior if you need more information on correct procedure for HIV Rapid testing.', 'Sample X - Sample Result does not match with reference result'),
+(4, 'You are required to test all samples in PT panel', 'Mandatory Sample S01 was not reported - Result not evaluated'),
+(5, 'Expired test kit should not be used for testing. If test kits are not available, please contact your superior.', 'Testkit XYZ expired M days before the test date 10-Nov-2014'),
+(6, 'Tester should verify testkit expiry date and required to report with PT result.', 'Testkit XYZ reported without expiry date - Result not evaluated.'),
+(7, 'Test kit name needs to be reported', 'No Test Kit name Reported - Result not evaluated'),
+(8, 'Country algorithm not followed. Please see the link on the PT website for country algorithm.', 'Testkit XYZ repeated for all 3 test kits'),
+(9, 'Country algorithm not followed. Please see the link on the PT website for country algorithm.', 'Test kit XYZ repeated for Testkit 1 and Testkit 2'),
+(10, 'Country algorithm not followed. Please see the link on the PT website for country algorithm.', 'Lot No. 1 was not reported'),
+(11, 'Tester need to provide lot number information for Proficiency Testing', 'Lot No. X was not reported'),
+(12, 'Please make sure your PT result is approved by your supervisor.', 'Supervisor approval absent'),
+(13, 'Please make sure you provide the sample rehydration date', 'Rehydration date not provided'),
+(14, 'Please make sure you provide date of shipment received. ', 'Shipment received Test date not provided'),
+(15, 'You should perform testing within 24 hours of rehydration.', 'Difference between testing and rehydration date is more than 24 hours'),
+(16, 'Please review your corrective action for improvement.\r\n', 'Participant did not meet the score criteria (Participant Score is 80 and Required Score is 95)');
