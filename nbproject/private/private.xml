@@ -3,16 +3,35 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/get-datamanager.ajax.phtml</file>
-            <file>file:/var/www/ept/application/modules/admin/controllers/TestkitController.php</file>
-            <file>file:/var/www/ept/application/modules/admin/views/scripts/enrollments/add.phtml</file>
-            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/participant-manager-map.phtml</file>
-            <file>file:/var/www/ept/application/modules/admin/views/scripts/testkit/standard-kit.phtml</file>
-            <file>file:/var/www/ept/application/controllers/DtsController.php</file>
             <file>file:/var/www/ept/application/modules/admin/controllers/ParticipantsController.php</file>
-            <file>file:/var/www/ept/application/services/Schemes.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/participant-manager-map.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/enrollments/add.phtml</file>
             <file>file:/var/www/ept/application/modules/admin/views/scripts/testkit/index.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/TestkitController.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/testkit/standard-kit.phtml</file>
             <file>file:/var/www/ept/application/services/DataManagers.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/get-datamanager.ajax.phtml</file>
+            <file>file:/var/www/ept/application/controllers/DtsController.php</file>
+            <file>file:/var/www/ept/application/services/Schemes.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/get-participant.ajax.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/testkit/get-testkit.ajax.phtml</file>
+            <file>file:/var/www/ept/application/models/DbTable/DataManagers.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/testkit/get-testkit.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/get-datamanager.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/get-participant.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/participants/index.phtml</file>
+            <file>file:/var/www/ept/docs/alter-commands.sql</file>
+            <file>file:/var/www/ept/application/models/DbTable/TestkitnameDts.php</file>
+            <file>file:/var/www/ept/application/views/scripts/dts/response.phtml</file>
+            <file>file:/var/www/ept/application/models/DTSResponse.php</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/EvaluateController.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/evaluate/view.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/ShipmentController.php</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/shipment/get-sample-form.ajax.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/shipment/dts-form.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/shipment/edit.phtml</file>
+            <file>file:/var/www/ept/application/views/scripts/dbs/response.phtml</file>
+            <file>file:/var/www/ept/application/views/scripts/eid/response.phtml</file>
         </group>
     </open-files>
 </project-private>

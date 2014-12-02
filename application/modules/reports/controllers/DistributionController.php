@@ -51,6 +51,7 @@ class Reports_DistributionController extends Zend_Controller_Action
     {
         $this->_helper->layout()->disableLayout();
         if($this->_hasParam('sId')){
+           
             $id = (int)base64_decode($this->_getParam('sId'));
             $reportService = new Application_Service_Reports();
             $this->view->header=$reportService->getReportConfigValue('report-header');
@@ -73,6 +74,8 @@ class Reports_DistributionController extends Zend_Controller_Action
             $this->view->logo=$reportService->getReportConfigValue('logo');
             $evalService = new Application_Service_Evaluation();
             $this->view->result = $evalService->getSummaryReportsInPdf($id);
+            $this->view->participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($id);
+            $this->view->correctiveness = $reportService->getCorrectiveActionReportByShipmentId($id);
         }
     }
 
