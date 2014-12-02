@@ -432,6 +432,9 @@
             <controllerFile controllerName="ShipmentResponse">
               <actionMethod actionName="index"/>
             </controllerFile>
+            <controllerFile controllerName="CorrectiveActions">
+              <actionMethod actionName="index"/>
+            </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
           <layoutsDirectory enabled="false">
@@ -485,6 +488,9 @@
                 <viewScriptFile forActionName="getShipmentsByScheme"/>
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="ShipmentResponse">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="CorrectiveActions">
                 <viewScriptFile forActionName="index"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>

@@ -1761,5 +1761,192 @@ class Application_Service_Reports {
 		$resultArray = $db->fetchAll($sQuery);
 		return $resultArray;
 	}
+	
+	public function getCorrectiveActionReport($parameters){
+	
+	    /* Array of database columns which should be read and sent back to DataTables. Use a space where
+	     * you want to insert a non-database field (for example a counter or static image)
+	     */
+    
+	    $aColumns = array('sl.scheme_name',"DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", 's.shipment_code',new Zend_Db_Expr('count("sp.map_id")'),new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),new Zend_Db_Expr("SUM(final_result = 1) + SUM(final_result = 2)"),new Zend_Db_Expr("((SUM(sp.shipment_score)+SUM(sp.documentation_score))/count('participant_id'))*100"));
+	    $searchColumns = array('scheme_id','s.shipment_code','corrective_action');
+	    $orderColumns = array('scheme_id',"s.shipment_code","",'corrective_action');
+    
+	    /* Indexed column (used for fast and accurate table cardinality) */
+	    $sIndexColumn = 'shipment_id';
+	    /*
+	     * Paging
+	     */
+	    $sLimit = "";
+	    if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+		$sOffset = $parameters['iDisplayStart'];
+		$sLimit = $parameters['iDisplayLength'];
+	    }
+    
+	    /*
+	     * Ordering
+	     */
+	    $sOrder = "";
+	    if (isset($parameters['iSortCol_0'])) {
+		$sOrder = "";
+		for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+		    if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+			$sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+					    " . ($parameters['sSortDir_' . $i]) . ", ";
+		    }
+		}
+    
+		$sOrder = substr_replace($sOrder, "", -2);
+	    }
+    
+	    /*
+	     * Filtering
+	     * NOTE this does not match the built-in DataTables filtering which does it
+	     * word by word on any field. It's possible to do here, but concerned about efficiency
+	     * on very large tables, and MySQL's regex functionality is very limited
+	     */
+	    $sWhere = "";
+	    if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+		$searchArray = explode(" ", $parameters['sSearch']);
+		$sWhereSub = "";
+		foreach ($searchArray as $search) {
+		    if ($sWhereSub == "") {
+			$sWhereSub .= "(";
+		    } else {
+			$sWhereSub .= " AND (";
+		    }
+		    $colSize = count($searchColumns);
+		    
+		    for ($i = 0; $i < $colSize; $i++) {
+			if($searchColumns[$i] == "" || $searchColumns[$i] == null){
+			    continue;
+			}
+			if ($i < $colSize - 1) {
+			    $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+			} else {
+			    $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' ";
+			}
+		    }
+		    $sWhereSub .= ")";
+		}
+		$sWhere .= $sWhereSub;
+	    }
+	    
+	    //error_log($sHaving);
+	    /* Individual column filtering */
+	    for ($i = 0; $i < count($searchColumns); $i++) {
+		if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+		    if ($sWhere == "") {
+			$sWhere .= $searchColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+		    } else {
+			$sWhere .= " AND " . $searchColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+		    }
+		}
+	    }		
+		
+	    /*
+	     * SQL queries
+	     * Get data to display
+	     */
+	    
+		    
+		    $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+		    $sQuery = $dbAdapter->select()->from(array('s'=>'shipment'),array('s.shipment_code'))
+				    ->join(array('sl'=>'scheme_list'),'s.scheme_type=sl.scheme_id')
+				    ->joinLeft(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('map_id'))
+				    ->join(array('cam'=>'dts_shipment_corrective_action_map'),'cam.shipment_map_id=sp.map_id',array("total_corrective"=>new Zend_Db_Expr('count("cam.corrective_action_id")')))
+				    ->join(array('ca'=>'r_dts_corrective_actions'),'ca.action_id=cam.corrective_action_id',array("action_id","corrective_action"))
+				    ->group(array('cam.corrective_action_id'));
+				  
+				    
+					
+		    if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
+			    $sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
+		    }
+		    
+		    if(isset($parameters['startDate']) && $parameters['startDate'] !="" && isset($parameters['endDate']) && $parameters['endDate'] !=""){
+			    $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?",$parameters['startDate']);
+			    $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?",$parameters['endDate']);
+		    }
+		    
+		    if(isset($parameters['shipmentId']) && $parameters['shipmentId'] !=""){
+				$sQuery = $sQuery->where("s.shipment_id = ?",$parameters['shipmentId']);
+		    }
+		    
+    
+	    if (isset($sWhere) && $sWhere != "") {
+		$sQuery = $sQuery->having($sWhere);
+	    }
+    
+    
+	    if (isset($sOrder) && $sOrder != "") {
+		$sQuery = $sQuery->order($sOrder);
+	    }
+    
+	    if (isset($sLimit) && isset($sOffset)) {
+		$sQuery = $sQuery->limit($sLimit, $sOffset);
+	    }
+    
+	    //echo $sQuery;
+	    //die;
+	    $rResult = $dbAdapter->fetchAll($sQuery);
+	    
+	    /* Data set length after filtering */
+	    $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
+	    $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+	    $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
+	    $iFilteredTotal = count($aResultFilterTotal);
+    
+	    /* Total data set length */
+	    $sWhere ="";
+	    //$sQuery = $dbAdapter->select()->from(array('s'=>'shipment'), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+	    $sQuery = $dbAdapter->select()->from(array('s'=>'shipment'),array(''))
+				    ->join(array('sl'=>'scheme_list'),'s.scheme_type=sl.scheme_id')
+				    ->joinLeft(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array(''))
+				    ->join(array('cam'=>'dts_shipment_corrective_action_map'),'cam.shipment_map_id=sp.map_id',array(""))
+				    ->join(array('ca'=>'r_dts_corrective_actions'),'ca.action_id=cam.corrective_action_id',array(""))
+				    ->group(array('cam.corrective_action_id'));
+		if(isset($parameters['scheme']) && $parameters['scheme'] !=""){
+			$sQuery = $sQuery->where("s.scheme_type = ?",$parameters['scheme']);
+		}
+		
+		if(isset($parameters['startDate']) && $parameters['startDate'] !="" && isset($parameters['endDate']) && $parameters['endDate'] !=""){
+			$sQuery = $sQuery->where("DATE(s.shipment_date) >= ?",$parameters['startDate']);
+			$sQuery = $sQuery->where("DATE(s.shipment_date) <= ?",$parameters['endDate']);
+		}
+		
+		if(isset($parameters['shipmentId']) && $parameters['shipmentId'] !=""){
+			    $sQuery = $sQuery->where("s.shipment_id = ?",$parameters['shipmentId']);
+		}
+	
+		if (isset($sWhere) && $sWhere != "") {
+		    $sQuery = $sQuery->where($sWhere);
+		}
+		
+		$aResultTotal = $dbAdapter->fetchAll($sQuery);
+		$iTotal = count($aResultTotal);
+	
+		/*
+		 * Output
+		 */
+		$output = array(
+		    "sEcho" => intval($parameters['sEcho']),
+		    "iTotalRecords" => $iTotal,
+		    "iTotalDisplayRecords" => $iFilteredTotal,
+		    "aaData" => array()
+		);
+	    
+		foreach ($rResult as $aRow) {
+		    $row = array();
+		    $row[] = strtoupper($aRow['scheme_id']);
+		    $row[] = $aRow['shipment_code'];
+		    $row[] = $aRow['total_corrective'];
+		    $row[] = $aRow['corrective_action'];
+			
+		    $output['aaData'][] = $row;
+		}
+    
+	    echo json_encode($output);
+	}
 }
 
