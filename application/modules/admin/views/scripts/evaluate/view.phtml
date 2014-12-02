@@ -576,7 +576,7 @@ else{
 		<td style="width:25%;vertical-align: middle">Notes</td>
 		<td>
 			<?php 
-				if(isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != ""){
+				if(isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != "[]"){
 					echo "<table class='table table-bordered'>";
 					echo "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
 					$warnings = json_decode($this->evaluateData['shipment']['failure_reason'],true);

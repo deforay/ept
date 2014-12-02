@@ -106,20 +106,22 @@
                                 $btnClassName="btn-success";
 				$editList[] = "/admin/evaluate/edit/sid/".base64_encode($shipment['shipment_id'])."/pid/".base64_encode($shipment['participant_id'])."/scheme/".base64_encode($shipment['scheme_type']);
 				$viewList[] = "/admin/evaluate/view/sid/".base64_encode($shipment['shipment_id'])."/pid/".base64_encode($shipment['participant_id'])."/scheme/".base64_encode($shipment['scheme_type']);
-				if(isset($shipment['failure_reason']) && $shipment['failure_reason'] != ""){
-					$failureReasonJson = $shipment['failure_reason'];
-					$shipment['failure_reason'] = "<table class='table table-bordered'>";
-					$shipment['failure_reason'] .= "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
-					$warnings = json_decode($failureReasonJson,true);
-					foreach($warnings as $warning){	
-						  $shipment['failure_reason'] .= "<tr><td>".(isset($warning['warning']) ? $warning['warning'] : "")."</td><td>".(isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "")."</td></tr>";
-					}
-					$shipment['failure_reason'] .=  "</table>";;
-				}
+			      $failureReasonJson = $shipment['failure_reason'];
+			      $warnings = json_decode($failureReasonJson,true);
+			      if(isset($warnings) && count($warnings) >0){                        
+				      $shipment['failure_reason'] = "<table class='table table-bordered'>";
+				      $shipment['failure_reason'] .= "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";                        
+				      foreach($warnings as $warning){	
+						$shipment['failure_reason'] .= 	"<tr><td>".(isset($warning['warning']) ? $warning['warning'] : "")."</td><td>".(isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "")."</td></tr>";
+				      }
+				      $shipment['failure_reason'] .=  "</table>";;
+			      }else{
+					$shipment['failure_reason'] = " - ";
+			      }
                                 
                                 if(isset($shipment['display_result']) && $shipment['display_result']=="Fail"){
                                     $btnClassName="btn-danger";
-                                }else if(isset($shipment['failure_reason']) && $shipment['failure_reason'] != ""){
+                                }else if(isset($warnings) && count($warnings) >0){
                                     $btnClassName="btn-warning";
                                 }
                                 $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';

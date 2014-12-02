@@ -1902,7 +1902,7 @@ CREATE TABLE IF NOT EXISTS `r_dts_corrective_actions` (
   `corrective_action` text NOT NULL,
   `description` text NOT NULL,
   PRIMARY KEY (`action_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 
 --
 -- Dumping data for table `r_dts_corrective_actions`
@@ -1924,3 +1924,11 @@ INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `descr
 (13, 'Please make sure you provide date of shipment received. ', 'Shipment received Test date not provided'),
 (14, 'You should perform testing within 24 hours of rehydration.', 'Difference between testing and rehydration date is more than 24 hours'),
 (15, 'Please review your corrective action for improvement.\r\n', 'Participant did not meet the score criteria (Participant Score is 80 and Required Score is 95)');
+
+-- Amit Dec 01 2014
+  
+CREATE TABLE IF NOT EXISTS `dts_shipment_corrective_action_map` (
+  `shipment_map_id` int(11) NOT NULL,
+  `corrective_action_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
