@@ -191,14 +191,12 @@ if ($this->result != "") {
 
   //----------------Participant Performance Overview  start----------------
                 $sampleCode.='<div><table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Shipment Code </td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Response</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Response</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
 
                 $sampleCode.='<tr>';
-                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['shipment_code'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_shipped'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['valid_responses'] . '</td>';
@@ -210,12 +208,12 @@ if ($this->result != "") {
                 
   //----------------Participant Corrective Action Overview  start----------------
                 $sampleCode.='<div><table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Shipment Code </td>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Response </td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td></tr>';
                 foreach($this->correctiveness as $correctiveness){
                 $sampleCode.='<tr>';
-                $sampleCode.='<td style="text-align:center;">' . $correctiveness['shipment_code'] . '</td>';
+                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $correctiveness['corrective_action'] . '</td>';
                 $sampleCode.='</tr>';
@@ -335,14 +333,12 @@ if ($this->result != "") {
             $sampleCode.='</table></br></br>';
 //----------------Participant Performance Overview  start----------------
                 $sampleCode.='<div><table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Shipment Code </td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Response</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Response</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
 
                 $sampleCode.='<tr>';
-                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['shipment_code'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_shipped'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['valid_responses'] . '</td>';
@@ -354,12 +350,12 @@ if ($this->result != "") {
                 
   //----------------Participant Corrective Action Overview  start----------------
                 $sampleCode.='<div><table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Shipment Code </td>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Response </td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td></tr>';
                 foreach($this->correctiveness as $correctiveness){
                 $sampleCode.='<tr>';
-                $sampleCode.='<td style="text-align:center;">' . $correctiveness['shipment_code'] . '</td>';
+                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $correctiveness['corrective_action'] . '</td>';
                 $sampleCode.='</tr>';
