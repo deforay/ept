@@ -116,7 +116,7 @@
                         }
                         $shipment['failure_reason'] .=  "</table>";;
                 }else{
-                    $shipment['failure_reason'] = " - ";
+                    $shipment['failure_reason'] = " No Warnings or Corrective Actions ";
 		}
                                 
                 if(isset($shipment['display_result']) && $shipment['display_result']=="Fail"){
@@ -249,7 +249,7 @@
             var sOut = "";
             if (aData[5] != "" && aData[5] != null && aData[5] != undefined) {
                 sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
-                sOut += '<tr><td style="width:220px;">Failure Reasons & Warnings:</td><td>' + aData[5] + '</td></tr>';
+                sOut += '<tr><td>' + aData[5] + '</td></tr>';
                 sOut += '</table>';
             } else {
                 sOut = 'No comments to show';

@@ -841,7 +841,7 @@ class Application_Service_Evaluation {
 		//Let us now calculate documentation score
 		$documentationScore = 0;
 		$documentationScorePerItem = ($config->evaluation->dts->documentationScore/4);
-		
+
 		if(strtolower($result['supervisor_approval']) == 'yes' && trim($result['participant_supervisor']) != ""){
 		    $documentationScore += $documentationScorePerItem;
 		}else{
@@ -899,6 +899,7 @@ class Application_Service_Evaluation {
 		    $failureReason[] = array('warning'=>'Excluded from Evaluation');
                     $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
                 } else {
+		    $shipment['is_excluded'] = 'no';
                     // if any of the results have failed, then the final result is fail
                     if ($algoResult == 'Fail' || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
                         $finalResult = 2;
@@ -918,8 +919,9 @@ class Application_Service_Evaluation {
                 $shipmentResult[$counter]['max_score'] = $maxScore;
 
                 // let us update the total score in DB
-                $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore,'documentation_score' => $documentationScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
+                $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore,'documentation_score' => $documentationScore, 'final_result' => $finalResult,'is_excluded'=>$shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
                 $nofOfRowsDeleted = $db->delete('dts_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
+		$correctiveActionList = array_unique($correctiveActionList);
 		foreach($correctiveActionList as $ca){
 		    $db->insert('dts_shipment_corrective_action_map', array('shipment_map_id'=>$shipment['map_id'],'corrective_action_id' => $ca), "map_id = " . $shipment['map_id']);
 		}

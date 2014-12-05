@@ -1932,3 +1932,9 @@ CREATE TABLE IF NOT EXISTS `dts_shipment_corrective_action_map` (
   `corrective_action_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- Amit Dec 04 2014
+
+ALTER TABLE  `dts_shipment_corrective_action_map` ADD UNIQUE (
+`shipment_map_id` ,
+`corrective_action_id`
+);
