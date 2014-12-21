@@ -81,12 +81,11 @@
                 $('#dateRange').daterangepicker({
                     format: 'DD-MMM-YYYY',
                     ranges: {
-                        'Today': [moment(), moment()],
-                        'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
-                        'Last 7 Days': [moment().subtract('days', 6), moment()],
-                        'Last 30 Days': [moment().subtract('days', 29), moment()],
-                        'This Month': [moment().startOf('month'), moment().endOf('month')],
-                        'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+			'Last 60 Days': [moment().subtract('days', 59), moment()],
+			'Last 90 Days': [moment().subtract('days', 89), moment()],
+			'Last 180 Days': [moment().subtract('days', 179), moment()],
+			'Last 12 Months': [moment().subtract('month', 12), moment()],
+			'Last 18 Months': [moment().subtract('month', 18), moment()],
                     }
                 },
                 function(start, end) {
@@ -109,17 +108,19 @@
                     var failedvalues = [];
                     var othervalues = [];
                     var latevalues = [];
+                    var excluded = [];
                     for (var ln = 0; ln < JSON.parse(response[1]).length; ln++) {
                         passedvalues.push(parseInt(JSON.parse(response[1])[ln]));
                         failedvalues.push(parseInt(JSON.parse(response[2])[ln]));
                         
                         othervalues.push(parseInt(JSON.parse(response[3])[ln]));
                         latevalues.push(parseInt(JSON.parse(response[4])[ln]));
+                        excluded.push(parseInt(JSON.parse(response[4])[ln]));
                     }
                     $("#participant").html('');
                     $('#participant').highcharts({
                         colors: [
-                            '#1a987e','#eb513c','#606060','#f2f760'
+                            '#1a987e','#eb513c','#606060','#f2f760','#000'
                         ],
                         chart: {
                             type: 'column'
@@ -180,12 +181,16 @@
                                 name: 'Failed',
                                 data: failedvalues
                             }, {
-                                name: 'Others',
+                                name: 'Not Responded',
                                 data: othervalues
                             }, {
                                 name: 'Late Response',
                                 data: latevalues
-                            }]
+                            }, {
+                                name: 'Excluded',
+                                data: excluded
+                            }
+                            ]
 
                     });
                 });

@@ -3,6 +3,7 @@
                 $passed = array();
                 $failed = array();
                 $others = array();
+                $excluded = array();
                 $late = array();
                 if(isset($this->type) && $this->type=='network'){
                     foreach($this->response as $value){
@@ -12,6 +13,7 @@
                        $failed[]=(isset($value['number_failed']) ? $value['number_failed'] : 0) ;
                        $late[]=(isset($value['number_late']) ? $value['number_late'] : 0) ;
                        $others[]=(isset($value['others']) ? $value['others'] : 0) ;
+                       $excluded[]=(isset($value['excluded']) ? $value['excluded'] : 0) ;
                     }
                 }else if(isset($this->type) && $this->type=='affiliation'){
                     foreach($this->response as $value){
@@ -20,6 +22,7 @@
                        $passed[]=(isset($value['number_passed']) ? $value['number_passed'] : 0) ;
                        $failed[]=(isset($value['number_failed']) ? $value['number_failed'] : 0) ;
                        $others[]=(isset($value['others']) ? $value['others'] : 0) ;
+                       $excluded[]=(isset($value['excluded']) ? $value['excluded'] : 0) ;
                     }
                 }else if(isset($this->type) && $this->type=='region'){
                     foreach($this->response as $value){
@@ -28,7 +31,8 @@
                        $passed[]=(isset($value['number_passed']) ? $value['number_passed'] : 0) ;
                        $failed[]=(isset($value['number_failed']) ? $value['number_failed'] : 0) ;
                        $others[]=(isset($value['others']) ? $value['others'] : 0) ;
+                       $excluded[]=(isset($value['excluded']) ? $value['excluded'] : 0) ;
                     }
                 }
-                echo json_encode($result).'##'.json_encode($passed).'##'.json_encode($failed).'##'.json_encode($others).'##'.json_encode($late);
+                echo json_encode($result).'##'.json_encode($passed).'##'.json_encode($failed).'##'.json_encode($others).'##'.json_encode($late).'##'.json_encode($excluded);
 ?>
