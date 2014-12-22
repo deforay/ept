@@ -421,9 +421,38 @@ class Application_Service_Reports {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('sl.scheme_name', "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", 's.shipment_code', new Zend_Db_Expr('count("sp.map_id")'), new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"), new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"), new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2))"));
-        $searchColumns = array('sl.scheme_name', "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", 's.shipment_code', "total_shipped", 'total_responses', 'valid_responses', 'average_score');
-        $orderColumns = array('sl.scheme_name', "s.shipment_date", 's.shipment_code', new Zend_Db_Expr('count("sp.map_id")'), new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"), new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"), new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2))"));
+        $aColumns = array(
+			  'sl.scheme_name',
+			  "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
+			  's.shipment_code',
+			  new Zend_Db_Expr('count("sp.map_id")'),
+			  new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
+			  new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
+			  new Zend_Db_Expr("SUM(final_result = 1)"),
+			  new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
+			  new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2))")
+		    );
+        $searchColumns = array(
+			       'sl.scheme_name',
+			       "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
+			       's.shipment_code', "total_shipped",
+			       'total_responses',
+			       'valid_responses',
+			       'total_passed',
+			       'pass_percentage',
+			       'average_score'
+			);
+        $orderColumns = array(
+			      'sl.scheme_name',
+			      "s.shipment_date",
+			      's.shipment_code',
+			      new Zend_Db_Expr('count("sp.map_id")'),
+			      new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
+			      new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
+			      new Zend_Db_Expr("SUM(final_result = 1)"),
+			      new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
+			      new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2))")
+			);
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = 'shipment_id';
@@ -506,7 +535,7 @@ class Application_Service_Reports {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
-                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'), "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"), "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"), "average_score" => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")))
+                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'), "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"), "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),"total_passed" =>new Zend_Db_Expr("(SUM(final_result = 1))"),"pass_percentage" =>new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100") , "average_score" => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")))
                 ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
                 ->group(array('s.shipment_id'));
@@ -595,6 +624,8 @@ class Application_Service_Reports {
             $row[] = $aRow['total_shipped'];
             $row[] = $aRow['total_responses'];
             $row[] = $aRow['valid_responses'];
+            $row[] = $aRow['total_passed'];
+            $row[] = round($aRow['pass_percentage'],2);
             $row[] = round($aRow['average_score'], 2);
 
 
@@ -618,7 +649,35 @@ class Application_Service_Reports {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('sl.scheme_name', "ref.sample_label", 'ref.reference_result', 'positive_responses', 'negative_responses', new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"), new Zend_Db_Expr("SUM(sp.final_result = 1) + SUM(sp.final_result = 2)"));
+        $aColumns = array('sl.scheme_name',
+			  "ref.sample_label",
+			  'ref.reference_result',
+			  'positive_responses',
+			  'negative_responses',
+			  new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
+			  new Zend_Db_Expr("SUM(sp.final_result=1)"),
+			  new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
+		);
+	
+        $searchColumns = array('sl.scheme_name',
+			  "ref.sample_label",
+			  'ref.reference_result',
+			  'positive_responses',
+			  'negative_responses',
+			  'total_responses',
+			  "total_passed",
+			  'valid_responses'
+		);
+        $orderColumns = array('sl.scheme_name',
+			  "ref.sample_label",
+			  'ref.reference_result',
+			  'positive_responses',
+			  'negative_responses',
+			  new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
+			  new Zend_Db_Expr("SUM(sp.final_result=1)"),
+			  new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
+		);
+	
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = 'shipment_id';
@@ -639,7 +698,7 @@ class Application_Service_Reports {
             $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
 					    " . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
@@ -663,16 +722,16 @@ class Application_Service_Reports {
                 } else {
                     $sWhereSub .= " AND (";
                 }
-                $colSize = count($aColumns);
+                $colSize = count($searchColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
-                    if ($aColumns[$i] == "" || $aColumns[$i] == null) {
+                    if ($searchColumns[$i] == "" || $searchColumns[$i] == null) {
                         continue;
                     }
                     if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                        $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
                     } else {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                        $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
                 $sWhereSub .= ")";
@@ -719,14 +778,14 @@ class Application_Service_Reports {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), array('shipment_code'))
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
-                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"), "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))")))
-                ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
-                ->joinLeft(array('ref' => $refTable), 's.shipment_id=ref.shipment_id')
-                ->joinLeft(array('res' => $resTable), 'sp.map_id=res.shipment_map_id', array("positive_responses" => new Zend_Db_Expr('SUM(if(res.reported_result = ' . $rPositive . ', 1, 0))'), "negative_responses" => new Zend_Db_Expr('SUM(if(res.reported_result = ' . $rNegative . ', 1, 0))')))
-                ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
-                ->joinLeft(array('rp' => 'r_possibleresult'), 'ref.reference_result=rp.id')
-                ->group(array('s.shipment_id', 'ref.sample_label'));
-
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),"total_passed" => new Zend_Db_Expr("SUM(sp.final_result=1)"), "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))")))
+                //->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
+                ->join(array('ref' => $refTable), 's.shipment_id=ref.shipment_id')
+                ->join(array('res' => $resTable), 'sp.map_id=res.shipment_map_id', array("positive_responses" => new Zend_Db_Expr('SUM(if(res.reported_result = ' . $rPositive . ', 1, 0))'), "negative_responses" => new Zend_Db_Expr('SUM(if(res.reported_result = ' . $rNegative . ', 1, 0))')))
+                ->join(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
+                ->join(array('rp' => 'r_possibleresult'), 'ref.reference_result=rp.id')
+		->where("res.sample_id = ref.sample_id")
+                ->group(array('sp.shipment_id', 'ref.sample_label'));
 
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
@@ -769,7 +828,10 @@ class Application_Service_Reports {
 
         /* Total data set length */
         $sWhere = "";
-        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+        $sQuery = $dbAdapter->select()->from(array('ref' => $refTable), new Zend_Db_Expr("COUNT('ref.sample_label')"))
+				      ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array());
+		
+
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
@@ -783,9 +845,11 @@ class Application_Service_Reports {
             $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
         }
 
+
         if (isset($sWhere) && $sWhere != "") {
-            $sQuery = $sQuery->where($sWhere);
+            $sQuery = $sQuery->having($sWhere);
         }
+
 
         $aResultTotal = $dbAdapter->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
@@ -812,7 +876,9 @@ class Application_Service_Reports {
             $row[] = $aRow['positive_responses'];
             $row[] = $aRow['negative_responses'];
             $row[] = $aRow['total_responses'];
-            $row[] = $aRow['valid_responses'];
+	    $row[] = $aRow['valid_responses'];
+            $row[] = $aRow['total_passed'];
+            
 
 
             $output['aaData'][] = $row;
