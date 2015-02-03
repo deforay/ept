@@ -8,6 +8,7 @@ class Reports_ShipmentsController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
                     ->addActionContext('get-shipment-participant-list', 'html')
+                    ->addActionContext('shipments-export', 'html')
                     ->initContext();
         $this->_helper->layout()->pageName = 'report';                
     }
@@ -41,16 +42,32 @@ class Reports_ShipmentsController extends Zend_Controller_Action
         }else{
             $this->_redirect("/admin/index");
         }
+        
     }
 
-    public function getShipmentParticipantListAction(){
+    public function getShipmentParticipantListAction()
+    {
         $reportService = new Application_Service_Reports();
         if($this->_hasParam('shipmentId')){
             $shipmentId = base64_decode($this->_getParam('shipmentId'));
             $this->view->result=$reportService->getShipmentParticipant($shipmentId);
         }
+        
     }
+
+    public function shipmentsExportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        if($this->getRequest()->isPost()){
+            $params = $this->_getAllParams();
+            $this->view->exported=$reportService->exportShipmentsReport($params);
+        }
+    }
+
+
 }
+
+
 
 
 

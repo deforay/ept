@@ -406,6 +406,7 @@
             <controllerFile controllerName="Shipments">
               <actionMethod actionName="index"/>
               <actionMethod actionName="responseChart"/>
+              <actionMethod actionName="shipmentsExport"/>
             </controllerFile>
             <controllerFile controllerName="Distribution">
               <actionMethod actionName="index"/>
@@ -424,6 +425,7 @@
             </controllerFile>
             <controllerFile controllerName="ParticipantPerformance">
               <actionMethod actionName="index"/>
+              <actionMethod actionName="participantPerformanceExport"/>
             </controllerFile>
             <controllerFile controllerName="Common">
               <actionMethod actionName="index"/>
@@ -434,6 +436,7 @@
             </controllerFile>
             <controllerFile controllerName="CorrectiveActions">
               <actionMethod actionName="index"/>
+              <actionMethod actionName="correctiveActionsExport"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -492,6 +495,15 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="CorrectiveActions">
                 <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="ParticipantPerformance">
+                <viewScriptFile forActionName="participantPerformanceExport"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="CorrectiveActions">
+                <viewScriptFile forActionName="correctiveActionsExport"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipments">
+                <viewScriptFile forActionName="shipmentsExport"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
