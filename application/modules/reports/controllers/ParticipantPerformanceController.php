@@ -34,6 +34,16 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
         }
     }
 
+    public function chartAction()
+    {
+        //if ($this->getRequest()->isPost()) {
+        //    $params = $this->_getAllParams();
+        //    $reportService = new Application_Service_Reports();
+        //    $response=$reportService->getPerformancePieChart($params);
+        //    $this->view->response = $response;
+        //}
+    }
+
 
 }
 

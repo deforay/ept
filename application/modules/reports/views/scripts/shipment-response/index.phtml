@@ -1,5 +1,13 @@
-
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<style>
+    @media print {
+        .dontPrint, #testKitTable_filter, #testKitTable_info{
+            display:none;
+	    
+        }
+    }
+
+</style>
 <legend><h3>Shipment Response Overview</h3></legend>
 <table  style="margin:20px 0;" class="table table-bordered">
     <tr>
@@ -62,6 +70,7 @@
 </table>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+
 <script type="text/javascript">
             var startDate = "";
             var endDate = "";
@@ -101,6 +110,8 @@
 			$.unblockUI();
 		    });
 	    }
+	    
+   
 	    
             function drawTable() {
 		if (startDate == "" || endDate=="" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {

@@ -187,10 +187,10 @@
 
 
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">PT Participant Login<span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label">PT Participant Login</label>
 
                 <div class="col-lg-8">
-                    <select class="form-control isRequired" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more PT Participant Logins" data-selected-text-format="count>3">
+                    <select class="form-control" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more PT Participant Logins" data-selected-text-format="count>3">
                         <?php
                         $dataManagers = explode(",", $this->participant['data_manager']);
                         foreach ($this->dataManagers as $dm) {

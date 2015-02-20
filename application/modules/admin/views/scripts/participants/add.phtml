@@ -174,10 +174,10 @@
             <hr style="border:1px solid #ccc;background: #ccc;width:90%;"/>
 
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">PT Participant Login<span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label">PT Participant Login</label>
 
                 <div class="col-lg-8">
-                    <select class="form-control isRequired" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more PT Participant Logins" data-selected-text-format="count>3">
+                    <select class="form-control" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more PT Participant Logins" data-selected-text-format="count>3">
                         <?php foreach ($this->dataManagers as $dm) {
                             ?>
                             <option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name'] . " " . $dm['last_name']; ?></option>
