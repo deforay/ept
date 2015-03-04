@@ -110,7 +110,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
 
         $sQuery = $this->getAdapter()->select()->from(array('u' => $this->_name))
 				    ->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.dm_id=u.dm_id',array())
-				    ->joinLeft(array('p'=>'participant'),'p.participant_id = pmm.participant_id',array('participants' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT(p.first_name,' ',p.last_name) SEPARATOR ', <br/>')"),'p.participant_id'))
+				    ->joinLeft(array('p'=>'participant'),'p.participant_id = pmm.participant_id',array('participantCount' => new Zend_Db_Expr("COUNT('p.first_name')"),'p.participant_id'))
 				    ->group('u.dm_id');
 
         if (isset($sWhere) && $sWhere != "") {
@@ -158,13 +158,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
 	    //}else{
 	    //$participantDetails='';
 	    //}
-            $row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/'.$aRow['dm_id'].'\',\'980\',\'500\');" class="btn btn-primary btn-xs"><i class="icon-search"></i></a>'.'  '.$aRow['institute'];
+            $row[] = $aRow['institute'];
 	   // $row[] = $participantDetails.' '.$aRow['institute'];
             $row[] = $aRow['first_name']; 
             $row[] = $aRow['last_name']; 
             $row[] = $aRow['mobile'];
             $row[] = $aRow['primary_email'];
-            $row[] = $aRow['participants'];
+            $row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/'.$aRow['dm_id'].'\',\'980\',\'500\');" >'.$aRow['participantCount'].'</a>';
             $row[] = $aRow['status'];
             $row[] = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
