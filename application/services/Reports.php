@@ -2338,5 +2338,10 @@ class Application_Service_Reports {
             error_log($exc->getTraceAsString());
         }
     }
-
+    
+    public function exportParticipantPerformanceReportInPdf(){
+	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
+        return $db->fetchAll($sQuerySession->participantQuery);
+    }
 }
