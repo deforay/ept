@@ -387,7 +387,7 @@ class Application_Service_Shipments {
                     'reference_ic_qs' => $params['icQs'][$i],
                     'control' => $params['control'][$i],
                     'mandatory' => $params['mandatory'][$i],
-                    'sample_score' => $params['score'][$i]
+                    'sample_score' => (isset($params['score'][$i]) ? $params['score'][$i] : 0)
                         )
                 );
             }
@@ -400,7 +400,7 @@ class Application_Service_Shipments {
                     'reference_result' => $params['vlResult'][$i],
                     'control' => $params['control'][$i],
                     'mandatory' => $params['mandatory'][$i],
-                    'sample_score' => $params['score'][$i]
+                    'sample_score' => (isset($params['score'][$i]) ? $params['score'][$i] : 0)
                         )
                 );
             }
@@ -413,7 +413,7 @@ class Application_Service_Shipments {
                     'reference_result' => $params['possibleResults'][$i],
                     'control' => $params['control'][$i],
                     'mandatory' => $params['mandatory'][$i],
-                    'sample_score' => $params['score'][$i]
+                    'sample_score' => (isset($params['score'][$i]) ? $params['score'][$i] : 1)
                         )
                 );
 
