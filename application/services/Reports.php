@@ -351,24 +351,27 @@ class Application_Service_Reports {
                 }
             }
         }
-
-
+	
         /*
          * SQL queries
          * Get data to display
          */
-
-
-
+	
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
                 ->group('s.shipment_id');
-        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+        
+	if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $sQuery = $sQuery->where("s.shipment_date >= ?", $parameters['startDate']);
             $sQuery = $sQuery->where("s.shipment_date <= ?", $parameters['endDate']);
         }
+	
+	if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+	
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -380,18 +383,17 @@ class Application_Service_Reports {
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-
+	
         $rResult = $dbAdapter->fetchAll($sQuery);
-
-
+	
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
         $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
-
+	
         /* Total data set length */
-
+	
         $aResultTotal = $dbAdapter->fetchAll($sQuery);
         $iTotal = sizeof($aResultTotal);
 
@@ -2077,11 +2079,21 @@ class Application_Service_Reports {
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Participant Performance Overview Report ( ' . $params['dateRange'] . ' )', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Participant Performance Overview Report', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            if(isset($params['shipmentName']) && trim($params['shipmentName'])!=""){
+	    $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+	    }
+	    $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            
+	    $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+	    $sheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
+	    $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
+	    
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getStyleByColumnAndRow($colNo, 3)->getFont()->setBold(true);
+                $sheet->getCellByColumnAndRow($colNo, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getStyleByColumnAndRow($colNo, 5)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -2089,7 +2101,7 @@ class Application_Service_Reports {
             $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
             $rResult = $db->fetchAll($sQuerySession->participantQuery);
             foreach ($rResult as $aRow) {
-
+	    
                 $row = array();
                 $row[] = $aRow['scheme_name'];
                 $row[] = Pt_Commons_General::humanDateFormat($aRow['shipment_date']);
@@ -2109,10 +2121,10 @@ class Application_Service_Reports {
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 4)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 4)->getAlignment()->setWrapText(true);
+                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 6)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2161,8 +2173,16 @@ class Application_Service_Reports {
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Participant Corrective Action Overview ( ' . $params['dateRange'] . ' )', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Participant Corrective Action Overview', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+	    if(isset($params['shipmentName']) && trim($params['shipmentName'])!=""){
+	    $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+	    }
+	    $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            
+	    
+	    $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $totalQuery = $db->select()->from(array('s' => 'shipment'), array())
@@ -2191,47 +2211,52 @@ class Application_Service_Reports {
             $validResp = ($totalResult['valid_responses']);
             $avgScore = round($totalResult['average_score'], 2) . '%';
 
-            $sheet->mergeCells('A3:B3');
-            $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Total shipped :' . $totalShipped, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
             $sheet->mergeCells('A4:B4');
-            $sheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode('Total number of responses :' . $totalResp, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode('Total shipped :' . $totalShipped, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->getStyleByColumnAndRow(0, 4)->getFont()->setBold(true);
             $sheet->mergeCells('A5:B5');
-            $sheet->getCellByColumnAndRow(0, 5)->setValueExplicit(html_entity_decode('Total number of valid responses :' . $validResp, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(0, 5)->setValueExplicit(html_entity_decode('Total number of responses :' . $totalResp, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->getStyleByColumnAndRow(0, 5)->getFont()->setBold(true);
-            $sheet->mergeCells('A5:B5');
-            $sheet->getCellByColumnAndRow(0, 6)->setValueExplicit(html_entity_decode('Average score :' . $avgScore, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->mergeCells('A6:B6');
+            $sheet->getCellByColumnAndRow(0, 6)->setValueExplicit(html_entity_decode('Total number of valid responses :' . $validResp, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->getStyleByColumnAndRow(0, 6)->getFont()->setBold(true);
+            $sheet->mergeCells('A7:B7');
+            $sheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode('Average score :' . $avgScore, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getStyleByColumnAndRow(0, 7)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo, 8)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getStyleByColumnAndRow($colNo, 8)->getFont()->setBold(true);
+                $sheet->getCellByColumnAndRow($colNo, 9)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getStyleByColumnAndRow($colNo, 9)->getFont()->setBold(true);
                 $colNo++;
             }
 
 
             $sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
             $rResult = $db->fetchAll($sQuerySession->correctiveActionsQuery);
-            //  Zend_Debug::dump($rResult);die;
-            foreach ($rResult as $aRow) {
-
-                $row = array();
-                $row[] = $aRow['corrective_action'];
-                $row[] = $aRow['total_corrective'];
-                $output[] = $row;
-            }
-
+            
+	    if(count($rResult)>0){
+		foreach ($rResult as $aRow) {
+		    $row = array();
+		    $row[] = $aRow['corrective_action'];
+		    $row[] = $aRow['total_corrective'];
+		    $output[] = $row;
+		}
+	    }else{
+		$row = array();
+		$row[]='No result found';
+		$output[]= $row;
+	    }
+	    
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
                 foreach ($rowData as $field => $value) {
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 9)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 10)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
                     if ($colNo == (sizeof($headings) - 1)) {
-                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 9)->getAlignment()->setWrapText(true);
+                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
+                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 10)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2280,11 +2305,21 @@ class Application_Service_Reports {
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Shipment Response Overview ( ' . $params['dateRange'] . ' )', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Shipment Response Overview', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            if(isset($params['shipmentName']) && trim($params['shipmentName'])!=""){
+	    $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+	    }
+	    $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            
+	    
+	    $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
+	    $sheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
+	    $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getStyleByColumnAndRow($colNo, 3)->getFont()->setBold(true);
+                $sheet->getCellByColumnAndRow($colNo, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getStyleByColumnAndRow($colNo, 5)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -2312,10 +2347,10 @@ class Application_Service_Reports {
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 4)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 4)->getAlignment()->setWrapText(true);
+                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 6)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2370,5 +2405,11 @@ class Application_Service_Reports {
         $rResult = $db->fetchAll($sQuerySession->correctiveActionsQuery);
 	
 	return $result=array('countCorrectiveAction'=>$totalResult,'correctiveAction'=>$rResult);
+    }
+    
+    public function exportShipmentsReportInPdf(){
+	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuerySession = new Zend_Session_Namespace('shipmentExportExcel');
+        return $db->fetchAll($sQuerySession->shipmentExportQuery);
     }
 }

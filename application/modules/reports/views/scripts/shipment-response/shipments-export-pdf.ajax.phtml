@@ -14,7 +14,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, '45', 'Participant Performance Overview Report', '');
+$pdf->SetHeaderData(PDF_HEADER_LOGO, '45', 'Shipment Response Overview Report', '');
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -55,54 +55,53 @@ $pdf->SetFont('times', '', 12);
 // This method has several options, check the source code documentation for more information.
 $pdf->AddPage();
 
-// set text shadow effect
-//$pdf->setTextShadow(array('enabled'=>true, 'depth_w'=>0.2, 'depth_h'=>0.2, 'color'=>array(196,196,196), 'opacity'=>1, 'blend_mode'=>'Normal'));
-
 // Set some content to print
 
-$performanceOverview='';
+$shipmentOverview='';
 if(trim($this->shipmentName)!=""){
-    $performanceOverview.='<p>Shipment : '.$this->shipmentName.'</p>';
+    $shipmentOverview.='<p>Shipment : '.$this->shipmentName.'</p>';
 }
-$performanceOverview.='<p>Selected Date Range : '.$this->dateRange.'</p>';
+$shipmentOverview.='<p>Selected Date Range : '.$this->dateRange.'</p>';
 
+$shipmentOverview.='<table border="1" align="center">';
+$shipmentOverview.='<tr>';
+$shipmentOverview.='<td style="font-weight:bold">Scheme</td>';
+$shipmentOverview.='<td style="font-weight:bold">Shipment Code</td>';
+$shipmentOverview.='<td style="font-weight:bold">Sample Label</td>';
+$shipmentOverview.='<td style="font-weight:bold">Reference Result</td>';
+$shipmentOverview.='<td style="font-weight:bold">Total Positive Responses</td>';
+$shipmentOverview.='<td style="font-weight:bold">Total Negative Responses</td>';
+$shipmentOverview.='<td style="font-weight:bold">Total Responses</td>';
+$shipmentOverview.='<td style="font-weight:bold">Total Valid Responses(Total - Excluded)</td>';
+$shipmentOverview.='<td style="font-weight:bold">Total Passed</td>';
+$shipmentOverview.='</tr>';
 
-$performanceOverview.='<table border="1" align="center">';
-$performanceOverview.='<tr>';
-$performanceOverview.='<td style="font-weight:bold">Scheme</td>';
-$performanceOverview.='<td style="font-weight:bold">Shipment Date</td>';
-$performanceOverview.='<td style="font-weight:bold">Shipment Code</td>';
-$performanceOverview.='<td style="font-weight:bold">No. of Shipments</td>';
-$performanceOverview.='<td style="font-weight:bold">No. of Responses</td>';
-$performanceOverview.='<td style="font-weight:bold">No. of Valid Responses</td>';
-$performanceOverview.='<td style="font-weight:bold">No. of Passed Responses</td>';
-$performanceOverview.='<td style="font-weight:bold">Pass %</td>';
-$performanceOverview.='<td style="font-weight:bold">Average Score</td>';
-$performanceOverview.='</tr>';
-
+if(count($this->result)>0){
 foreach($this->result as $res){
-    $performanceOverview.='<tr>';
-    $performanceOverview.='<td>'.$res['scheme_name'].'</td>';
-    $performanceOverview.='<td>'.$res['shipment_date'].'</td>';
-    $performanceOverview.='<td>'.$res['shipment_code'].'</td>';
-    $performanceOverview.='<td>'.$res['total_shipped'].'</td>';
-    $performanceOverview.='<td>'.$res['total_responses'].'</td>';
-    $performanceOverview.='<td>'.$res['valid_responses'].'</td>';
-    $performanceOverview.='<td>'.$res['total_passed'].'</td>';
-    $performanceOverview.='<td>'.round($res['pass_percentage'], 2).'</td>';
-    $performanceOverview.='<td>'.round($res['average_score'], 2).'</td>';
-    $performanceOverview.='</tr>';
+    $shipmentOverview.='<tr>';
+    $shipmentOverview.='<td>'.$res['scheme_name'].'</td>';
+    $shipmentOverview.='<td>'.$res['shipment_code'].'</td>';
+    $shipmentOverview.='<td>'.$res['sample_label'].'</td>';
+    $shipmentOverview.='<td>'.$res['response'].'</td>';
+    $shipmentOverview.='<td>'.$res['positive_responses'].'</td>';
+    $shipmentOverview.='<td>'.$res['negative_responses'].'</td>';
+    $shipmentOverview.='<td>'.$res['total_responses'].'</td>';
+    $shipmentOverview.='<td>'.$res['valid_responses'].'</td>';
+    $shipmentOverview.='<td>'.$res['total_passed'].'</td>';
+    $shipmentOverview.='</tr>';
     
 }
-
-$performanceOverview.='</table>';
-$pdf->writeHTML($performanceOverview, true, false, true, false, '');
+}else{
+    $shipmentOverview.='<tr><td colspan="9">No result found</td></tr>';
+}
+$shipmentOverview.='</table>';
+$pdf->writeHTML($shipmentOverview, true, false, true, false, '');
 
 
 // ---------------------------------------------------------
 
 // Close and output PDF document
-$fileName = "participants-performance-".date('d-M-Y-H-i-s').".pdf";
+$fileName = "shipment-response-".date('d-M-Y-H-i-s').".pdf";
 $filePath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR.$fileName;
 //$pdf->Output('example_003.pdf', 'I');
 $pdf->Output($filePath, "F");

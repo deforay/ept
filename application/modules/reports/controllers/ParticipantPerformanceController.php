@@ -52,6 +52,7 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
             $params = $this->_getAllParams();
             $this->view->result=$reportService->exportParticipantPerformanceReportInPdf();
             $this->view->dateRange=$params['dateRange'];
+            $this->view->shipmentName=$params['shipmentName'];
         }
     }
 }

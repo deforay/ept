@@ -1,7 +1,7 @@
 <?php
 // Include the main TCPDF library (search for installation path).
 require_once('tcpdf/tcpdf.php');
-
+//Zend_Debug::dump($this->result);die;
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -14,7 +14,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, '20', 'Participant Corrective Action Overview ('.$this->dateRange.')', '');
+$pdf->SetHeaderData(PDF_HEADER_LOGO, '45', 'Participant Corrective Action Overview', '');
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -61,10 +61,18 @@ if(trim($this->result['countCorrectiveAction']['total_responses'])==""){
 if(trim($this->result['countCorrectiveAction']['valid_responses'])==""){
     $this->result['countCorrectiveAction']['valid_responses']=0;
 }
-$correctiveAction='<div><span style="font-weight:bold">Total shipped :</span>'.$this->result['countCorrectiveAction']['total_shipped'].'</div>';
-$correctiveAction.='<div><span style="font-weight:bold">Total number of responses :</span>'.$this->result['countCorrectiveAction']['total_responses'].'</div>';
-$correctiveAction.='<div><span style="font-weight:bold">Total number of valid responses :</span>'.$this->result['countCorrectiveAction']['valid_responses'].'</div>';
-$correctiveAction.='<div><span style="font-weight:bold">Average score :</span>'.round($this->result['countCorrectiveAction']['average_score'], 2) . '%'.'</div>';
+
+$correctiveAction='';
+if(trim($this->shipmentName)!=""){
+    $correctiveAction.='<div><span style="font-weight:bold">Shipment : </span> '.$this->shipmentName.'</div>';
+}
+$correctiveAction.='<div><span style="font-weight:bold">Selected Date Range : </span> '.$this->dateRange.'</div>';
+
+
+$correctiveAction.='<div><span style="font-weight:bold">Total shipped : </span> '.$this->result['countCorrectiveAction']['total_shipped'].'</div>';
+$correctiveAction.='<div><span style="font-weight:bold">Total number of responses : </span>'.$this->result['countCorrectiveAction']['total_responses'].'</div>';
+$correctiveAction.='<div><span style="font-weight:bold">Total number of valid responses : </span>'.$this->result['countCorrectiveAction']['valid_responses'].'</div>';
+$correctiveAction.='<div><span style="font-weight:bold">Average score : </span>'.round($this->result['countCorrectiveAction']['average_score'], 2) . '%'.'</div>';
 
 // Set some content to print
 $correctiveAction.='<br/><table border="1" align="center">';
