@@ -103,7 +103,7 @@
 		<th style="text-align: center">Result-3</th>
 		<th style="text-align: center">Reported Result</th>
 		<th style="text-align: center">Reference Result</th>
-		<th style="text-align: center">Score</th>
+		<!--<th style="text-align: center">Score</th>-->
 	</tr>
 	</thead>
 	
@@ -218,13 +218,13 @@ $count = 1;
 		 	<?php $this->dropdownSelectedText($possibleFinalResults,$sample['reference_result'],true); ?>
         
         </td>
-		<td style="vertical-align: middle;">
+<!--		<td style="vertical-align: middle;">
 			<?php echo $score = ($sample['reference_result'] == $sample['reported_result']) ? $sample['sample_score'] : 0; $total+= $score; ?>
-		</td>
+		</td>-->
 	</tr>
 	<?php }?>
-	<tr style="text-align:center" >
+	<!--<tr style="text-align:center" >
 		<td colspan="6" style="text-align: right;">Total</td>
 		<td style="vertical-align: middle;"><?php echo $total; ?></td>
-	</tr>
+	</tr>-->
 </table>
