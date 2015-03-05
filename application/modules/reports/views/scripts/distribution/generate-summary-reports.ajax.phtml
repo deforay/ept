@@ -17,7 +17,6 @@ if ($this->result != "") {
 
 // Extend the TCPDF class to create custom Header and Footer
     class MYPDF extends TCPDF {
-
         public function setSchemeName($header, $schemeName, $logo) {
             $this->scheme_name = $schemeName;
             $this->header = $header;
@@ -63,7 +62,6 @@ if ($this->result != "") {
             // Page number
             $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }
-
     }
 
 // create new PDF document

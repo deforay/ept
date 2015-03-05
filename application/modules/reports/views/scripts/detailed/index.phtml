@@ -118,6 +118,11 @@
                         excluded.push(parseInt(JSON.parse(response[4])[ln]));
                     }
                     $("#participant").html('');
+		    if (JSON.parse(response[0]).length>0) {
+			$("#participant").css("display", "block");
+		    }else{
+			$("#participant").css("display", "none");
+		    }
                     $('#participant').highcharts({
                         colors: [
                             '#1a987e','#eb513c','#606060','#f2f760','#000'
@@ -225,6 +230,7 @@
                         aoData.push({"name": "startDate", "value": startDate});
                         aoData.push({"name": "endDate", "value": endDate});
 			aoData.push({"name": "scheme", "value": $("#scheme").val()});
+			aoData.push({"name": "reportType", "value": $("#reportType").val()});
                     },
                     "fnServerData": function(sSource, aoData, fnCallback) {
                         $.ajax({

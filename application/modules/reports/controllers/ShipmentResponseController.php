@@ -30,6 +30,8 @@ class Reports_ShipmentResponseController extends Zend_Controller_Action
             $params = $this->_getAllParams();
             $this->view->dateRange=$params['dateRange'];
             $this->view->shipmentName=$params['shipmentName'];
+            $this->view->header=$reportService->getReportConfigValue('report-header');
+            $this->view->logo=$reportService->getReportConfigValue('logo');
             $this->view->result=$reportService->exportShipmentsReportInPdf($params);
         }
     }
