@@ -1943,8 +1943,6 @@ class Application_Service_Reports {
                 ->where("sp.is_excluded = 'no'")
                 ->group(array('ca.action_id'));
 
-
-
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
@@ -2343,5 +2341,34 @@ class Application_Service_Reports {
 	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
         return $db->fetchAll($sQuerySession->participantQuery);
+    }
+    
+    public function exportCorrectiveActionsReportInPdf($params){
+	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+	$totalQuery = $db->select()->from(array('s' => 'shipment'), array())
+                    ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+                "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
+                "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
+                "average_score" => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")));
+	
+	if (isset($params['scheme']) && $params['scheme'] != "") {
+	    $totalQuery = $totalQuery->where("s.scheme_type = ?", $params['scheme']);
+	}
+
+	if (isset($params['dateStartDate']) && $params['dateStartDate'] != "" && isset($params['dateEndDate']) && $params['dateEndDate'] != "") {
+	    $totalQuery = $totalQuery->where("DATE(s.shipment_date) >= ?", $params['dateStartDate']);
+	    $totalQuery = $totalQuery->where("DATE(s.shipment_date) <= ?", $params['dateEndDate']);
+	}
+
+	if (isset($params['shipmentId']) && $params['shipmentId'] != "") {
+	    $totalQuery = $totalQuery->where("s.shipment_id = ?", $params['shipmentId']);
+	}
+	//die($totalQuery);
+	$totalResult = $db->fetchRow($totalQuery);
+	    
+	$sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
+        $rResult = $db->fetchAll($sQuerySession->correctiveActionsQuery);
+	
+	return $result=array('countCorrectiveAction'=>$totalResult,'correctiveAction'=>$rResult);
     }
 }

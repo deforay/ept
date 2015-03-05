@@ -8,7 +8,8 @@ class Reports_CorrectiveActionsController extends Zend_Controller_Action
         /* Initialize action controller here */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-                ->addActionContext('corrective-actions-export', 'html')
+                    ->addActionContext('corrective-actions-export', 'html')
+                    ->addActionContext('corrective-actions-export-pdf', 'html')
                     ->initContext();
         $this->_helper->layout()->pageName = 'report'; 
     }
@@ -33,7 +34,16 @@ class Reports_CorrectiveActionsController extends Zend_Controller_Action
             $this->view->exported=$reportService->exportCorrectiveActionsReport($params);
         }
     }
-
+    
+    public function correctiveActionsExportPdfAction()
+    {
+       $reportService = new Application_Service_Reports();
+        if($this->getRequest()->isPost()){
+            $params = $this->_getAllParams();
+            $this->view->dateRange=$params['dateRange'];
+            $this->view->result=$reportService->exportCorrectiveActionsReportInPdf($params);
+        }
+    }
 
 }
 

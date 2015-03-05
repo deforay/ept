@@ -3,7 +3,7 @@
 <legend><h3>Participant Corrective Action Overview</h3></legend>
 <table  style="margin:20px 0;" class="table table-bordered">
     <tr>
-        <td style="width:200px;text-align: center;font-weight:bold;">
+        <td style="width:150px;text-align: center;font-weight:bold;">
             Pick a Date Range
         </td>		
         <td style="width:100px;text-align: center;font-weight:bold;">
@@ -12,7 +12,7 @@
         <td style="width:200px;text-align: center;font-weight:bold;">
             Select Shipment
         </td>
-        <td class="dontPrint" style="width:5px;text-align: center;font-weight:bold;">Action</td>
+        <td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;">Action</td>
     </tr>
     <tr>
         <td>
@@ -37,7 +37,7 @@
                 <option value=''>-- Select Date Range and Scheme to populate this list --</option>
             </select>			
         </td>
-        <td class="dontPrint" ><button class="btn btn-success btn-sm disabled" id="getReportBtn" onclick="drawTable()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button><button class="btn btn-info btn-sm hide" id="exportExcel" onclick="correctiveExcel()"><span>Export</span></button></td>
+        <td class="dontPrint" ><button class="btn btn-success btn-sm disabled" id="getReportBtn" onclick="drawTable()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="correctiveExcel()"><i class="icon-download"></i> Excel</button> <a href="#" class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a></td>
     </tr>
 </table>
 <br/>
@@ -145,7 +145,7 @@
                     "bRetrieve": false,
                     "bDestroy": true,
                     "aoColumns": [
-                        {"sClass": "center"},
+                        {"sClass": "left"},
                         {"sClass": "center"}
                     ],
                     "aaSorting": [[0, "desc"]],
@@ -182,6 +182,7 @@
                     },
                 });
                 $('#exportExcel').removeClass('hide');
+                correctiveExportPdf();
             }
             function correctiveExcel()
             {
@@ -193,8 +194,8 @@
                     var scheme = $("#scheme").val();
                     var dateStartDate = startDate;
                     var dateEndDate = endDate;
-
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'corrective-actions-export'), 'default', true); ?>", {dateRange: dateRange, scheme: scheme, dateStartDate: dateStartDate, dateEndDate: dateEndDate, format: "html"},
+                    var shipmentId = $("#shipmentId").val();
+                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'corrective-actions-export'), 'default', true); ?>", {dateRange: dateRange, scheme: scheme, dateStartDate: dateStartDate, dateEndDate: dateEndDate,shipmentId:shipmentId,format: "html"},
                     function (data) {
                         if (data == "" || data == null) {
                             alert('Unable to generate download');
@@ -203,5 +204,23 @@
                         }
                     });
                 }
+            }
+            
+            function correctiveExportPdf()
+            {
+                var dateRange = $("#dateRange").val();
+                var scheme = $("#scheme").val();
+                var dateStartDate = startDate;
+                var dateEndDate = endDate;
+                var shipmentId = $("#shipmentId").val();
+                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'corrective-actions-export-pdf'), 'default', true); ?>", {dateRange: dateRange, scheme: scheme, dateStartDate: dateStartDate,dateEndDate: dateEndDate,shipmentId:shipmentId,format: "html"},
+                function (data) {
+                    if (data == "" || data == null) {
+                        alert('Unable to generate download');
+                    } else {
+                        $('#exportPdf').attr('href', '/temporary/'+data);
+                        $('#exportPdf').removeClass('hide');
+                    }
+                });
             }
 </script>
