@@ -222,9 +222,9 @@
                     "bServerSide": true,
                     "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed', 'action' => 'report', 'format' => 'html')); ?>",
                     "fnServerParams": function(aoData) {
-
                         aoData.push({"name": "startDate", "value": startDate});
                         aoData.push({"name": "endDate", "value": endDate});
+			aoData.push({"name": "scheme", "value": $("#scheme").val()});
                     },
                     "fnServerData": function(sSource, aoData, fnCallback) {
                         $.ajax({

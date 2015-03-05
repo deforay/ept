@@ -162,7 +162,11 @@
             function performanceExcel()
             {
                 var dateRange = $("#dateRange").val();
-                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export'), 'default', true); ?>", {dateRange: dateRange, format: "html"},
+                 shipmentName="";
+		if($("#shipmentId").val()!=""){
+		    shipmentName=$("#shipmentId option:selected").text();
+		}
+                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export'), 'default', true); ?>", {dateRange: dateRange,shipmentName:shipmentName, format: "html"},
                 function (data) {
                     if (data == "" || data == null) {
                         alert('Unable to generate download');
@@ -175,7 +179,11 @@
             function performanceExportPdf()
             {
                 var dateRange = $("#dateRange").val();
-                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export-pdf'), 'default', true); ?>", {dateRange: dateRange, format: "html"},
+                shipmentName="";
+		if($("#shipmentId").val()!=""){
+		    shipmentName=$("#shipmentId option:selected").text();
+		}
+                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export-pdf'), 'default', true); ?>", {dateRange: dateRange,shipmentName:shipmentName,format: "html"},
                 function (data) {
                     if (data == "" || data == null) {
                         alert('Unable to generate download');

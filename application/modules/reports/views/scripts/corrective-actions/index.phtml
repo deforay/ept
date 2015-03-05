@@ -195,7 +195,11 @@
                     var dateStartDate = startDate;
                     var dateEndDate = endDate;
                     var shipmentId = $("#shipmentId").val();
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'corrective-actions-export'), 'default', true); ?>", {dateRange: dateRange, scheme: scheme, dateStartDate: dateStartDate, dateEndDate: dateEndDate,shipmentId:shipmentId,format: "html"},
+                    shipmentName="";
+                    if($("#shipmentId").val()!=""){
+                        shipmentName=$("#shipmentId option:selected").text();
+                    }
+                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'corrective-actions-export'), 'default', true); ?>", {dateRange: dateRange, scheme: scheme, dateStartDate: dateStartDate, dateEndDate: dateEndDate,shipmentId:shipmentId,shipmentName:shipmentName,format: "html"},
                     function (data) {
                         if (data == "" || data == null) {
                             alert('Unable to generate download');
@@ -213,7 +217,11 @@
                 var dateStartDate = startDate;
                 var dateEndDate = endDate;
                 var shipmentId = $("#shipmentId").val();
-                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'corrective-actions-export-pdf'), 'default', true); ?>", {dateRange: dateRange, scheme: scheme, dateStartDate: dateStartDate,dateEndDate: dateEndDate,shipmentId:shipmentId,format: "html"},
+                shipmentName="";
+		if($("#shipmentId").val()!=""){
+		    shipmentName=$("#shipmentId option:selected").text();
+		}
+                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'corrective-actions-export-pdf'), 'default', true); ?>", {dateRange: dateRange, scheme: scheme, dateStartDate: dateStartDate,dateEndDate: dateEndDate,shipmentId:shipmentId,shipmentName:shipmentName,format: "html"},
                 function (data) {
                     if (data == "" || data == null) {
                         alert('Unable to generate download');

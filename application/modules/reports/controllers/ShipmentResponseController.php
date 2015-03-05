@@ -7,6 +7,7 @@ class Reports_ShipmentResponseController extends Zend_Controller_Action
         /* Initialize action controller here */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
+                    ->addActionContext('shipments-export-pdf', 'html')
                     ->initContext();
         $this->_helper->layout()->pageName = 'report'; 
     }
@@ -22,7 +23,16 @@ class Reports_ShipmentResponseController extends Zend_Controller_Action
         $this->view->schemes = $scheme->getAllSchemes();
     }
 
-
+    public function shipmentsExportPdfAction()
+    {
+       $reportService = new Application_Service_Reports();
+        if($this->getRequest()->isPost()){
+            $params = $this->_getAllParams();
+            $this->view->dateRange=$params['dateRange'];
+            $this->view->shipmentName=$params['shipmentName'];
+            $this->view->result=$reportService->exportShipmentsReportInPdf($params);
+        }
+    }
 
 }
 
