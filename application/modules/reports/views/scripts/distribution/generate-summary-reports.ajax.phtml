@@ -190,7 +190,7 @@ if ($this->result != "") {
                 $sampleCode.='</div></br></br>';
 
   //----------------Participant Performance Overview  start----------------
-                $sampleCode.='<div><table border="1" style="margin-left:5px;"><tr>';
+                $sampleCode.='<div><span style="text-decoration: underline;">Participant Performance Overview</span><br/><br/><table border="1" style="margin-left:5px;"><tr>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Response</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Response</td>';
@@ -207,7 +207,7 @@ if ($this->result != "") {
   //----------------Participant Performance Overview  Ends----------------     
                 
   //----------------Participant Corrective Action Overview  start----------------
-                $sampleCode.='<div><table border="1" style="margin-left:5px;"><tr>';
+                $sampleCode.='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/><br/><table border="1" style="margin-left:5px;"><tr>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Response </td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td></tr>';
@@ -215,7 +215,7 @@ if ($this->result != "") {
                 $sampleCode.='<tr>';
                 $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $correctiveness['corrective_action'] . '</td>';
+                $sampleCode.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
                 $sampleCode.='</tr>';
                 }
                 $sampleCode.='</table></div><br/><br/>';
@@ -367,7 +367,7 @@ if ($this->result != "") {
                 $sampleCode.='<tr>';
                 $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $correctiveness['corrective_action'] . '</td>';
+                $sampleCode.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
                 $sampleCode.='</tr>';
                 }
                 $sampleCode.='</table></div><br/><br/>';
