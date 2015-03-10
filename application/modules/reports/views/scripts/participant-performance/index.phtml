@@ -58,13 +58,52 @@
         </tr>
     </tbody>
 </table>
+<?php
+if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['shipment_code'] != '')) {
+    ?>
+    <legend class="modal-header hide" id="regionReportHeader">
+        <h4 class="modal-title" id="regionHeading">Region Wise Participant Performance Report For <strong> <?php echo $this->schemeDetails["scheme_name"]; ?> - <?php echo $this->shipmentDetails['shipment_code']; ?> ( <?php echo $this->dateFormat($this->shipmentDetails['shipment_date']); ?> ) </strong></h4>
+    </legend>
+    <?php
+} else {
+    ?>
+    <legend class="modal-header hide" id="regionReportHeader">
+        <h4 class="modal-title" id="regionHeading"></h4>
+    </legend>
+    <?php
+}
+?>
+<button class="btn btn-info btn-sm pull-right hide" id="regionExportExcel" onclick="regionPerformanceExportExcel()"><i class="icon-download"></i> Excel</button>
+<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="regionTable">
+    <thead>
+        <tr>
+            <th style="text-align: center;">Region</th>
+            <th style="text-align: center;">No. of Shipments</th>
+            <th style="text-align: center;">No. of Responses</th>
+            <th style="text-align: center;">No. of Valid Responses</th>
+            <th style="text-align: center;">No. of Passed Responses</th>
+            <th style="text-align: center;">Pass %</th>
+            <th style="text-align: center;">Average Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="10" class="dataTables_empty">Loading data from server</td>
+        </tr>
+    </tbody>
+</table>
+<input type="hidden" name="selectedScheme" id="selectedScheme" value="<?php echo (isset($this->schemeDetails["scheme_name"]) && $this->schemeDetails["scheme_name"])  ? $this->schemeDetails["scheme_name"] : ""; ?>"/>
+<input type="hidden" name="selectedDate" id="selectedDate" value="<?php echo (isset($this->shipmentDetails["shipment_date"]) && $this->shipmentDetails["shipment_date"])  ? $this->dateFormat($this->shipmentDetails['shipment_date']) : ""; ?>"/>
+<input type="hidden" name="selectedCode" id="selectedCode" value="<?php echo (isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['shipment_code'])  ? $this->shipmentDetails['shipment_code'] : ""; ?>"/>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript">
             var startDate = "";
             var endDate = "";
             var paginate = true;
+            var currentHighlighted = null;
             $(document).ready(function () {
+                currentHighlighted = getCookie('did');
                 $('#dateRange').daterangepicker({
                     format: 'DD-MMM-YYYY',
                     ranges: {
@@ -147,26 +186,33 @@
                             "type": "POST",
                             "url": sSource,
                             "data": aoData,
-                            "success": fnCallback
+                            "success": function (json) {
+                                fnCallback(json);
+                                if (currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0) {
+
+                                    $("#shipment" + currentHighlighted + " td").addClass("highliter");
+                                    shipmetRegionReport(currentHighlighted);
+                                }
+                            }
                         });
                     }, "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                         $.unblockUI;
                     },
                 });
-               $('#exportExcel').removeClass('hide');
-               
-               performanceExportPdf();
-               
+                $('#exportExcel').removeClass('hide');
+
+                performanceExportPdf();
+
             }
-            
+
             function performanceExcel()
             {
                 var dateRange = $("#dateRange").val();
-                 shipmentName="";
-		if($("#shipmentId").val()!=""){
-		    shipmentName=$("#shipmentId option:selected").text();
-		}
-                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export'), 'default', true); ?>", {dateRange: dateRange,shipmentName:shipmentName, format: "html"},
+                shipmentName = "";
+                if ($("#shipmentId").val() != "") {
+                    shipmentName = $("#shipmentId option:selected").text();
+                }
+                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export'), 'default', true); ?>", {dateRange: dateRange, shipmentName: shipmentName, format: "html"},
                 function (data) {
                     if (data == "" || data == null) {
                         alert('Unable to generate download');
@@ -175,21 +221,107 @@
                     }
                 });
             }
-            
+
             function performanceExportPdf()
             {
                 var dateRange = $("#dateRange").val();
-                shipmentName="";
-		if($("#shipmentId").val()!=""){
-		    shipmentName=$("#shipmentId option:selected").text();
-		}
-                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export-pdf'), 'default', true); ?>", {dateRange: dateRange,shipmentName:shipmentName,format: "html"},
+                shipmentName = "";
+                if ($("#shipmentId").val() != "") {
+                    shipmentName = $("#shipmentId option:selected").text();
+                }
+                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export-pdf'), 'default', true); ?>", {dateRange: dateRange, shipmentName: shipmentName, format: "html"},
                 function (data) {
                     if (data == "" || data == null) {
                         alert('Unable to generate download');
                     } else {
-                        $('#exportPdf').attr('href', '/temporary/'+data);
+                        $('#exportPdf').attr('href', '/temporary/' + data);
                         $('#exportPdf').removeClass('hide');
+                    }
+                });
+            }
+            function shipmetRegionReport(shipmentId) {
+                if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
+                    alert("Please pick date range and Scheme Type to proceed");
+                    return false;
+                }
+                currentHighlighted = shipmentId;
+                setCookie('did', shipmentId);
+                $("#shipmentTable tr td").removeClass("highliter");
+                $("#shipment" + currentHighlighted + " td").addClass("highliter");
+                $("#regionTable").removeClass("hide");
+                $("#regionExportExcel").removeClass("hide");
+                $("#regionReportHeader").removeClass("hide");
+                $.blockUI;
+                $('#regionTable').dataTable({
+                    "oLanguage": {
+                        "sLengthMenu": "_MENU_ records per page",
+                        "sEmptyTable": "No data to show"
+                    },
+                    "bPaginate": paginate,
+                    "bJQueryUI": false,
+                    "bAutoWidth": false,
+                    "bInfo": true,
+                    "bScrollCollapse": true,
+                    "sPaginationType": "bootstrap",
+                    "bRetrieve": false,
+                    "bDestroy": true,
+                    "aoColumns": [
+                        {"sClass": "center"},
+                        {"sClass": "center"},
+                        {"sClass": "center"},
+                        {"sClass": "center"},
+                        {"sClass": "center"},
+                        {"sClass": "center"},
+                        {"sClass": "center"}
+                    ],
+                    "aaSorting": [[1, "desc"]],
+                    "bProcessing": true,
+                    "bServerSide": true,
+                    "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'region-wise-participant-report', 'format' => 'html')); ?>",
+                    "fnServerParams": function (aoData) {
+                        aoData.push({"name": "scheme", "value": $("#scheme").val()});
+                        aoData.push({"name": "shipmentId", "value": shipmentId});
+                        aoData.push({"name": "startDate", "value": startDate});
+                        aoData.push({"name": "endDate", "value": endDate});
+                    },
+                    "fnServerData": function (sSource, aoData, fnCallback) {
+                        $.ajax({
+                            "dataType": 'json',
+                            "type": "POST",
+                            "url": sSource,
+                            "data": aoData,
+                            "success": fnCallback
+                        });
+                    }, "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                        $.unblockUI;
+                    },
+                });
+
+            }
+            function regionDetails(scheme, date, code) {
+                $("#regionReportHeader").removeClass("hide");
+                $("#regionHeading").html("Region Wise Participant Performance Report For <strong>" + scheme + " - " + code + " ( " + date + " ) </strong>");
+                $("#selectedScheme").val(scheme);
+                $("#selectedDate").val(date);
+                $("#selectedCode").val(code);
+                
+            }
+            function regionPerformanceExportExcel()
+            {
+//              var dateRange = $("#dateRange").val();
+              var selectedScheme = $("#selectedScheme").val();
+              var selectedDate = $("#selectedDate").val();
+              var selectedCode = $("#selectedCode").val();
+//                shipmentName = "";
+//                if ($("#shipmentId").val() != "") {
+//                    shipmentName = $("#shipmentId option:selected").text();
+//                }
+                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-region-wise-export'), 'default', true); ?>", {selectedScheme: selectedScheme ,selectedDate : selectedDate, selectedCode : selectedCode, format: "html"},
+                function (data) {
+                    if (data == "" || data == null) {
+                        alert('Unable to generate download');
+                    } else {
+                        document.location.href = '/temporary/' + data;
                     }
                 });
             }

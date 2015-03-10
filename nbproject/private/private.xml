@@ -3,17 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/var/www/ept/application/modules/reports/controllers/DistributionController.php</file>
-            <file>file:/var/www/ept/application/modules/reports/views/scripts/distribution/shipment.phtml</file>
-            <file>file:/var/www/ept/application/modules/reports/controllers/ParticipantPerformanceController.php</file>
             <file>file:/var/www/ept/application/modules/reports/views/scripts/participant-performance/index.phtml</file>
-            <file>file:/var/www/ept/application/modules/reports/controllers/CommonController.php</file>
+            <file>file:/var/www/ept/application/services/Shipments.php</file>
             <file>file:/var/www/ept/application/services/Reports.php</file>
-            <file>file:/var/www/ept/application/modules/reports/views/scripts/participant-performance/index.ajax.phtml</file>
-            <file>file:/var/www/ept/application/modules/reports/views/scripts/distribution/generate-reports.ajax.phtml</file>
-            <file>file:/var/www/ept/application/modules/reports/views/scripts/distribution/generate-summary-reports.ajax.phtml</file>
-            <file>file:/var/www/ept/application/modules/reports/controllers/CorrectiveActionsController.php</file>
-            <file>file:/var/www/ept/application/layouts/scripts/admin.phtml</file>
+            <file>file:/var/www/ept/application/modules/reports/controllers/ShipmentsController.php</file>
+            <file>file:/var/www/ept/application/modules/reports/controllers/ParticipantPerformanceController.php</file>
         </group>
     </open-files>
 </project-private>

@@ -339,6 +339,10 @@ class Application_Service_Schemes {
         $schemeListDb = new Application_Model_DbTable_SchemeList();
         return $schemeListDb->countEnrollmentSchemes();
     }
+    public function getScheme($sid) {
+        $schemeListDb = new Application_Model_DbTable_SchemeList();
+        return $schemeListDb->fetchRow($schemeListDb->select()->where("scheme_id = ?", $sid));
+    }
 
     public function addTestkit($params) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

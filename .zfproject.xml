@@ -426,6 +426,8 @@
             <controllerFile controllerName="ParticipantPerformance">
               <actionMethod actionName="index"/>
               <actionMethod actionName="participantPerformanceExport"/>
+              <actionMethod actionName="regionWiseParticipantReport"/>
+              <actionMethod actionName="participantPerformanceRegionWiseExport"/>
             </controllerFile>
             <controllerFile controllerName="Common">
               <actionMethod actionName="index"/>
@@ -504,6 +506,12 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Shipments">
                 <viewScriptFile forActionName="shipmentsExport"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="ParticipantPerformance">
+                <viewScriptFile forActionName="regionWiseParticipantReport"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="ParticipantPerformance">
+                <viewScriptFile forActionName="participantPerformanceRegionWiseExport"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

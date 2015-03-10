@@ -351,27 +351,27 @@ class Application_Service_Reports {
                 }
             }
         }
-	
+
         /*
          * SQL queries
          * Get data to display
          */
-	
+
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
                 ->group('s.shipment_id');
-        
-	if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $sQuery = $sQuery->where("s.shipment_date >= ?", $parameters['startDate']);
             $sQuery = $sQuery->where("s.shipment_date <= ?", $parameters['endDate']);
         }
-	
-	if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
-	
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -383,17 +383,17 @@ class Application_Service_Reports {
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-	
+
         $rResult = $dbAdapter->fetchAll($sQuery);
-	
+
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
         $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
-	
+
         /* Total data set length */
-	
+
         $aResultTotal = $dbAdapter->fetchAll($sQuery);
         $iTotal = sizeof($aResultTotal);
 
@@ -575,7 +575,7 @@ class Application_Service_Reports {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //error_log($sQuery);
+//        error_log($sQuery);
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -624,9 +624,10 @@ class Application_Service_Reports {
 
 
             $row = array();
+            $row['DT_RowId'] = "shipment" . $aRow['shipment_id'];
             $row[] = $aRow['scheme_name'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['shipment_date']);
-            $row[] = $aRow['shipment_code'];
+            $row[] = "<a href='javascript:void(0);' onclick='shipmetRegionReport(\"" . $aRow['shipment_id'] . "\"),regionDetails(\"" . $aRow['scheme_name'] . "\",\"" . Pt_Commons_General::humanDateFormat($aRow['shipment_date']) . "\",\"" . $aRow['shipment_code'] . "\")'>" . $aRow['shipment_code'] . "</a>";
             $row[] = $aRow['total_shipped'];
             $row[] = $aRow['total_responses'];
             $row[] = $aRow['valid_responses'];
@@ -645,11 +646,11 @@ class Application_Service_Reports {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
-                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')","total_shipped" => new Zend_Db_Expr('count("sp.map_id")'), "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
-			"valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
-			"average_score" => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")))
+                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'), "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
+                    "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
+                    "average_score" => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")))
                 ->where("s.shipment_id = ?", $shipmentId);
-	//echo $sQuery;die;
+        //echo $sQuery;die;
         return $dbAdapter->fetchRow($sQuery);
     }
 
@@ -2080,17 +2081,17 @@ class Application_Service_Reports {
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
             $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Participant Performance Overview Report', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            if(isset($params['shipmentName']) && trim($params['shipmentName'])!=""){
-	    $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-	    }
-	    $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
+                $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            }
+            $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            
-	    $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
-	    $sheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
-	    $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
-	    
+
+            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
+
             foreach ($headings as $field => $value) {
                 $sheet->getCellByColumnAndRow($colNo, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getStyleByColumnAndRow($colNo, 5)->getFont()->setBold(true);
@@ -2101,7 +2102,7 @@ class Application_Service_Reports {
             $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
             $rResult = $db->fetchAll($sQuerySession->participantQuery);
             foreach ($rResult as $aRow) {
-	    
+
                 $row = array();
                 $row[] = $aRow['scheme_name'];
                 $row[] = Pt_Commons_General::humanDateFormat($aRow['shipment_date']);
@@ -2140,7 +2141,7 @@ class Application_Service_Reports {
             return $filename;
         } catch (Exception $exc) {
             return "";
-            $sQuerySession->participantQuery='';
+            $sQuerySession->participantQuery = '';
             error_log("GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
         }
@@ -2174,15 +2175,15 @@ class Application_Service_Reports {
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
             $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Participant Corrective Action Overview', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-	    if(isset($params['shipmentName']) && trim($params['shipmentName'])!=""){
-	    $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-	    }
-	    $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
+                $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            }
+            $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            
-	    
-	    $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+
+
+            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $totalQuery = $db->select()->from(array('s' => 'shipment'), array())
@@ -2233,20 +2234,20 @@ class Application_Service_Reports {
 
             $sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
             $rResult = $db->fetchAll($sQuerySession->correctiveActionsQuery);
-            
-	    if(count($rResult)>0){
-		foreach ($rResult as $aRow) {
-		    $row = array();
-		    $row[] = $aRow['corrective_action'];
-		    $row[] = $aRow['total_corrective'];
-		    $output[] = $row;
-		}
-	    }else{
-		$row = array();
-		$row[]='No result found';
-		$output[]= $row;
-	    }
-	    
+
+            if (count($rResult) > 0) {
+                foreach ($rResult as $aRow) {
+                    $row = array();
+                    $row[] = $aRow['corrective_action'];
+                    $row[] = $aRow['total_corrective'];
+                    $output[] = $row;
+                }
+            } else {
+                $row = array();
+                $row[] = 'No result found';
+                $output[] = $row;
+            }
+
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
                 foreach ($rowData as $field => $value) {
@@ -2272,7 +2273,7 @@ class Application_Service_Reports {
             return $filename;
         } catch (Exception $exc) {
             return "";
-            $sQuerySession->correctiveActionsQuery='';
+            $sQuerySession->correctiveActionsQuery = '';
             error_log("GENERATE-PARTICIPANT-CORRECTIVE-ACTIONS--REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
         }
@@ -2306,17 +2307,17 @@ class Application_Service_Reports {
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
             $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Shipment Response Overview', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            if(isset($params['shipmentName']) && trim($params['shipmentName'])!=""){
-	    $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-	    }
-	    $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
+                $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            }
+            $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            
-	    
-	    $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
-	    $sheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
-	    $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+
+
+            $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
             foreach ($headings as $field => $value) {
                 $sheet->getCellByColumnAndRow($colNo, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getStyleByColumnAndRow($colNo, 5)->getFont()->setBold(true);
@@ -2366,50 +2367,361 @@ class Application_Service_Reports {
             return $filename;
         } catch (Exception $exc) {
             return "";
-            $sQuerySession->shipmentExportQuery='';
+            $sQuerySession->shipmentExportQuery = '';
             error_log("GENERATE-SHIPMENT_RESPONSE-REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
         }
     }
-    
-    public function exportParticipantPerformanceReportInPdf(){
-	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+    public function exportParticipantPerformanceReportInPdf() {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
         return $db->fetchAll($sQuerySession->participantQuery);
     }
-    
-    public function exportCorrectiveActionsReportInPdf($params){
-	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$totalQuery = $db->select()->from(array('s' => 'shipment'), array())
-                    ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
-                "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
-                "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
-                "average_score" => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")));
-	
-	if (isset($params['scheme']) && $params['scheme'] != "") {
-	    $totalQuery = $totalQuery->where("s.scheme_type = ?", $params['scheme']);
-	}
 
-	if (isset($params['dateStartDate']) && $params['dateStartDate'] != "" && isset($params['dateEndDate']) && $params['dateEndDate'] != "") {
-	    $totalQuery = $totalQuery->where("DATE(s.shipment_date) >= ?", $params['dateStartDate']);
-	    $totalQuery = $totalQuery->where("DATE(s.shipment_date) <= ?", $params['dateEndDate']);
-	}
+    public function exportCorrectiveActionsReportInPdf($params) {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $totalQuery = $db->select()->from(array('s' => 'shipment'), array())
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+            "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
+            "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
+            "average_score" => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")));
 
-	if (isset($params['shipmentId']) && $params['shipmentId'] != "") {
-	    $totalQuery = $totalQuery->where("s.shipment_id = ?", $params['shipmentId']);
-	}
-	//die($totalQuery);
-	$totalResult = $db->fetchRow($totalQuery);
-	    
-	$sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
+        if (isset($params['scheme']) && $params['scheme'] != "") {
+            $totalQuery = $totalQuery->where("s.scheme_type = ?", $params['scheme']);
+        }
+
+        if (isset($params['dateStartDate']) && $params['dateStartDate'] != "" && isset($params['dateEndDate']) && $params['dateEndDate'] != "") {
+            $totalQuery = $totalQuery->where("DATE(s.shipment_date) >= ?", $params['dateStartDate']);
+            $totalQuery = $totalQuery->where("DATE(s.shipment_date) <= ?", $params['dateEndDate']);
+        }
+
+        if (isset($params['shipmentId']) && $params['shipmentId'] != "") {
+            $totalQuery = $totalQuery->where("s.shipment_id = ?", $params['shipmentId']);
+        }
+        //die($totalQuery);
+        $totalResult = $db->fetchRow($totalQuery);
+
+        $sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
         $rResult = $db->fetchAll($sQuerySession->correctiveActionsQuery);
-	
-	return $result=array('countCorrectiveAction'=>$totalResult,'correctiveAction'=>$rResult);
+
+        return $result = array('countCorrectiveAction' => $totalResult, 'correctiveAction' => $rResult);
     }
-    
-    public function exportShipmentsReportInPdf(){
-	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+    public function exportShipmentsReportInPdf() {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuerySession = new Zend_Session_Namespace('shipmentExportExcel');
         return $db->fetchAll($sQuerySession->shipmentExportQuery);
     }
+
+    public function getParticipantPerformanceRegionWiseReport($parameters) {
+        /* Array of database columns which should be read and sent back to DataTables. Use a space where
+         * you want to insert a non-database field (for example a counter or static image)
+         */
+
+        $aColumns = array(
+            'p.region',
+            new Zend_Db_Expr('count("sp.map_id")'),
+            new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
+            new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
+            new Zend_Db_Expr("SUM(final_result = 1)"),
+            new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
+            new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2))")
+        );
+        $searchColumns = array(
+            'p.region',
+            'total_responses',
+            'valid_responses',
+            'total_passed',
+            'pass_percentage',
+            'average_score'
+        );
+        $orderColumns = array(
+            'p.region',
+            new Zend_Db_Expr('count("sp.map_id")'),
+            new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"),
+            new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"),
+            new Zend_Db_Expr("SUM(final_result = 1)"),
+            new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
+            new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2))")
+        );
+
+        /* Indexed column (used for fast and accurate table cardinality) */
+        $sIndexColumn = 'shipment_id';
+        /*
+         * Paging
+         */
+        $sLimit = "";
+        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+            $sOffset = $parameters['iDisplayStart'];
+            $sLimit = $parameters['iDisplayLength'];
+        }
+
+        /*
+         * Ordering
+         */
+        $sOrder = "";
+        if (isset($parameters['iSortCol_0'])) {
+            $sOrder = "";
+            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+					    " . ($parameters['sSortDir_' . $i]) . ", ";
+                }
+            }
+
+            $sOrder = substr_replace($sOrder, "", -2);
+        }
+
+        /*
+         * Filtering
+         * NOTE this does not match the built-in DataTables filtering which does it
+         * word by word on any field. It's possible to do here, but concerned about efficiency
+         * on very large tables, and MySQL's regex functionality is very limited
+         */
+        $sWhere = "";
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+            $searchArray = explode(" ", $parameters['sSearch']);
+            $sWhereSub = "";
+            foreach ($searchArray as $search) {
+                if ($sWhereSub == "") {
+                    $sWhereSub .= "(";
+                } else {
+                    $sWhereSub .= " AND (";
+                }
+                $colSize = count($searchColumns);
+
+                for ($i = 0; $i < $colSize; $i++) {
+                    if ($searchColumns[$i] == "" || $searchColumns[$i] == null) {
+                        continue;
+                    }
+                    if ($i < $colSize - 1) {
+                        $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                    } else {
+                        $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                    }
+                }
+                $sWhereSub .= ")";
+            }
+            $sWhere .= $sWhereSub;
+        }
+
+        //error_log($sHaving);
+        /* Individual column filtering */
+        for ($i = 0; $i < count($searchColumns); $i++) {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == "") {
+                    $sWhere .= $searchColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                } else {
+                    $sWhere .= " AND " . $searchColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                }
+            }
+        }
+
+        /*
+         * SQL queries
+         * Get data to display
+         */
+
+
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
+                ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
+                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'), "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"), "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"), "total_passed" => new Zend_Db_Expr("(SUM(final_result = 1))"), "pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"), "average_score" => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")))
+                ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'))
+                ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
+                ->group(array('p.region'));
+
+
+
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+        }
+
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
+            $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
+        }
+
+        if (isset($sWhere) && $sWhere != "") {
+            $sQuery = $sQuery->having($sWhere);
+        }
+
+        if (isset($sOrder) && $sOrder != "") {
+            $sQuery = $sQuery->order($sOrder);
+        }
+        
+        $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
+        $sQuerySession->participantRegionQuery = $sQuery;
+
+        if (isset($sLimit) && isset($sOffset)) {
+            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        }
+
+
+        $rResult = $dbAdapter->fetchAll($sQuery);
+
+
+        /* Data set length after filtering */
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
+        $iFilteredTotal = count($aResultFilterTotal);
+
+        /* Total data set length */
+        $sWhere = "";
+        //$sQuery = $dbAdapter->select()->from(array('s'=>'shipment'), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+
+
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))
+                ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
+                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'), "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')"), "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '') - SUM(is_excluded = 'yes'))"), "total_passed" => new Zend_Db_Expr("(SUM(final_result = 1))"), "pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"), "average_score" => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")))
+                ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'))
+                ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
+                ->group(array('p.region'));
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+        }
+
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
+            $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
+        }
+
+        $aResultTotal = $dbAdapter->fetchAll($sQuery);
+        $iTotal = count($aResultTotal);
+
+        /*
+         * Output
+         */
+        $output = array(
+            "sEcho" => intval($parameters['sEcho']),
+            "iTotalRecords" => $iTotal,
+            "iTotalDisplayRecords" => $iFilteredTotal,
+            "aaData" => array()
+        );
+
+
+        foreach ($rResult as $aRow) {
+
+
+            $row = array();
+
+            $row[] = $aRow['region'];
+            $row[] = $aRow['total_shipped'];
+            $row[] = $aRow['total_responses'];
+            $row[] = $aRow['valid_responses'];
+            $row[] = $aRow['total_passed'];
+            $row[] = round($aRow['pass_percentage'], 2);
+            $row[] = round($aRow['average_score'], 2);
+
+
+            $output['aaData'][] = $row;
+        }
+
+        echo json_encode($output);
+    }
+
+    public function exportParticipantPerformanceRegionReport($params) {
+        $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %', 'Average Score');
+        try {
+            $excel = new PHPExcel();
+            $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+            $cacheSettings = array('memoryCacheSize' => '80MB');
+            PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            $output = array();
+            $sheet = $excel->getActiveSheet();
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true,
+                ),
+                'alignment' => array(
+                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                    'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => PHPExcel_Style_Border::BORDER_THICK,
+                    ),
+                )
+            );
+
+            $colNo = 0;
+            $sheet->mergeCells('A1:I1');
+            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+
+            $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+
+            $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+
+            $sheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+
+            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(0, 4)->getFont()->setBold(true);
+
+            foreach ($headings as $field => $value) {
+                $sheet->getCellByColumnAndRow($colNo, 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getStyleByColumnAndRow($colNo, 6)->getFont()->setBold(true);
+                $colNo++;
+            }
+
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
+            $rResult = $db->fetchAll($sQuerySession->participantRegionQuery);
+            foreach ($rResult as $aRow) {
+                $row = array();
+                $row[] = $aRow['region'];
+                $row[] = $aRow['total_shipped'];
+                $row[] = $aRow['total_responses'];
+                $row[] = $aRow['valid_responses'];
+                $row[] = $aRow['total_passed'];
+                $row[] = round($aRow['pass_percentage'], 2);
+                $row[] = round($aRow['average_score'], 2);
+                $output[] = $row;
+            }
+
+            foreach ($output as $rowNo => $rowData) {
+                $colNo = 0;
+                foreach ($rowData as $field => $value) {
+                    if (!isset($value)) {
+                        $value = "";
+                    }
+                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 7)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    if ($colNo == (sizeof($headings) - 1)) {
+                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
+                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 7)->getAlignment()->setWrapText(true);
+                    }
+                    $colNo++;
+                }
+            }
+
+            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
+                mkdir(TEMP_UPLOAD_PATH);
+            }
+
+            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
+            $filename = 'participant-performance-region-wise' . date('d-M-Y-H-i-s') . '.xls';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Exception $exc) {
+            return "";
+            $sQuerySession->participantRegionQuery = '';
+            error_log("GENERATE-PARTICIPANT-PERFORMANCE-REGION-WISE-REPORT-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+        }
+    }
+
 }
