@@ -280,8 +280,16 @@ class Application_Service_Reports {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
+        
+        if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
+              $aColumns = array('s.shipment_code', 'sl.scheme_name','network_name' ,'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
+            }else  if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
+                $aColumns = array('s.shipment_code', 'sl.scheme_name','affiliate' ,'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
+            } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
+                $aColumns = array('s.shipment_code', 'sl.scheme_name','region' ,'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
+            }
 
-        $aColumns = array('s.shipment_code', 'sl.scheme_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
+        
 
         /*
          * Paging
@@ -358,10 +366,46 @@ class Application_Service_Reports {
          */
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
-                ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
-                ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
-                ->group('s.shipment_id');
+        //////////////
+        
+        
+        if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
+            $sQuery = $dbAdapter->select()->from(array('n' => 'r_network_tiers'))
+                    ->joinLeft(array('p' => 'participant'), 'p.network_tier=n.network_id', array())
+                    ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
+                    ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code','lastdate_response'))
+                    ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+                    ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code','distribution_date'))
+                    ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+        }
+
+       else  if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
+            $sQuery = $dbAdapter->select()->from(array('pa' => 'r_participant_affiliates'))
+                    ->joinLeft(array('p' => 'participant'), 'p.affiliation=pa.affiliate', array())
+                    ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
+                    ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code','lastdate_response'))
+                    ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+                    ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code','distribution_date'))
+                    ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+        }
+        else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
+            $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region'))
+                            ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
+                            ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code','lastdate_response'))
+                            ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+                            ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code','distribution_date'))
+                            ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+        }
+//        else{
+//          $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
+//                ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
+//                ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
+//                ->group('s.shipment_id');
+//        }
+        
+        
+        ///////////
+      
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $sQuery = $sQuery->where("s.shipment_date >= ?", $parameters['startDate']);
@@ -411,6 +455,14 @@ class Application_Service_Reports {
             $row = array();
             $row[] = $aRow['shipment_code'];
             $row[] = ucwords($aRow['scheme_name']);
+            if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
+              $row[] = $aRow['network_name'];
+            }else  if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
+                $row[] = $aRow['affiliate'];
+            } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
+                $row[] = $aRow['region'];
+            }
+              
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $output['aaData'][] = $row;
@@ -961,14 +1013,25 @@ class Application_Service_Reports {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('p.lab_name', 'tn.TestKit_Name');
+        $aColumns = array('p.lab_name', new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)"),'tn.TestKit_Name');
+        
+        
+        $aColumns = array(
+            'p.lab_name',
+            new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)"),
+            'tn.TestKit_Name'
+        );
+        $searchColumns = array(
+             'p.lab_name',
+            'totalTest',
+            'tn.TestKit_Name'
+        );
+        $orderColumns = array(
+            'p.lab_name',
+            new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)"),
+            'tn.TestKit_Name'
+        );
 
-        /*
-         * Paging
-         */
-        /*
-         * Paging
-         */
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
@@ -983,8 +1046,8 @@ class Application_Service_Reports {
             $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+					    " . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
 
@@ -1007,13 +1070,16 @@ class Application_Service_Reports {
                 } else {
                     $sWhereSub .= " AND (";
                 }
-                $colSize = count($aColumns);
+                $colSize = count($searchColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
+                    if ($searchColumns[$i] == "" || $searchColumns[$i] == null) {
+                        continue;
+                    }
                     if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                        $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
                     } else {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                        $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
                 $sWhereSub .= ")";
@@ -1021,17 +1087,17 @@ class Application_Service_Reports {
             $sWhere .= $sWhereSub;
         }
 
+        //error_log($sHaving);
         /* Individual column filtering */
-        for ($i = 0; $i < count($aColumns); $i++) {
+        for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
                 if ($sWhere == "") {
-                    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= $searchColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= " AND " . $searchColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
-
 
         /*
          * SQL queries
@@ -1041,7 +1107,7 @@ class Application_Service_Reports {
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(array('res' => 'response_result_dts'), array())
+        $sQuery = $dbAdapter->select()->from(array('res' => 'response_result_dts'), array('totalTest' => new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")))
                 ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array())
                 ->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array())
@@ -1089,10 +1155,10 @@ class Application_Service_Reports {
             $sQuery = $sQuery->where("s.shipment_date <= ?", $parameters['endDate']);
         }
         $sQuery = $sQuery->where("tn.TestKit_Name IS NOT NULL");
+        
         if (isset($sWhere) && $sWhere != "") {
-            $sQuery = $sQuery->where($sWhere);
+            $sQuery = $sQuery->having($sWhere);
         }
-
         if (isset($sOrder) && $sOrder != "") {
             $sQuery = $sQuery->order($sOrder);
         }
@@ -1127,6 +1193,7 @@ class Application_Service_Reports {
         foreach ($rResult as $aRow) {
             $row = array();
             $row[] = $aRow['participantName'];
+            $row[] = $aRow['totalTest'];
             $row[] = stripslashes($aRow['TestKit_Name']);
             $output['aaData'][] = $row;
         }

@@ -97,6 +97,7 @@
     <tr>
 		  
 		  <th style="text-align: center;">Lab Name/Participant Name</th>
+		  <th style="text-align: center;">Test Count</th>
 		  <th style="text-align: center;">Test Kit Name</th>
     </tr>
     </thead>
@@ -161,9 +162,9 @@
 						    },
 						     point: {
 							events: {
-							    //legendItemClick: function() {
-								//oTable.fnFilter(this.name);
-							   // },
+							    legendItemClick: function() {
+								oTable.fnFilter(this.name);
+							    },
 							    click: function(event) {
 								oTable.fnFilter(this.name);
 							    }
@@ -181,7 +182,7 @@
 					     itemMarginTop: 10,
 					    itemMarginBottom: 10,
 					    labelFormatter: function() {
-						return this.name + ' ' + this.y + '%';
+						return this.name + ' - ' + this.y + '%';
 					    }
 					},
 				    series: [{
@@ -227,6 +228,7 @@
             "bRetrieve": false,
             "bDestroy": true,
             "aoColumns": [
+                {"sClass":"center"},
                 {"sClass":"center"},
                 {"sClass":"center"}
             ],
