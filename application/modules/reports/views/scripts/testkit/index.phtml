@@ -2,273 +2,383 @@
     @media print {
         .dontPrint, #testKitTable_filter, #testKitTable_info{
             display:none;
-	    
+
         }
     }
+    
+/*    #participantTable_wrapper{
+        max-width:500px;
+        margin: 0 auto;
+    }*/
 
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <legend><h3>TestKit Report For DTS</h3></legend>
 <table  style="margin:20px 0;" class="table table-bordered">
-	<tr>
-<td style="width:200px;text-align: center;font-weight:bold;">
-			Pick a Date Range (Optional)
-		</td>		
-<td style="width:200px;text-align: center;font-weight:bold;">
-			Select Report Type
-		</td>
-<td style="width:200px;text-align: center;font-weight:bold;" class="hide network">
-			Select Netwok Tiers
-		</td>
-<td style="width:200px;text-align: center;font-weight:bold;" class="hide affiliation">
-			Select Participant Affiliatiates
-		</td>
-<td style="width:200px;text-align: center;font-weight:bold;" class="hide region">
-			Select Region
-		</td>
-<td style="width:200px;text-align: center;font-weight:bold;">
-			TestKit No.
-		</td>
-		<td class="dontPrint" style="width:200px;text-align: center;font-weight:bold;">Action</td>
-	</tr>
-	<tr>
-		<td>
-			<input type="text" id="dateRange" name="dateRange"  class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder ="Click here to pick a Date Range"/>
-		</td>		
-		<td>
-			<select id="reportType" name="reportType"  class="form-control input-sm" onchange="getTypeList(this.value)">
-				<option value=""> -- Select Report Type --</option>
-				<option value="network">Network Tier</option>
-				<option value="affiliation">Affiliation</option>
-				<option value="region">Region</option>
-				
-			</select>			
-		</td>
-		<td class="hide network">
-			<select id="networkValue" name="networkValue"  class="form-control input-sm">
-				<option value=""> -- Select Network Tiers --</option>
-				<?php
-				  foreach($this->networkTierList as $network){
-					?>
-						<option value="<?php echo $network['network_id']; ?>"><?php echo ucwords($network['network_name']); ?></option>	
-					<?php
-				  }
-				?>
-			</select>			
-		</td>
-		<td class="hide affiliation">
-			<select id="affiliateValue" name="affiliateValue"  class="form-control input-sm">
-				<option value=""> -- Select Affiliates --</option>
-				<?php
-				  foreach($this->affiliateList as $affiliates){
-					?>
-						<option value="<?php echo $affiliates['aff_id']; ?>"><?php echo ucwords($affiliates['affiliate']); ?></option>	
-					<?php
-				  }
-				?>
-			</select>			
-		</td>
-		<td class="hide region">
-			<select id="regionValue" name="regionValue"  class="form-control input-sm">
-				<option value=""> -- Select Region --</option>
-				<?php
-				  foreach($this->regionList as $region){
-					?>
-						<option value="<?php echo $region['region']; ?>"><?php echo ucwords($region['region']); ?></option>	
-					<?php
-				  }
-				?>
-			</select>			
-		</td>
-		<td>
-			<select id="kitType" name="kitType"  class="form-control input-sm">
-				<option value=""> -- Select Test Kit Number--</option>
-				<option value="testkit1">Test Kit 1</option>
-				<option value="testkit2">Test Kit 2</option>
-				<option value="testkit3">Test Kit 3</option>
-			</select>			
-		</td>
-		<td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button> <button class="btn btn-primary btn-sm" onclick="GetPrint()"><span>Print</span></button></td>
-	</tr>
+    <tr>
+        <td style="width:200px;text-align: center;font-weight:bold;">
+            Pick a Date Range (Optional)
+        </td>		
+        <td style="width:200px;text-align: center;font-weight:bold;">
+            Select Report Type
+        </td>
+        <td style="width:200px;text-align: center;font-weight:bold;" class="hide network">
+            Select Netwok Tiers
+        </td>
+        <td style="width:200px;text-align: center;font-weight:bold;" class="hide affiliation">
+            Select Participant Affiliatiates
+        </td>
+        <td style="width:200px;text-align: center;font-weight:bold;" class="hide region">
+            Select Region
+        </td>
+        <td style="width:200px;text-align: center;font-weight:bold;">
+            TestKit No.
+        </td>
+        <td class="dontPrint" style="width:200px;text-align: center;font-weight:bold;">Action</td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" id="dateRange" name="dateRange"  class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder ="Click here to pick a Date Range"/>
+        </td>		
+        <td>
+            <select id="reportType" name="reportType"  class="form-control input-sm" onchange="getTypeList(this.value)">
+                <option value=""> -- Select Report Type --</option>
+                <option value="network">Network Tier</option>
+                <option value="affiliation">Affiliation</option>
+                <option value="region">Region</option>
+            </select>			
+        </td>
+        <td class="hide network">
+            <select id="networkValue" name="networkValue"  class="form-control input-sm">
+                <option value=""> -- Select Network Tiers --</option>
+                <?php
+                foreach ($this->networkTierList as $network) {
+                    ?>
+                    <option value="<?php echo $network['network_id']; ?>"><?php echo ucwords($network['network_name']); ?></option>	
+                    <?php
+                }
+                ?>
+            </select>			
+        </td>
+        <td class="hide affiliation">
+            <select id="affiliateValue" name="affiliateValue"  class="form-control input-sm">
+                <option value=""> -- Select Affiliates --</option>
+                <?php
+                foreach ($this->affiliateList as $affiliates) {
+                    ?>
+                    <option value="<?php echo $affiliates['aff_id']; ?>"><?php echo ucwords($affiliates['affiliate']); ?></option>	
+                    <?php
+                }
+                ?>
+            </select>			
+        </td>
+        <td class="hide region">
+            <select id="regionValue" name="regionValue"  class="form-control input-sm">
+                <option value=""> -- Select Region --</option>
+                <?php
+                foreach ($this->regionList as $region) {
+                    ?>
+                    <option value="<?php echo $region['region']; ?>"><?php echo ucwords($region['region']); ?></option>	
+                    <?php
+                }
+                ?>
+            </select>			
+        </td>
+        <td>
+            <select id="kitType" name="kitType"  class="form-control input-sm">
+                <option value=""> -- Select Test Kit Number--</option>
+                <option value="testkit1">Test Kit 1</option>
+                <option value="testkit2">Test Kit 2</option>
+                <option value="testkit3">Test Kit 3</option>
+            </select>			
+        </td>
+        <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-primary btn-sm" onclick="GetPrint()"><span>Print</span></button></td>
+    </tr>
 </table>
 <div id="testKitChart" width="450" height="450"></div>
 <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="testKitTable">
     <thead>
-    <tr>
-		  
-		  <th style="text-align: center;">Lab Name/Participant Name</th>
-		  <th style="text-align: center;">Test Count</th>
-		  <th style="text-align: center;">Test Kit Name</th>
-    </tr>
+        <tr>
+<!--		  <th style="text-align: center;">Lab Name/Participant Name</th>-->
+            <th style="text-align: center;">Test Kit Name</th>
+            <th style="text-align: center;">Test Count</th>
+
+        </tr>
     </thead>
     <tbody>
-    <tr>
-        <td colspan="10" class="dataTables_empty">Loading data from server</td>
-    </tr>
+        <tr>
+            <td colspan="2" class="dataTables_empty">Loading data from server</td>
+        </tr>
+    </tbody>
+</table>
+<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="participantTable">
+    <thead>
+        <tr>
+            <th style="text-align: center;">Participant</th>
+            <th style="text-align: center;" id="reportHeading">Report Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="1" class="dataTables_empty">Loading data from server</td>
+        </tr>
     </tbody>
 </table>
 <!--s<script src="http://code.highcharts.com/highcharts.js"></script>-->
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript">
-	var startDate = "";
-	var endDate = "";
-	var paginate = true;
-	$(document).ready(function(){
-		$('#dateRange').daterangepicker({
+            var startDate = "";
+            var endDate = "";
+            var paginate = true;
+            var currentHighlighted = null;
+            
+            $(document).ready(function () {
+                
+                currentHighlighted = getCookie('tid');
+                $('#dateRange').daterangepicker({
                     format: 'DD-MMM-YYYY',
                     ranges: {
-			'Last 60 Days': [moment().subtract('days', 59), moment()],
-			'Last 90 Days': [moment().subtract('days', 89), moment()],
-			'Last 180 Days': [moment().subtract('days', 179), moment()],
-			'Last 12 Months': [moment().subtract('month', 12), moment()],
-			'Last 18 Months': [moment().subtract('month', 18), moment()],
+                        'Last 60 Days': [moment().subtract('days', 59), moment()],
+                        'Last 90 Days': [moment().subtract('days', 89), moment()],
+                        'Last 180 Days': [moment().subtract('days', 179), moment()],
+                        'Last 12 Months': [moment().subtract('month', 12), moment()],
+                        'Last 18 Months': [moment().subtract('month', 18), moment()],
                     }
-		},
-		function(start, end) {
-			startDate = start.format('YYYY-MM-DD');
-			endDate = end.format('YYYY-MM-DD');
-		});
-		
-	});
-	function drawGraph(){
-		if($("#kitType").val()==''){
-		alert('Please select test kit number to proceed');
-		return;
-		}
-		drawTable();
-		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'chart'),"default",true); ?>", { startDate :startDate,endDate:endDate,kitType :$("#kitType").val(),reportType :$("#reportType").val(),networkValue :$("#networkValue").val(),affiliateValue :$("#affiliateValue").val(),regionValue :$("#regionValue").val(),format: "html" },
-		function(response){
-				$('#testKitChart').highcharts({
-                                    colors: ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4','#7cb5ec', '#318047', '#90ed7d', '#f7a35c', '#2f7ed8','#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1','#0d233a', '#8bbc21', '#910000', '#1aadce','#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a','#4572A7', '#AA4643', '#89A54E', '#80699B', '#3D96AE','#DB843D', '#92A8CD', '#A47D7C', '#B5CA92'],
-				    chart: {
-					plotBackgroundColor: null,
-					plotBorderWidth: null,
-					plotShadow: false
-				    },
-				    
-				    title: {
-					text: 'Test Kit DTS Chart'
-				    },
-				    tooltip: {
-					pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-				    },
-				     plotOptions: {
-						pie: {
-						    allowPointSelect: true,
-						    cursor: 'pointer',
-						    dataLabels: {
-							enabled: false
-						    },
-						     point: {
-							events: {
-							    legendItemClick: function() {
-								oTable.fnFilter(this.name);
-							    },
-							    click: function(event) {
-								oTable.fnFilter(this.name);
-							    }
-							},
-						    },
-						    
-						    showInLegend: true
-						}
-					    },
-					    legend: {
-					    enabled: true,
-					    layout: 'vertical',
-					    align: 'right',
-					    verticalAlign: 'middle',
-					     itemMarginTop: 10,
-					    itemMarginBottom: 10,
-					    labelFormatter: function() {
-						return this.name + ' - ' + this.y + '%';
-					    }
-					},
-				    series: [{
-					type: 'pie',
-					name: 'Test Used',
-					data: JSON.parse(response.stripSlashes()),
-				    }]
-				});
-		});
-	}
-	function getTypeList(typeValue){
-		if(typeValue=='network'){
-			$(".network").removeClass("hide dontPrint");
-			$(".affiliation").addClass("hide dontPrint");
-			$(".region").addClass("hide dontPrint");
-		}else if(typeValue=='affiliation'){
-			$(".network").addClass("hide dontPrint");
-			$(".affiliation").removeClass("hide dontPrint");
-			$(".region").addClass("hide dontPrint");
-			
-		}else if(typeValue=='region'){
-			$(".network").addClass("hide dontPrint");
-			$(".affiliation").addClass("hide dontPrint");
-			$(".region").removeClass("hide dontPrint");
-			
-		}
-		
-	}
-	function drawTable() {
-		$("#testKitTable").removeClass("hide");
-		$.blockUI;
-        oTable = $('#testKitTable').dataTable( {
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page",
-				"sEmptyTable": "No data to show"
-            },
-	    "bPaginate": paginate,
-            "bJQueryUI": false,
-            "bAutoWidth": false,
-            "bInfo": true,
-            "bScrollCollapse": true,
-            "sPaginationType": "bootstrap",
-            "bRetrieve": false,
-            "bDestroy": true,
-            "aoColumns": [
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"}
-            ],
-            "aaSorting": [[ 1, "desc" ]],
-            "bProcessing": true,
-            "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'index', 'format' => 'html')); ?>",
-			"fnServerParams": function ( aoData ) {
-				
-				aoData.push( { "name": "startDate", "value": startDate } );
-				aoData.push( { "name": "endDate", "value": endDate } );
-				aoData.push( { "name": "regionValue", "value": $("#regionValue").val() } );
-				aoData.push( { "name": "affiliateValue", "value": $("#affiliateValue").val() } );
-				aoData.push( { "name": "networkValue", "value": $("#networkValue").val() } );
-				aoData.push( { "name": "reportType", "value": $("#reportType").val() } );
-				aoData.push( { "name": "kitType", "value": $("#kitType").val() } );
-			},			
-            "fnServerData": function ( sSource, aoData, fnCallback ) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": fnCallback
+                },
+                function (start, end) {
+                    startDate = start.format('YYYY-MM-DD');
+                    endDate = end.format('YYYY-MM-DD');
                 });
-            },"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
-				$.unblockUI;
-	        },
-        });
 
-	};
-	function GetPrint(){
-		paginate=false;
-		drawTable()
-		window.print();
-	}
-	jQuery(document).bind("keyup keydown", function(e){
-        if(e.ctrlKey && e.keyCode == 80){
-          paginate=false;
-	  drawTable()
-        }
-});
+            });
+            function drawGraph() {
+                if ($("#kitType").val() == '') {
+                    alert('Please select test kit number to proceed');
+                    return;
+                }
+                drawTable();
+                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'chart'), "default", true); ?>", {startDate: startDate, endDate: endDate, kitType: $("#kitType").val(), reportType: $("#reportType").val(), networkValue: $("#networkValue").val(), affiliateValue: $("#affiliateValue").val(), regionValue: $("#regionValue").val(), format: "html"},
+                function (response) {
+                    $('#testKitChart').highcharts({
+                        colors: ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4', '#7cb5ec', '#318047', '#90ed7d', '#f7a35c', '#2f7ed8', '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1', '#0d233a', '#8bbc21', '#910000', '#1aadce', '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a', '#4572A7', '#AA4643', '#89A54E', '#80699B', '#3D96AE', '#DB843D', '#92A8CD', '#A47D7C', '#B5CA92'],
+                        chart: {
+                            plotBackgroundColor: null,
+                            plotBorderWidth: null,
+                            plotShadow: false
+                        },
+                        title: {
+                            text: 'Test Kit DTS Chart'
+                        },
+                        tooltip: {
+                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        },
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    enabled: false
+                                },
+                                point: {
+                                    events: {
+                                        legendItemClick: function () {
+                                              var visibility = this.visible ? 'visible' : 'hidden';
+                                                if(visibility=='visible'){
+                                                    participantReport(this.id)
+                                                    oTable.fnFilter(this.name);
+                                                }else{
+                                                    oTable.fnFilter('');
+                                                    $("#participantTable_wrapper").addClass("hide");
+                                                }
+                                        },
+                                        click: function (event) {
+                                            var sliced = this.sliced ? false : true;
+                                            if(sliced){
+                                                 oTable.fnFilter(this.name);
+                                                 participantReport(this.id)
+                                            }else{
+                                                 oTable.fnFilter('');
+                                                 $("#participantTable_wrapper").addClass("hide");
+                                            }
+                                             
+                                        }
+                                    },
+                                },
+                                showInLegend: true
+                            }
+                        },
+                        legend: {
+                            enabled: true,
+                            layout: 'vertical',
+                            align: 'right',
+                            verticalAlign: 'middle',
+                            itemMarginTop: 10,
+                            itemMarginBottom: 10,
+                            labelFormatter: function () {
+                                return this.name + ' - ' + this.y + '%';
+                            }
+                        },
+                        series: [{
+                                type: 'pie',
+                                name: 'Test Used',
+                                data: JSON.parse(response.stripSlashes()),
+                            }]
+                    });
+                });
+            }
+            function getTypeList(typeValue) {
+                if (typeValue == 'network') {
+                    $(".network").removeClass("hide dontPrint");
+                    $(".affiliation").addClass("hide dontPrint");
+                    $(".region").addClass("hide dontPrint");
+                } else if (typeValue == 'affiliation') {
+                    $(".network").addClass("hide dontPrint");
+                    $(".affiliation").removeClass("hide dontPrint");
+                    $(".region").addClass("hide dontPrint");
+
+                } else if (typeValue == 'region') {
+                    $(".network").addClass("hide dontPrint");
+                    $(".affiliation").addClass("hide dontPrint");
+                    $(".region").removeClass("hide dontPrint");
+
+                }
+
+            }
+            
+            function drawTable() {
+                
+                $("#testKitTable").removeClass("hide");
+                 $("#participantTable_wrapper").addClass("hide");
+                $.blockUI;
+                oTable = $('#testKitTable').dataTable({
+                    "oLanguage": {
+                        "sLengthMenu": "_MENU_ records per page",
+                        "sEmptyTable": "No data to show"
+                    },
+                    "bPaginate": paginate,
+                    "bJQueryUI": false,
+                    "bAutoWidth": false,
+                    "bInfo": true,
+                    "bScrollCollapse": true,
+                    "sPaginationType": "bootstrap",
+                    "bRetrieve": false,
+                    "bDestroy": true,
+                    "aoColumns": [
+//                {"sClass":"center"},
+                        {"sClass": "center"},
+                        {"sClass": "center"}
+                    ],
+                    
+                    "aaSorting": [[1, "desc"]],
+                    "bProcessing": true,
+                    "bServerSide": true,
+                    "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'index', 'format' => 'html')); ?>",
+                    "fnServerParams": function (aoData) {
+
+                        aoData.push({"name": "startDate", "value": startDate});
+                        aoData.push({"name": "endDate", "value": endDate});
+                        aoData.push({"name": "regionValue", "value": $("#regionValue").val()});
+                        aoData.push({"name": "affiliateValue", "value": $("#affiliateValue").val()});
+                        aoData.push({"name": "networkValue", "value": $("#networkValue").val()});
+                        aoData.push({"name": "reportType", "value": $("#reportType").val()});
+                        aoData.push({"name": "kitType", "value": $("#kitType").val()});
+                    },
+                    "fnServerData": function (sSource, aoData, fnCallback) {
+                        $.ajax({
+                            "dataType": 'json',
+                            "type": "POST",
+                            "url": sSource,
+                            "data": aoData,
+                            "success": fnCallback
+                        });
+                    }, "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                        $.unblockUI;
+                    },
+                });
+
+            }
+            ;
+            function GetPrint() {
+                paginate = false;
+                drawTable()
+                window.print();
+            }
+            jQuery(document).bind("keyup keydown", function (e) {
+                if (e.ctrlKey && e.keyCode == 80) {
+                    paginate = false;
+                    drawTable()
+                }
+            });
+            function participantReport(testkitId) {
+                
+                currentHighlighted = testkitId;
+                setCookie('tid', testkitId);
+                $("#testKitTable tr td").removeClass("highliter");
+                $("#testkitId" + currentHighlighted + " td").addClass("highliter");
+                //   $("#participantTable").removeClass("hide");
+                $.blockUI;
+                rTable=$('#participantTable').dataTable({
+                    "oLanguage": {
+                        "sLengthMenu": "_MENU_ records per page",
+                        "sEmptyTable": "No data to show"
+                    },
+                    "bPaginate": paginate,
+                    "bJQueryUI": false,
+                    "bAutoWidth": false,
+                    "bInfo": true,
+                    "bScrollCollapse": true,
+                    "sPaginationType": "bootstrap",
+                    "bRetrieve": false,
+                    "bDestroy": true,
+                    "aoColumns": [
+                        {"sClass": "center"},
+                        {"sClass": "center"},
+                    ],
+                    "bVisible": false, "aTargets": [ 1],
+                    "aaSorting": [[0, "asc"]],
+                    "bProcessing": true,
+                    "bServerSide": true,
+                    "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'participant', 'format' => 'html')); ?>",
+                    "fnServerParams": function (aoData) {
+
+                        aoData.push({"name": "startDate", "value": startDate});
+                        aoData.push({"name": "endDate", "value": endDate});
+                        aoData.push({"name": "regionValue", "value": $("#regionValue").val()});
+                        aoData.push({"name": "affiliateValue", "value": $("#affiliateValue").val()});
+                        aoData.push({"name": "networkValue", "value": $("#networkValue").val()});
+                        aoData.push({"name": "reportType", "value": $("#reportType").val()});
+                        aoData.push({"name": "kitType", "value": $("#kitType").val()});
+                       // aoData.push({"name": "kitType", "value": });
+                        aoData.push({"name": "testkitId", "value": testkitId});
+                    },
+                    "fnServerData": function (sSource, aoData, fnCallback) {
+                        $.ajax({
+                            "dataType": 'json',
+                            "type": "POST",
+                            "url": sSource,
+                            "data": aoData,
+                            "success": fnCallback,
+                        });
+                    }, "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                        $.unblockUI;
+                    },
+                            
+                });
+                if($("#reportType").val()==''){
+                     rTable.fnSetColumnVis(1,false);
+                 }else{
+                     rTable.fnSetColumnVis(1,true);
+                     newcolumnHeading=$("#reportType option:selected").text();
+                    $('#reportHeading').html(newcolumnHeading);
+                 }
+                if ($("#testKitTable").dataTable().fnGetData().length > 0) {
+                    $("#participantTable").removeClass("hide");
+                    $("#participantTable_wrapper").removeClass("hide");
+                } else {
+                    $("#participantTable_wrapper").addClass("hide");
+                }
+
+            }
+
 </script>

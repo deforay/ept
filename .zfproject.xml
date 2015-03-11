@@ -422,6 +422,7 @@
             <controllerFile controllerName="Testkit">
               <actionMethod actionName="index"/>
               <actionMethod actionName="chart"/>
+              <actionMethod actionName="participant"/>
             </controllerFile>
             <controllerFile controllerName="ParticipantPerformance">
               <actionMethod actionName="index"/>
@@ -512,6 +513,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="ParticipantPerformance">
                 <viewScriptFile forActionName="participantPerformanceRegionWiseExport"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Testkit">
+                <viewScriptFile forActionName="participant"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

@@ -102,9 +102,7 @@
                 drawTable();
                 $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed', 'action' => 'index'), "default", true); ?>", {startDate: startDate, endDate: endDate, scheme: $("#scheme").val(), reportType: $("#reportType").val(), format: "html"},
                 function(response) {
-                    console.log(response);
                     response = response.split('##');
-                    
                     var passedvalues = [];
                     var failedvalues = [];
                     var othervalues = [];
