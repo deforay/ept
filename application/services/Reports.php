@@ -1021,7 +1021,7 @@ class Application_Service_Reports {
         );
         $orderColumns = array(
             'tn.TestKit_Name',
-            new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")
+            'totalTest'
         );
 
         $sLimit = "";
