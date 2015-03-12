@@ -1,0 +1,215 @@
+<?php
+
+// Include the main TCPDF library (search for installation path).
+require_once('tcpdf/tcpdf.php');
+require_once('libchart/classes/libchart.php');
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        
+    if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
+        mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
+    }
+//Zend_Debug::dump($this->result);die;
+
+class MYPDF extends TCPDF {
+
+    public function setSchemeName($header, $logo) {
+        $this->header = $header;
+        $this->logo = $logo;
+    }
+
+    //Page header
+    public function Header() {
+        // Logo
+        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+        if (trim($this->logo) != "") {
+            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
+                $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
+                $this->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            }
+        }
+
+        // Set font
+        $this->SetFont('times', '', 12);
+
+        $this->header = str_replace("<div", "<span", trim($this->header));
+        $this->header = str_replace("</div>", "</span><br/>", $this->header);
+
+        //error_log($this->header);
+        //$y = $this->getY();
+        $html = $this->header;
+
+        $this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
+        //$this->writeHTML($html, true, false, true, true, 'L');
+        //$html = '<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</p>';
+        //$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
+        $html = '<hr/>';
+        $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
+    }
+
+    // Page footer
+    public function Footer() {
+        // Position at 15 mm from bottom
+        $this->SetY(-15);
+        // Set font
+        $this->SetFont('helvetica', 'I', 8);
+        // Page number
+        $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+    }
+
+}
+
+// create new PDF document
+$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+// set document information
+$pdf->SetCreator(PDF_CREATOR);
+$pdf->SetAuthor('Nicola Asuni');
+$pdf->SetTitle('TCPDF Example 003');
+$pdf->SetSubject('TCPDF Tutorial');
+$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
+// set default header data
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+// set header and footer fonts
+$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+// set default monospaced font
+$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+// set margins
+$pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+// set auto page breaks
+$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+// set image scale factor
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+// set some language-dependent strings (optional)
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once(dirname(__FILE__) . '/lang/eng.php');
+    $pdf->setLanguageArray($l);
+}
+
+// ---------------------------------------------------------
+$pdf->setSchemeName($this->header, $this->logo);
+
+// Set font
+// dejavusans is a UTF-8 Unicode font, if you only need to
+// print standard ASCII chars, you can use core fonts like
+// helvetica or times to reduce file size.
+//$pdf->SetFont('dejavusans', '', 14, '', true);
+$pdf->SetFont('times', '', 12);
+// Add a page
+// This method has several options, check the source code documentation for more information.
+$pdf->AddPage();
+
+$pdf->SetY(40);
+$testAction = '';
+$testAction.='<p style="font-weight:bold;font-size:18px;text-decoration: underline;">Testkit Report For DTS</p>';
+$testAction.='<div><span style="font-weight:bold">Selected Date Range : </span> ' . $this->dateRange . '</div>';
+
+
+
+
+
+
+
+// Set some content to print
+$testAction.='<br/><table border="1" align="center">';
+$testAction.='<tr>';
+$testAction.='<td style="font-weight:bold">Testkit Name</td>';
+$testAction.='<td style="font-weight:bold">Test Count</td>';
+$testAction.='</tr>';
+
+if (count($this->result['testkitDtsReport']) > 0) {
+    foreach ($this->result['testkitDtsReport'] as $res) {
+        $testAction.='<tr>';
+        $testAction.='<td style="text-align:left;">' . $res['TestKit_Name'] . '</td>';
+        $testAction.='<td>' . $res['totalTest'] . '</td>';
+        $testAction.='</tr>';
+    }
+} else {
+    $testAction.='<tr><td colspan="2">No result found</td></tr>';
+}
+$testAction.='</table>';
+
+
+if (isset($this->result['testkitDtsParticipantReport']) && $this->result['testkitDtsParticipantReport'] != '' && count($this->result['testkitDtsParticipantReport']) > 0) {
+    $testAction.= '<br/>';
+    $testAction.='<p style="font-weight:bold;font-size:18px;text-decoration: underline;">Testkit Participant Report For DTS - '.$this->testkitName .'</p>';
+    $testAction.='<br/><table border="1" align="center">';
+    $testAction.='<tr>';
+    $testAction.='<td style="font-weight:bold">Participant</td>';
+    if (isset($this->reportType) && $this->reportType == "network") {
+        $testAction.='<td style="font-weight:bold">Network</td>';
+    } else if (isset($this->reportType) && $this->reportType == "affiliation") {
+        $testAction.='<td style="font-weight:bold">Affiliation</td>';
+    } else if (isset($this->reportType) && $this->reportType == "region") {
+        $testAction.='<td style="font-weight:bold">Region</td>';
+    }
+    $testAction.='</tr>';
+
+
+    foreach ($this->result['testkitDtsParticipantReport'] as $res) {
+        $testAction.='<tr>';
+        $testAction.='<td style="text-align:left;">' . $res['first_name'] . ' ' . $res['last_name'] . '</td>';
+        if (isset($this->reportType) && $this->reportType == "network") {
+            $testAction.='<td style="text-align:left;">' . $res['network_name'] . '</td>';
+        } else if (isset($this->reportType) && $this->reportType == "affiliation") {
+            $testAction.='<td style="text-align:left;">' . $res['affiliation'] . '</td>';
+        } else if (isset($this->reportType) && $this->reportType == "region") {
+            $testAction.='<td style="text-align:left;">' . $res['region'] . '</td>';
+        }
+        $testAction.='</tr>';
+    }
+    $testAction.='</table>';
+}
+
+
+$pdf->writeHTML($testAction, true, false, true, false, '');
+
+if (count($this->result['testkitChart']) > 0) {
+            if (count($this->result['testkitChart']) > 0) {
+                $chart = new PieChart(500, 250);
+                $chart->getPlot()->getPalette()->setPieColor(array(new Color(237, 86, 86), new Color(80, 180, 50),new Color(5, 141, 199),  new Color(221, 223, 0), new Color(36, 203, 229), new Color(100, 229, 114), new Color(255, 150, 85), new Color(255, 242, 99), new Color(106, 249, 196), new Color(124, 181, 236), new Color(49, 128, 71), new Color(144, 237, 125), new Color(247, 163, 92),new Color(47,126,216),new Color(241,92,128),new Color(228,211,84),new Color(128,133,232),new Color(141,70,83),new Color(145,232,225),new Color(13,35,58),new Color(139,188,33),new Color(145,0,0),new Color(26,173,206),new Color(73,41,112),new Color(242,143,67),new Color(119,161,229),new Color(196,37,37),new Color(166,201,106),new Color(69,114,167),new Color(170,70,67),new Color(137,165,78),new Color(128,105,155),new Color(61,150,174),new Color(219,132,61),new Color(146,168,205),new Color(164,125,124),new Color(181,202,146)));
+                $dataSet = new XYDataSet();
+                $totaltest=0;
+                
+                foreach($this->result['testkitChart'] as $testkit){
+		   $totaltest+=$testkit['totalTest'];
+		}
+                foreach ($this->result['testkitChart'] as $piechart) {
+                     $percentage=(($piechart['totalTest']/$totaltest)*100);
+                    $dataSet->addPoint(new Point(stripslashes(wordwrap($piechart['TestKit_Name'], 50, "<br />\n")), round($percentage, 2)));
+                }
+                $piechart = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . 'pieChart.png';
+                $chart->setDataSet($dataSet);
+
+                $chart->setTitle("Testkit Report For DTS ");
+                $chart->render($piechart);
+                
+              
+            
+            $y = $pdf->getY()+20;
+
+                $pdf->Image($piechart, 50, $y, '', '', '', '', '', false, 300);
+                if (file_exists($piechart)) {
+                    unlink($piechart);
+                }
+            }
+        }
+// ---------------------------------------------------------
+// Close and output PDF document
+$fileName = "TestKit-report-for-dTS" . date('d-M-Y-H-i-s') . ".pdf";
+$filePath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName;
+//$pdf->Output('example_003.pdf', 'I');
+$pdf->Output($filePath, "F");
+echo $fileName;
+//============================================================+
+// END OF FILE
+//============================================================+

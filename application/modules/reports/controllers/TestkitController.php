@@ -9,6 +9,7 @@ class Reports_TestkitController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
                     ->addActionContext('chart', 'html')
                     ->addActionContext('participant', 'html')
+                    ->addActionContext('generate-pdf', 'html')
                     ->initContext();
         $this->_helper->layout()->pageName = 'report'; 
     }
@@ -45,8 +46,25 @@ class Reports_TestkitController extends Zend_Controller_Action
         }
     }
 
+    public function generatePdfAction()
+    {
+         $this->_helper->layout()->disableLayout();
+         if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $this->view->result = $reportService->generatePdfTestKitDetailedReport($params);
+            $this->view->header=$reportService->getReportConfigValue('report-header');
+            $this->view->logo=$reportService->getReportConfigValue('logo');
+            $this->view->dateRange=$params['dateRange'];
+            $this->view->reportType=$params['reportType'];
+            $this->view->testkitName=$params['testkitName'];
+        }
+    }
+
 
 }
+
+
 
 
 

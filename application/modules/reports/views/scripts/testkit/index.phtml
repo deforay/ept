@@ -5,11 +5,11 @@
 
         }
     }
-    
-/*    #participantTable_wrapper{
-        max-width:500px;
-        margin: 0 auto;
-    }*/
+
+    /*    #participantTable_wrapper{
+            max-width:500px;
+            margin: 0 auto;
+        }*/
 
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
@@ -92,7 +92,7 @@
                 <option value="testkit3">Test Kit 3</option>
             </select>			
         </td>
-        <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-primary btn-sm" onclick="GetPrint()"><span>Print</span></button></td>
+        <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-info btn-sm" onclick="GetPrint()"><span>Print</span></button> <a href="#" class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a></td>
     </tr>
 </table>
 <div id="testKitChart" width="450" height="450"></div>
@@ -111,6 +111,10 @@
         </tr>
     </tbody>
 </table>
+  
+    <legend class="modal-header hide" id="participantReportHeader">
+        <h4 class="modal-title" id="participantHeading">TestKit Report For DTS</h4>
+    </legend>
 <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="participantTable">
     <thead>
         <tr>
@@ -132,10 +136,11 @@
             var endDate = "";
             var paginate = true;
             var currentHighlighted = null;
-            
+
             $(document).ready(function () {
-                
+
                 currentHighlighted = getCookie('tid');
+                currentTestKit = getCookie('tname');
                 $('#dateRange').daterangepicker({
                     format: 'DD-MMM-YYYY',
                     ranges: {
@@ -150,8 +155,13 @@
                     startDate = start.format('YYYY-MM-DD');
                     endDate = end.format('YYYY-MM-DD');
                 });
-
+                
+                if (currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0) {
+                   $('#participantHeading').html('TestKit Report For DTS - <strong>'+currentTestKit +'</strong>');
+                }
+                
             });
+
             function drawGraph() {
                 if ($("#kitType").val() == '') {
                     alert('Please select test kit number to proceed');
@@ -183,25 +193,29 @@
                                 point: {
                                     events: {
                                         legendItemClick: function () {
-                                              var visibility = this.visible ? 'visible' : 'hidden';
-                                                if(visibility=='visible'){
-                                                    participantReport(this.id)
-                                                    oTable.fnFilter(this.name);
-                                                }else{
-                                                    oTable.fnFilter('');
-                                                    $("#participantTable_wrapper").addClass("hide");
-                                                }
+                                            var visibility = this.visible ? 'visible' : 'hidden';
+                                            if (visibility == 'visible') {
+                                                participantReport(this.id,this.name)
+                                                oTable.fnFilter(this.name);
+                                            } else {
+                                                oTable.fnFilter('');
+                                                $("#participantTable_wrapper").addClass("hide");
+                                                $("#participantReportHeader").addClass("hide");
+                                                // currentHighlighted = '';
+                                            }
                                         },
                                         click: function (event) {
                                             var sliced = this.sliced ? false : true;
-                                            if(sliced){
-                                                 oTable.fnFilter(this.name);
-                                                 participantReport(this.id)
-                                            }else{
-                                                 oTable.fnFilter('');
-                                                 $("#participantTable_wrapper").addClass("hide");
+                                            if (sliced) {
+                                                oTable.fnFilter(this.name);
+                                                participantReport(this.id,this.name)
+                                            } else {
+                                                oTable.fnFilter('');
+                                                $("#participantTable_wrapper").addClass("hide");
+                                                $("#participantReportHeader").addClass("hide");
+                                                // currentHighlighted = '';
                                             }
-                                             
+
                                         }
                                     },
                                 },
@@ -226,6 +240,7 @@
                             }]
                     });
                 });
+                testkitExportPdf();
             }
             function getTypeList(typeValue) {
                 if (typeValue == 'network') {
@@ -245,11 +260,12 @@
                 }
 
             }
-            
+
             function drawTable() {
-                
+
                 $("#testKitTable").removeClass("hide");
-                 $("#participantTable_wrapper").addClass("hide");
+                $("#participantTable_wrapper").addClass("hide");
+                $("#participantReportHeader").addClass("hide");
                 $.blockUI;
                 oTable = $('#testKitTable').dataTable({
                     "oLanguage": {
@@ -269,7 +285,6 @@
                         {"sClass": "center"},
                         {"sClass": "center"}
                     ],
-                    
                     "aaSorting": [[1, "desc"]],
                     "bProcessing": true,
                     "bServerSide": true,
@@ -290,12 +305,21 @@
                             "type": "POST",
                             "url": sSource,
                             "data": aoData,
-                            "success": fnCallback
+                            "success": function(json){
+                                fnCallback(json);
+                                if (currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0) {
+                                    $("#testkitId" + currentHighlighted).find('td').addClass("highliter");
+                                    participantReport(currentHighlighted,currentTestKit);
+                                }
+                            }
                         });
+                        
                     }, "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                         $.unblockUI;
                     },
                 });
+
+
 
             }
             ;
@@ -310,15 +334,16 @@
                     drawTable()
                 }
             });
-            function participantReport(testkitId) {
-                
+            function participantReport(testkitId,testkitName) {
                 currentHighlighted = testkitId;
+                currentTestKit = testkitName;
                 setCookie('tid', testkitId);
+                setCookie('tname', currentTestKit);
                 $("#testKitTable tr td").removeClass("highliter");
                 $("#testkitId" + currentHighlighted + " td").addClass("highliter");
                 //   $("#participantTable").removeClass("hide");
                 $.blockUI;
-                rTable=$('#participantTable').dataTable({
+                rTable = $('#participantTable').dataTable({
                     "oLanguage": {
                         "sLengthMenu": "_MENU_ records per page",
                         "sEmptyTable": "No data to show"
@@ -335,7 +360,7 @@
                         {"sClass": "center"},
                         {"sClass": "center"},
                     ],
-                    "bVisible": false, "aTargets": [ 1],
+                    "bVisible": false, "aTargets": [1],
                     "aaSorting": [[0, "asc"]],
                     "bProcessing": true,
                     "bServerSide": true,
@@ -349,7 +374,7 @@
                         aoData.push({"name": "networkValue", "value": $("#networkValue").val()});
                         aoData.push({"name": "reportType", "value": $("#reportType").val()});
                         aoData.push({"name": "kitType", "value": $("#kitType").val()});
-                       // aoData.push({"name": "kitType", "value": });
+                        // aoData.push({"name": "kitType", "value": });
                         aoData.push({"name": "testkitId", "value": testkitId});
                     },
                     "fnServerData": function (sSource, aoData, fnCallback) {
@@ -363,22 +388,46 @@
                     }, "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                         $.unblockUI;
                     },
-                            
                 });
-                if($("#reportType").val()==''){
-                     rTable.fnSetColumnVis(1,false);
-                 }else{
-                     rTable.fnSetColumnVis(1,true);
-                     newcolumnHeading=$("#reportType option:selected").text();
+                if ($("#reportType").val() == '') {
+                    rTable.fnSetColumnVis(1, false);
+                } else {
+                    rTable.fnSetColumnVis(1, true);
+                    newcolumnHeading = $("#reportType option:selected").text();
                     $('#reportHeading').html(newcolumnHeading);
-                 }
+                }
                 if ($("#testKitTable").dataTable().fnGetData().length > 0) {
                     $("#participantTable").removeClass("hide");
+                    $("#participantReportHeader").removeClass("hide");
                     $("#participantTable_wrapper").removeClass("hide");
                 } else {
+                    // currentHighlighted = '';
                     $("#participantTable_wrapper").addClass("hide");
+                    $("#participantReportHeader").addClass("hide");
                 }
 
+            }
+            function testkitExportPdf()
+            {
+                var dateRange = $("#dateRange").val();
+                var dateStartDate = startDate;
+                var dateEndDate = endDate;
+                var regionValue = $("#regionValue").val();
+                var affiliateValue = $("#affiliateValue").val();
+                var networkValue = $("#networkValue").val();
+                var reportType = $("#reportType").val();
+                var kitType = $("#kitType").val();
+                var testkitId = currentHighlighted;
+                var testkitName= currentTestKit;
+                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'generate-pdf'), 'default', true); ?>", {dateRange: dateRange, startDate: dateStartDate, endDate: dateEndDate, regionValue: regionValue, affiliateValue: affiliateValue, networkValue: networkValue, reportType: reportType, kitType: kitType, testkitId: testkitId,testkitName: testkitName, format: "html"},
+                function (data) {
+                    if (data == "" || data == null) {
+                        alert('Unable to generate download');
+                    } else {
+                        $('#exportPdf').attr('href', '/temporary/' + data);
+                        $('#exportPdf').removeClass('hide');
+                    }
+                });
             }
 
 </script>
