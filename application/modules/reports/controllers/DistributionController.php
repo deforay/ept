@@ -36,12 +36,14 @@ class Reports_DistributionController extends Zend_Controller_Action
 
     public function shipmentAction()
     {
+        $shipmentService = new Application_Service_Shipments();
         if($this->_hasParam('sid')){            
             $id = (int)base64_decode($this->_getParam('sid'));
             $reEvaluate = false;
             $evalService = new Application_Service_Evaluation();
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id,$reEvaluate);
-            $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
+            //$this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
+            $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
         }else{
             $this->_redirect("/report/distribution/");
         }
@@ -79,8 +81,24 @@ class Reports_DistributionController extends Zend_Controller_Action
         }
     }
 
+    public function finalizeAction()
+    {
+        $shipmentService = new Application_Service_Shipments();
+         if($this->_hasParam('sid')){            
+            $id = (int)base64_decode($this->_getParam('sid'));
+            $reEvaluate = false;
+            $evalService = new Application_Service_Evaluation();
+            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id,$reEvaluate);
+            $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
+        }else{
+            $this->_redirect("/report/finalize/");
+        }
+    }
+
 
 }
+
+
 
 
 

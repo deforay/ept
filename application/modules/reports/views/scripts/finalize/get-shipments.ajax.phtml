@@ -1,0 +1,68 @@
+<?php
+//Zend_Debug::dump($this->shipments);die;
+if($this->shipments == false && count($this->shipments) <= 0){
+	echo "<br/><br/><br/><h4 style='text-align:center;'>Unable fetch shipments. Please try again later or contact system admin for help</h4>";
+}else{
+	?>
+	
+  
+    <div class="modal-dialog" style="width:100%;">
+        <div class="modal-header">
+          <h4 class="modal-title">Shipments Under PT Survey <?php echo $this->shipments[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipments[0]['distribution_date']); ?>)</h4>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered table-striped table-hover">
+			<tr>
+				<th style="text-align: center;">Shipment Code</th>
+				<th style="text-align: center;">Scheme</th>
+				<th style="text-align: center;">No. of Samples</th>
+				<th style="text-align: center;">No. of Participants</th>
+				<th style="text-align: center;">No. of Responses</th>
+				<th style="text-align: center;">Response %</th>
+				<th style="text-align: center;">Number Passed</th>
+				<th style="text-align: center;">Shipment Status</th>
+				<th style="text-align: center;">Action</th>
+			</tr>
+			<?php
+			if(count($this->shipments) > 0){
+			foreach($this->shipments as $shipment){
+				$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+				?>
+				<tr>
+					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
+					<td style="text-align: center;"><?php echo ($shipment['scheme_name']) ?></td>
+					<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
+					<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
+					<td style="text-align: center;"><?php echo $reported ?></td>
+					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported/$shipment['participant_count'])*100,2) : 0; ?></td>					
+					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
+					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
+					<td style="text-align: center;">
+                                            <?php if (isset($shipment['status']) && $shipment['status']=='evaluated') { ?>
+                                            <a class="btn btn-success btn-xs" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-check"></i> Finalize</span></a>
+                                            <?php } else if (isset($shipment['status']) && $shipment['status']=='finalized') { ?>
+                                            <a class="btn btn-danger btn-xs disabled" href="javascript:void(0)"><span><i class="icon-check"></i> Finalized</span></a>
+                                            <?php } else if (isset($shipment['status']) && $shipment['status']=='shipped') { ?>
+                                            <a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-ambulance"></i> Shipped</span></a>
+                                            <?php } ?>
+					</td>
+				</tr>
+				<?php
+				}
+			}else{
+				?>
+				<tr>
+					<td colspan="5" align="center" style="text-align:center">
+						No shipments for this distribution yet
+					</td>
+				</tr>
+				<?php
+			}
+			?>
+		  </table>
+        </div>
+    </div><!-- /.modal-dialog -->
+	
+	
+	<?php
+}

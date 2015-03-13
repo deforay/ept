@@ -181,6 +181,7 @@
               <actionMethod actionName="view"/>
               <actionMethod actionName="edit"/>
               <actionMethod actionName="updateShipmentComment"/>
+              <actionMethod actionName="updateShipmentStatus"/>
             </controllerFile>
             <controllerFile controllerName="ContactUs">
               <actionMethod actionName="index"/>
@@ -370,6 +371,9 @@
               <viewControllerScriptsDirectory forControllerName="Testkit">
                 <viewScriptFile forActionName="getTestkit"/>
               </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Evaluate">
+                <viewScriptFile forActionName="updateShipmentStatus"/>
+              </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
             <viewFiltersDirectory/>
@@ -415,6 +419,7 @@
               <actionMethod actionName="shipment"/>
               <actionMethod actionName="generateReports"/>
               <actionMethod actionName="generateSummaryReports"/>
+              <actionMethod actionName="finalize"/>
             </controllerFile>
             <controllerFile controllerName="Detailed">
               <actionMethod actionName="index"/>
@@ -442,6 +447,10 @@
             <controllerFile controllerName="CorrectiveActions">
               <actionMethod actionName="index"/>
               <actionMethod actionName="correctiveActionsExport"/>
+            </controllerFile>
+            <controllerFile controllerName="Finalize">
+              <actionMethod actionName="index"/>
+              <actionMethod actionName="getShipments"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -521,6 +530,15 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Testkit">
                 <viewScriptFile forActionName="generatePdf"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Finalize">
+                <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Finalize">
+                <viewScriptFile forActionName="getShipments"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Distribution">
+                <viewScriptFile forActionName="finalize"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

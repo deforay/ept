@@ -170,8 +170,7 @@ class Application_Service_Evaluation {
 
         return $db->fetchAll($sql);
     }
-
-    public function getShipmentToEvaluate($shipmentId, $reEvaluate = false) {
+   public function getShipmentToEvaluate($shipmentId, $reEvaluate = false) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
@@ -1271,14 +1270,25 @@ class Application_Service_Evaluation {
             return "Unable to update shipment comment. Please try again later.";
         }
     }
+    public function updateShipmentStatus($shipmentId, $status) {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $admin = $authNameSpace->primary_email;
+        $noOfRows = $db->update('shipment', array('status' => $status, 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $shipmentId);
+        if ($noOfRows > 0) {
+            return "Status updated";
+        } else {
+            return "Unable to update shipment status. Please try again later.";
+        }
+    }
 
     public function getShipmentToEvaluateReports($shipmentId, $reEvaluate = false) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('s' => 'shipment'))
-                ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
+        $sql = $db->select()->from(array('s' => 'shipment',array('shipment_id','shipment_code','status','number_of_samples')))
+                ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id',array('distribution_code','distribution_date'))
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
-                ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
-                ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
+                ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type',array('scheme_name'))
+                ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id',array('first_name','last_name'))
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result')
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->where("substring(sp.evaluation_status,4,1) != '0'");
