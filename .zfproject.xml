@@ -31,6 +31,7 @@
           <actionMethod actionName="currentSchemes"/>
           <actionMethod actionName="allSchemes"/>
           <actionMethod actionName="download"/>
+          <actionMethod actionName="summaryReport"/>
         </controllerFile>
         <controllerFile controllerName="DTS">
           <actionMethod actionName="index"/>
@@ -642,6 +643,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Participant">
             <viewScriptFile forActionName="download"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Participant">
+            <viewScriptFile forActionName="summaryReport"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

@@ -10,18 +10,18 @@
         margin-top: 5px;
         vertical-align: middle !important;
     }
-
     .dataTables_length,.dataTables_filter{
         margin-bottom: 5px;
         vertical-align: middle !important;
     }
+    
     .daterangepicker{
         display: none;
     }
 
 </style>
 <div id="view-content">
-    <span class="txt" style="margin-left:0em">Individual Report</span>
+    <span class="txt" style="margin-left:0em">Summary Report</span>
     <br>
     <table>
         <tr class="dark">
@@ -43,23 +43,21 @@
                     ?>
                 </select>
             </td>
-            <td><button class="btn btn-success btn-sm" onclick="individualSchemes()"><span>Get Report</span></button></td>
+            <td><button class="btn btn-success btn-sm" onclick="summarySchemes()"><span>Get Report</span></button></td>
         </tr>
     </table>
-    <table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="individualReportTable">
+    <table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="summaryReportTable">
         <thead>
             <tr>
                 <th>Scheme</th>
                 <th>Shipment Code</th>
                 <th>Shipment Date</th>
-                <th>Participant</th>
-                <th>Response Date</th>
                 <th>Report</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td colspan="6" class="dataTables_empty">Please pick date range and Scheme Type to proceed</td>
+                <td colspan="5" class="dataTables_empty">Please pick date range and Scheme Type to proceed</td>
             </tr>
         </tbody>
     </table>
@@ -92,13 +90,12 @@
                      
                 });
 
-                function individualSchemes() {
+                function summarySchemes() {
                     if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
                         alert("Please pick date range and Scheme Type to proceed");
                         return false;
                     }
-                    //oTable.fnDraw();
-                   oTable = $('#individualReportTable').dataTable({
+                   oTable = $('#summaryReportTable').dataTable({
                         "oLanguage": {
                             "sLengthMenu": "_MENU_ records per page"
                         },
@@ -113,14 +110,12 @@
                             {"sClass": "center"},
                             {"sClass": "center"},
                             {"sClass": "center"},
-                            {"sClass": "center"},
-                            {"sClass": "center"},
                             {"sClass": "center", "bSortable": false}
                         ],
-                        "aaSorting": [[4, "desc"]],
+                        "aaSorting": [[2, "desc"]],
                         "bProcessing": true,
                         "bServerSide": true,
-                        "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'report', 'format' => 'html')); ?>",
+                        "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'summary-report', 'format' => 'html')); ?>",
                         "fnServerParams": function (aoData) {
                             aoData.push({"name": "scheme", "value": $("#scheme").val()});
                             aoData.push({"name": "startDate", "value": startDate});

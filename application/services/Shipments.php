@@ -881,6 +881,15 @@ class Application_Service_Shipments {
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->getShipmentAllDetails($parameters);
     }
+    
+    public function getindividualReport($parameters) {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->getindividualReportDetails($parameters);
+    }
+    public function getSummaryReport($parameters) {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->getSummaryReportDetails($parameters);
+    }
 
     public function getShipmentInReports($distributionId) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

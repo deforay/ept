@@ -10,6 +10,8 @@ class ParticipantController extends Zend_Controller_Action {
                 ->addActionContext('default-scheme', 'html')
                 ->addActionContext('current-schemes', 'html')
                 ->addActionContext('all-schemes', 'html')
+                ->addActionContext('report', 'html')
+                ->addActionContext('summary-report', 'html')
                 ->addActionContext('shipment-report', 'html')
                 ->initContext();
     }
@@ -32,7 +34,14 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function reportAction() {
-        // action body
+        //SHIPMENT_ALL
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $shipmentService = new Application_Service_Shipments();
+            $shipmentService->getindividualReport($params);
+        }
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
     }
 
     public function userInfoAction() {
@@ -85,7 +94,7 @@ class ParticipantController extends Zend_Controller_Action {
         $this->view->countriesList = $commonService->getcountriesList();
         $this->view->networks = $participantService->getNetworkTierList();
         $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
-	$this->view->siteType = $participantService->getSiteTypeList();
+        $this->view->siteType = $participantService->getSiteTypeList();
     }
 
     public function schemeinfoAction() {
@@ -107,7 +116,7 @@ class ParticipantController extends Zend_Controller_Action {
         $this->view->schemes = $scheme->getAllSchemes();
         $this->view->countriesList = $commonService->getcountriesList();
         $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
-	$this->view->siteType = $participantService->getSiteTypeList();
+        $this->view->siteType = $participantService->getSiteTypeList();
     }
 
     public function defaultSchemeAction() {
@@ -150,7 +159,7 @@ class ParticipantController extends Zend_Controller_Action {
             $this->_redirect("/participant/dashboard");
         }
     }
-    
+
     public function shipmentReportAction() {
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_ALL
@@ -159,4 +168,15 @@ class ParticipantController extends Zend_Controller_Action {
             $shipmentService->getShipmentReport($params);
         }
     }
+
+    public function summaryReportAction() {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $shipmentService = new Application_Service_Shipments();
+            $shipmentService->getSummaryReport($params);
+        }
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
+    }
+
 }

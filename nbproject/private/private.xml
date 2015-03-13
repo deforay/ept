@@ -3,15 +3,19 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/var/www/ept/application/modules/reports/views/scripts/detailed/index.phtml</file>
+            <file>file:/var/www/ept/application/modules/reports/views/scripts/distribution/generate-summary-reports.ajax.phtml</file>
             <file>file:/var/www/ept/application/modules/reports/views/scripts/participant-performance/index.phtml</file>
+            <file>file:/var/www/ept/application/modules/reports/controllers/CorrectiveActionsController.php</file>
+            <file>file:/var/www/ept/application/modules/reports/views/scripts/distribution/index.phtml</file>
             <file>file:/var/www/ept/application/modules/reports/views/scripts/testkit/index.phtml</file>
+            <file>file:/var/www/ept/application/modules/reports/views/scripts/distribution/shipment.phtml</file>
             <file>file:/var/www/ept/application/services/Reports.php</file>
-            <file>file:/var/www/ept/application/modules/reports/views/scripts/detailed/report.phtml</file>
-            <file>file:/var/www/ept/application/modules/reports/controllers/DetailedController.php</file>
+            <file>file:/var/www/ept/application/modules/reports/views/scripts/testkit/generate-pdf.ajax.phtml</file>
+            <file>file:/var/www/ept/application/services/Evaluation.php</file>
             <file>file:/var/www/ept/application/modules/reports/views/scripts/testkit/chart.ajax.phtml</file>
             <file>file:/var/www/ept/application/modules/reports/controllers/ParticipantPerformanceController.php</file>
             <file>file:/var/www/ept/application/modules/reports/controllers/TestkitController.php</file>
+            <file>file:/var/www/ept/application/modules/reports/controllers/DistributionController.php</file>
         </group>
     </open-files>
 </project-private>

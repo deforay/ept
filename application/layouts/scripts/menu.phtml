@@ -24,8 +24,7 @@
         <div class="inside">
 	    
                       <?php if(!isset($authNameSpace->dm_id)){ ?>
-        	
-        	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>" class="da-button">Participant Login</a>
+              	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>" class="da-button">Participant Login</a>
 		<a href="<?php echo $this->url(array("controller"=>"contact-us","action"=>"index"),null,true) ?>" class="da-button">Register as a PT Participant</a>
         <?php }?>
             <nav>
@@ -43,8 +42,8 @@
                     <li><a href="javascript:void(0);">My PT</a>
                         <ul>
                             <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"dashboard"),null,true) ?>">Overview</a></li>
-                            
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"report"),null,true) ?>">Report</a></li>
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"report"),null,true) ?>"> Individual Report</a></li>
+                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"summary-report"),null,true) ?>"> Summary Report</a></li>
                             
                         </ul>
                     </li>
