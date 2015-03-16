@@ -88,14 +88,21 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $row = $this->fetchRow("shipment_id = " . $shipmentId . " AND participant_id = " . $participantId);
         $shipment = $db->fetchRow($db->select()->from(array('s' => 'shipment'))
                         ->where("s.shipment_id = ?", $shipmentId));
-        $responseAfterEvaluate = Application_Service_Common::getConfig('response_after_evaluate');
-        if ($responseAfterEvaluate == 'yes') {
-            return true;
-        } else {
-            if ($shipment["status"] == 'evaluated') {
-                return false;
-            } else {
+        $responseAfterFinalised = Application_Service_Common::getConfig('response_after_evaluate');
+        $date = new Zend_Date();
+        $lastDate = new Zend_Date($shipment["lastdate_response"], Zend_Date::ISO_8601);
+        if ($responseAfterFinalised == 'yes') {
+            // only if current date is lesser than last date
+            if ($date->compare($lastDate) <= 0 || $shipment["status"]== 'finalized') {
                 return true;
+            } else {
+                return false;
+            }
+        } else {
+            if ($date->compare($lastDate) <= 0) {
+                return true;
+            } else {
+                return false;
             }
         }
 

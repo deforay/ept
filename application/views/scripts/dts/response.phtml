@@ -1,367 +1,383 @@
-<?php date_default_timezone_set('America/New_York');?>
-<form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller"=>"dts","action"=>"response"),null,true) ?>">
+<?php date_default_timezone_set('America/New_York'); ?>
+<form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller" => "dts", "action" => "response"), null, true) ?>">
 
-<input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response'];?>" />
-<input type="hidden" id ="shipmentId" name="shipmentId" value="<?php echo $this->shipId;?>" />
-<input type="hidden" id ="participantId" name="participantId" value="<?php echo $this->participantId;?>" />
-<input type="hidden" id ="evId" name="evId" value="<?php echo $this->eID;?>" />
-<input type="hidden" id ="smid" name="smid" value="<?php echo $this->shipment['map_id'];?>" />
+    <input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response']; ?>" />
+    <input type="hidden" id ="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
+    <input type="hidden" id ="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
+    <input type="hidden" id ="evId" name="evId" value="<?php echo $this->eID; ?>" />
+    <input type="hidden" id ="smid" name="smid" value="<?php echo $this->shipment['map_id']; ?>" />
 
-<input type="hidden" id ="test_kit_other_name_update_1" name="test_kit_other_name_update_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" />
-<input type="hidden" id ="test_kit_other_name_update_2" name="test_kit_other_name_update_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" />
-<input type="hidden" id ="test_kit_other_name_update_3" name="test_kit_other_name_update_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" />
-
-
-<?php 
-//  $dt= DateTime::createFromFormat('Y-m-d',$this->shipment["shipment_receipt_date"]); echo $dt->format('d-M-Y'); 
+    <input type="hidden" id ="test_kit_other_name_update_1" name="test_kit_other_name_update_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" />
+    <input type="hidden" id ="test_kit_other_name_update_2" name="test_kit_other_name_update_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" />
+    <input type="hidden" id ="test_kit_other_name_update_3" name="test_kit_other_name_update_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" />
 
 
-?>
-<div id="view-content">
-<h2 align="CENTER"> Dried Tube Specimens for Rapid HIV Testing </h2>
-<br>
-<div id=error></div>
-<table>
-<tr>
-	<td> <span class="txt"> Participant Name </span> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?></td>
-		<td><span class="txt"> Participant Code </span> <?php echo $this->participant['unique_identifier'] ?></td>
-	<td><span class="txt"> Affiliation </span> <?php echo ( $this->participant['affiliation'] );?> </td>
-	<td><span class="txt"> Phone No </span> <?php  echo ( $this->participant['mobile']  . ' <br/> ' .   $this->participant['phone'] ); ?></td>
-</tr>
-</table>
+    <?php
+    $date = new Zend_Date();
+    $lastDate = new Zend_Date($this->shipment['lastdate_response'], Zend_Date::ISO_8601);
+    $response=$date->compare($lastDate)
+    ?>
+    <div id="view-content">
+        <h2 align="CENTER"> Dried Tube Specimens for Rapid HIV Testing </h2>
+        <?php
+        if ($response == 1 && $this->shipment['status'] == 'finalized') {
+            ?>
+            <h5 align="CENTER" style="color:red">Late Response And Finalized Report – Result will not be evaluated </h5>
+            <?php
+        } else if ($response == 1) {
+            ?>
+            <h5 align="CENTER" style="color:red">Late Response – Result will not be evaluated </h5>
+            <?php
+        } else if ($this->shipment['status'] == 'finalized') {
+            ?>
+            <h5 align="CENTER" style="color:red">Finalized Report – Result will not be evaluated </h5>
+            <?php
+        }
+        ?>
+        <br>
+        <div id=error></div>
+        <table>
+            <tr>
+                <td> <span class="txt"> Participant Name </span> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] ); ?></td>
+                <td><span class="txt"> Participant Code </span> <?php echo $this->participant['unique_identifier'] ?></td>
+                <td><span class="txt"> Affiliation </span> <?php echo ( $this->participant['affiliation'] ); ?> </td>
+                <td><span class="txt"> Phone No </span> <?php echo ( $this->participant['mobile'] . ' <br/> ' . $this->participant['phone'] ); ?></td>
+            </tr>
+        </table>
 
-<table>
-	<tr class="dark">
-		<td>Shipment Date</td>
-		<td><?php echo $this->dateFormat($this->shipment['shipment_date']);?></td>
-		<td>Last Response Date <?php  ?></td>
-		<td><?php echo $this->dateFormat($this->shipment['lastdate_response']);?> </td>
-	</tr>
-	
-	
-	
-	<tr class ="light">
-		<td>Shipment Receipt Date</td>
-		<td><input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" value="<?php  echo $this->dateFormat($this->shipment["shipment_receipt_date"]);  ?>" class="isRequired datepicker" readonly="readonly"   title="Please enter Test Receipt Date" /></td>
-		<td>Sample Rehydration Date</td>
-		<td><input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class="isRequired datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  /></td>
-	</tr>
-	
-	<tr class ="dark">
-		<td>Testing Date</td> 
-		<td><input type="text" id="testDate" name="testDate" size="11" maxlength="11" value="<?php  echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="isRequired datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /></td>		
-		<td>Algorithm Used</td> 
-		<td>
-			<select name="algorithm" id="algorithm" class="isRequired" title="Please choose the Algorithm used">
-				<option value="">--Select--</option>	
-				<option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>	
-				<option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>	
-			</select>
-		</td>
-	</tr>
-	
-</table>
-<?php
-
-	$possibleResults ='';
-	foreach($this->dtsPossibleResults as $pr){
-		if($pr['scheme_sub_group'] == 'DTS_TEST'){
-			$possibleResults[$pr['id']]= $pr['response'];
-		}
-	}
-	$possibleFinalResults ='';
-	foreach($this->dtsPossibleResults as $pr){
-		if($pr['scheme_sub_group'] == 'DTS_FINAL'){
-			$possibleFinalResults[$pr['id']]= $pr['response'];
-		}
-	}
-	
-	echo $this->allSamples[0]["test_kit_name_1"];
-?>
+        <table>
+            <tr class="dark">
+                <td>Shipment Date</td>
+                <td><?php echo $this->dateFormat($this->shipment['shipment_date']); ?></td>
+                <td>Last Response Date <?php ?></td>
+                <td><?php echo $this->dateFormat($this->shipment['lastdate_response']); ?> </td>
+            </tr>
 
 
 
-<table style="width: max-content;" border="1">
-	<thead>
-	<tr align="CENTER" class="dark" >
-		<th></th>
-		<th >Test-1</th>
-		<th >Test-2</th>
-		<th >Test-3</th>
-		
-	</tr>
-</thead>
-	<tr align="CENTER" class="light" >
-		<th> Kit Name</th>
-		<td  class="dark" width="20%" >
-		<select name="test_kit_name_1" id="test_kit_name_1"  style="width: 200px" class=""  title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
-                    <option value="">   ---Select Kit---</option>
-                    <?php
-                    foreach($this->allTestKits as $key=>$testkit){
-                        if($testkit['testkit_1']=='1'){
-                        ?>
-                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME']?></option>
+            <tr class ="light">
+                <td>Shipment Receipt Date</td>
+                <td><input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="isRequired datepicker" readonly="readonly"   title="Please enter Test Receipt Date" /></td>
+                <td>Sample Rehydration Date</td>
+                <td><input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class="isRequired datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  /></td>
+            </tr>
+
+            <tr class ="dark">
+                <td>Testing Date</td> 
+                <td><input type="text" id="testDate" name="testDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="isRequired datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /></td>		
+                <td>Algorithm Used</td> 
+                <td>
+                    <select name="algorithm" id="algorithm" class="isRequired" title="Please choose the Algorithm used">
+                        <option value="">--Select--</option>	
+                        <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>	
+                        <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>	
+                    </select>
+                </td>
+            </tr>
+
+        </table>
+        <?php
+        $possibleResults = '';
+        foreach ($this->dtsPossibleResults as $pr) {
+            if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+                $possibleResults[$pr['id']] = $pr['response'];
+            }
+        }
+        $possibleFinalResults = '';
+        foreach ($this->dtsPossibleResults as $pr) {
+            if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
+                $possibleFinalResults[$pr['id']] = $pr['response'];
+            }
+        }
+
+        echo $this->allSamples[0]["test_kit_name_1"];
+        ?>
+
+
+
+        <table style="width: max-content;" border="1">
+            <thead>
+                <tr align="CENTER" class="dark" >
+                    <th></th>
+                    <th >Test-1</th>
+                    <th >Test-2</th>
+                    <th >Test-3</th>
+
+                </tr>
+            </thead>
+            <tr align="CENTER" class="light" >
+                <th> Kit Name</th>
+                <td  class="dark" width="20%" >
+                    <select name="test_kit_name_1" id="test_kit_name_1"  style="width: 200px" class=""  title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
+                        <option value="">   ---Select Kit---</option>
                         <?php
+                        foreach ($this->allTestKits as $key => $testkit) {
+                            if ($testkit['testkit_1'] == '1') {
+                                ?>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                <?php
+                            }
                         }
-                    }
-                    ?>
-			<option value="other">Other</option>
-		</select>
-		<input type="text" size="40" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
-		</td>
-		<td width="20%" >
-		<select name="test_kit_name_2" id="test_kit_name_2"   style="width: 200px" class=""  title="Please Choose Test Kit 2" onchange="selectTestKitName(this)">
-		 	<option value="">   ---Select Kit---</option>
-                    <?php
-                    foreach($this->allTestKits as $key=>$testkit){
-                        if($testkit['testkit_2']=='1'){
                         ?>
-                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME']?></option>
+                        <option value="other">Other</option>
+                    </select>
+                    <input type="text" size="40" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
+                </td>
+                <td width="20%" >
+                    <select name="test_kit_name_2" id="test_kit_name_2"   style="width: 200px" class=""  title="Please Choose Test Kit 2" onchange="selectTestKitName(this)">
+                        <option value="">   ---Select Kit---</option>
                         <?php
+                        foreach ($this->allTestKits as $key => $testkit) {
+                            if ($testkit['testkit_2'] == '1') {
+                                ?>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                <?php
+                            }
                         }
-                    }
-                    ?>
-			<option value="other">Other</option>
-		</select>
-		<input type="text" size="40" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
-		</td>
-        <td width="20%" >
-		<select name="test_kit_name_3" id="test_kit_name_3" style="width: 200px" class=""  title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
-			<option value="">   ---Select Kit---</option>
-                    <?php
-                    foreach($this->allTestKits as $key=>$testkit){
-                        if($testkit['testkit_3']=='1'){
                         ?>
-                        <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME']?></option>
+                        <option value="other">Other</option>
+                    </select>
+                    <input type="text" size="40" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
+                </td>
+                <td width="20%" >
+                    <select name="test_kit_name_3" id="test_kit_name_3" style="width: 200px" class=""  title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
+                        <option value="">   ---Select Kit---</option>
                         <?php
+                        foreach ($this->allTestKits as $key => $testkit) {
+                            if ($testkit['testkit_3'] == '1') {
+                                ?>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                <?php
+                            }
                         }
-                    }
-                    ?>
-			<option value="other">Other</option>
-		</select>
-		<input type="text" size="40" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
-	</td>
-        
-		
-		
-	</tr>
-	<?php
-	$lotNo1="";
-	$lotNo2="";
-	$lotNo3="";
-	if(isset($this->allSamples[0]["lot_no_1"])&& trim($this->allSamples[0]["lot_no_1"])!=""){
-		$lotNo1=$this->allSamples[0]["lot_no_1"];
-	}
-	if(isset($this->allSamples[0]["lot_no_2"])&& trim($this->allSamples[0]["lot_no_2"])!=""){
-		$lotNo2=$this->allSamples[0]["lot_no_2"];
-	}
-	if(isset($this->allSamples[0]["lot_no_3"])&& trim($this->allSamples[0]["lot_no_3"])!=""){
-		$lotNo3=$this->allSamples[0]["lot_no_3"];
-	}
-	?>
-	<tr align="CENTER" class="dark" >
-		<th>Lot No.</th>
-		<td><input type="text" size="40" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo( $lotNo1); ?>" style="width: 200px" class="" title="Please enter Lot No. 1"/></td>
-		<td><input type="text" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo( $lotNo2); ?>" style="width: 200px" class="" title="Please enter Lot No. 2"/></td>
-		<td><input type="text" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo( $lotNo3); ?>" style="width: 200px" class="" title="Please enter Lot No. 3"/></td>
-		
-		
-		
-	</tr>
-	<?php
-	$expDate1="";
-	$expDate2="";
-	$expDate3="";
-	if(isset($this->allSamples[0]["exp_date_1"])&& trim($this->allSamples[0]["exp_date_1"])!=""){
-		$expDate1=$this->dateFormat($this->allSamples[0]["exp_date_1"]);
-	}
-	if(isset($this->allSamples[0]["exp_date_2"])&& trim($this->allSamples[0]["exp_date_2"])!=""){
-		$expDate2=$this->dateFormat($this->allSamples[0]["exp_date_2"]);
-	}
-	if(isset($this->allSamples[0]["exp_date_3"])&& trim($this->allSamples[0]["exp_date_3"])!=""){
-		$expDate3=$this->dateFormat($this->allSamples[0]["exp_date_3"]);
-	}
-	?>
-	<tr align="CENTER" class="light">
-		<th>Exp Date</th>
-		<td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php  echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /></td>
-		<td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php  echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /></td>
-		<td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php  echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /></td>
-		
-	</tr>
-	<thead> 
-	<tr align="CENTER" class="dark" >
-		<th></th>
-		<th>Result-1</th>
-		<th>Result-2</th>
-		<th>Result-3</th>
-		<th>Final Result</th>
-	</tr>
-	</thead>
-	<?php $count =0; 
-	 foreach($this->allSamples as $sample){
-		$count++;
-	 ?>
-	
-	<tr align="CENTER" class="light" >
-		
-		<th style="white-space: nowrap;">
-			<?php echo ($sample['sample_label']); ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
-		</th>
-		
-		<td   width="20%" >
-        <select name="test_result_1[]" id="<?php echo "testresult1_" .$count ; ?>" style="width: 150px"  >
-		 	<?php $this->dropdownSelection($possibleResults,$sample['test_result_1'],true); ?>
-        </select> 
-        </td>
-		<td  width="20%" >
-        <select name="test_result_2[]" id="<?php echo "testresult2_" .$count ; ?>" style="width: 150px"  >
-		 	<?php $this->dropdownSelection($possibleResults,$sample['test_result_2'],true); ?>
-        </select> 
-        </td>
-        <td   width="20%" >
-        <select name="test_result_3[]" id="<?php echo "testresult3_" .$count ; ?>" style="width: 150px"  >
-		 	<?php $this->dropdownSelection($possibleResults,$sample['test_result_3'],true); ?>
-        </select> 
-        </td>
-		
-		<td   width="20%" >
-        <select name="reported_result[]" id="<?php echo "testresultf_" . $count ; ?>" style="width: 150px" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" >
-		 	<?php $this->dropdownSelection($possibleFinalResults,$sample['reported_result'],true); ?>
-        </select> 
-        </td>
-	</tr>
-	<?php }?>
-	
-</table>
-<br>
-<table>
-<tr>
-	<th>Supervisor Review</th>
-	<td><select name="supervisorApproval" id="supervisorApproval" class="isRequired"  title="Please select if Supervisor Approval was conducted or not"><option value=""> -- Select -- </option>
-	<option value="yes" <?php if($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>YES</option>
-	<option value="no" <?php if($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>NO</option></select></td>
-	<th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
-	<td>
-		<input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/>
-	</td>
-	
-</tr>
-<tr>
+                        ?>
+                        <option value="other">Other</option>
+                    </select>
+                    <input type="text" size="40" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
+                </td>
 
-<th>Comments </th> <td colspan="3">
-<input name="userComments" id="userComments" type="text"size="120" maxlength="40" value="<?php echo $this->shipment['user_comment'] ; ?>"/>
 
-</td>
-</tr>
 
-</table>
-<?php if($this->isEditable){ ?>
-	<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-				<p>
-					
-					<input name="submitbtn" class="css_btn_class" type="submit" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
-					&nbsp;&nbsp;&nbsp;
-					<input name="cancel" class="css_btn_class" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" /> 
-					
-				</p>
-			</div>
-	<?php } ?>
-</div>
+            </tr>
+            <?php
+            $lotNo1 = "";
+            $lotNo2 = "";
+            $lotNo3 = "";
+            if (isset($this->allSamples[0]["lot_no_1"]) && trim($this->allSamples[0]["lot_no_1"]) != "") {
+                $lotNo1 = $this->allSamples[0]["lot_no_1"];
+            }
+            if (isset($this->allSamples[0]["lot_no_2"]) && trim($this->allSamples[0]["lot_no_2"]) != "") {
+                $lotNo2 = $this->allSamples[0]["lot_no_2"];
+            }
+            if (isset($this->allSamples[0]["lot_no_3"]) && trim($this->allSamples[0]["lot_no_3"]) != "") {
+                $lotNo3 = $this->allSamples[0]["lot_no_3"];
+            }
+            ?>
+            <tr align="CENTER" class="dark" >
+                <th>Lot No.</th>
+                <td><input type="text" size="40" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo( $lotNo1); ?>" style="width: 200px" class="" title="Please enter Lot No. 1"/></td>
+                <td><input type="text" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo( $lotNo2); ?>" style="width: 200px" class="" title="Please enter Lot No. 2"/></td>
+                <td><input type="text" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo( $lotNo3); ?>" style="width: 200px" class="" title="Please enter Lot No. 3"/></td>
 
-<?php 
-$vHelper = $this->getHelper('DateFormat');
-$dtFormat=  $vHelper->getDateFormat();
-?>
+
+
+            </tr>
+            <?php
+            $expDate1 = "";
+            $expDate2 = "";
+            $expDate3 = "";
+            if (isset($this->allSamples[0]["exp_date_1"]) && trim($this->allSamples[0]["exp_date_1"]) != "") {
+                $expDate1 = $this->dateFormat($this->allSamples[0]["exp_date_1"]);
+            }
+            if (isset($this->allSamples[0]["exp_date_2"]) && trim($this->allSamples[0]["exp_date_2"]) != "") {
+                $expDate2 = $this->dateFormat($this->allSamples[0]["exp_date_2"]);
+            }
+            if (isset($this->allSamples[0]["exp_date_3"]) && trim($this->allSamples[0]["exp_date_3"]) != "") {
+                $expDate3 = $this->dateFormat($this->allSamples[0]["exp_date_3"]);
+            }
+            ?>
+            <tr align="CENTER" class="light">
+                <th>Exp Date</th>
+                <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /></td>
+                <td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /></td>
+                <td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /></td>
+
+            </tr>
+            <thead> 
+                <tr align="CENTER" class="dark" >
+                    <th></th>
+                    <th>Result-1</th>
+                    <th>Result-2</th>
+                    <th>Result-3</th>
+                    <th>Final Result</th>
+                </tr>
+            </thead>
+            <?php
+            $count = 0;
+            foreach ($this->allSamples as $sample) {
+                $count++;
+                ?>
+
+                <tr align="CENTER" class="light" >
+
+                    <th style="white-space: nowrap;">
+                        <?php echo ($sample['sample_label']); ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+                        <input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                    </th>
+
+                    <td   width="20%" >
+                        <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" style="width: 150px"  >
+                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
+                        </select> 
+                    </td>
+                    <td  width="20%" >
+                        <select name="test_result_2[]" id="<?php echo "testresult2_" . $count; ?>" style="width: 150px"  >
+                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
+                        </select> 
+                    </td>
+                    <td   width="20%" >
+                        <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" style="width: 150px"  >
+                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
+                        </select> 
+                    </td>
+
+                    <td   width="20%" >
+                        <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" style="width: 150px" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" >
+                            <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
+                        </select> 
+                    </td>
+                </tr>
+            <?php } ?>
+
+        </table>
+        <br>
+        <table>
+            <tr>
+                <th>Supervisor Review</th>
+                <td><select name="supervisorApproval" id="supervisorApproval" class="isRequired"  title="Please select if Supervisor Approval was conducted or not"><option value=""> -- Select -- </option>
+                        <option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>YES</option>
+                        <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>NO</option></select></td>
+                <th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
+                <td>
+                    <input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> value="<?php echo $this->shipment['participant_supervisor']; ?>"/>
+                </td>
+
+            </tr>
+            <tr>
+
+                <th>Comments </th> <td colspan="3">
+                    <input name="userComments" id="userComments" type="text"size="120" maxlength="40" value="<?php echo $this->shipment['user_comment']; ?>"/>
+
+                </td>
+            </tr>
+
+        </table>
+        <?php if ($this->isEditable) { ?>
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+                <p>
+
+                    <input name="submitbtn" class="css_btn_class" type="submit" onclick="validateNow();
+                                                    return false;" tabindex="7" value="Submit"  /> 
+                    &nbsp;&nbsp;&nbsp;
+                    <input name="cancel" class="css_btn_class" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" /> 
+
+                </p>
+            </div>
+        <?php } ?>
+    </div>
+
+    <?php
+    $vHelper = $this->getHelper('DateFormat');
+    $dtFormat = $vHelper->getDateFormat();
+    ?>
 </form>
-<?php if(!$this->isEditable){
-		?>
-		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-			<input name="cancel" class="css_btn_class" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />
-		</div>
-		<?php
+<?php if (!$this->isEditable) {
+    ?>
+    <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+        <input name="cancel" class="css_btn_class" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />
+    </div>
+    <?php
 }
 ?>
- 
+
 <script>
-	
-	function goto_dashboard(){
-		window.history.back();
-	}	 
-	
-	$(function() {
-  	    //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
-  	    $(".datepicker,.expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-		<?php if(!$this->isEditable){
-			?>
-			$("#dtsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
-			<?php
-		}
-		?>		
 
-		$('#supervisorApproval').change(function() {
-			
-			  if ($('#supervisorApproval').val() =='yes') 
-			  {
-				  $('#labSupervisor').show();
-				  $('#participantSupervisor').val('');
-				  $('#participantSupervisor').show();
-				}
-			  else{
-				  $('#labSupervisor').hide();
-				  $('#participantSupervisor').val('');
-				  $('#participantSupervisor').hide();
-			  }
-			});		
-		if ($('#test_kit_name_1').val()=="") {
-			$('#test_kit_name_1').val('');
-			document.getElementById("test_kit_other_name_1").style.display="none";
-		}else{
-			$("#test_kit_other_name_1").val('');
-			$("#test_kit_other_name_update_1").val('');
-		}
-		
-		if ($('#test_kit_name_2').val()=="") {
-			$('#test_kit_name_2').val('');
-			document.getElementById("test_kit_other_name_2").style.display="none";
-		}else{
-			$("#test_kit_other_name_2").val('');
-			$("#test_kit_other_name_update_2").val('');
-		}
-		
-		if ($('#test_kit_name_3').val()=="") {
-			$('#test_kit_name_3').val('');
-			document.getElementById("test_kit_other_name_3").style.display="none";
-		}else{
-			$("#test_kit_other_name_3").val('');
-			$("#test_kit_other_name_update_3").val('');
-		}
-	});
+    function goto_dashboard() {
+        window.history.back();
+    }
 
-	
-	function validateNow(){
+    $(function () {
+        //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
+        $(".datepicker,.expDatepicker").datepicker({dateFormat: '<?php echo $dtFormat; ?>'});
+<?php if (!$this->isEditable) {
+    ?>
+            $("#dtsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
+    <?php
+}
+?>
 
-		flag = deforayValidator.init({
-			formId: 'dtsResponseForm'
-		});
-		if(flag){
-			if(moment($("#receipt_date").val(), "DD-MMM-YYYY").isAfter($("#test_date").val(), "DD-MMM-YYYY")){
-				alert('Testing Date has to come after the Shipment Receipt Date');
-				return false;
-			}				
-			$.blockUI();
-			document.getElementById('dtsResponseForm').submit();
-		}
-	}
-	
-	function selectTestKitName(obj) {
-		res= obj.id.split("_");
-		if (obj.value=='other') {
-			document.getElementById("test_kit_other_name_"+res[3]).style.display="block";
-		}else{
-			document.getElementById("test_kit_other_name_"+res[3]).style.display="none";
-			$("#test_kit_other_name_"+res[3]).val('');
-		}
-	}
-  </script>
+        $('#supervisorApproval').change(function () {
+
+            if ($('#supervisorApproval').val() == 'yes')
+            {
+                $('#labSupervisor').show();
+                $('#participantSupervisor').val('');
+                $('#participantSupervisor').show();
+            }
+            else {
+                $('#labSupervisor').hide();
+                $('#participantSupervisor').val('');
+                $('#participantSupervisor').hide();
+            }
+        });
+        if ($('#test_kit_name_1').val() == "") {
+            $('#test_kit_name_1').val('');
+            document.getElementById("test_kit_other_name_1").style.display = "none";
+        } else {
+            $("#test_kit_other_name_1").val('');
+            $("#test_kit_other_name_update_1").val('');
+        }
+
+        if ($('#test_kit_name_2').val() == "") {
+            $('#test_kit_name_2').val('');
+            document.getElementById("test_kit_other_name_2").style.display = "none";
+        } else {
+            $("#test_kit_other_name_2").val('');
+            $("#test_kit_other_name_update_2").val('');
+        }
+
+        if ($('#test_kit_name_3').val() == "") {
+            $('#test_kit_name_3').val('');
+            document.getElementById("test_kit_other_name_3").style.display = "none";
+        } else {
+            $("#test_kit_other_name_3").val('');
+            $("#test_kit_other_name_update_3").val('');
+        }
+    });
+
+
+    function validateNow() {
+
+        flag = deforayValidator.init({
+            formId: 'dtsResponseForm'
+        });
+        if (flag) {
+            if (moment($("#receipt_date").val(), "DD-MMM-YYYY").isAfter($("#test_date").val(), "DD-MMM-YYYY")) {
+                alert('Testing Date has to come after the Shipment Receipt Date');
+                return false;
+            }
+            $.blockUI();
+            document.getElementById('dtsResponseForm').submit();
+        }
+    }
+
+    function selectTestKitName(obj) {
+        res = obj.id.split("_");
+        if (obj.value == 'other') {
+            document.getElementById("test_kit_other_name_" + res[3]).style.display = "block";
+        } else {
+            document.getElementById("test_kit_other_name_" + res[3]).style.display = "none";
+            $("#test_kit_other_name_" + res[3]).val('');
+        }
+    }
+</script>
