@@ -1938,3 +1938,26 @@ ALTER TABLE  `dts_shipment_corrective_action_map` ADD UNIQUE (
 `shipment_map_id` ,
 `corrective_action_id`
 );
+
+
+-- Amit Mar 18 2015
+
+
+CREATE TABLE IF NOT EXISTS `reference_result_tb` (
+  `shipment_id` int(11) NOT NULL,
+  `sample_id` int(11) NOT NULL,
+  `sample_label` varchar(255) DEFAULT NULL,
+  `mtb_detected` varchar(255) DEFAULT NULL,
+  `rif_resistance` varchar(255) DEFAULT NULL,
+  `probe_d` varchar(255) DEFAULT NULL,
+  `probe_c` varchar(255) DEFAULT NULL,
+  `probe_e` varchar(255) DEFAULT NULL,
+  `probe_b` varchar(255) DEFAULT NULL,
+  `spc` varchar(255) DEFAULT NULL,
+  `probe_a` varchar(255) DEFAULT NULL,
+  `control` int(11) DEFAULT NULL,
+  `mandatory` int(11) NOT NULL DEFAULT '0',
+  `sample_score` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) VALUES ('tb', 'Tuberculosis', 'response_result_tb', 'reference_result_tb', NULL, 'active');

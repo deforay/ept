@@ -77,6 +77,10 @@
           <actionMethod actionName="index"/>
           <actionMethod actionName="response"/>
         </controllerFile>
+        <controllerFile controllerName="Tb">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="response"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory enabled="false"/>
       <layoutsDirectory>
@@ -664,6 +668,12 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Participant">
             <viewScriptFile forActionName="summaryReport"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Tb">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Tb">
+            <viewScriptFile forActionName="response"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
