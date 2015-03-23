@@ -311,6 +311,49 @@ class Application_Service_Shipments {
         }
     }
 
+    public function updateTbResults($params) {
+
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            return false;
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $db->beginTransaction();
+        try {
+            $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $attributes = array("sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+                "mtb_rif_kit_lot_no" => $params['mtbRifKitLotNo'],
+                "expiry_date" => $params['expiryDate']);
+            $attributes = json_encode($attributes);
+            $data = array(
+                "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
+                "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
+                "attributes" => $attributes,
+                "shipment_test_report_date" => new Zend_Db_Expr('now()'),
+                "supervisor_approval" => $params['supervisorApproval'],
+                "participant_supervisor" => $params['participantSupervisor'],
+                "user_comment" => $params['userComments'],
+                "updated_by_user" => $authNameSpace->dm_id,
+                "updated_on_user" => new Zend_Db_Expr('now()')
+            );
+
+            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+
+            $tbResponseDb = new Application_Model_DbTable_ResponseTb();
+            $tbResponseDb->updateResults($params);
+            $db->commit();
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            $db->rollBack();
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+        }
+    }
     public function updateVlResults($params) {
 
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
