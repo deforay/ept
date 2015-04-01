@@ -5,8 +5,8 @@ Welcome to the Open Source repository of the e-Proficiency Testing (ePT) softwar
 ### How do I get set up? ###
 
 * [Install Zend Framework 1.12](http://framework.zend.com/manual/1.12/en/introduction.installation.html)
-* Download the source code and put it into your server's root folder (www or htdocs)
-* Create a database and import the sql file from the downloads page of this repository
+* [Download the ePT Source Code](https://bitbucket.org/deforay/ept/downloads) and put it into your server's root folder (www or htdocs). 
+* Create a database and [import the sql file that you can find in the downloads section of this repository](https://bitbucket.org/deforay/ept/downloads)
 * Modify the config file (application/configs/application.ini) and update the database parameters
 * Create a virtual host pointing to the public folder of the source code
 
