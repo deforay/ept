@@ -633,7 +633,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
                 ->where("year(s.shipment_date)  + 5 > year(CURDATE())");
         //->order('s.shipment_date')
         //->order('spm.participant_id')
-        error_log($sQuery);
+       // error_log($this->_session->dm_id);
      
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -691,7 +691,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             }
             
             $aRow['lastdate_response'];
-            $row[] = $aRow['SHIP_YEAR'];
+            $row[] = $aRow['SHIP_YEAR'].' '.$aRow['evaluation_status'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = strtoupper($aRow['scheme_type']);
             $row[] = $aRow['shipment_code'];
