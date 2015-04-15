@@ -326,6 +326,49 @@ class Application_Service_Shipments {
         }
     }
 
+    public function updateTbResults($params) {
+
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            return false;
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $db->beginTransaction();
+        try {
+            $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $attributes = array("sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+                "mtb_rif_kit_lot_no" => $params['mtbRifKitLotNo'],
+                "expiry_date" => $params['expiryDate']);
+            $attributes = json_encode($attributes);
+            $data = array(
+                "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
+                "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
+                "attributes" => $attributes,
+                "shipment_test_report_date" => new Zend_Db_Expr('now()'),
+                "supervisor_approval" => $params['supervisorApproval'],
+                "participant_supervisor" => $params['participantSupervisor'],
+                "user_comment" => $params['userComments'],
+                "updated_by_user" => $authNameSpace->dm_id,
+                "updated_on_user" => new Zend_Db_Expr('now()')
+            );
+
+            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+
+            $tbResponseDb = new Application_Model_DbTable_ResponseTb();
+            $tbResponseDb->updateResults($params);
+            $db->commit();
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            $db->rollBack();
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+        }
+    }
     public function updateVlResults($params) {
 
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
@@ -578,7 +621,27 @@ class Application_Service_Shipments {
                 }
                 // ------------------>
             }
-        }
+        } else if ($params['schemeId'] == 'tb') {
+	    for ($i = 0; $i < $size; $i++) {
+                $dbAdapter->insert('reference_result_tb', array(
+                    'shipment_id' => $lastId,
+                    'sample_id' => ($i + 1),
+                    'sample_label' => $params['sampleName'][$i],
+                    'mtb_detected' => $params['mtbDetected'][$i],
+                    'rif_resistance' => $params['rifResistance'][$i],
+                    'probe_d' => $params['probeD'][$i],
+                    'probe_c' => $params['probeC'][$i],
+                    'probe_e' => $params['probeE'][$i],
+                    'probe_b' => $params['probeB'][$i],
+                    'spc' => $params['spc'][$i],
+                    'probe_a' => $params['probeA'][$i],
+                    'control' => $params['control'][$i],
+                    'mandatory' => $params['mandatory'][$i],
+                    'sample_score' => (isset($params['score'][$i]) ? $params['score'][$i] : 0)
+                    )
+                );
+            }	    
+	}
 
         $distroService->updateDistributionStatus($params['distribution'], 'pending');
     }
@@ -669,9 +732,9 @@ class Application_Service_Shipments {
                             ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults('eid');
-        } else if ($shipment['scheme_type'] == 'vl') {
+        } else if ($shipment['scheme_type'] == 'tb') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
-                            ->join(array('ref' => 'reference_result_vl'), 'ref.shipment_id=s.shipment_id')
+                            ->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=s.shipment_id')
                             ->where("s.shipment_id = ?", $sid));
             $possibleResults = "";
         } else {
@@ -719,6 +782,27 @@ class Application_Service_Shipments {
                     'mandatory' => $params['mandatory'][$i],
                     'sample_score' => $params['score'][$i]
                         )
+                );
+            }
+        }else if ($scheme == 'tb') {
+            $dbAdapter->delete('reference_result_tb', 'shipment_id = ' . $params['shipmentId']);
+            for ($i = 0; $i < $size; $i++) {
+                $dbAdapter->insert('reference_result_tb', array(
+                    'shipment_id' => $params['shipmentId'],
+                    'sample_id' => ($i + 1),
+                    'sample_label' => $params['sampleName'][$i],
+                    'mtb_detected' => $params['mtbDetected'][$i],
+                    'rif_resistance' => $params['rifResistance'][$i],
+                    'probe_d' => $params['probeD'][$i],
+                    'probe_c' => $params['probeC'][$i],
+                    'probe_e' => $params['probeE'][$i],
+                    'probe_b' => $params['probeB'][$i],
+                    'spc' => $params['spc'][$i],
+                    'probe_a' => $params['probeA'][$i],
+                    'control' => $params['control'][$i],
+                    'mandatory' => $params['mandatory'][$i],
+                    'sample_score' => (isset($params['score'][$i]) ? $params['score'][$i] : 0)
+                    )
                 );
             }
         } else if ($scheme == 'dts') {

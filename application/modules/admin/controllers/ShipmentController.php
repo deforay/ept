@@ -125,6 +125,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function editAction()
     {
+
         if($this->getRequest()->isPost()){
             $shipmentService = new Application_Service_Shipments();
             $params = $this->getRequest()->getPost();

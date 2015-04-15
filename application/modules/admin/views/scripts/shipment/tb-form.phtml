@@ -1,0 +1,168 @@
+
+<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+	<thead>
+		<tr align="center" style="background:yellow;">
+			<th  style="text-align: center;" colspan="3">
+				Results Table
+			</th>
+			<th style="text-align: center;" colspan="6">
+				Cycle Threshold (CT)
+			</th>
+			<th style="text-align: center;" colspan="4">
+				Control/Sample Options
+			</th>
+		</tr>
+		<tr align="center">
+			<th style="width:15%;text-align: center;vertical-align:middle;">Control/Sample</th>
+			<th style="text-align: center;vertical-align:middle;">MTB Detected<br/>(Level)</th>
+			<th style="text-align: center;vertical-align:middle;">Rif Resistance</th>
+			<th style="text-align: center;vertical-align:middle;">Probe D</th>
+			<th style="text-align: center;vertical-align:middle;">Probe C</th>
+			<th style="text-align: center;vertical-align:middle;">Probe E</th>
+			<th style="text-align: center;vertical-align:middle;">Probe B</th>			
+			<th style="text-align: center;vertical-align:middle;">SPC</th>
+			<th style="text-align: center;vertical-align:middle;">Probe A</th>
+			<th style="text-align: center;vertical-align:middle;">Is it a Control ?</th>
+			<th style="text-align: center;vertical-align:middle;">Mandatory ?</th>
+			<th style="width:10%;text-align: center;vertical-align:middle;">Score</th>
+			<th style="width:5%;text-align: center;vertical-align:middle;">Add/Remove Row</th>
+		</tr>
+	</thead>
+	<tbody>
+		
+			<tr align="center">
+				<th>
+					<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
+				</th>
+				<td>
+					<select name="mtbDetected[]" class="isRequired form-control input-sm"  title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
+						<option value="">-- Select --</option>
+						<option value="high">High</option>
+						<option value="medium">Medium</option>
+						<option value="low">Low</option>
+						<option value="veryLow">veryLow</option>
+						<option value="notDetected">Not Detected</option>
+						<option value="noResult">No Result</option>
+					</select>
+				</td>
+				<td>
+					<select name="rifResistance[]" class="isRequired form-control input-sm"  title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
+						<option value="">-- Select --</option>
+						<option value="detected">Detected</option>
+						<option value="notDetected">Not Detected</option>
+						<option value="na">N/A</option>
+					</select>						
+				</td>
+				<td>
+					<input type="text" name="probeD[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe D value for this sample" placeholder="Please enter the Probe D value for this sample" />
+				</td>
+				<td>
+					<input type="text" name="probeC[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe C value for this sample" placeholder="Please enter the Probe C value for this sample" />
+				</td>
+				<td>
+					<input type="text" name="probeE[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe E value for this sample" placeholder="Please enter the Probe E value for this sample" />
+				</td>
+				<td>
+					<input type="text" name="probeB[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe B value for this sample" placeholder="Please enter the Probe B value for this sample" />
+				</td>
+				<td>
+					<input type="text" name="spc[]" class="form-control input-sm oneDecimal"  title="Please enter the SPC value for this sample" placeholder="Please enter the SPC value for this sample" />
+				</td>
+				<td>
+					<input type="text" name="probeA[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe A value for this sample" placeholder="Please enter the Probe A value for this sample" />
+				</td>
+				<td>
+					<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
+						<option value="">--Select--</option>
+						<option value="1">Yes</option>
+						<option value="0">No</option>
+					</select>
+				</td>
+				<td>
+					<select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory">
+						<option value="">--Select--</option>
+						<option value="1">Yes</option>
+						<option value="0">No</option>
+					</select>
+				</td>
+				<td>
+					<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" />
+				</td>
+				<td>
+					<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+					<!--&nbsp;&nbsp;<a href="javascript:void(0);" onclick="alert('Cannot remove this row.')" class="btn btn-xs btn-default disabled"><i class="icon-minus"></i></a>-->
+				</td>
+			</tr>
+		</tbody>
+</table>
+<br>
+
+<script type="text/javascript">
+	function addTbRow(obj) {
+		$(obj.parentNode.parentNode).after('<tr align="center"> \
+												<th> \
+					<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
+				</th> \
+				<td> \
+					<select name="mtbDetected[]" class="isRequired form-control input-sm"  title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample"> \
+						<option value="">-- Select --</option> \
+						<option value="high">High</option> \
+						<option value="medium">Medium</option> \
+						<option value="low">Low</option> \
+						<option value="veryLow">veryLow</option> \
+						<option value="notDetected">Not Detected</option> \
+						<option value="noResult">No Result</option> \
+					</select> \
+				</td> \
+				<td> \
+					<select name="rifResistance[]" class="isRequired form-control input-sm"  title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample"> \
+						<option value="">-- Select --</option> \
+						<option value="detected">Detected</option> \
+						<option value="notDetected">Not Detected</option> \
+						<option value="na">N/A</option> \
+					</select> \
+				</td> \
+				<td> \
+					<input type="text" name="probeD[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe D value for this sample" placeholder="Please enter the Probe D value for this sample" /> \
+				</td> \
+				<td> \
+					<input type="text" name="probeC[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe C value for this sample" placeholder="Please enter the Probe C value for this sample" /> \
+				</td> \
+				<td> \
+					<input type="text" name="probeE[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe E value for this sample" placeholder="Please enter the Probe E value for this sample" /> \
+				</td> \
+				<td> \
+					<input type="text" name="probeB[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe B value for this sample" placeholder="Please enter the Probe B value for this sample" /> \
+				</td> \
+				<td> \
+					<input type="text" name="spc[]" class="form-control input-sm oneDecimal"  title="Please enter the SPC value for this sample" placeholder="Please enter the SPC value for this sample" /> \
+				</td> \
+				<td> \
+					<input type="text" name="probeA[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe A value for this sample" placeholder="Please enter the Probe A value for this sample" /> \
+				</td> \
+				<td> \
+					<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
+						<option value="">--Select--</option> \
+						<option value="1">Yes</option> \
+						<option value="0">No</option> \
+					</select> \
+				</td> \
+				<td> \
+					<select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+						<option value="">--Select--</option> \
+						<option value="1">Yes</option> \
+						<option value="0">No</option> \
+					</select> \
+				</td> \
+				<td> \
+					<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /> \
+				</td>\
+												<td><a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
+											</tr>');
+	}
+	function removeRow(obj) {
+		$(obj.parentNode.parentNode).fadeOut("normal",function(){
+			$(this).remove();
+		});
+	}	
+</script>
