@@ -171,7 +171,7 @@ class Application_Service_Shipments {
                 $edit='&nbsp;<a class="btn btn-danger btn-xs disabled" href="javascript:void(0);"><span><i class="icon-check"></i> Finalized</span></a>';
             }
             
-            if($aRow['status'] != 'shipped' && $aRow['status'] != 'finalized'){
+            if($aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated' && $aRow['status'] != 'finalized'){
                 $enrolled='&nbsp;<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>';
             }else if($aRow['status']=='shipped'){
                 $enrolled='&nbsp;<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
