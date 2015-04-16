@@ -169,7 +169,7 @@
 	
 	
 	function allSchemes(){
-		oTable = $('#allSchemeTable').dataTable({
+		schemeTable = $('#allSchemeTable').dataTable({
 			"oLanguage": {
 			    "sLengthMenu": "_MENU_ records per page"
 			},
@@ -346,5 +346,18 @@
 			    });
 			}
 		});
+	}
+        function removeSchemes(schemeType,mid){
+		if (window.confirm("Are you sure you want to remove this result?\n This cannot be undone !")) { 
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'Dts', 'action' => 'delete')); ?>", { mid: mid, format: "html" },
+			    function (data) {
+				alert("scheme result removed successfully");
+				schemeTable.fnDraw();
+				csTable.fnDraw();
+				$.unblockUI();
+			});
+		}		
+		
 	}
 </script>

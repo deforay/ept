@@ -276,8 +276,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          * SQL queries
          * Get data to display
          */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id'))
-                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')","RESPONSE" => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,3,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,3,1)='9' AND s.lastdate_response>= CURDATE()) OR (s.status= 'finalized') THEN 'Enter Result' END")))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id','s.status'))
+                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id","spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')","RESPONSE" => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,3,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,3,1)='9' AND s.lastdate_response>= CURDATE()) OR (s.status= 'finalized') THEN 'Enter Result' END")))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
                 ->where("pmm.dm_id=?", $this->_session->dm_id)
@@ -309,8 +309,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id'))
-                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(''))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id','s.status'))
+                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array(''))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
                 ->where("pmm.dm_id=?", $this->_session->dm_id)
@@ -334,6 +334,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         $general = new Pt_Commons_General();
         $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
         foreach ($rResult as $aRow) {
+            $delete='';
             $isEditable=$shipmentParticipantDb->isShipmentEditable($aRow['shipment_id'],$aRow['participant_id']);
             $row = array();
             if ($aRow['RESPONSE'] == "View") {
@@ -348,8 +349,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['lastdate_response']);
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);
+            if($aRow['status']!='finalized' && $aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
+             $delete='<a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" style="text-decoration : underline;"> Delete</a>';
+            }
             if($isEditable){
-            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" style="text-decoration : underline;">' . $aRow['RESPONSE'] . '</a>';
+            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" style="text-decoration : underline;">' . $aRow['RESPONSE'] . '</a> '.$delete;
             }else{
                 $row[] = '';
             }
@@ -446,8 +450,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          * SQL queries
          * Get data to display
          */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id'))
-                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "ACTION" => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,2,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,2,1)='9' AND s.lastdate_response>= CURDATE()) OR (s.status= 'finalized') THEN 'Enter Result' END"), "STATUS" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'On Time' WHEN '2' THEN 'Late' WHEN '0' THEN 'No Response' END")))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.status','SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id'))
+                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id","spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "ACTION" => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,2,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,2,1)='9' AND s.lastdate_response>= CURDATE()) OR (s.status= 'finalized') THEN 'Enter Result' END"), "STATUS" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'On Time' WHEN '2' THEN 'Late' WHEN '0' THEN 'No Response' END")))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name','p.participant_id'))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
                 ->where("pmm.dm_id=?", $this->_session->dm_id)
@@ -508,6 +512,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         $general = new Pt_Commons_General();
         $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
         foreach ($rResult as $aRow) {
+            $delete='';
             $isEditable=$shipmentParticipantDb->isShipmentEditable($aRow['shipment_id'],$aRow['participant_id']);
             $row = array();
             if ($aRow['ACTION'] == "View") {
@@ -525,8 +530,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $row[] = $general->humanDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['STATUS'];
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);
+            
+             if($aRow['status']!='finalized' && $aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
+             $delete='<a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" style="text-decoration : underline;"> Delete</a>';
+            }
             if($isEditable){
-            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" style="text-decoration : underline;">' . $aRow['ACTION'] . '</a>';
+            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" style="text-decoration : underline;">' . $aRow['ACTION'] . '</a> '.$delete;
             }else{
                 $row[] ='';
             }
@@ -681,6 +690,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         $general = new Pt_Commons_General();
         $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
         foreach ($rResult as $aRow) {
+            $delete='';
             $isEditable=$shipmentParticipantDb->isShipmentEditable($aRow['shipment_id'],$aRow['participant_id']);
             $row = array();
             if ($aRow['RESPONSE'] == "View") {
@@ -697,8 +707,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);
+            
+            if($aRow['status']!='finalized' && $aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
+             $delete='<a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" style="text-decoration : underline;"> Delete</a>';
+            }
+            
             if($isEditable){
-            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" style="text-decoration : underline;">' . $aRow['RESPONSE'] . '</a>';
+            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" style="text-decoration : underline;">' . $aRow['RESPONSE'] . '</a>  '.$delete;
             }else{
                 $row[] ='';
             }

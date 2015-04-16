@@ -88,6 +88,7 @@ class Application_Model_DbTable_ResponseDbs extends Zend_Db_Table_Abstract
         }
     }
     
+    
 
 }
 

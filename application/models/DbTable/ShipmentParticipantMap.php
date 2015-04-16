@@ -82,6 +82,28 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
         return $this->update($params, "map_id = " . $shipmentMapId);
     }
+    
+    
+    public function removeShipmentMapDetails($params, $mapId) {
+        $row = $this->fetchRow("map_id = " . $mapId);
+        if ($row != "") {
+            if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
+                $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $mapId);
+            }
+        }
+        $params['evaluation_status'] = $row['evaluation_status'];
+        // changing evaluation status 3rd character to 9 = not responded
+        $params['evaluation_status'][2] = 9;
+
+        // changing evaluation status 5th character to 1 = via web user
+        $params['evaluation_status'][4] = 1;
+
+        // changing evaluation status 4th character to 0 = no response
+            $params['evaluation_status'][3] = 0;
+     
+        return $this->update($params, "map_id = " . $mapId);
+    }
+    
 
     public function isShipmentEditable($shipmentId, $participantId) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

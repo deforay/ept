@@ -36,6 +36,7 @@
         <controllerFile controllerName="DTS">
           <actionMethod actionName="index"/>
           <actionMethod actionName="response"/>
+          <actionMethod actionName="delete"/>
         </controllerFile>
         <controllerFile controllerName="Provider">
           <actionMethod actionName="index"/>
@@ -585,6 +586,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="DTS">
             <viewScriptFile forActionName="response"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="DTS">
+            <viewScriptFile forActionName="delete"/>
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Participant">
             <viewScriptFile forActionName="report"/>
