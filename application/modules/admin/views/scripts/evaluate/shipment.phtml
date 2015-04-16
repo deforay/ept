@@ -126,7 +126,6 @@
                                 }
                                 $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
                                 $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
-				
 				?>
 				<tr>
                                         <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
@@ -137,7 +136,14 @@
 					<td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
 						<a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
-						<a class="btn btn-primary btn-xs" href="/admin/evaluate/view/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-search"></i> View</span></a>
+						<a class="btn btn-primary btn-xs" href="/admin/evaluate/view/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-search"></i> View</span></a>&nbsp;
+                                                <?php
+                                                if($shipment['shipment_status']!='finalized' && $shipment['shipment_test_report_date']!='' && $shipment['shipment_test_report_date']!='0000-00-00 00:00:00'){
+                                                ?>
+						<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('Dts','<?php echo base64_encode($shipment['map_id']); ?>')"><span><i class="icon-remove"></i> Delete</span></a>
+                                                <?php
+                                                }
+                                                 ?>
 					</td>
 				</tr>
 				<?php
@@ -196,6 +202,7 @@
 		    "bScrollCollapse": true,
 		    "sPaginationType": "bootstrap",
 		    "bRetrieve": true,
+		    "bdestroy": false,
 		    "aoColumns": [
 			{"bSortable": false, "aTargets": [ 0 ] },
 			{"sClass":"center"},
@@ -235,6 +242,20 @@
             function (data) {               
 			   $.unblockUI({  onUnblock: function(){ alert(data); }  });			   
 			});		
+	}
+        function removeSchemes(schemeType,mid){
+		if (window.confirm("Are you sure you want to remove this result?\n This cannot be undone !")) { 
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'Dts', 'action' => 'delete')); ?>", { mid: mid, format: "html" },
+			    function (data) {
+				alert("scheme result removed successfully");
+                                oTable.fnStandingRedraw();
+                               // oTable.fnDraw();
+                             //  location.reload();
+				$.unblockUI();
+			});
+		}		
+		
 	}
 </script>
 

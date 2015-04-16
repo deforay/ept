@@ -205,6 +205,7 @@ foreach($this->result['shipment'] as $result){
 							<td style="background-color:#989898;">Your Results</td>
 							<td style="background-color:#989898;">Expected Results</td>
 						</tr>';
+
 			$nonMandatorySamples = array();
 			foreach($result['responseResult'] as $response){
                 if($response['mandatory'] == 0){
@@ -216,7 +217,8 @@ foreach($this->result['shipment'] as $result){
 							<td>'.$response['referenceResult'].'</td>
 						  </tr>';
 			}
-			$labRes.='</table>';
+			$labRes.='</table><br/><br/>';
+                     
 			$pdf->SetLeftMargin(40);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
 			
