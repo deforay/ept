@@ -196,11 +196,6 @@ foreach($this->result['shipment'] as $result){
 	
 	
 	$html='<p style="font-weight: bold;">Your laboratory test results : <br/></p>';
-         foreach ($result['responseResult'] as $response) {
-                if ($response['mandatory']=='0' || $response['mandatory']==0) {
-                    $html.= '<p style="font-weight: normal;text-align:center;width:400px;">Sample <strong>' . $response['sample_label'] . '</strong> excluded from the evaluation</p>';
-                }
-            }
 	$pdf->writeHTML($html, true, false, true, false, '');
 	if(sizeof($result['responseResult'])>0){
 		if($schemeType != 'vl'){
@@ -210,14 +205,37 @@ foreach($this->result['shipment'] as $result){
 							<td style="background-color:#989898;">Your Results</td>
 							<td style="background-color:#989898;">Expected Results</td>
 						</tr>';
+                        $excludedCount=0;
 			foreach($result['responseResult'] as $response){
+                            if ($response['mandatory'] == '0' || $response['mandatory'] == 0) {
+                                $excludedCount++;
+                            }
 				$labRes.='<tr>
 							<td style="text-align:center;">'.$response['sample_label'].'</td>
 							<td>'.$response['labResult'].'</td>
 							<td>'.$response['referenceResult'].'</td>
 						  </tr>';
 			}
-			$labRes.='</table>';
+			$labRes.='</table><br/><br/>';
+                        
+                        
+            if ($excludedCount > 0) {
+                $labRes.='<table border="1" style="text-align:center;font-weight:bold;width:400px;" align="center">';
+                $labRes.='<tr>';
+                $labRes.='<td style="background-color:#989898;">Below samples are excluded from evaluation</td>';
+                $labRes.='</tr>';
+                foreach ($result['responseResult'] as $response) {
+                    if ($response['mandatory'] == '0' || $response['mandatory'] == 0) {
+                        $labRes.='<tr>';
+                        $labRes.='<td>' . $response['sample_label'] . '</td>';
+                        $labRes.='</tr>';
+                    }
+                }
+                $labRes.='</table>';
+            }
+            
+            
+            
 			$pdf->SetLeftMargin(40);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
 			

@@ -241,23 +241,36 @@ if ($this->result != "") {
             $referenceRes.='</tr>';
             $referenceRes.='</table>';
             $referenceRes.= '<p style="font-weight: bold;text-decoration: underline;">Reference Result </p>';
-            foreach ($this->result['referenceResult'] as $refRes) {
-                if ($refRes['mandatory']=='0' || $refRes['mandatory']==0) {
-                    $referenceRes.= '<p style="font-weight: normal;">Sample <strong>' . $refRes['sample_label'] . '</strong> excluded from the evaluation</p>';
-                }
-            }
             $referenceRes.='<table border="1" style="text-align:center;font-weight:bold;" align="center">';
             $referenceRes.='<tr>';
             $referenceRes.='<td style="background-color:#989898;">Specimen Panel ID</td>';
             $referenceRes.='<td style="background-color:#989898;">Results</td>';
             $referenceRes.='</tr>';
+            $excludedCount = 0;
             foreach ($this->result['referenceResult'] as $refRes) {
+                if ($refRes['mandatory'] == '0' || $refRes['mandatory'] == 0) {
+                    $excludedCount++;
+                }
                 $referenceRes.='<tr>';
                 $referenceRes.='<td>' . $refRes['sample_label'] . '</td>';
                 $referenceRes.='<td>' . $refRes['referenceResult'] . '</td>';
                 $referenceRes.='</tr>';
             }
-            $referenceRes.='</table>';
+            $referenceRes.='</table><br/><br/>';
+            if ($excludedCount > 0) {
+                $referenceRes.='<table border="1" style="text-align:center;font-weight:bold;" align="center">';
+                $referenceRes.='<tr>';
+                $referenceRes.='<td style="background-color:#989898;">Below samples are excluded from evaluation</td>';
+                $referenceRes.='</tr>';
+                foreach ($this->result['referenceResult'] as $refRes) {
+                    if ($refRes['mandatory'] == '0' || $refRes['mandatory'] == 0) {
+                        $referenceRes.='<tr>';
+                        $referenceRes.='<td>' . $refRes['sample_label'] . '</td>';
+                        $referenceRes.='</tr>';
+                    }
+                }
+                $referenceRes.='</table>';
+            }
             $pdf->writeHTML($referenceRes, true, false, true, false, '');
         }
         if (count($this->result['summaryResult']) > 0) {
