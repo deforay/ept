@@ -257,7 +257,7 @@ class Application_Service_Evaluation {
                     $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
                     $counter++;
                 } else {
-                    $failureReason = array('warning'=>"Response was submitted after the last response date.");
+                    $failureReason = array('warning' => "Response was submitted after the last response date.");
                     $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
                 }
             }
@@ -450,7 +450,7 @@ class Application_Service_Evaluation {
                     $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
                     $counter++;
                 } else {
-                    $failureReason = array('warning'=>"Response was submitted after the last response date.");
+                    $failureReason = array('warning' => "Response was submitted after the last response date.");
                     $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
                 }
             }
@@ -459,11 +459,11 @@ class Application_Service_Evaluation {
 
             $counter = 0;
             $maxScore = 0;
-	    
-	    $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-	    $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-	    $correctiveActions = $schemeService->getDtsCorrectiveActions();
-	    
+
+            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+            $correctiveActions = $schemeService->getDtsCorrectiveActions();
+
             foreach ($shipmentResult as $shipment) {
                 $createdOnUser = explode(" ", $shipment['created_on_user']);
                 if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
@@ -474,7 +474,7 @@ class Application_Service_Evaluation {
                 }
 
                 $results = $schemeService->getDtsSamples($shipmentId, $shipment['participant_id']);
-                
+
                 $totalScore = 0;
                 $maxScore = 0;
                 $mandatoryResult = "";
@@ -498,9 +498,9 @@ class Application_Service_Evaluation {
                 $lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
                 if (!$createdOn->isEarlier($lastDate)) {
                     $lastDateResult = 'Fail';
-                    $failureReason[] = array('warning'=>"Response was submitted after the last response date.",
-					     'correctiveAction'=>$correctiveActions[1]);
-		    $correctiveActionList[] = 1;
+                    $failureReason[] = array('warning' => "Response was submitted after the last response date.",
+                        'correctiveAction' => $correctiveActions[1]);
+                    $correctiveActionList[] = 1;
                 }
 
 
@@ -510,7 +510,10 @@ class Application_Service_Evaluation {
 
 
                 foreach ($results as $result) {
-
+                    //if Sample is not mandatory, we will skip the evaluation
+                    if(0 == $result['mandatory']){
+                        continue;
+                    }
                     $testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 
                     $r1 = $r2 = $r3 = '';
@@ -546,40 +549,37 @@ class Application_Service_Evaluation {
 
                     if ($attributes['algorithm'] == 'serial') {
 
-		    
+
                         if ($r1 == 'NR') {
                             if (($r2 == '-') && ($r3 == '-')) {
                                 $algoResult = 'Pass';
                             } else {
                                 $algoResult = 'Fail';
-                                $failureReason[] = array('warning'=>"For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
-							 'correctiveAction'=>$correctiveActions[2]);
-				$correctiveActionList[] = 2;
+                                $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
+                                    'correctiveAction' => $correctiveActions[2]);
+                                $correctiveActionList[] = 2;
                             }
                         }
 //			else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'NR') {
 //                            $algoResult = 'Pass';
 //                        }
-			else if ($r1 == 'R' && $r2 == 'R') {
+                        else if ($r1 == 'R' && $r2 == 'R') {
                             if (($r3 == '-')) {
                                 $algoResult = 'Pass';
                             } else {
                                 $algoResult = 'Fail';
-                                $failureReason[] = array('warning'=>"For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
-							 'correctiveAction'=>$correctiveActions[2]);
-				$correctiveActionList[] = 2;
+                                $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
+                                    'correctiveAction' => $correctiveActions[2]);
+                                $correctiveActionList[] = 2;
                             }
                         } else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'R') {
                             $algoResult = 'Pass';
                         } else {
                             $algoResult = 'Fail';
-                            $failureReason[] = array('warning'=>"For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
-						     'correctiveAction'=>$correctiveActions[2]);
-			    $correctiveActionList[] = 2;
+                            $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
+                                'correctiveAction' => $correctiveActions[2]);
+                            $correctiveActionList[] = 2;
                         }
-			
-			
-			
                     } else if ($attributes['algorithm'] == 'parallel') {
 
                         if ($r1 == 'R' && $r2 == 'R') {
@@ -588,9 +588,9 @@ class Application_Service_Evaluation {
                             } else {
 
                                 $algoResult = 'Fail';
-                                $failureReason[] = array('warning'=>"For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
-							 'correctiveAction'=>$correctiveActions[2]);
-				$correctiveActionList[] = 2;
+                                $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
+                                    'correctiveAction' => $correctiveActions[2]);
+                                $correctiveActionList[] = 2;
                             }
                         } else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'R') {
                             $algoResult = 'Pass';
@@ -601,9 +601,9 @@ class Application_Service_Evaluation {
                                 $algoResult = 'Pass';
                             } else {
                                 $algoResult = 'Fail';
-                                $failureReason[] = array('warning'=>"For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
-							 'correctiveAction'=>$correctiveActions[2]);
-				$correctiveActionList[] = 2;
+                                $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
+                                    'correctiveAction' => $correctiveActions[2]);
+                                $correctiveActionList[] = 2;
                             }
                         } else if ($r1 == 'NR' && $r2 == 'R' && $r3 == 'NR') {
                             $algoResult = 'Pass';
@@ -611,9 +611,9 @@ class Application_Service_Evaluation {
                             $algoResult = 'Pass';
                         } else {
                             $algoResult = 'Fail';
-                            $failureReason[] = array('warning'=>"For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
-						     'correctiveAction'=>$correctiveActions[2]);
-			    $correctiveActionList[] = 2;
+                            $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
+                                'correctiveAction' => $correctiveActions[2]);
+                            $correctiveActionList[] = 2;
                         }
                     }
 
@@ -623,9 +623,9 @@ class Application_Service_Evaluation {
                             $totalScore += $result['sample_score'];
                         } else {
                             if ($result['sample_score'] > 0) {
-                                $failureReason[] = array('warning'=>"<strong>" . $result['sample_label'] . "</strong> - Reported Sample result does not match the reference result",
-							 'correctiveAction'=>$correctiveActions[3]);
-				$correctiveActionList[] = 3;
+                                $failureReason[] = array('warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported Sample result does not match the reference result",
+                                    'correctiveAction' => $correctiveActions[3]);
+                                $correctiveActionList[] = 3;
                             }
                         }
                     }
@@ -635,10 +635,10 @@ class Application_Service_Evaluation {
                     if ($result['mandatory'] == 1) {
                         if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
                             $mandatoryResult = 'Fail';
-			    $shipment['is_excluded'] = 'yes';
-                            $failureReason[] = array('warning'=>"Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported. Result not evaluated.",
-						     'correctiveAction'=>$correctiveActions[4]);
-			    $correctiveActionList[] = 4;
+                            $shipment['is_excluded'] = 'yes';
+                            $failureReason[] = array('warning' => "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported. Result not evaluated.",
+                                'correctiveAction' => $correctiveActions[4]);
+                            $correctiveActionList[] = 4;
                         }
                         //else if(($result['reference_result'] != $result['reported_result'])){
                         //	$mandatoryResult = 'Fail';
@@ -697,18 +697,18 @@ class Application_Service_Evaluation {
                             if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
                                 $testKitExpiryResult = 'Fail';
                             }
-                            $failureReason[] = array('warning'=>"Test Kit 1 (<strong>" . $testKit1 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
-						     'correctiveAction'=>$correctiveActions[5]);
-			    $correctiveActionList[] = 5;
+                            $failureReason[] = array('warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
+                                'correctiveAction' => $correctiveActions[5]);
+                            $correctiveActionList[] = 5;
                         }
                     } else {
                         if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
                             $testKitExpiryResult = 'Fail';
                         }
-                        $failureReason[] = array('warning'=>"Test Kit 1 (<strong>" . $testKit1 . "</strong>) reported without expiry date. Result not evaluated.",
-						 'correctiveAction'=>$correctiveActions[6]);
-			$correctiveActionList[] = 6;
-			$shipment['is_excluded'] = 'yes';
+                        $failureReason[] = array('warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) reported without expiry date. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[6]);
+                        $correctiveActionList[] = 6;
+                        $shipment['is_excluded'] = 'yes';
                     }
                 }
                 $testDate = $testedOn->toString('dd-MMM-YYYY');
@@ -723,18 +723,18 @@ class Application_Service_Evaluation {
                             if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
                                 $testKitExpiryResult = 'Fail';
                             }
-                            $failureReason[] = array('warning'=>"Test Kit 2 (<strong>" . $testKit2 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
-						      'correctiveAction'=>$correctiveActions[5]);
-			    $correctiveActionList[] = 5;
+                            $failureReason[] = array('warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
+                                'correctiveAction' => $correctiveActions[5]);
+                            $correctiveActionList[] = 5;
                         }
                     } else {
                         if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
                             $testKitExpiryResult = 'Fail';
                         }
-                        $failureReason[] = array('warning'=>"Test Kit 2 (<strong>" . $testKit2 . "</strong>) reported without expiry date. Result not evaluated.",
-					    'correctiveAction'=>$correctiveActions[6]);
-			$correctiveActionList[] = 6;
-			$shipment['is_excluded'] = 'yes';
+                        $failureReason[] = array('warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) reported without expiry date. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[6]);
+                        $correctiveActionList[] = 6;
+                        $shipment['is_excluded'] = 'yes';
                     }
                 }
 
@@ -751,139 +751,139 @@ class Application_Service_Evaluation {
                             if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
                                 $testKitExpiryResult = 'Fail';
                             }
-                            $failureReason[] = array('warning'=>"Test Kit 3 (<strong>" . $testKit3 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
-						     'correctiveAction'=>$correctiveActions[5]);
-			    $correctiveActionList[] = 5;
+                            $failureReason[] = array('warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
+                                'correctiveAction' => $correctiveActions[5]);
+                            $correctiveActionList[] = 5;
                         }
                     } else {
                         if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
                             $testKitExpiryResult = 'Fail';
                         }
-                        $failureReason[] = array('warning'=>"Test Kit 3 (<strong>" . $testKit3 . "</strong>) reported without expiry date. Result not evaluated.",
-					    'correctiveAction'=>$correctiveActions[6]);
-			$correctiveActionList[] = 6;
-			$shipment['is_excluded'] = 'yes';
+                        $failureReason[] = array('warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) reported without expiry date. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[6]);
+                        $correctiveActionList[] = 6;
+                        $shipment['is_excluded'] = 'yes';
                     }
                 }
                 //checking if testkits were repeated
                 if (($testKit1 == "") && ($testKit2 == "") && ($testKit3 == "")) {
-                    $failureReason[] = array('warning'=>"No Test Kit reported. Result not evaluated",
-					'correctiveAction'=>$correctiveActions[7]);
-		    $correctiveActionList[] = 7;
-		    $shipment['is_excluded'] = 'yes';
+                    $failureReason[] = array('warning' => "No Test Kit reported. Result not evaluated",
+                        'correctiveAction' => $correctiveActions[7]);
+                    $correctiveActionList[] = 7;
+                    $shipment['is_excluded'] = 'yes';
                 } else if (($testKit1 == "")) {
-                    $failureReason[] = array('warning'=>"Test Kit 1 not reported");
+                    $failureReason[] = array('warning' => "Test Kit 1 not reported");
                 } else if (($testKit1 != "") && ($testKit2 != "") && ($testKit3 != "") && ($testKit1 == $testKit2) && ($testKit2 == $testKit3)) {
                     //$testKitRepeatResult = 'Fail';
-                    $failureReason[] = array('warning'=>"<strong>$testKit1</strong> repeated for all three Test Kits",
-					     'correctiveAction'=>$correctiveActions[8]);
-		    $correctiveActionList[] = 8;
+                    $failureReason[] = array('warning' => "<strong>$testKit1</strong> repeated for all three Test Kits",
+                        'correctiveAction' => $correctiveActions[8]);
+                    $correctiveActionList[] = 8;
                 } else {
                     if (($testKit1 != "") && ($testKit2 != "") && ($testKit1 == $testKit2) && $testKit1 != "" && $testKit2 != "") {
                         //$testKitRepeatResult = 'Fail';
-                        $failureReason[] = array('warning'=>"<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2",
-					     'correctiveAction'=>$correctiveActions[9]);
-			$correctiveActionList[] = 9;
+                        $failureReason[] = array('warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2",
+                            'correctiveAction' => $correctiveActions[9]);
+                        $correctiveActionList[] = 9;
                     }
                     if (($testKit2 != "") && ($testKit3 != "") && ($testKit2 == $testKit3) && $testKit2 != "" && $testKit3 != "") {
                         //$testKitRepeatResult = 'Fail';
-                        $failureReason[] = array('warning'=>"<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3",
-					     'correctiveAction'=>$correctiveActions[9]);
-			$correctiveActionList[] = 9;
+                        $failureReason[] = array('warning' => "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3",
+                            'correctiveAction' => $correctiveActions[9]);
+                        $correctiveActionList[] = 9;
                     }
                     if (($testKit1 != "") && ($testKit3 != "") && ($testKit1 == $testKit3) && $testKit1 != "" && $testKit3 != "") {
                         //$testKitRepeatResult = 'Fail';
-                        $failureReason[] = array('warning'=>"<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3",
-					     'correctiveAction'=>$correctiveActions[9]);
-			$correctiveActionList[] = 9;
+                        $failureReason[] = array('warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3",
+                            'correctiveAction' => $correctiveActions[9]);
+                        $correctiveActionList[] = 9;
                     }
                 }
 
 
                 // checking if all LOT details were entered
                 if ($testKit1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
-		    if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
-                            $lotResult = 'Fail';
-			    $failureReason[] = array('warning'=>"<strong>Lot No. 1</strong> was not reported. Result not evaluated.",
-					     'correctiveAction'=>$correctiveActions[10]);
-			    $correctiveActionList[] = 10;
-			    $shipment['is_excluded'] = 'yes';
+                    if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
+                        $lotResult = 'Fail';
+                        $failureReason[] = array('warning' => "<strong>Lot No. 1</strong> was not reported. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[10]);
+                        $correctiveActionList[] = 10;
+                        $shipment['is_excluded'] = 'yes';
                     }
                 }
                 if ($testKit2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)) {
-		    if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
-                            $lotResult = 'Fail';
-			    $failureReason[] = array('warning'=>"<strong>Lot No. 2</strong> was not reported. Result not evaluated.",
-					     'correctiveAction'=>$correctiveActions[10]);
-			    $correctiveActionList[] = 10;
-			    $shipment['is_excluded'] = 'yes';
+                    if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
+                        $lotResult = 'Fail';
+                        $failureReason[] = array('warning' => "<strong>Lot No. 2</strong> was not reported. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[10]);
+                        $correctiveActionList[] = 10;
+                        $shipment['is_excluded'] = 'yes';
                     }
                 }
                 if ($testKit3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)) {
-		    if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
-			$lotResult = 'Fail';
-			$failureReason[] = array('warning'=>"<strong>Lot No. 3</strong> was not reported. Result not evaluated.",
-					     'correctiveAction'=>$correctiveActions[10]);
-			$correctiveActionList[] = 10;
-			$shipment['is_excluded'] = 'yes';
+                    if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
+                        $lotResult = 'Fail';
+                        $failureReason[] = array('warning' => "<strong>Lot No. 3</strong> was not reported. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[10]);
+                        $correctiveActionList[] = 10;
+                        $shipment['is_excluded'] = 'yes';
                     }
                 }
 
                 // checking if total score and maximum scores are the same
-		if($maxScore == 0 || $totalScore == 0){
-		    $responseScore = 0;
-		}else{
-		    $responseScore = round(($totalScore/$maxScore)*100 *(100-$config->evaluation->dts->documentationScore)/100,2);    
-		}
-		
-		
-		//Let us now calculate documentation score
-		$documentationScore = 0;
-		$documentationScorePerItem = ($config->evaluation->dts->documentationScore/4);
+                if ($maxScore == 0 || $totalScore == 0) {
+                    $responseScore = 0;
+                } else {
+                    $responseScore = round(($totalScore / $maxScore) * 100 * (100 - $config->evaluation->dts->documentationScore) / 100, 2);
+                }
 
-		if(strtolower($result['supervisor_approval']) == 'yes' && trim($result['participant_supervisor']) != ""){
-		    $documentationScore += $documentationScorePerItem;
-		}else{
-		    $failureReason[] = array('warning'=>"Supervisor approval absent",
-					     'correctiveAction'=>$correctiveActions[11]);
-		    $correctiveActionList[] = 11;
-		}
-		
-		if(isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != ""){
-		    $documentationScore += $documentationScorePerItem;
-		}else{
-		    $failureReason[] = array('warning'=>"Sample rehydration date not provided",
-					     'correctiveAction'=>$correctiveActions[12]);
-		    $correctiveActionList[] = 12;
-		}
-		
-		if(isset($results[0]['shipment_test_date']) && trim($results[0]['shipment_test_date']) != ""){
-		    $documentationScore += $documentationScorePerItem;
-		}else{
-		    $failureReason[] = array('warning'=>"Shipment received test date not provided",
-					     'correctiveAction'=>$correctiveActions[13]);
-		    $correctiveActionList[] = 13;
-		}
-		
-		$sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
+
+                //Let us now calculate documentation score
+                $documentationScore = 0;
+                $documentationScorePerItem = ($config->evaluation->dts->documentationScore / 4);
+
+                if (strtolower($result['supervisor_approval']) == 'yes' && trim($result['participant_supervisor']) != "") {
+                    $documentationScore += $documentationScorePerItem;
+                } else {
+                    $failureReason[] = array('warning' => "Supervisor approval absent",
+                        'correctiveAction' => $correctiveActions[11]);
+                    $correctiveActionList[] = 11;
+                }
+
+                if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
+                    $documentationScore += $documentationScorePerItem;
+                } else {
+                    $failureReason[] = array('warning' => "Sample rehydration date not provided",
+                        'correctiveAction' => $correctiveActions[12]);
+                    $correctiveActionList[] = 12;
+                }
+
+                if (isset($results[0]['shipment_test_date']) && trim($results[0]['shipment_test_date']) != "") {
+                    $documentationScore += $documentationScorePerItem;
+                } else {
+                    $failureReason[] = array('warning' => "Shipment received test date not provided",
+                        'correctiveAction' => $correctiveActions[13]);
+                    $correctiveActionList[] = 13;
+                }
+
+                $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
                 $testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
                 // Testing should be done within 24 hours of rehydration.
                 $diff = $testedOn->sub($sampleRehydrationDate)->toValue();
                 $days = ceil($diff / 60 / 60 / 24) + 1;
                 if ($days > 1) {
-                    $failureReason[] = array('warning'=>"Testing should be done within 24 hours of rehydration.",
-					     'correctiveAction'=>$correctiveActions[14]);
-		    $correctiveActionList[] = 14;
-                }else{
-		    $documentationScore += $documentationScorePerItem;
-		}
-		
-		$grandTotal = ($responseScore+$documentationScore);
+                    $failureReason[] = array('warning' => "Testing should be done within 24 hours of rehydration.",
+                        'correctiveAction' => $correctiveActions[14]);
+                    $correctiveActionList[] = 14;
+                } else {
+                    $documentationScore += $documentationScorePerItem;
+                }
+
+                $grandTotal = ($responseScore + $documentationScore);
                 if ($grandTotal < $config->evaluation->dts->passPercentage) {
                     $scoreResult = 'Fail';
-                    $failureReason[] = array('warning'=>"Participant did not meet the score criteria (Participant Score is <strong>".$grandTotal."</strong> and Required Score is <strong>".$config->evaluation->dts->passPercentage."</strong>)",
-					     'correctiveAction'=>$correctiveActions[15]);
-		    $correctiveActionList[] = 15;
+                    $failureReason[] = array('warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $config->evaluation->dts->passPercentage . "</strong>)",
+                        'correctiveAction' => $correctiveActions[15]);
+                    $correctiveActionList[] = 15;
                 } else {
                     $scoreResult = 'Pass';
                 }
@@ -893,12 +893,12 @@ class Application_Service_Evaluation {
                 if ($shipment['is_excluded'] == 'yes') {
                     $finalResult = '';
                     $shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
-		    $shipmentResult[$counter]['documentation_score'] = 0;
+                    $shipmentResult[$counter]['documentation_score'] = 0;
                     $shipmentResult[$counter]['display_result'] = '';
-		    $failureReason[] = array('warning'=>'Excluded from Evaluation');
+                    $failureReason[] = array('warning' => 'Excluded from Evaluation');
                     $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
                 } else {
-		    $shipment['is_excluded'] = 'no';
+                    $shipment['is_excluded'] = 'no';
                     // if any of the results have failed, then the final result is fail
                     if ($algoResult == 'Fail' || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
                         $finalResult = 2;
@@ -918,16 +918,16 @@ class Application_Service_Evaluation {
                 $shipmentResult[$counter]['max_score'] = $maxScore;
 
                 // let us update the total score in DB
-                $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore,'documentation_score' => $documentationScore, 'final_result' => $finalResult,'is_excluded'=>$shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
+                $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
                 $nofOfRowsDeleted = $db->delete('dts_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
-		$correctiveActionList = array_unique($correctiveActionList);
-		foreach($correctiveActionList as $ca){
-		    $db->insert('dts_shipment_corrective_action_map', array('shipment_map_id'=>$shipment['map_id'],'corrective_action_id' => $ca), "map_id = " . $shipment['map_id']);
-		}
-                
+                $correctiveActionList = array_unique($correctiveActionList);
+                foreach ($correctiveActionList as $ca) {
+                    $db->insert('dts_shipment_corrective_action_map', array('shipment_map_id' => $shipment['map_id'], 'corrective_action_id' => $ca), "map_id = " . $shipment['map_id']);
+                }
+
                 $counter++;
             }
-	    
+
             $db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
         } else if ($shipmentResult[0]['scheme_type'] == 'vl') {
             $counter = 0;
@@ -1029,7 +1029,7 @@ class Application_Service_Evaluation {
                     $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
                     $counter++;
                 } else {
-                    $failureReason = array('warning'=>"Response was submitted after the last response date.");
+                    $failureReason = array('warning' => "Response was submitted after the last response date.");
 
                     $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
                 }
@@ -1154,10 +1154,10 @@ class Application_Service_Evaluation {
 
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);	
+        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $sql = $db->select()->from(array('s' => 'shipment'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('fullscore' => new Zend_Db_Expr("(if((sp.shipment_score+sp.documentation_score) >= ".$config->evaluation->dts->passPercentage.", 1, 0))")))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('fullscore' => new Zend_Db_Expr("(if((sp.shipment_score+sp.documentation_score) >= " . $config->evaluation->dts->passPercentage . ", 1, 0))")))
                 ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
                 ->where("sp.shipment_id = ?", $shipmentId)
                 ->where("substring(sp.evaluation_status,4,1) != '0'")
@@ -1270,6 +1270,7 @@ class Application_Service_Evaluation {
             return "Unable to update shipment comment. Please try again later.";
         }
     }
+
     public function updateShipmentStatus($shipmentId, $status) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -1284,11 +1285,11 @@ class Application_Service_Evaluation {
 
     public function getShipmentToEvaluateReports($shipmentId, $reEvaluate = false) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('s' => 'shipment',array('shipment_id','shipment_code','status','number_of_samples')))
-                ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id',array('distribution_code','distribution_date'))
+        $sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
+                ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
-                ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type',array('scheme_name'))
-                ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id',array('first_name','last_name'))
+                ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
+                ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('first_name', 'last_name'))
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result')
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->where("substring(sp.evaluation_status,4,1) != '0'");
@@ -1304,7 +1305,7 @@ class Application_Service_Evaluation {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment','sp.documentation_score'))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score'))
                 ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
                 ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
@@ -1313,126 +1314,125 @@ class Application_Service_Evaluation {
                 ->where("substring(sp.evaluation_status,4,1) != '0'");
         //error_log($sql);die;
         $shipmentResult = $db->fetchAll($sql);
-	
+
         //Zend_Debug::dump($shipmentResult);die;
         $i = 0;
-	//$mapRes="";
-	$mapRes = array();
+        //$mapRes="";
+        $mapRes = array();
         foreach ($shipmentResult as $res) {
-		$dmResult=$db->fetchAll($db->select()->from(array('pmm'=>'participant_manager_map'))
-					->join(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('institute'))
-					->where("pmm.participant_id=".$res['participant_id']));
-		if(isset($res['last_name']) && trim($res['last_name'])!=""){
-			$res['last_name']="_".$res['last_name'];
-		}
-		
-		foreach($dmResult as $dmRes){
-			if(count($mapRes)==0){
-				$mapRes[$dmRes['dm_id']]=$dmRes['institute']."#".$dmRes['participant_id']."#".$res['first_name'].$res['last_name']."-".$res['map_id'];
-			}
-			else if (array_key_exists($dmRes['dm_id'], $mapRes)) {
-				$mapRes[$dmRes['dm_id']].=",".$dmRes['institute']."#".$dmRes['participant_id']."#".$res['first_name'].$res['last_name']."-".$res['map_id'];
-			}else{
-				$mapRes[$dmRes['dm_id']]=$dmRes['institute']."#".$dmRes['participant_id']."#".$res['first_name'].$res['last_name']."-".$res['map_id'];
-			}
-		}
-		if ($res['scheme_type'] == 'dbs') {
-		    $sQuery = $db->select()->from(array('resdbs' => 'response_result_dbs'), array('resdbs.shipment_map_id', 'resdbs.sample_id', 'resdbs.reported_result', 'responseDate' => 'resdbs.created_on'))
-			    ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdbs.reported_result', array('labResult' => 'respr.response'))
-			    ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdbs.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-			    ->join(array('refdbs' => 'reference_result_dbs'), 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', array('refdbs.reference_result', 'refdbs.sample_label'))
-			    ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdbs.reference_result', array('referenceResult' => 'refpr.response'))
-			    ->where("resdbs.shipment_map_id = ?", $res['map_id']);
-    
-		    $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
-		} else if ($res['scheme_type'] == 'dts') {
-		    
-		    $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on'))
-			    ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
-			    ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-			    ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label'))
-			    ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
-			    ->where("resdts.shipment_map_id = ?", $res['map_id']);
-		    //error_log($sQuery);
-		    $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
-		} else if ($res['scheme_type'] == 'eid') {
-    
-		    $sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'responseDate' => 'reseid.created_on'))
-			    ->join(array('respr' => 'r_possibleresult'), 'respr.id=reseid.reported_result', array('labResult' => 'respr.response'))
-			    ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-			    ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label'))
-			    ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
-			    ->where("reseid.shipment_map_id = ?", $res['map_id']);
-		    //error_log($sQuery);
-		    $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
-		} else if ($res['scheme_type'] == 'vl') {
-		    $schemeService = new Application_Service_Schemes();
-		    $vlAssayResultSet = $schemeService->getVlAssay();
-		    $vlAssayList = array();
-		    foreach ($vlAssayResultSet as $vlAssayRow) {
-			$vlAssayList[$vlAssayRow['id']] = $vlAssayRow['name'];
-		    }
-    
-		    $vlRange = $schemeService->getVlRange($shipmentId);
-		    $results = $schemeService->getVlSamples($shipmentId, $res['participant_id']);
-    
-		    $attributes = json_decode($res['attributes'], true);
-		    $counter = 0;
-		    $toReturn = array();
-		    foreach ($results as $result) {
-			//$toReturn = array();
-			$responseAssay = json_decode($result['attributes'], true);
-			$toReturn[$counter]['vl_assay'] = $vlAssayList[$responseAssay['vl_assay']];
-			$responseAssay = $responseAssay['vl_assay'];
-    
-			$toReturn[$counter]['sample_label'] = $result['sample_label'];
-			$toReturn[$counter]['shipment_map_id'] = $result['map_id'];
-			$toReturn[$counter]['shipment_id'] = $result['shipment_id'];
-			$toReturn[$counter]['responseDate'] = $result['responseDate'];
-			$toReturn[$counter]['shipment_score'] = $result['shipment_score'];
-			$toReturn[$counter]['max_score'] = $result['max_score'];
-			$toReturn[$counter]['reported_viral_load'] = $result['reported_viral_load'];
-			if (isset($vlRange[$responseAssay])) {
-			    // matching reported and low/high limits
-			    if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
-				if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
-				    $grade = 'Acceptable';
-				} else {
-				    $grade = 'Not Acceptable';
-				}
-			    }
-    
-			    if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
-				if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
-				    $grade = 'Acceptable';
-				} else {
-				    if ($result['sample_score'] > 0) {
-					$grade = 'Not Acceptable';
-				    } else {
-					$grade = '-';
-				    }
-				}
-			    }
-    
-			    $toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['low'];
-			    $toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['high'];
-			    $toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
-			    $toReturn[$counter]['mean'] = $vlRange[$responseAssay][$result['sample_id']]['mean'];
-			} else {
-			    $toReturn[$counter]['low'] = 'Not Applicable';
-			    $toReturn[$counter]['high'] = 'Not Applicable';
-			    $toReturn[$counter]['sd'] = 'Not Applicable';
-			    $toReturn[$counter]['mean'] = 'Not Applicable';
-			    $grade = 'Not Applicable';
-			}
-			$toReturn[$counter]['grade'] = $grade;
-    
-    
-			$counter++;
-		    }
-    
-		    $shipmentResult[$i]['responseResult'] = $toReturn;
-		}
+            $dmResult = $db->fetchAll($db->select()->from(array('pmm' => 'participant_manager_map'))
+                            ->join(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('institute'))
+                            ->where("pmm.participant_id=" . $res['participant_id']));
+            if (isset($res['last_name']) && trim($res['last_name']) != "") {
+                $res['last_name'] = "_" . $res['last_name'];
+            }
+
+            foreach ($dmResult as $dmRes) {
+                if (count($mapRes) == 0) {
+                    $mapRes[$dmRes['dm_id']] = $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $res['first_name'] . $res['last_name'] . "-" . $res['map_id'];
+                } else if (array_key_exists($dmRes['dm_id'], $mapRes)) {
+                    $mapRes[$dmRes['dm_id']].="," . $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $res['first_name'] . $res['last_name'] . "-" . $res['map_id'];
+                } else {
+                    $mapRes[$dmRes['dm_id']] = $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $res['first_name'] . $res['last_name'] . "-" . $res['map_id'];
+                }
+            }
+            if ($res['scheme_type'] == 'dbs') {
+                $sQuery = $db->select()->from(array('resdbs' => 'response_result_dbs'), array('resdbs.shipment_map_id', 'resdbs.sample_id', 'resdbs.reported_result', 'responseDate' => 'resdbs.created_on'))
+                        ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdbs.reported_result', array('labResult' => 'respr.response'))
+                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdbs.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
+                        ->join(array('refdbs' => 'reference_result_dbs'), 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', array('refdbs.reference_result', 'refdbs.sample_label'))
+                        ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdbs.reference_result', array('referenceResult' => 'refpr.response'))
+                        ->where("resdbs.shipment_map_id = ?", $res['map_id']);
+
+                $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+            } else if ($res['scheme_type'] == 'dts') {
+
+                $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on'))
+                        ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
+                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
+                        ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label'))
+                        ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
+                        ->where("resdts.shipment_map_id = ?", $res['map_id']);
+                //error_log($sQuery);
+                $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+            } else if ($res['scheme_type'] == 'eid') {
+
+                $sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'responseDate' => 'reseid.created_on'))
+                        ->join(array('respr' => 'r_possibleresult'), 'respr.id=reseid.reported_result', array('labResult' => 'respr.response'))
+                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
+                        ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label'))
+                        ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
+                        ->where("reseid.shipment_map_id = ?", $res['map_id']);
+                //error_log($sQuery);
+                $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+            } else if ($res['scheme_type'] == 'vl') {
+                $schemeService = new Application_Service_Schemes();
+                $vlAssayResultSet = $schemeService->getVlAssay();
+                $vlAssayList = array();
+                foreach ($vlAssayResultSet as $vlAssayRow) {
+                    $vlAssayList[$vlAssayRow['id']] = $vlAssayRow['name'];
+                }
+
+                $vlRange = $schemeService->getVlRange($shipmentId);
+                $results = $schemeService->getVlSamples($shipmentId, $res['participant_id']);
+
+                $attributes = json_decode($res['attributes'], true);
+                $counter = 0;
+                $toReturn = array();
+                foreach ($results as $result) {
+                    //$toReturn = array();
+                    $responseAssay = json_decode($result['attributes'], true);
+                    $toReturn[$counter]['vl_assay'] = $vlAssayList[$responseAssay['vl_assay']];
+                    $responseAssay = $responseAssay['vl_assay'];
+
+                    $toReturn[$counter]['sample_label'] = $result['sample_label'];
+                    $toReturn[$counter]['shipment_map_id'] = $result['map_id'];
+                    $toReturn[$counter]['shipment_id'] = $result['shipment_id'];
+                    $toReturn[$counter]['responseDate'] = $result['responseDate'];
+                    $toReturn[$counter]['shipment_score'] = $result['shipment_score'];
+                    $toReturn[$counter]['max_score'] = $result['max_score'];
+                    $toReturn[$counter]['reported_viral_load'] = $result['reported_viral_load'];
+                    if (isset($vlRange[$responseAssay])) {
+                        // matching reported and low/high limits
+                        if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
+                            if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
+                                $grade = 'Acceptable';
+                            } else {
+                                $grade = 'Not Acceptable';
+                            }
+                        }
+
+                        if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
+                            if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
+                                $grade = 'Acceptable';
+                            } else {
+                                if ($result['sample_score'] > 0) {
+                                    $grade = 'Not Acceptable';
+                                } else {
+                                    $grade = '-';
+                                }
+                            }
+                        }
+
+                        $toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['low'];
+                        $toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['high'];
+                        $toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
+                        $toReturn[$counter]['mean'] = $vlRange[$responseAssay][$result['sample_id']]['mean'];
+                    } else {
+                        $toReturn[$counter]['low'] = 'Not Applicable';
+                        $toReturn[$counter]['high'] = 'Not Applicable';
+                        $toReturn[$counter]['sd'] = 'Not Applicable';
+                        $toReturn[$counter]['mean'] = 'Not Applicable';
+                        $grade = 'Not Applicable';
+                    }
+                    $toReturn[$counter]['grade'] = $grade;
+
+
+                    $counter++;
+                }
+
+                $shipmentResult[$i]['responseResult'] = $toReturn;
+            }
 
             $i++;
             $db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
@@ -1452,8 +1452,8 @@ class Application_Service_Evaluation {
                 }
             }
         }
-	
-        $result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation,'dmResult'=>$mapRes);
+
+        $result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'dmResult' => $mapRes);
 
         return $result;
     }
@@ -1479,7 +1479,7 @@ class Application_Service_Evaluation {
                 $shipmentResult['referenceResult'] = $sqlRes;
                 //Zend_Debug::dump($shipmentResult['referenceResult']);die;
 
-                $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score','spm.documentation_score', 'spm.attributes'))
+                $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'))
                         ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
                         ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
                         ->where("spm.shipment_id = ?", $shipmentId)
@@ -1629,7 +1629,7 @@ class Application_Service_Evaluation {
                         $extId = $extractionAssayVal['id'];
                         $detId = $detectionAssayVal['id'];
 
-                        $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score','spm.documentation_score', 'spm.attributes'))
+                        $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'))
                                 ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=spm.shipment_id', array('refeid.sample_label'))
                                 ->join(array('eidExtrac' => 'r_eid_extraction_assay'), "eidExtrac.id=$extId", array('eidExtracName' => 'eidExtrac.name'))
                                 ->join(array('eidDetec' => 'r_eid_detection_assay'), "eidDetec.id=$detId", array('eidDetecName' => 'eidDetec.name'))
