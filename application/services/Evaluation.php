@@ -1351,7 +1351,7 @@ class Application_Service_Evaluation {
                 $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
                         ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-                        ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label'))
+                        ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("resdts.shipment_map_id = ?", $res['map_id']);
                 //error_log($sQuery);
@@ -1548,7 +1548,7 @@ class Application_Service_Evaluation {
                 }
                 //die;
             } else if ($shipmentResult['scheme_type'] == 'dts') {
-                $sql = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.reference_result', 'refdts.sample_label'))
+                $sql = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("refdts.shipment_id = ?", $shipmentResult['shipment_id']);
                 $sqlRes = $db->fetchAll($sql);
