@@ -1560,6 +1560,7 @@ class Application_Service_Evaluation {
                         ->where("spm.shipment_id = ?", $shipmentId)
                         ->where("spm.final_result IS NOT NULL")
                         ->where("spm.final_result!=''")
+                       // ->where("spm.final_result = ?",'2')
                         ->where("substring(spm.evaluation_status,4,1) != '0'")
                         ->group('spm.map_id');
                 $sQueryRes = $db->fetchAll($sQuery);
@@ -1638,6 +1639,7 @@ class Application_Service_Evaluation {
                                 ->where("spm.attributes LIKE '%\"detection_assay\":\"$detId\"%' ")
                                 ->where("spm.final_result IS NOT NULL")
                                 ->where("spm.final_result!=''")
+                                //->where("spm.final_result = ?",'2')
                                 ->where("substring(spm.evaluation_status,4,1) != '0'")
                                 ->group('spm.map_id');
                         //echo "<br/>";

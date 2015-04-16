@@ -1,6 +1,6 @@
 <?php
 
-//Zend_Debug::dump($this->result['pieChart']);die;
+//Zend_Debug::dump($this->result['summaryResult']);die;
 require_once('tcpdf/tcpdf.php');
 //require_once('libchart/classes/libchart.php');
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -287,7 +287,8 @@ if ($this->result != "") {
                     }
                     //echo $maxScore;die;
                     $per = ($result[$i]['shipment_score'] / $this->result['max_score']) * 100;
-                    $dataSet->addPoint(new Point($result[$i]['unique_identifier'], $per));
+                    //$dataSet->addPoint(new Point($result[$i]['unique_identifier'], $per));
+                    $dataSet->addPoint(new Point('', $per));
                 }
 
                 $scoringPer = round(($maxScore / $partCount) * 100, 2);
