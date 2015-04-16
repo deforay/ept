@@ -243,7 +243,6 @@ class Application_Service_Shipments {
     }
 
     public function updateDtsResults($params) {
-
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
             return false;
         }

@@ -1,4 +1,6 @@
 <?php
+//&& $this->shipments[0]["shipment_test_report_date"]!='' && $this->shipments[0]["shipment_test_report_date"]!='0000-00-00 00:00:00' &&  $this->shipments[0]["shipment_test_report_date"]!=null && $this->shipments[0]["shipment_test_report_date"]!='NULL'
+//Zend_Debug::dump($this->shipments);die;
 if($this->shipments == false && count($this->shipments) <= 0){
 	echo "<br/><br/><br/><h4 style='text-align:center;'>Unable fetch shipments. Please try again later or contact system admin for help</h4>";
 }else{
@@ -37,7 +39,7 @@ if($this->shipments == false && count($this->shipments) <= 0){
 					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
 					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
 					<td style="text-align: center;">
-						<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
+						<?php if (isset($shipment["reported_count"]) && $shipment["reported_count"] > 0 && $shipment["responseDate"]!=null && $shipment["responseDate"]!='NULL' && $shipment["responseDate"]!='' ) { ?>
 						<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
 						<?php } else { ?>
 						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
