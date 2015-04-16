@@ -202,6 +202,7 @@
 		    "bScrollCollapse": true,
 		    "sPaginationType": "bootstrap",
 		    "bRetrieve": true,
+		    "bdestroy": false,
 		    "aoColumns": [
 			{"bSortable": false, "aTargets": [ 0 ] },
 			{"sClass":"center"},
@@ -250,7 +251,7 @@
 				alert("scheme result removed successfully");
                                 oTable.fnStandingRedraw();
                                // oTable.fnDraw();
-                               location.reload();
+                             //  location.reload();
 				$.unblockUI();
 			});
 		}		

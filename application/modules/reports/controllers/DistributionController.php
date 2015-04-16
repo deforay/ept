@@ -75,7 +75,8 @@ class Reports_DistributionController extends Zend_Controller_Action
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
             $evalService = new Application_Service_Evaluation();
-            $this->view->result = $evalService->getSummaryReportsInPdf($id);
+            $this->view->result=$result = $evalService->getSummaryReportsInPdf($id);
+           // Zend_Debug::dump($result);die;
             $this->view->participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($id);
             $this->view->correctiveness = $reportService->getCorrectiveActionReportByShipmentId($id);
         }

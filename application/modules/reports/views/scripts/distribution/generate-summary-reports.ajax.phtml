@@ -16,6 +16,7 @@ if ($this->result != "") {
 
 // Extend the TCPDF class to create custom Header and Footer
     class MYPDF extends TCPDF {
+
         public function setSchemeName($header, $schemeName, $logo) {
             $this->scheme_name = $schemeName;
             $this->header = $header;
@@ -61,6 +62,7 @@ if ($this->result != "") {
             // Page number
             $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }
+
     }
 
 // create new PDF document
@@ -186,7 +188,7 @@ if ($this->result != "") {
                 $sampleCode.='</table>';
                 $sampleCode.='</div></br></br>';
 
-  //----------------Participant Performance Overview  start----------------
+                //----------------Participant Performance Overview  start----------------
                 $sampleCode.='<div><span style="text-decoration: underline;">Participant Performance Overview</span><br/><br/><table border="1" style="margin-left:5px;"><tr>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Response</td>';
@@ -201,23 +203,22 @@ if ($this->result != "") {
                 $sampleCode.='</tr>';
 
                 $sampleCode.='</table></div>';
-  //----------------Participant Performance Overview  Ends----------------     
-                
-  //----------------Participant Corrective Action Overview  start----------------
+                //----------------Participant Performance Overview  Ends----------------     
+                //----------------Participant Corrective Action Overview  start----------------
                 $sampleCode.='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/><br/><table border="1" style="margin-left:5px;"><tr>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Response </td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td></tr>';
-                foreach($this->correctiveness as $correctiveness){
-                $sampleCode.='<tr>';
-                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
-                $sampleCode.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
-                $sampleCode.='</tr>';
+                foreach ($this->correctiveness as $correctiveness) {
+                    $sampleCode.='<tr>';
+                    $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
+                    $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
+                    $sampleCode.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
+                    $sampleCode.='</tr>';
                 }
                 $sampleCode.='</table></div><br/><br/>';
-                
- //----------------Participant Corrective Action Overview  Ends----------------
+
+                //----------------Participant Corrective Action Overview  Ends----------------
 
 
 
@@ -230,16 +231,21 @@ if ($this->result != "") {
         $pdf->AddPage('L', 'A4');
         $pdf->SetFont('times', 'B', 12);
         if (count($this->result['referenceResult']) > 0) {
-            
-            
-            $referenceRes='<table style="text-align:center;width:100%" align="left">';
+
+
+            $referenceRes = '<table style="text-align:center;width:100%" align="left">';
             $referenceRes.='<tr>';
-            $referenceRes.='<td style="width:10%">PT Survey</td><td style="width:2%;">:</td><td style="font-weight:normal;width:22%;">'.$this->result['distribution_code'].'</td>';
-            $referenceRes.='<td style="width:14%">PT Survey Date</td><td style="width:2%;">:</td><td style="font-weight:normal;width:10%;">'. $this->dateFormat($this->result['shipment_date']).'</td>';
-            $referenceRes.='<td style="width:14%">Shipment Code</td><td style="width:2%;">:</td><td style="font-weight:normal;width:22%;">'.$this->result['shipment_code'].'</td>';
+            $referenceRes.='<td style="width:10%">PT Survey</td><td style="width:2%;">:</td><td style="font-weight:normal;width:22%;">' . $this->result['distribution_code'] . '</td>';
+            $referenceRes.='<td style="width:14%">PT Survey Date</td><td style="width:2%;">:</td><td style="font-weight:normal;width:10%;">' . $this->dateFormat($this->result['shipment_date']) . '</td>';
+            $referenceRes.='<td style="width:14%">Shipment Code</td><td style="width:2%;">:</td><td style="font-weight:normal;width:22%;">' . $this->result['shipment_code'] . '</td>';
             $referenceRes.='</tr>';
             $referenceRes.='</table>';
             $referenceRes.= '<p style="font-weight: bold;text-decoration: underline;">Reference Result </p>';
+            foreach ($this->result['referenceResult'] as $refRes) {
+                if ($refRes['mandatory']=='0' || $refRes['mandatory']==0) {
+                    $referenceRes.= '<p style="font-weight: normal;">Sample <strong>' . $refRes['sample_label'] . '</strong> excluded from the evaluation</p>';
+                }
+            }
             $referenceRes.='<table border="1" style="text-align:center;font-weight:bold;" align="center">';
             $referenceRes.='<tr>';
             $referenceRes.='<td style="background-color:#989898;">Specimen Panel ID</td>';
@@ -338,38 +344,37 @@ if ($this->result != "") {
 
             $sampleCode.='</table></br><br/><br/>';
 //----------------Participant Performance Overview  start----------------
-                $sampleCode.='<div><span style="text-decoration: underline;">Participant Performance Overview</span><br/><br/>';
-                $sampleCode.='<table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Response</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Response</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
+            $sampleCode.='<div><span style="text-decoration: underline;">Participant Performance Overview</span><br/><br/>';
+            $sampleCode.='<table border="1" style="margin-left:5px;"><tr>';
+            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
+            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Response</td>';
+            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Response</td>';
+            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
 
-                $sampleCode.='<tr>';
-                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_shipped'] . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['valid_responses'] . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . round($this->participantPerformance['average_score'], 2) . '</td>';
-                $sampleCode.='</tr>';
+            $sampleCode.='<tr>';
+            $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_shipped'] . '</td>';
+            $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
+            $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['valid_responses'] . '</td>';
+            $sampleCode.='<td style="text-align:center;">' . round($this->participantPerformance['average_score'], 2) . '</td>';
+            $sampleCode.='</tr>';
 
-                $sampleCode.='</table></div>';
-  //----------------Participant Performance Overview  Ends----------------     
-                
-  //----------------Participant Corrective Action Overview  start----------------
-                $sampleCode.='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/><br/><table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Response </td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td></tr>';
-                foreach($this->correctiveness as $correctiveness){
+            $sampleCode.='</table></div>';
+            //----------------Participant Performance Overview  Ends----------------     
+            //----------------Participant Corrective Action Overview  start----------------
+            $sampleCode.='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/><br/><table border="1" style="margin-left:5px;"><tr>';
+            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Response </td>';
+            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
+            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td></tr>';
+            foreach ($this->correctiveness as $correctiveness) {
                 $sampleCode.='<tr>';
                 $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
                 $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
                 $sampleCode.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
                 $sampleCode.='</tr>';
-                }
-                $sampleCode.='</table></div><br/><br/>';
-                
- //----------------Participant Corrective Action Overview  Ends----------------
+            }
+            $sampleCode.='</table></div><br/><br/>';
+
+            //----------------Participant Corrective Action Overview  Ends----------------
 
             $pdf->writeHTML($sampleCode, true, false, true, false, '');
             $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';

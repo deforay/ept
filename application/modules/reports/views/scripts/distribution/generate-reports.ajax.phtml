@@ -196,6 +196,11 @@ foreach($this->result['shipment'] as $result){
 	
 	
 	$html='<p style="font-weight: bold;">Your laboratory test results : <br/></p>';
+         foreach ($result['responseResult'] as $response) {
+                if ($response['mandatory']=='0' || $response['mandatory']==0) {
+                    $html.= '<p style="font-weight: normal;text-align:center;width:400px;">Sample <strong>' . $response['sample_label'] . '</strong> excluded from the evaluation</p>';
+                }
+            }
 	$pdf->writeHTML($html, true, false, true, false, '');
 	if(sizeof($result['responseResult'])>0){
 		if($schemeType != 'vl'){

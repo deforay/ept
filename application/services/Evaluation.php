@@ -1340,7 +1340,7 @@ class Application_Service_Evaluation {
                 $sQuery = $db->select()->from(array('resdbs' => 'response_result_dbs'), array('resdbs.shipment_map_id', 'resdbs.sample_id', 'resdbs.reported_result', 'responseDate' => 'resdbs.created_on'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdbs.reported_result', array('labResult' => 'respr.response'))
                         ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdbs.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-                        ->join(array('refdbs' => 'reference_result_dbs'), 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', array('refdbs.reference_result', 'refdbs.sample_label'))
+                        ->join(array('refdbs' => 'reference_result_dbs'), 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', array('refdbs.reference_result', 'refdbs.sample_label','resdbs.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdbs.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("resdbs.shipment_map_id = ?", $res['map_id']);
 
@@ -1350,7 +1350,7 @@ class Application_Service_Evaluation {
                 $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
                         ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-                        ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label'))
+                        ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label','refdts.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("resdts.shipment_map_id = ?", $res['map_id']);
                 //error_log($sQuery);
@@ -1360,7 +1360,7 @@ class Application_Service_Evaluation {
                 $sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'responseDate' => 'reseid.created_on'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=reseid.reported_result', array('labResult' => 'respr.response'))
                         ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-                        ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label'))
+                        ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label','refeid.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("reseid.shipment_map_id = ?", $res['map_id']);
                 //error_log($sQuery);
@@ -1443,7 +1443,7 @@ class Application_Service_Evaluation {
             $vlAssayResultSet = $schemeService->getVlAssay();
             foreach ($vlAssayResultSet as $vlAssayRow) {
                 $vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
-                                ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label'))
+                                ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label','refVl.mandatory'))
                                 ->where("vlCal.shipment_id=?", $res['shipment_id'])->where("vlCal.vl_assay=?", $vlAssayRow['id']));
 
                 if (count($vlCalRes) > 0) {
@@ -1471,7 +1471,7 @@ class Application_Service_Evaluation {
         if ($shipmentResult != "") {
             $db->update('shipment', array('status' => 'evaluated'), "shipment_id = " . $shipmentId);
             if ($shipmentResult['scheme_type'] == 'dbs') {
-                $sql = $db->select()->from(array('refdbs' => 'reference_result_dbs'), array('refdbs.reference_result', 'refdbs.sample_label'))
+                $sql = $db->select()->from(array('refdbs' => 'reference_result_dbs'), array('refdbs.reference_result', 'refdbs.sample_label','refdbs.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdbs.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("refdbs.shipment_id = ?", $shipmentResult['shipment_id']);
                 $sqlRes = $db->fetchAll($sql);
@@ -1547,7 +1547,7 @@ class Application_Service_Evaluation {
                 }
                 //die;
             } else if ($shipmentResult['scheme_type'] == 'dts') {
-                $sql = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.reference_result', 'refdts.sample_label'))
+                $sql = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.reference_result', 'refdts.sample_label','refdts.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("refdts.shipment_id = ?", $shipmentResult['shipment_id']);
                 $sqlRes = $db->fetchAll($sql);
@@ -1644,7 +1644,7 @@ class Application_Service_Evaluation {
                         $sQueryRes = $db->fetchAll($sQuery);
 
                         if (count($sQueryRes) > 0) {
-                            $tQuery = $db->select()->from(array('refeid' => 'reference_result_eid'), array('refeid.sample_id', 'refeid.sample_label'))
+                            $tQuery = $db->select()->from(array('refeid' => 'reference_result_eid'), array('refeid.sample_id', 'refeid.sample_label','refeid.mandatory'))
                                     ->join(array('reseid' => 'response_result_eid'), 'reseid.sample_id=refeid.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN reseid.reported_result=refeid.reference_result THEN 1 ELSE 0 END)")))
                                     ->join(array('spm' => 'shipment_participant_map'), 'reseid.shipment_map_id=spm.map_id and refeid.shipment_id=spm.shipment_id', array())
                                     ->where("spm.attributes LIKE '%\"extraction_assay\":\"$extId\"%' ")
