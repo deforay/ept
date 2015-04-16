@@ -191,7 +191,7 @@ class Application_Service_Shipments {
 //                $row[] = $edit.'<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
 //            }
 
-              $row[] = $edit.$enrolled.$delete;
+            $row[] = $edit.$enrolled.$delete;
             $output['aaData'][] = $row;
         }
 

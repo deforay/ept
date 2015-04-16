@@ -1,0 +1,117 @@
+<?php
+//Zend_Debug::dump($this->mailTemplateDetails);die;
+$title='';
+if($this->mailPurpose=='new_shipment'){
+    $title='New Shipment Announcement';
+}else if($this->mailPurpose=='not_participated'){
+    $title='Not Participated Reminder';
+}
+?>
+<div class="well">
+    <form name="mailTemplate" id="mailTemplate" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "mail-template", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
+        <fieldset>
+            <legend><?php echo $title ; ?> Mail Template</legend>
+            <div class="form-group">
+                <label for="adminName" class="col-lg-3 control-label">From Name <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <input type="text" class="form-control isRequired" id="adminName" name="adminName" placeholder="Enter Admin Name" title="Please enter from name" value="<?php echo $this->mailTemplateDetails["from_name"]; ?>" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="adminEmail" class="col-lg-3 control-label">From Email <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <input type="text" class="form-control isRequired" id="adminEmail" name="adminEmail" placeholder="Enter Admin Email" title="Please enter from email" value="<?php echo $this->mailTemplateDetails["mail_from"]; ?>" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="adminBcc" class="col-lg-3 control-label">Bcc</label>
+                <div class="col-lg-6">
+                    <textarea class="form-control" id="adminBcc" name="adminBcc" placeholder="Enter comma seperated mails" title="Please enter bcc mails"><?php echo $this->mailTemplateDetails["mail_bcc"]; ?></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="adminCc" class="col-lg-3 control-label">Cc </label>
+                <div class="col-lg-6">
+                    <textarea class="form-control" id="adminCc" name="adminCc" placeholder="Enter comma seperated mails" title="Please enter Cc mails"><?php echo $this->mailTemplateDetails["mail_cc"]; ?></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Note:</label>
+                <div class="col-lg-6">
+                    <p class="form-control-static" style="color: red;">You can enter comma[,] seperated email ids.</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="subject" class="col-lg-3 control-label">Subject <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <textarea class="form-control isRequired" id="subject" name="subject" placeholder="Enter Subject" title="Please enter subject"><?php echo $this->mailTemplateDetails["mail_subject"]; ?></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="message" class="col-lg-3 control-label">Message <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <textarea class="form-control" id="message" name="message" placeholder="Enter Message" title="Please enter message"><?php echo $this->mailTemplateDetails["mail_content"]; ?></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="message" class="col-lg-3 control-label">Key</label>
+                <div class="col-lg-6">
+                    <span class="help-block">Lab Name/Participant Name : ##NAME##</span>
+                    <span class="help-block">Shipment Code : ##SHIPCODE##</span>
+                    <span class="help-block">Scheme Type : ##SHIPTYPE##</span>
+                    <span class="help-block">PT Survey Code : ##SURVEYCODE##</span>
+                    <span class="help-block">PT Survey Date : ##SURVEYDATE##</span>
+                </div>
+            </div>
+             <div class="form-group">
+                <label for="footer" class="col-lg-3 control-label">Footer</label>
+                <div class="col-lg-6">
+                    <textarea class="form-control" id="footer" name="footer" placeholder="Enter Footer Content" title="Please footer content"><?php echo $this->mailTemplateDetails["mail_footer"]; ?></textarea>
+                </div>
+            </div>
+            <input type="hidden" id="mailPurpose" name="mailPurpose" value="<?php echo $this->mailPurpose; ?>" />
+            <input type="hidden" id="mailId" name="mailId" value="<?php echo $this->mailTemplateDetails["mail_temp_id"]; ?>" />
+            
+            <br>
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();
+                        return false;" tabindex="7" value="Update"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/index';" tabindex="8" value="Cancel"/>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript" src="<?php echo $this->baseUrl('plugins/ckeditor/ckeditor.js'); ?>"></script>
+<script type="text/javascript">
+                    function validateNow() {
+                        var message = CKEDITOR.instances['message'].getData();
+                        $("#message").html(message);
+                        flag = deforayValidator.init({
+                            formId: 'mailTemplate'
+                        });
+                        if (flag) {
+                            $.blockUI();
+                            document.getElementById('mailTemplate').submit();
+                        }
+                    }
+                    $(document).ready(function () {
+                        CKEDITOR.config.width = 740;
+                        CKEDITOR.replace('message', {
+                            filebrowserBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=files'); ?>',
+                            filebrowserImageBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=images'); ?>',
+                            filebrowserFlashBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=flash'); ?>',
+                            filebrowserUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=files'); ?>',
+                            filebrowserImageUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=images'); ?>',
+                            filebrowserFlashUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=flash'); ?>'
+                        });
+                        CKEDITOR.replace('footer', {
+                            filebrowserBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=files'); ?>',
+                            filebrowserImageBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=images'); ?>',
+                            filebrowserFlashBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=flash'); ?>',
+                            filebrowserUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=files'); ?>',
+                            filebrowserImageUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=images'); ?>',
+                            filebrowserFlashUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=flash'); ?>'
+                        });
+                    });
+</script>

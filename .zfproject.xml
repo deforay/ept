@@ -112,6 +112,7 @@
           <dbTableFile dbTableName="ReportConfig"/>
           <dbTableFile dbTableName="Countries"/>
           <dbTableFile dbTableName="TestkitnameDts"/>
+          <dbTableFile dbTableName="MailTemplate"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>
@@ -202,6 +203,9 @@
               <actionMethod actionName="edit"/>
               <actionMethod actionName="standardKit"/>
               <actionMethod actionName="getTestkit"/>
+            </controllerFile>
+            <controllerFile controllerName="MailTemplate">
+              <actionMethod actionName="index"/>
             </controllerFile>
           </controllersDirectory>
           <formsDirectory enabled="false"/>
@@ -377,6 +381,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Evaluate">
                 <viewScriptFile forActionName="updateShipmentStatus"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="MailTemplate">
+                <viewScriptFile forActionName="index"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

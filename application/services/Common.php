@@ -166,6 +166,34 @@ class Application_Service_Common {
 	$db = new Application_Model_DbTable_GlobalConfig();
 	$db->updateConfigDetails($params);
     }
+    public function getEmailTemplate($purpose){
+        $db = new Application_Model_DbTable_MailTemplate();
+        return $db->getEmailTemplateDetails($purpose);
+    }
+    public function updateTemplate($params){
+        $filterRules = array(
+                    '*' => 'StripTags',
+                    '*' => 'StringTrim'
+                );
+
+        $filter = new Zend_Filter_Input($filterRules, null, $params);
+
+        if ($filter->isValid()) {
+
+            $params = $filter->getEscaped();
+            $db= new Application_Model_DbTable_MailTemplate();
+            $db->getAdapter()->beginTransaction();
+
+            try {
+                $result=$db->updateMailTemplateDetails($params);
+                $db->getAdapter()->commit();
+            } catch (Exception $exc) {
+                $db->getAdapter()->rollBack();
+                error_log($exc->getMessage());
+                error_log($exc->getTraceAsString());
+            }
+        }        
+    }
 
 }
 

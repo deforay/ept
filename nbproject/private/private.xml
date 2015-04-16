@@ -3,12 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/var/www/ept/application/models/DbTable/Shipments.php</file>
-            <file>file:/var/www/ept/application/services/Shipments.php</file>
-            <file>file:/var/www/ept/application/controllers/ParticipantController.php</file>
-            <file>file:/var/www/ept/application/models/DbTable/ShipmentParticipantMap.php</file>
-            <file>file:/var/www/ept/application/views/scripts/dts/response.phtml</file>
-            <file>file:/var/www/ept/application/modules/admin/views/scripts/global-config/index.phtml</file>
+            <file>file:/var/www/ept/application/models/DbTable/Enrollments.php</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/EvaluateController.php</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/ContactUsController.php</file>
+            <file>file:/var/www/ept/application/layouts/scripts/admin.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/views/scripts/mail-template/index.phtml</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/ShipmentController.php</file>
+            <file>file:/var/www/ept/docs/alter-commands.sql</file>
+            <file>file:/var/www/ept/application/modules/admin/controllers/MailTemplateController.php</file>
+            <file>file:/var/www/ept/application/services/Common.php</file>
+            <file>file:/var/www/ept/application/models/DbTable/MailTemplate.php</file>
         </group>
     </open-files>
 </project-private>
