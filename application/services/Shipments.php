@@ -295,6 +295,7 @@ class Application_Service_Shipments {
                 "supervisor_approval" =>'',
                 "participant_supervisor" =>'',
                 "user_comment" => '',
+                "final_result" => '',
                 "updated_by_user" => $authNameSpace->dm_id,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
