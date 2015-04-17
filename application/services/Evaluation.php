@@ -1547,7 +1547,8 @@ class Application_Service_Evaluation {
                 }
                 //die;
             } else if ($shipmentResult['scheme_type'] == 'dts') {
-                $sql = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.reference_result', 'refdts.sample_label','refdts.mandatory'))
+                $sql = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory'))
+
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("refdts.shipment_id = ?", $shipmentResult['shipment_id']);
                 $sqlRes = $db->fetchAll($sql);

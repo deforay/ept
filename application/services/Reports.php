@@ -929,9 +929,13 @@ class Application_Service_Reports {
 
 
             $row = array();
+			$exclamation = "";
+			if($aRow['mandatory'] == 0){
+				$exclamation = "&nbsp;&nbsp;&nbsp;<i class='icon-exclamation' style='color:red;'></i>";
+			}
             $row[] = $aRow['scheme_name'];
             $row[] = $aRow['shipment_code'];
-            $row[] = $aRow['sample_label'];
+            $row[] = $aRow['sample_label'].$exclamation;
             $row[] = $aRow['response'];
             $row[] = $aRow['positive_responses'];
             $row[] = $aRow['negative_responses'];
@@ -1368,7 +1372,7 @@ class Application_Service_Reports {
         $sheet->setTitle('Participant List');
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval','sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
                 ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status'))
                 ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
                 ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
