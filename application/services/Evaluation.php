@@ -508,10 +508,11 @@ class Application_Service_Evaluation {
                 //$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
 
 
-
+				$samplePassOrFail = array();
                 foreach ($results as $result) {
                     //if Sample is not mandatory, we will skip the evaluation
                     if(0 == $result['mandatory']){
+						$db->update('response_result_dts', array('calculated_score' => "Skipped"), "shipment_map_id = ".$result['map_id']." and sample_id = ".$result['sample_id']);
                         continue;
                     }
                     $testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
@@ -636,7 +637,7 @@ class Application_Service_Evaluation {
                     $maxScore += $result['sample_score'];
 
                     // checking if mandatory fields were entered and were entered right
-                    if ($result['mandatory'] == 1) {
+                    //if ($result['mandatory'] == 1) {
                         if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
                             $mandatoryResult = 'Fail';
                             $shipment['is_excluded'] = 'yes';
@@ -648,9 +649,14 @@ class Application_Service_Evaluation {
                         //	$mandatoryResult = 'Fail';
                         //	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
                         //}
-                    }
+                    //}
+					
+					if($algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])){
+						$db->update('response_result_dts', array('calculated_score' => "Fail"), "shipment_map_id = ".$result['map_id']." and sample_id = ".$result['sample_id']);
+					}else{
+						$db->update('response_result_dts', array('calculated_score' => "Pass"), "shipment_map_id = ".$result['map_id']." and sample_id = ".$result['sample_id']);
+					}
                 }
-
 
                 // checking test kit expiry dates
 
@@ -931,6 +937,7 @@ class Application_Service_Evaluation {
 
                 $counter++;
             }
+			
 
             $db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
         } else if ($shipmentResult[0]['scheme_type'] == 'vl') {
@@ -1353,7 +1360,7 @@ class Application_Service_Evaluation {
 
                 $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on','calculated_score'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
-                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id','sp.attributes','sp.supervisor_approval','sp.participant_supervisor','sp.shipment_test_date'))
+                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id','sp.attributes','sp.supervisor_approval','sp.participant_supervisor','sp.shipment_test_date','sp.failure_reason'))
                         ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label','refdts.mandatory','refdts.sample_score'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("resdts.shipment_map_id = ?", $res['map_id']);
