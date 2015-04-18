@@ -53,6 +53,14 @@
 			<span class="input-group-addon">%</span>
 		</div>				
             </div>
+			
+            <div class="form-group">
+                <label for="dtsOptionalTest3" class="col-lg-3 control-label">DTS Test 3 is Optional<span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<input type="radio" name="dtsOptionalTest3" id="dtsOptionalTest3_yes" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3=="yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether 3rd Test Is optional or not"/> Yes
+					<input type="radio" name="dtsOptionalTest3" id="dtsOptionalTest3_no" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
+				</div>			
+            </div>
 
             </table>
             <br>

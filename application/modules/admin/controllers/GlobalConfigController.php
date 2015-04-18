@@ -21,6 +21,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
             $config->$sec->instituteName=$this->getRequest()->getPost('instituteName');
             $config->$sec->evaluation->dts->passPercentage=$this->getRequest()->getPost('dtsPassPercentage');
             $config->$sec->evaluation->dts->documentationScore=$this->getRequest()->getPost('dtsDocumentationScore');
+            $config->$sec->evaluation->dts->dtsOptionalTest3=$this->getRequest()->getPost('dtsOptionalTest3');
             
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)

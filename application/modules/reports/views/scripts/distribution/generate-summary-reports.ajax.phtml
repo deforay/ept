@@ -7,7 +7,7 @@ $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs"
 if ($this->result != "") {
     if ($this->result['scheme_type'] != 'eid') {
         require_once('libchart/classes/libchart.php');
-        $chart = new VerticalBarChart(800, 400);
+        $chart = new VerticalBarChart(900, 400);
         $dataSet = new XYDataSet();
     }
     if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
@@ -205,15 +205,17 @@ if ($this->result != "") {
                 $sampleCode.='</table></div>';
                 //----------------Participant Performance Overview  Ends----------------     
                 //----------------Participant Corrective Action Overview  start----------------
-                $sampleCode.='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/><br/><table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Response </td>';
+                $sampleCode.='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/><br/>
+                        <table border="1" style="margin-left:5px;"><tr>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td></tr>';
+
+                $sampleCode.='</tr>';
                 foreach ($this->correctiveness as $correctiveness) {
                     $sampleCode.='<tr>';
-                    $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
-                    $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
                     $sampleCode.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
+                    $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
+                    
                     $sampleCode.='</tr>';
                 }
                 $sampleCode.='</table></div><br/><br/>';
@@ -265,7 +267,7 @@ if ($this->result != "") {
                 $nmsTable="<table><tr><td style='width:100%;text-align:center'>";
                 $nmsTable.="Please note :<br/>";    
                 foreach($nonMandatorySamples as $nms){
-                    $nmsTable.="Sample <strong>".$nms."</strong> has been excluded from Evaluation<br/>";    
+                    $nmsTable.="Sample <strong>".$nms."</strong> has been excluded from evaluation<br/>";    
                 }
                 
                 $nmsTable.="</td></tr></table>";
@@ -275,33 +277,53 @@ if ($this->result != "") {
         }
         if (count($this->result['summaryResult']) > 0) {
             $labCounter = 1;
+            $pass = $config->evaluation->dts->passPercentage;
+            $barPoints["0 - 59"] = 0;
+            $barPoints["60 - 69"] = 0;
+            $barPoints["70 - $pass"] = 0;
+            $abovePass =sprintf("above $pass");
+            $barPoints[$abovePass] = 0;
+            
             foreach ($this->result['summaryResult'] as $result) {
                 $maxScore = 0;
                 $belowScore = 0;
                 $partCount = count($result) - 1;
                 //Zend_Debug::dump($result['correctCount']);
                 for ($i = 0; $i < $partCount; $i++) {
-                    if (($result[$i]['shipment_score'] + $result[$i]['documentation_score']) >= $config->evaluation->dts->passPercentage) {
+                    
+                    $totalScore = $result[$i]['shipment_score'] + $result[$i]['documentation_score'];
+                    if ($totalScore >0 && $totalScore < 60){
+                        $barPoints["0 - 59"]++;
+                    }else if($totalScore > 59 && $totalScore < 70){
+                        $barPoints["60 - 69"]++;
+                    }else if($totalScore > 69 && $totalScore <= $pass){
+                        $barPoints["70 - $pass"]++;
+                    }
+                    else if ($totalScore > $config->evaluation->dts->passPercentage) {
+                        
+                        $barPoints[$abovePass]++;
+                    } else {
+                        
+                    }
+                    if (($totalScore) >= $config->evaluation->dts->passPercentage) {
                         $maxScore++;
-                        continue;
                     } else {
                         $belowScore++;
                     }
-                    
-                    //$per = ($result[$i]['shipment_score'] / $this->result['max_score']) * 100;
-                    $per = $result[$i]['shipment_score']+$result[$i]['documentation_score'];
-                    $dataSet->addPoint(new Point($labCounter, $per));
                     $labCounter++;
                 }
 
                 $scoringPer = round(($maxScore / $partCount) * 100, 2);
             }
 
+            foreach($barPoints as $key=>$val){
+                $dataSet->addPoint(new Point($key, $val));
+            }
 
             $chart->setDataSet($dataSet);
 
             //Bound::setUpperBound(50);
-            $chart->setTitle("Comparison of test performance between participating laboratories scoring below Pass Percentage");
+            $chart->setTitle("Comparison of test performance between participating laboratories");
             $chart->render(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
 
             // set font
@@ -406,7 +428,7 @@ if ($this->result != "") {
             //$pdf->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
         }
         
-        $pdf->AddPage();
+        //$pdf->AddPage();
 
         if ($this->result['scheme_type'] == 'dts') {
             if (count($this->result['pieChart']) > 0) {

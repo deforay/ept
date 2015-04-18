@@ -535,15 +535,19 @@ class Application_Service_Evaluation {
                     } else {
                         $r2 = '-';
                     }
-                    if ($result['test_result_3'] == 1) {
-                        $r3 = 'R';
-                    } else if ($result['test_result_3'] == 2) {
-                        $r3 = 'NR';
-                    } else if ($result['test_result_3'] == 3) {
-                        $r3 = 'I';
-                    } else {
-                        $r3 = '-';
-                    }
+					if(isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes'){
+						$r3 = 'X';	
+					}else{
+						if ($result['test_result_3'] == 1) {
+							$r3 = 'R';
+						} else if ($result['test_result_3'] == 2) {
+							$r3 = 'NR';
+						} else if ($result['test_result_3'] == 3) {
+							$r3 = 'I';
+						} else {
+							$r3 = '-';
+						}
+					}
 
                     $algoString = "Wrongly reported in the pattern : <strong>" . $r1 . "</strong> <strong>" . $r2 . "</strong> <strong>" . $r3 . "</strong>";
 
@@ -551,7 +555,7 @@ class Application_Service_Evaluation {
 
 
                         if ($r1 == 'NR') {
-                            if (($r2 == '-') && ($r3 == '-')) {
+                            if (($r2 == '-') && ($r3 == '-' || $r3 == 'X')) {
                                 $algoResult = 'Pass';
                             } else {
                                 $algoResult = 'Fail';
@@ -564,7 +568,7 @@ class Application_Service_Evaluation {
 //                            $algoResult = 'Pass';
 //                        }
                         else if ($r1 == 'R' && $r2 == 'R') {
-                            if (($r3 == '-')) {
+                            if (($r3 == '-' || $r3 == 'X')) {
                                 $algoResult = 'Pass';
                             } else {
                                 $algoResult = 'Fail';
@@ -572,7 +576,7 @@ class Application_Service_Evaluation {
                                     'correctiveAction' => $correctiveActions[2]);
                                 $correctiveActionList[] = 2;
                             }
-                        } else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'R') {
+                        } else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'R' || $r3 == 'X')) {
                             $algoResult = 'Pass';
                         } else {
                             $algoResult = 'Fail';
@@ -583,7 +587,7 @@ class Application_Service_Evaluation {
                     } else if ($attributes['algorithm'] == 'parallel') {
 
                         if ($r1 == 'R' && $r2 == 'R') {
-                            if (($r3 == '-')) {
+                            if (($r3 == '-' || $r3 == 'X')) {
                                 $algoResult = 'Pass';
                             } else {
 
@@ -592,12 +596,12 @@ class Application_Service_Evaluation {
                                     'correctiveAction' => $correctiveActions[2]);
                                 $correctiveActionList[] = 2;
                             }
-                        } else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'R') {
+                        } else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'R' || $r3 == 'X')) {
                             $algoResult = 'Pass';
-                        } else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'NR') {
+                        } else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'NR' || $r3 == 'X')) {
                             $algoResult = 'Pass';
                         } else if ($r1 == 'NR' && $r2 == 'NR') {
-                            if (($r3 == '-')) {
+                            if (($r3 == '-' || $r3 == 'X')) {
                                 $algoResult = 'Pass';
                             } else {
                                 $algoResult = 'Fail';
@@ -605,9 +609,9 @@ class Application_Service_Evaluation {
                                     'correctiveAction' => $correctiveActions[2]);
                                 $correctiveActionList[] = 2;
                             }
-                        } else if ($r1 == 'NR' && $r2 == 'R' && $r3 == 'NR') {
+                        } else if ($r1 == 'NR' && $r2 == 'R' && ($r3 == 'NR' || $r3 == 'X')) {
                             $algoResult = 'Pass';
-                        } else if ($r1 == 'NR' && $r2 == 'R' && $r3 == 'R') {
+                        } else if ($r1 == 'NR' && $r2 == 'R' && ($r3 == 'R' || $r3 == 'X')) {
                             $algoResult = 'Pass';
                         } else {
                             $algoResult = 'Fail';
