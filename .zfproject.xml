@@ -180,6 +180,8 @@
               <actionMethod actionName="unenrollments"/>
               <actionMethod actionName="addEnrollments"/>
               <actionMethod actionName="getShipmentCode"/>
+               <actionMethod actionName="newShipmentMail"/>
+                <actionMethod actionName="notParticipatedMail"/>
             </controllerFile>
             <controllerFile controllerName="Evaluate">
               <actionMethod actionName="index"/>
@@ -365,6 +367,12 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Shipment">
                 <viewScriptFile forActionName="getShipmentCode"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="newShipmentMail"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="notParticipatedMail"/>
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Testkit">
                 <viewScriptFile forActionName="index"/>
