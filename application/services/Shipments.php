@@ -10,8 +10,8 @@ class Application_Service_Shipments {
         //$aColumns = array('project_name','project_code','e.employee_name','client_name','architect_name','project_value','building_type_name','DATE_FORMAT(p.project_date,"%d-%b-%Y")','DATE_FORMAT(p.deadline,"%d-%b-%Y")','refered_by','emp.employee_name');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'number_of_samples', 's.status');
-        $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'number_of_samples', 's.status');
+        $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'number_of_samples', 's.status',"DATE_FORMAT(last_new_shipment_mailed_on,'%d-%b-%Y')", 'new_shipment_mail_count');
+        $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'number_of_samples', 's.status', 'last_new_shipment_mailed_on', 'new_shipment_mail_count');
 
 
         /* Indexed column (used for fast and accurate table cardinality) */
@@ -94,7 +94,7 @@ class Application_Service_Shipments {
 
         $sQuery = $db->select()->from(array('s' => 'shipment'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-		->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants'=> new Zend_Db_Expr('count(map_id)')))
+		->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants'=> new Zend_Db_Expr('count(map_id)'),'last_new_shipment_mailed_on','new_shipment_mail_count'))
 		->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
 		->group('s.shipment_id');
 
@@ -143,7 +143,7 @@ class Application_Service_Shipments {
         );
 
         foreach ($rResult as $aRow) {
-
+            $mailedOn='';
             $row = array();
             if ($aRow['status'] == 'ready') {
                 $btn = "btn-success";
@@ -152,7 +152,11 @@ class Application_Service_Shipments {
             } else {
                 $btn = "btn-primary";
             }
-
+            if($aRow['last_new_shipment_mailed_on']!=''){
+            $mailedOn=  explode(' ', $aRow['last_new_shipment_mailed_on']);
+            $mailedOn=  Pt_Commons_General::humanDateFormat($mailedOn[0]).' '.$mailedOn[1];
+            }
+           
             //$row[] = $aRow['shipment_code'];
             $row[] = '<a href="/admin/shipment/view-enrollments/id/' . base64_encode($aRow['shipment_id']) . '/shipmentCode/' . $aRow['shipment_code'] . '" target="_blank">' . $aRow['shipment_code'] . '</a>';
             $row[] = $aRow['SCHEME'];
@@ -162,9 +166,12 @@ class Application_Service_Shipments {
             $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['total_participants'];
             $row[] = ucfirst($aRow['status']);
+             $row[] = $mailedOn;
+             $row[] = $aRow['new_shipment_mail_count'];
             $edit='';
             $enrolled='';
             $delete='';
+            $announcementMail='';
             if($aRow['status'] != 'finalized'){
                 $edit='&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-edit"></i> Edit</span></a>';
             }else{
@@ -175,6 +182,7 @@ class Application_Service_Shipments {
                 $enrolled='&nbsp;<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>';
             }else if($aRow['status']=='shipped'){
                 $enrolled='&nbsp;<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
+                $announcementMail='&nbsp;<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> New Shipment Mail</span></a>';
             }
             
             if($aRow['status'] != 'finalized'){
@@ -191,7 +199,7 @@ class Application_Service_Shipments {
 //                $row[] = $edit.'<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
 //            }
 
-            $row[] = $edit.$enrolled.$delete;
+            $row[] = $edit.$enrolled.$delete.$announcementMail;
             $output['aaData'][] = $row;
         }
 
@@ -1137,4 +1145,79 @@ class Application_Service_Shipments {
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->getShipmentReportDetails($parameters);
     }
+     public function getShipmentParticipants($sid) {
+        $commonServices = new Application_Service_Common();
+        $general = new Pt_Commons_General();
+        $newShipmentMailContent = $commonServices->getEmailTemplate('new_shipment');
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $return=0;
+        $sQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id','sp.map_id','sp.new_shipment_mail_count'))
+                  ->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('s.shipment_code','s.shipment_code'))
+                  ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+                  ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email','participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+                  ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+                  ->where("sp.shipment_id = ?", $sid)
+                  ->group("p.participant_id");
+        $participantEmails=$db->fetchAll($sQuery);
+        
+        foreach($participantEmails as $participantDetails){
+            if($participantDetails['email']!=''){
+            $surveyDate=$general->humanDateFormat($participantDetails['distribution_date']);
+            $search = array('##NAME##','##SHIPCODE##','##SHIPTYPE##','##SURVEYCODE##','##SURVEYDATE##',);
+            $replace = array($participantDetails['participantName'],$participantDetails['shipment_code'],$participantDetails['SCHEME'],$participantDetails['distribution_code'],$surveyDate);
+            $content = $newShipmentMailContent['mail_content'];
+            $message = str_replace($search, $replace, $content);
+            $subject = $newShipmentMailContent['mail_subject'];
+            $message = $message;
+            $fromEmail =$newShipmentMailContent['mail_from'];
+            $fromFullName = $newShipmentMailContent['from_name'];
+            $toEmail =$participantDetails['email'];
+            $cc=$newShipmentMailContent['mail_cc'];
+            $bcc=$newShipmentMailContent['mail_bcc'];
+            $commonServices->insertTempMail($toEmail,$cc,$bcc, $subject, $message, $fromEmail, $fromFullName);
+            $count=$participantDetails['new_shipment_mail_count']+1;
+            $return=$db->update('shipment_participant_map', array('last_new_shipment_mailed_on' => new Zend_Db_Expr('now()'), 'new_shipment_mail_count' => $count), 'map_id = ' . $participantDetails['map_id']);
+           }
+        }
+        return $return;
+    }
+    public function getShipmentNotParticipated($sid) {
+        $commonServices = new Application_Service_Common();
+        $general = new Pt_Commons_General();
+        $notParticipatedMailContent = $commonServices->getEmailTemplate('not_participated');
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $return=0;
+        $sQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id','sp.map_id','sp.new_shipment_mail_count'))
+                  ->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('s.shipment_code','s.shipment_code'))
+                  ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+                  ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email','participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+                  ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+                  ->where("sp.shipment_id = ?", $sid)
+                  ->where("sp.final_result!='1'")
+                  ->where("sp.final_result!='2'")
+                  ->group("p.participant_id");
+        $participantEmails=$db->fetchAll($sQuery);
+        
+        foreach($participantEmails as $participantDetails){
+            if($participantDetails['email']!=''){
+            $surveyDate=$general->humanDateFormat($participantDetails['distribution_date']);
+            $search = array('##NAME##','##SHIPCODE##','##SHIPTYPE##','##SURVEYCODE##','##SURVEYDATE##',);
+            $replace = array($participantDetails['participantName'],$participantDetails['shipment_code'],$participantDetails['SCHEME'],$participantDetails['distribution_code'],$surveyDate);
+            $content = $notParticipatedMailContent['mail_content'];
+            $message = str_replace($search, $replace, $content);
+            $subject = $notParticipatedMailContent['mail_subject'];
+            $message = $message;
+            $fromEmail =$notParticipatedMailContent['mail_from'];
+            $fromFullName = $notParticipatedMailContent['from_name'];
+            $toEmail =$participantDetails['email'];
+            $cc=$notParticipatedMailContent['mail_cc'];
+            $bcc=$notParticipatedMailContent['mail_bcc'];
+            $commonServices->insertTempMail($toEmail,$cc,$bcc, $subject, $message, $fromEmail, $fromFullName);
+            $count=$participantDetails['last_not_participated_mail_count']+1;
+            $return=$db->update('shipment_participant_map', array('last_not_participated_mailed_on' => new Zend_Db_Expr('now()'), 'last_not_participated_mail_count' => $count), 'map_id = ' . $participantDetails['map_id']);
+           }
+        }
+        return $return;
+    }
+
 }

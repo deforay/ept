@@ -1995,3 +1995,22 @@ CREATE TABLE IF NOT EXISTS `mail_template` (
   `mail_footer` text,
   PRIMARY KEY (`mail_temp_id`)
 );
+---Guna 18-Apirl-2015----
+CREATE TABLE IF NOT EXISTS `temp_mail` (
+  `temp_id` int(11) NOT NULL AUTO_INCREMENT,
+  `message` text,
+  `from_mail` varchar(255) DEFAULT NULL,
+  `to_email` varchar(255) NOT NULL,
+  `bcc` text,
+  `cc` text,
+  `subject` text,
+  `from_full_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`temp_id`)
+);
+
+ALTER TABLE  `temp_mail` ADD  `status` VARCHAR( 255 ) NOT NULL DEFAULT  'pending' AFTER  `from_full_name` ;
+ALTER TABLE  `shipment_participant_map` ADD  `last_new_shipment_mailed_on` DATETIME NULL DEFAULT NULL AFTER  `report_generated` ,
+ADD  `new_shipment_mail_count` INT( 11 ) NOT NULL DEFAULT  '0' AFTER  `last_new_shipment_mailed_on` ;
+
+ALTER TABLE  `shipment_participant_map` ADD  `last_not_participated_mailed_on` DATETIME NULL DEFAULT NULL AFTER  `new_shipment_mail_count` ,
+ADD  `last_not_participated_mail_count` INT( 11 ) NOT NULL DEFAULT  '0' AFTER  `last_not_participated_mailed_on` ;

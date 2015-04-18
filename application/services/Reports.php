@@ -941,7 +941,7 @@ class Application_Service_Reports {
             $row[] = $aRow['negative_responses'];
             $row[] = $aRow['total_responses'];
             $row[] = $aRow['valid_responses'];
-            $row[] = $aRow['total_passed'];
+           // $row[] = $aRow['total_passed'];
 
 
 

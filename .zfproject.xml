@@ -114,6 +114,7 @@
           <dbTableFile dbTableName="Countries"/>
           <dbTableFile dbTableName="TestkitnameDts"/>
           <dbTableFile dbTableName="MailTemplate"/>
+          <dbTableFile dbTableName="TempMail"/>
         </dbTableDirectory>
         <modelFile modelName="DTSResponse"/>
       </modelsDirectory>

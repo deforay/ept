@@ -28,6 +28,9 @@ if($this->shipments == false && count($this->shipments) <= 0){
 			if(count($this->shipments) > 0){
 			foreach($this->shipments as $shipment){
 				$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+                                $totalParticipant=$shipment['participant_count'];
+                                $passed=(isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0;
+                                $nonResponse=$totalParticipant-$reported;
 				?>
 				<tr>
 					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
@@ -41,7 +44,10 @@ if($this->shipments == false && count($this->shipments) <= 0){
 					<td style="text-align: center;">
 						<?php if (isset($shipment["reported_count"]) && $shipment["reported_count"] > 0 && $shipment["responseDate"]!=null && $shipment["responseDate"]!='NULL' && $shipment["responseDate"]!='' ) { ?>
 						<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
-						<?php } else { ?>
+                                                <?php if($nonResponse > 0){?>
+                                                <a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-bullhorn"></i> Mail <?php echo $nonResponse ?> Not Participants</span></a>
+						<?php }
+                                                }else { ?>
 						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
 						<?php }?>
 					</td>

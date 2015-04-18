@@ -56,6 +56,14 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?> ><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'index'),'default',true); ?>"><i class="icon-dashboard"></i>&nbsp;&nbsp;Dashboard</a></li>
+            <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'mailTemplate') ? "class='active dropdown'" : "class='dropdown'"; ?>>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-mail-forward"></i>&nbsp;&nbsp;Mail Template <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/admin/mail-template/index/9u690s3/new_shipment/"> New Shipment</a></li>
+                <li><a href="/admin/mail-template/index/9u690s3/not_participated/"> Not Participated</a></li>
+                
+              </ul>
+            </li>
             <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manage') ? "class='active dropdown'" : "class='dropdown'"; ?>>
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i>&nbsp;&nbsp;Configure <b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -103,14 +111,7 @@
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments'),'default',true); ?>">Shipments Report</a></li>		
               </ul>
             </li>
-            <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'mailTemplate') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-mail-forward"></i>&nbsp;&nbsp;Mail Template <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="/admin/mail-template/index/9u690s3/new_shipment/"> New Shipment</a></li>
-                <li><a href="/admin/mail-template/index/9u690s3/not_participated/"> Not Participated</a></li>
-                
-              </ul>
-            </li>
+            
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'login','action'=>'log-out')); ?>"><i class="icon-signout"></i> Logout</a></li>

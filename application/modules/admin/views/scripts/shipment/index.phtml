@@ -22,26 +22,28 @@
     </select>
 </span>
 <span class="col-md-5 col-xs-12" id="btnSpan" style="padding:10px;display:none;">
-	<label>Click on New Shipment to proceed adding Scheme</label>
-<button class="btn btn-primary btn-sm" onclick="newShipment();" id="enrollBtn"><span>New Scheme</span></button>
-<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location;"><span>Reset</span></button>
+    <label>Click on New Shipment to proceed adding Scheme</label>
+    <button class="btn btn-primary btn-sm" onclick="newShipment();" id="enrollBtn"><span>New Scheme</span></button>
+    <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location;"><span>Reset</span></button>
 </span>
 
 
 <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentTable">
     <thead>
-    <tr>
- 
-        <th>Shipment Code</th>
-	<th>Scheme Type</th>
-        <th>PT Survey Code</th>
-        <th>PT Survey Date</th>
-        <th>Last Date</th>
-        <th>No. of Samples</th>
-        <th>No. of Participants Selected</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
+        <tr>
+
+            <th>Shipment Code</th>
+            <th>Scheme Type</th>
+            <th>PT Survey Code</th>
+            <th>PT Survey Date</th>
+            <th>Last Date</th>
+            <th>No. of Samples</th>
+            <th>No. of Participants Selected</th>
+            <th>Status</th>
+            <th>Last Mailedon</th>
+            <th>Mailed Count</th>
+            <th>Action</th>
+        </tr>
     </thead>
     <tbody>
         <tr>
@@ -51,29 +53,29 @@
 </table>
 <br/><br/><br/>
 <div style="display:none;clear:both;padding:30px;" id="configShipment">
-	<fieldset>
-		<legend style="font-size:17px;">Add Shipment Details</legend>
-	
-	<form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'add')); ?>" autocomplete="off">
+    <fieldset>
+        <legend style="font-size:17px;">Add Shipment Details</legend>
+
+        <form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'add')); ?>" autocomplete="off">
             <div class="form-group">
                 <label class="col-lg-3 control-label">PT Survey (Unshipped) <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-					<select id="distribution" name="distribution" class="isRequired form-control input-sm" title="Please select a PT Survey">
-						<option value="">--Select--</option>
-						<?php
-							foreach($this->unshippedDistro as $dist){
-								?>
-								<option value="<?php echo $dist['distribution_id']; ?>" <?php echo ($dist['distribution_id'] == $this->selectedDistribution) ? "selected='selected'" : "" ?>><?php echo $dist['distribution_code'] . "   (". $this->dateFormat($dist['distribution_date']) .")"; ?></option>		
-								<?php
-							}
-						?>
-					</select>
-				</div>
-				
-				<input type="hidden" name="schemeId" id="schemeId" class="isRequired" title="Please choose a Scheme Type on the top of this page"/>
-				<input type="hidden" name="selectedDistribution" id="selectedDistribution" class="" value="<?php echo $this->selectedDistribution; ?>"/>
-				
+                    <select id="distribution" name="distribution" class="isRequired form-control input-sm" title="Please select a PT Survey">
+                        <option value="">--Select--</option>
+                        <?php
+                        foreach ($this->unshippedDistro as $dist) {
+                            ?>
+                            <option value="<?php echo $dist['distribution_id']; ?>" <?php echo ($dist['distribution_id'] == $this->selectedDistribution) ? "selected='selected'" : "" ?>><?php echo $dist['distribution_code'] . "   (" . $this->dateFormat($dist['distribution_date']) . ")"; ?></option>		
+                            <?php
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <input type="hidden" name="schemeId" id="schemeId" class="isRequired" title="Please choose a Scheme Type on the top of this page"/>
+                <input type="hidden" name="selectedDistribution" id="selectedDistribution" class="" value="<?php echo $this->selectedDistribution; ?>"/>
+
             </div>		
             <div class="form-group">
                 <label class="col-lg-3 control-label">Shipment Code <span class="mandatory">*</span></label>
@@ -123,7 +125,7 @@
             return;
         }
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {tableName: tableName, fieldName: fieldName, value: obj.val(), fnct: fnct, format: "html"},
-        function(data) {
+        function (data) {
             if (data > 0) {
                 alert(msg, "err");
                 duplicated = true;
@@ -136,9 +138,9 @@
     }
 
 
-    $(document).ready(function() {
+    $(document).ready(function () {
 
-        $("body").on("change", 'select.controlOrNot', function() {
+        $("body").on("change", 'select.controlOrNot', function () {
             var scoreElem = $(this).parent().parent().find('.score');
             if ($(this).val() == 1) {
                 $(scoreElem).val(0);
@@ -170,18 +172,18 @@
         $("#schemeId").val(scheme)
         $("#configShipment").hide();
         if (scheme != "" && scheme != null) {
-            <?php
-            if(isset($this->unshippedDistro) && count($this->unshippedDistro)>0 && $this->unshippedDistro!=''){
-            ?>
-            $("#enrollBtn span").text("New Shipment : " + $("#scheme option:selected").text());
-            $("#btnSpan").fadeIn();
-            <?php
-            }else{
-            ?>
-               $("#btnSpan").fadeOut();
-            <?php
-            }
-            ?>
+<?php
+if (isset($this->unshippedDistro) && count($this->unshippedDistro) > 0 && $this->unshippedDistro != '') {
+    ?>
+                $("#enrollBtn span").text("New Shipment : " + $("#scheme option:selected").text());
+                $("#btnSpan").fadeIn();
+    <?php
+} else {
+    ?>
+                $("#btnSpan").fadeOut();
+    <?php
+}
+?>
         } else {
             $("#btnSpan").fadeOut();
         }
@@ -192,7 +194,7 @@
         if (window.confirm("Are you sure you wish to delete? This cannot be undone !")) {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'remove')); ?>", {sid: sid, format: "html"},
-            function(data) {
+            function (data) {
                 alert(data);
                 drawTable();
                 $.unblockUI();
@@ -223,18 +225,20 @@
                 {"sClass": "center"},
                 {"sClass": "center"},
                 {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
                 {"sClass": "center", "bSortable": false}
             ],
             "aaSorting": [[3, "desc"]],
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function(aoData) {
+            "fnServerParams": function (aoData) {
                 schemeId = $("#scheme").val();
                 aoData.push({"name": "scheme", "value": schemeId});
                 aoData.push({"name": "distribution", "value": '<?php echo $this->selectedDistribution ?>'});
             },
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -242,7 +246,7 @@
                     "data": aoData,
                     "success": fnCallback
                 });
-            }, "fnRowCallback": function(nRow, aData, iDisplayIndex) {
+            }, "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                 /* Append the grade to the default row class name */
 
                 $('td.sorting_1').addClass('goga');
@@ -262,13 +266,13 @@ if (isset($this->searchData) && $this->searchData != '') {
 
     function newShipment() {
         getSampleForm();
-        $("#configShipment").fadeIn('fast', function() {
-            $('html body').animate({scrollTop: ($("#configShipment").offset().top - 50)}, 1300, function() {
+        $("#configShipment").fadeIn('fast', function () {
+            $('html body').animate({scrollTop: ($("#configShipment").offset().top - 50)}, 1300, function () {
                 $("#configShipment").effect("highlight", 2000);
                 $("#shipmentCode").val('');
                 $.blockUI();
                 $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-shipment-code')); ?>", {sid: $("#scheme").val(), format: "html"},
-                function(data) {
+                function (data) {
                     $("#shipmentCode").val(data);
                     $.unblockUI();
 
@@ -282,11 +286,23 @@ if (isset($this->searchData) && $this->searchData != '') {
     function getSampleForm() {
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-sample-form')); ?>", {sid: $("#scheme").val(), format: "html"},
-        function(data) {
+        function (data) {
             $("#sampleFormFragment").html(data);
             $.unblockUI();
 
         });
+    }
+    function mailShipment(sid) {
+        if (window.confirm("Are you sure to send announcement mail to all participants")) {
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'new-shipment-mail')); ?>", {sid: sid, format: "html"},
+            function (data) {
+                if (data > 0) {
+                    alert("Mail Sent successfully");
+                }
+                oTable.fnDraw();
+            });
+        }
+
     }
 
 

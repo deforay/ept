@@ -194,6 +194,10 @@ class Application_Service_Common {
             }
         }        
     }
+    public function insertTempMail($to, $cc,$bcc, $subject, $message, $fromMail = null, $fromName = null) {
+        $db = new Application_Model_DbTable_TempMail();
+        return $db->insertTempMailDetails($to, $cc,$bcc, $subject, $message, $fromMail, $fromName);
+    }
 
 }
 

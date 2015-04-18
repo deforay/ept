@@ -12,6 +12,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 ->addActionContext('remove', 'html')
                 ->addActionContext('view-enrollments', 'html')
                 ->addActionContext('delete-shipment-participant', 'html')
+                ->addActionContext('new-shipment-mail', 'html')
                 ->addActionContext('unenrollments', 'html')
                 ->initContext();
         $this->_helper->layout()->pageName = 'configurations';
@@ -208,6 +209,22 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $sid = strtolower($this->_getParam('sid'));
             $shipmentService = new Application_Service_Shipments();
             $this->view->code= $shipmentService->getShipmentCode($sid);
+        }   
+    }
+    public function newShipmentMailAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $sid = strtolower(base64_decode($this->_getParam('sid')));
+            $shipmentService = new Application_Service_Shipments();
+            $this->view->pcount= $shipmentService->getShipmentParticipants($sid);
+        }   
+    }
+    public function notParticipatedMailAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $sid = strtolower(base64_decode($this->_getParam('sid')));
+            $shipmentService = new Application_Service_Shipments();
+            $this->view->pcount= $shipmentService->getShipmentNotParticipated($sid);
         }   
     }
 
