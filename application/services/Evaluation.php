@@ -1351,10 +1351,10 @@ class Application_Service_Evaluation {
                 $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
             } else if ($res['scheme_type'] == 'dts') {
 
-                $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on'))
+                $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on','calculated_score'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
-                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-                        ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label','refdts.mandatory'))
+                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id','sp.attributes','sp.supervisor_approval','sp.participant_supervisor','sp.shipment_test_date'))
+                        ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label','refdts.mandatory','refdts.sample_score'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("resdts.shipment_map_id = ?", $res['map_id']);
                 //error_log($sQuery);

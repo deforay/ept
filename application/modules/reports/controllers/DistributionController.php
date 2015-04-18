@@ -58,6 +58,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $reportService = new Application_Service_Reports();
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
+            $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
             $evalService = new Application_Service_Evaluation();
             $this->view->result = $evalService->getEvaluateReportsInPdf($id);
             $commonService = new Application_Service_Common();
@@ -74,6 +75,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $reportService = new Application_Service_Reports();
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
+            $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
             $evalService = new Application_Service_Evaluation();
             $this->view->result=$result = $evalService->getSummaryReportsInPdf($id);
            // Zend_Debug::dump($result);die;

@@ -2014,3 +2014,7 @@ ADD  `new_shipment_mail_count` INT( 11 ) NOT NULL DEFAULT  '0' AFTER  `last_new_
 
 ALTER TABLE  `shipment_participant_map` ADD  `last_not_participated_mailed_on` DATETIME NULL DEFAULT NULL AFTER  `new_shipment_mail_count` ,
 ADD  `last_not_participated_mail_count` INT( 11 ) NOT NULL DEFAULT  '0' AFTER  `last_not_participated_mailed_on` ;
+
+
+-- Amit 18 April 2015
+INSERT INTO `report_config` (`name`, `value`) VALUES ('logo-right', NULL);

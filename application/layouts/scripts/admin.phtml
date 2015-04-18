@@ -56,14 +56,6 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?> ><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'index'),'default',true); ?>"><i class="icon-dashboard"></i>&nbsp;&nbsp;Dashboard</a></li>
-            <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'mailTemplate') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-mail-forward"></i>&nbsp;&nbsp;Mail Template <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="/admin/mail-template/index/9u690s3/new_shipment/"> New Shipment</a></li>
-                <li><a href="/admin/mail-template/index/9u690s3/not_participated/"> Not Participated</a></li>
-                
-              </ul>
-            </li>
             <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manage') ? "class='active dropdown'" : "class='dropdown'"; ?>>
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i>&nbsp;&nbsp;Configure <b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -78,6 +70,9 @@
 		<li class="divider"></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'global-config'),'default',true); ?>">ePT Global Settings</a></li>
 		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'report-config'),'default',true); ?>">PDF Report Settings</a></li>				
+                <li class="divider"></li>
+<li><a href="/admin/mail-template/index/9u690s3/new_shipment/"> New Shipment Mail Template</a></li>
+                <li><a href="/admin/mail-template/index/9u690s3/not_participated/"> Not Participated Mail Template</a></li>				
                 <li class="divider"></li>
 		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'contact-us'),'default',true); ?>">Contact Messages</a></li>
                 

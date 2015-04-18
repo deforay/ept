@@ -15,10 +15,11 @@ if(sizeof($this->result['shipment'])>0){
 class MYPDF extends TCPDF {
 	public $scheme_name = '';
 
-	public function setSchemeName($header,$schemeName,$logo) {
+	public function setSchemeName($header, $schemeName, $logo,$logoRight) {
 		$this->scheme_name = $schemeName;
-		$this->header=$header;
-		$this->logo=$logo;
+		$this->header = $header;
+		$this->logo = $logo;
+		$this->logoRight = $logoRight;
 	}
     
 	//Page header
@@ -29,6 +30,12 @@ class MYPDF extends TCPDF {
 		if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo)) {
 			$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo;
 			$this->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+		}
+	}
+	if(trim($this->logoRight)!=""){
+		if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logoRight)) {
+			$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logoRight;
+			$this->Image($image_file, 180, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 		}
 	}
        
@@ -74,7 +81,7 @@ foreach($this->result['shipment'] as $result){
 	// create new PDF document
 	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	
-	$pdf->setSchemeName($this->header,$result['scheme_name'],$this->logo);
+	$pdf->setSchemeName($this->header,$result['scheme_name'],$this->logo,$this->logoRight);
 	// set document information
 	//$pdf->SetCreator(PDF_CREATOR);
 	//$pdf->SetAuthor('Nicola Asuni');
@@ -137,37 +144,17 @@ foreach($this->result['shipment'] as $result){
 		$result['lastdate_response']=$this->dateFormat($result['lastdate_response']);
 	}
 	
+	$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 	$responseDate="";
-	$shipmentScore="";
-	$documentationScore="";
-	$score="";
+	$shipmentScore=0;
+	$documentationScore=0;
+	$score=0;
 	
 	if(isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate'])!=""){
 		$splitDate=explode(" ",$result['responseResult'][0]['responseDate']);
 		$responseDate=$this->dateFormat($splitDate[0]);
 	}
-	if(trim($result['shipment_score'])!=""){
-		$shipmentScore=$result['shipment_score'];
-	}
-	
-	if(isset($result['documentation_score']) && trim($result['documentation_score'])!=""){
-		$documentationScore=$result['documentation_score'];
-	}
-	
-	if(trim($result['max_score'])!=""){
-		$score=$shipmentScore+$documentationScore;
-		//$score=100*round($shipmentScore/$result['max_score'],2);
-	}
-	
-	if($result['is_excluded'] == 'yes'){
-		$wishes='<p>Your response was not considered for evaluation</p><br/>';
-	}
-	else if($score>=$this->passPercentage){
-		$wishes='<p>Congratulations! You have received a satisfactory score of '.$score.'%.</p><br/>';
-	}else{
-		$wishes='<p>You have received a score of '.$score.'%.</p><br/>';
-	}
-	
+
 	//if($result['result_name']=='Fail'){
 	//	$wishes="";
 	//	$splStr=explode("###",$result['failure_reason']);
@@ -199,30 +186,48 @@ foreach($this->result['shipment'] as $result){
 	$pdf->writeHTML($html, true, false, true, false, '');
 	if(sizeof($result['responseResult'])>0){
 		if($schemeType != 'vl'){
-			$labRes='<table border="1" style="text-align:center;font-weight:bold;width:400px;">
+			$labRes='<table border="1" style="font-weight:bold;">
 						<tr>
-							<td style="background-color:#989898;">Specimen Panel ID </td>
-							<td style="background-color:#989898;">Your Results</td>
-							<td style="background-color:#989898;">Expected Results</td>
+							<td style="background-color:#989898;text-align:center;">Specimen Panel ID </td>
+							<td style="background-color:#989898;text-align:center;">Your Result</td>
+							<td style="background-color:#989898;text-align:center;">Expected Result</td>
+							<td style="background-color:#989898;text-align:center;">Score</td>
 						</tr>';
 
 			$nonMandatorySamples = array();
+			$correctSamples = array();
+			$totalProperSamples = 0;
+			$correctSamplesCount = 0;
+			$wrongSamples = array();
 			foreach($result['responseResult'] as $response){
                 if($response['mandatory'] == 0){
-                    $nonMandatorySamples[] = $response['sample_label']; 
-                }				
+                    $nonMandatorySamples[] = $response['sample_label'];
+					$score = "N.A.";
+                }
+				else if($response['labResult'] == $response['referenceResult']){
+					$correctSamples[] = $response['sample_label'];
+					$score = 5;
+				}else{
+					$wrongSamples[] = $response['sample_label'];
+					$score = 0;
+				}
 				$labRes.='<tr>
 							<td style="text-align:center;">'.$response['sample_label'].'</td>
 							<td>'.$response['labResult'].'</td>
 							<td>'.$response['referenceResult'].'</td>
+							<td style="text-align:center;">'.$score.'</td>
 						  </tr>';
 			}
-			$labRes.='</table><br/><br/>';
+			$labRes.='</table>';
+
+			
+			$correctSamplesCount = count($correctSamples);
+			$totalProperSamples = $correctSamplesCount + count($wrongSamples);
                      
-			$pdf->SetLeftMargin(40);
+			$pdf->SetLeftMargin(15);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
 			
-            
+			
             if(count($nonMandatorySamples) > 0){
                 $nmsTable="<table><tr><td style='width:100%;text-align:center'>";
                 $nmsTable.="Please note :<br/>";    
@@ -232,7 +237,86 @@ foreach($this->result['shipment'] as $result){
                 
                 $nmsTable.="</td></tr></table>";
                 $pdf->writeHTML($nmsTable, true, false, true, false, '');
-            }			
+            }
+			
+			
+			
+			//Let us now calculate documentation score
+			$documentationScore = 0;
+			$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 4);
+			$attributes = json_decode($result['attributes'], true);
+			
+			$html='<p style="font-weight: bold;">Your documentation score : <br/></p>';
+			$pdf->writeHTML($html, true, false, true, false, '');			
+			
+			$docRes='<table border="1" style="font-weight:bold;">
+						<tr>
+							<td style="background-color:#989898;text-align:center;">Documentation Item</td>
+							<td style="background-color:#989898;text-align:center;">Score</td>
+						</tr>';
+
+
+			if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
+				$scoreDoc =  $documentationScorePerItem;
+			} else {
+				$scoreDoc = 0;
+			}
+			
+			$docRes.='<tr>
+							<td>Supervisor Approval</td>
+							<td style="text-align:center;">'.$scoreDoc.'</td>
+					</tr>';
+			
+
+			
+			if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
+				$scoreDoc =  $documentationScorePerItem;
+			} else {
+				$scoreDoc = 0;
+			}
+						
+			
+			$docRes.='<tr>
+							<td>Reporting of the Sample Rehydration Date</td>
+							<td style="text-align:center;">'.$scoreDoc.'</td>
+					</tr>';
+			
+
+			if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
+				$scoreDoc =  $documentationScorePerItem;
+			} else {
+				$scoreDoc = 0;
+			}
+						
+			$docRes.='<tr>
+							<td>Reporting of the Shipment Test Date</td>
+							<td style="text-align:center;">'.$scoreDoc.'</td>
+					</tr>';
+			
+
+			$sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
+			$testedOn = new Zend_Date($result['responseResult'][0]['shipment_test_date'], Zend_Date::ISO_8601);
+			// Testing should be done within 24 hours of rehydration.
+			$diff = $testedOn->sub($sampleRehydrationDate)->toValue();
+			$days = ceil($diff / 60 / 60 / 24) + 1;
+
+			if ($days > 1) {
+				$scoreDoc = 0;
+			} else {
+				$scoreDoc =  $documentationScorePerItem;
+			}			
+			$docRes.='<tr>
+							<td>Testing to be done within 24 hours of rehydration.</td>
+							<td style="text-align:center;">'.$scoreDoc.'</td>
+					</tr>';
+			
+			$docRes.='</table>';
+			
+			$pdf->writeHTML($docRes, true, false, true, false, '');
+			
+			
+			
+            			
 		}else{
 			$labRes='<h5>'.$result['responseResult'][0]['vl_assay'].'</h5>';
 			$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;">
@@ -265,6 +349,35 @@ foreach($this->result['shipment'] as $result){
 			
 		}
 	}
+	
+	
+	if(trim($result['shipment_score'])!=""){
+		$shipmentScore=$result['shipment_score'];
+	}
+	
+	if(isset($result['documentation_score']) && trim($result['documentation_score'])!=""){
+		$documentationScore=$result['documentation_score'];
+	}
+	
+	$maxDocumentationPoints = $config->evaluation->dts->documentationScore;
+	$maxResponsePoints = 100-$maxDocumentationPoints;
+	$score=$shipmentScore+$documentationScore;
+	//$score=100*round($shipmentScore/$result['max_score'],2);
+	
+	
+	if($result['is_excluded'] == 'yes'){
+		$wishes='<p>Your response was not considered for evaluation</p><br/>';
+	}
+	else if($score>=$this->passPercentage){
+		$wishes='<p>Congratulations! You have received a satisfactory score of '.round($score,2).'%.</p><br/>';
+	}else{
+		$wishes='<p>You have received a score of '.round($score,2).'%.</p><br/>';
+	}
+	$wishes.="<br/><p><strong style='font-weight:bold;'>Score Breakup:</strong>";
+	$wishes.="<br/>Score for Correct Responses (out of $maxResponsePoints) : $shipmentScore (You reported ".$correctSamplesCount." samples correctly out of ".$totalProperSamples. ")";
+	$wishes.="<br/>Score for Documentation (out of $maxDocumentationPoints) : $documentationScore</p>";
+		
+	
 	
 	$pdf->SetLeftMargin(15);
 	

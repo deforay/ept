@@ -88,6 +88,29 @@
 			</div>
 		</div>
 	</div>
+	
+	<div class="col-md-8">
+		<input type="hidden" name="existImageRight" value="<?php echo $this->logoRight;?>"/>
+		<div class="fileupload fileupload-new" data-provides="fileupload">
+			
+			<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+				<?php if(trim($this->logoRight)!=""){ ?>
+					<img src="<?php echo $this->baseUrl('uploads/logo/'.$this->logoRight); ?>" />
+				<?php }else{ ?>
+					<img src="<?php echo $this->baseUrl('images/logo-generate.gif'); ?>" />
+				<?php } ?>
+				
+			</div>
+			
+			<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+			<div>
+			  <span class="btn btn-file"><span class="fileupload-new">Select image</span><span class="fileupload-exists">Change</span>
+			       
+			      <input type="file" name="logo_image_right" id="logo_image_right"/></span>
+			  <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+			</div>
+		</div>
+	</div>
   
 	<div class="form-group">
 	  <div class="col-lg-offset-2 col-lg-10">

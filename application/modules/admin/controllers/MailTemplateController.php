@@ -6,7 +6,7 @@ class Admin_MailTemplateController extends Zend_Controller_Action
     public function init()
     {
         /* Initialize action controller here */
-         $this->_helper->layout()->pageName = 'mailTemplate';
+         $this->_helper->layout()->pageName = 'manage';
     }
 
     public function indexAction()
