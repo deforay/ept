@@ -164,8 +164,8 @@
 
             function drawGraph() {
                 if ($("#kitType").val() == '') {
-                    alert('Please select test kit number to proceed');
-                    return;
+                    //alert('Please select test kit number to proceed');
+                    //return;
                 }
                 drawTable();
                 $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'chart'), "default", true); ?>", {startDate: startDate, endDate: endDate, kitType: $("#kitType").val(), reportType: $("#reportType").val(), networkValue: $("#networkValue").val(), affiliateValue: $("#affiliateValue").val(), regionValue: $("#regionValue").val(), format: "html"},
