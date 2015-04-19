@@ -2121,7 +2121,8 @@ class Application_Service_Reports {
                 ->join(array('cam' => 'dts_shipment_corrective_action_map'), 'cam.shipment_map_id=sp.map_id', array("total_corrective" => new Zend_Db_Expr('count("cam.corrective_action_id")')))
                 ->join(array('ca' => 'r_dts_corrective_actions'), 'ca.action_id=cam.corrective_action_id', array("action_id", "corrective_action"))
                 ->where("s.shipment_id = ?", $shipmentId)
-                ->group(array('cam.corrective_action_id'));
+                ->group(array('cam.corrective_action_id'))
+				->order(array('total_corrective DESC'));
 
         return $dbAdapter->fetchAll($sQuery);
     }

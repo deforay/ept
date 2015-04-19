@@ -439,10 +439,10 @@ if ($this->result != "") {
 
         if ($this->result['scheme_type'] == 'dts') {
             if (count($this->result['pieChart']) > 0) {
-                $chart = new PieChart(800, 350);
+                $chart = new PieChart(900, 400);
                 $dataSet = new XYDataSet();
                 foreach ($this->result['pieChart'] as $piechart) {
-                    $dataSet->addPoint(new Point($piechart['kit_name'], $piechart['count']));
+                    $dataSet->addPoint(new Point($piechart['kit_name']." (used ".$piechart['count']."  times)", $piechart['count']));
                 }
                 $piechart = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
                 $chart->setDataSet($dataSet);
@@ -457,7 +457,7 @@ if ($this->result != "") {
             }
         }
         if ($this->result['scheme_type'] == 'dbs') {
-            $chart = new PieChart(800, 350);
+            $chart = new PieChart(900, 400);
 
             $dataSet = new XYDataSet();
 
@@ -502,5 +502,5 @@ if ($this->result != "") {
 //============================================================+
 // END OF FILE
 //============================================================+
-    echo "Success";
+    echo "success";
 }

@@ -512,7 +512,7 @@ class Application_Service_Evaluation {
                 foreach ($results as $result) {
                     //if Sample is not mandatory, we will skip the evaluation
                     if(0 == $result['mandatory']){
-						$db->update('response_result_dts', array('calculated_score' => "Skipped"), "shipment_map_id = ".$result['map_id']." and sample_id = ".$result['sample_id']);
+						$db->update('response_result_dts', array('calculated_score' => "N.A."), "shipment_map_id = ".$result['map_id']." and sample_id = ".$result['sample_id']);
                         continue;
                     }
                     $testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);

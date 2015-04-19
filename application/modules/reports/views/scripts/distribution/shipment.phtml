@@ -273,26 +273,39 @@
         }
 
         function generateReport(sId) {
-            //alert(sId);
-            //checkReportDate=true;
+
+            document.getElementById("summaryDiv").innerHTML ="";
             if (checkReportDate) {
                 $.blockUI();
-                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {sId: sId, format: "html"},
-                function (data) {
-                    $.unblockUI();
-                    //alert(data);
-                });
-    <?php if ($shipment['scheme_type'] != "vl") { ?>
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {sId: sId, format: "html"},
+                var individual = null;
+                var summary = null;
+                $.when(
+                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {sId: sId, format: "html"},
                     function (data) {
-                        //alert(data);
-                        if (data == 'Success') {
-                            //document.getElementById("summaryDiv").innerHTML="< ?php echo "<a href='".$this->baseUrl(). DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$shipment['shipment_code']. DIRECTORY_SEPARATOR."summary.pdf' class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a>"?>";
-                            document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/summary.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a></a> <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Participants Report</a></a>";
-                            $.unblockUI();
-                        }
-                    });
-    <?php } ?>
+                        summary = data;
+                }),
+                  
+                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {sId: sId, format: "html"},
+                    function (data) {
+                        individual = data;
+                  })
+                
+                ).then(function() {
+                
+                    if (individual == 'success') {
+                        $("#summaryDiv").append(" <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/summary.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a> ");
+                        
+                    }
+                
+                    if (summary == 'success') {
+                        $("#summaryDiv").append(" <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Participants Report</a> ");
+                        
+                    }
+                    
+                    $.unblockUI();
+                
+                });        
+                
             } else {
                 $.unblockUI();
                 alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']);?>).\n\n\nYou can change the PT Survey Date and retry.");

@@ -200,7 +200,7 @@ foreach($this->result['shipment'] as $result){
 			$correctSamplesCount = 0;
 			$wrongSamples = array();
 			foreach($result['responseResult'] as $response){
-               /* if($response['mandatory'] == 0){
+                if($response['mandatory'] == 0){
                     $nonMandatorySamples[] = $response['sample_label'];
 					$score = "N.A.";
                 }
@@ -210,7 +210,7 @@ foreach($this->result['shipment'] as $result){
 				}else{
 					$wrongSamples[] = $response['sample_label'];
 					$score = 0;
-				}*/
+				}
 				$labRes.='<tr>
 							<td style="text-align:center;">'.$response['sample_label'].'</td>
 							<td>'.$response['labResult'].'</td>
@@ -226,7 +226,6 @@ foreach($this->result['shipment'] as $result){
                      
 			$pdf->SetLeftMargin(15);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
-			
 			
             if(count($nonMandatorySamples) > 0){
                 
@@ -533,5 +532,5 @@ foreach($this->result['dmResult'] as $key=>$dmRes){
 //============================================================+
 // END OF FILE
 //============================================================+
-echo "Reports generated successfully.";
+echo "success";
 }
