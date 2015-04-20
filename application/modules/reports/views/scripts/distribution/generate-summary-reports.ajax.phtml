@@ -493,6 +493,37 @@ if ($this->result != "") {
             }
         }
     }
+    
+    if(isset($this->responseResult) && count($this->responseResult)>0  && $this->responseResult!=''){
+        
+        $chart1 = new PieChart(900, 400);
+	$dataSet = new XYDataSet();
+        
+        $passed=$this->responseResult["number_passed"];
+        $failed=$this->responseResult["number_failed"];
+        $notResponded=$this->responseResult["others"];
+        $late=$this->responseResult["number_late"];
+        $excluded=$this->responseResult["excluded"];
+        
+        $dataSet->addPoint(new Point("Passed ($passed)", $passed));
+        $dataSet->addPoint(new Point("Failed ($failed)", $failed));
+        $dataSet->addPoint(new Point("Not Responded ($notResponded)", $notResponded));
+        $dataSet->addPoint(new Point("Late Response ($late)", $late));
+        $dataSet->addPoint(new Point("Excluded ($excluded)", $excluded));
+        
+        $performancePiechart = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
+        
+	$chart1->setDataSet($dataSet);
+	$chart1->setTitle("Shipment Participant Result Report");
+	$chart1->render($performancePiechart);
+        $pdf->Image($performancePiechart, 50, $y, '', '', '', '', '', false, 300);
+        if (file_exists($performancePiechart)) {
+            unlink($performancePiechart);
+        }
+        
+    }
+            
+            
 //Close and output PDF document
     $fileName = "summary.pdf";
     $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;

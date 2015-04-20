@@ -162,7 +162,7 @@ class Application_Service_Evaluation {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('map_id','responseDate'=>'shipment_test_report_date','participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('map_id', 'responseDate' => 'shipment_test_report_date', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
                 ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
                 ->where("s.distribution_id = ?", $distributionId)
@@ -170,9 +170,10 @@ class Application_Service_Evaluation {
 
         return $db->fetchAll($sql);
     }
-   public function getShipmentToEvaluate($shipmentId, $reEvaluate = false) {
+
+    public function getShipmentToEvaluate($shipmentId, $reEvaluate = false) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('s' => 'shipment'),array('s.shipment_id','s.shipment_code','s.scheme_type','s.shipment_date','s.lastdate_response','s.distribution_id','s.number_of_samples','s.max_score','s.shipment_comment','s.created_by_admin','s.created_on_admin','s.updated_by_admin','s.updated_on_admin','shipment_status'=>'s.status'))
+        $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.distribution_id', 's.number_of_samples', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
                 ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
@@ -508,11 +509,11 @@ class Application_Service_Evaluation {
                 //$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
 
 
-				$samplePassOrFail = array();
+                $samplePassOrFail = array();
                 foreach ($results as $result) {
                     //if Sample is not mandatory, we will skip the evaluation
-                    if(0 == $result['mandatory']){
-						$db->update('response_result_dts', array('calculated_score' => "N.A."), "shipment_map_id = ".$result['map_id']." and sample_id = ".$result['sample_id']);
+                    if (0 == $result['mandatory']) {
+                        $db->update('response_result_dts', array('calculated_score' => "N.A."), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
                         continue;
                     }
                     $testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
@@ -536,19 +537,19 @@ class Application_Service_Evaluation {
                     } else {
                         $r2 = '-';
                     }
-					if(isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes'){
-						$r3 = 'X';	
-					}else{
-						if ($result['test_result_3'] == 1) {
-							$r3 = 'R';
-						} else if ($result['test_result_3'] == 2) {
-							$r3 = 'NR';
-						} else if ($result['test_result_3'] == 3) {
-							$r3 = 'I';
-						} else {
-							$r3 = '-';
-						}
-					}
+                    if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+                        $r3 = 'X';
+                    } else {
+                        if ($result['test_result_3'] == 1) {
+                            $r3 = 'R';
+                        } else if ($result['test_result_3'] == 2) {
+                            $r3 = 'NR';
+                        } else if ($result['test_result_3'] == 3) {
+                            $r3 = 'I';
+                        } else {
+                            $r3 = '-';
+                        }
+                    }
 
                     $algoString = "Wrongly reported in the pattern : <strong>" . $r1 . "</strong> <strong>" . $r2 . "</strong> <strong>" . $r3 . "</strong>";
 
@@ -638,24 +639,24 @@ class Application_Service_Evaluation {
 
                     // checking if mandatory fields were entered and were entered right
                     //if ($result['mandatory'] == 1) {
-                        if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
-                            $mandatoryResult = 'Fail';
-                            $shipment['is_excluded'] = 'yes';
-                            $failureReason[] = array('warning' => "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported. Result not evaluated.",
-                                'correctiveAction' => $correctiveActions[4]);
-                            $correctiveActionList[] = 4;
-                        }
-                        //else if(($result['reference_result'] != $result['reported_result'])){
-                        //	$mandatoryResult = 'Fail';
-                        //	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
-                        //}
+                    if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
+                        $mandatoryResult = 'Fail';
+                        $shipment['is_excluded'] = 'yes';
+                        $failureReason[] = array('warning' => "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[4]);
+                        $correctiveActionList[] = 4;
+                    }
+                    //else if(($result['reference_result'] != $result['reported_result'])){
+                    //	$mandatoryResult = 'Fail';
+                    //	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
                     //}
-					
-					if($algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])){
-						$db->update('response_result_dts', array('calculated_score' => "Fail"), "shipment_map_id = ".$result['map_id']." and sample_id = ".$result['sample_id']);
-					}else{
-						$db->update('response_result_dts', array('calculated_score' => "Pass"), "shipment_map_id = ".$result['map_id']." and sample_id = ".$result['sample_id']);
-					}
+                    //}
+
+                    if ($algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])) {
+                        $db->update('response_result_dts', array('calculated_score' => "Fail"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    } else {
+                        $db->update('response_result_dts', array('calculated_score' => "Pass"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    }
                 }
 
                 // checking test kit expiry dates
@@ -937,7 +938,7 @@ class Application_Service_Evaluation {
 
                 $counter++;
             }
-			
+
 
             $db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
         } else if ($shipmentResult[0]['scheme_type'] == 'vl') {
@@ -1351,17 +1352,17 @@ class Application_Service_Evaluation {
                 $sQuery = $db->select()->from(array('resdbs' => 'response_result_dbs'), array('resdbs.shipment_map_id', 'resdbs.sample_id', 'resdbs.reported_result', 'responseDate' => 'resdbs.created_on'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdbs.reported_result', array('labResult' => 'respr.response'))
                         ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdbs.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-                        ->join(array('refdbs' => 'reference_result_dbs'), 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', array('refdbs.reference_result', 'refdbs.sample_label','resdbs.mandatory'))
+                        ->join(array('refdbs' => 'reference_result_dbs'), 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', array('refdbs.reference_result', 'refdbs.sample_label', 'resdbs.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdbs.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("resdbs.shipment_map_id = ?", $res['map_id']);
 
                 $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
             } else if ($res['scheme_type'] == 'dts') {
 
-                $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on','calculated_score'))
+                $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on', 'calculated_score'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
-                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id','sp.attributes','sp.supervisor_approval','sp.participant_supervisor','sp.shipment_test_date','sp.failure_reason'))
-                        ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label','refdts.mandatory','refdts.sample_score'))
+                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
+                        ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory', 'refdts.sample_score'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("resdts.shipment_map_id = ?", $res['map_id']);
                 //error_log($sQuery);
@@ -1371,7 +1372,7 @@ class Application_Service_Evaluation {
                 $sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'responseDate' => 'reseid.created_on'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=reseid.reported_result', array('labResult' => 'respr.response'))
                         ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-                        ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label','refeid.mandatory'))
+                        ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("reseid.shipment_map_id = ?", $res['map_id']);
                 //error_log($sQuery);
@@ -1454,7 +1455,7 @@ class Application_Service_Evaluation {
             $vlAssayResultSet = $schemeService->getVlAssay();
             foreach ($vlAssayResultSet as $vlAssayRow) {
                 $vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
-                                ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label','refVl.mandatory'))
+                                ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
                                 ->where("vlCal.shipment_id=?", $res['shipment_id'])->where("vlCal.vl_assay=?", $vlAssayRow['id']));
 
                 if (count($vlCalRes) > 0) {
@@ -1482,7 +1483,7 @@ class Application_Service_Evaluation {
         if ($shipmentResult != "") {
             $db->update('shipment', array('status' => 'evaluated'), "shipment_id = " . $shipmentId);
             if ($shipmentResult['scheme_type'] == 'dbs') {
-                $sql = $db->select()->from(array('refdbs' => 'reference_result_dbs'), array('refdbs.reference_result', 'refdbs.sample_label','refdbs.mandatory'))
+                $sql = $db->select()->from(array('refdbs' => 'reference_result_dbs'), array('refdbs.reference_result', 'refdbs.sample_label', 'refdbs.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdbs.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("refdbs.shipment_id = ?", $shipmentResult['shipment_id']);
                 $sqlRes = $db->fetchAll($sql);
@@ -1559,7 +1560,6 @@ class Application_Service_Evaluation {
                 //die;
             } else if ($shipmentResult['scheme_type'] == 'dts') {
                 $sql = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory'))
-
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("refdts.shipment_id = ?", $shipmentResult['shipment_id']);
                 $sqlRes = $db->fetchAll($sql);
@@ -1572,7 +1572,7 @@ class Application_Service_Evaluation {
                         ->where("spm.shipment_id = ?", $shipmentId)
                         ->where("spm.final_result IS NOT NULL")
                         ->where("spm.final_result!=''")
-                       // ->where("spm.final_result = ?",'2')
+                        // ->where("spm.final_result = ?",'2')
                         ->where("substring(spm.evaluation_status,4,1) != '0'")
                         ->group('spm.map_id');
                 $sQueryRes = $db->fetchAll($sQuery);
@@ -1658,7 +1658,7 @@ class Application_Service_Evaluation {
                         $sQueryRes = $db->fetchAll($sQuery);
 
                         if (count($sQueryRes) > 0) {
-                            $tQuery = $db->select()->from(array('refeid' => 'reference_result_eid'), array('refeid.sample_id', 'refeid.sample_label','refeid.mandatory'))
+                            $tQuery = $db->select()->from(array('refeid' => 'reference_result_eid'), array('refeid.sample_id', 'refeid.sample_label', 'refeid.mandatory'))
                                     ->join(array('reseid' => 'response_result_eid'), 'reseid.sample_id=refeid.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN reseid.reported_result=refeid.reference_result THEN 1 ELSE 0 END)")))
                                     ->join(array('spm' => 'shipment_participant_map'), 'reseid.shipment_map_id=spm.map_id and refeid.shipment_id=spm.shipment_id', array())
                                     ->where("spm.attributes LIKE '%\"extraction_assay\":\"$extId\"%' ")
@@ -1681,6 +1681,22 @@ class Application_Service_Evaluation {
         }
         //Zend_Debug::dump($shipmentResult);die;
         return $shipmentResult;
+    }
+
+    public function getResponseReports($shipmentId) {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
+                ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
+                ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code'))
+                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('others' => new Zend_Db_Expr("SUM(sp.shipment_test_date IS NULL)"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > s.lastdate_response AND sp.is_excluded != 'yes')"), 'map_id'))
+                ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
+                ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
+                ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
+                ->where("s.shipment_id = ?", $shipmentId)
+                ->group('s.shipment_id');
+
+        return $dbAdapter->fetchRow($sQuery);
     }
 
 }
