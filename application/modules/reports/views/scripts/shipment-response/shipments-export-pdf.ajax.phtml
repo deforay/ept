@@ -117,6 +117,7 @@ $shipmentOverview.='<td style="font-weight:bold">Sample Label</td>';
 $shipmentOverview.='<td style="font-weight:bold">Reference Result</td>';
 $shipmentOverview.='<td style="font-weight:bold">Total Positive Responses</td>';
 $shipmentOverview.='<td style="font-weight:bold">Total Negative Responses</td>';
+$shipmentOverview.='<td style="font-weight:bold">Total Invalid/Indeterminate Responses</td>';
 $shipmentOverview.='<td style="font-weight:bold">Total Responses</td>';
 $shipmentOverview.='<td style="font-weight:bold">Total Valid Responses(Total - Excluded)</td>';
 $shipmentOverview.='<td style="font-weight:bold">Total Passed</td>';
@@ -131,6 +132,7 @@ foreach($this->result as $res){
     $shipmentOverview.='<td>'.$res['response'].'</td>';
     $shipmentOverview.='<td>'.$res['positive_responses'].'</td>';
     $shipmentOverview.='<td>'.$res['negative_responses'].'</td>';
+    $shipmentOverview.='<td>'.$res['invalid_responses'].'</td>';
     $shipmentOverview.='<td>'.$res['total_responses'].'</td>';
     $shipmentOverview.='<td>'.$res['valid_responses'].'</td>';
     $shipmentOverview.='<td>'.$res['total_passed'].'</td>';

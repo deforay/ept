@@ -711,6 +711,7 @@ class Application_Service_Reports {
             'ref.reference_result',
             'positive_responses',
             'negative_responses',
+            'invalid_responses',
             new Zend_Db_Expr("SUM(sp.shipment_test_date <> '0000-00-00')"),
             new Zend_Db_Expr("SUM(sp.final_result=1)"),
             new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '0000-00-00') - SUM(is_excluded = 'yes'))"),
@@ -721,6 +722,7 @@ class Application_Service_Reports {
             'ref.reference_result',
             'positive_responses',
             'negative_responses',
+            'invalid_responses',
             'total_responses',
             "total_passed",
             'valid_responses'
@@ -730,6 +732,7 @@ class Application_Service_Reports {
             'ref.reference_result',
             'positive_responses',
             'negative_responses',
+            'invalid_responses',
             new Zend_Db_Expr("SUM(sp.shipment_test_date <> '0000-00-00')"),
             new Zend_Db_Expr("SUM(sp.final_result=1)"),
             new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '0000-00-00') - SUM(is_excluded = 'yes'))"),
@@ -822,6 +825,7 @@ class Application_Service_Reports {
             if ($parameters['scheme'] == 'dts') {
                 $rPositive = 4;
                 $rNegative = 5;
+                $rInderminate = 6;
             } else if ($parameters['scheme'] == 'dbs') {
                 $rPositive = 7;
                 $rNegative = 8;
@@ -838,7 +842,7 @@ class Application_Service_Reports {
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '0000-00-00')"), "total_passed" => new Zend_Db_Expr("SUM(sp.final_result=1)"), "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '0000-00-00') - SUM(is_excluded = 'yes'))")))
                 //->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
                 ->join(array('ref' => $refTable), 's.shipment_id=ref.shipment_id')
-                ->join(array('res' => $resTable), 'sp.map_id=res.shipment_map_id', array("positive_responses" => new Zend_Db_Expr('SUM(if(res.reported_result = ' . $rPositive . ', 1, 0))'), "negative_responses" => new Zend_Db_Expr('SUM(if(res.reported_result = ' . $rNegative . ', 1, 0))')))
+                ->join(array('res' => $resTable), 'sp.map_id=res.shipment_map_id', array("positive_responses" => new Zend_Db_Expr('SUM(if(res.reported_result = ' . $rPositive . ', 1, 0))'), "negative_responses" => new Zend_Db_Expr('SUM(if(res.reported_result = ' . $rNegative . ', 1, 0))'), "invalid_responses" => new Zend_Db_Expr('SUM(if(res.reported_result = ' . $rInderminate . ', 1, 0))')))
                 ->join(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
                 ->join(array('rp' => 'r_possibleresult'), 'ref.reference_result=rp.id')
                 ->where("res.sample_id = ref.sample_id")
@@ -910,7 +914,6 @@ class Application_Service_Reports {
             $sQuery = $sQuery->having($sWhere);
         }
 
-
         $aResultTotal = $dbAdapter->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -939,6 +942,7 @@ class Application_Service_Reports {
             $row[] = $aRow['response'];
             $row[] = $aRow['positive_responses'];
             $row[] = $aRow['negative_responses'];
+            $row[] = $aRow['invalid_responses'];
             $row[] = $aRow['total_responses'];
             $row[] = $aRow['valid_responses'];
            // $row[] = $aRow['total_passed'];
@@ -2355,7 +2359,7 @@ class Application_Service_Reports {
 
     public function exportShipmentsReport($params) {
 
-        $headings = array('Scheme', 'Shipment Code', 'Sample Label', 'Reference Result', 'Total Positive Responses', 'Total Negative Responses', 'Total Responses', 'Total Valid Responses(Total - Excluded)', 'Total Passed');
+        $headings = array('Scheme', 'Shipment Code', 'Sample Label', 'Reference Result', 'Total Positive Responses', 'Total Negative Responses', 'Total Indeterminate Responses', 'Total Responses', 'Total Valid Responses(Total - Excluded)', 'Total Passed');
         try {
             $excel = new PHPExcel();
             $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
@@ -2410,6 +2414,7 @@ class Application_Service_Reports {
                 $row[] = $aRow['response'];
                 $row[] = $aRow['positive_responses'];
                 $row[] = $aRow['negative_responses'];
+                $row[] = $aRow['invalid_responses'];
                 $row[] = $aRow['total_responses'];
                 $row[] = $aRow['valid_responses'];
                 $row[] = $aRow['total_passed'];

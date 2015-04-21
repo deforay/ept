@@ -906,6 +906,7 @@ class Application_Service_Evaluation {
                     $shipmentResult[$counter]['documentation_score'] = 0;
                     $shipmentResult[$counter]['display_result'] = '';
                     $failureReason[] = array('warning' => 'Excluded from Evaluation');
+					$finalResult = 3;
                     $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
                 } else {
                     $shipment['is_excluded'] = 'no';
@@ -1288,7 +1289,12 @@ class Application_Service_Evaluation {
 
         $params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] != "" ) ? $params['isFollowUp'] : "no";
 
-        $db->update('shipment_participant_map', array('evaluation_comment' => $params['comment'], 'optional_eval_comment' => $params['optionalComments'], 'is_followup' => $params['isFollowUp'], 'is_excluded' => $params['isExcluded'], 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')), "map_id = " . $params['smid']);
+		$updateArray = array('evaluation_comment' => $params['comment'], 'optional_eval_comment' => $params['optionalComments'], 'is_followup' => $params['isFollowUp'], 'is_excluded' => $params['isExcluded'], 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()'));
+		if($params['isExcluded'] == 'yes'){
+			$updateArray['final_result'] = 3;
+		}
+		
+        $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
     }
 
     public function updateShipmentComment($shipmentId, $comment) {
