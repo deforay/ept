@@ -57,14 +57,14 @@
 
             <tr class ="light">
                 <td>Shipment Receipt Date</td>
-                <td><input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class=" datepicker" readonly="readonly"   title="Please enter Test Receipt Date" /></td>
+                <td><input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class=" datepicker" readonly="readonly"   title="Please enter Test Receipt Date" /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('receiptDate')"></i></td>
                 <td>Sample Rehydration Date</td>
-                <td><input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class=" datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  /></td>
+                <td><input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class=" datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('sampleRehydrationDate')"></i></td>
             </tr>
 
             <tr class ="dark">
                 <td>Testing Date</td> 
-                <td><input type="text" id="testDate" name="testDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class=" datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /></td>		
+                <td><input type="text" id="testDate" name="testDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class=" datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('testDate')"></i></td>		
                 <td>Algorithm Used</td> 
                 <td>
                     <select name="algorithm" id="algorithm" class="isRequired" title="Please choose the Algorithm used">
@@ -198,9 +198,9 @@
             ?>
             <tr align="CENTER" class="light">
                 <th>Exp Date</th>
-                <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /></td>
-                <td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /></td>
-                <td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /></td>
+                <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('exp_date1')"></i></td>
+                <td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('exp_date2')"></i></td>
+                <td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('exp_date3')"></i></td>
 
             </tr>
             <thead> 
@@ -379,5 +379,8 @@
             document.getElementById("test_kit_other_name_" + res[3]).style.display = "none";
             $("#test_kit_other_name_" + res[3]).val('');
         }
+    }
+    function clearDate(id) {
+      $("#" + id).val('');
     }
 </script>
