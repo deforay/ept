@@ -2017,4 +2017,9 @@ ADD  `last_not_participated_mail_count` INT( 11 ) NOT NULL DEFAULT  '0' AFTER  `
 
 
 -- Amit 18 April 2015
+
 INSERT INTO `report_config` (`name`, `value`) VALUES ('logo-right', NULL);
+
+-- Amit 20 April 2015
+
+ALTER TABLE  `shipment_participant_map` CHANGE  `final_result`  `final_result` INT( 11 ) NULL DEFAULT  '0';

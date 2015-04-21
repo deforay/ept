@@ -1030,7 +1030,7 @@ class Application_Service_Shipments {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment',array('shipment_id','shipment_code','status','number_of_samples')))
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id',array('distribution_code','distribution_date'))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
                 ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type',array('scheme_name'))
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
                 ->where("s.distribution_id = ?", $distributionId)
@@ -1062,7 +1062,7 @@ class Application_Service_Shipments {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response'))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('participantCount' => new Zend_Db_Expr("count(sp.participant_id)"), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '')")))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('participantCount' => new Zend_Db_Expr("count(sp.participant_id)"), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date <> '0000-00-00')")))
                 ->where("s.status='shipped'")
                 //->where("YEAR(s.shipment_date) = YEAR(CURDATE())")
                 ->where("s.shipment_date > DATE_SUB(now(), INTERVAL 24 MONTH)")
@@ -1158,6 +1158,7 @@ class Application_Service_Shipments {
                   ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
                   ->where("sp.shipment_id = ?", $sid)
                   ->group("p.participant_id");
+        echo $sQuery;die;
         $participantEmails=$db->fetchAll($sQuery);
         
         foreach($participantEmails as $participantDetails){
@@ -1182,22 +1183,25 @@ class Application_Service_Shipments {
         return $return;
     }
     public function getShipmentNotParticipated($sid) {
+       
         $commonServices = new Application_Service_Common();
         $general = new Pt_Commons_General();
         $notParticipatedMailContent = $commonServices->getEmailTemplate('not_participated');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $return=0;
-        $sQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id','sp.map_id','sp.last_not_participated_mail_count'))
-                  ->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('s.shipment_code','s.shipment_code'))
-                  ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-                  ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email','participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-                  ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+        $sQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id','sp.map_id','sp.last_not_participated_mail_count','sp.final_result'))
+                  ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('s.shipment_code','s.shipment_code'))
+                  ->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+                  ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email','participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+                  ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
                   ->where("sp.shipment_id = ?", $sid)
-                  ->where("sp.final_result!='1'")
-                  ->where("sp.final_result!='2'")
-                  ->group("p.participant_id");
+                  ->orwhere("sp.final_result =?", '0')
+                  ->orwhere("sp.final_result =?", 'NULL')
+                  ->orwhere("sp.final_result =?", '')
+                  ->group("sp.participant_id");
+      //  echo $sQuery;die;
         $participantEmails=$db->fetchAll($sQuery);
-        
+    //    Zend_Debug::dump($participantEmails);die;
         foreach($participantEmails as $participantDetails){
             if($participantDetails['email']!=''){
             $surveyDate=$general->humanDateFormat($participantDetails['distribution_date']);

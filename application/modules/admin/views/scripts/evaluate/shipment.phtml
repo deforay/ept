@@ -1,4 +1,6 @@
-<?php if (count($this->shipment) > 0) {  ?>
+<?php if (count($this->shipment) > 0) { 
+   // Zend_Debug::dump($this->shipmentsUnderDistro);die;
+    ?>
 <div class="well" style="clear: both;">
 <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
 <div id="allShipmentList">
@@ -15,12 +17,18 @@
 				<th style="text-align: center;">Response %</th>
 				<th style="text-align: center;">Number Passed</th>
 				<th style="text-align: center;">Shipment Status</th>
+				<th style="text-align: center;">Last Mailed On</th>
+				<th style="text-align: center;">Mail Count</th>
 				<th style="text-align: center;">Action</th>
 			</tr>
 			<?php
 			if(count($this->shipmentsUnderDistro) > 0){
 			foreach($this->shipmentsUnderDistro as $shipment){
 				$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+                                
+                                 $totalParticipant=$shipment['participant_count'];
+                                $passed=(isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0;
+                                $nonResponse=$totalParticipant-$reported;
 				?>
 				<tr>
 					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
@@ -31,10 +39,17 @@
 					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported/$shipment['participant_count'])*100,2) : 0; ?></td>					
 					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
 					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
+                                        <td style="text-align: center;"><?php echo $this->dateFormat($shipment['last_not_participated_mailed_on']); ?></td>
+					<td style="text-align: center;"><?php echo $shipment['last_not_participated_mail_count'] ?></td>
 					<td style="text-align: center;">
 						<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
 						<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
-						<?php } else { ?>
+                                                
+						<?php if($nonResponse > 0){?>
+                                                <a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> Not Responded Participants</span></a>
+						<?php }
+                                                
+                                                } else { ?>
 						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
 						<?php }?>
 					</td>
@@ -257,6 +272,18 @@
 		}		
 		
 	}
+        function mailNonParticipants(sid) {
+        if (window.confirm("Are you sure to send mail to not participants")) {
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'not-participated-mail')); ?>", {sid: sid, format: "html"},
+            function (data) {
+                if (data > 0) {
+                    alert("Mail Sent successfully");
+                }
+                oTable.fnDraw();
+            });
+        }
+
+    }
 </script>
 
 <?php } else { ?>
