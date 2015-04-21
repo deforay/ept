@@ -4,10 +4,16 @@
 //Zend_Debug::dump($this->result);die;
 require_once('tcpdf/tcpdf.php');
 $schemeType = $this->result['shipment'][0]['scheme_type'];
+//var_dump($this->result['shipment'][0]['responseResult'][0]['testkit1']);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode='';
+
+$dtsResults = array();
+foreach($this->possibleDtsResults as $pr){
+	$dtsResults[$pr['id']] = ucfirst(strtolower($pr['response']));
+}
 if(sizeof($this->result['shipment'])>0){
 	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
 		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
@@ -168,7 +174,6 @@ foreach($this->result['shipment'] as $result){
 	
 	//Coment Details
 	
-	
 	$labInfo='<table><tr><td style="font-weight:bold;">Participant Code :</td><td style="text-align:left;">'.$result['unique_identifier'].'</td>';
 	$labInfo.='<td  style="font-weight:bold;">Performing Participant : </td><td style="text-align:left">'.$result['first_name']." ".$result['last_name'].'</td></tr>';
 	$labInfo.='<tr><td style="font-weight:bold;">PT Survey Name :</td><td style="text-align:left">'.$result['distribution_code'].'</td>';
@@ -180,18 +185,21 @@ foreach($this->result['shipment'] as $result){
 	
 	$pdf->writeHTML($labInfo, true, false, true, false, '');
 	
-	
-	
-	$html='<p style="font-weight: bold;">Your laboratory test results : <br/></p>';
-	$pdf->writeHTML($html, true, false, true, false, '');
 	if(sizeof($result['responseResult'])>0){
 		if($schemeType != 'vl'){
-			$labRes='<table border="1" style="font-weight:bold;">
-						<tr>
-							<td style="background-color:#989898;text-align:center;">Specimen Panel ID </td>
-							<td style="background-color:#989898;text-align:center;">Your Result</td>
-							<td style="background-color:#989898;text-align:center;">Expected Result</td>
-							<td style="background-color:#989898;text-align:center;">Score</td>
+			$labRes = '<span style="font-weight: bold;">Your laboratory test results : <br/></span><table border="1" style="font-size:13px;">';
+			$labRes .='<tr><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;">Test-3</td><td colspan="3" style="border:none;"></td></tr>';
+			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Kit Name</td><td>'.$result['responseResult'][0]['testkit1'].'</td><td>'.$result['responseResult'][0]['testkit2'].'</td><td>'.$result['responseResult'][0]['testkit3'].'</td><td colspan="3"></td></tr>';
+			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Lot No.</td><td>'.$result['responseResult'][0]['lot_no_1'].'</td><td>'.$result['responseResult'][0]['lot_no_2'].'</td><td>'.$result['responseResult'][0]['lot_no_3'].'</td><td colspan="3"></td></tr>';
+			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Expiry Date</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_1']).'</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_2']).'</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_3']).'</td><td colspan="3"></td></tr>';		
+			$labRes .='<tr>
+							<td style="text-align:center;font-weight:bold;">Specimen Panel ID </td>
+							<td style="text-align:center;font-weight:bold;">Result-1</td>
+							<td style="text-align:center;font-weight:bold;">Result-2</td>
+							<td style="text-align:center;font-weight:bold;">Result-3</td>
+							<td style="text-align:center;font-weight:bold;">Your Result</td>
+							<td style="text-align:center;font-weight:bold;">Expected Result</td>
+							<td style="text-align:center;font-weight:bold;">Score</td>
 						</tr>';
 
 			$nonMandatorySamples = array();
@@ -213,8 +221,11 @@ foreach($this->result['shipment'] as $result){
 				}
 				$labRes.='<tr>
 							<td style="text-align:center;">'.$response['sample_label'].'</td>
-							<td>'.$response['labResult'].'</td>
-							<td>'.$response['referenceResult'].'</td>
+							<td>'.$dtsResults[$response['test_result_1']].'</td>
+							<td>'.$dtsResults[$response['test_result_2']].'</td>
+							<td>'.$dtsResults[$response['test_result_3']].'</td>
+							<td>'.ucfirst(strtolower($response['labResult'])).'</td>
+							<td>'.ucfirst(strtolower($response['referenceResult'])).'</td>
 							<td style="text-align:center;">'.$response['calculated_score'].'</td>
 						  </tr>';
 			}
@@ -233,21 +244,18 @@ foreach($this->result['shipment'] as $result){
                 $nmsTable.="<br/>";
                 $pdf->writeHTML($nmsTable, true, false, true, false, '');
             }
-			
-			
+					
 			
 			//Let us now calculate documentation score
 			$documentationScore = 0;
 			$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 4);
 			$attributes = json_decode($result['attributes'], true);
 			
-			$html='<p style="font-weight: bold;">Your documentation score : <br/></p>';
-			$pdf->writeHTML($html, true, false, true, false, '');			
 			
-			$docRes='<table border="1" style="font-weight:bold;">
+			$docRes='<span style="font-weight:bold;">Your documentation score :</span> <br/><table border="1" style="font-size:13px;">
 						<tr>
-							<td style="background-color:#989898;text-align:center;">Documentation Item</td>
-							<td style="background-color:#989898;text-align:center;">Score</td>
+							<td style="text-align:center;font-weight:bold;">Documentation Item</td>
+							<td style="text-align:center;font-weight:bold;">Score</td>
 						</tr>';
 
 
@@ -258,7 +266,7 @@ foreach($this->result['shipment'] as $result){
 			}
 			
 			$docRes.='<tr>
-							<td>Supervisor Approval</td>
+							<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
@@ -272,7 +280,7 @@ foreach($this->result['shipment'] as $result){
 						
 			
 			$docRes.='<tr>
-							<td>Reporting of the Sample Rehydration Date</td>
+							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
@@ -284,7 +292,7 @@ foreach($this->result['shipment'] as $result){
 			}
 						
 			$docRes.='<tr>
-							<td>Reporting of the Shipment Test Date</td>
+							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
@@ -301,7 +309,7 @@ foreach($this->result['shipment'] as $result){
 				$scoreDoc =  $documentationScorePerItem;
 			}			
 			$docRes.='<tr>
-							<td>Testing to be done within 24 hours of rehydration.</td>
+							<td style="text-align:left;font-weight:bold;">Testing to be done within 24 hours of rehydration.</td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
@@ -310,8 +318,8 @@ foreach($this->result['shipment'] as $result){
 			$pdf->writeHTML($docRes, true, false, true, false, '');
 			
 			if(isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null){
-				$failRes = 'Suggested Corrective actions for your response : <br/>';
-				$failRes .= '<table border="1">';
+				$failRes = '<span style="font-weight:bold;">Suggested Corrective actions for your response :</span> <br/>';
+				$failRes .= '<table border="1" style="font-size:13px;">';
 				$failRes.= '<tr><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
 				$warnings = json_decode($result['responseResult'][0]['failure_reason'],true);
 				foreach($warnings as $warning){
@@ -327,15 +335,15 @@ foreach($this->result['shipment'] as $result){
             			
 		}else{
 			$labRes='<h5>'.$result['responseResult'][0]['vl_assay'].'</h5>';
-			$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;">
+			$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
 						<tr>
-							<td style="background-color:#989898;">Specimen ID </td>
-							<td style="background-color:#989898;">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
-							<td style="background-color:#989898;">Mean<br/>(log<sub>10</sub> copies/ml)</td>
-							<td style="background-color:#989898;">S.D.</td>
-							<td style="background-color:#989898;">Low</td>
-							<td style="background-color:#989898;">High</td>
-							<td style="background-color:#989898;">Your Grade</td>
+							<td style="">Specimen ID </td>
+							<td style="">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
+							<td style="">Mean<br/>(log<sub>10</sub> copies/ml)</td>
+							<td style="">S.D.</td>
+							<td style="">Low</td>
+							<td style="">High</td>
+							<td style="">Your Grade</td>
 						</tr>';
 			foreach($result['responseResult'] as $response){
 				$labRes.='<tr>
@@ -396,12 +404,12 @@ foreach($this->result['shipment'] as $result){
 				
 			foreach($this->result['vlCalculation'] as $vlCal){
 				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results</h5>';
-				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;">
+				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
 				<tr>
-					<td style="background-color:#989898;">Specimen ID </td>
-					<td style="background-color:#989898;">Mean<br/>(log<sub>10</sub> copies/ml)</td>
-					<td style="background-color:#989898;">S.D.</td>
-					<td style="background-color:#989898;">CV</td>
+					<td style="">Specimen ID </td>
+					<td style="">Mean<br/>(log<sub>10</sub> copies/ml)</td>
+					<td style="">S.D.</td>
+					<td style="">CV</td>
 				</tr>';
 				//Zend_Debug::dump($vlCal[0]['low_limit']);
 				//Zend_Debug::dump(count($vlCal));
@@ -429,35 +437,34 @@ foreach($this->result['shipment'] as $result){
 	//if(trim($result['distribution_date'])!=""){
 	//	$result['distribution_date']=$this->dateFormat($result['distribution_date']);
 	//}
-	$comment='<table style="width:100%;">';
-	if(trim($result['shipment_comment'])!=""){
-	$comment.='<tr>';
-	$comment.='<td style="text-align:left;width:200px;">Message from the PT Admin</td>';
-	$comment.='<td style="text-align:left;width:20px;">:</td>';
-	$comment.='<td>'.$result['shipment_comment'].'</td>';
-	$comment.='</tr>';
+	if(trim($result['shipment_comment'])!="" || trim($result['evaluationComments'])!="" || trim($result['optional_eval_comment'])!=""){
+		$comment='<br/><br/><table border="1" style="width:100%;font-size:13px;" cellpadding="3">';
+		if(trim($result['shipment_comment'])!=""){
+			$comment.='<tr>';
+			$comment.='<td style="font-weight:bold;width:30%;">Message from the PT Admin</td>';
+			$comment.='<td style="width:70%;">'.$result['shipment_comment'].'</td>';
+			$comment.='</tr>';
+		}
+		
+		if(trim($result['evaluationComments'])!=""){
+			$comment.='<tr>';
+			$comment.='<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
+			$comment.='<td style="width:70%;">'.$result['evaluationComments'].'</td>';
+			$comment.='</tr>';
+		}
+		
+		if(trim($result['optional_eval_comment'])!=""){
+			$comment.='<tr>';
+			$comment.='<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
+			$comment.='<td style="width:70%;">'.$result['optional_eval_comment'].'</td>';
+			$comment.='</tr>';
+		}
+		
+		$comment.='</table>';
+		$pdf->writeHTML($comment, true, false, true, false, '');
 	}
 	
-	if(trim($result['evaluationComments'])!=""){
-	$comment.='<tr>';
-	$comment.='<td>Evaluation Comments </td>';
-	$comment.='<td>:</td>';
-	$comment.='<td>'.$result['evaluationComments'].'</td>';
-	$comment.='</tr>';
-	}
-	
-	if(trim($result['optional_eval_comment'])!=""){
-	$comment.='<tr>';
-	$comment.='<td>Specific Comments/Feedback</td>';
-	$comment.='<td>:</td>';
-	$comment.='<td>'.$result['optional_eval_comment'].'</td>';
-	$comment.='</tr>';
-	}
-	
-	$comment.='</table>';
-	$pdf->writeHTML($comment, true, false, true, false, '');	
-	
-	$html='<p>Thank you for participating in the HIV Serology '.strtoupper($result['scheme_type']).' Proficiency Testing Program.</p>';
+	$html='<br/><p>Thank you for participating in the HIV Serology '.strtoupper($result['scheme_type']).' Proficiency Testing Program.</p>';
 	$pdf->writeHTML($html, true, false, true, false, '');
 	
 	if (ob_get_contents()) ob_end_clean();

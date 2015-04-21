@@ -198,8 +198,8 @@ if ($this->result != "") {
                 //----------------Participant Performance Overview  start----------------
                 $sampleCode.='<div><span style="text-decoration: underline;">Participant Performance Overview</span><br/><br/><table border="1" style="margin-left:5px;"><tr>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Response</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Response</td>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Responses</td>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Responses</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
 
                 $sampleCode.='<tr>';
@@ -442,7 +442,7 @@ if ($this->result != "") {
                 $chart = new PieChart(900, 400);
                 $dataSet = new XYDataSet();
                 foreach ($this->result['pieChart'] as $piechart) {
-                    $dataSet->addPoint(new Point($piechart['kit_name']." (used ".$piechart['count']."  times)", $piechart['count']));
+                    $dataSet->addPoint(new Point($piechart['kit_name']." (N=".$piechart['count'].")", $piechart['count']));
                 }
                 $piechart = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
                 $chart->setDataSet($dataSet);

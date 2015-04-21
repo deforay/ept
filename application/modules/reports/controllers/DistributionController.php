@@ -62,6 +62,8 @@ class Reports_DistributionController extends Zend_Controller_Action
             $evalService = new Application_Service_Evaluation();
             $this->view->result = $evalService->getEvaluateReportsInPdf($id);
             $commonService = new Application_Service_Common();
+            $schemeService = new Application_Service_Schemes();
+            $this->view->possibleDtsResults = $schemeService->getPossibleResults('dts');
             $this->view->passPercentage = $commonService->getConfig('pass_percentage');
             
         }
