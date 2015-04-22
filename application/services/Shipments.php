@@ -1198,9 +1198,8 @@ class Application_Service_Shipments {
                   ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email','participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
                   ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
                   ->where("sp.shipment_id = ?", $sid)
-                  ->orwhere("sp.final_result =?", '0')
-                  ->orwhere("sp.final_result =?", 'NULL')
-                  ->orwhere("sp.final_result =?", '')
+                  ->where("sp.shipment_test_date = ?", '0000-00-00')
+                  ->where("sp.shipment_test_date IS NULL ")
                   ->group("sp.participant_id");
       //  echo $sQuery;die;
         $participantEmails=$db->fetchAll($sQuery);
