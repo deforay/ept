@@ -172,6 +172,7 @@ class Application_Service_Shipments {
             $enrolled='';
             $delete='';
             $announcementMail='';
+            $manageEnroll='';
             if($aRow['status'] != 'finalized'){
                 $edit='&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-edit"></i> Edit</span></a>';
             }else{
@@ -183,6 +184,7 @@ class Application_Service_Shipments {
             }else if($aRow['status']=='shipped'){
                 $enrolled='&nbsp;<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
                 $announcementMail='&nbsp;<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> New Shipment Mail</span></a>';
+                $manageEnroll='&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-gear"></i> Manage Enroll</span></a>';
             }
             
             if($aRow['status'] != 'finalized'){
@@ -199,7 +201,7 @@ class Application_Service_Shipments {
 //                $row[] = $edit.'<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
 //            }
 
-            $row[] = $edit.$enrolled.$delete.$announcementMail;
+            $row[] = $edit.$enrolled.$delete.$announcementMail.$manageEnroll;
             $output['aaData'][] = $row;
         }
 
@@ -1075,8 +1077,9 @@ class Application_Service_Shipments {
 
     public function removeShipmentParticipant($mapId) {
         try {
-            $shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();
-            return $shipmentParticipantMap->delete('map_id=' . $mapId);
+             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+             $db->delete('response_result_dts', "shipment_map_id = " . $mapId);
+           return  $db->delete('shipment_participant_map', "map_id = " . $mapId);
         } catch (Exception $e) {
             return($e->getMessage());
             return "Unable to delete. Please try again later or contact system admin for help";

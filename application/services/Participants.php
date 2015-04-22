@@ -170,5 +170,12 @@ class Application_Service_Participants {
 		$db = new Application_Model_DbTable_Participants();
 		$db->getUnEnrolledByShipments($parameters);
 	}
-	
+        public function getShipmentRespondedParticipants($params){
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->getShipmentRespondedParticipants($params);
+	}
+	public function getShipmentNotRespondedParticipants($params){
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->getShipmentNotRespondedParticipants($params);
+	}
 }

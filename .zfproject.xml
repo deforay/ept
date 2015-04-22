@@ -180,8 +180,12 @@
               <actionMethod actionName="unenrollments"/>
               <actionMethod actionName="addEnrollments"/>
               <actionMethod actionName="getShipmentCode"/>
-               <actionMethod actionName="newShipmentMail"/>
-                <actionMethod actionName="notParticipatedMail"/>
+              <actionMethod actionName="newShipmentMail"/>
+              <actionMethod actionName="notParticipatedMail"/>
+              <actionMethod actionName="manageEnroll"/>
+              <actionMethod actionName="shipmentRespondedParticipants"/>
+              <actionMethod actionName="shipmentNotRespondedParticipants"/>
+              <actionMethod actionName="deleteNonRespondedParticipant"/>
             </controllerFile>
             <controllerFile controllerName="Evaluate">
               <actionMethod actionName="index"/>
@@ -394,6 +398,18 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="MailTemplate">
                 <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="manageEnroll"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="shipmentRespondedParticipants"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="shipmentNotRespondedParticipants"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="deleteNonRespondedParticipant"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

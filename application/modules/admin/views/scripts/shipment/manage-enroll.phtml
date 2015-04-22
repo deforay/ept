@@ -1,0 +1,239 @@
+<?php
+//Zend_Debug::dump($this->shipment);die;
+?>
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;"><div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Manage Enrollment</div></h4>
+
+<table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
+        <tr>
+            <th>Shipment Code</th>
+            <td><?php echo $this->shipment['shipment']['shipment_code']; ?></td>
+            <th>Scheme Type</th>
+            <td><?php echo strtoupper($this->shipment['shipment']['scheme_type']); ?></td>
+        </tr>
+        <tr>
+            <th>PT Survey Code</th>
+            <td><?php echo strtoupper($this->shipment['shipment']['distribution_code']); ?></td>
+             <th>PT Survey Date</th>
+            <td><?php echo $this->dateFormat($this->shipment['shipment']['distribution_date']); ?></td>
+        </tr>
+        <tr>
+            <th>Shipment Date</th>
+            <td><?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?></td>
+            <th>Last Response Date</th>
+            <td><?php echo $this->dateFormat($this->shipment['shipment']['lastdate_response']); ?></td>
+        </tr>
+    </table>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body table-responsive">
+                    <div class="widget" style="padding-top:20px;">
+                        <div class="widget-content">
+                            <div class="bs-example bs-example-tabs">
+                                <ul id="myTab" class="nav nav-tabs">
+                                    <li class="active"><a href="#listOfResponded" data-toggle="tab">Responded</a></li>
+                                    <li><a href="#listOfNotResponded" data-toggle="tab">Not Responded </a></li>
+<!--                                    <li><a href="#notEnrolled" data-toggle="tab">Not Enrolled in this Shipment </a></li>-->
+                                </ul>
+                                <div id="myTabContent" class="tab-content">
+                                    <div class="tab-pane fade in active" id="listOfResponded">
+                                        <div style="padding-top:20px;"></div>
+                                        <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="respondedTable">
+                                            <thead>
+                                                <tr>
+                                                   <th>Participant ID</th>
+                                                    <th>Lab Name/Participant Name</th>
+                                                    <th>Country</th>
+                                                    <th>Cell/Mobile</th>
+                                                    <th>Phone</th>
+                                                    <th>Affiliation</th>
+                                                    <th>Email</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="9" class="dataTables_empty">Loading data from server</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="tab-pane fade" id="listOfNotResponded">
+                                        <div style="padding-top:20px;"></div>
+                                        <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="notRespondedTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Participant ID</th>
+                                                    <th>Lab Name/Participant Name</th>
+                                                    <th>Country</th>
+                                                    <th>Cell/Mobile</th>
+                                                    <th>Phone</th>
+                                                    <th>Affiliation</th>
+                                                    <th>Email</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="10" class="dataTables_empty">Loading data from server</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+<!--                                    <div class="tab-pane fade" id="notEnrolled">
+                                        <div style="padding-top:20px;"></div>
+                                        <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="notEnrolledTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Participant ID</th>
+                                                    <th>Lab Name/Participant Name</th>
+                                                    <th>Country</th>
+                                                    <th>Cell/Mobile</th>
+                                                    <th>Phone</th>
+                                                    <th>Affiliation</th>
+                                                    <th>Email</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="10" class="dataTables_empty">Loading data from server</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+    </div>
+
+</section><!-- /.content -->
+
+<script type="text/javascript" charset="utf-8">
+      var oTableResponded = null;
+    var oTableNotResponded = null;
+    var oTableNotEnrolled = null;
+    $(document).ready(function () {
+        drawTableResponded();
+        drawTableNotResponded();
+   //     drawTableNotEnrolled();
+
+    });
+    $('#myTab a[href="#listOfResponded"]').click(function (e) {
+        oTableResponded.fnDraw();
+    });
+    $('#myTab a[href="#listOfNotResponded"]').click(function (e) {
+        oTableNotResponded.fnDraw();
+    });
+//    $('#myTab a[href="#notEnrolled"]').click(function (e) {
+//        oTableNotEnrolled.fnDraw();
+//    });
+//    
+    function drawTableResponded() {
+
+       oTableResponded = $('#respondedTable').dataTable( {
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [
+               {"sClass":"center"},
+                {"sClass":""},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":""},
+                {"sClass":"center"}
+            ],
+            "aaSorting": [[ 0, "asc" ]],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-responded-participants', 'format' => 'html')); ?>",
+             "fnServerParams": function (aoData) {
+                aoData.push({"name": "shipmentId", "value": '<?php echo $this->shipmentId ?>'});
+            },
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+    }
+    function drawTableNotResponded() {
+
+       oTableResponded = $('#notRespondedTable').dataTable( {
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [
+               {"sClass":"center"},
+                {"sClass":""},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":""},
+                {"sClass":"center"},
+                {"sClass":"center","bSortable":false}
+            ],
+            "aaSorting": [[ 0, "asc" ]],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-not-responded-participants', 'format' => 'html')); ?>",
+             "fnServerParams": function (aoData) {
+                aoData.push({"name": "shipmentId", "value": '<?php echo $this->shipmentId ?>'});
+            },
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+    }
+    function removeParticipants(mid){
+		if (window.confirm("Are you sure you want to remove this participant?\n This cannot be undone !")) { 
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", { mid: mid, format: "html" },
+			    function (data) {
+			       if (data>0) {
+				alert("Participants removed successfully");
+			       }else{
+				alert("Unable to delete. Please try again later or contact system admin for help");
+			       }
+				drawTableNotResponded();
+				$.unblockUI();
+			});
+		}		
+		
+	}
+
+   
+</script>
