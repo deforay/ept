@@ -459,6 +459,7 @@ class Application_Service_Evaluation {
 
             $counter = 0;
             $maxScore = 0;
+			$scoreHolder = array();
 
             $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $config = new Zend_Config_Ini($file, APPLICATION_ENV);
@@ -918,6 +919,7 @@ class Application_Service_Evaluation {
                     }
                     $shipmentResult[$counter]['shipment_score'] = $responseScore;
                     $shipmentResult[$counter]['documentation_score'] = $documentationScore;
+					$scoreHolder[$shipment['map_id']] = $responseScore + $documentationScore;
 
                     $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
 
@@ -939,8 +941,9 @@ class Application_Service_Evaluation {
                 $counter++;
             }
 
+			$averageScore = round(array_sum($scoreHolder)/count($scoreHolder),2);
 
-            $db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
+            $db->update('shipment', array('max_score' => $maxScore,'average_score' => $averageScore), "shipment_id = " . $shipmentId);
         } else if ($shipmentResult[0]['scheme_type'] == 'vl') {
             $counter = 0;
             $maxScore = 0;

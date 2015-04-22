@@ -184,10 +184,11 @@ class Application_Service_Shipments {
             }else if($aRow['status']=='shipped'){
                 $enrolled='&nbsp;<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
                 $announcementMail='&nbsp;<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> New Shipment Mail</span></a>';
-                $manageEnroll='&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-gear"></i> Manage Enroll</span></a>';
+                
             }
             
             if($aRow['status'] != 'finalized'){
+				$manageEnroll='&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-gear"></i> Manage Enrollment</span></a>';
                 $delete='&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
             }
             
