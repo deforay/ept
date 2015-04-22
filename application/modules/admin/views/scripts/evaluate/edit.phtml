@@ -167,4 +167,18 @@ $dtFormat=  $vHelper->getDateFormat();
 		$(this).val(lastValue);
 	    }
 	});
+         $('#supervisorApproval').change(function () {
+
+            if ($('#supervisorApproval').val() == 'yes')
+            {
+                $('#labSupervisor').show();
+                $('#participantSupervisor').val('');
+                $('#participantSupervisor').show();
+            }
+            else {
+                $('#labSupervisor').hide();
+                $('#participantSupervisor').val('');
+                $('#participantSupervisor').hide();
+            }
+        });
 </script>

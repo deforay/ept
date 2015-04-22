@@ -1086,13 +1086,13 @@ class Application_Service_Evaluation {
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('fullscore' => new Zend_Db_Expr("SUM(if(s.max_score = sp.shipment_score, 1, 0))")))
                 ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
                 ->where("sp.shipment_id = ?", $shipmentId)
-                ->where("substring(sp.evaluation_status,4,1) != '0'");
+                ->where("substring(sp.evaluation_status,4,1) != '0'")->group('sp.map_id');
         $shipmentOverall = $db->fetchAll($sql);
-
 
         $noOfParticipants = count($shipmentOverall);
         $numScoredFull = $shipmentOverall[0]['fullscore'];
         $maxScore = $shipmentOverall[0]['max_score'];
+        
 
         $controlRes = array();
         $sampleRes = array();
@@ -1116,7 +1116,8 @@ class Application_Service_Evaluation {
             'maxScore' => $maxScore,
             'evalComments' => $evalComments,
             'controlResults' => $controlRes,
-            'results' => $sampleRes);
+            'results' => $sampleRes
+                );
     }
 
     public function viewEvaluation($shipmentId, $participantId, $scheme) {
@@ -1173,15 +1174,19 @@ class Application_Service_Evaluation {
                 ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
                 ->where("sp.shipment_id = ?", $shipmentId)
                 ->where("substring(sp.evaluation_status,4,1) != '0'")
-                ->group('sp.map_id');
+               ->group('sp.map_id');
+        
         $shipmentOverall = $db->fetchAll($sql);
-
+   //     Zend_Debug::dump($shipmentOverall);die;
 
         $noOfParticipants = count($shipmentOverall);
         $numScoredFull = 0;
         foreach ($shipmentOverall as $shipment) {
             $numScoredFull += $shipment['fullscore'];
         }
+        $supervisorApproval = $shipmentOverall[0]['supervisor_approval'];
+        $participantSupervisor = $shipmentOverall[0]['participant_supervisor'];
+        $userComment= $shipmentOverall[0]['user_comment'];
 
         return array('participant' => $participantData,
             'shipment' => $shipmentData,
@@ -1190,7 +1195,8 @@ class Application_Service_Evaluation {
             'fullScorers' => $numScoredFull,
             'evalComments' => $evalComments,
             'controlResults' => $controlRes,
-            'results' => $sampleRes);
+            'results' => $sampleRes                
+                );
     }
 
     public function updateShipmentResults($params) {
@@ -1214,6 +1220,9 @@ class Application_Service_Evaluation {
             "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receivedOn']),
             "shipment_test_date" => Pt_Commons_General::dateFormat($params['testedOn']),
             "attributes" => $attributes,
+            "supervisor_approval" => $params['supervisorApproval'],
+            "participant_supervisor" => $params['participantSupervisor'],
+            "user_comment" => $params['userComments'],
             "updated_by_admin" => $admin,
             "updated_on_admin" => new Zend_Db_Expr('now()')
         );
