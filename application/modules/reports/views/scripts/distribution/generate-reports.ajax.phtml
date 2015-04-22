@@ -188,10 +188,10 @@ foreach($this->result['shipment'] as $result){
 	if(sizeof($result['responseResult'])>0){
 		if($schemeType != 'vl'){
 			$labRes = '<span style="font-weight: bold;">Your laboratory test results : <br/></span><table border="1" style="font-size:13px;">';
-			$labRes .='<tr><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;">Test-3</td><td colspan="3" style="border:none;"></td></tr>';
-			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Kit Name</td><td>'.$result['responseResult'][0]['testkit1'].'</td><td>'.$result['responseResult'][0]['testkit2'].'</td><td>'.$result['responseResult'][0]['testkit3'].'</td><td colspan="3"></td></tr>';
-			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Lot No.</td><td>'.$result['responseResult'][0]['lot_no_1'].'</td><td>'.$result['responseResult'][0]['lot_no_2'].'</td><td>'.$result['responseResult'][0]['lot_no_3'].'</td><td colspan="3"></td></tr>';
-			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Expiry Date</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_1']).'</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_2']).'</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_3']).'</td><td colspan="3"></td></tr>';		
+			$labRes .='<tr><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
+			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Kit Name</td><td>'.$result['responseResult'][0]['testkit1'].'</td><td>'.$result['responseResult'][0]['testkit2'].'</td><td>'.$result['responseResult'][0]['testkit3'].'</td><td colspan="4"></td></tr>';
+			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Lot No.</td><td>'.$result['responseResult'][0]['lot_no_1'].'</td><td>'.$result['responseResult'][0]['lot_no_2'].'</td><td>'.$result['responseResult'][0]['lot_no_3'].'</td><td colspan="4"></td></tr>';
+			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Expiry Date</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_1']).'</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_2']).'</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_3']).'</td><td colspan="4"></td></tr>';		
 			$labRes .='<tr>
 							<td style="text-align:center;font-weight:bold;">Specimen Panel ID </td>
 							<td style="text-align:center;font-weight:bold;">Result-1</td>
@@ -199,7 +199,7 @@ foreach($this->result['shipment'] as $result){
 							<td style="text-align:center;font-weight:bold;">Result-3</td>
 							<td style="text-align:center;font-weight:bold;">Your Result</td>
 							<td style="text-align:center;font-weight:bold;">Expected Result</td>
-							<td style="text-align:center;font-weight:bold;">Score</td>
+							<td style="text-align:center;font-weight:bold;" colspan="2">Score</td>
 						</tr>';
 
 			$nonMandatorySamples = array();
@@ -219,6 +219,14 @@ foreach($this->result['shipment'] as $result){
 					$wrongSamples[] = $response['sample_label'];
 					$score = 0;
 				}
+				
+				if($response['calculated_score'] == 'Pass'){
+					$img = UPLOAD_PATH . '/../images/check.jpg';
+				} else if($response['calculated_score'] == 'Fail'){
+					$img = UPLOAD_PATH . '/../images/cross.jpg';
+				}else{
+					$img = UPLOAD_PATH . '/../images/minus.jpg';
+				}
 				$labRes.='<tr>
 							<td style="text-align:center;">'.$response['sample_label'].'</td>
 							<td>'.(isset($response['test_result_1']) && $response['test_result_1'] !="" ? $dtsResults[$response['test_result_1']] : "").'</td>
@@ -226,6 +234,7 @@ foreach($this->result['shipment'] as $result){
 							<td>'.(isset($response['test_result_3']) && $response['test_result_3'] !="" ? $dtsResults[$response['test_result_3']] : "").'</td>
 							<td>'.ucfirst(strtolower($response['labResult'])).'</td>
 							<td>'.ucfirst(strtolower($response['referenceResult'])).'</td>
+							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$response['calculated_score'].'</td>
 						  </tr>';
 			}
@@ -251,22 +260,29 @@ foreach($this->result['shipment'] as $result){
 			$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 4);
 			$attributes = json_decode($result['attributes'], true);
 			
+			$img = array();
+			$imgPass = UPLOAD_PATH . '/../images/check.jpg';
+			$imgFail = UPLOAD_PATH . '/../images/cross.jpg';
 			
-			$docRes='<span style="font-weight:bold;">Your documentation score :</span> <br/><table border="1" style="font-size:13px;">
+			$docRes='<span style="font-weight:bold;">Your documentation score :</span> <br/>
+					<table border="1" style="font-size:13px;width:100%;">
 						<tr>
-							<td style="text-align:center;font-weight:bold;">Documentation Item</td>
-							<td style="text-align:center;font-weight:bold;">Score</td>
+							<td style="text-align:center;font-weight:bold;width:75%">Documentation Item</td>
+							<td style="text-align:center;font-weight:bold;width:25%" colspan="2">Score</td>
 						</tr>';
 
 
 			if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
 				$scoreDoc =  $documentationScorePerItem;
+				$img = $imgPass;
 			} else {
 				$scoreDoc = 0;
+				$img = $imgFail;
 			}
 			
 			$docRes.='<tr>
 							<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
+							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
@@ -274,25 +290,31 @@ foreach($this->result['shipment'] as $result){
 			
 			if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
 				$scoreDoc =  $documentationScorePerItem;
+				$img = $imgPass;
 			} else {
 				$scoreDoc = 0;
+				$img = $imgFail;
 			}
 						
 			
 			$docRes.='<tr>
 							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>
+							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
 
 			if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
 				$scoreDoc =  $documentationScorePerItem;
+				$img = $imgPass;
 			} else {
 				$scoreDoc = 0;
+				$img = $imgFail;
 			}
 						
 			$docRes.='<tr>
 							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
+							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
@@ -305,11 +327,14 @@ foreach($this->result['shipment'] as $result){
 
 			if ($days > 1) {
 				$scoreDoc = 0;
+				$img = $imgFail;
 			} else {
 				$scoreDoc =  $documentationScorePerItem;
+				$img = $imgPass;
 			}			
 			$docRes.='<tr>
 							<td style="text-align:left;font-weight:bold;">Testing to be done within 24 hours of rehydration.</td>
+							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
