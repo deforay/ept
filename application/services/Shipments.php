@@ -10,8 +10,8 @@ class Application_Service_Shipments {
         //$aColumns = array('project_name','project_code','e.employee_name','client_name','architect_name','project_value','building_type_name','DATE_FORMAT(p.project_date,"%d-%b-%Y")','DATE_FORMAT(p.deadline,"%d-%b-%Y")','refered_by','emp.employee_name');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'number_of_samples', 's.status',"DATE_FORMAT(last_new_shipment_mailed_on,'%d-%b-%Y')", 'new_shipment_mail_count');
-        $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'number_of_samples', 's.status', 'last_new_shipment_mailed_on', 'new_shipment_mail_count');
+        $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'number_of_samples', 's.status');
+        $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'number_of_samples', 's.status');
 
 
         /* Indexed column (used for fast and accurate table cardinality) */
@@ -166,8 +166,8 @@ class Application_Service_Shipments {
             $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['total_participants'];
             $row[] = ucfirst($aRow['status']);
-             $row[] = $mailedOn;
-             $row[] = $aRow['new_shipment_mail_count'];
+//             $row[] = $mailedOn;
+//             $row[] = $aRow['new_shipment_mail_count'];
             $edit='';
             $enrolled='';
             $delete='';
@@ -1165,6 +1165,7 @@ class Application_Service_Shipments {
                   ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
                   ->where("sp.shipment_id = ?", $sid)
                   ->group("p.participant_id");
+        echo $sQuery;die;
         $participantEmails=$db->fetchAll($sQuery);
         
         foreach($participantEmails as $participantDetails){
@@ -1174,8 +1175,8 @@ class Application_Service_Shipments {
             $replace = array($participantDetails['participantName'],$participantDetails['shipment_code'],$participantDetails['SCHEME'],$participantDetails['distribution_code'],$surveyDate);
             $content = $newShipmentMailContent['mail_content'];
             $message = str_replace($search, $replace, $content);
-            $subject = str_replace($search, $replace, $newShipmentMailContent['mail_subject']);
-            //$message = $message;
+            $subject = $newShipmentMailContent['mail_subject'];
+            $message = $message;
             $fromEmail =$newShipmentMailContent['mail_from'];
             $fromFullName = $newShipmentMailContent['from_name'];
             $toEmail =$participantDetails['email'];
@@ -1213,8 +1214,8 @@ class Application_Service_Shipments {
             $replace = array($participantDetails['participantName'],$participantDetails['shipment_code'],$participantDetails['SCHEME'],$participantDetails['distribution_code'],$surveyDate);
             $content = $notParticipatedMailContent['mail_content'];
             $message = str_replace($search, $replace, $content);
-            $subject = str_replace($search, $replace, $notParticipatedMailContent['mail_subject']);
-            //$message = $message;
+            $subject = $notParticipatedMailContent['mail_subject'];
+            $message = $message;
             $fromEmail =$notParticipatedMailContent['mail_from'];
             $fromFullName = $notParticipatedMailContent['from_name'];
             $toEmail =$participantDetails['email'];

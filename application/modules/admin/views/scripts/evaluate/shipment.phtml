@@ -17,8 +17,8 @@
 				<th style="text-align: center;">Response %</th>
 				<th style="text-align: center;">Number Passed</th>
 				<th style="text-align: center;">Shipment Status</th>
-				<th style="text-align: center;">Last Mailed On</th>
-				<th style="text-align: center;">Mail Count</th>
+<!--				<th style="text-align: center;">Last Mailed On</th>
+				<th style="text-align: center;">Mail Count</th>-->
 				<th style="text-align: center;">Action</th>
 			</tr>
 			<?php
@@ -39,8 +39,8 @@
 					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported/$shipment['participant_count'])*100,2) : 0; ?></td>					
 					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
 					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
-                                        <td style="text-align: center;"><?php echo $this->dateFormat($shipment['last_not_participated_mailed_on']); ?></td>
-					<td style="text-align: center;"><?php echo $shipment['last_not_participated_mail_count'] ?></td>
+<!--                                        <td style="text-align: center;">< ?php echo $this->dateFormat($shipment['last_not_participated_mailed_on']); ?></td>
+					<td style="text-align: center;">< ?php echo $shipment['last_not_participated_mail_count'] ?></td>-->
 					<td style="text-align: center;">
 						<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
 						<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
