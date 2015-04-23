@@ -1000,7 +1000,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('unique_identifier', 'first_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'p.status');
+        $aColumns = array('first_name','unique_identifier', 'first_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'p.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
       //  $sIndexColumn = "participant_id";
@@ -1129,6 +1129,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
         foreach ($rResult as $aRow) {
             $row = array();
+          
+	    $row[]='<input type="checkbox" class="checkParticipants" id="chk' . base64_encode($aRow['participant_id']). '"  value="' . base64_encode($aRow['participant_id']) . '" onclick="toggleSelect(this);"  />';
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['participantName'];
             $row[] = $aRow['iso_name'];
@@ -1137,7 +1139,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a href="javascript:void(0);" onclick="enrollParticipants(\'' . base64_encode($parameters['shipmentId']). '\',\'' . base64_encode($aRow['participant_id']) . '\')" class="btn btn-primary btn-xs"> Enroll</a>';
+            $row[] = '<a href="javascript:void(0);" onclick="enrollParticipants(\'' .base64_encode($aRow['participant_id']). '\',\'' .  base64_encode($parameters['shipmentId']) . '\')" class="btn btn-primary btn-xs"> Enroll</a>';
             $output['aaData'][] = $row;
         }
 

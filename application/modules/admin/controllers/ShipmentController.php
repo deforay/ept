@@ -258,7 +258,7 @@ class Admin_ShipmentController extends Zend_Controller_Action {
          if ($this->_hasParam('sid') && $this->_hasParam('pid')) {
             if ($this->getRequest()->isPost()) {
                 $shipmentId = (int) base64_decode($this->_getParam('sid'));
-                $participantId = (int) base64_decode($this->_getParam('pid'));
+                $participantId = $this->_getParam('pid');
                 $shipmentService = new Application_Service_Shipments();
                 $this->view->result = $shipmentService->enrollShipmentParticipant($shipmentId,$participantId);
             }

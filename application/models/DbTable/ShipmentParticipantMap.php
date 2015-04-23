@@ -82,8 +82,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
         return $this->update($params, "map_id = " . $shipmentMapId);
     }
-    
-    
+
     public function removeShipmentMapDetails($params, $mapId) {
         $row = $this->fetchRow("map_id = " . $mapId);
         if ($row != "") {
@@ -99,11 +98,10 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $params['evaluation_status'][4] = 1;
 
         // changing evaluation status 4th character to 0 = no response
-            $params['evaluation_status'][3] = 0;
-     
+        $params['evaluation_status'][3] = 0;
+
         return $this->update($params, "map_id = " . $mapId);
     }
-    
 
     public function isShipmentEditable($shipmentId, $participantId) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -115,7 +113,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $lastDate = new Zend_Date($shipment["lastdate_response"], Zend_Date::ISO_8601);
         if ($responseAfterFinalised == 'yes') {
             // only if current date is lesser than last date
-            if ($date->compare($lastDate) <= 0 || $shipment["status"]== 'finalized') {
+            if ($date->compare($lastDate) <= 0 || $shipment["status"] == 'finalized') {
                 return true;
             } else {
                 return false;
@@ -168,23 +166,24 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             return false;
         }
     }
-    
-    public function enrollShipmentParticipant($shipmentId,$participantId) {
-        $count=0;
+
+    public function enrollShipmentParticipant($shipmentId, $participantId) {
+        $insertCount = 0;
         try {
             $this->getAdapter()->beginTransaction();
             $authNameSpace = new Zend_Session_Namespace('administrators');
-//            foreach ($params['participants'] as $participant) {
+            $participantId = explode(',', $participantId);
+            $count = count($participantId);
+            for ($i = 0; $i < $count; $i++) {
                 $data = array('shipment_id' => $shipmentId,
-                    'participant_id' => $participantId,
+                    'participant_id' => base64_decode($participantId[$i]),
                     'evaluation_status' => '19901190',
                     'created_by_admin' => $authNameSpace->admin_id,
                     "created_on_admin" => new Zend_Db_Expr('now()'));
-                     $count=$this->insert($data);
-              
-//            }
+                   $insertCount = $this->insert($data);
+            }
             $this->getAdapter()->commit();
-            return $count;
+            return $insertCount;
         } catch (Exception $e) {
             $this->getAdapter()->rollBack();
             die($e->getMessage());

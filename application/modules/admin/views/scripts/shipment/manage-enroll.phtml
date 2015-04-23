@@ -4,25 +4,25 @@
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;"><div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Manage Enrollment</div></h4>
 
 <table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
-        <tr>
-            <th>Shipment Code</th>
-            <td><?php echo $this->shipment['shipment']['shipment_code']; ?></td>
-            <th>Scheme Type</th>
-            <td><?php echo strtoupper($this->shipment['shipment']['scheme_type']); ?></td>
-        </tr>
-        <tr>
-            <th>PT Survey Code</th>
-            <td><?php echo strtoupper($this->shipment['shipment']['distribution_code']); ?></td>
-             <th>PT Survey Date</th>
-            <td><?php echo $this->dateFormat($this->shipment['shipment']['distribution_date']); ?></td>
-        </tr>
-        <tr>
-            <th>Shipment Date</th>
-            <td><?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?></td>
-            <th>Last Response Date</th>
-            <td><?php echo $this->dateFormat($this->shipment['shipment']['lastdate_response']); ?></td>
-        </tr>
-    </table>
+    <tr>
+        <th>Shipment Code</th>
+        <td><?php echo $this->shipment['shipment']['shipment_code']; ?></td>
+        <th>Scheme Type</th>
+        <td><?php echo strtoupper($this->shipment['shipment']['scheme_type']); ?></td>
+    </tr>
+    <tr>
+        <th>PT Survey Code</th>
+        <td><?php echo strtoupper($this->shipment['shipment']['distribution_code']); ?></td>
+        <th>PT Survey Date</th>
+        <td><?php echo $this->dateFormat($this->shipment['shipment']['distribution_date']); ?></td>
+    </tr>
+    <tr>
+        <th>Shipment Date</th>
+        <td><?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?></td>
+        <th>Last Response Date</th>
+        <td><?php echo $this->dateFormat($this->shipment['shipment']['lastdate_response']); ?></td>
+    </tr>
+</table>
 
 <section class="content">
     <div class="row">
@@ -39,14 +39,14 @@
                                 </ul>
                                 <div id="myTabContent" class="tab-content">
                                     <div class="tab-pane fade in active" id="listOfResponded">
-                                         <div style="padding-top:20px;">
-                                                
-                                            </div>
-                                            
+                                        <div style="padding-top:20px;">
+
+                                        </div>
+
                                         <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="respondedTable">
                                             <thead>
                                                 <tr>
-                                                   <th>Participant ID</th>
+                                                    <th>Participant ID</th>
                                                     <th>Lab Name/Participant Name</th>
                                                     <th>Country</th>
                                                     <th>Cell/Mobile</th>
@@ -87,10 +87,11 @@
                                         </table>
                                     </div>
                                     <div class="tab-pane fade" id="notEnrolled">
-<!--                                        <div style="padding-top:20px;">    <a href="javascript:void(0)" onclick="changeLeaveStatus($('#approvalPending').val(),'approved')" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;Mark <span id="countChecksPending">0</span> participants selected for enroll</a></div>-->
+                                        <div style="padding-top:20px;">    <a href="javascript:void(0)" onclick="submitEnrollParticipants($('#enrollParticipants').val(), '<?php echo $this->shipmentId ?>')" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="icon-cogs"></i>&nbsp;Mark <span id="countCheckedParticipants">0</span> participants selected for enroll</a></div>
                                         <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="notEnrolledTable">
                                             <thead>
                                                 <tr>
+                                                    <th><input type="checkbox" id="bulkParticipants" onclick="toggleAllSelection()"/></th>
                                                     <th>Participant ID</th>
                                                     <th>Lab Name/Participant Name</th>
                                                     <th>Country</th>
@@ -117,13 +118,14 @@
             </div><!-- /.box -->
         </div>
     </div>
-
+    <input type="hidden" name="enrollParticipants" id="enrollParticipants"/>
 </section><!-- /.content -->
 
 <script type="text/javascript" charset="utf-8">
-      var oTableResponded = null;
+    var oTableResponded = null;
     var oTableNotResponded = null;
     var oTableNotEnrolled = null;
+    selectedParticipants = [];
     $(document).ready(function () {
         drawTableResponded();
         drawTableNotResponded();
@@ -139,10 +141,10 @@
     $('#myTab a[href="#notEnrolled"]').click(function (e) {
         oTableNotEnrolled.fnDraw();
     });
-    
+
     function drawTableResponded() {
 
-       oTableResponded = $('#respondedTable').dataTable( {
+        oTableResponded = $('#respondedTable').dataTable({
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"
             },
@@ -153,23 +155,23 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [
-               {"sClass":"center"},
-                {"sClass":""},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":""},
-                {"sClass":"center"}
+                {"sClass": "center"},
+                {"sClass": ""},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": ""},
+                {"sClass": "center"}
             ],
-            "aaSorting": [[ 0, "asc" ]],
+            "aaSorting": [[0, "asc"]],
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-responded-participants', 'format' => 'html')); ?>",
-             "fnServerParams": function (aoData) {
+            "fnServerParams": function (aoData) {
                 aoData.push({"name": "shipmentId", "value": '<?php echo $this->shipmentId ?>'});
             },
-            "fnServerData": function ( sSource, aoData, fnCallback ) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -178,10 +180,10 @@
                     "success": fnCallback
                 });
             }
-        } );
+        });
     }
-    function drawTableNotResponded() {        
-        oTableNotResponded = $('#notRespondedTable').dataTable( {
+    function drawTableNotResponded() {
+        oTableNotResponded = $('#notRespondedTable').dataTable({
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"
             },
@@ -192,24 +194,24 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [
-                {"sClass":"center"},
-                {"sClass":""},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":""},
-                {"sClass":"center"},
-                {"sClass":"center","bSortable":false}
+                {"sClass": "center"},
+                {"sClass": ""},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": ""},
+                {"sClass": "center"},
+                {"sClass": "center", "bSortable": false}
             ],
-	    "fnServerParams": function ( aoData ) {
-		 aoData.push({"name": "shipmentId", "value": '<?php echo $this->shipmentId ?>'});
-	    },
-            "aaSorting": [[ 0, "asc" ]],
+            "fnServerParams": function (aoData) {
+                aoData.push({"name": "shipmentId", "value": '<?php echo $this->shipmentId ?>'});
+            },
+            "aaSorting": [[0, "asc"]],
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-not-responded-participants', 'format' => 'html')); ?>",
-            "fnServerData": function ( sSource, aoData, fnCallback ) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -218,12 +220,12 @@
                     "success": fnCallback
                 });
             }
-        } );
-        
-        
+        });
+
+
     }
-     function drawTableNotEnrolled() {        
-        oTableNotEnrolled = $('#notEnrolledTable').dataTable( {
+    function drawTableNotEnrolled() {
+        oTableNotEnrolled = $('#notEnrolledTable').dataTable({
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"
             },
@@ -234,25 +236,26 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [
-                {"sClass":"center"},
-                {"sClass":""},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":""},
-                {"sClass":"center"},
-                {"sClass":"center","bSortable":false}
+                {"sClass": "center", "bSortable": false},
+                {"sClass": "center"},
+                {"sClass": ""},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": "center"},
+                {"sClass": ""},
+                {"sClass": "center"},
+                {"sClass": "center", "bSortable": false}
             ],
-	    "fnServerParams": function ( aoData ) {
-		 aoData.push({"name": "shipmentId", "value": '<?php echo $this->shipmentId ?>'});
-		 aoData.push({"name": "schemeType", "value": '<?php echo $this->schemeType ?>'});
-	    },
-            "aaSorting": [[ 0, "asc" ]],
+            "fnServerParams": function (aoData) {
+                aoData.push({"name": "shipmentId", "value": '<?php echo $this->shipmentId ?>'});
+                aoData.push({"name": "schemeType", "value": '<?php echo $this->schemeType ?>'});
+            },
+            "aaSorting": [[0, "asc"]],
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-not-enrolled-participants', 'format' => 'html')); ?>",
-            "fnServerData": function ( sSource, aoData, fnCallback ) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -261,47 +264,91 @@
                     "success": fnCallback
                 });
             }
-        } );
-        
-        
-    }
-    function removeParticipants(mid){
-		if (window.confirm("Are you sure you want to remove this participant?\n This cannot be undone !")) { 
-			$.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", { mid: mid, format: "html" },
-			    function (data) {
-			       if (data>0) {
-				alert("Participants removed successfully");
-			       }else{
-				alert("Unable to delete. Please try again later or contact system admin for help");
-			       }
-				oTableNotResponded.fnDraw();
-                                oTableResponded.fnDraw();
-                                oTableNotEnrolled.fnDraw();
-				$.unblockUI();
-			});
-		}		
-		
-	}
-        
-        function enrollParticipants(sid,pid){
-		if (window.confirm("Are you sure you want to enroll this participant?\n This cannot be undone !")) { 
-			$.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'enroll-shipment-participant')); ?>", { sid: sid, pid:pid, format: "html" },
-			    function (data) {
-			       if (data>0) {
-				alert("Participant enrolled successfully");
-			       }else{
-				alert("Unable to enroll. Please try again later or contact system admin for help");
-			       }
-				oTableNotResponded.fnDraw();
-                                oTableResponded.fnDraw();
-                                oTableNotEnrolled.fnDraw();
-				$.unblockUI();
-			});
-		}		
-		
-	}
+        });
 
-   
+
+    }
+    function removeParticipants(mid) {
+        if (window.confirm("Are you sure you want to remove this participant?\n This cannot be undone !")) {
+            $.blockUI();
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", {mid: mid, format: "html"},
+            function (data) {
+                if (data > 0) {
+                    alert("Participants removed successfully");
+                } else {
+                    alert("Unable to delete. Please try again later or contact system admin for help");
+                }
+                oTableNotResponded.fnDraw();
+                oTableResponded.fnDraw();
+                oTableNotEnrolled.fnDraw();
+                $.unblockUI();
+            });
+        }
+
+    }
+
+    function enrollParticipants(pid,sid) {
+      if ($.inArray(pid, selectedParticipants) == -1) {
+                selectedParticipants.push(pid);
+            }else {
+            selectedParticipants.splice($.inArray(obj.value, selectedParticipants), 1);
+        }
+         submitEnrollParticipants(pid, sid);
+    }
+
+    function toggleSelect(obj) {
+        if ($(obj).is(':checked')) {
+            if ($.inArray(obj.value, selectedParticipants) == -1) {
+                selectedParticipants.push(obj.value);
+            }
+        } else {
+            selectedParticipants.splice($.inArray(obj.value, selectedParticipants), 1);
+        }
+        $("#enrollParticipants").val(selectedParticipants.join());
+        $("#countCheckedParticipants").text(selectedParticipants.length);
+    }
+    function toggleAllSelection() {
+        if ($("#bulkParticipants").is(':checked')) {
+            $(".checkParticipants").each(function () {
+                $(this).prop('checked', true);
+                if ($.inArray(this.value, selectedParticipants) == -1) {
+                    selectedParticipants.push(this.value);
+                }
+            });
+        } else {
+
+            $(".checkParticipants").each(function () {
+                $(this).prop('checked', false);
+                selectedParticipants.splice($.inArray(this.value, selectedParticipants), 1);
+            });
+        }
+        $("#enrollParticipants").val(selectedParticipants.join());
+        $("#countCheckedParticipants").text(selectedParticipants.length);
+    }
+
+    function submitEnrollParticipants(pid, sid) {
+        if (pid == "" || pid == null || pid == undefined) {
+            alert("You need to select at least one participant to proceed");
+            return false;
+        }
+        if (window.confirm("Are you sure you want to enroll this participant?\n This cannot be undone !")) {
+            $.blockUI();
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'enroll-shipment-participant')); ?>", {sid: sid, pid: pid, format: "html"},
+            function (data) {
+                if (data > 0) {
+                    alert("Participant enrolled successfully");
+                } else {
+                    alert("Unable to enroll. Please try again later or contact system admin for help");
+                }
+                oTableNotResponded.fnDraw();
+                oTableResponded.fnDraw();
+                oTableNotEnrolled.fnDraw();
+                $("#countCheckedParticipants").text("0");
+                 $("#bulkParticipants").prop('checked', false);
+                $.unblockUI();
+            });
+        }
+    }
+
+
 </script>
