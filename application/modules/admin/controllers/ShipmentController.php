@@ -14,6 +14,7 @@ class Admin_ShipmentController extends Zend_Controller_Action {
                 ->addActionContext('unenrollments', 'html')
                 ->addActionContext('shipment-responded-participants', 'html')
                 ->addActionContext('shipment-not-responded-participants', 'html')
+                ->addActionContext('shipment-not-enrolled-participants', 'html')
                 ->initContext();
         $this->_helper->layout()->pageName = 'configurations';
     }
@@ -216,9 +217,11 @@ class Admin_ShipmentController extends Zend_Controller_Action {
     {
          if ($this->_hasParam('sid')) {
             $shipmentId = (int) base64_decode($this->_getParam('sid'));
+            $schemeType = base64_decode($this->_getParam('sctype'));
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipment = $shipmentService->getShipmentForEdit($shipmentId);
             $this->view->shipmentId = $shipmentId;
+            $this->view->schemeType = $schemeType;
         } 
     }
 
@@ -241,8 +244,36 @@ class Admin_ShipmentController extends Zend_Controller_Action {
         }
     }
 
+    public function shipmentNotEnrolledParticipantsAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();            
+            $clientsServices = new Application_Service_Participants();
+            $clientsServices->getShipmentNotEnrolledParticipants($params);
+        }
+    }
+
+    public function enrollShipmentParticipantAction()
+    {
+         if ($this->_hasParam('sid') && $this->_hasParam('pid')) {
+            if ($this->getRequest()->isPost()) {
+                $shipmentId = (int) base64_decode($this->_getParam('sid'));
+                $participantId = (int) base64_decode($this->_getParam('pid'));
+                $shipmentService = new Application_Service_Shipments();
+                $this->view->result = $shipmentService->enrollShipmentParticipant($shipmentId,$participantId);
+            }
+        } else {
+            $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
+        }
+        
+    }
+
 
 }
+
+
+
+
 
 
 

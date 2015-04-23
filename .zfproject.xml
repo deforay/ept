@@ -186,6 +186,8 @@
               <actionMethod actionName="shipmentRespondedParticipants"/>
               <actionMethod actionName="shipmentNotRespondedParticipants"/>
               <actionMethod actionName="deleteNonRespondedParticipant"/>
+              <actionMethod actionName="shipmentNotEnrolledParticipants"/>
+              <actionMethod actionName="enrollShipmentParticipant"/>
             </controllerFile>
             <controllerFile controllerName="Evaluate">
               <actionMethod actionName="index"/>
@@ -410,6 +412,12 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Shipment">
                 <viewScriptFile forActionName="deleteNonRespondedParticipant"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="shipmentNotEnrolledParticipants"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="enrollShipmentParticipant"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

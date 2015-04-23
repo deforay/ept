@@ -35,7 +35,7 @@
                                 <ul id="myTab" class="nav nav-tabs">
                                     <li class="active"><a href="#listOfResponded" data-toggle="tab">Responded</a></li>
                                     <li><a href="#listOfNotResponded" data-toggle="tab">Not Responded </a></li>
-<!--                                    <li><a href="#notEnrolled" data-toggle="tab">Not Enrolled in this Shipment </a></li>-->
+                                    <li><a href="#notEnrolled" data-toggle="tab">Not Enrolled in this Shipment </a></li>
                                 </ul>
                                 <div id="myTabContent" class="tab-content">
                                     <div class="tab-pane fade in active" id="listOfResponded">
@@ -83,7 +83,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-<!--                                    <div class="tab-pane fade" id="notEnrolled">
+                                    <div class="tab-pane fade" id="notEnrolled">
                                         <div style="padding-top:20px;"></div>
                                         <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="notEnrolledTable">
                                             <thead>
@@ -105,7 +105,7 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-                                    </div>-->
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -124,7 +124,7 @@
     $(document).ready(function () {
         drawTableResponded();
         drawTableNotResponded();
-   //     drawTableNotEnrolled();
+        drawTableNotEnrolled();
 
     });
     $('#myTab a[href="#listOfResponded"]').click(function (e) {
@@ -133,10 +133,10 @@
     $('#myTab a[href="#listOfNotResponded"]').click(function (e) {
         oTableNotResponded.fnDraw();
     });
-//    $('#myTab a[href="#notEnrolled"]').click(function (e) {
-//        oTableNotEnrolled.fnDraw();
-//    });
-//    
+    $('#myTab a[href="#notEnrolled"]').click(function (e) {
+        oTableNotEnrolled.fnDraw();
+    });
+    
     function drawTableResponded() {
 
        oTableResponded = $('#respondedTable').dataTable( {
@@ -177,9 +177,8 @@
             }
         } );
     }
-    function drawTableNotResponded() {
-
-       oTableResponded = $('#notRespondedTable').dataTable( {
+    function drawTableNotResponded() {        
+        oTableNotResponded = $('#notRespondedTable').dataTable( {
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"
             },
@@ -190,7 +189,7 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [
-               {"sClass":"center"},
+                {"sClass":"center"},
                 {"sClass":""},
                 {"sClass":"center"},
                 {"sClass":"center"},
@@ -200,13 +199,13 @@
                 {"sClass":"center"},
                 {"sClass":"center","bSortable":false}
             ],
+	    "fnServerParams": function ( aoData ) {
+		 aoData.push({"name": "shipmentId", "value": '<?php echo $this->shipmentId ?>'});
+	    },
             "aaSorting": [[ 0, "asc" ]],
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-not-responded-participants', 'format' => 'html')); ?>",
-             "fnServerParams": function (aoData) {
-                aoData.push({"name": "shipmentId", "value": '<?php echo $this->shipmentId ?>'});
-            },
             "fnServerData": function ( sSource, aoData, fnCallback ) {
                 $.ajax({
                     "dataType": 'json',
@@ -217,6 +216,51 @@
                 });
             }
         } );
+        
+        
+    }
+     function drawTableNotEnrolled() {        
+        oTableNotEnrolled = $('#notEnrolledTable').dataTable( {
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [
+                {"sClass":"center"},
+                {"sClass":""},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":""},
+                {"sClass":"center"},
+                {"sClass":"center","bSortable":false}
+            ],
+	    "fnServerParams": function ( aoData ) {
+		 aoData.push({"name": "shipmentId", "value": '<?php echo $this->shipmentId ?>'});
+		 aoData.push({"name": "schemeType", "value": '<?php echo $this->schemeType ?>'});
+	    },
+            "aaSorting": [[ 0, "asc" ]],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-not-enrolled-participants', 'format' => 'html')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+        
+        
     }
     function removeParticipants(mid){
 		if (window.confirm("Are you sure you want to remove this participant?\n This cannot be undone !")) { 
@@ -228,7 +272,28 @@
 			       }else{
 				alert("Unable to delete. Please try again later or contact system admin for help");
 			       }
-				drawTableNotResponded();
+				oTableNotResponded.fnDraw();
+                                oTableResponded.fnDraw();
+                                oTableNotEnrolled.fnDraw();
+				$.unblockUI();
+			});
+		}		
+		
+	}
+        
+        function enrollParticipants(sid,pid){
+		if (window.confirm("Are you sure you want to enroll this participant?\n This cannot be undone !")) { 
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'enroll-shipment-participant')); ?>", { sid: sid, pid:pid, format: "html" },
+			    function (data) {
+			       if (data>0) {
+				alert("Participant enrolled successfully");
+			       }else{
+				alert("Unable to enroll. Please try again later or contact system admin for help");
+			       }
+				oTableNotResponded.fnDraw();
+                                oTableResponded.fnDraw();
+                                oTableNotEnrolled.fnDraw();
 				$.unblockUI();
 			});
 		}		

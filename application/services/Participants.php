@@ -178,4 +178,8 @@ class Application_Service_Participants {
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->getShipmentNotRespondedParticipants($params);
 	}
+        public function getShipmentNotEnrolledParticipants($params){
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->getShipmentNotEnrolledParticipants($params);
+	}
 }

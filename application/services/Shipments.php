@@ -173,6 +173,7 @@ class Application_Service_Shipments {
             $delete='';
             $announcementMail='';
             $manageEnroll='';
+           
             if($aRow['status'] != 'finalized'){
                 $edit='&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-edit"></i> Edit</span></a>';
             }else{
@@ -184,7 +185,10 @@ class Application_Service_Shipments {
             }else if($aRow['status']=='shipped'){
                 $enrolled='&nbsp;<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
                 $announcementMail='&nbsp;<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> New Shipment Mail</span></a>';
-                $manageEnroll='&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-gear"></i> Manage Enroll</span></a>';
+              $manageEnroll='&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/'. base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Manage Enroll</span></a>';
+            }
+            if($aRow['status']=='shipped' || $aRow['status']=='evaluated'){
+                $manageEnroll='&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/'. base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Manage Enroll</span></a>';
             }
             
             if($aRow['status'] != 'finalized'){
@@ -1076,9 +1080,10 @@ class Application_Service_Shipments {
     }
 
     public function removeShipmentParticipant($mapId) {
+       
         try {
+            error_log($mapId);
              $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-             $db->delete('response_result_dts', "shipment_map_id = " . $mapId);
            return  $db->delete('shipment_participant_map', "map_id = " . $mapId);
         } catch (Exception $e) {
             return($e->getMessage());
@@ -1197,9 +1202,8 @@ class Application_Service_Shipments {
                   ->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
                   ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email','participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
                   ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+                  ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL)")
                   ->where("sp.shipment_id = ?", $sid)
-                  ->where("sp.shipment_test_date = ?", '0000-00-00')
-                  ->where("sp.shipment_test_date IS NULL ")
                   ->group("sp.participant_id");
       //  echo $sQuery;die;
         $participantEmails=$db->fetchAll($sQuery);
@@ -1224,6 +1228,10 @@ class Application_Service_Shipments {
            }
         }
         return $return;
+    }
+    public function enrollShipmentParticipant($shipmentId,$participantId) {
+        $db = new Application_Model_DbTable_ShipmentParticipantMap();
+        return $db->enrollShipmentParticipant($shipmentId,$participantId);
     }
 
 }
