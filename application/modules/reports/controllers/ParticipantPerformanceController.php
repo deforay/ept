@@ -59,6 +59,7 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
             $params = $this->_getAllParams();
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
+            $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
             $this->view->result=$reportService->exportParticipantPerformanceReportInPdf();
             $this->view->dateRange=$params['dateRange'];
             $this->view->shipmentName=$params['shipmentName'];

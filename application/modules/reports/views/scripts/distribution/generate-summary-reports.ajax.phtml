@@ -8,7 +8,7 @@ if ($this->result != "") {
     if ($this->result['scheme_type'] != 'eid') {
         require_once('libchart/classes/libchart.php');
         $chart = new VerticalBarChart(900, 400);
-        $dataSet = new XYDataSet();
+       
     }
     if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
@@ -196,10 +196,10 @@ if ($this->result != "") {
                 $sampleCode.='</div></br></br>';
 
                 //----------------Participant Performance Overview  start----------------
-                $sampleCode.='<div><span style="text-decoration: underline;">Participant Performance Overview</span><br/><br/><table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Responses</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Responses</td>';
+                $sampleCode.='<span style="text-decoration: underline;">Participant Performance Overview</span><br/><table border="1" style="margin-left:5px;"><tr>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;"># of Shipments</td>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;"># of Responses</td>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;"># of Valid Responses</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
 
                 $sampleCode.='<tr>';
@@ -209,29 +209,28 @@ if ($this->result != "") {
                 $sampleCode.='<td style="text-align:center;">' . round($this->participantPerformance['average_score'], 2) . '</td>';
                 $sampleCode.='</tr>';
 
-                $sampleCode.='</table></div>';
+                $sampleCode.='</table><br/>';
+                $pdf->writeHTML($sampleCode, true, false, true, false, '');
                 //----------------Participant Performance Overview  Ends----------------     
                 //----------------Participant Corrective Action Overview  start----------------
-                $sampleCode.='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/><br/>
-                        <table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
-
-                $sampleCode.='</tr>';
-                foreach ($this->correctiveness as $correctiveness) {
-                    $sampleCode.='<tr>';
-                    $sampleCode.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
-                    $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
-                    
-                    $sampleCode.='</tr>';
+                if(count($this->correctiveness) > 0){
+                    $correctiveOverview='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/>
+                            <table border="1" style="margin-left:5px;"><tr>';
+                    $correctiveOverview.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td>';
+                    $correctiveOverview.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
+    
+                    $correctiveOverview.='</tr>';
+                    foreach ($this->correctiveness as $correctiveness) {
+                        $correctiveOverview.='<tr>';
+                        $correctiveOverview.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
+                        $correctiveOverview.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
+                        
+                        $correctiveOverview.='</tr>';
+                    }
+                    $correctiveOverview.='</table></div><br/><br/>';    
+                    //----------------Participant Corrective Action Overview  Ends----------------    
+                    $pdf->writeHTML($correctiveOverview, true, false, true, false, '');
                 }
-                $sampleCode.='</table></div><br/><br/>';
-
-                //----------------Participant Corrective Action Overview  Ends----------------
-
-
-
-                $pdf->writeHTML($sampleCode, true, false, true, false, '');
 
 // ---------------------------------------------------------
             }
@@ -249,37 +248,11 @@ if ($this->result != "") {
             $referenceRes.='<td style="width:14%">Shipment Code</td><td style="width:2%;">:</td><td style="font-weight:normal;width:22%;">' . $this->result['shipment_code'] . '</td>';
             $referenceRes.='</tr>';
             $referenceRes.='</table>';
-            $referenceRes.= '<p style="font-weight: bold;text-decoration: underline;">Expected Results </p>';
-            $referenceRes.='<table border="1" style="text-align:center;font-weight:bold;" align="center">';
-            $referenceRes.='<tr>';
-            $referenceRes.='<td style="background-color:#989898;">Specimen Panel ID</td>';
-            $referenceRes.='<td style="background-color:#989898;">Expected Result</td>';
-            $referenceRes.='</tr>';
-            $nonMandatorySamples = array();
+    
 
-            foreach ($this->result['referenceResult'] as $refRes) {
-
-                if($refRes['mandatory'] == 0){
-                    $nonMandatorySamples[] = $refRes['sample_label']; 
-                }
-                $referenceRes.='<tr>';
-                $referenceRes.='<td>' . $refRes['sample_label'] . '</td>';
-                $referenceRes.='<td>' . $refRes['referenceResult'] . '</td>';
-                $referenceRes.='</tr>';
-            }
-            $referenceRes.='</table><br/><br/>';
             $pdf->writeHTML($referenceRes, true, false, true, false, '');
             
-            if(count($nonMandatorySamples) > 0){
-                $nmsTable="<table><tr><td style='width:100%;text-align:center'>";
-                $nmsTable.="Please note :<br/>";    
-                foreach($nonMandatorySamples as $nms){
-                    $nmsTable.="Sample <strong>".$nms."</strong> has been excluded from evaluation<br/>";    
-                }
-                
-                $nmsTable.="</td></tr></table>";
-                $pdf->writeHTML($nmsTable, true, false, true, false, '');
-            }            
+                     
             
         }
         if (count($this->result['summaryResult']) > 0) {
@@ -321,38 +294,51 @@ if ($this->result != "") {
 
                 $scoringPer = round(($maxScore / $partCount) * 100, 2);
             }
-
+            $dataSet = new XYSeriesDataSet();
+            
+            $chart->getPlot()->getPalette()->setBarColor(array(
+                new Color(128,0,0),
+                new Color(255,0,0),
+                new Color(255,255,0),
+                new Color(0,128,0)
+            ));
             foreach($barPoints as $key=>$val){
-                $dataSet->addPoint(new Point($key, $val));
+                $serie = new XYDataSet();
+                $serie->addPoint(new Point("", $val));
+                $dataSet->addSerie($key, $serie);
             }
 
             $chart->setDataSet($dataSet);
 
             //Bound::setUpperBound(50);
+            $chart->getPlot()->setGraphCaptionRatio(0.8);
             $chart->setTitle("Comparison of test performance between participating laboratories");
             $chart->render(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
 
             // set font
             $pdf->SetFont('times', 'B', 12);
 
-            $sampleCode = '<table border="1" style="margin-left:5px;"><tr>';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Performing Assay Pair </td>';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring "' . $config->evaluation->dts->passPercentage . '" and above</td>';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring Below "' . $config->evaluation->dts->passPercentage . '" </td>';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Percentage of Laboratories Scoring "' . $config->evaluation->dts->passPercentage . '"</td></tr>';
+            
+            $overview= '<table border="1" style="font-size:13px;"><tr>';
+            $overview.='<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
+            $overview.='<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $config->evaluation->dts->passPercentage . '"</td>';
+            $overview.='<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config->evaluation->dts->passPercentage . '" </td>';
+            $overview.='<td style="background-color:#dbe4ee;text-align:center;">% of Participants Scoring "' . $config->evaluation->dts->passPercentage . '"</td></tr>';
 
-            $sampleCode.='<tr>';
-            $sampleCode.='<td style="text-align:center;">' . $partCount . '</td>';
-            $sampleCode.='<td style="text-align:center;">' . $maxScore . '</td>';
-            $sampleCode.='<td style="text-align:center;">' . $belowScore . '</td>';
-            $sampleCode.='<td style="text-align:center;">' . $scoringPer . '%</td>';
-            $sampleCode.='</tr>';
+            $overview.='<tr>';
+            $overview.='<td style="text-align:center;">' . $partCount . '</td>';
+            $overview.='<td style="text-align:center;">' . $maxScore .' ('.round(($maxScore/$partCount)*100,2). '%)</td>';
+            $overview.='<td style="text-align:center;">' . $belowScore .' ('.round(($belowScore/$partCount)*100,2). '%)</td>';
+            $overview.='<td style="text-align:center;">' . $scoringPer . '%</td>';
+            $overview.='</tr>';
 
-            $sampleCode.='</table><br/><br/>';
+            $overview.='</table><br/>';
+            $pdf->writeHTML($overview, true, false, true, false, '');            
+           
 
             $sampleCount = count($result['correctCount']);
 
-            $sampleCode.='<table border="1">';
+            $sampleCode='<table border="1" style="font-size:13px;">';
             $sampleCode.='<tr>';
             $sampleCode.='<td rowspan="2"></td>';
             $sampleCode.='<td colspan="' . $sampleCount . '" style="background-color:#dbe4ee;text-align:center;">Sample ID</td>';
@@ -367,62 +353,89 @@ if ($this->result != "") {
             $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average</td>';
             $sampleCode.='</tr>';
             $sampleCode.='<tr>';
+            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Expected Result</td>';
+            
+            $nonMandatorySamples = array();
+
+            foreach ($this->result['referenceResult'] as $refRes) {
+
+                if($refRes['mandatory'] == 0){
+                    $nonMandatorySamples[] = $refRes['sample_label']; 
+                }
+                $sampleCode.='<td style="text-align:center;">' . ucfirst(strtolower($refRes['referenceResult'])) . '</td>';
+
+            }
+            
+            $sampleCode.='<td></td>';
+            $sampleCode.='</tr>';
+            $sampleCode.='<tr>';
             $sampAvg = '0';
             $sampPerAvg = '0';
-            $sampleCode.='<td rowspan="2" style="background-color:#dbe4ee;text-align:center;">Correctly Reported</td>';
+            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Correctly Reported</td>';
 
             foreach ($result['correctCount'] as $sample) {
                 $sampAvg+=$sample["correctRes"];
-                $sampleCode.='<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] . '</td>';
-            }
-
-            $sampleCode.='<td style="text-align:center;">' . round(($sampAvg / $sampleCount), 2) . '</td>';
-            $sampleCode.='</tr>';
-
-            $sampleCode.='<tr>';
-            foreach ($result['correctCount'] as $sample) {
                 $sampPerAvg+=(($sample["correctRes"] / $partCount) * 100);
-                $sampleCode.='<td style="text-align:center;">' . round(($sample["correctRes"] / $partCount) * 100, 2) . '%</td>';
+                $sampleCode.='<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] .' ('. round(($sample["correctRes"] / $partCount) * 100, 2) . '%)</td>';
             }
-            $sampleCode.='<td style="text-align:center;">' . round(($sampPerAvg / $sampleCount), 2) . '%</td>';
+
+            $sampleCode.='<td style="text-align:center;font-weight:normal;">' . round(($sampAvg / $sampleCount), 2).' ('.round(($sampPerAvg / $sampleCount), 2) .'%)</td>';
             $sampleCode.='</tr>';
 
-            $sampleCode.='</table></br><br/><br/>';
-//----------------Participant Performance Overview  start----------------
-            $sampleCode.='<div><span style="text-decoration: underline;">Participant Performance Overview</span><br/><br/>';
-            $sampleCode.='<table border="1" style="margin-left:5px;"><tr>';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Response</td>';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Response</td>';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
 
-            $sampleCode.='<tr>';
-            $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_shipped'] . '</td>';
-            $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
-            $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['valid_responses'] . '</td>';
-            $sampleCode.='<td style="text-align:center;">' . round($this->participantPerformance['average_score'], 2) . '</td>';
-            $sampleCode.='</tr>';
-
-            $sampleCode.='</table></div>';
-            //----------------Participant Performance Overview  Ends----------------     
-            //----------------Participant Corrective Action Overview  start----------------
-            $sampleCode.='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/><br/><table border="1" style="margin-left:5px;"><tr>';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td>';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
+            $sampleCode.='</table></br>';
+            $pdf->writeHTML($sampleCode, true, false, true, false, '');
             
-            $sampleCode.='</tr>';
+             if(count($nonMandatorySamples) > 0){
+                $nmsTable='<span style="font-size:13px;">';
+                $nmsTable.="The following samples have been excluded from this evaluation : ".implode(", ",$nonMandatorySamples);    
+                $nmsTable.="</span><br/>";
+                $pdf->writeHTML($nmsTable, true, false, true, false, '');
+            }   
+            
+            
+//----------------Participant Performance Overview  start----------------
+            $ppOverview='<span style="font-size:13px;">Participant Performance Overview</span><br/>';
+            $ppOverview.='<table border="1"  style="font-size:13px;"><tr>';
+            $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;"># of Participants</td>';
+            $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;"># of Responses</td>';
+            $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;"># of Valid Responses</td>';
+            $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
+
+            $ppOverview.='<tr>';
+            $ppOverview.='<td style="text-align:center;">' . $this->participantPerformance['total_shipped'] . '</td>';
+            $ppOverview.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
+            $ppOverview.='<td style="text-align:center;">' . $this->participantPerformance['valid_responses'] . '</td>';
+            $ppOverview.='<td style="text-align:center;">' . round($this->participantPerformance['average_score'], 2) . '</td>';
+            $ppOverview.='</tr>';
+
+            $ppOverview.='</table><br>';
+            //----------------Participant Performance Overview  Ends----------------
+                    
+            $pdf->writeHTML($ppOverview, true, false, true, false, '');
+        
+        if(count($this->correctiveness) > 0){
+            //----------------Participant Corrective Action Overview  start----------------
+            $correctiveActionStuff='<span style="font-size:13px;">Corrective Action Overview </span><br/>
+            <table border="1" style="font-weight:normal;font-size:13px;"><tr style="font-weight:bold;">';
+            $correctiveActionStuff.='<td style="background-color:#dbe4ee;text-align:center;width:75%;">Corrective Action</td>';
+            $correctiveActionStuff.='<td style="background-color:#dbe4ee;text-align:center;width:25%;">Responses having Corrective Action</td>';
+            
+            $correctiveActionStuff.='</tr>';
             foreach ($this->correctiveness as $correctiveness) {
-                $sampleCode.='<tr>';
-                $sampleCode.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
+                $correctiveActionStuff.='<tr>';
+                $correctiveActionStuff.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
+                $correctiveActionStuff.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
                 
-                $sampleCode.='</tr>';
+                $correctiveActionStuff.='</tr>';
             }
-            $sampleCode.='</table></div><br/><br/>';
+            $correctiveActionStuff.='</table><br/>';
 
             //----------------Participant Corrective Action Overview  Ends----------------
 
-            $pdf->writeHTML($sampleCode, true, false, true, false, '');
+            $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
+        }
+               
             $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
             //$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
             //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
@@ -505,11 +518,11 @@ if ($this->result != "") {
         $late=$this->responseResult["number_late"];
         $excluded=$this->responseResult["excluded"];
         
-        $dataSet->addPoint(new Point("Passed ($passed)", $passed));
-        $dataSet->addPoint(new Point("Failed ($failed)", $failed));
-        $dataSet->addPoint(new Point("Not Responded ($notResponded)", $notResponded));
-        $dataSet->addPoint(new Point("Late Response ($late)", $late));
-        $dataSet->addPoint(new Point("Excluded ($excluded)", $excluded));
+        $dataSet->addPoint(new Point("Passed (N=$passed)", $passed));
+        $dataSet->addPoint(new Point("Failed (N=$failed)", $failed));
+        $dataSet->addPoint(new Point("Not Responded (N=$notResponded)", $notResponded));
+        $dataSet->addPoint(new Point("Late Response (N=$late)", $late));
+        $dataSet->addPoint(new Point("Excluded (N=$excluded)", $excluded));
         
         $performancePiechart = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
         

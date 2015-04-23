@@ -187,18 +187,19 @@ foreach($this->result['shipment'] as $result){
 	
 	if(sizeof($result['responseResult'])>0){
 		if($schemeType != 'vl'){
-			$labRes = '<span style="font-weight: bold;">Your laboratory test results : <br/></span><table border="1" style="font-size:13px;">';
-			$labRes .='<tr><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
-			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Kit Name</td><td>'.$result['responseResult'][0]['testkit1'].'</td><td>'.$result['responseResult'][0]['testkit2'].'</td><td>'.$result['responseResult'][0]['testkit3'].'</td><td colspan="4"></td></tr>';
-			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Lot No.</td><td>'.$result['responseResult'][0]['lot_no_1'].'</td><td>'.$result['responseResult'][0]['lot_no_2'].'</td><td>'.$result['responseResult'][0]['lot_no_3'].'</td><td colspan="4"></td></tr>';
-			$labRes .='<tr><td style="text-align:center;font-weight:bold;">Expiry Date</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_1']).'</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_2']).'</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_3']).'</td><td colspan="4"></td></tr>';		
-			$labRes .='<tr>
+			$labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span><table border="1" style="font-size:13px;">';
+			$labRes .='<tr style="background-color:#dbe4ee;"><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
+			$labRes .='<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td><td>'.$result['responseResult'][0]['testkit1'].'</td><td>'.$result['responseResult'][0]['testkit2'].'</td><td>'.$result['responseResult'][0]['testkit3'].'</td><td colspan="4"></td></tr>';
+			$labRes .='<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td><td>'.$result['responseResult'][0]['lot_no_1'].'</td><td>'.$result['responseResult'][0]['lot_no_2'].'</td><td>'.$result['responseResult'][0]['lot_no_3'].'</td><td colspan="4"></td></tr>';
+			$labRes .='<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_1']).'</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_2']).'</td><td>'.$this->dateFormat($result['responseResult'][0]['exp_date_3']).'</td><td colspan="4"></td></tr>';		
+			$labRes .='<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;">Specimen Panel ID </td>
 							<td style="text-align:center;font-weight:bold;">Result-1</td>
 							<td style="text-align:center;font-weight:bold;">Result-2</td>
 							<td style="text-align:center;font-weight:bold;">Result-3</td>
-							<td style="text-align:center;font-weight:bold;">Your Result</td>
 							<td style="text-align:center;font-weight:bold;">Expected Result</td>
+							<td style="text-align:center;font-weight:bold;">Your Result</td>
+
 							<td style="text-align:center;font-weight:bold;" colspan="2">Score</td>
 						</tr>';
 
@@ -219,7 +220,7 @@ foreach($this->result['shipment'] as $result){
 					$wrongSamples[] = $response['sample_label'];
 					$score = 0;
 				}
-				
+
 				if($response['calculated_score'] == 'Pass'){
 					$img = UPLOAD_PATH . '/../images/check.jpg';
 				} else if($response['calculated_score'] == 'Fail'){
@@ -232,8 +233,9 @@ foreach($this->result['shipment'] as $result){
 							<td>'.(isset($response['test_result_1']) && $response['test_result_1'] !="" ? $dtsResults[$response['test_result_1']] : "").'</td>
 							<td>'.(isset($response['test_result_2']) && $response['test_result_2'] !="" ? $dtsResults[$response['test_result_2']] : "").'</td>
 							<td>'.(isset($response['test_result_3']) && $response['test_result_3'] !="" ? $dtsResults[$response['test_result_3']] : "").'</td>
-							<td>'.ucfirst(strtolower($response['labResult'])).'</td>
 							<td>'.ucfirst(strtolower($response['referenceResult'])).'</td>
+							<td>'.ucfirst(strtolower($response['labResult'])).'</td>
+							
 							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$response['calculated_score'].'</td>
 						  </tr>';
@@ -264,9 +266,9 @@ foreach($this->result['shipment'] as $result){
 			$imgPass = UPLOAD_PATH . '/../images/check.jpg';
 			$imgFail = UPLOAD_PATH . '/../images/cross.jpg';
 			
-			$docRes='<span style="font-weight:bold;">Your documentation score :</span> <br/>
+			$docRes='<span style="font-weight:bold;font-size:13px;">Your documentation score :</span> <br/>
 					<table border="1" style="font-size:13px;width:100%;">
-						<tr>
+						<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;width:75%">Documentation Item</td>
 							<td style="text-align:center;font-weight:bold;width:25%" colspan="2">Score</td>
 						</tr>';
@@ -343,9 +345,9 @@ foreach($this->result['shipment'] as $result){
 			$pdf->writeHTML($docRes, true, false, true, false, '');
 			
 			if(isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null){
-				$failRes = '<span style="font-weight:bold;">Suggested Corrective actions for your response :</span> <br/>';
+				$failRes = '<span style="font-weight:bold;font-size:13px;">Suggested Corrective actions for your response :</span> <br/>';
 				$failRes .= '<table border="1" style="font-size:13px;">';
-				$failRes.= '<tr><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
+				$failRes.= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
 				$warnings = json_decode($result['responseResult'][0]['failure_reason'],true);
 				foreach($warnings as $warning){
 					$failRes.= '<tr>';

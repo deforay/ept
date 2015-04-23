@@ -55,6 +55,7 @@ class Reports_TestkitController extends Zend_Controller_Action
             $this->view->result = $reportService->generatePdfTestKitDetailedReport($params);
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
+            $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
             $this->view->dateRange=$params['dateRange'];
             $this->view->reportType=$params['reportType'];
             $this->view->testkitName=$params['testkitName'];
