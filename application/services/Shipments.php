@@ -1165,7 +1165,6 @@ class Application_Service_Shipments {
                   ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
                   ->where("sp.shipment_id = ?", $sid)
                   ->group("p.participant_id");
-        echo $sQuery;die;
         $participantEmails=$db->fetchAll($sQuery);
         
         foreach($participantEmails as $participantDetails){
@@ -1175,8 +1174,8 @@ class Application_Service_Shipments {
             $replace = array($participantDetails['participantName'],$participantDetails['shipment_code'],$participantDetails['SCHEME'],$participantDetails['distribution_code'],$surveyDate);
             $content = $newShipmentMailContent['mail_content'];
             $message = str_replace($search, $replace, $content);
-            $subject = $newShipmentMailContent['mail_subject'];
-            $message = $message;
+            $subject = str_replace($search, $replace, $newShipmentMailContent['mail_subject']);
+            //$message = $message;
             $fromEmail =$newShipmentMailContent['mail_from'];
             $fromFullName = $newShipmentMailContent['from_name'];
             $toEmail =$participantDetails['email'];
@@ -1214,8 +1213,8 @@ class Application_Service_Shipments {
             $replace = array($participantDetails['participantName'],$participantDetails['shipment_code'],$participantDetails['SCHEME'],$participantDetails['distribution_code'],$surveyDate);
             $content = $notParticipatedMailContent['mail_content'];
             $message = str_replace($search, $replace, $content);
-            $subject = $notParticipatedMailContent['mail_subject'];
-            $message = $message;
+            $subject = str_replace($search, $replace, $notParticipatedMailContent['mail_subject']);
+            //$message = $message;
             $fromEmail =$notParticipatedMailContent['mail_from'];
             $fromFullName = $notParticipatedMailContent['from_name'];
             $toEmail =$participantDetails['email'];

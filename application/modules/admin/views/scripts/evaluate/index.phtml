@@ -96,7 +96,7 @@
         });
     }
     function mailNonParticipants(sid) {
-        if (window.confirm("Are you sure to send mail to not participants")) {
+        if (window.confirm("Are you sure you to send email reminder to participants not yet responded ?")) {
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'not-participated-mail')); ?>", {sid: sid, format: "html"},
             function (data) {
                 if (data > 0) {
