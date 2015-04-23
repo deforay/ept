@@ -133,10 +133,12 @@
 
     });
     $('#myTab a[href="#listOfResponded"]').click(function (e) {
-        oTableResponded.fnDraw();
+        //oTableResponded.fnDraw();
+        drawTableResponded();
     });
     $('#myTab a[href="#listOfNotResponded"]').click(function (e) {
-        oTableNotResponded.fnDraw();
+        //oTableNotResponded.fnDraw();
+        drawTableNotResponded()
     });
     $('#myTab a[href="#notEnrolled"]').click(function (e) {
         oTableNotEnrolled.fnDraw();

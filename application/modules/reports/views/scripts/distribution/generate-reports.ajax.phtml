@@ -208,25 +208,39 @@ foreach($this->result['shipment'] as $result){
 			$totalProperSamples = 0;
 			$correctSamplesCount = 0;
 			$wrongSamples = array();
+			$otherSamples = array();
+			$allSamples = array();
 			foreach($result['responseResult'] as $response){
+				$allSamples[] = $response['sample_label'];
                 if($response['mandatory'] == 0){
                     $nonMandatorySamples[] = $response['sample_label'];
-					$score = "N.A.";
                 }
-				else if($response['labResult'] == $response['referenceResult']){
+				else if($response['calculated_score'] == 'Pass'){
 					$correctSamples[] = $response['sample_label'];
-					$score = 5;
-				}else{
+				}else if($response['calculated_score'] == 'Fail'){
 					$wrongSamples[] = $response['sample_label'];
-					$score = 0;
+				}else{
+					$otherSamples[] = $response['sample_label'];
 				}
-
+			}
+			
+			$correctSamplesCount = count($correctSamples);
+			$totalProperSamples = $correctSamplesCount + count($wrongSamples);
+			$maxDocumentationPoints = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore) : 0;
+			$maximumResponseScore = 100 - $maxDocumentationPoints;
+			$scorePerCorrectSample = round($maximumResponseScore/(count($allSamples)-count($nonMandatorySamples)),2);
+			
+			foreach($result['responseResult'] as $response){
+                
 				if($response['calculated_score'] == 'Pass'){
 					$img = UPLOAD_PATH . '/../images/check.jpg';
+					$score = $scorePerCorrectSample;
 				} else if($response['calculated_score'] == 'Fail'){
 					$img = UPLOAD_PATH . '/../images/cross.jpg';
+					$score = 0;
 				}else{
 					$img = UPLOAD_PATH . '/../images/minus.jpg';
+					$score = "N.A.";
 				}
 				$labRes.='<tr>
 							<td style="text-align:center;">'.$response['sample_label'].'</td>
@@ -237,14 +251,11 @@ foreach($this->result['shipment'] as $result){
 							<td>'.ucfirst(strtolower($response['labResult'])).'</td>
 							
 							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
-							<td style="text-align:center;">'.$response['calculated_score'].'</td>
+							<td style="text-align:center;">'.$score.'</td>
 						  </tr>';
 			}
 			$labRes.='</table>';
 
-			
-			$correctSamplesCount = count($correctSamples);
-			$totalProperSamples = $correctSamplesCount + count($wrongSamples);
                      
 			$pdf->SetLeftMargin(15);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
@@ -259,7 +270,7 @@ foreach($this->result['shipment'] as $result){
 			
 			//Let us now calculate documentation score
 			$documentationScore = 0;
-			$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 4);
+			$documentationScorePerItem = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore / 4) : 0;
 			$attributes = json_decode($result['attributes'], true);
 			
 			$img = array();
