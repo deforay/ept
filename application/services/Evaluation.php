@@ -664,15 +664,15 @@ class Application_Service_Evaluation {
                 $testDate = $testedOn->toString('dd-MMM-YYYY');
                 $expDate1 = "";
                 //die($results[0]['exp_date_1']);
-                if (trim(strtotime($results[0]['exp_date_1'])) != "") {
+                if (isset($results[0]['exp_date_1']) && trim($results[0]['exp_date_1']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_1'])) != "") {
                     $expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
                 }
                 $expDate2 = "";
-                if (trim(strtotime($results[0]['exp_date_2'])) != "") {
+                if (isset($results[0]['exp_date_2']) && trim($results[0]['exp_date_2']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_2'])) != "") {
                     $expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
                 }
                 $expDate3 = "";
-                if (trim(strtotime($results[0]['exp_date_3'])) != "") {
+                if (isset($results[0]['exp_date_3']) && trim($results[0]['exp_date_3']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_3'])) != "") {
                     $expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
                 }
 
@@ -940,8 +940,13 @@ class Application_Service_Evaluation {
 
                 $counter++;
             }
-
-			$averageScore = round(array_sum($scoreHolder)/count($scoreHolder),2);
+			
+			if(count($scoreHolder) > 0){
+				$averageScore = round(array_sum($scoreHolder)/count($scoreHolder),2);	
+			}else{
+				$averageScore = 0 ;
+			}
+			
 
             $db->update('shipment', array('max_score' => $maxScore,'average_score' => $averageScore), "shipment_id = " . $shipmentId);
         } else if ($shipmentResult[0]['scheme_type'] == 'vl') {
