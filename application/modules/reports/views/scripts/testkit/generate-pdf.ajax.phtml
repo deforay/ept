@@ -12,39 +12,49 @@ $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs"
 
 class MYPDF extends TCPDF {
 
-    public function setSchemeName($header, $logo) {
-        $this->header = $header;
-        $this->logo = $logo;
-    }
 
-    //Page header
-    public function Header() {
-        // Logo
-        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
-        if (trim($this->logo) != "") {
-            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
-                $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                $this->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-            }
+        public function setSchemeName($header, $logo,$logoRight) {
+            $this->header = $header;
+            $this->logo = $logo;
+            $this->logoRight = $logoRight;
         }
 
-        // Set font
-        $this->SetFont('times', '', 12);
+        //Page header
+        public function Header() {
+            // Logo
+            //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+            if (trim($this->logo) != "") {
+                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
+                    $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
+                    $this->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                }
+            }
+            if (trim($this->logoRight) != "") {
+                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
+                    $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
+                    $this->Image($image_file, 260, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                }
+            }
 
-        $this->header = str_replace("<div", "<span", trim($this->header));
-        $this->header = str_replace("</div>", "</span><br/>", $this->header);
+            // Set font
+            $this->SetFont('times', '', 12);
 
-        //error_log($this->header);
-        //$y = $this->getY();
-        $html = $this->header;
+            $this->header = str_replace("<div", "<span", trim($this->header));
+            $this->header = str_replace("</div>", "</span><br/>", $this->header);
 
-        $this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
-        //$this->writeHTML($html, true, false, true, true, 'L');
-        //$html = '<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</p>';
-        //$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
-        $html = '<hr/>';
-        $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
-    }
+            //error_log($this->header);
+            //$y = $this->getY();
+            $html = $this->header;
+
+            $this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
+            //$this->writeHTML($html, true, false, true, true, 'L');
+
+            //$html = '<p  style="font-weight: bold;text-align:center;">Testkit Usage Report</p>';
+            //$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
+        }
+
 
     // Page footer
     public function Footer() {
@@ -96,7 +106,7 @@ if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
 }
 
 // ---------------------------------------------------------
-$pdf->setSchemeName($this->header, $this->logo);
+$pdf->setSchemeName($this->header,$this->logo,$this->logoRight);
 
 // Set font
 // dejavusans is a UTF-8 Unicode font, if you only need to
@@ -110,7 +120,7 @@ $pdf->AddPage();
 
 $pdf->SetY(40);
 $testAction = '';
-$testAction.='<p style="font-weight:bold;font-size:18px;text-decoration: underline;">Testkit Report For DTS</p>';
+$testAction.='<p style="font-weight:bold;font-size:18px;text-decoration: underline;text-align:center;">Testkit Report For DTS</p>';
 $testAction.='<div><span style="font-weight:bold">Selected Date Range : </span> ' . $this->dateRange . '</div>';
 
 
@@ -120,7 +130,7 @@ $testAction.='<div><span style="font-weight:bold">Selected Date Range : </span> 
 
 
 // Set some content to print
-$testAction.='<br/><table border="1" align="center">';
+$testAction.='<br/><table border="1" align="center" style="font-size:13px;">';
 $testAction.='<tr>';
 $testAction.='<td style="font-weight:bold">Testkit Name</td>';
 $testAction.='<td style="font-weight:bold">Test Count</td>';

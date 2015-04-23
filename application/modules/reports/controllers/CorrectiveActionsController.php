@@ -42,6 +42,7 @@ class Reports_CorrectiveActionsController extends Zend_Controller_Action
             $params = $this->_getAllParams();
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
+            $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
             $this->view->dateRange=$params['dateRange'];
             $this->view->shipmentName=$params['shipmentName'];
             $this->view->result=$reportService->exportCorrectiveActionsReportInPdf($params);

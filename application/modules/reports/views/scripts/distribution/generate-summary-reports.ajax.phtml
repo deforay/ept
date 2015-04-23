@@ -8,7 +8,7 @@ if ($this->result != "") {
     if ($this->result['scheme_type'] != 'eid') {
         require_once('libchart/classes/libchart.php');
         $chart = new VerticalBarChart(900, 400);
-        $dataSet = new XYDataSet();
+       
     }
     if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
@@ -197,9 +197,9 @@ if ($this->result != "") {
 
                 //----------------Participant Performance Overview  start----------------
                 $sampleCode.='<span style="text-decoration: underline;">Participant Performance Overview</span><br/><table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Responses</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Responses</td>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;"># of Shipments</td>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;"># of Responses</td>';
+                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;"># of Valid Responses</td>';
                 $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
 
                 $sampleCode.='<tr>';
@@ -210,28 +210,27 @@ if ($this->result != "") {
                 $sampleCode.='</tr>';
 
                 $sampleCode.='</table><br/>';
+                $pdf->writeHTML($sampleCode, true, false, true, false, '');
                 //----------------Participant Performance Overview  Ends----------------     
                 //----------------Participant Corrective Action Overview  start----------------
-                $sampleCode.='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/><br/>
-                        <table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
-
-                $sampleCode.='</tr>';
-                foreach ($this->correctiveness as $correctiveness) {
-                    $sampleCode.='<tr>';
-                    $sampleCode.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
-                    $sampleCode.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
-                    
-                    $sampleCode.='</tr>';
+                if(count($this->correctiveness) > 0){
+                    $correctiveOverview='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/>
+                            <table border="1" style="margin-left:5px;"><tr>';
+                    $correctiveOverview.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td>';
+                    $correctiveOverview.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
+    
+                    $correctiveOverview.='</tr>';
+                    foreach ($this->correctiveness as $correctiveness) {
+                        $correctiveOverview.='<tr>';
+                        $correctiveOverview.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
+                        $correctiveOverview.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
+                        
+                        $correctiveOverview.='</tr>';
+                    }
+                    $correctiveOverview.='</table></div><br/><br/>';    
+                    //----------------Participant Corrective Action Overview  Ends----------------    
+                    $pdf->writeHTML($correctiveOverview, true, false, true, false, '');
                 }
-                $sampleCode.='</table></div><br/><br/>';
-
-                //----------------Participant Corrective Action Overview  Ends----------------
-
-
-
-                $pdf->writeHTML($sampleCode, true, false, true, false, '');
 
 // ---------------------------------------------------------
             }
@@ -295,14 +294,24 @@ if ($this->result != "") {
 
                 $scoringPer = round(($maxScore / $partCount) * 100, 2);
             }
-
+            $dataSet = new XYSeriesDataSet();
+            
+            $chart->getPlot()->getPalette()->setBarColor(array(
+                new Color(128,0,0),
+                new Color(255,0,0),
+                new Color(255,255,0),
+                new Color(0,128,0)
+            ));
             foreach($barPoints as $key=>$val){
-                $dataSet->addPoint(new Point($key, $val));
+                $serie = new XYDataSet();
+                $serie->addPoint(new Point("", $val));
+                $dataSet->addSerie($key, $serie);
             }
 
             $chart->setDataSet($dataSet);
 
             //Bound::setUpperBound(50);
+            $chart->getPlot()->setGraphCaptionRatio(0.8);
             $chart->setTitle("Comparison of test performance between participating laboratories");
             $chart->render(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
 
@@ -311,7 +320,7 @@ if ($this->result != "") {
 
             
             $overview= '<table border="1" style="font-size:13px;"><tr>';
-            $overview.='<td style="background-color:#dbe4ee;text-align:center;"># of Participants Performing Assay Pair </td>';
+            $overview.='<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
             $overview.='<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $config->evaluation->dts->passPercentage . '"</td>';
             $overview.='<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config->evaluation->dts->passPercentage . '" </td>';
             $overview.='<td style="background-color:#dbe4ee;text-align:center;">% of Participants Scoring "' . $config->evaluation->dts->passPercentage . '"</td></tr>';
@@ -386,11 +395,11 @@ if ($this->result != "") {
             
             
 //----------------Participant Performance Overview  start----------------
-            $ppOverview='<span style="font-size:13px;">Participant Performance Overview</span><br/><br/>';
+            $ppOverview='<span style="font-size:13px;">Participant Performance Overview</span><br/>';
             $ppOverview.='<table border="1"  style="font-size:13px;"><tr>';
-            $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Shipments</td>';
-            $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Response</td>';
-            $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;">Number Of Valid Response</td>';
+            $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;"># of Participants</td>';
+            $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;"># of Responses</td>';
+            $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;"># of Valid Responses</td>';
             $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
 
             $ppOverview.='<tr>';
@@ -405,10 +414,12 @@ if ($this->result != "") {
                     
             $pdf->writeHTML($ppOverview, true, false, true, false, '');
         
+        if(count($this->correctiveness) > 0){
             //----------------Participant Corrective Action Overview  start----------------
-            $correctiveActionStuff='<span style="font-size:13px;">Corrective Action Overview </span><br/><table border="1" style="font-size:13px;"><tr>';
-            $correctiveActionStuff.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td>';
-            $correctiveActionStuff.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
+            $correctiveActionStuff='<span style="font-size:13px;">Corrective Action Overview </span><br/>
+            <table border="1" style="font-weight:normal;font-size:13px;"><tr style="font-weight:bold;">';
+            $correctiveActionStuff.='<td style="background-color:#dbe4ee;text-align:center;width:75%;">Corrective Action</td>';
+            $correctiveActionStuff.='<td style="background-color:#dbe4ee;text-align:center;width:25%;">Responses having Corrective Action</td>';
             
             $correctiveActionStuff.='</tr>';
             foreach ($this->correctiveness as $correctiveness) {
@@ -423,11 +434,8 @@ if ($this->result != "") {
             //----------------Participant Corrective Action Overview  Ends----------------
 
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
-            
-                       
-            
-            
-            
+        }
+               
             $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
             //$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
             //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
