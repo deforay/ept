@@ -554,8 +554,6 @@ class Application_Service_Evaluation {
                     $algoString = "Wrongly reported in the pattern : <strong>" . $r1 . "</strong> <strong>" . $r2 . "</strong> <strong>" . $r3 . "</strong>";
 
                     if ($attributes['algorithm'] == 'serial') {
-
-
                         if ($r1 == 'NR') {
                             if (($r2 == '-') && ($r3 == '-' || $r3 == 'X')) {
                                 $algoResult = 'Pass';
@@ -623,20 +621,6 @@ class Application_Service_Evaluation {
                         }
                     }
 
-                    // matching reported and reference results
-                    if (isset($result['reported_result']) && $result['reported_result'] != null) {
-                        if ($result['reference_result'] == $result['reported_result']) {
-                            $totalScore += $result['sample_score'];
-                        } else {
-                            if ($result['sample_score'] > 0) {
-                                $failureReason[] = array('warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported Sample result does not match the reference result",
-                                    'correctiveAction' => $correctiveActions[3]);
-                                $correctiveActionList[] = 3;
-                            }
-                        }
-                    }
-                    $maxScore += $result['sample_score'];
-
                     // checking if mandatory fields were entered and were entered right
                     //if ($result['mandatory'] == 1) {
                     if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
@@ -651,6 +635,29 @@ class Application_Service_Evaluation {
                     //	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
                     //}
                     //}
+					
+					
+
+                    // matching reported and reference results
+                    if (isset($result['reported_result']) && $result['reported_result'] != null) {
+                        if ($result['reference_result'] == $result['reported_result']) {
+							if($algoResult != 'Fail' && $mandatoryResult != 'Fail'){
+								$totalScore += $result['sample_score'];
+							}else{
+								// $totalScore remains the same	
+							}
+                        } else {
+                            if ($result['sample_score'] > 0) {
+                                $failureReason[] = array('warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported Sample result does not match the reference result",
+                                    'correctiveAction' => $correctiveActions[3]);
+                                $correctiveActionList[] = 3;
+                            }
+                        }
+                    }
+					
+                    $maxScore += $result['sample_score'];
+					
+					
 
                     if ($algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])) {
                         $db->update('response_result_dts', array('calculated_score' => "Fail"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
@@ -839,12 +846,14 @@ class Application_Service_Evaluation {
                         $shipment['is_excluded'] = 'yes';
                     }
                 }
+				
+				$configuredDocScore = ((isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore != "" && $config->evaluation->dts->documentationScore != null) ? $config->evaluation->dts->documentationScore : 0);
 
                 // checking if total score and maximum scores are the same
                 if ($maxScore == 0 || $totalScore == 0) {
                     $responseScore = 0;
                 } else {
-                    $responseScore = round(($totalScore / $maxScore) * 100 * (100 - $config->evaluation->dts->documentationScore) / 100, 2);
+                    $responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
                 }
 
 
