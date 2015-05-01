@@ -370,7 +370,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name', 'country', 'mobile', 'email', 'p.status');
+        $aColumns = array('first_name', 'iso_name', 'mobile', 'email', 'p.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -449,6 +449,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.map_id', 'sp.created_on_user', 'sp.attributes', 'sp.final_result'))
                 ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array('shipmentStatus' => 's.status'))
+                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
                 ->where("p.status='active'");
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -482,6 +483,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         $sQuery = $this->getAdapter()->select()->from(array("p" => $this->_name), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
                 ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
+                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
                 ->where("p.status='active'");
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -505,12 +507,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         foreach ($rResult as $aRow) {
             $row = array();
             $row[] = ucwords($aRow['first_name'] . " " . $aRow['last_name']);
-            $row[] = ucwords($aRow['country']);
+            $row[] = ucwords($aRow['iso_name']);
             $row[] = $aRow['mobile'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
 
-            if (trim($aRow['created_on_user']) == "" && trim($aRow['final_result']) == "" && $aRow['shipmentStatus'] != 'evaluated') {
+            if (trim($aRow['created_on_user']) == "" && trim($aRow['final_result']) == "" && $aRow['shipmentStatus'] != 'evaluated' && $aRow['shipmentStatus'] != 'finalized') {
                 $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             } else {
                 $row[] = '';
@@ -527,7 +529,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name', 'country', 'mobile', 'email', 'p.status');
+        $aColumns = array('first_name', 'iso_name', 'mobile', 'email', 'p.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -604,7 +606,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id'))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
+              ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
                 ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
                 ->where("p.status='active'");
 
@@ -612,7 +614,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             $sQuery = $sQuery->where("s.shipment_id = ? ", $parameters['shipmentId']);
         }
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))->where("p.status='active'")->where("p.participant_id NOT IN ?", $sQuery);
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))  ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))->where("p.status='active'")->where("p.participant_id NOT IN ?", $sQuery);
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -625,8 +627,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-
-        //error_log($sQuery);
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
@@ -667,7 +667,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             $row = array();
             $row[] = '<input type="checkbox" class="isRequired" name="participants[]" id="' . $aRow['participant_id'] . '" value="' . base64_encode($aRow['participant_id']) . '" onclick="checkParticipantName(' . $aRow['participant_id'] . ',this)" title="Select atleast one participant">';
             $row[] = ucwords($aRow['first_name'] . " " . $aRow['last_name']);
-            $row[] = ucwords($aRow['country']);
+            $row[] = ucwords($aRow['iso_name']);
             $row[] = $aRow['mobile'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
