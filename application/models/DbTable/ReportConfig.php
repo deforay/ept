@@ -65,8 +65,7 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         $res = $this->getAdapter()->fetchCol($this->select()
                                ->from($this->_name, array('value'))
                               ->where("name='".$name."'"));
-      //  return $res[0];
-        return 'GHANA HEALTH LABORATORY QUALITY ASSURANCE PROGRAM';
+        return $res[0];
     }
 }
 
