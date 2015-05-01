@@ -447,7 +447,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.map_id', 'sp.created_on_user', 'sp.attributes', 'sp.final_result'))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.map_id', 'sp.created_on_user', 'sp.attributes', 'sp.final_result','sp.shipment_test_date'))
                 ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array('shipmentStatus' => 's.status'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
                 ->where("p.status='active'");
@@ -481,7 +481,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         /* Total data set length */
 
         $sQuery = $this->getAdapter()->select()->from(array("p" => $this->_name), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.shipment_test_date'))
                 ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
                 ->where("p.status='active'");
@@ -506,13 +506,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
         foreach ($rResult as $aRow) {
             $row = array();
+            $responseStatus='Not Responded';
+            if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) !='0000-00-00' && trim($aRow['shipment_test_date']) !='NULL' && trim($aRow['shipment_test_date']) !=null) {
+                $responseStatus='Responded';
+            }
             $row[] = ucwords($aRow['first_name'] . " " . $aRow['last_name']);
             $row[] = ucwords($aRow['iso_name']);
             $row[] = $aRow['mobile'];
             $row[] = $aRow['email'];
-            $row[] = ucwords($aRow['status']);
+            $row[] = ucwords($responseStatus);
 
-            if (trim($aRow['created_on_user']) == "" && trim($aRow['final_result']) == "" && $aRow['shipmentStatus'] != 'evaluated' && $aRow['shipmentStatus'] != 'finalized') {
+            if (trim($aRow['created_on_user']) == "" && trim($aRow['final_result']) == "" && $aRow['shipmentStatus'] != 'finalized') {
                 $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             } else {
                 $row[] = '';
@@ -670,7 +674,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             $row[] = ucwords($aRow['iso_name']);
             $row[] = $aRow['mobile'];
             $row[] = $aRow['email'];
-            $row[] = ucwords($aRow['status']);
+           // $row[] = ucwords($aRow['status']);
+            $row[] = 'Unenrolled';
 
             $output['aaData'][] = $row;
         }

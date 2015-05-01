@@ -13,7 +13,7 @@
 	<form name="addParticipantForm" id="addParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "add-enrollments"),'default', true) ?>" class="form-horizontal bs-example" role="form">
 	<fieldset>
 		<legend>Enrollments for Shipment Code - <?php echo $this->shipment['shipment_code']; ?></legend>
-		<?php if($this->shipment['status']!="evaluated" && $this->shipment['status']!="finalized"){ ?>
+		<?php if($this->shipment['status']!="finalized"){ ?>
 		<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo base64_encode($this->shipment['shipment_id']); ?>">
 		<span class="col-md-6 col-xs-12" style="padding:5px 0;">
 		<button class="btn btn-primary btn-sm" onclick="showUnEnrollment();return false;" id="showBtn"><span>Add participants this shipment - <?php echo $this->shipmentCode; ?></span></button>
