@@ -1,3 +1,6 @@
+<?php
+// Zend_Debug::dump($this->allSchemes);die;
+?>
 <div class="well">
     <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
@@ -12,6 +15,20 @@
 			<label for="admin_email" class="col-lg-3 control-label">Institute Name</label>
 			<div class="col-lg-6">
 				<input type="text" class="form-control" id="instituteName" name="instituteName" placeholder="Enter Institute Name" title="Enter Institute Name" value="<?php echo $this->config->instituteName; ?>" />
+			</div>
+	     </div>
+            <div class="form-group">
+			<label for="schemeId" class="col-lg-3 control-label">Choose Schemes</label>
+			<div class="col-lg-6">
+                            <select class="form-control" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">
+                                <?php
+                                foreach($this->allSchemes as $schemes){
+                                ?>
+                                <option value="<?php echo $schemes["scheme_id"] ?>" <?php echo ($schemes['status'] == "active") ? "selected='selected'" : ""; ?>><?php echo ucwords($schemes["scheme_name"]); ?></option>
+                                        <?php
+                                }
+                                            ?>
+				</select>
 			</div>
 	     </div>
             <div class="form-group">
@@ -84,4 +101,7 @@
             document.getElementById('addDistributionForm').submit();
         }
 	}
+          $(document).ready(function() {
+        $('#schemeId').multiselect();
+    });
 </script>

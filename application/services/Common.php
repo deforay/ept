@@ -161,6 +161,10 @@ class Application_Service_Common {
 	$db = new Application_Model_DbTable_GlobalConfig();
 	return $db->getGlobalConfig();
     }
+    public function getFullSchemesDetails() {
+	$db = new Application_Model_DbTable_SchemeList();
+	return $db->getFullSchemeList();
+    }
     
     public function updateConfig($params) {	
 	$db = new Application_Model_DbTable_GlobalConfig();
