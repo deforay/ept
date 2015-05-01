@@ -447,7 +447,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.map_id', 'sp.created_on_user', 'sp.attributes', 'sp.final_result','sp.shipment_test_date'))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.map_id', 'sp.created_on_user', 'sp.attributes', 'sp.final_result','sp.shipment_test_date',"RESPONSE" => new Zend_Db_Expr("CASE  WHEN sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date!='NULL' THEN 'Responded' ELSE 'Not Responded' END")))
                 ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array('shipmentStatus' => 's.status'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
                 ->where("p.status='active'");
@@ -506,15 +506,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
         foreach ($rResult as $aRow) {
             $row = array();
-            $responseStatus='Not Responded';
-            if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) !='0000-00-00' && trim($aRow['shipment_test_date']) !='NULL' && trim($aRow['shipment_test_date']) !=null) {
-                $responseStatus='Responded';
-            }
             $row[] = ucwords($aRow['first_name'] . " " . $aRow['last_name']);
             $row[] = ucwords($aRow['iso_name']);
             $row[] = $aRow['mobile'];
             $row[] = $aRow['email'];
-            $row[] = ucwords($responseStatus);
+            $row[] = ucwords($aRow['RESPONSE']);
 
             if (trim($aRow['created_on_user']) == "" && trim($aRow['final_result']) == "" && $aRow['shipmentStatus'] != 'finalized') {
                 $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
