@@ -170,8 +170,8 @@ class Application_Service_Reports {
         foreach ($rResult as $aRow) {
             $download = ' No Download Available ';
             if (isset($aRow['report_generated']) && $aRow['report_generated'] == 'yes') {
-                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "summary.pdf")) {
-                    $download = '<a href="/uploads/reports/' . $aRow['shipment_code'] . '/summary.pdf" class=\'btn btn-info btn-xs\'><i class=\'icon-download\'></i> Summary</a>';
+                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code']."-summary.pdf")) {
+                    $download = '<a href="/uploads/reports/' . $aRow['shipment_code'] . '/'.$aRow['shipment_code'].'-summary.pdf" class=\'btn btn-info btn-xs\'><i class=\'icon-download\'></i> Summary</a>';
                 }
             }
             $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);

@@ -7,11 +7,14 @@ $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs"
 if ($this->result != "") {
     if ($this->result['scheme_type'] != 'eid') {
         require_once('libchart/classes/libchart.php');
-        $chart = new VerticalBarChart(900, 400);
+        $chart = new VerticalBarChart(700, 300);
        
     }
     if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
+    }
+    if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code']) && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'])) {
+        mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code']);
     }
 
 // Extend the TCPDF class to create custom Header and Footer
@@ -109,7 +112,7 @@ if ($this->result != "") {
 //$pdf->AddPage();
 // ---------------------------------------------------------
     if ($this->result['scheme_type'] == 'eid') {
-        $pdf->AddPage('L', 'A4');
+        $pdf->AddPage('P', 'A4');
         if (isset($this->result['summaryResult']) && sizeof($this->result['summaryResult']) > 0) {
             foreach ($this->result['summaryResult'] as $result) {
 
@@ -236,7 +239,7 @@ if ($this->result != "") {
             }
         }
     } else {
-        $pdf->AddPage('L', 'A4');
+        $pdf->AddPage('P', 'A4');
         $pdf->SetFont('times', 'B', 12);
         if (count($this->result['referenceResult']) > 0) {
 
@@ -311,7 +314,7 @@ if ($this->result != "") {
             $chart->setDataSet($dataSet);
 
             //Bound::setUpperBound(50);
-            $chart->getPlot()->setGraphCaptionRatio(0.8);
+            $chart->getPlot()->setGraphCaptionRatio(0.5);
             $chart->setTitle("Comparison of test performance between participating laboratories");
             $chart->render(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
 
@@ -439,8 +442,8 @@ if ($this->result != "") {
             $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
             //$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
             //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
-            $y = $pdf->getY() + 20;
-            $pdf->Image($image_file, 10, $pdf->getY(), '', '', '', '', '', false, 300);
+            $y = $pdf->getY() + 5;
+            $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
             if (file_exists($image_file)) {
                 unlink($image_file);
             }
@@ -452,7 +455,7 @@ if ($this->result != "") {
 
         if ($this->result['scheme_type'] == 'dts') {
             if (count($this->result['pieChart']) > 0) {
-                $chart = new PieChart(900, 400);
+                $chart = new PieChart(700, 400);
                 $dataSet = new XYDataSet();
                 foreach ($this->result['pieChart'] as $piechart) {
                     $dataSet->addPoint(new Point($piechart['kit_name']." (N=".$piechart['count'].")", $piechart['count']));
@@ -460,17 +463,18 @@ if ($this->result != "") {
                 $piechart = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
                 $chart->setDataSet($dataSet);
 
+                $chart->getPlot()->setGraphCaptionRatio(0.5);
                 $chart->setTitle("Test kits used for DTS-based PT survey " . $this->result['distribution_code']);
                 $chart->render($piechart);
 
-                $pdf->Image($piechart, 50, $y, '', '', '', '', '', false, 300);
+                $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
                 if (file_exists($piechart)) {
                     unlink($piechart);
                 }
             }
         }
         if ($this->result['scheme_type'] == 'dbs') {
-            $chart = new PieChart(900, 400);
+            $chart = new PieChart(700, 400);
 
             $dataSet = new XYDataSet();
 
@@ -500,7 +504,7 @@ if ($this->result != "") {
             $chart->setTitle("HIV Testing Algorithms used for DBS-based PT survey " . $this->result['distribution_code']);
             $chart->render($piechart);
 
-            $pdf->Image($piechart, 50, $y, '', '', '', '', '', false, 300);
+            $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
             if (file_exists($piechart)) {
                 unlink($piechart);
             }
@@ -509,7 +513,7 @@ if ($this->result != "") {
     
     if(isset($this->responseResult) && count($this->responseResult)>0  && $this->responseResult!=''){
         
-        $chart1 = new PieChart(900, 400);
+        $chart1 = new PieChart(700, 400);
 	$dataSet = new XYDataSet();
         
         $passed=$this->responseResult["number_passed"];
@@ -529,7 +533,7 @@ if ($this->result != "") {
 	$chart1->setDataSet($dataSet);
 	$chart1->setTitle("Shipment Participant Result Report");
 	$chart1->render($performancePiechart);
-        $pdf->Image($performancePiechart, 50, $y, '', '', '', '', '', false, 300);
+        $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 300);
         if (file_exists($performancePiechart)) {
             unlink($performancePiechart);
         }

@@ -1194,8 +1194,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $row[] = strtoupper($aRow['scheme_type']);
             $row[] = $aRow['shipment_code'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
-            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "summary.pdf") && $aRow['status']=='finalized') {
-                 $row[] = '<a href="/uploads/reports/' . $aRow['shipment_code']. '/summary.pdf"  style="text-decoration : none;" target="_BLANK">Report</a>';
+            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR .$aRow['shipment_code']. "-summary.pdf") && $aRow['status']=='finalized') {
+                 $row[] = '<a href="/uploads/reports/' . $aRow['shipment_code']. '/'.$aRow['shipment_code'].'-summary.pdf"  style="text-decoration : none;" target="_BLANK">Report</a>';
             } else {
                 $row[] = '';
             }
