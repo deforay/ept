@@ -1,4 +1,7 @@
 <?php if (count($this->shipment) > 0) {
+    if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] == 'finalized') {
+         header('Location: /reports/distribution');
+    }
     ?>
     <div class="well" style="clear: both;">
         <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
@@ -170,6 +173,7 @@
             checkReportDate = true;
         <?php
     }
+    
     if ($shipment['report_generated'] == 'yes') {
         if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf")) {
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-bulk-participant-report.pdf")) {
@@ -280,12 +284,12 @@
                 var individual = null;
                 var summary = null;
                 $.when(
-                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {sId: sId, format: "html"},
+                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {sId: sId,'comingFrom':'generateReport', format: "html"},
                     function (data) {
                         summary = data;
                 }),
                   
-                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {sId: sId, format: "html"},
+                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {sId: sId,'comingFrom':'generateReport', format: "html"},
                     function (data) {
                         individual = data;
                   })
@@ -294,12 +298,10 @@
                 
                     if (individual == 'success') {
                         $("#summaryDiv").append(" <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-summary.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Summary Report</a> ");
-                        
                     }
                 
                     if (summary == 'success') {
                         $("#summaryDiv").append(" <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>\" class='btn btn-info' target='_BLANK'><i class='icon-file-text'></i> Download Participants Report</a> ");
-                        
                     }
                     
                     $.unblockUI();
@@ -310,7 +312,6 @@
                 $.unblockUI();
                 alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']);?>).\n\n\nYou can change the PT Survey Date and retry.");
             }
-
         }
     </script>
 

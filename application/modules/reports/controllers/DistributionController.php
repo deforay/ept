@@ -55,6 +55,7 @@ class Reports_DistributionController extends Zend_Controller_Action
         if($this->_hasParam('sId')){
            
             $id = (int)base64_decode($this->_getParam('sId'));
+            $comingFrom = $this->_getParam('comingFrom');
             $reportService = new Application_Service_Reports();
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
@@ -65,7 +66,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $schemeService = new Application_Service_Schemes();
             $this->view->possibleDtsResults = $schemeService->getPossibleResults('dts');
             $this->view->passPercentage = $commonService->getConfig('pass_percentage');
-            
+            $this->view->comingFrom=$comingFrom;
         }
     }
 
@@ -74,6 +75,7 @@ class Reports_DistributionController extends Zend_Controller_Action
         $this->_helper->layout()->disableLayout();
         if($this->_hasParam('sId')){
             $id = (int)base64_decode($this->_getParam('sId'));
+            $comingFrom = $this->_getParam('comingFrom');
             $reportService = new Application_Service_Reports();
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
@@ -83,6 +85,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $this->view->responseResult= $evalService->getResponseReports($id);
             $this->view->participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($id);
             $this->view->correctiveness = $reportService->getCorrectiveActionReportByShipmentId($id);
+            $this->view->comingFrom=$comingFrom;
         }
     }
 

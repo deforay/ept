@@ -38,13 +38,16 @@ if($this->shipments == false && count($this->shipments) <= 0){
 					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
 					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
 					<td style="text-align: center;">
-                                            <?php if (isset($shipment['status']) && $shipment['status']=='evaluated') { ?>
-                                            <a class="btn btn-success btn-xs" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-check"></i> Finalize</span></a>
-                                            <?php } else if (isset($shipment['status']) && $shipment['status']=='finalized') { ?>
-                                            <a class="btn btn-danger btn-xs disabled" href="javascript:void(0)"><span><i class="icon-check"></i> Finalized</span></a>
-                                            <?php } else if (isset($shipment['status']) && $shipment['status']=='shipped') { ?>
-                                            <a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-ambulance"></i> Shipped</span></a>
-                                            <?php } ?>
+						<?php if (isset($shipment['status']) && $shipment['status']=='evaluated') { ?>
+						<a class="btn btn-success btn-xs" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-check"></i> Finalize</span></a>
+						<?php } else if (isset($shipment['status']) && $shipment['status']=='finalized') { ?>
+						<a class="btn btn-danger btn-xs disabled" href="javascript:void(0)"><span><i class="icon-check"></i> Finalized</span></a>
+						<a class="btn btn-info btn-xs" href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>" target='_BLANK'><span><i class="icon-check"></i> Download Summary Report</span></a>
+						<a class="btn btn-info btn-xs" href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>" target='_BLANK'><span><i class="icon-check"></i> Download Participants Report</span></a>
+						
+						<?php } else if (isset($shipment['status']) && $shipment['status']=='shipped') { ?>
+						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-ambulance"></i> Shipped</span></a>
+						<?php } ?>
 					</td>
 				</tr>
 				<?php

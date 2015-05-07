@@ -97,7 +97,6 @@ if (count($this->shipment) > 0) {
                 <th>Documentation Score</th>
                 <th>Result</th>
                 <th>Comments (if any)</th>
-
             </tr>
         </thead>
         <tbody>
@@ -158,7 +157,7 @@ if (count($this->shipment) > 0) {
     if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] != 'finalized') {
         ?>
         <div align="center">
-            <a href="javascript:void(0)" class="btn btn-danger" onclick="finalizeReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>Finalize this Shipment</a>
+            <a href="javascript:void(0)" class="btn btn-danger" onclick="finalizeReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i> Finalize this Shipment</a>
         </div>
         <?php
     }
@@ -177,8 +176,7 @@ if (count($this->shipment) > 0) {
     }
     ?>
         $(document).ready(function () {
-
-
+            
             $('#shipmentEvaluation').on('click', ".clicker", function () {
                 nTr = $(this).parents('tr')[0];
                 aData = oTable.fnGetData(nTr);
@@ -253,14 +251,38 @@ if (count($this->shipment) > 0) {
             if (!choice) {
                 return false;
             }
-            $.blockUI();
-            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-status'), 'default', true); ?>", {sid: sid, status: 'finalized', format: "html"},
-            function (data) {
-                $.unblockUI({onUnblock: function () {
-                        alert(data);
-                        window.location.href = "/reports/finalize";
-                    }});
-            });
+                $.blockUI();
+                var individual = null;
+                var summary = null;
+                $.when(
+                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {sId: sid, format: "html"},
+                        function (data) {
+                        summary = data;
+                    }),
+                  
+                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {sId: sid, format: "html"},
+                    function (data) {
+                        individual = data;
+                  })
+                
+                ).then(function() {
+                    if (individual == 'success' && summary == 'success') {
+                        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-status'), 'default', true); ?>", {sid: sid, status: 'finalized', format: "html"},
+                        function (data) {
+                            $.unblockUI({onUnblock: function () {
+                                alert(data);
+                                window.location.href = "/reports/finalize";
+                            }});
+                        });
+                    }
+                });
+            
+            
+            
+            
+            
+            
+            
         }
 
 

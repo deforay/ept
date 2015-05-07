@@ -20,11 +20,12 @@ if ($this->result != "") {
 // Extend the TCPDF class to create custom Header and Footer
     class MYPDF extends TCPDF {
 
-        public function setSchemeName($header, $schemeName, $logo,$logoRight) {
+        public function setSchemeName($header, $schemeName, $logo,$logoRight,$comingFrom) {
             $this->scheme_name = $schemeName;
             $this->header = $header;
             $this->logo = $logo;
             $this->logoRight = $logoRight;
+            $this->comingFrom = $comingFrom;
         }
 
         //Page header
@@ -65,12 +66,16 @@ if ($this->result != "") {
 
         // Page footer
         public function Footer() {
+            $underReport="";
+            if(trim($this->comingFrom)!=""){
+                $underReport='       Under Review';
+            }
             // Position at 15 mm from bottom
             $this->SetY(-15);
             // Set font
             $this->SetFont('helvetica', 'I', 8);
             // Page number
-            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s"), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$underReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }
 
     }
@@ -107,7 +112,8 @@ if ($this->result != "") {
     }
 
 //$pdf->setSchemeName($this->result['scheme_name']);
-    $pdf->setSchemeName($this->header, $this->result['scheme_name'], $this->logo,$this->logoRight);
+    $pdf->setSchemeName($this->header, $this->result['scheme_name'], $this->logo,$this->logoRight,$this->comingFrom);
+    //$pdf->checkComingFrom($this->comingFrom);
 // add a page
 //$pdf->AddPage();
 // ---------------------------------------------------------
@@ -542,7 +548,7 @@ if ($this->result != "") {
             
             
 //Close and output PDF document
-    $fileName = $this->result['shipment_code']."-Summary.pdf";
+    $fileName = $this->result['shipment_code']."-summary.pdf";
     $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
 //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
