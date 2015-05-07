@@ -100,7 +100,7 @@ if(isset($this->evaluateData['evalComments'])){
 	<tr>
 		<td style="vertical-align: middle;" colspan="2">
 			<label>Is the above a follow up comment for corrective action ? </label>
-			<input type="radio" name="isFollowUp" id="followUpYes" <?php echo (isset($this->evaluateData['shipment']['is_followup']) && $this->evaluateData['shipment']['is_followup'] =="yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether this is a follow up comment or not"/> Yes
+			<input type="radio" name="isFollowUp" id="followUpYes" <?php echo ((isset($this->evaluateData['shipment']['is_followup']) && $this->evaluateData['shipment']['is_followup'] =="yes") || (isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != "[]")) ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether this is a follow up comment or not"/> Yes
 			<input type="radio" name="isFollowUp" id="followUpNo" <?php echo (isset($this->evaluateData['shipment']['is_followup']) && $this->evaluateData['shipment']['is_followup'] =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
 		</td>
 	</tr>

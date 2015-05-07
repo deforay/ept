@@ -70,7 +70,7 @@ class MYPDF extends TCPDF {
     public function Footer() {
 		$underReport="";
 		if(trim($this->comingFrom)!=""){
-			$underReport='       Under Review';
+			$underReport='       (Under Review)';
 		}
         // Position at 15 mm from bottom
         $this->SetY(-15);
@@ -432,10 +432,11 @@ foreach($this->result['shipment'] as $result){
 	}else{
 		$wishes='<p>You have received a score of '.round($score,2).'%.</p><br/>';
 	}
-	$wishes.="<br/><strong style='font-weight:bold;'>Score Breakup:</strong>";
-	$wishes.="<br/>Score for Correct Responses (out of $maxResponsePoints) : $shipmentScore (You reported ".$correctSamplesCount." samples correctly out of ".$totalProperSamples. ")";
-	$wishes.="<br/>Score for Documentation (out of $maxDocumentationPoints) : $documentationScore";
-		
+	if($result['is_excluded'] != 'yes'){
+		$wishes.="<br/><strong style='font-weight:bold;'>Score Breakup:</strong>";
+		$wishes.="<br/>Score for Correct Responses (out of $maxResponsePoints) : $shipmentScore (You reported ".$correctSamplesCount." samples correctly out of ".$totalProperSamples. ")";
+		$wishes.="<br/>Score for Documentation (out of $maxDocumentationPoints) : $documentationScore";
+	}
 	
 	
 	$pdf->SetLeftMargin(15);
@@ -507,7 +508,7 @@ foreach($this->result['shipment'] as $result){
 		$pdf->writeHTML($comment, true, false, true, false, '');
 	}
 	
-	$html='<br/><p>Thank you for participating in the HIV Serology '.strtoupper($result['scheme_type']).' Proficiency Testing Program.</p>';
+	$html='<p>Thank you for participating in the HIV Serology '.strtoupper($result['scheme_type']).' Proficiency Testing Program.</p>';
 	$pdf->writeHTML($html, true, false, true, false, '');
 	
 	if (ob_get_contents()) ob_end_clean();

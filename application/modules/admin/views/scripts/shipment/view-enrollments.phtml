@@ -16,13 +16,13 @@
 		<?php if($this->shipment['status']!="finalized"){ ?>
 		<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo base64_encode($this->shipment['shipment_id']); ?>">
 		<span class="col-md-6 col-xs-12" style="padding:5px 0;">
-		<button class="btn btn-primary btn-sm" onclick="showUnEnrollment();return false;" id="showBtn"><span>Add participants this shipment - <?php echo $this->shipmentCode; ?></span></button>
+		<button class="btn btn-primary btn-sm" onclick="showUnEnrollment();return false;" id="showBtn"><span>Add participants to this shipment - <?php echo $this->shipment['shipment_code']; ?></span></button>
 		<button class="btn btn-primary btn-sm" onclick="hideUnEnrollment();return false;" id="closeBtn" style="display: none;"><span>Close participants this shipment - <?php echo $this->shipmentCode; ?></span></button>
 		<input name="submitbtn" id="submitbtn" style="display: none;" class="btn btn-success btn-sm" type="button" onclick="validateNow();return false;" value="Add">
 		</span>
 		<?php } ?>
-		
-		<table class="table table-bordered table-striped table-hover" id="unEnrollmentTable" style="width: 100%;margin: auto;">
+		<br/><br/>
+		<table class="table table-bordered table-striped table-hover" id="unEnrollmentTable" style="width: 100%;margin:10px auto;">
 			<thead>
 			<tr>
 				<th></th>
@@ -35,9 +35,11 @@
 			</tr>
 			</thead>
 			<tr>
-				<td colspan="6" class="dataTables_empty">Loading data from server</td>
+				<td colspan="6" class="dataTables_empty">No Unenrolled Participants found.</td>
 			</tr>
 		</table>
+		
+		<br/>
 		
 		<table class="table table-bordered table-striped table-hover display" id="enrollmentTable" style="width: 100%;margin: auto;">
 			<thead>

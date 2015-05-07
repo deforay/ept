@@ -158,7 +158,7 @@ class Application_Service_Shipments {
             }
            
             //$row[] = $aRow['shipment_code'];
-            $row[] = '<a href="/admin/shipment/view-enrollments/id/' . base64_encode($aRow['shipment_id']) . '/shipmentCode/' . $aRow['shipment_code'] . '" target="_blank">' . $aRow['shipment_code'] . '</a>';
+            $row[] = $aRow['shipment_code'];
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
@@ -187,7 +187,7 @@ class Application_Service_Shipments {
                 $announcementMail='&nbsp;<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> New Shipment Mail</span></a>';
             }
             if($aRow['status']=='shipped' || $aRow['status']=='evaluated'){
-                $manageEnroll='&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/'. base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Manage Enrollment </span></a>';
+                $manageEnroll='&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/'. base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment </span></a>';
             }
             
             if($aRow['status'] != 'finalized'){

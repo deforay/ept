@@ -915,6 +915,7 @@ class Application_Service_Evaluation {
                     $shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
                     $shipmentResult[$counter]['documentation_score'] = 0;
                     $shipmentResult[$counter]['display_result'] = '';
+                    $shipmentResult[$counter]['is_followup'] = 'yes';
                     $failureReason[] = array('warning' => 'Excluded from Evaluation');
 					$finalResult = 3;
                     $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
@@ -923,6 +924,7 @@ class Application_Service_Evaluation {
                     // if any of the results have failed, then the final result is fail
                     if ($algoResult == 'Fail' || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
                         $finalResult = 2;
+						$shipmentResult[$counter]['is_followup'] = 'yes';
                     } else {
                         $finalResult = 1;
                     }
@@ -933,14 +935,14 @@ class Application_Service_Evaluation {
                     $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
 
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
-                    $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
+                    $shipmentResult[$counter]['failure_reason'] = $failureReason = (isset($failureReason) && count($failureReason) > 0) ? json_encode($failureReason) : "";
                     //$shipmentResult[$counter]['corrective_actions'] = implode(",",$correctiveActionList);
                 }
 
                 $shipmentResult[$counter]['max_score'] = $maxScore;
 
                 // let us update the total score in DB
-                $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
+                $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult,"is_followup" => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
                 $nofOfRowsDeleted = $db->delete('dts_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
                 $correctiveActionList = array_unique($correctiveActionList);
                 foreach ($correctiveActionList as $ca) {

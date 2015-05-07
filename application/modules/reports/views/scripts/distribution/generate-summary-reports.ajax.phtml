@@ -7,7 +7,7 @@ $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs"
 if ($this->result != "") {
     if ($this->result['scheme_type'] != 'eid') {
         require_once('libchart/classes/libchart.php');
-        $chart = new VerticalBarChart(700, 300);
+        $chart = new VerticalBarChart(700, 400);
        
     }
     if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
@@ -68,7 +68,7 @@ if ($this->result != "") {
         public function Footer() {
             $underReport="";
             if(trim($this->comingFrom)!=""){
-                $underReport='       Under Review';
+                $underReport='       (Under Review)';
             }
             // Position at 15 mm from bottom
             $this->SetY(-15);
@@ -249,19 +249,14 @@ if ($this->result != "") {
         $pdf->SetFont('times', 'B', 12);
         if (count($this->result['referenceResult']) > 0) {
 
-
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
             $referenceRes.='<tr>';
-            $referenceRes.='<td style="width:10%">PT Survey</td><td style="width:2%;">:</td><td style="font-weight:normal;width:22%;">' . $this->result['distribution_code'] . '</td>';
-            $referenceRes.='<td style="width:14%">PT Survey Date</td><td style="width:2%;">:</td><td style="font-weight:normal;width:10%;">' . $this->dateFormat($this->result['shipment_date']) . '</td>';
-            $referenceRes.='<td style="width:14%">Shipment Code</td><td style="width:2%;">:</td><td style="font-weight:normal;width:22%;">' . $this->result['shipment_code'] . '</td>';
+            $referenceRes.='<td style="font-weight:bold;width:20%;">PT Survey</td><td style="font-weight:normal;width:30%;">' . $this->result['distribution_code'] . '<br>(' . $this->dateFormat($this->result['shipment_date']) . ')</td>';
+            $referenceRes.='<td style="font-weight:bold;width:20%;">Shipment Code</td><td style="font-weight:normal;width:30%;">' . $this->result['shipment_code'] . '</td>';
             $referenceRes.='</tr>';
             $referenceRes.='</table>';
-    
 
             $pdf->writeHTML($referenceRes, true, false, true, false, '');
-            
-                     
             
         }
         if (count($this->result['summaryResult']) > 0) {
