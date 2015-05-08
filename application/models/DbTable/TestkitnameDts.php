@@ -17,6 +17,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
             'TestKit_Name_Short' => $params['shortTestKitName'],
             'TestKit_Comments' => $params['comments'],
             'TestKit_Manufacturer' => $params['manufacturer'],
+            'scheme_type' => $params['scheme'],
             'TestKit_ApprovalAgency' => $params['approvalAgency'],
             'source_reference' => $params['sourceReference'],
             'CountryAdapted' => $params['countryAdapted'],
@@ -32,6 +33,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
                 'TestKit_Name_Short' => $params['shortTestKitName'],
                 'TestKit_Comments' => $params['comments'],
                 'TestKit_Manufacturer' => $params['manufacturer'],
+				'scheme_type' => $params['scheme'],
                 'TestKit_ApprovalAgency' => $params['approvalAgency'],
                 'source_reference' => $params['sourceReference'],
                 'CountryAdapted' => $params['countryAdapted'],
@@ -70,7 +72,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('TestKit_Name', 'TestKit_Manufacturer', 'TestKit_ApprovalAgency', 'Approval', 'DATE_FORMAT(Created_On,"%d-%b-%Y %T")');
+        $aColumns = array('TestKit_Name','scheme_name' ,'TestKit_Manufacturer', 'TestKit_ApprovalAgency', 'Approval', 'DATE_FORMAT(Created_On,"%d-%b-%Y %T")');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -148,7 +150,8 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name));
+        $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name))
+								->join(array('s'=>'scheme_list'),"a.scheme_type=s.scheme_id",'scheme_name');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -200,6 +203,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
             }
             $createdDate = explode(" ", $aRow['Created_On']);
             $row[] = ucwords($aRow['TestKit_Name']);
+            $row[] = $aRow['scheme_name'];
             $row[] = $aRow['TestKit_Manufacturer'];
             $row[] = $aRow['TestKit_ApprovalAgency'];
             $row[] = $approved;

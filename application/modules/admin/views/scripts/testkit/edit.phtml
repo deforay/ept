@@ -22,15 +22,27 @@
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Approval Agency <span class="mandatory">*</span></label>
                 <div class="col-lg-8">
-			<input type="text" id="approvalAgency" name="approvalAgency" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Approval Agency here" placeholder="Please enter the Approval Agency here" value="<?php echo $this->result['TestKit_ApprovalAgency']; ?>"/>
-		</div>
+					<input type="text" id="approvalAgency" name="approvalAgency" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Approval Agency here" placeholder="Please enter the Approval Agency here" value="<?php echo $this->result['TestKit_ApprovalAgency']; ?>"/>
+				</div>
             </div>
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">Scheme <span class="mandatory">*</span></label>
+
+                <div class="col-lg-8">
+					<select id="scheme" name="scheme" class="form-control isRequired" title="Please select the Scheme">
+						<option value="">--Select Scheme--</option>
+						<?php foreach($this->schemeList as $scheme) { ?>
+						<option value="<?php echo $scheme->scheme_id; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme->scheme_id) ? " selected='selected'" : ""; ?>><?php echo $scheme->scheme_name; ?></option>	
+						<?php } ?>
+					</select>
+				</div>
+            </div>			
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Source Reference</label>
 
                 <div class="col-lg-8">
-			<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255" class="form-control" title="Please enter the Source Reference here" placeholder="Please enter the Source Reference here" value="<?php echo $this->result['source_reference']; ?>"/>
-		</div>
+					<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255" class="form-control" title="Please enter the Source Reference here" placeholder="Please enter the Source Reference here" value="<?php echo $this->result['source_reference']; ?>"/>
+				</div>
             </div>
             
 	    <div class="form-group col-lg-6">
