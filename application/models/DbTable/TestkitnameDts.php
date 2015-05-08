@@ -4,12 +4,35 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
 
     protected $_name = 'r_testkitname_dts';
     protected $_primary = 'TestKitName_ID';
+	
+	public function getTestKitNameById($testKitId){
+		return $this->getAdapter()->fetchCol($db->select()->from('r_testkitname_dts', 'TestKit_Name')->where("TestKitName_ID = '$testKitId'"));
+	}
+	
+	public function getActiveTestKitsNamesForScheme($scheme,$countryAdapted=false){
+		
+		
+        $sql = $this->getAdapter()->select()->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))
+                            ->where("scheme_type = '$scheme'");
+
+        if ($countryAdapted) {
+            $sql = $sql->where('COUNTRYADAPTED = 1');
+        }
+
+        $stmt = $this->getAdapter()->fetchAll($sql);
+
+        foreach ($stmt as $kitName) {
+            $retval[$kitName['TESTKITNAMEID']] = $kitName['TESTKITNAME'];
+        }
+        return $retval;
+			
+	}
 
     public function addTestkitDetails($params) {
         $commonService = new Application_Service_Common();
         $randomStr = $commonService->getRandomString(13);
         $testkitId = "tk" . $randomStr;
-        $tkId = $this->checkTestkitId($testkitId);
+        $tkId = $this->checkTestkitId($testkitId,$params['scheme']);
 
         $data = array(
             'TestKitName_ID' => $tkId,
@@ -54,19 +77,19 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
         }
     }
 
-    public function checkTestkitId($testkitId) {
+    public function checkTestkitId($testkitId,$scheme) {
         $result = $this->fetchRow($this->select()->where("TestKitName_ID='" . $testkitId . "'"));
         if ($result != "") {
             $commonService = new Application_Service_Common();
             $randomStr = $commonService->getRandomString(13);
             $testkitId = "tk" . $randomStr;
-            $this->checkTestkitId($testkitId);
+            $this->checkTestkitId($testkitId,$scheme);
         } else {
             return $testkitId;
         }
     }
 
-    public function getAllDtsTestKitDetails($parameters) {
+    public function getAllTestKitsForAllSchemes($parameters) {
 
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
@@ -221,12 +244,12 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
         return $result;
     }
 
-    public function addTestkitInParticipant($oldName, $testkitName) {
+    public function addTestkitInParticipant($oldName, $testkitName,$scheme) {
         if (trim($testkitName) != "") {
             $commonService = new Application_Service_Common();
             $randomStr = $commonService->getRandomString(13);
             $testkitId = "tk" . $randomStr;
-            $tkId = $this->checkTestkitId($testkitId);
+            $tkId = $this->checkTestkitId($testkitId,$scheme);
             $result = $this->fetchRow($this->select()->where("TestKit_Name=?", $testkitName));
 
             if ($result == "" && trim($oldName) == "") {

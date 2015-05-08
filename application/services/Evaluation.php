@@ -683,23 +683,24 @@ class Application_Service_Evaluation {
                     $expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
                 }
 
-
+				$testKitDb = new Application_Model_DbTable_TestkitnameDts();
                 $testKit1 = "";
-                $testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts', 'TestKit_Name')->where("TestKitName_ID = '" . $results[0]['test_kit_name_1'] . "'"));
+				
+                $testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_1']);
                 if (isset($testKitName[0])) {
                     $testKit1 = $testKitName[0];
                 }
 
                 $testKit2 = "";
                 if (trim($results[0]['test_kit_name_2']) != "") {
-                    $testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts', 'TestKit_Name')->where("TestKitName_ID = '" . $results[0]['test_kit_name_2'] . "'"));
+					$testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_2']);
                     if (isset($testKitName[0])) {
                         $testKit2 = $testKitName[0];
                     }
                 }
                 $testKit3 = "";
                 if (trim($results[0]['test_kit_name_3']) != "") {
-                    $testKitName = $db->fetchCol($db->select()->from('r_testkitname_dts', 'TestKit_Name')->where("TestKitName_ID = '" . $results[0]['test_kit_name_3'] . "'"));
+					$testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_3']);
                     if (isset($testKitName[0])) {
                         $testKit3 = $testKitName[0];
                     }
@@ -1647,8 +1648,8 @@ class Application_Service_Evaluation {
                     $shipmentResult['summaryResult'][] = $sQueryRes;
                     $shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
 
-                    $kitNameRes = $db->fetchAll($db->select()->from('r_testkitname_dts'));
-
+                    $kitNameRes = $db->fetchAll($db->select()->from('r_testkitname_dts')->where("scheme_type='dts'"));
+					
                     $rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id'))
                             ->join(array('resdts' => 'response_result_dts'), 'resdts.shipment_map_id=spm.map_id', array('resdts.test_kit_name_1', 'resdts.test_kit_name_2', 'resdts.test_kit_name_3'))
                             ->where("spm.final_result IS NOT NULL")

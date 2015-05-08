@@ -9,24 +9,15 @@ class Application_Service_Schemes {
 
     public function getAllDtsTestKit($countryAdapted = false) {
 
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'));
-
-        if ($countryAdapted) {
-            $sql = $sql->where('COUNTRYADAPTED = 1');
-        }
-
-        $stmt = $db->fetchAll($sql);
-
-        foreach ($stmt as $kitName) {
-            $retval[$kitName['TESTKITNAMEID']] = $kitName['TESTKITNAME'];
-        }
-        return $retval;
+        $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+        return $testkitsDb->getActiveTestKitsNamesForScheme('dts',$countryAdapted);
+    
     }
     public function getAllDtsTestKitList($countryAdapted = false) {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME','testkit_1','testkit_2','testkit_3'));
+        $sql = $db->select()->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME','testkit_1','testkit_2','testkit_3'))
+                        ->where("scheme_type = 'dts'");
 
         if ($countryAdapted) {
             $sql = $sql->where('COUNTRYADAPTED = 1');
@@ -395,7 +386,7 @@ class Application_Service_Schemes {
 
     public function getAllDtsTestKitInGrid($parameters) {
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
-        return $testkitsDb->getAllDtsTestKitDetails($parameters);
+        return $testkitsDb->getAllTestKitsForAllSchemes($parameters);
     }
 
     public function getDtsTestkit($testkitId) {

@@ -7,19 +7,6 @@ public function IsgetDTSResponseEditable($evaluationStatus){
 	return true;
 }
 
-public function getAllDtsTestKit(){
-
-	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$sql = $db->select()->from(array('r_testkitname_dts'),array('TESTKITNAMEID'=>'TESTKITNAME_ID', 'TESTKITNAME'=>'TESTKIT_NAME'))
-					->where('COUNTRYADAPTED = 1');
-	$stmt = $db->fetchAll($sql);
-	
-	foreach($stmt as $kitName){
-		$retval[$kitName['TESTKITNAMEID']] = $kitName['TESTKITNAME'];	
-	}
-	return $retval;
-}
-
 	
 	public function saveResponse($data){
 		date_default_timezone_set('America/New_York');
