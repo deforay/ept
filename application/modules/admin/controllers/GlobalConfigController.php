@@ -3,7 +3,7 @@
 class Admin_GlobalConfigController extends Zend_Controller_Action {
 
     public function init() {
-        /* Initialize action controller here */
+        $this->_helper->layout()->pageName = 'manage';
     }
 
     public function indexAction() {

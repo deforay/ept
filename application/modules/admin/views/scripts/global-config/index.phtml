@@ -18,9 +18,9 @@
 			</div>
 	     </div>
             <div class="form-group">
-			<label for="schemeId" class="col-lg-3 control-label">Choose Schemes</label>
+			<label for="schemeId" class="col-lg-3 control-label">Choose Active Schemes <span class="mandatory">*</span></label>
 			<div class="col-lg-6">
-                            <select class="form-control" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">
+                            <select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">
                                 <?php
                                 foreach($this->allSchemes as $schemes){
                                 ?>
@@ -92,6 +92,10 @@
 
 <script type="text/javascript">
 	function validateNow() {
+		if($("#schemeId").val() == null || $("#schemeId").val() == ""){
+			alert('You have to choose at least 1 Scheme to proceed');
+			return false;
+		}
 	//checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Survey. Please try something else.')
         flag = deforayValidator.init({
             formId: 'addDistributionForm'

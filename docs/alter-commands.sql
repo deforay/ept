@@ -2030,3 +2030,8 @@ ALTER TABLE  `shipment_participant_map` CHANGE  `shipment_test_date`  `shipment_
 --Amit 22 April 2015
 INSERT INTO `r_results` (`result_id`, `result_name`) VALUES ('3', 'Excluded');
 ALTER TABLE `shipment` ADD `average_score` VARCHAR(255) NULL DEFAULT '0' AFTER `max_score`;
+
+-- Amit May 8 2015
+
+ALTER TABLE `r_testkitname_dts` ADD `scheme_type` VARCHAR(255) NOT NULL AFTER `TestKitName_ID`;
+UPDATE `r_testkitname_dts` SET `scheme_type`='dts'; # RUN THIS only the first time

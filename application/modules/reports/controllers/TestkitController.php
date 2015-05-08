@@ -13,6 +13,13 @@ class Reports_TestkitController extends Zend_Controller_Action
                     ->initContext();
         $this->_helper->layout()->pageName = 'report'; 
     }
+    
+    public function preDispatch(){
+        $adminSession = new Zend_Session_Namespace('administrators');
+        if(!in_array('dts',$adminSession->activeSchemes)){
+            $this->_redirect("/admin");
+        }
+    }
 
     public function indexAction()
     {
