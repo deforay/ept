@@ -69,11 +69,15 @@ class DtsController extends Zend_Controller_Action
 	    $pID= $this->getRequest()->getParam('pid');
 	    $eID =$this->getRequest()->getParam('eid');
 	    
+		$reportService = new Application_Service_Reports();
+        $this->view->header=$reportService->getReportConfigValue('report-header');
+        $this->view->logo=$reportService->getReportConfigValue('logo');
+        $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
+			
 	    $participantService = new Application_Service_Participants();
 	    $this->view->participant = $participantService->getParticipantDetails($pID);
 		$schemeService = new Application_Service_Schemes();
-	    //$response =$schemeService->getDtsSamples($sID,$pID);
-	    //$this->view->allSamples = $response;
+	    
 		$shipment = $schemeService->getShipmentData($sID,$pID);
 	    $shipment['attributes'] = json_decode($shipment['attributes'],true);
 	    $this->view->shipment = $shipment;

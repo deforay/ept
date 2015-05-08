@@ -13,18 +13,48 @@ $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 	
 class MYPDF extends TCPDF {
 	
-	
+	public function setSchemeName($header,$schemeName,$logo,$logoRight,$schemeType) {
+		$this->scheme_name = $schemeName;
+		$this->header = $header;
+		$this->logo = $logo;
+		$this->logoRight = $logoRight;
+		$this->schemeType = $schemeType;
+		
+	}
     
 	//Page header
 	public function Header() {
+        // Logo
+        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+		if(trim($this->logo)!=""){
+			if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo)) {
+				$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo;
+				$this->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			}
+		}
+		if(trim($this->logoRight)!=""){
+			if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logoRight)) {
+				$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logoRight;
+				$this->Image($image_file, 180, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			}
+		}
        
         // Set font
 		$this->SetFont('times', '', 12);
         
-		$html='<p  style="font-weight: bold;text-align:center;">Shipment Form</p>';
-		$this->writeHTMLCell(0, 0, 10, 10, $html, 0, 0, 0, true, 'J', true);
+		$this->header=str_replace("<div","<span",trim($this->header));
+		$this->header=str_replace("</div>","</span><br/>",$this->header);
+	
+		//error_log($this->header);
+		//$y = $this->getY();
+		$html=$this->header;
+	
+		$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
+
+		$html='<p  style="font-weight: bold;text-align:center;">'.$this->scheme_name.' ('.$this->schemeType.')</p>';
+		$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
 		$html='<hr/>';
-		$this->writeHTMLCell(0, 0, 10, 20, $html, 0, 0, 0, true, 'J', true);
+		$this->writeHTMLCell(0, 0, 10, 45, $html, 0, 0, 0, true, 'J', true);
     }
 
     // Page footer
@@ -42,6 +72,8 @@ class MYPDF extends TCPDF {
 	// create new PDF document
 	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	
+	$pdf->setSchemeName($this->header,$this->shipment['scheme_name'],$this->logo,$this->logoRight,$this->shipment['scheme_type']);
+	
 	// set default header data
 	$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 	
@@ -54,7 +86,7 @@ class MYPDF extends TCPDF {
 	
 	// set margins
 	
-	$pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
+	$pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
 	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 	
@@ -79,7 +111,23 @@ class MYPDF extends TCPDF {
 	$pdf->AddPage();
 	
 	$labInfo='<span class="pull-right">Fields marked <span class="mandatory">*</span> are mandatory</span><br/>';
-	$labInfo.='<table border="1" style="font-size:13px;width:100%;">';
+	
+	$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+            $labInfo.='<tr style="background-color:#dbe4ee;">';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> Shipment Code</span> </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Scheme Type </span> </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> PT Survey Code </span>  </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> PT Survey Date </span> </td>';
+            $labInfo.='</tr>';
+	    $labInfo.='<tr>';
+                $labInfo.='<td style="text-align:center;">'.$this->shipment["shipment_code"].'</td>';
+                $labInfo.='<td style="text-align:center;">'.$this->shipment["scheme_name"].'</td>';
+                $labInfo.='<td style="text-align:center;">'.$this->shipment["distribution_code"].'</td>';
+                $labInfo.='<td style="text-align:center;">'.$this->dateFormat($this->shipment["distribution_date"]).'</td>';
+            $labInfo.='</tr>';
+        $labInfo.='</table><br/><br/>';
+	
+	$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
             $labInfo.='<tr style="background-color:#dbe4ee;">';
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> Participant Name </span> </td>';
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Participant Code </span> </td>';
@@ -98,17 +146,17 @@ class MYPDF extends TCPDF {
 	
 	
 	
-	 $labInfo.='<table border="1" style="font-size:13px;width:100%;">';
+	 $labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
             $labInfo.='<tr style="background-color:#F7F7F7;">';
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Shipment Date</td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->dateFormat($this->shipment["shipment_date"]).'</td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Last Response Date <?php ?></td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->dateFormat($this->shipment["lastdate_response"]).'</td>';
+                $labInfo.='<td style="text-align:center;width:25%">'.$this->dateFormat($this->shipment["shipment_date"]).'</td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Last Response Date</td>';
+                $labInfo.='<td style="text-align:center;width:25%">'.$this->dateFormat($this->shipment["lastdate_response"]).'</td>';
             $labInfo.='</tr>';
 	
 
 
-            $labInfo.='<tr style="background-color:#CCCCCC;">';
+            $labInfo.='<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Shipment Receipt Date</td>';
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Sample Rehydration Date</td>';
@@ -123,7 +171,7 @@ class MYPDF extends TCPDF {
             $labInfo.='</tr>';
         $labInfo.='</table><br/><br/>';
 	
-		$labInfo.='<table border="1" style="font-size:13px;width:100%;">';
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 			$labInfo.='<tr style="background-color:#CCCCCC;">';
 				$labInfo.='<td style="width:12%"></td>';
 				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Test-1</td>';
@@ -131,7 +179,7 @@ class MYPDF extends TCPDF {
 				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Test-3</td>';
 			$labInfo.='</tr>';
 			
-			$labInfo.='<tr style="background-color:#F7F7F7;">';
+			$labInfo.='<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
 				$labInfo.='<td style="text-align:center;font-weight:bold;">Kit Name</td>';
 				$labInfo.='<td></td>';
 				$labInfo.='<td></td>';
@@ -153,7 +201,7 @@ class MYPDF extends TCPDF {
 			$labInfo.='</tr>';
 		$labInfo.='</table>';
 		
-		$labInfo.='<table border="1" style="font-size:13px;width:100%;">';
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 			$labInfo.='<tr style="background-color:#CCCCCC;">';
 				$labInfo.='<td style="width:12%"></td>';
 				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-1</td>';
@@ -171,10 +219,10 @@ class MYPDF extends TCPDF {
 			$labInfo.='</tr>';
 		$labInfo.='</table><br/><br/>';
 		
-		$labInfo.='<table border="1" style="font-size:13px;width:100%;">';
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 			$labInfo.='<tr style="background-color:#CCCCCC;">';
 				$labInfo.='<td style="font-weight:bold;">Supervisor Review</td>';
-				$labInfo.='<td></td>';
+				$labInfo.='<td>Yes/No</td>';
 				$labInfo.='<td style="font-weight:bold;">Supervisor Name</td>';
 				$labInfo.='<td></td>';
 			$labInfo.='</tr>';

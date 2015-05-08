@@ -20,10 +20,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
     }
     
      public function getShipmentRowInfo($sId) {
-
-        return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('s' => $this->_name))
-                                ->where("s.shipment_id = ?", $sId));
-                            
+		return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('s' => 'shipment'))
+                ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
+			->group('s.shipment_id')
+			->where("s.shipment_id = ?", $sId));
     }
 
     public function updateShipmentStatus($shipmentId, $status) {
