@@ -16,7 +16,7 @@ class Admin_ShipmentController extends Zend_Controller_Action {
                 ->addActionContext('shipment-not-responded-participants', 'html')
                 ->addActionContext('shipment-not-enrolled-participants', 'html')
                 ->initContext();
-        $this->_helper->layout()->pageName = 'configurations';
+        $this->_helper->layout()->pageName = 'manageMenu';
     }
 
     public function indexAction() {

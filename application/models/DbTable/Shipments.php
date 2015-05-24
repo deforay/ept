@@ -701,7 +701,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             }
             
             $aRow['lastdate_response'];
-            $row[] = $aRow['SHIP_YEAR'].' '.$aRow['evaluation_status'];
+            $row[] = $aRow['SHIP_YEAR'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = strtoupper($aRow['scheme_type']);
             $row[] = $aRow['shipment_code'];

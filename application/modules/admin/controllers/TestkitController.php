@@ -7,7 +7,7 @@ class Admin_TestkitController extends Zend_Controller_Action {
         $ajaxContext->addActionContext('index', 'html')
                 ->addActionContext('get-testkit', 'html')
                 ->initContext();
-        $this->_helper->layout()->pageName = 'manage';
+        $this->_helper->layout()->pageName = 'configMenu';
     }
 
     public function indexAction() {

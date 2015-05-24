@@ -48,7 +48,7 @@ class Admin_LoginController extends Zend_Controller_Action
 				}
 				$authNameSpace->activeSchemes = $schemeList;
 	    		
-    			$this->_redirect('/admin/index');
+    			$this->_redirect('/admin');
     		
     		}else
     		{

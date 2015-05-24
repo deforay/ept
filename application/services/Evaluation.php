@@ -162,7 +162,7 @@ class Application_Service_Evaluation {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('map_id', 'responseDate' => 'shipment_test_report_date', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)"), 'last_not_participated_mailed_on', 'last_not_participated_mail_count'))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('map_id', 'responseDate' => 'shipment_test_report_date', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)"), 'last_not_participated_mailed_on', 'last_not_participated_mail_count','shipment_status'=>'s.status'))
                 ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
                 ->where("s.distribution_id = ?", $distributionId)
@@ -197,7 +197,7 @@ class Application_Service_Evaluation {
                 }
 
                 $lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
-                if ($createdOn->isEarlier($lastDate)) {
+                if ($createdOn->compare($lastDate) <=0) {
                     $results = $schemeService->getEidSamples($shipmentId, $shipment['participant_id']);
                     $totalScore = 0;
                     $maxScore = 0;
@@ -497,7 +497,7 @@ class Application_Service_Evaluation {
 
                 //Response was submitted after the last response date.
                 $lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
-                if (!$createdOn->isEarlier($lastDate)) {
+                if ($createdOn->compare($lastDate,Zend_date::DATES) > 0) {
                     $lastDateResult = 'Fail';
                     $failureReason[] = array('warning' => "Response was submitted after the last response date.",
                         'correctiveAction' => $correctiveActions[1]);

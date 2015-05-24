@@ -8,7 +8,7 @@ class Admin_UsersController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
                 ->initContext();
-        $this->_helper->layout()->pageName = 'manage';
+        $this->_helper->layout()->pageName = 'configMenu';
     }
 
     public function indexAction()

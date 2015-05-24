@@ -38,7 +38,7 @@
 					<td style="text-align: center;"><?php echo $reported ?></td>
 					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported/$shipment['participant_count'])*100,2) : 0; ?></td>					
 					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
-					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
+					<td style="text-align: center;"><?php echo ucfirst($shipment['shipment_status']) ?></td>
 <!--                                        <td style="text-align: center;">< ?php echo $this->dateFormat($shipment['last_not_participated_mailed_on']); ?></td>
 					<td style="text-align: center;">< ?php echo $shipment['last_not_participated_mail_count'] ?></td>-->
 					<td style="text-align: center;">
@@ -259,11 +259,11 @@
 			});		
 	}
         function removeSchemes(schemeType,mid){
-		if (window.confirm("Are you sure you want to remove this result?\n This cannot be undone !")) { 
+		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'Dts', 'action' => 'delete')); ?>", { mid: mid, format: "html" },
 			    function (data) {
-				alert("scheme result removed successfully");
+				alert("Response removed successfully");
                                 oTable.fnStandingRedraw();
                                // oTable.fnDraw();
                              //  location.reload();

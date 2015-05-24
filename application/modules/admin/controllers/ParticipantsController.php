@@ -11,7 +11,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 	            ->addActionContext('get-datamanager', 'html')
 	            ->addActionContext('get-participant', 'html')
                 ->initContext();
-        $this->_helper->layout()->pageName = 'manage';
+        $this->_helper->layout()->pageName = 'configMenu';
     }
 
     public function indexAction()

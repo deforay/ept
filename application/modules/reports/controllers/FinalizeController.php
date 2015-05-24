@@ -9,7 +9,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
                  ->addActionContext('get-shipments', 'html')
                   ->initContext();        
-        $this->_helper->layout()->pageName = 'finalize';
+        $this->_helper->layout()->pageName = 'analyze';
     }
 
     public function indexAction()

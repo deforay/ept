@@ -15,10 +15,10 @@
     <?php
     $date = new Zend_Date();
     $lastDate = new Zend_Date($this->shipment['lastdate_response'], Zend_Date::ISO_8601);
-    $response=$date->compare($lastDate)
+    $response=$date->compare($lastDate,Zend_Date::DATES)
     ?>
     <div id="view-content">
-        <h2 align="CENTER"> Dried Tube Specimens for Rapid HIV Testing </h2>
+        <h2 align="CENTER"> Dried Tube Specimens (DTS) for Rapid HIV Testing </h2>
         <?php
         if ($response == 1 && $this->shipment['status'] == 'finalized') {
             ?>
@@ -36,6 +36,7 @@
         ?>
         <br>
         <div id=error></div>
+        <span class="pull-right">Fields marked <span class='mandatory'>*</span> are mandatory</span>
         <table>
             <tr>
                 <td> <span class="txt"> Participant Name </span> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] ); ?></td>
@@ -57,14 +58,14 @@
 
             <tr class ="light">
                 <td>Shipment Receipt Date</td>
-                <td><input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class=" datepicker" readonly="readonly"   title="Please enter Test Receipt Date" /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('receiptDate')"></i></td>
+                <td><input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class=" datepicker" readonly="readonly"   title="Please enter Test Receipt Date" /> <i class="icon-remove-sign" style="cursor:pointer" alt="Clear Date" title="Clear Date"  onclick="clearDate('receiptDate')"></i></td>
                 <td>Sample Rehydration Date</td>
-                <td><input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class=" datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('sampleRehydrationDate')"></i></td>
+                <td><input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class=" datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  /> <i class="icon-remove-sign" style="cursor:pointer" alt="Clear Date" title="Clear Date"  onclick="clearDate('sampleRehydrationDate')"></i></td>
             </tr>
 
             <tr class ="dark">
                 <td>Testing Date</td> 
-                <td><input type="text" id="testDate" name="testDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class=" datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('testDate')"></i></td>		
+                <td><input type="text" id="testDate" name="testDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class=" datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /> <i class="icon-remove-sign" style="cursor:pointer" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"></i></td>		
                 <td>Algorithm Used</td> 
                 <td>
                     <select name="algorithm" id="algorithm" class="isRequired" title="Please choose the Algorithm used">
@@ -198,9 +199,9 @@
             ?>
             <tr align="CENTER" class="light">
                 <th>Exp Date</th>
-                <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('exp_date1')"></i></td>
-                <td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('exp_date2')"></i></td>
-                <td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer" onclick="clearDate('exp_date3')"></i></td>
+                <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date1')"></i></td>
+                <td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date2')"></i></td>
+                <td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date3')"></i></td>
 
             </tr>
             <thead> 

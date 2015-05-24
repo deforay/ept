@@ -5,7 +5,7 @@ class Admin_ReportConfigController extends Zend_Controller_Action
 
     public function init()
     {
-        $this->_helper->layout()->pageName = 'manage';
+        $this->_helper->layout()->pageName = 'configMenu';
     }
 
     public function indexAction()

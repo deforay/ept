@@ -113,13 +113,13 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $lastDate = new Zend_Date($shipment["lastdate_response"], Zend_Date::ISO_8601);
         if ($responseAfterFinalised == 'yes') {
             // only if current date is lesser than last date
-            if ($date->compare($lastDate) <= 0 || $shipment["status"] == 'finalized') {
+            if ($date->compare($lastDate,Zend_Date::DATES) <= 0 || $shipment["status"] == 'finalized') {
                 return true;
             } else {
                 return false;
             }
         } else {
-            if ($date->compare($lastDate) <= 0) {
+            if ($date->compare($lastDate,Zend_Date::DATES) <= 0) {
                 return true;
             } else {
                 return false;

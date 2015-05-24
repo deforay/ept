@@ -10,7 +10,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
                     ->addActionContext('view-shipment', 'html')
                     ->addActionContext('ship-distribution', 'html')
                     ->initContext();
-        $this->_helper->layout()->pageName = 'configurations';
+        $this->_helper->layout()->pageName = 'manageMenu';
     }
 
     public function indexAction()
