@@ -1232,5 +1232,13 @@ class Application_Service_Shipments {
         $db = new Application_Model_DbTable_ShipmentParticipantMap();
         return $db->enrollShipmentParticipant($shipmentId,$participantId);
     }
+    public function getShipmentRowData($shipmentId) {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->getShipmentRowInfo($shipmentId);
+    }
+    public function getAllShipmentForm($parameters) {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->getAllShipmentFormDetails($parameters);
+    }
 
 }

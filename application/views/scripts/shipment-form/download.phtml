@@ -1,0 +1,213 @@
+<?php
+//Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
+
+//Zend_Debug::dump($this->result);die;
+require_once('tcpdf/tcpdf.php');
+$pdfNew = new Zend_Pdf();
+$extractor = new Zend_Pdf_Resource_Extractor();
+$font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
+
+//	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
+//		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
+//        }
+	
+class MYPDF extends TCPDF {
+	
+	public function setSchemeName($header, $schemeName, $logo,$logoRight,$comingFrom) {
+		$this->scheme_name = $schemeName;
+		$this->header = $header;
+		$this->logo = $logo;
+		$this->logoRight = $logoRight;
+		$this->comingFrom = $comingFrom;
+	}
+    
+	//Page header
+	public function Header() {
+        // Logo
+        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+	if(trim($this->logo)!=""){
+		if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo)) {
+			$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo;
+			$this->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+		}
+	}
+	if(trim($this->logoRight)!=""){
+		if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logoRight)) {
+			$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logoRight;
+			$this->Image($image_file, 180, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+		}
+	}
+       
+        // Set font
+	$this->SetFont('times', '', 12);
+        
+	$this->header=str_replace("<div","<span",trim($this->header));
+	$this->header=str_replace("</div>","</span><br/>",$this->header);
+	
+	//error_log($this->header);
+	//$y = $this->getY();
+	$html=$this->header;
+	
+	$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
+	//$this->writeHTML($html, true, false, true, true, 'L');
+	
+	$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p>';
+	$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
+	$html='<hr/>';
+	$this->writeHTMLCell(0, 0, 10, 45, $html, 0, 0, 0, true, 'J', true);
+	
+    }
+
+    // Page footer
+    public function Footer() {
+		$underReport="";
+		if(trim($this->comingFrom)!=""){
+			$underReport='       (Under Review)';
+		}
+        // Position at 15 mm from bottom
+        $this->SetY(-15);
+        // Set font
+        $this->SetFont('helvetica', 'I', 8);
+        // Page number
+        $this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$underReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+	
+    }
+}
+
+	
+	// create new PDF document
+	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+	
+	$pdf->setSchemeName($this->header,'shipment name',$this->logo,$this->logoRight,$this->comingFrom);
+	// set document information
+	//$pdf->SetCreator(PDF_CREATOR);
+	//$pdf->SetAuthor('Nicola Asuni');
+	//$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
+	//$pdf->SetSubject('TCPDF Tutorial');
+	//$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
+	// set default header data
+	$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+	
+	// set header and footer fonts
+	$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+	
+	// set default monospaced font
+	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+	
+	// set margins
+	
+	$pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+	
+	// set auto page breaks
+	$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+	
+	// set image scale factor
+	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	
+	// set some language-dependent strings (optional)
+	if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	    require_once(dirname(__FILE__).'/lang/eng.php');
+	    $pdf->setLanguageArray($l);
+	}
+
+	// ---------------------------------------------------------
+	
+	// set font
+	$pdf->SetFont('times', '', 12);
+	
+	// add a page
+	$pdf->AddPage();
+	
+	$labInfo='<span class="pull-right">Fields marked <span class="mandatory">*</span> are mandatory</span><br/>';
+	$labInfo.='<table border="1" style="font-size:13px;width:100%;">';
+            $labInfo.='<tr style="background-color:#dbe4ee;">';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> Participant Name </span> </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Participant Code </span> </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Affiliation </span>  </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Phone No </span> </td>';
+            $labInfo.='</tr>';
+	    $labInfo.='<tr>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+        $labInfo.='</table><br/><br/>';
+	
+	
+	
+	
+	
+	 $labInfo.='<table border="1" style="font-size:13px;width:100%;">';
+            $labInfo.='<tr style="background-color:#F7F7F7;">';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Shipment Date</td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->dateFormat($this->shipment["shipment_date"]).'</td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Last Response Date <?php ?></td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->dateFormat($this->shipment["lastdate_response"]).'</td>';
+            $labInfo.='</tr>';
+	
+
+
+            $labInfo.='<tr style="background-color:#CCCCCC;">';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Shipment Receipt Date</td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Sample Rehydration Date</td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+
+            $labInfo.='<tr style="background-color:#F7F7F7;">';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Testing Date</td> ';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';		
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Algorithm Used</td>'; 
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+        $labInfo.='</table>';
+	
+	
+	
+	
+	
+	
+	$pdf->writeHTML($labInfo, true, false, true, false, '');
+	
+	$html='<p>Thank you for participating in the HIV Serology Proficiency Testing Program.</p>';
+	$pdf->writeHTML($html, true, false, true, false, '');
+	
+	//if (ob_get_contents()) ob_end_clean();
+	////Close and output PDF document
+	//if(isset($result['last_name']) && trim($result['last_name'])!=""){
+	//	$result['last_name']="_".$result['last_name'];
+	//}
+	
+//	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
+//		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
+//        }
+	
+	$fileName="test.pdf";
+	$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
+	$fileName = str_replace(" ", "-", $fileName);
+	$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$fileName;
+	$created=$pdf->Output($filePath, "F");
+	
+	//$pdf->Output($fileName, 'I');
+        
+	
+	
+        $loadpdf = Zend_Pdf::load($filePath);
+        
+        foreach($loadpdf->pages as $page){
+        $pdfExtract = $extractor->clonePage($page);
+        //$pdfExtract->setFont($font, 8) ->drawText('Page '.$j.' / '.$totalPages, 280, 50);
+        $pdfNew->pages[] = $pdfExtract;
+        
+        }
+
+
+//============================================================+
+// END OF FILE
+//============================================================+
+echo "success";

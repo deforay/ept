@@ -82,6 +82,10 @@
           <actionMethod actionName="index"/>
           <actionMethod actionName="response"/>
         </controllerFile>
+        <controllerFile controllerName="ShipmentForm">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="download"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory enabled="false"/>
       <layoutsDirectory>
@@ -718,6 +722,12 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Tb">
             <viewScriptFile forActionName="response"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ShipmentForm">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ShipmentForm">
+            <viewScriptFile forActionName="download"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
