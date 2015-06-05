@@ -49,6 +49,7 @@ class DtsController extends Zend_Controller_Action
 	    $this->view->isEditable = $shipmentService->isShipmentEditable($sID,$pID);
 	}
     }
+	
     public function deleteAction()
     {
         if($this->_hasParam('mid')){
@@ -61,7 +62,22 @@ class DtsController extends Zend_Controller_Action
             $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
         }
     }
-
+	
+	public function downloadAction(){
+		$this->_helper->layout()->disableLayout();
+		$sID= $this->getRequest()->getParam('sid');
+	    $pID= $this->getRequest()->getParam('pid');
+	    $eID =$this->getRequest()->getParam('eid');
+	    
+	    $participantService = new Application_Service_Participants();
+	    $this->view->participant = $participantService->getParticipantDetails($pID);
+		$schemeService = new Application_Service_Schemes();
+	    //$response =$schemeService->getDtsSamples($sID,$pID);
+	    //$this->view->allSamples = $response;
+		$shipment = $schemeService->getShipmentData($sID,$pID);
+	    $shipment['attributes'] = json_decode($shipment['attributes'],true);
+	    $this->view->shipment = $shipment;
+	}
 
 }
 
