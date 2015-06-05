@@ -165,49 +165,85 @@ class MYPDF extends TCPDF {
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Algorithm Used</td>'; 
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
             $labInfo.='</tr>';
-        $labInfo.='</table>';
+        $labInfo.='</table><br/><br/>';
 	
-	
-	
-	
-	
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;">';
+			$labInfo.='<tr style="background-color:#CCCCCC;">';
+				$labInfo.='<td style="width:12%"></td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Test-1</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Test-2</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Test-3</td>';
+			$labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="text-align:center;font-weight:bold;">Kit Name</td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td></td>';
+			$labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="text-align:center;font-weight:bold;">Lot No.</td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td></td>';
+			$labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="text-align:center;font-weight:bold;">Exp Date</td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td></td>';
+			$labInfo.='</tr>';
+		$labInfo.='</table>';
+		
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;">';
+			$labInfo.='<tr style="background-color:#CCCCCC;">';
+				$labInfo.='<td style="width:12%"></td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-1</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-2</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-3</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Final Result * </td>';
+			$labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="text-align:center;font-weight:bold;">S0001</td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td></td>';
+			$labInfo.='</tr>';
+		$labInfo.='</table><br/><br/>';
+		
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;">';
+			$labInfo.='<tr style="background-color:#CCCCCC;">';
+				$labInfo.='<td style="font-weight:bold;">Supervisor Review</td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td style="font-weight:bold;">Supervisor Name</td>';
+				$labInfo.='<td></td>';
+			$labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="font-weight:bold;">Comments</td>';
+				$labInfo.='<td colspan="3"></td>';
+			$labInfo.='</tr>';
+		$labInfo.='</table>';
 	
 	$pdf->writeHTML($labInfo, true, false, true, false, '');
 	
-	$html='<p>Thank you for participating in the HIV Serology Proficiency Testing Program.</p>';
-	$pdf->writeHTML($html, true, false, true, false, '');
+	//$html='<p>Thank you for participating in the HIV Serology Proficiency Testing Program.</p>';
+	//$pdf->writeHTML($html, true, false, true, false, '');
 	
-	//if (ob_get_contents()) ob_end_clean();
-	////Close and output PDF document
-	//if(isset($result['last_name']) && trim($result['last_name'])!=""){
-	//	$result['last_name']="_".$result['last_name'];
-	//}
 	
-//	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
-//		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
-//        }
-	
-	$fileName="test.pdf";
+	$fileName=$this->shipment["shipment_code"].".pdf";
 	$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
 	$fileName = str_replace(" ", "-", $fileName);
 	$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$fileName;
 	$created=$pdf->Output($filePath, "F");
 	
-	//$pdf->Output($fileName, 'I');
-        
-	
-	
-        $loadpdf = Zend_Pdf::load($filePath);
-        
-        foreach($loadpdf->pages as $page){
-        $pdfExtract = $extractor->clonePage($page);
-        //$pdfExtract->setFont($font, 8) ->drawText('Page '.$j.' / '.$totalPages, 280, 50);
-        $pdfNew->pages[] = $pdfExtract;
-        
-        }
-
+	$pdf->Output($fileName, 'I');
 
 //============================================================+
 // END OF FILE
 //============================================================+
-echo "success";
+//echo $fileName;
