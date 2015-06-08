@@ -2032,6 +2032,14 @@ INSERT INTO `r_results` (`result_id`, `result_name`) VALUES ('3', 'Excluded');
 ALTER TABLE `shipment` ADD `average_score` VARCHAR(255) NULL DEFAULT '0' AFTER `max_score`;
 
 -- Amit May 8 2015
-
 ALTER TABLE `r_testkitname_dts` ADD `scheme_type` VARCHAR(255) NOT NULL AFTER `TestKitName_ID`;
 UPDATE `r_testkitname_dts` SET `scheme_type`='dts'; # RUN THIS only the first time
+
+-- Amit Jun 4 2015
+INSERT INTO `global_config` (`name`, `value`) VALUES ('custom_field_1', '');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('custom_field_needed', 'no');
+ALTER TABLE `shipment_participant_map` ADD `custom_field_1` TEXT NULL DEFAULT NULL AFTER `user_comment`;
+
+-- Amit Jun 8 2015
+ALTER TABLE `shipment_participant_map` ADD `custom_field_2` TEXT NULL DEFAULT NULL AFTER `custom_field_1`;
+INSERT INTO `global_config` (`name`, `value`) VALUES ('custom_field_2', '');

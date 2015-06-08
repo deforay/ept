@@ -267,12 +267,26 @@
             <tr>
 
                 <th>Comments </th> <td colspan="3">
-                    <input name="userComments" id="userComments" type="text"size="120" maxlength="40" value="<?php echo $this->shipment['user_comment']; ?>"/>
+                    <input name="userComments" id="userComments" type="text" size="120" maxlength="40" value="<?php echo $this->shipment['user_comment']; ?>"/>
 
                 </td>
             </tr>
 
         </table>
+        <?php if(isset($this->haveCustom) && $this->haveCustom == 'yes') { ?>
+        <table>
+            <tr>
+                <th style="width:250px;"><?php echo $this->customField1; ?> </th>
+                <td><input name="customField1" id="customField1" type="text" size="80" maxlength="40" value="<?php echo $this->shipment['custom_field_1']; ?>"/></td>
+            </tr>
+            <?php if(isset($this->customField2) && $this->customField2 != ""){ ?>
+            <tr>
+                <th><?php echo $this->customField2; ?> </th>
+                <td><input name="customField2" id="customField2" type="text" value="<?php echo $this->shipment['custom_field_2']; ?>"/></td>
+            </tr>
+            <?php } ?>
+        </table>
+        <?php } ?>
         <?php if ($this->isEditable) { ?>
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
                 <p>

@@ -15,8 +15,7 @@ class DtsController extends Zend_Controller_Action
         // action body
     }
 
-    public function responseAction()
-    {
+    public function responseAction(){
 	
 	$schemeService = new Application_Service_Schemes();
 	$shipmentService = new Application_Service_Shipments();		
@@ -29,6 +28,11 @@ class DtsController extends Zend_Controller_Action
 	    $sID= $this->getRequest()->getParam('sid');
 	    $pID= $this->getRequest()->getParam('pid');
 	    $eID =$this->getRequest()->getParam('eid');
+		
+		$access = $shipmentService->checkParticipantAccess($pID);
+		if($access == false){
+			$this->_redirect("/participant/dashboard");
+		}
 	    
 	    $participantService = new Application_Service_Participants();
 	    $this->view->participant = $participantService->getParticipantDetails($pID);
@@ -47,6 +51,12 @@ class DtsController extends Zend_Controller_Action
 	    $this->view->eID = $eID;
 	    //
 	    $this->view->isEditable = $shipmentService->isShipmentEditable($sID,$pID);
+		
+		$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
+        $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
+        $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
+		
 	}
     }
 	

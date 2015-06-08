@@ -12,6 +12,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
                                 //->where("p.status = 'active'")
                                 ->group('p.participant_id'));
     }
+	
+	public function checkParticipantAccess($participantId){
+		$authNameSpace =  new Zend_Session_Namespace('datamanagers');
+		$row = $this->getAdapter()->fetchRow($this->getAdapter()->select()
+								->from(array('pmm' => 'participant_manager_map'))
+                                ->where("pmm.participant_id = ?", $participantId)
+                                ->where("pmm.dm_id = ?", $authNameSpace->dm_id));
+		
+		if($row == false){
+			return false;
+		} else {
+			return true;
+		}
+	}
 
     public function getParticipant($partSysId) {
         return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('p' => $this->_name))

@@ -7,6 +7,8 @@ class Admin_GlobalConfigController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
+        
+        // some config settings are in config file and some in global_config table.
         $commonServices = new Application_Service_Common();
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($this->getRequest()->isPost()) {

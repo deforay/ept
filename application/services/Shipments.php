@@ -732,6 +732,11 @@ class Application_Service_Shipments {
         return $spMap->isShipmentEditable($shipmentId, $participantId);
     }
 
+    public function checkParticipantAccess($participantId) {
+        $participantDb = new Application_Model_DbTable_Participants();
+        return $participantDb->checkParticipantAccess($participantId);
+    }
+
     public function getShipmentForEdit($sid) {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
