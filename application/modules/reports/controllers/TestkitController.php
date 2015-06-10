@@ -29,6 +29,7 @@ class Reports_TestkitController extends Zend_Controller_Action
             $reportService->getTestKitDetailedReport($params);
         }
         $participantService = new Application_Service_Participants();
+            $this->view->enrolledProgramsList = $participantService->getEnrolledProgramsList();
             $this->view->networkTierList = $participantService->getNetworkTierList();
             $this->view->affiliateList = $participantService->getAffiliateList();
             $this->view->regionList = $participantService->getAllParticipantRegion();
@@ -65,7 +66,7 @@ class Reports_TestkitController extends Zend_Controller_Action
             $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
             $this->view->dateRange=$params['dateRange'];
             $this->view->reportType=$params['reportType'];
-            $this->view->testkitName=$params['testkitName'];
+            $this->view->testkitName=$this->_getParam('testkitName');
         }
     }
 

@@ -264,10 +264,24 @@ class Application_Service_Reports {
                             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
                             ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")/* ->where("p.status = 'active'") */;
         }
+        if (isset($params['reportType']) && $params['reportType'] == "enrolled-programs") {
+            $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
+                            //->joinLeft(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array('participant_count'=> new Zend_Db_Expr("SUM(shipment_test_date = '') + SUM(shipment_test_date <> '')"), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
+                            ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
+                            ->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'))
+                            ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
+                            ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('lastdate_response'))
+                            ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('others' => new Zend_Db_Expr("SUM(sp.shipment_test_date IS NULL)"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > s.lastdate_response AND sp.is_excluded != 'yes')")))
+                            ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
+                            ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
+                            ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
+                            ->group('rep.r_epid');
+        }
         if (isset($params['scheme']) && $params['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $params['scheme']);
         }
 
+		//die($sQuery);
         if (isset($params['startDate']) && $params['startDate'] != "" && isset($params['endDate']) && $params['endDate'] != "") {
             $sQuery = $sQuery->where("s.shipment_date >= ?", $params['startDate']);
             $sQuery = $sQuery->where("s.shipment_date <= ?", $params['endDate']);
@@ -287,6 +301,8 @@ class Application_Service_Reports {
             $aColumns = array('s.shipment_code', 'sl.scheme_name', 'affiliate', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
         } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
             $aColumns = array('s.shipment_code', 'sl.scheme_name', 'region', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
+        }else if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
+            $aColumns = array('s.shipment_code', 'sl.scheme_name', 'enrolled_programs', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
         }
 
 
@@ -392,6 +408,19 @@ class Application_Service_Reports {
                             ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                             ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
                             ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+        } else if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
+			
+			
+			$sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
+			->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
+                            ->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'))
+                            ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
+                            ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
+                            ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+                            ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
+                             ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+			
+            
         }
 //        else{
 //          $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
@@ -456,6 +485,8 @@ class Application_Service_Reports {
                 $row[] = $aRow['affiliate'];
             } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
                 $row[] = $aRow['region'];
+            } else if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
+				$row[] = (isset($aRow['enrolled_programs']) && $aRow['enrolled_programs'] != "" && $aRow['enrolled_programs'] != null) ? $aRow['enrolled_programs'] : "No Program";
             }
 
             $row[] = $aRow['distribution_code'];
@@ -1011,6 +1042,16 @@ class Application_Service_Reports {
                 $sQuery = $sQuery->where("p.region IS NOT NULL")->where("p.region != ''");
             }
         }
+        if (isset($params['reportType']) && $params['reportType'] == "enrolled-programs") {
+            if (isset($params['enrolledProgramsValue']) && $params['enrolledProgramsValue'] != "") {
+                $sQuery = $sQuery->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
+                            ->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'))
+							->where("rep.r_epid= ?", $params['enrolledProgramsValue']);
+            } else {
+                $sQuery = $sQuery->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
+                            ->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'));
+            }
+        }
 
         if (isset($params['startDate']) && $params['startDate'] != "" && isset($params['endDate']) && $params['endDate'] != "") {
             $sQuery = $sQuery->where("s.shipment_date >= ?", $params['startDate']);
@@ -1154,6 +1195,16 @@ class Application_Service_Reports {
                 $sQuery = $sQuery->where('p.affiliation="' . $appliate . '" OR p.affiliation=' . $parameters['affiliateValue']);
             } else {
                 $sQuery = $sQuery->joinLeft(array('pa' => 'r_participant_affiliates'), 'p.affiliation=pa.affiliate', array());
+            }
+        }
+        if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
+            if (isset($parameters['enrolledProgramsValue']) && $parameters['enrolledProgramsValue'] != "") {
+                $sQuery = $sQuery->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
+                            ->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'))
+							->where("rep.r_epid= ?", $parameters['enrolledProgramsValue']);
+            } else {
+                $sQuery = $sQuery->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
+                            ->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'));
             }
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
@@ -3045,6 +3096,16 @@ class Application_Service_Reports {
                     $sQuery = $sQuery->where("p.region IS NOT NULL")->where("p.region != ''");
                 }
             }
+			if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
+				if (isset($parameters['enrolledProgramsValue']) && $parameters['enrolledProgramsValue'] != "") {
+					$sQuery = $sQuery->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
+								->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'))
+								->where("rep.r_epid= ?", $parameters['enrolledProgramsValue']);
+				} else {
+					$sQuery = $sQuery->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
+								->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'));
+				}
+			}			
             if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
                 $sQuery = $sQuery->where("s.shipment_date >= ?", $parameters['startDate']);
                 $sQuery = $sQuery->where("s.shipment_date <= ?", $parameters['endDate']);

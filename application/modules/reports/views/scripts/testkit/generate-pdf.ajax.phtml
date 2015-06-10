@@ -194,7 +194,7 @@ if (count($this->result['testkitChart']) > 0) {
 		   $totaltest+=$testkit['totalTest'];
 		}
                 foreach ($this->result['testkitChart'] as $piechart) {
-                     $percentage=(($piechart['totalTest']/$totaltest)*100);
+                    $percentage=(($piechart['totalTest']/$totaltest)*100);
                     $dataSet->addPoint(new Point(stripslashes(wordwrap($piechart['TestKit_Name'], 50, "<br />\n")), round($percentage, 2)));
                 }
                 $piechart = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . 'pieChart.png';

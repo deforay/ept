@@ -2043,3 +2043,11 @@ ALTER TABLE `shipment_participant_map` ADD `custom_field_1` TEXT NULL DEFAULT NU
 -- Amit Jun 8 2015
 ALTER TABLE `shipment_participant_map` ADD `custom_field_2` TEXT NULL DEFAULT NULL AFTER `custom_field_1`;
 INSERT INTO `global_config` (`name`, `value`) VALUES ('custom_field_2', '');
+
+-- Amit Jun 10 2015
+
+CREATE TABLE IF NOT EXISTS `participant_enrolled_programs_map` (
+  `participant_id` int(11) NOT NULL,
+  `ep_id` int(11) NOT NULL,
+  PRIMARY KEY (`participant_id`,`ep_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

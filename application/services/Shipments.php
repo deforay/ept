@@ -269,6 +269,8 @@ class Application_Service_Shipments {
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes["algorithm"] = $params['algorithm'];
             $attributes = json_encode($attributes);
+			
+			
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
@@ -280,6 +282,14 @@ class Application_Service_Shipments {
                 "updated_by_user" => $authNameSpace->dm_id,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
+			
+			if(isset($params['customField1']) && trim($params['customField1']) != ""){
+				$data['custom_field_1'] = $params['customField1'];
+			}
+			
+			if(isset($params['customField2']) && trim($params['customField2']) != ""){
+				$data['custom_field_2'] = $params['customField2'];
+			}
 
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 

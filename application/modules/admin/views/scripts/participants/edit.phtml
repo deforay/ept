@@ -140,11 +140,14 @@
                 <label class="col-lg-4 control-label">Enrolled Programs </label>
 
                 <div class="col-lg-8">
-                    <select name="enrolledProgram" id="enrolledProgram"  class="form-control">
-                        <option value="">--Select--</option>
-                        <?php foreach ($this->enrolledPrograms as $enrolledPrograms) {
+                    <select name="enrolledProgram[]" id="enrolledProgram"   multiple="multiple" class="form-control"  data-selected-text-format="count>3" title="Please choose Enrolled Programs" >
+                        <?php
+                        $enrolledProg = explode(",", $this->participant['enrolled_prog']);
+                        
+                        foreach ($this->enrolledPrograms as $enrolledPrograms) {
                             ?>
-                            <option value="<?php echo $enrolledPrograms['r_epid']; ?>" <?php echo ($this->participant['enrolled_programs'] == $enrolledPrograms['r_epid']) ? "selected='selected'" : ""; ?>><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
+                            
+                            <option value="<?php echo $enrolledPrograms['r_epid']; ?>" <?php echo (in_array($enrolledPrograms['r_epid'], $enrolledProg)) ? "selected='selected'" : "" ?>><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
                             <?php
                         }
                         ?>
@@ -307,6 +310,7 @@
 
                     $(document).ready(function() {
                         $('#dataManager').selectpicker();
+                        $('#enrolledProgram').selectpicker();
                         $('#country').selectpicker();
                         $('#scheme').selectpicker();
                     });

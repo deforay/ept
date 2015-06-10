@@ -30,6 +30,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
     public function getParticipant($partSysId) {
         return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('p' => $this->_name))
                                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+                                ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array('enrolled_prog' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pe.ep_id SEPARATOR ', ')")))
                                 ->where("p.participant_id = ?", $partSysId)
                                 ->group('p.participant_id'));
     }
@@ -205,16 +206,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'network_tier' => $params['network'],
             'testing_volume' => $params['testingVolume'],
             'funding_source' => $params['fundingSource'],
-            'enrolled_programs' => $params['enrolledProgram'],
             'site_type' => $params['siteType'],
             'region' => $params['region'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
-	if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
-	   $data['individual']='yes';
-	}else{
-	    $data['individual']='no';
-	}
+		
+		if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
+		   $data['individual']='yes';
+		}else{
+			$data['individual']='no';
+		}
+	
+	
 
         if (isset($params['status']) && $params['status'] != "" && $params['status'] != null) {
             $data['status'] = $params['status'];
@@ -231,11 +234,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
 
         $noOfRows = $this->update($data, "participant_id = " . $params['participantId']);
-
+		$db = Zend_Db_Table_Abstract::getAdapter();
+		if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
+				$db->delete('participant_enrolled_programs_map', "participant_id = " . $params['participantId']);			
+				foreach ($params['enrolledProgram'] as $epId) {
+					$db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $params['participantId']));
+				}
+		}
+		
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
-            $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
-
             foreach ($params['dataManager'] as $dataManager) {
                 $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $params['participantId']));
             }
@@ -274,18 +282,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'network_tier' => $params['network'],
             'testing_volume' => $params['testingVolume'],
             'funding_source' => $params['fundingSource'],
-            'enrolled_programs' => $params['enrolledProgram'],
             'site_type' => $params['siteType'],
             'region' => $params['region'],
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->primary_email,
             'status' => $params['status']
         );
-	if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
-	   $data['individual']='yes';
-	}else{
-	    $data['individual']='no';
-	}
+		if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
+		   $data['individual']='yes';
+		}else{
+			$data['individual']='no';
+		}
 
 
         $participantId = $this->insert($data);
@@ -295,6 +302,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         foreach ($params['dataManager'] as $dataManager) {
             $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $participantId));
         }
+		if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
+				foreach ($params['enrolledProgram'] as $epId) {
+					$db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));
+				}
+		}
 
         return $participantId;
     }
@@ -326,22 +338,31 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'testing_volume' => $params['testingVolume'],
             'funding_source' => $params['fundingSource'],
             'region' => $params['region'],
-            'enrolled_programs' => $params['enrolledProgram'],
             'site_type' => $params['siteType'],
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->UserID,
         );
-	if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
-	   $data['individual']='yes';
-	}else{
-	    $data['individual']='no';
-	}
-
+		
+		if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
+		   $data['individual']='yes';
+		}else{
+			$data['individual']='no';
+		}
+		
+		
         //Zend_Debug::dump($data);die;
         //Zend_Debug::dump($data);die;
-        $participantId = $this->insert($data);
+         $participantId = $this->insert($data);
 
 
+		if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
+				$db = Zend_Db_Table_Abstract::getAdapter();
+				$db->delete('participant_enrolled_programs_map', "participant_id = " . $participantId);			
+				foreach ($params['enrolledProgram'] as $epId) {
+					$db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));
+				}
+		}
+		
         if (isset($params['scheme']) && $params['scheme'] != "") {
             $enrollDb = new Application_Model_DbTable_Enrollments();
             $enrollDb->enrollParticipantToSchemes($participantId, $params['scheme']);

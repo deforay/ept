@@ -130,8 +130,7 @@
                 <label class="col-lg-4 control-label">Enrolled Programs </label>
 
                 <div class="col-lg-8">
-                    <select name="enrolledProgram" id="enrolledProgram"  class="form-control">
-                        <option value="">--Select--</option>
+                    <select name="enrolledProgram[]" id="enrolledProgram"  multiple="multiple" class="form-control"  data-selected-text-format="count>3" title="Please choose Enrolled Programs" >
                         <?php foreach ($this->enrolledPrograms as $enrolledPrograms) {
                             ?>
                             <option value="<?php echo $enrolledPrograms['r_epid']; ?>"><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
@@ -262,6 +261,7 @@
 
                     $(document).ready(function() {
                         $('#dataManager').selectpicker();
+                        $('#enrolledProgram').selectpicker();
                         $('#country').selectpicker();
                         tag = '<label class="col-lg-4 control-label">Lab Name<span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="Please enter the Lab Name here"/></div>';
                             $("#lastNameDiv").hide();
