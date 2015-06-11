@@ -518,108 +518,110 @@ class Application_Service_Evaluation {
                     }
                     $testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 
-                    $r1 = $r2 = $r3 = '';
-                    if ($result['test_result_1'] == 1) {
-                        $r1 = 'R';
-                    } else if ($result['test_result_1'] == 2) {
-                        $r1 = 'NR';
-                    } else if ($result['test_result_1'] == 3) {
-                        $r1 = 'I';
-                    } else {
-                        $r1 = '-';
-                    }
-                    if ($result['test_result_2'] == 1) {
-                        $r2 = 'R';
-                    } else if ($result['test_result_2'] == 2) {
-                        $r2 = 'NR';
-                    } else if ($result['test_result_2'] == 3) {
-                        $r2 = 'I';
-                    } else {
-                        $r2 = '-';
-                    }
-                    if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
-                        $r3 = 'X';
-                    } else {
-                        if ($result['test_result_3'] == 1) {
-                            $r3 = 'R';
-                        } else if ($result['test_result_3'] == 2) {
-                            $r3 = 'NR';
-                        } else if ($result['test_result_3'] == 3) {
-                            $r3 = 'I';
-                        } else {
-                            $r3 = '-';
-                        }
-                    }
-
-                    $algoString = "Wrongly reported in the pattern : <strong>" . $r1 . "</strong> <strong>" . $r2 . "</strong> <strong>" . $r3 . "</strong>";
-
-                    if ($attributes['algorithm'] == 'serial') {
-                        if ($r1 == 'NR') {
-                            if (($r2 == '-') && ($r3 == '-' || $r3 == 'X')) {
-                                $algoResult = 'Pass';
-                            } else {
-                                $algoResult = 'Fail';
-                                $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
-                                    'correctiveAction' => $correctiveActions[2]);
-                                $correctiveActionList[] = 2;
-                            }
-                        }
-//			else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'NR') {
-//                            $algoResult = 'Pass';
-//                        }
-                        else if ($r1 == 'R' && $r2 == 'R') {
-                            if (($r3 == '-' || $r3 == 'X')) {
-                                $algoResult = 'Pass';
-                            } else {
-                                $algoResult = 'Fail';
-                                $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
-                                    'correctiveAction' => $correctiveActions[2]);
-                                $correctiveActionList[] = 2;
-                            }
-                        } else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'R' || $r3 == 'X')) {
-                            $algoResult = 'Pass';
-                        } else {
-                            $algoResult = 'Fail';
-                            $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
-                                'correctiveAction' => $correctiveActions[2]);
-                            $correctiveActionList[] = 2;
-                        }
-                    } else if ($attributes['algorithm'] == 'parallel') {
-
-                        if ($r1 == 'R' && $r2 == 'R') {
-                            if (($r3 == '-' || $r3 == 'X')) {
-                                $algoResult = 'Pass';
-                            } else {
-
-                                $algoResult = 'Fail';
-                                $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
-                                    'correctiveAction' => $correctiveActions[2]);
-                                $correctiveActionList[] = 2;
-                            }
-                        } else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'R' || $r3 == 'X')) {
-                            $algoResult = 'Pass';
-                        } else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'NR' || $r3 == 'X')) {
-                            $algoResult = 'Pass';
-                        } else if ($r1 == 'NR' && $r2 == 'NR') {
-                            if (($r3 == '-' || $r3 == 'X')) {
-                                $algoResult = 'Pass';
-                            } else {
-                                $algoResult = 'Fail';
-                                $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
-                                    'correctiveAction' => $correctiveActions[2]);
-                                $correctiveActionList[] = 2;
-                            }
-                        } else if ($r1 == 'NR' && $r2 == 'R' && ($r3 == 'NR' || $r3 == 'X')) {
-                            $algoResult = 'Pass';
-                        } else if ($r1 == 'NR' && $r2 == 'R' && ($r3 == 'R' || $r3 == 'X')) {
-                            $algoResult = 'Pass';
-                        } else {
-                            $algoResult = 'Fail';
-                            $failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
-                                'correctiveAction' => $correctiveActions[2]);
-                            $correctiveActionList[] = 2;
-                        }
-                    }
+					if(0 == $result['control']) {
+						$r1 = $r2 = $r3 = '';
+						if ($result['test_result_1'] == 1) {
+							$r1 = 'R';
+						} else if ($result['test_result_1'] == 2) {
+							$r1 = 'NR';
+						} else if ($result['test_result_1'] == 3) {
+							$r1 = 'I';
+						} else {
+							$r1 = '-';
+						}
+						if ($result['test_result_2'] == 1) {
+							$r2 = 'R';
+						} else if ($result['test_result_2'] == 2) {
+							$r2 = 'NR';
+						} else if ($result['test_result_2'] == 3) {
+							$r2 = 'I';
+						} else {
+							$r2 = '-';
+						}
+						if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+							$r3 = 'X';
+						} else {
+							if ($result['test_result_3'] == 1) {
+								$r3 = 'R';
+							} else if ($result['test_result_3'] == 2) {
+								$r3 = 'NR';
+							} else if ($result['test_result_3'] == 3) {
+								$r3 = 'I';
+							} else {
+								$r3 = '-';
+							}
+						}
+	
+						$algoString = "Wrongly reported in the pattern : <strong>" . $r1 . "</strong> <strong>" . $r2 . "</strong> <strong>" . $r3 . "</strong>";
+	
+						if ($attributes['algorithm'] == 'serial') {
+							if ($r1 == 'NR') {
+								if (($r2 == '-') && ($r3 == '-' || $r3 == 'X')) {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
+										'correctiveAction' => $correctiveActions[2]);
+									$correctiveActionList[] = 2;
+								}
+							}
+							//			else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'NR') {
+							//                            $algoResult = 'Pass';
+							//                        }
+							else if ($r1 == 'R' && $r2 == 'R') {
+								if (($r3 == '-' || $r3 == 'X')) {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
+										'correctiveAction' => $correctiveActions[2]);
+									$correctiveActionList[] = 2;
+								}
+							} else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'R' || $r3 == 'X')) {
+								$algoResult = 'Pass';
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
+									'correctiveAction' => $correctiveActions[2]);
+								$correctiveActionList[] = 2;
+							}
+						} else if ($attributes['algorithm'] == 'parallel') {
+	
+							if ($r1 == 'R' && $r2 == 'R') {
+								if (($r3 == '-' || $r3 == 'X')) {
+									$algoResult = 'Pass';
+								} else {
+	
+									$algoResult = 'Fail';
+									$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
+										'correctiveAction' => $correctiveActions[2]);
+									$correctiveActionList[] = 2;
+								}
+							} else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'R' || $r3 == 'X')) {
+								$algoResult = 'Pass';
+							} else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'NR' || $r3 == 'X')) {
+								$algoResult = 'Pass';
+							} else if ($r1 == 'NR' && $r2 == 'NR') {
+								if (($r3 == '-' || $r3 == 'X')) {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
+										'correctiveAction' => $correctiveActions[2]);
+									$correctiveActionList[] = 2;
+								}
+							} else if ($r1 == 'NR' && $r2 == 'R' && ($r3 == 'NR' || $r3 == 'X')) {
+								$algoResult = 'Pass';
+							} else if ($r1 == 'NR' && $r2 == 'R' && ($r3 == 'R' || $r3 == 'X')) {
+								$algoResult = 'Pass';
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
+									'correctiveAction' => $correctiveActions[2]);
+								$correctiveActionList[] = 2;
+							}
+						}
+					}
 
                     // checking if mandatory fields were entered and were entered right
                     //if ($result['mandatory'] == 1) {
