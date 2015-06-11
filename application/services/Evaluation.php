@@ -93,7 +93,7 @@ class Application_Service_Evaluation {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))
-                ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
+                ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"),'not_finalized_count' => new Zend_Db_Expr("SUM(IF(s.status!='finalized',1,0))")))
                 ->where("d.status='shipped'")
                 ->group('d.distribution_id');
 
@@ -108,7 +108,9 @@ class Application_Service_Evaluation {
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-
+		
+		$sQuery = $dbAdapter->select()->from(array('temp' => $sQuery))->where("not_finalized_count>0");
+		
         //die($sQuery);
 
         $rResult = $dbAdapter->fetchAll($sQuery);
@@ -121,9 +123,9 @@ class Application_Service_Evaluation {
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $dbAdapter->select()->from('distributions', new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))->where("status='shipped'");
-        $aResultTotal = $dbAdapter->fetchCol($sQuery);
-        $iTotal = $aResultTotal[0];
+        //$sQuery = $dbAdapter->select()->from('distributions', new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))->where("status='shipped'");
+        $aResultTotal = $dbAdapter->fetchAll($sQuery);
+        $iTotal = count($aResultTotal);
 
         /*
          * Output

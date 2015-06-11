@@ -45,7 +45,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             //$this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
             $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
         }else{
-            $this->_redirect("/report/distribution/");
+            $this->_redirect("/reports/distribution/");
         }
     }
 

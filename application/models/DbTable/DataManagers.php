@@ -18,7 +18,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             'password' => $params['password'],
             'force_password_reset' => 1,
             'status' => $params['status'],
-	    'created_by' => $authNameSpace->admin_id,
+			'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()')
         );
         return $this->insert($data);

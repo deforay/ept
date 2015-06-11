@@ -56,7 +56,7 @@
             "bProcessing": true,
 			//"bSortClasses": false,
             "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'index', 'format' => 'html')); ?>",
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'index', 'format' => 'html')); ?>",
             "fnServerData": function ( sSource, aoData, fnCallback ) {
                 $.ajax({
                     "dataType": 'json',

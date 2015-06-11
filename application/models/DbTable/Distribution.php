@@ -295,9 +295,9 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
          * Get data to display
          */
 		
-	$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))
-				->joinLeft(array('s'=>'shipment'),'s.distribution_id=d.distribution_id',array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
+				->joinLeft(array('s'=>'shipment'),'s.distribution_id=d.distribution_id',array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"),'not_finalized_count' => new Zend_Db_Expr("SUM(IF(s.status!='finalized',1,0))")))
 				->where("d.status='shipped'")
 				->group('d.distribution_id');
 				
@@ -312,8 +312,10 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-	
-        //die($sQuery);
+		
+		$sQuery = $dbAdapter->select()->from(array('temp' => $sQuery))->where("not_finalized_count>0");
+		
+		//die($sQuery);
         $rResult = $dbAdapter->fetchAll($sQuery);
 	
         /* Data set length after filtering */
@@ -323,10 +325,10 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         $iFilteredTotal = count($aResultFilterTotal);
 	
         /* Total data set length */
-        $sQuery = $dbAdapter->select()->from('distributions', new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))->where("status='shipped'");
-        $aResultTotal = $dbAdapter->fetchCol($sQuery);
-        $iTotal = $aResultTotal[0];
-	
+        //$sQuery = $dbAdapter->select()->from('distributions', new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))->where("status='shipped'");
+        $aResultTotal = $dbAdapter->fetchAll($sQuery);
+        $iTotal = count($aResultTotal);
+		
         /*
          * Output
          */
