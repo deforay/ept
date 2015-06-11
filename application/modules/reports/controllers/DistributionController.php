@@ -53,7 +53,7 @@ class Reports_DistributionController extends Zend_Controller_Action
     {
         $this->_helper->layout()->disableLayout();
         if($this->_hasParam('sId')){
-           
+            ini_set('memory_limit', '-1');
             $id = (int)base64_decode($this->_getParam('sId'));
             $comingFrom = $this->_getParam('comingFrom');
             $reportService = new Application_Service_Reports();
@@ -99,11 +99,11 @@ class Reports_DistributionController extends Zend_Controller_Action
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id,$reEvaluate);
             $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
         }else{
-            $this->_redirect("/report/finalize/");
+            $this->_redirect("/reports/finalize/");
         }
     }
 
-
+    
 }
 
 

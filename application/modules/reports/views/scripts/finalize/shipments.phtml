@@ -1,0 +1,95 @@
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">PT Survey - Finalized Reports</div>
+</h4>
+
+<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="distroTable">
+    <thead>
+    <tr>
+        <th>PT Survey Date</th>
+        <th>PT Survey Code</th>
+        <th>Shipment Code(s)</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td colspan="5" class="dataTables_empty">Loading data from server</td>
+    </tr>
+    </tbody>
+</table>
+
+  
+<div id="shipments" style="clear:both;margin-top:30px;"></div>
+
+<script type="text/javascript" charset="utf-8">
+	
+	$('#myModal').on('hidden.bs.modal', function () {
+	  $(this).removeData('bs.modal');
+	});		
+    /* Table initialisation */
+    var oTable = null;
+    var currentHighlighted = null;
+    $(document).ready(function() {
+		
+		currentHighlighted = getCookie('disId');
+		
+        oTable = $('#distroTable').dataTable( {
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center"},
+                {"sClass":"center","bSortable":false}
+            ],
+            "aaSorting": [[ 0, "desc" ]],
+            "bProcessing": true,
+			//"bSortClasses": false,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'shipments', 'format' => 'html')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": function(json){
+                        fnCallback(json);
+                        if(currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0){
+						$("#dist"+currentHighlighted+" td").addClass("highliter");
+						getShipmentInReports(currentHighlighted);
+						}
+                    }
+
+                });
+            }
+        } );
+
+    } );
+
+	
+	
+	function getShipmentInReports(did) {
+		$.blockUI();
+		currentHighlighted = did;
+		setCookie('disId', did);
+		$("#distroTable tr td").removeClass("highliter");
+		$("#dist"+currentHighlighted+" td").addClass("highliter");
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'get-finalized-shipments')); ?>", { did: did, format: "html" },
+		    function (data) {
+		       $("#shipments").html(data);
+			$.unblockUI();
+		});
+	}	
+
+</script>

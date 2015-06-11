@@ -6,7 +6,7 @@ if (count($this->shipment) > 0) {
         <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
         <div id="allShipmentList">
 
-            <legend><h4>All Shipments Under PT Survey <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4></legend>
+            <legend><h4>All Shipments PT Survey <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4></legend>
 
             <table class="table table-bordered table-striped table-hover">
                 <tr>
@@ -18,7 +18,7 @@ if (count($this->shipment) > 0) {
                     <th style="text-align: center;">Response %</th>
                     <th style="text-align: center;">Number Passed</th>
                     <th style="text-align: center;">Shipment Status</th>
-                    <th style="text-align: center;">Action</th>
+                    
                 </tr>
                 <?php
                 if (count($this->shipmentsUnderDistro) > 0) {
@@ -34,15 +34,7 @@ if (count($this->shipment) > 0) {
                             <td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported / $shipment['participant_count']) * 100, 2) : 0; ?></td>					
                             <td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
                             <td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
-                            <td style="text-align: center;">
-                                <?php if (isset($shipment['status']) && $shipment['status'] == 'evaluated') { ?>
-                                    <a class="btn btn-success btn-xs" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-check"></i> Finalize</span></a>
-                                <?php } else if (isset($shipment['status']) && $shipment['status'] == 'finalized') { ?>
-                                    <a class="btn btn-danger btn-xs disabled" href="javascript:void(0)"><span><i class="icon-check"></i> Finalized</span></a>
-                                <?php } else if (isset($shipment['status']) && $shipment['status'] == 'shipped') { ?>
-                                    <a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-ambulance"></i> Shipped</span></a>
-                                <?php } ?>
-                            </td>
+                            
                         </tr>
                         <?php
                     }
@@ -62,7 +54,7 @@ if (count($this->shipment) > 0) {
     <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
         <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently generating reports for Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> </div>
         <div style="margin-top:10px;">
-            <a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
+            <a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'shipments'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
         </div>
     </h4>
     <table class="table table-bordered" style="margin:0 auto;">
@@ -152,15 +144,23 @@ if (count($this->shipment) > 0) {
     <br/>
     <br/>
     <br/>
-    <?php
-    if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] != 'finalized') {
-        ?>
-        <div align="center">
-            <a href="javascript:void(0)" class="btn btn-danger" onclick="finalizeReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i> Finalize this Shipment</a>
-        </div>
+    
+    <div align="center" style="padding-top:3px;">
+        <span id="summaryDiv" >
         <?php
-    }
-    ?>
+        if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf"))
+        {
+        ?>
+        <a href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code'] ."-summary.pdf"); ?>" class="btn btn-info" target="_BLANK"><i class="icon-file-text"></i> Download Summary Report</a>
+        <?php }
+        if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-bulk-participant-report.pdf"))
+        {
+        ?>
+        <a href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>" class="btn btn-info" target="_BLANK"><i class="icon-file-text"></i> Download Participants Report</a>
+        <?php } ?>
+        </span>
+    </div>
+    
     <script type="text/javascript" charset="utf-8">
 
         var oTable = null;
@@ -243,47 +243,8 @@ if (count($this->shipment) > 0) {
                 sOut = 'No comments to show';
             }
             return sOut;
-
         }
-        function finalizeReport(sid) {
-            var choice = confirm("Are you sure you want to finalize this shipment ? \n You cannot undo this !")
-            if (!choice) {
-                return false;
-            }
-                $.blockUI();
-                var individual = null;
-                var summary = null;
-                $.when(
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {sId: sid, format: "html"},
-                        function (data) {
-                        summary = data;
-                    }),
-                  
-                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {sId: sid, format: "html"},
-                    function (data) {
-                        individual = data;
-                  })
-                
-                ).then(function() {
-                    if (individual == 'success' && summary == 'success') {
-                        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-status'), 'default', true); ?>", {sid: sid, status: 'finalized', format: "html"},
-                        function (data) {
-                            $.unblockUI({onUnblock: function () {
-                                alert(data);
-                                window.location.href = "/reports/finalize";
-                            }});
-                        });
-                    }
-                });
-            
-            
-            
-            
-            
-            
-            
-        }
-
+        
 
     </script>
 

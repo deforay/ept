@@ -94,6 +94,7 @@
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'evaluate'),'default',true); ?>">Evaluate Responses</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'distribution'),'default',true); ?>">Generate Reports</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'finalize'),'default',true); ?>">Finalize Reports</a></li>
+                <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'finalize','action'=>'shipments'),'default',true); ?>">View Finalized Shipments</a></li>
               </ul>
             </li>
 	    <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'report') ? "class='active dropdown'" : "class='dropdown'"; ?>>
