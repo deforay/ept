@@ -110,7 +110,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
 
         $sQuery = $this->getAdapter()->select()->from(array('u' => $this->_name))
 				    ->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.dm_id=u.dm_id',array())
-				    ->joinLeft(array('p'=>'participant'),'p.participant_id = pmm.participant_id',array('participantCount' => new Zend_Db_Expr("COUNT('p.first_name')"),'p.participant_id'))
+				    ->joinLeft(array('p'=>'participant'),'p.participant_id = pmm.participant_id',array('participantCount' => new Zend_Db_Expr("SUM(IF(p.participant_id!='',1,0))"),'p.participant_id'))
 				    ->group('u.dm_id');
 
         if (isset($sWhere) && $sWhere != "") {
