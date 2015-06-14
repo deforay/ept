@@ -520,6 +520,7 @@ class Application_Service_Evaluation {
                     }
                     $testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 
+					// Checking algorithm Pass/Fail only if it is NOT a control.
 					if(0 == $result['control']) {
 						$r1 = $r2 = $r3 = '';
 						if ($result['test_result_1'] == 1) {
@@ -647,7 +648,9 @@ class Application_Service_Evaluation {
                         if ($result['reference_result'] == $result['reported_result']) {
 							if($algoResult != 'Fail' && $mandatoryResult != 'Fail'){
 								$totalScore += $result['sample_score'];
+								$correctResponse = true;
 							}else{
+								$correctResponse = false;
 								// $totalScore remains the same	
 							}
                         } else {
@@ -656,6 +659,7 @@ class Application_Service_Evaluation {
                                     'correctiveAction' => $correctiveActions[3]);
                                 $correctiveActionList[] = 3;
                             }
+							$correctResponse = false;
                         }
                     }
 					
@@ -719,6 +723,9 @@ class Application_Service_Evaluation {
                             $measure->convertTo(Zend_Measure_Time::DAY);
                             if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
                                 $testKitExpiryResult = 'Fail';
+								if($correctResponse){
+									$totalScore -= $result['sample_score'];
+								}
                             }
                             $failureReason[] = array('warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
                                 'correctiveAction' => $correctiveActions[5]);
@@ -727,6 +734,9 @@ class Application_Service_Evaluation {
                     } else {
                         if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
                             $testKitExpiryResult = 'Fail';
+							if($correctResponse){
+									$totalScore -= $result['sample_score'];
+							}
                         }
                         $failureReason[] = array('warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) reported without expiry date. Result not evaluated.",
                             'correctiveAction' => $correctiveActions[6]);
@@ -745,6 +755,9 @@ class Application_Service_Evaluation {
                             $measure->convertTo(Zend_Measure_Time::DAY);
                             if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
                                 $testKitExpiryResult = 'Fail';
+								if($correctResponse){
+									$totalScore -= $result['sample_score'];
+								}
                             }
                             $failureReason[] = array('warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
                                 'correctiveAction' => $correctiveActions[5]);
@@ -753,6 +766,9 @@ class Application_Service_Evaluation {
                     } else {
                         if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
                             $testKitExpiryResult = 'Fail';
+							if($correctResponse){
+								$totalScore -= $result['sample_score'];
+							}
                         }
                         $failureReason[] = array('warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) reported without expiry date. Result not evaluated.",
                             'correctiveAction' => $correctiveActions[6]);
@@ -773,6 +789,9 @@ class Application_Service_Evaluation {
                             $measure->convertTo(Zend_Measure_Time::DAY);
                             if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
                                 $testKitExpiryResult = 'Fail';
+								if($correctResponse){
+									$totalScore -= $result['sample_score'];
+								}
                             }
                             $failureReason[] = array('warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
                                 'correctiveAction' => $correctiveActions[5]);
@@ -781,6 +800,9 @@ class Application_Service_Evaluation {
                     } else {
                         if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
                             $testKitExpiryResult = 'Fail';
+							if($correctResponse){
+								$totalScore -= $result['sample_score'];
+							}
                         }
                         $failureReason[] = array('warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) reported without expiry date. Result not evaluated.",
                             'correctiveAction' => $correctiveActions[6]);
@@ -866,7 +888,7 @@ class Application_Service_Evaluation {
                 $documentationScore = 0;
                 $documentationScorePerItem = ($config->evaluation->dts->documentationScore / 4);
 
-                if (strtolower($result['supervisor_approval']) == 'yes' && trim($result['participant_supervisor']) != "") {
+                if (isset($result['supervisor_approval']) && strtolower($result['supervisor_approval']) == 'yes' && trim($result['participant_supervisor']) != "") {
                     $documentationScore += $documentationScorePerItem;
                 } else {
                     $failureReason[] = array('warning' => "Supervisor approval absent",
