@@ -919,10 +919,12 @@ class Application_Service_Evaluation {
                 $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
                 $testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
                 // Testing should be done within 24 hours of rehydration.
+				$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
                 $diff = $testedOn->sub($sampleRehydrationDate)->toValue();
                 $days = ceil($diff / 60 / 60 / 24) + 1;
-                if ($days > 1) {
-                    $failureReason[] = array('warning' => "Testing should be done within 24 hours of rehydration.",
+				$rehydrateHours = $sampleRehydrateDays*24;
+                if ($days > $sampleRehydrateDays) {
+                    $failureReason[] = array('warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
                         'correctiveAction' => $correctiveActions[14]);
                     $correctiveActionList[] = 14;
                 } else {
