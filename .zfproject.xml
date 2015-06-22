@@ -201,6 +201,7 @@
               <actionMethod actionName="edit"/>
               <actionMethod actionName="updateShipmentComment"/>
               <actionMethod actionName="updateShipmentStatus"/>
+              <actionMethod actionName="deleteDtsResponse"/>
             </controllerFile>
             <controllerFile controllerName="ContactUs">
               <actionMethod actionName="index"/>
@@ -422,6 +423,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Shipment">
                 <viewScriptFile forActionName="enrollShipmentParticipant"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Evaluate">
+                <viewScriptFile forActionName="deleteDtsResponse"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

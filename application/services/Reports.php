@@ -1870,7 +1870,7 @@ class Application_Service_Reports {
                         $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['finalResult'], PHPExcel_Cell_DataType::TYPE_STRING);
 
                         $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['finalResult'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        if (isset($aRow['response'][$k]['finalResult']) && $aRow['response'][$k]['finalResult'] == $refResult[$k]['referenceResult'] && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
+                        if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }

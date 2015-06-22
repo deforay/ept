@@ -10,6 +10,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     ->addActionContext('get-shipments', 'html')
                     ->addActionContext('update-shipment-comment', 'html')
                     ->addActionContext('update-shipment-status', 'html')
+                    ->addActionContext('delete-dts-response', 'html')
                     ->initContext();        
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -53,7 +54,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
     }
 
     public function viewAction()
-    {       
+    {
             if($this->_hasParam('sid') && $this->_hasParam('pid')  && $this->_hasParam('scheme') ){
                 $this->view->currentUrl = "/admin/evaluate/view/sid/".$this->_getParam('sid')."/pid/".$this->_getParam('pid')."/scheme/".$this->_getParam('scheme');
                 $sid = (int)base64_decode($this->_getParam('sid'));
@@ -167,8 +168,23 @@ class Admin_EvaluateController extends Zend_Controller_Action
         }
     }
 
+    public function deleteDtsResponseAction()
+    {
+        if($this->_hasParam('mid')){
+            if ($this->getRequest()->isPost()) {
+                $mapId = (int)base64_decode($this->_getParam('mid'));
+                $shipmentService = new Application_Service_Shipments();
+                $this->view->result = $shipmentService->removeDtsResults($mapId);
+            }
+        }else{
+            $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
+        }
+    }
+
 
 }
+
+
 
 
 

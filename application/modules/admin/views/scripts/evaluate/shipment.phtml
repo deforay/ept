@@ -261,12 +261,12 @@
         function removeSchemes(schemeType,mid){
 		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 
 			$.blockUI();
-			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'Dts', 'action' => 'delete')); ?>", { mid: mid, format: "html" },
+			$.post("<?php echo $this->url(array('module'=>'admin','controller' =>'evaluate', 'action' => 'delete-dts-response')); ?>", { mid: mid, format: "html" },
 			    function (data) {
-				alert("Response removed successfully");
-                                oTable.fnStandingRedraw();
+				alert("Response has been removed successfully. Please wait while we reload this evaluation.");
+                               // oTable.fnStandingRedraw();
                                // oTable.fnDraw();
-                             //  location.reload();
+					 document.location.href= document.location;
 				$.unblockUI();
 			});
 		}		

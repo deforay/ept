@@ -510,7 +510,186 @@ class Application_Service_Evaluation {
                 //$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
                 //$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
 
+				$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+				
+				// Getting the Test Date string to show in Corrective Actions and other sentences
+				$testDate = $testedOn->toString('dd-MMM-YYYY');
+				
+				// Getting test kit expiry dates as reported
+                $expDate1 = "";
+                //die($results[0]['exp_date_1']);
+                if (isset($results[0]['exp_date_1']) && trim($results[0]['exp_date_1']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_1'])) != "") {
+                    $expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
+                }
+                $expDate2 = "";
+                if (isset($results[0]['exp_date_2']) && trim($results[0]['exp_date_2']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_2'])) != "") {
+                    $expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
+                }
+                $expDate3 = "";
+                if (isset($results[0]['exp_date_3']) && trim($results[0]['exp_date_3']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_3'])) != "") {
+                    $expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
+                }
 
+				// Getting Test Kit Names
+				
+				$testKitDb = new Application_Model_DbTable_TestkitnameDts();
+                $testKit1 = "";
+				
+                $testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_1']);
+                if (isset($testKitName[0])) {
+                    $testKit1 = $testKitName[0];
+                }
+
+                $testKit2 = "";
+                if (trim($results[0]['test_kit_name_2']) != "") {
+					$testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_2']);
+                    if (isset($testKitName[0])) {
+                        $testKit2 = $testKitName[0];
+                    }
+                }
+                $testKit3 = "";
+                if (trim($results[0]['test_kit_name_3']) != "") {
+					$testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_3']);
+                    if (isset($testKitName[0])) {
+                        $testKit3 = $testKitName[0];
+                    }
+                }
+				
+				
+				// Checking for Expired Test Kits
+
+                if ($testKit1 != "") {
+                    if ($expDate1 != "") {
+                        if ($testedOn->isLater($expDate1)) {
+                            $difference = $testedOn->sub($expDate1);
+
+                            $measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+                            $measure->convertTo(Zend_Measure_Time::DAY);
+                            $failureReason[] = array('warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
+                                'correctiveAction' => $correctiveActions[5]);
+                            $correctiveActionList[] = 5;
+							$tk1Expired = true;
+                        }else{
+							$tk1Expired = false;
+						}
+						
+                    } else {
+                        $failureReason[] = array('warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) reported without expiry date. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[6]);
+                        $correctiveActionList[] = 6;
+                        $shipment['is_excluded'] = 'yes';
+                    }
+                }
+
+                if ($testKit2 != "") {
+                    if ($expDate2 != "") {
+                        if ($testedOn->isLater($expDate2)) {
+                            $difference = $testedOn->sub($expDate2);
+
+                            $measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+                            $measure->convertTo(Zend_Measure_Time::DAY);
+                            $failureReason[] = array('warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
+                                'correctiveAction' => $correctiveActions[5]);
+                            $correctiveActionList[] = 5;
+							$tk2Expired = true;
+                        }else{
+							$tk2Expired = false;
+						}
+                    } else {
+                        $failureReason[] = array('warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) reported without expiry date. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[6]);
+                        $correctiveActionList[] = 6;
+                        $shipment['is_excluded'] = 'yes';
+                    }
+                }
+
+
+                if ($testKit3 != "") {
+                    if ($expDate3 != "") {
+                        if ($testedOn->isLater($expDate3)) {
+                            $difference = $testedOn->sub($expDate3);
+
+                            $measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
+                            $measure->convertTo(Zend_Measure_Time::DAY);
+                            $failureReason[] = array('warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
+                                'correctiveAction' => $correctiveActions[5]);
+                            $correctiveActionList[] = 5;
+							$tk3Expired = true;
+                        }else{
+							$tk3Expired = false;
+						}
+                    } else {
+
+                        $failureReason[] = array('warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) reported without expiry date. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[6]);
+                        $correctiveActionList[] = 6;
+                        $shipment['is_excluded'] = 'yes';
+                    }
+                }
+                //checking if testkits were repeated
+                if (($testKit1 == "") && ($testKit2 == "") && ($testKit3 == "")) {
+                    $failureReason[] = array('warning' => "No Test Kit reported. Result not evaluated",
+                        'correctiveAction' => $correctiveActions[7]);
+                    $correctiveActionList[] = 7;
+                    $shipment['is_excluded'] = 'yes';
+                } else if (($testKit1 == "")) {
+                    $failureReason[] = array('warning' => "Test Kit 1 not reported");
+                } else if (($testKit1 != "") && ($testKit2 != "") && ($testKit3 != "") && ($testKit1 == $testKit2) && ($testKit2 == $testKit3)) {
+                    //$testKitRepeatResult = 'Fail';
+                    $failureReason[] = array('warning' => "<strong>$testKit1</strong> repeated for all three Test Kits",
+                        'correctiveAction' => $correctiveActions[8]);
+                    $correctiveActionList[] = 8;
+                } else {
+                    if (($testKit1 != "") && ($testKit2 != "") && ($testKit1 == $testKit2) && $testKit1 != "" && $testKit2 != "") {
+                        //$testKitRepeatResult = 'Fail';
+                        $failureReason[] = array('warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2",
+                            'correctiveAction' => $correctiveActions[9]);
+                        $correctiveActionList[] = 9;
+                    }
+                    if (($testKit2 != "") && ($testKit3 != "") && ($testKit2 == $testKit3) && $testKit2 != "" && $testKit3 != "") {
+                        //$testKitRepeatResult = 'Fail';
+                        $failureReason[] = array('warning' => "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3",
+                            'correctiveAction' => $correctiveActions[9]);
+                        $correctiveActionList[] = 9;
+                    }
+                    if (($testKit1 != "") && ($testKit3 != "") && ($testKit1 == $testKit3) && $testKit1 != "" && $testKit3 != "") {
+                        //$testKitRepeatResult = 'Fail';
+                        $failureReason[] = array('warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3",
+                            'correctiveAction' => $correctiveActions[9]);
+                        $correctiveActionList[] = 9;
+                    }
+                }
+
+
+                // checking if all LOT details were entered
+                if ($testKit1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
+                    if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
+                        $lotResult = 'Fail';
+                        $failureReason[] = array('warning' => "<strong>Lot No. 1</strong> was not reported. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[10]);
+                        $correctiveActionList[] = 10;
+                        $shipment['is_excluded'] = 'yes';
+                    }
+                }
+                if ($testKit2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)) {
+                    if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
+                        $lotResult = 'Fail';
+                        $failureReason[] = array('warning' => "<strong>Lot No. 2</strong> was not reported. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[10]);
+                        $correctiveActionList[] = 10;
+                        $shipment['is_excluded'] = 'yes';
+                    }
+                }
+                if ($testKit3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)) {
+                    if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
+                        $lotResult = 'Fail';
+                        $failureReason[] = array('warning' => "<strong>Lot No. 3</strong> was not reported. Result not evaluated.",
+                            'correctiveAction' => $correctiveActions[10]);
+                        $correctiveActionList[] = 10;
+                        $shipment['is_excluded'] = 'yes';
+                    }
+                }
+				
                 $samplePassOrFail = array();
                 foreach ($results as $result) {
                     //if Sample is not mandatory, we will skip the evaluation
@@ -518,7 +697,7 @@ class Application_Service_Evaluation {
                         $db->update('response_result_dts', array('calculated_score' => "N.A."), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
                         continue;
                     }
-                    $testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+                    
 
 					// Checking algorithm Pass/Fail only if it is NOT a control.
 					if(0 == $result['control']) {
@@ -666,213 +845,38 @@ class Application_Service_Evaluation {
                     $maxScore += $result['sample_score'];
 					
 					
-
-                    if ($algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])) {
+					if (isset($tk1Expired) && $tk1Expired && isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
+						$testKitExpiryResult = 'Fail';
+						if($correctResponse){
+							$totalScore -= $result['sample_score'];
+						}
+						$correctResponse = false;
+                    }
+					
+					if (isset($tk2Expired) && $tk2Expired && isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
+						$testKitExpiryResult = 'Fail';
+						if($correctResponse){
+							$totalScore -= $result['sample_score'];
+						}
+						$correctResponse = false;
+                    }
+					
+					if (isset($tk3Expired) && $tk3Expired && isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
+						$testKitExpiryResult = 'Fail';
+						if($correctResponse){
+							$totalScore -= $result['sample_score'];
+						}
+						$correctResponse = false;
+                    }
+					
+                    if (!$correctResponse || $algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])) {
                         $db->update('response_result_dts', array('calculated_score' => "Fail"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
                     } else {
                         $db->update('response_result_dts', array('calculated_score' => "Pass"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
                     }
                 }
 
-                // checking test kit expiry dates
-
-                $testDate = $testedOn->toString('dd-MMM-YYYY');
-                $expDate1 = "";
-                //die($results[0]['exp_date_1']);
-                if (isset($results[0]['exp_date_1']) && trim($results[0]['exp_date_1']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_1'])) != "") {
-                    $expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
-                }
-                $expDate2 = "";
-                if (isset($results[0]['exp_date_2']) && trim($results[0]['exp_date_2']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_2'])) != "") {
-                    $expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
-                }
-                $expDate3 = "";
-                if (isset($results[0]['exp_date_3']) && trim($results[0]['exp_date_3']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_3'])) != "") {
-                    $expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
-                }
-
-				$testKitDb = new Application_Model_DbTable_TestkitnameDts();
-                $testKit1 = "";
-				
-                $testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_1']);
-                if (isset($testKitName[0])) {
-                    $testKit1 = $testKitName[0];
-                }
-
-                $testKit2 = "";
-                if (trim($results[0]['test_kit_name_2']) != "") {
-					$testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_2']);
-                    if (isset($testKitName[0])) {
-                        $testKit2 = $testKitName[0];
-                    }
-                }
-                $testKit3 = "";
-                if (trim($results[0]['test_kit_name_3']) != "") {
-					$testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_3']);
-                    if (isset($testKitName[0])) {
-                        $testKit3 = $testKitName[0];
-                    }
-                }
-
-                if ($testKit1 != "") {
-                    if ($expDate1 != "") {
-                        if ($testedOn->isLater($expDate1)) {
-                            $difference = $testedOn->sub($expDate1);
-
-                            $measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-                            $measure->convertTo(Zend_Measure_Time::DAY);
-                            if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
-                                $testKitExpiryResult = 'Fail';
-								if($correctResponse){
-									$totalScore -= $result['sample_score'];
-								}
-                            }
-                            $failureReason[] = array('warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
-                                'correctiveAction' => $correctiveActions[5]);
-                            $correctiveActionList[] = 5;
-                        }
-                    } else {
-                        if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
-                            $testKitExpiryResult = 'Fail';
-							if($correctResponse){
-									$totalScore -= $result['sample_score'];
-							}
-                        }
-                        $failureReason[] = array('warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) reported without expiry date. Result not evaluated.",
-                            'correctiveAction' => $correctiveActions[6]);
-                        $correctiveActionList[] = 6;
-                        $shipment['is_excluded'] = 'yes';
-                    }
-                }
-                $testDate = $testedOn->toString('dd-MMM-YYYY');
-
-                if ($testKit2 != "") {
-                    if ($expDate2 != "") {
-                        if ($testedOn->isLater($expDate2)) {
-                            $difference = $testedOn->sub($expDate2);
-
-                            $measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-                            $measure->convertTo(Zend_Measure_Time::DAY);
-                            if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
-                                $testKitExpiryResult = 'Fail';
-								if($correctResponse){
-									$totalScore -= $result['sample_score'];
-								}
-                            }
-                            $failureReason[] = array('warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
-                                'correctiveAction' => $correctiveActions[5]);
-                            $correctiveActionList[] = 5;
-                        }
-                    } else {
-                        if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
-                            $testKitExpiryResult = 'Fail';
-							if($correctResponse){
-								$totalScore -= $result['sample_score'];
-							}
-                        }
-                        $failureReason[] = array('warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) reported without expiry date. Result not evaluated.",
-                            'correctiveAction' => $correctiveActions[6]);
-                        $correctiveActionList[] = 6;
-                        $shipment['is_excluded'] = 'yes';
-                    }
-                }
-
-
-                $testDate = $testedOn->toString('dd-MMM-YYYY');
-
-                if ($testKit3 != "") {
-                    if ($expDate3 != "") {
-                        if ($testedOn->isLater($expDate3)) {
-                            $difference = $testedOn->sub($expDate3);
-
-                            $measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-                            $measure->convertTo(Zend_Measure_Time::DAY);
-                            if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
-                                $testKitExpiryResult = 'Fail';
-								if($correctResponse){
-									$totalScore -= $result['sample_score'];
-								}
-                            }
-                            $failureReason[] = array('warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
-                                'correctiveAction' => $correctiveActions[5]);
-                            $correctiveActionList[] = 5;
-                        }
-                    } else {
-                        if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
-                            $testKitExpiryResult = 'Fail';
-							if($correctResponse){
-								$totalScore -= $result['sample_score'];
-							}
-                        }
-                        $failureReason[] = array('warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) reported without expiry date. Result not evaluated.",
-                            'correctiveAction' => $correctiveActions[6]);
-                        $correctiveActionList[] = 6;
-                        $shipment['is_excluded'] = 'yes';
-                    }
-                }
-                //checking if testkits were repeated
-                if (($testKit1 == "") && ($testKit2 == "") && ($testKit3 == "")) {
-                    $failureReason[] = array('warning' => "No Test Kit reported. Result not evaluated",
-                        'correctiveAction' => $correctiveActions[7]);
-                    $correctiveActionList[] = 7;
-                    $shipment['is_excluded'] = 'yes';
-                } else if (($testKit1 == "")) {
-                    $failureReason[] = array('warning' => "Test Kit 1 not reported");
-                } else if (($testKit1 != "") && ($testKit2 != "") && ($testKit3 != "") && ($testKit1 == $testKit2) && ($testKit2 == $testKit3)) {
-                    //$testKitRepeatResult = 'Fail';
-                    $failureReason[] = array('warning' => "<strong>$testKit1</strong> repeated for all three Test Kits",
-                        'correctiveAction' => $correctiveActions[8]);
-                    $correctiveActionList[] = 8;
-                } else {
-                    if (($testKit1 != "") && ($testKit2 != "") && ($testKit1 == $testKit2) && $testKit1 != "" && $testKit2 != "") {
-                        //$testKitRepeatResult = 'Fail';
-                        $failureReason[] = array('warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2",
-                            'correctiveAction' => $correctiveActions[9]);
-                        $correctiveActionList[] = 9;
-                    }
-                    if (($testKit2 != "") && ($testKit3 != "") && ($testKit2 == $testKit3) && $testKit2 != "" && $testKit3 != "") {
-                        //$testKitRepeatResult = 'Fail';
-                        $failureReason[] = array('warning' => "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3",
-                            'correctiveAction' => $correctiveActions[9]);
-                        $correctiveActionList[] = 9;
-                    }
-                    if (($testKit1 != "") && ($testKit3 != "") && ($testKit1 == $testKit3) && $testKit1 != "" && $testKit3 != "") {
-                        //$testKitRepeatResult = 'Fail';
-                        $failureReason[] = array('warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3",
-                            'correctiveAction' => $correctiveActions[9]);
-                        $correctiveActionList[] = 9;
-                    }
-                }
-
-
-                // checking if all LOT details were entered
-                if ($testKit1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
-                    if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
-                        $lotResult = 'Fail';
-                        $failureReason[] = array('warning' => "<strong>Lot No. 1</strong> was not reported. Result not evaluated.",
-                            'correctiveAction' => $correctiveActions[10]);
-                        $correctiveActionList[] = 10;
-                        $shipment['is_excluded'] = 'yes';
-                    }
-                }
-                if ($testKit2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)) {
-                    if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
-                        $lotResult = 'Fail';
-                        $failureReason[] = array('warning' => "<strong>Lot No. 2</strong> was not reported. Result not evaluated.",
-                            'correctiveAction' => $correctiveActions[10]);
-                        $correctiveActionList[] = 10;
-                        $shipment['is_excluded'] = 'yes';
-                    }
-                }
-                if ($testKit3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)) {
-                    if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
-                        $lotResult = 'Fail';
-                        $failureReason[] = array('warning' => "<strong>Lot No. 3</strong> was not reported. Result not evaluated.",
-                            'correctiveAction' => $correctiveActions[10]);
-                        $correctiveActionList[] = 10;
-                        $shipment['is_excluded'] = 'yes';
-                    }
-                }
+                
 				
 				$configuredDocScore = ((isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore != "" && $config->evaluation->dts->documentationScore != null) ? $config->evaluation->dts->documentationScore : 0);
 
@@ -1230,9 +1234,6 @@ class Application_Service_Evaluation {
         foreach ($shipmentOverall as $shipment) {
             $numScoredFull += $shipment['fullscore'];
         }
-        $supervisorApproval = $shipmentOverall[0]['supervisor_approval'];
-        $participantSupervisor = $shipmentOverall[0]['participant_supervisor'];
-        $userComment= $shipmentOverall[0]['user_comment'];
 
         return array('participant' => $participantData,
             'shipment' => $shipmentData,
