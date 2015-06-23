@@ -209,14 +209,20 @@ foreach($this->result['shipment'] as $result){
 						</tr>';
 
 			$nonMandatorySamples = array();
+			$controlSamples = array();
 			$correctSamples = array();
 			$totalProperSamples = 0;
 			$correctSamplesCount = 0;
 			$wrongSamples = array();
 			$otherSamples = array();
 			$allSamples = array();
+			
 			foreach($result['responseResult'] as $response){
 				$allSamples[] = $response['sample_label'];
+				if($response['control'] == 1){
+                    $controlSamples[] = $response['sample_label'];
+                }
+				
                 if($response['mandatory'] == 0){
                     $nonMandatorySamples[] = $response['sample_label'];
                 }
@@ -233,16 +239,17 @@ foreach($this->result['shipment'] as $result){
 			$totalProperSamples = $correctSamplesCount + count($wrongSamples);
 			$maxDocumentationPoints = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore) : 0;
 			$maximumResponseScore = 100 - $maxDocumentationPoints;
-			$scorePerCorrectSample = round($maximumResponseScore/(count($allSamples)-count($nonMandatorySamples)),2);
+			$scorePerCorrectSample = round($maximumResponseScore/(count($allSamples)-count($nonMandatorySamples) - count($controlSamples)),2);
 			
 			foreach($result['responseResult'] as $response){
                 
 				if($response['calculated_score'] == 'Pass'){
 					$img = UPLOAD_PATH . '/../images/check.jpg';
-					$score = $scorePerCorrectSample;
+					
+					$score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
 				} else if($response['calculated_score'] == 'Fail'){
 					$img = UPLOAD_PATH . '/../images/cross.jpg';
-					$score = 0;
+					$score = ($response['control'] == 0) ? 0 : "N.A.";
 				}else{
 					$img = UPLOAD_PATH . '/../images/minus.jpg';
 					$score = "N.A.";
