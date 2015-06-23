@@ -165,6 +165,17 @@ foreach($this->result['shipment'] as $result){
 		$splitDate=explode(" ",$result['responseResult'][0]['responseDate']);
 		$responseDate=$this->dateFormat($splitDate[0]);
 	}
+	
+	$attributes = json_decode($result['responseResult'][0]['attributes'], true);
+	
+	$sampleRehydrationDate = "";
+	if(isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date'])!=""){
+		$sampleRehydrationDate=$this->dateFormat($attributes['sample_rehydration_date']);
+	}
+	$shipmentReceiptDate = "";
+	if(isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date'])!=""){
+		$shipmentReceiptDate=$this->dateFormat($result['responseResult'][0]['shipment_receipt_date']);
+	}
 
 	//if($result['result_name']=='Fail'){
 	//	$wishes="";
@@ -183,8 +194,12 @@ foreach($this->result['shipment'] as $result){
 	$labInfo.='<td  style="font-weight:bold;">Performing Participant : </td><td style="text-align:left">'.$result['first_name']." ".$result['last_name'].'</td></tr>';
 	$labInfo.='<tr><td style="font-weight:bold;">PT Survey Name :</td><td style="text-align:left">'.$result['distribution_code'].'</td>';
 	$labInfo.='<td style="font-weight:bold;">Shipment Date :</td><td style="text-align:left">'.$result['shipment_date'].'</td></tr>';
+	
 	$labInfo.='<tr><td style="font-weight:bold;">Last Response Date :</td><td style="text-align:left">'.$result['lastdate_response'].'</td>';
 	$labInfo.='<td style="font-weight:bold;">Response Date :</td><td style="text-align:left">'.$responseDate.'</td></tr>';
+	
+	$labInfo.='<tr><td style="font-weight:bold;">Panel Receipt Date :</td><td style="text-align:left">'.$shipmentReceiptDate.'</td>';
+	$labInfo.='<td style="font-weight:bold;">Rehydration Date :</td><td style="text-align:left">'.$sampleRehydrationDate.'</td></tr>';
 	
 	$labInfo.='</table>';
 	
