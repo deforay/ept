@@ -916,14 +916,19 @@ class Application_Service_Evaluation {
                     $correctiveActionList[] = 13;
                 }
 
-                $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
-                $testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
-                // Testing should be done within 24 hours of rehydration.
+                //$sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
+                //$testedOnDate = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+				
+				$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
+				$testedOnDate = new DateTime($results[0]['shipment_test_date']);
+				$interval = $sampleRehydrationDate->diff($testedOnDate);
+				
+				
+                // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
 				$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
-                $diff = $testedOn->sub($sampleRehydrationDate)->toValue();
-                $days = ceil($diff / 60 / 60 / 24) + 1;
 				$rehydrateHours = $sampleRehydrateDays*24;
-                if ($days > $sampleRehydrateDays) {
+
+                if ($interval->days > $sampleRehydrateDays) {
                     $failureReason[] = array('warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
                         'correctiveAction' => $correctiveActions[14]);
                     $correctiveActionList[] = 14;
