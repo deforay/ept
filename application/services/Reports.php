@@ -1610,7 +1610,7 @@ class Application_Service_Reports {
         if ($result['scheme_type'] == 'dts') {
             $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-            $documentationScorePerItem = ($config->evaluation->dts->documentationScore / 4);
+            $documentationScorePerItem = ($config->evaluation->dts->documentationScore / 5);
         }
 
         $docScoreSheet = new PHPExcel_Worksheet($excel, 'Documentation Score');
@@ -1620,7 +1620,7 @@ class Application_Service_Reports {
         //$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
         $docScoreSheet->getDefaultRowDimension('G')->setRowHeight(25);
 
-        $docScoreHeadings = array('Facility Code', 'Facility Name', 'Supervisor signature', 'Rehydration Date', 'Tested Date', 'Rehydration Test In 24 Hrs', 'Documentation Score %');
+        $docScoreHeadings = array('Facility Code', 'Facility Name', 'Supervisor signature', 'Panel Receipt Date' ,'Rehydration Date', 'Tested Date', 'Rehydration Test In 24 Hrs', 'Documentation Score %');
 
         $docScoreSheetCol = 0;
         $docScoreRow = 1;
@@ -1640,10 +1640,10 @@ class Application_Service_Reports {
         $cellName = $secondRowcellName->getColumn();
         $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
 
-        for ($r = 2; $r <= 6; $r++) {
+        for ($r = 2; $r <= 7; $r++) {
 
             $secondRowcellName = $docScoreSheet->getCellByColumnAndRow($r, $docScoreRow);
-            if ($r != 6) {
+            if ($r != 7) {
                 $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             }
             $docScoreSheet->getStyleByColumnAndRow($r, $docScoreRow)->getFont()->setBold(true);
@@ -1756,9 +1756,9 @@ class Application_Service_Reports {
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . $aRow['dataManagerLastName'], PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
-
+				$shipmentReceiptDate = "";
                 if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
-                    $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
+                    $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
                 }
 
                 if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
@@ -1784,6 +1784,12 @@ class Application_Service_Reports {
 
                 $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
                 $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
+
+                if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != "") {
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                } else {
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                }
 
                 if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
                     $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);

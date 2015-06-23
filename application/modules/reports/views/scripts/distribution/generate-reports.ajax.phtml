@@ -275,7 +275,7 @@ foreach($this->result['shipment'] as $result){
 			
 			//Let us now calculate documentation score
 			$documentationScore = 0;
-			$documentationScorePerItem = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore / 4) : 0;
+			$documentationScorePerItem = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore / 5) : 0;
 			$attributes = json_decode($result['attributes'], true);
 			
 			$img = array();
@@ -300,6 +300,21 @@ foreach($this->result['shipment'] as $result){
 			
 			$docRes.='<tr>
 							<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
+							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
+							<td style="text-align:center;">'.$scoreDoc.'</td>
+					</tr>';
+			
+
+			if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
+				$scoreDoc =  $documentationScorePerItem;
+				$img = $imgPass;
+			} else {
+				$scoreDoc = 0;
+				$img = $imgFail;
+			}
+			
+			$docRes.='<tr>
+							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>
 							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';

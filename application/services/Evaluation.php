@@ -468,6 +468,7 @@ class Application_Service_Evaluation {
             $correctiveActions = $schemeService->getDtsCorrectiveActions();
 
             foreach ($shipmentResult as $shipment) {
+				//Zend_Debug::dump($shipment);
                 $createdOnUser = explode(" ", $shipment['created_on_user']);
                 if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
                     $createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
@@ -890,7 +891,7 @@ class Application_Service_Evaluation {
 
                 //Let us now calculate documentation score
                 $documentationScore = 0;
-                $documentationScorePerItem = ($config->evaluation->dts->documentationScore / 4);
+                $documentationScorePerItem = ($config->evaluation->dts->documentationScore / 5);
 
                 if (isset($result['supervisor_approval']) && strtolower($result['supervisor_approval']) == 'yes' && trim($result['participant_supervisor']) != "") {
                     $documentationScore += $documentationScorePerItem;
@@ -898,6 +899,14 @@ class Application_Service_Evaluation {
                     $failureReason[] = array('warning' => "Supervisor approval absent",
                         'correctiveAction' => $correctiveActions[11]);
                     $correctiveActionList[] = 11;
+                }
+				
+                if (isset($results[0]['shipment_receipt_date']) && strtolower($results[0]['shipment_receipt_date']) != '') {
+                    $documentationScore += $documentationScorePerItem;
+                } else {
+                    $failureReason[] = array('warning' => "Shipment Receipt Date not provided",
+                        'correctiveAction' => $correctiveActions[16]);
+                    $correctiveActionList[] = 16;
                 }
 
                 if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
@@ -1450,7 +1459,7 @@ class Application_Service_Evaluation {
 
                 $sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.created_on', 'calculated_score','test_kit_name_1','lot_no_1','exp_date_1','test_kit_name_2','lot_no_2','exp_date_2','test_kit_name_3','lot_no_3','exp_date_3','test_result_1','test_result_2','test_result_3'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
-                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
+                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id','sp.shipment_receipt_date', 'sp.participant_id', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
                         ->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory', 'refdts.sample_score'))
 						->joinLeft(array('dtstk1' => 'r_testkitname_dts'), 'dtstk1.TestKitName_ID=resdts.test_kit_name_1', array('testkit1'=>'dtstk1.TestKit_Name'))
 						->joinLeft(array('dtstk2' => 'r_testkitname_dts'), 'dtstk2.TestKitName_ID=resdts.test_kit_name_2', array('testkit2'=>'dtstk2.TestKit_Name'))

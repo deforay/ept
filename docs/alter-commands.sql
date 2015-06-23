@@ -2051,3 +2051,6 @@ CREATE TABLE IF NOT EXISTS `participant_enrolled_programs_map` (
   `ep_id` int(11) NOT NULL,
   PRIMARY KEY (`participant_id`,`ep_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Amit Jun 23 2015
+INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES ('16', 'Please specify the Panel Receipt Date .', 'Please specify the Panel Receipt Date .');
