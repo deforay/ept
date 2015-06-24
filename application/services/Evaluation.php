@@ -494,6 +494,7 @@ class Application_Service_Evaluation {
                 $correctiveActionList = array();
                 $algoResult = "";
                 $lastDateResult = "";
+				$controlTesKitFail = "";
 
                 $attributes = json_decode($shipment['attributes'], true);
 
@@ -804,6 +805,39 @@ class Application_Service_Evaluation {
 								$correctiveActionList[] = 2;
 							}
 						}
+					}else{
+						// If there are two kit used for the participants then the control
+						// needs to be tested with at least both kit.
+						// If three then all three kits required and one then atleast one.
+						
+						if($testKit1 != ""){
+							if(!isset($result['test_result_1']) || $result['test_result_1'] == ""){
+								$controlTesKitFail = 'Fail';
+								$failureReason[] = array('warning' => "For the Control Sample <strong>" . $result['sample_label'] . "</strong>, Test Kit 1 (<strong>$testKit1</strong>) was not used",
+									'correctiveAction' => $correctiveActions[2]);
+								$correctiveActionList[] = 2;
+							}
+						}
+						
+						if($testKit2 != ""){
+							if(!isset($result['test_result_2']) || $result['test_result_2'] == ""){
+								$controlTesKitFail = 'Fail';
+								$failureReason[] = array('warning' => "For the Control Sample <strong>" . $result['sample_label'] . "</strong>, Test Kit 2 (<strong>$testKit2</strong>) was not used",
+									'correctiveAction' => $correctiveActions[2]);
+								$correctiveActionList[] = 2;
+							}
+						}
+						
+						
+						if($testKit3 != ""){
+							if(!isset($result['test_result_3']) || $result['test_result_3'] == ""){
+								$controlTesKitFail = 'Fail';
+								$failureReason[] = array('warning' => "For the Control Sample <strong>" . $result['sample_label'] . "</strong>, Test Kit 3 (<strong>$testKit3</strong>) was not used",
+									'correctiveAction' => $correctiveActions[2]);
+								$correctiveActionList[] = 2;
+							}
+						}
+						
 					}
 
                     // checking if mandatory fields were entered and were entered right
@@ -825,22 +859,27 @@ class Application_Service_Evaluation {
 
                     // matching reported and reference results
                     if (isset($result['reported_result']) && $result['reported_result'] != null) {
-                        if ($result['reference_result'] == $result['reported_result']) {
-							if($algoResult != 'Fail' && $mandatoryResult != 'Fail'){
-								$totalScore += $result['sample_score'];
-								$correctResponse = true;
-							}else{
+						if($controlTesKitFail != 'Fail'){
+							if ($result['reference_result'] == $result['reported_result']) {
+								if($algoResult != 'Fail' && $mandatoryResult != 'Fail'){
+									$totalScore += $result['sample_score'];
+									$correctResponse = true;
+								}else{
+									$correctResponse = false;
+									// $totalScore remains the same	
+								}
+							} else {
+								if ($result['sample_score'] > 0) {
+									$failureReason[] = array('warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported Sample result does not match the reference result",
+										'correctiveAction' => $correctiveActions[3]);
+									$correctiveActionList[] = 3;
+								}
 								$correctResponse = false;
-								// $totalScore remains the same	
 							}
-                        } else {
-                            if ($result['sample_score'] > 0) {
-                                $failureReason[] = array('warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported Sample result does not match the reference result",
-                                    'correctiveAction' => $correctiveActions[3]);
-                                $correctiveActionList[] = 3;
-                            }
+						}else{
 							$correctResponse = false;
-                        }
+						}
+                        
                     }
 					
                     $maxScore += $result['sample_score'];

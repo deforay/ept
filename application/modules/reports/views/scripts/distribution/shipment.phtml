@@ -122,7 +122,7 @@
                     $shipment['failure_reason'] = " No Warnings or Corrective Actions ";
 		}
                                 
-                if(isset($shipment['display_result']) && $shipment['display_result']=="Fail"){
+                if(isset($shipment['final_result']) && $shipment['final_result']==2){
                     $btnClassName="btn-danger";
                 }else if(isset($warnings) && count($warnings) >0){
                     $btnClassName="btn-warning";
