@@ -1705,7 +1705,7 @@ class Application_Service_Evaluation {
 
                 $shipmentResult['referenceResult'] = $sqlRes;
 
-                $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'))
+                $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes','spm.is_excluded'))
                         ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
                         ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
                         ->where("spm.shipment_id = ?", $shipmentId)
@@ -1719,7 +1719,7 @@ class Application_Service_Evaluation {
                 if (count($sQueryRes) > 0) {
 
                     $tQuery = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.sample_id', 'refdts.sample_label'))
-                            ->join(array('resdts' => 'response_result_dts'), 'resdts.sample_id=refdts.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN resdts.reported_result=refdts.reference_result THEN 1 ELSE 0 END)")))
+                            ->join(array('resdts' => 'response_result_dts'), 'resdts.sample_id=refdts.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN (resdts.reported_result=refdts.reference_result AND spm.is_excluded='no') THEN 1 ELSE 0 END)")))
                             ->join(array('spm' => 'shipment_participant_map'), 'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id', array())
                             ->where("spm.shipment_id = ?", $shipmentId)
                             ->where("spm.final_result IS NOT NULL")
@@ -1833,6 +1833,7 @@ class Application_Service_Evaluation {
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
                 ->where("s.shipment_id = ?", $shipmentId)
+                //->where("p.status = 'active'")
                 ->group('s.shipment_id');
 
         return $dbAdapter->fetchRow($sQuery);
