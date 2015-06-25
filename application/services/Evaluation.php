@@ -1318,6 +1318,7 @@ class Application_Service_Evaluation {
         $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['rehydrationDate']);
         $attributes["algorithm"] = $params['algorithm'];
         $attributes = json_encode($attributes);
+
         $mapdata = array(
             "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receivedOn']),
             "shipment_test_date" => Pt_Commons_General::dateFormat($params['testedOn']),
@@ -1328,6 +1329,13 @@ class Application_Service_Evaluation {
             "updated_by_admin" => $admin,
             "updated_on_admin" => new Zend_Db_Expr('now()')
         );
+		if(isset($params['customField1']) && trim($params['customField1']) != ""){
+			$mapdata['custom_field_1'] = $params['customField1'];
+		}
+		
+		if(isset($params['customField2']) && trim($params['customField2']) != ""){
+			$mapdata['custom_field_2'] = $params['customField2'];
+		}
         $db->update('shipment_participant_map', $mapdata, "map_id = " . $params['smid']);
 
         if ($params['scheme'] == 'eid') {

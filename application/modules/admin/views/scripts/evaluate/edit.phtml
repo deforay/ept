@@ -125,6 +125,25 @@ if(isset($this->evaluateData['evalComments'])){
 		</td>
 	</tr>
 </table>
+
+  <?php if(isset($this->haveCustom) && $this->haveCustom == 'yes') { ?>
+  <fieldset>
+	<legend>Custom Fields</legend>
+        <table>
+			
+            <tr>
+                <th style="width:250px;padding:5px;"><?php echo $this->customField1; ?> </th>
+                <td style="padding:5px;"><input name="customField1" id="customField1" type="text" size="80" maxlength="40" value="<?php echo  $this->evaluateData['shipment']['custom_field_1']; ?>"/></td>
+            </tr>
+            <?php if(isset($this->customField2) && $this->customField2 != ""){ ?>
+            <tr>
+                <th style="width:250px;padding:5px;"><?php echo $this->customField2; ?> </th>
+                <td style="padding:5px;"><input name="customField2" id="customField2" type="text" value="<?php echo  $this->evaluateData['shipment']['custom_field_2']; ?>"/></td>
+            </tr>
+            <?php } ?>
+        </table>
+	</fieldset>
+        <?php } ?>
 <br/>
 <div id="respond" style="margin: 10px auto 10px auto; text-align: center;" align="center">
 	<h5>Currently editing result <?php echo $pos+1 . " of ".count($urlListArray); ?> </h5>

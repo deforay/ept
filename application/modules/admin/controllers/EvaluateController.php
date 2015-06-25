@@ -79,6 +79,10 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->viewEvaluation($sid,$pid,$scheme);
                 
+		$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
+        $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
+        $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
                 
             }else{
                 $this->_redirect("/admin/evaluate/");
@@ -135,6 +139,10 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sid,$pid,$scheme);
                 
+                $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+                $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
+                $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
+                $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
                 
             }else{
                 $this->_redirect("/admin/evaluate/");

@@ -67,6 +67,13 @@ class Reports_DistributionController extends Zend_Controller_Action
             $this->view->possibleDtsResults = $schemeService->getPossibleResults('dts');
             $this->view->passPercentage = $commonService->getConfig('pass_percentage');
             $this->view->comingFrom=$comingFrom;
+            
+                
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+            $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
+            $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
+            $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
+        
         }
     }
 
