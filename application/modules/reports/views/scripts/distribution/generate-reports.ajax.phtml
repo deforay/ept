@@ -157,6 +157,7 @@ foreach($this->result['shipment'] as $result){
 	
 	$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 	$responseDate="";
+	$shipmentTestDate="";
 	$shipmentScore=0;
 	$documentationScore=0;
 	$score=0;
@@ -176,7 +177,11 @@ foreach($this->result['shipment'] as $result){
 	if(isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date'])!=""){
 		$shipmentReceiptDate=$this->dateFormat($result['responseResult'][0]['shipment_receipt_date']);
 	}
-
+	
+	if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
+		$shipmentTestDate=$this->dateFormat($result['responseResult'][0]['shipment_test_date']);
+	}
+	
 	//if($result['result_name']=='Fail'){
 	//	$wishes="";
 	//	$splStr=explode("###",$result['failure_reason']);
@@ -190,7 +195,7 @@ foreach($this->result['shipment'] as $result){
 	
 	//Coment Details
 	
-	$labInfo='<table border="1" cellpadding="2">';
+	$labInfo='<table cellpadding="2">';
 	
 	$labInfo.='<tr>';
 	$labInfo.='	<td><strong>Participant Code</strong> <br>'.$result['unique_identifier'].'</td>';
@@ -212,15 +217,18 @@ foreach($this->result['shipment'] as $result){
 	$labInfo.='	<td><strong>Rehydration Date</strong> <br>'.$sampleRehydrationDate.'</td>';
 
 	$labInfo.='	<td><strong>Last Response Date</strong> <br>'.$result['lastdate_response'].'</td>';
-		$labInfo.='</tr>';
+	$labInfo.='</tr>';
 	
 	$labInfo.='<tr>';
 	$labInfo.='	<td><strong>Response Date</strong> <br>'.$responseDate.'</td>';
+	$labInfo.='	<td><strong>Shipment Test Date</strong> <br>'.$shipmentTestDate.'</td>';
 	$labInfo.='	<td>';
 	if(isset($this->haveCustom) && $this->haveCustom == 'yes') {
 		$labInfo.='	<strong>'.$this->customField1.'</strong> <br>'.$this->shipment['custom_field_1'];
 	}
 	$labInfo.=' </td>';
+	$labInfo.='</tr>';
+	$labInfo.='<tr>';
 	$labInfo.='	<td>';
 	if(isset($this->haveCustom) && $this->haveCustom == 'yes') {
 		$labInfo.='	<strong>'.$this->customField2.'</strong> <br>'.$this->shipment['custom_field_2'];
@@ -230,7 +238,7 @@ foreach($this->result['shipment'] as $result){
 
 	
 	$labInfo.='</table>';
-	
+	//shipment_test_date
 	$pdf->writeHTML($labInfo, true, false, true, false, '');
 	
 	if(sizeof($result['responseResult'])>0){
