@@ -103,6 +103,13 @@ class Application_Service_Schemes {
                 ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
     }
+    
+    public function getDtsReferenceData($shipmentId){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('reference_result_dts'))
+                ->where('shipment_id = ? ', $shipmentId);
+        return $db->fetchAll($sql);        
+    }
 
     public function getDbsSamples($sId, $pId) {
 

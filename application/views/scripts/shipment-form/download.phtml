@@ -1,7 +1,7 @@
 <?php
 //Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
 
-//Zend_Debug::dump($this->result);die;
+//Zend_Debug::dump($this->referenceDetails);die;
 require_once('tcpdf/tcpdf.php');
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
@@ -209,14 +209,15 @@ class MYPDF extends TCPDF {
 				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-3</td>';
 				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Final Result * </td>';
 			$labInfo.='</tr>';
-			
-			$labInfo.='<tr style="background-color:#F7F7F7;">';
-				$labInfo.='<td style="font-weight:bold;">S0001</td>';
-				$labInfo.='<td></td>';
-				$labInfo.='<td></td>';
-				$labInfo.='<td></td>';
-				$labInfo.='<td></td>';
-			$labInfo.='</tr>';
+			foreach($this->referenceDetails as $sample){
+				$labInfo.='<tr style="background-color:#F7F7F7;">';
+					$labInfo.='<td style="font-weight:bold;">'.$sample['sample_label'].'</td>';
+					$labInfo.='<td></td>';
+					$labInfo.='<td></td>';
+					$labInfo.='<td></td>';
+					$labInfo.='<td></td>';
+				$labInfo.='</tr>';
+			}
 		$labInfo.='</table><br/><br/>';
 		
 		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
