@@ -1620,7 +1620,7 @@ class Application_Service_Reports {
         //$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
         $docScoreSheet->getDefaultRowDimension('G')->setRowHeight(25);
 
-        $docScoreHeadings = array('Facility Code', 'Facility Name', 'Supervisor signature', 'Panel Receipt Date' ,'Rehydration Date', 'Tested Date', 'Rehydration Test In 24 Hrs', 'Documentation Score %');
+        $docScoreHeadings = array('Facility Code', 'Facility Name', 'Supervisor signature', 'Panel Receipt Date' ,'Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
 
         $docScoreSheetCol = 0;
         $docScoreRow = 1;
@@ -1810,11 +1810,19 @@ class Application_Service_Reports {
                 }
 
                 if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
-                    $testedOn = new Zend_Date($aRow['shipment_test_date'], Zend_Date::ISO_8601);
-                    // Testing should be done within 24 hours of rehydration.
-                    $diff = $testedOn->sub($sampleRehydrationDate)->toValue();
-                    $days = ceil($diff / 60 / 60 / 24) + 1;
-                    if ($days > 1) {
+					
+					
+					$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+					$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
+					$testedOnDate = new DateTime($aRow['shipment_test_date']);
+					$interval = $sampleRehydrationDate->diff($testedOnDate);
+					
+					// Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
+					$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+					$rehydrateHours = $sampleRehydrateDays*24;
+		
+					if ($interval->days > $sampleRehydrateDays) {
+					
                         $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                     } else {
                         $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);

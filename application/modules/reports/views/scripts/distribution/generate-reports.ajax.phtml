@@ -410,22 +410,23 @@ foreach($this->result['shipment'] as $result){
 					</tr>';
 			
 
-			$sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
-			$testedOn = new Zend_Date($result['responseResult'][0]['shipment_test_date'], Zend_Date::ISO_8601);
-			// Testing should be done within 24 hours of rehydration.
-			$diff = $testedOn->sub($sampleRehydrationDate)->toValue();
-			$days = ceil($diff / 60 / 60 / 24) + 1;
+			$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+			$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
+			$testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
+			$interval = $sampleRehydrationDate->diff($testedOnDate);
+			
+			// Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
+			$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+			$rehydrateHours = $sampleRehydrateDays*24;
 
-			if ($days > 1) {
+			if ($interval->days > $sampleRehydrateDays) {
 				$scoreDoc = 0;
 				$img = $imgFail;
 			} else {
 				$scoreDoc =  $documentationScorePerItem;
 				$img = $imgPass;
 			}
-			$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-			$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
-			$rehydrateHours = $sampleRehydrateDays*24;
+			
 			$docRes.='<tr>
 							<td style="text-align:left;font-weight:bold;">Testing to be done within '.$rehydrateHours.' hours of rehydration.</td>
 							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
