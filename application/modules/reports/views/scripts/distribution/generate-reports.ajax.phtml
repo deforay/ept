@@ -422,9 +422,12 @@ foreach($this->result['shipment'] as $result){
 			} else {
 				$scoreDoc =  $documentationScorePerItem;
 				$img = $imgPass;
-			}			
+			}
+			$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+			$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+			$rehydrateHours = $sampleRehydrateDays*24;
 			$docRes.='<tr>
-							<td style="text-align:left;font-weight:bold;">Testing to be done within 24 hours of rehydration.</td>
+							<td style="text-align:left;font-weight:bold;">Testing to be done within '.$rehydrateHours.' hours of rehydration.</td>
 							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
