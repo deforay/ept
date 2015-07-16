@@ -2056,3 +2056,6 @@ CREATE TABLE IF NOT EXISTS `participant_enrolled_programs_map` (
 INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES ('16', 'Please specify the Panel Receipt Date .', 'Please specify the Panel Receipt Date .');
 
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`) VALUES (NULL, 'dts', 'DTS_FINAL', 'Not Tested');
+
+-- Amit Jul 17 2015
+ALTER TABLE `shipment` ADD `response_switch` VARCHAR(255) NOT NULL DEFAULT 'off' AFTER `number_of_samples`;

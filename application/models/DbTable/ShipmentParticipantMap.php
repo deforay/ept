@@ -111,20 +111,27 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $responseAfterFinalised = Application_Service_Common::getConfig('response_after_evaluate');
         $date = new Zend_Date();
         $lastDate = new Zend_Date($shipment["lastdate_response"], Zend_Date::ISO_8601);
-        if ($responseAfterFinalised == 'yes') {
-            // only if current date is lesser than last date
-            if ($date->compare($lastDate,Zend_Date::DATES) <= 0 || $shipment["status"] == 'finalized') {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            if ($date->compare($lastDate,Zend_Date::DATES) <= 0) {
-                return true;
-            } else {
-                return false;
-            }
+        
+        if($shipment["status"] == 'finalized' || $shipment["response_switch"] == 'off'){
+            return false;
+        }else{
+            return true;
         }
+        
+        //if ($responseAfterFinalised == 'yes') {
+        //    // only if current date is lesser than last date
+        //    if ($date->compare($lastDate,Zend_Date::DATES) <= 0 || $shipment["status"] == 'finalized') {
+        //        return true;
+        //    } else {
+        //        return false;
+        //    }
+        //} else {
+        //    if ($date->compare($lastDate,Zend_Date::DATES) <= 0) {
+        //        return true;
+        //    } else {
+        //        return false;
+        //    }
+        //}
 
         //$now= date("Y-m-d");
         //$todaydate= strtotime($now);

@@ -153,9 +153,17 @@ class Application_Service_Shipments {
                 $btn = "btn-primary";
             }
             if($aRow['last_new_shipment_mailed_on']!=''){
-            $mailedOn=  explode(' ', $aRow['last_new_shipment_mailed_on']);
-            $mailedOn=  Pt_Commons_General::humanDateFormat($mailedOn[0]).' '.$mailedOn[1];
+				$mailedOn=  explode(' ', $aRow['last_new_shipment_mailed_on']);
+				$mailedOn=  Pt_Commons_General::humanDateFormat($mailedOn[0]).' '.$mailedOn[1];
             }
+			if($aRow['status'] != 'finalized'){
+				$responseSwitch = "<select onchange='responseSwitch(this.value,".$aRow['shipment_id'].")'>";
+				$responseSwitch .= "<option value='on'".(isset($aRow['response_switch']) && $aRow['response_switch'] =="on" ? " selected='selected' " : "").">On</option>";
+				$responseSwitch .= "<option value='off'".(isset($aRow['response_switch']) && $aRow['response_switch'] =="off" ? " selected='selected' " : "").">Off</option>";
+				$responseSwitch .= "</select>";
+			}else{
+				$responseSwitch = 'Not Applicable';
+			}
            
             //$row[] = $aRow['shipment_code'];
             $row[] = $aRow['shipment_code'];
@@ -165,6 +173,7 @@ class Application_Service_Shipments {
             $row[] = Pt_Commons_General::humanDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['total_participants'];
+            $row[] = $responseSwitch;
             $row[] = ucfirst($aRow['status']);
 //             $row[] = $mailedOn;
 //             $row[] = $aRow['new_shipment_mail_count'];
@@ -1259,6 +1268,11 @@ class Application_Service_Shipments {
 	public function getAllFinalizedShipments($parameters){
 		$shipmentDb = new Application_Model_DbTable_Shipments();
 		return $shipmentDb->fecthAllFinalizedShipments($parameters);
+	}
+	
+	public function responseSwitch($shipmentId,$switchStatus){
+		$shipmentDb = new Application_Model_DbTable_Shipments();
+		return $shipmentDb->responseSwitch($shipmentId,$switchStatus);
 	}
 	
 	public function getFinalizedShipmentInReports($distributionId) {

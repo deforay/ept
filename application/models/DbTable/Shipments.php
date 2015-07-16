@@ -35,6 +35,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         }
     }
 
+    public function responseSwitch($shipmentId,$switchStatus) {
+        if (isset($switchStatus) && $switchStatus != null && $switchStatus != "") {
+			$this->update(array('response_switch' => $switchStatus), "shipment_id = $shipmentId");
+			return "Shipment status updated to $switchStatus successfully";
+        } else {
+            return "Unable to update Shipment status updated to $switchStatus. Please try again later.";
+        }
+    }
+
     public function updateShipmentStatusByDistribution($distributionId, $status) {
         if (isset($status) && $status != null && $status != "") {
             return $this->update(array('status' => $status), "distribution_id = $distributionId");

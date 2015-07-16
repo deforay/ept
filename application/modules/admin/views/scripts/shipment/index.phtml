@@ -39,7 +39,9 @@
             <th>Last Date</th>
             <th>No. of Samples</th>
             <th>No. of Participants Selected</th>
+            <th>Response Switch</th>
             <th>Status</th>
+            
 <!--            <th>Last Mailed On</th>
             <th>Mailed Count</th>-->
             <th>Action</th>
@@ -190,6 +192,21 @@ if (isset($this->unshippedDistro) && count($this->unshippedDistro) > 0 && $this-
 
     }
 
+    function responseSwitch(switchStatus,sid) {
+        if (window.confirm("Are you sure you wish to switch this shipment "+switchStatus+" ?")) {
+            $.blockUI();
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'response-switch')); ?>", {sid: sid,switchStatus: switchStatus, format: "html"},
+            function (data) {
+                alert(data);
+                drawTable();
+                $.unblockUI();
+            });
+        }else{
+            drawTable();
+        }
+
+    }
+
     function removeShipment(sid) {
         if (window.confirm("Are you sure you wish to delete? This cannot be undone !")) {
             $.blockUI();
@@ -225,7 +242,7 @@ if (isset($this->unshippedDistro) && count($this->unshippedDistro) > 0 && $this-
                 {"sClass": "center"},
                 {"sClass": "center"},
                 {"sClass": "center"},
-//                {"sClass": "center"},
+                {"sClass": "center"},
 //                {"sClass": "center"},
                 {"sClass": "center", "bSortable": false}
             ],
@@ -252,6 +269,8 @@ if (isset($this->unshippedDistro) && count($this->unshippedDistro) > 0 && $this-
                 $('td.sorting_1').addClass('goga');
             },
         });
+        
+    
 
 <?php
 if (isset($this->searchData) && $this->searchData != '') {

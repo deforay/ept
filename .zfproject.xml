@@ -192,6 +192,7 @@
               <actionMethod actionName="deleteNonRespondedParticipant"/>
               <actionMethod actionName="shipmentNotEnrolledParticipants"/>
               <actionMethod actionName="enrollShipmentParticipant"/>
+              <actionMethod actionName="responseSwitch"/>
             </controllerFile>
             <controllerFile controllerName="Evaluate">
               <actionMethod actionName="index"/>
@@ -432,6 +433,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="DtsSettings">
                 <viewScriptFile forActionName="index"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Shipment">
+                <viewScriptFile forActionName="responseSwitch"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>
