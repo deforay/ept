@@ -55,38 +55,7 @@
 				
             </div>
 			
-            <div class="form-group">
-                <label for="dtsPassPercentage" class="col-lg-3 control-label">DTS Pass Percentage <span class="mandatory">*</span></label>
-                <div class="col-lg-1 input-group" style="width:140px;">
-			<input type="text" id="dtsPassPercentage" name="dtsPassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo $this->config->evaluation->dts->passPercentage; ?>"/>
-			<span class="input-group-addon">%</span>
-		</div>				
-            </div>
-			
-            <div class="form-group">
-                <label for="dtsPassPercentage" class="col-lg-3 control-label">DTS Documentation Score (Percentage)<span class="mandatory">*</span></label>
-                <div class="col-lg-1 input-group" style="width:140px;">
-			<input type="text" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Documentation Score Percentage" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>"/>
-			<span class="input-group-addon">%</span>
-		</div>				
-            </div>
-			
-            <div class="form-group">
-                <label for="dtsOptionalTest3" class="col-lg-3 control-label">DTS Test 3 is Optional<span class="mandatory">*</span></label>
-				<div class="col-lg-6">
-					<input type="radio" name="dtsOptionalTest3" id="dtsOptionalTest3_yes" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3=="yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether 3rd Test Is optional or not"/> Yes
-					<input type="radio" name="dtsOptionalTest3" id="dtsOptionalTest3_no" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
-				</div>			
-            </div>
-        <div class="form-group">
-			<label for="schemeId" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
-			<div class="col-lg-6">  
-				<select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
-					<option value="1" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays=="1") ? " selected='selected' " : ""; ?>>1</option>
-					<option value="2" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays=="2") ? " selected='selected' " : ""; ?>>2</option>
-				</select>
-			</div>
-	     </div>			
+				
 
             </table>
             <br>

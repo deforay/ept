@@ -1,6 +1,7 @@
 <?php
 
-class Admin_GlobalConfigController extends Zend_Controller_Action {
+class Admin_DtsSettingsController extends Zend_Controller_Action
+{
 
     public function init() {
         $this->_helper->layout()->pageName = 'configMenu';
@@ -15,10 +16,11 @@ class Admin_GlobalConfigController extends Zend_Controller_Action {
            // Zend_Debug::dump($this->_getAllParams());die;
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
-            $config->$sec->map->center = $this->getRequest()->getPost('mapCenter');
-            $config->$sec->map->zoom = $this->getRequest()->getPost('mapZoom');
-            $config->$sec->instituteName = $this->getRequest()->getPost('instituteName');
-            
+
+            $config->$sec->evaluation->dts->passPercentage = $this->getRequest()->getPost('dtsPassPercentage');
+            $config->$sec->evaluation->dts->documentationScore = $this->getRequest()->getPost('dtsDocumentationScore');
+            $config->$sec->evaluation->dts->dtsOptionalTest3 = $this->getRequest()->getPost('dtsOptionalTest3');
+            $config->$sec->evaluation->dts->sampleRehydrateDays = $this->getRequest()->getPost('sampleRehydrateDays');
 
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)
@@ -27,16 +29,10 @@ class Admin_GlobalConfigController extends Zend_Controller_Action {
 
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-            $params = $this->_getAllParams();
-            $commonServices->updateConfig($params);
         }
 
         $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-        $assign = $commonServices->getGlobalConfigDetails();
-
-        $this->view->assign($assign);
-        $this->view->allSchemes = $commonServices->getFullSchemesDetails();
     }
 
 }
