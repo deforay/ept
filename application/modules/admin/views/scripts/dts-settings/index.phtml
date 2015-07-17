@@ -9,17 +9,17 @@
             <div class="form-group">
                 <label for="dtsPassPercentage" class="col-lg-3 control-label">DTS Pass Percentage <span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
-			<input type="text" id="dtsPassPercentage" name="dtsPassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo $this->config->evaluation->dts->passPercentage; ?>"/>
-			<span class="input-group-addon">%</span>
-		</div>				
+					<input type="text" id="dtsPassPercentage" name="dtsPassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo $this->config->evaluation->dts->passPercentage; ?>"/>
+					<span class="input-group-addon">%</span>
+				</div>				
             </div>
 			
             <div class="form-group">
                 <label for="dtsPassPercentage" class="col-lg-3 control-label">DTS Documentation Score (Percentage)<span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
-			<input type="text" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Documentation Score Percentage" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>"/>
-			<span class="input-group-addon">%</span>
-		</div>				
+					<input type="text" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Documentation Score Percentage" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>"/>
+					<span class="input-group-addon">%</span>
+				</div>				
             </div>
 			
             <div class="form-group">
@@ -29,15 +29,75 @@
 					<input type="radio" name="dtsOptionalTest3" id="dtsOptionalTest3_no" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
 				</div>			
             </div>
-        <div class="form-group">
-			<label for="schemeId" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
-			<div class="col-lg-6">  
-				<select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
-					<option value="1" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays=="1") ? " selected='selected' " : ""; ?>>1</option>
-					<option value="2" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays=="2") ? " selected='selected' " : ""; ?>>2</option>
-				</select>
-			</div>
-	     </div>			
+			<div class="form-group">
+				<label for="schemeId" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
+				<div class="col-lg-6">  
+					<select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
+						<option value="1" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays=="1") ? " selected='selected' " : ""; ?>>1</option>
+						<option value="2" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays=="2") ? " selected='selected' " : ""; ?>>2</option>
+					</select>
+				</div>
+			 </div>
+			<p class="mandatory">Note : <br/>
+			<ul>
+				<li>If a response does not contain the following recommended Testkits, participants will not pass for the respective samples.</li>
+				<li>If you don't want to enforce the testkit check, please leave the following 3 options blank</li>
+				<li>Please set the <a href="/admin/testkit/standard-kit">DTS Standard Testkits</a> before you do the below</li>
+			</ul>
+			
+			</p>
+			<div class="form-group">
+				<label for="testkit1" class="col-lg-3 control-label">Recommended Testkit 1</label>
+				<div class="col-lg-6">  
+					<select name="testkit1[]" id="testkit1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+                        <?php
+                        foreach ($this->allTestKits as $key => $testkit) {
+                            if ($testkit['testkit_1'] == '1') {
+                                ?>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'],$this->recommendedTestkits[1])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                <?php
+                            }
+                        }
+                        ?>
+                    </select>
+				</div>
+			 </div>
+			
+			<div class="form-group">
+				<label for="testkit2" class="col-lg-3 control-label">Recommended Testkit 2</label>
+				<div class="col-lg-6">  
+					<select name="testkit2[]" id="testkit2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+                        <?php
+                        foreach ($this->allTestKits as $key => $testkit) {
+                            if ($testkit['testkit_2'] == '1') {
+                                ?>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'],$this->recommendedTestkits[2])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                <?php
+                            }
+                        }
+                        ?>
+                    </select>
+				</div>
+			 </div>
+			
+			
+			<div class="form-group">
+				<label for="testkit3" class="col-lg-3 control-label">Recommended Testkit 3</label>
+				<div class="col-lg-6">  
+					<select name="testkit3[]" id="testkit3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+                        <?php
+                        foreach ($this->allTestKits as $key => $testkit) {
+                            if ($testkit['testkit_3'] == '1') {
+                                ?>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'],$this->recommendedTestkits[3])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                <?php
+                            }
+                        }
+                        ?>
+                    </select>
+				</div>
+			 </div>
+			
 
             </table>
             <br>
@@ -63,6 +123,8 @@
         }
 	}
           $(document).ready(function() {
-        $('#schemeId').multiselect();
-    });
+				$('.multipleSelect').multiselect({
+					includeSelectAllOption: true
+				});
+			});
 </script>

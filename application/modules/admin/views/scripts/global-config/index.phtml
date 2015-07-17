@@ -50,8 +50,8 @@
             <div class="form-group">
                 <label for="mapZoom" class="col-lg-3 control-label">Map Zoom <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-			<input type="text" id="mapZoom" name="mapZoom" size="50" maxlength="45" class="isRequired form-control" placeholder="Please enter the map zoom" value="<?php echo $this->config->map->zoom; ?>" style="width:70px;"/>
-		</div>
+					<input type="text" id="mapZoom" name="mapZoom" size="50" maxlength="45" class="isRequired form-control" placeholder="Please enter the map zoom" value="<?php echo $this->config->map->zoom; ?>" style="width:70px;"/>
+				</div>
 				
             </div>
 			
@@ -84,6 +84,8 @@
         }
 	}
           $(document).ready(function() {
-        $('#schemeId').multiselect();
-    });
+				$('#schemeId').multiselect({
+					includeSelectAllOption: true
+				});
+			});
 </script>

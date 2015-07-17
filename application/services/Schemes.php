@@ -30,6 +30,37 @@ class Application_Service_Schemes {
 //        }
         return $stmt;
     }
+    
+    public function getRecommededDtsTestkit($testKit = null) {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('dts_recommended_testkits'));
+
+        if ($testKit != null && (int)$testKit > 0 && (int)$testKit <=3) {
+            $sql = $sql->where('test_no = '. (int)$testKit);
+        }
+
+        $stmt = $db->fetchAll($sql);
+        $retval = array();
+        foreach ($stmt as $t) {
+            $retval[$t['test_no']][] = $t['testkit'];
+        }
+        return $retval;
+    }
+    
+    public function setRecommededDtsTestkit($recommended) {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->delete('dts_recommended_testkits');
+        foreach($recommended as $testNo => $kits){
+            foreach($kits as $kit){
+                $data = array('test_no' => $testNo,
+                               'testkit' => $kit
+                            );
+                $db->insert('dts_recommended_testkits', $data);
+            }
+        }
+    }
 
 
     public function getEidExtractionAssay() {

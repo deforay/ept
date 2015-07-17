@@ -2059,3 +2059,11 @@ INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response
 
 -- Amit Jul 17 2015
 ALTER TABLE `shipment` ADD `response_switch` VARCHAR(255) NOT NULL DEFAULT 'off' AFTER `number_of_samples`;
+
+CREATE TABLE IF NOT EXISTS `dts_recommended_testkits` (
+  `test_no` int(11) NOT NULL,
+  `testkit` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `dts_recommended_testkits`
+ ADD PRIMARY KEY (`test_no`,`testkit`);
