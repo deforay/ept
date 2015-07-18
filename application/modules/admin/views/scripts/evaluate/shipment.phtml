@@ -43,13 +43,13 @@
 					<td style="text-align: center;">< ?php echo $shipment['last_not_participated_mail_count'] ?></td>-->
 					<td style="text-align: center;">
 						<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
-						<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
+										<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
+																
+							  <?php if($nonResponse > 0){?>
+									<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> Not Responded Participants</span></a>
+							  <?php }
                                                 
-						<?php if($nonResponse > 0){?>
-                                                <a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> Not Responded Participants</span></a>
-						<?php }
-                                                
-                                                } else { ?>
+							  } else { ?>
 						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
 						<?php }?>
 					</td>

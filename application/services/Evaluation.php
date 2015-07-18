@@ -1272,6 +1272,7 @@ class Application_Service_Evaluation {
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 		$correctiveActions = $schemeService->getDtsCorrectiveActions();
+		$recommendedTestkits = $schemeService->getRecommededDtsTestkit();
 
 		foreach ($shipmentResult as $shipment) {
 			//Zend_Debug::dump($shipment);
@@ -1387,6 +1388,17 @@ class Application_Service_Evaluation {
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
 				}
+				
+				if(isset($recommendedTestkits[1]) && count($recommendedTestkits[1]) > 0){
+					if(!in_array($results[0]['test_kit_name_1'],$recommendedTestkits[1])){
+						$tk1RecommendedUsed = false;
+						$failureReason[] = array('warning' => "For Test 1, testing is not performed with country approved test kit.",
+							'correctiveAction' => $correctiveActions[2]);							
+					}else{
+						$tk1RecommendedUsed = true;
+					}
+				}
+				
 			}
 
 			if ($testKit2 != "") {
@@ -1408,6 +1420,16 @@ class Application_Service_Evaluation {
 						'correctiveAction' => $correctiveActions[6]);
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
+				}
+				
+				if(isset($recommendedTestkits[2]) && count($recommendedTestkits[2]) > 0){
+					if(!in_array($results[0]['test_kit_name_2'],$recommendedTestkits[2])){
+						$tk2RecommendedUsed = false;
+						$failureReason[] = array('warning' => "For Test 2, testing is not performed with country approved test kit.",
+							'correctiveAction' => $correctiveActions[2]);							
+					}else{
+						$tk2RecommendedUsed = true;
+					}
 				}
 			}
 
@@ -1432,6 +1454,16 @@ class Application_Service_Evaluation {
 						'correctiveAction' => $correctiveActions[6]);
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
+				}
+				
+				if(isset($recommendedTestkits[3]) && count($recommendedTestkits[3]) > 0){
+					if(!in_array($results[0]['test_kit_name_3'],$recommendedTestkits[3])){
+						$tk3RecommendedUsed = false;
+						$failureReason[] = array('warning' => "For Test 3, testing is not performed with country approved test kit.",
+							'correctiveAction' => $correctiveActions[2]);							
+					}else{
+						$tk3RecommendedUsed = true;
+					}
 				}
 			}
 			//checking if testkits were repeated
@@ -1690,7 +1722,8 @@ class Application_Service_Evaluation {
 						$shipment['is_excluded'] = 'yes';
 					}
 					//T.5 Ensure expiry date information is submitted for all performed tests.
-					if (isset($tk1Expired) && $tk1Expired) {
+					//T.15 Testing performed with a test kit that is not recommended by MOH
+					if ((isset($tk1Expired) && $tk1Expired) || (isset($tk1RecommendedUsed) && !$tk1RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
 						if($correctResponse){
 							$totalScore -= $result['sample_score'];
@@ -1707,7 +1740,8 @@ class Application_Service_Evaluation {
 						$shipment['is_excluded'] = 'yes';
 					}
 					//T.5 Ensure expiry date information is submitted for all performed tests.
-					if (isset($tk2Expired) && $tk2Expired) {
+					//T.15 Testing performed with a test kit that is not recommended by MOH
+					if ((isset($tk2Expired) && $tk2Expired) || (isset($tk2RecommendedUsed) && !$tk2RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
 						if($correctResponse){
 							$totalScore -= $result['sample_score'];
@@ -1724,7 +1758,8 @@ class Application_Service_Evaluation {
 						$shipment['is_excluded'] = 'yes';
 					}
 					//T.5 Ensure expiry date information is submitted for all performed tests.
-					if (isset($tk3Expired) && $tk3Expired) {
+					//T.15 Testing performed with a test kit that is not recommended by MOH
+					if ((isset($tk3Expired) && $tk3Expired) || (isset($tk3RecommendedUsed) && !$tk3RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
 						if($correctResponse){
 							$totalScore -= $result['sample_score'];
@@ -1851,6 +1886,7 @@ class Application_Service_Evaluation {
 			}
 
 			$shipmentResult[$counter]['max_score'] = $maxScore;
+			$shipmentResult[$counter]['final_result'] = $finalResult;
 
 			// let us update the total score in DB
 			$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult,"is_followup" => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
