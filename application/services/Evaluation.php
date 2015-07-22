@@ -1393,7 +1393,7 @@ class Application_Service_Evaluation {
 					if(!in_array($results[0]['test_kit_name_1'],$recommendedTestkits[1])){
 						$tk1RecommendedUsed = false;
 						$failureReason[] = array('warning' => "For Test 1, testing is not performed with country approved test kit.",
-							'correctiveAction' => $correctiveActions[2]);							
+							'correctiveAction' => $correctiveActions[17]);							
 					}else{
 						$tk1RecommendedUsed = true;
 					}
@@ -1426,7 +1426,7 @@ class Application_Service_Evaluation {
 					if(!in_array($results[0]['test_kit_name_2'],$recommendedTestkits[2])){
 						$tk2RecommendedUsed = false;
 						$failureReason[] = array('warning' => "For Test 2, testing is not performed with country approved test kit.",
-							'correctiveAction' => $correctiveActions[2]);							
+							'correctiveAction' => $correctiveActions[17]);							
 					}else{
 						$tk2RecommendedUsed = true;
 					}
@@ -1460,7 +1460,7 @@ class Application_Service_Evaluation {
 					if(!in_array($results[0]['test_kit_name_3'],$recommendedTestkits[3])){
 						$tk3RecommendedUsed = false;
 						$failureReason[] = array('warning' => "For Test 3, testing is not performed with country approved test kit.",
-							'correctiveAction' => $correctiveActions[2]);							
+							'correctiveAction' => $correctiveActions[17]);							
 					}else{
 						$tk3RecommendedUsed = true;
 					}

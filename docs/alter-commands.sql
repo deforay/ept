@@ -2067,3 +2067,26 @@ CREATE TABLE IF NOT EXISTS `dts_recommended_testkits` (
 
 ALTER TABLE `dts_recommended_testkits`
  ADD PRIMARY KEY (`test_no`,`testkit`);
+ 
+ 
+ -- Amit Jul 21 2015
+ 
+ 
+INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES
+(1, 'Please submit response before last date', 'Late response, response not evaluated. Your response received after last date. Expected result for PT panel will be available for your reference. '),
+(2, 'Review and refer to SOP for testing. Sample should be tested per National HIV Testing algorithm. ', 'For sample (1/2/3?) National HIV Testing algorithm was not followed.'),
+(3, 'Review all testing procedures prior to performing client testing as reported result does not match expected result.', 'Sample (1/2/3?) reported result does not match with expected result.'),
+(4, 'You are required to test all samples in PT panel', 'Sample (1/2/3) was not reported '),
+(5, 'Ensure expired test kit are not be used for testing. If test kits are not available, please contact your superior.', 'Test kit XYZ expired M days before the test date DD-MON-YYY.'),
+(6, 'Ensure expiry date information is submitted for all performed tests.', 'Result not evaluated Ð test kit expiry date (first/second/third) is not reported with PT response.'),
+(7, 'Ensure test kit name is reported for all performed tests.', 'Result not evaluated Ð name of test kit not reported.'),
+(8, 'Please use the approved test kits according to the SOP/National HIV Testing algorithm for confirmatory and tie-breaker.', 'Testkit XYZ repeated for all 3 test kits'),
+(9, 'Please use the approved test kits according to the SOP/National HIV Testing algorithm for confirmatory and tie-breaker.', 'Test kit repeated for confirmatory or tiebreaker test (T1/T2/T3).'),
+(10, 'Ensure test kit lot number is reported for all performed tests. ', 'Result not evaluated Ð Test Kit lot number (first/second/third) is not reported.'),
+(11, 'Ensure to provide supervisor approval along with his name.', 'Missing supervisor approval for reported result.'),
+(12, 'Ensure to provide sample rehydration date', 'Re-hydration date missing in PT report form.'),
+(13, 'Ensure to provide to provide panel testing date.', 'Testing date missing in PT report form.'),
+(14, 'DTS Testing should be done within specified hours of rehydration as per SOP.', 'Testing is not performed within X to Y hours of rehydration.'),
+(15, 'Review all testing procedures prior to performing client testing and contact your supervisor for improvement.', 'Participant did not meet the score criteria (Participant Score is 80 and Required Score is 95)'),
+(16, 'Ensure to provide to provide panel receipt date. ', 'Panel receipt date missing in PT report form.'),
+(17, 'Please test DTS sample as per National HIV Testing algorithm. Review and refer to SOP for testing.', 'For Test (1/2/3) testing is not performed with country approved test kit.');
