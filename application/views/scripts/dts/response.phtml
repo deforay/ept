@@ -26,7 +26,7 @@
             <?php
         } else if ($response == 1) {
             ?>
-            <h5 align="CENTER" style="color:red">Your response is late. Your result will not be evaluated </h5>
+            <h5 align="CENTER" style="color:red">Your response is late.</h5>
             <?php
         } else if ($this->shipment['status'] == 'finalized') {
             ?>
@@ -327,6 +327,7 @@
 <?php if (!$this->isEditable) {
     ?>
             $("#dtsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
+            $(".icon-remove-sign").remove();
     <?php
 }
 ?>

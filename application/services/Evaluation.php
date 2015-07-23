@@ -1383,7 +1383,7 @@ class Application_Service_Evaluation {
 					}
 					
 				} else {
-					$failureReason[] = array('warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) reported without expiry date. Result not evaluated.",
+					$failureReason[] = array('warning' => "Result not evaluated – Test kit 1 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]);
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
@@ -1416,7 +1416,7 @@ class Application_Service_Evaluation {
 						$tk2Expired = false;
 					}
 				} else {
-					$failureReason[] = array('warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) reported without expiry date. Result not evaluated.",
+					$failureReason[] = array('warning' => "Result not evaluated – Test kit 2 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]);
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
@@ -1450,7 +1450,7 @@ class Application_Service_Evaluation {
 					}
 				} else {
 
-					$failureReason[] = array('warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) reported without expiry date. Result not evaluated.",
+					$failureReason[] = array('warning' => "Result not evaluated – Test kit 3 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]);
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
@@ -1505,7 +1505,7 @@ class Application_Service_Evaluation {
 			if ($testKit1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
 				if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
 					$lotResult = 'Fail';
-					$failureReason[] = array('warning' => "<strong>Lot No. 1</strong> was not reported. Result not evaluated.",
+					$failureReason[] = array('warning' => "Result not evaluated – Test Kit lot number 1 is not reported.",
 						'correctiveAction' => $correctiveActions[10]);
 					$correctiveActionList[] = 10;
 					$shipment['is_excluded'] = 'yes';
@@ -1514,7 +1514,7 @@ class Application_Service_Evaluation {
 			if ($testKit2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)) {
 				if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
 					$lotResult = 'Fail';
-					$failureReason[] = array('warning' => "<strong>Lot No. 2</strong> was not reported. Result not evaluated.",
+					$failureReason[] = array('warning' => "Result not evaluated – Test Kit lot number 2 is not reported.",
 						'correctiveAction' => $correctiveActions[10]);
 					$correctiveActionList[] = 10;
 					$shipment['is_excluded'] = 'yes';
@@ -1523,7 +1523,7 @@ class Application_Service_Evaluation {
 			if ($testKit3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)) {
 				if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
 					$lotResult = 'Fail';
-					$failureReason[] = array('warning' => "<strong>Lot No. 3</strong> was not reported. Result not evaluated.",
+					$failureReason[] = array('warning' => "Result not evaluated – Test Kit lot number 3 is not reported.",
 						'correctiveAction' => $correctiveActions[10]);
 					$correctiveActionList[] = 10;
 					$shipment['is_excluded'] = 'yes';
@@ -1582,7 +1582,7 @@ class Application_Service_Evaluation {
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
+								$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]);
 								$correctiveActionList[] = 2;
 							}
@@ -1595,7 +1595,7 @@ class Application_Service_Evaluation {
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
+								$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]);
 								$correctiveActionList[] = 2;
 							}
@@ -1603,7 +1603,7 @@ class Application_Service_Evaluation {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
-							$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Serial Algorithm was not followed ($algoString)",
+							$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 								'correctiveAction' => $correctiveActions[2]);
 							$correctiveActionList[] = 2;
 						}
@@ -1615,7 +1615,7 @@ class Application_Service_Evaluation {
 							} else {
 
 								$algoResult = 'Fail';
-								$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
+								$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]);
 								$correctiveActionList[] = 2;
 							}
@@ -1628,7 +1628,7 @@ class Application_Service_Evaluation {
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
+								$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]);
 								$correctiveActionList[] = 2;
 							}
@@ -1638,7 +1638,7 @@ class Application_Service_Evaluation {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
-							$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> Parallel Algorithm was not followed ($algoString)",
+							$failureReason[] = array('warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 								'correctiveAction' => $correctiveActions[2]);
 							$correctiveActionList[] = 2;
 						}
@@ -1681,7 +1681,7 @@ class Application_Service_Evaluation {
 				if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
 					$mandatoryResult = 'Fail';
 					$shipment['is_excluded'] = 'yes';
-					$failureReason[] = array('warning' => "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported. Result not evaluated.",
+					$failureReason[] = array('warning' => "Sample <strong>" . $result['sample_label'] . "</strong> was not reported. Result not evaluated.",
 						'correctiveAction' => $correctiveActions[4]);
 					$correctiveActionList[] = 4;
 				}
@@ -1699,7 +1699,7 @@ class Application_Service_Evaluation {
 							}
 						} else {
 							if ($result['sample_score'] > 0) {
-								$failureReason[] = array('warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported Sample result does not match the reference result",
+								$failureReason[] = array('warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported result does not match the expected result",
 									'correctiveAction' => $correctiveActions[3]);
 								$correctiveActionList[] = 3;
 							}
@@ -1716,7 +1716,7 @@ class Application_Service_Evaluation {
 				if(isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null){
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit1 == "")) {
-						$failureReason[] = array('warning' => "Test Kit 1 not reported. Excluded from Evaluation",
+						$failureReason[] = array('warning' => "Result not evaluated – name of Test kit 1 not reported.",
 							'correctiveAction' => $correctiveActions[7]);
 						$correctiveActionList[] = 7;
 						$shipment['is_excluded'] = 'yes';
@@ -1734,7 +1734,7 @@ class Application_Service_Evaluation {
 				if(isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null){
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit2 == "")) {
-						$failureReason[] = array('warning' => "Test Kit 2 not reported. Excluded from Evaluation",
+						$failureReason[] = array('warning' => "Result not evaluated – name of Test kit 2 not reported.",
 							'correctiveAction' => $correctiveActions[7]);
 						$correctiveActionList[] = 7;
 						$shipment['is_excluded'] = 'yes';
@@ -1752,7 +1752,7 @@ class Application_Service_Evaluation {
 				if(isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null){
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit3 == "")) {
-						$failureReason[] = array('warning' => "Test Kit 3 not reported. Excluded from Evaluation",
+						$failureReason[] = array('warning' => "Result not evaluated – name of Test kit 3 not reported.",
 							'correctiveAction' => $correctiveActions[7]);
 						$correctiveActionList[] = 7;
 						$shipment['is_excluded'] = 'yes';
