@@ -15,12 +15,16 @@
 		vertical-align: middle !important;
 	}
 	
+	th,td{
+		vertical-align: middle !important;
+	}
+	
 </style>
 <section id="content">
     <div class="main">
             <div class="container_24">
             	<div class="container">
-                    <div class="grid_8 alpha">
+<!--                    <div class="grid_8 alpha">
                         <div class="suffix_1">
                            <div class="box">
                            	<div class="indent-box">
@@ -34,11 +38,11 @@
                            </div>
                         </div>
                     </div>
-                       <div class="grid_10 alpha">
+-->                      <!-- <div class="grid_10 alpha">
                         
                            <div class="tail container">
                               <img alt="" src="<?php echo $this->baseUrl("images/manicon.PNG"); ?>" width="50" height="50" class="img-left" />
-                              <span class="txt">User Information <a href="<?php echo $this->url(array('controller'=>'participant','action'=>'user-info'),'default',true); ?>" class="link" style="font-size:10px;text-transform: lowercase;">modify</a> </span>
+                              <span class="txt">Your ePT User Profile <a href="<?php echo $this->url(array('controller'=>'participant','action'=>'user-info'),'default',true); ?>" class="link" style="font-size:10px;text-transform: lowercase;">modify</a> </span>
                               
 							  <div style="margin-left: 60px;">
                         	  	<h3 style="width:700px;"><span style="color:#df7a18;"> Your Name : </span> <?php echo( ($this->authNameSpace->first_name ) . "  " . ($this->authNameSpace->last_name ) );?> <br/>
@@ -46,12 +50,13 @@
                         </div>
                               <br class="clear" />          
                         </div>
-                    </div>
+                    </div>-->
                 </div>        
                         
             </div>
-            <br>
-		<span class="txt">Overview</span>
+			<h1 style="text-transform:none;border-bottom:1px solid #999;">ePT Dashboard <span style="font-size:13px;font-weight:normal;">Track all your PT Shipment responses</span></h1>
+			
+		<span class="txt">ePT Overview</span>
 		<table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="overviewTable">
 			<thead>
 				<tr>
@@ -70,17 +75,17 @@
 		</table>
 			
 		<br>
-	       <span class="txt">Current Schemes</span>
+	       <span class="txt">Current/Active Schemes</span>
 	       <table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="currentSchemeTable">
 			       <thead>
 				       <tr>
-					       <th>Shipment Date</th>
-					       <th>Scheme</th>
-					       <th>Shipment Code</th>
+					       <th style="width:70px;">Shipment<br/>Date</th>
+					       <th style="width:50px;">Scheme</th>
+					       <th style="width:100px;">Shipment Code</th>
 					       <th>Participant</th>
-					       <th>Last Date</th>
-					       <th>Response Date</th>
-					       <th>Action</th>
+					       <th style="width:70px;">Last Date</th>
+					       <th style="width:70px;">Response<br/>Date</th>
+					       <th style="width:100px;">Action</th>
 				       </tr>
 			       </thead>
 			       <tbody>
@@ -96,15 +101,15 @@
 			<table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="defaultedSchemeTable">
 					<thead>
 						<tr>
-							<th>Year</th>
-							<th>Shipment Date</th>
-							<th>Scheme</th>
-							<th>Shipment Code</th>
+							<th style="width:30px;">Year</th>
+							  <th style="width:70px;">Shipment<br/>Date</th>
+					       <th style="width:50px;">Scheme</th>
+					       <th style="width:100px;">Shipment Code</th>
 							<th>Participant</th>
-							<th>Last Date</th>
+							<th style="width:70px;">Last Date</th>
 							<th>Status</th>
-							<th>Response Date</th>
-							<th>Action</th>
+							<th style="width:70px;">Response<br/>Date</th>
+							<th style="width:100px;">Action</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -118,13 +123,13 @@
 			<table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="allSchemeTable">
 				<thead>
 				    <tr>
-					<th>Year</th>
-					<th>Shipment Date</th>
-					<th>Scheme</th>
-					<th>Shipment Code</th>
+					<th style="width:30px;">Year</th>
+					<th style="width:70px;">Shipment<br/>Date</th>
+					<th style="width:50px;">Scheme</th>
+					<th style="width:100px;">Shipment Code</th>
 					<th>Participant</th>
-					<th>Response Date</th>
-					<th>Action</th>
+					<th style="width:70px;">Response<br/>Date</th>
+					<th style="width:100px;">Action</th>
 					<th>Report</th>
 	    
 				    </tr>
@@ -136,9 +141,9 @@
 				</tbody>
 			</table>
 			
-			<br>
-			<span class="txt">Shipment Report</span>
-			<table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="dataManagerSchemeTable">
+			<!--<br>
+			<span class="txt">Shipment Report</span>-->
+<!--			<table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="dataManagerSchemeTable">
 				<thead>
 				    <tr>
 					<th>Year</th>
@@ -155,7 +160,7 @@
 				    </tr>
 				</tbody>
 			</table>
-    </div>
+-->    </div>
 </section>
 <script src="<?php echo $this->baseUrl("js/jquery.dataTables.min.js"); ?>" type="text/javascript"></script>
 <script>
@@ -263,7 +268,7 @@
 			    {"sClass":"center"},
 			    {"sClass":"center","bSortable":false}
 			],
-			"aaSorting": [[ 0, "desc" ]],
+			"aaSorting": [[ 3, "asc" ]],
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'current-schemes', 'format' => 'html')); ?>",
@@ -315,37 +320,37 @@
 	}
 	
 	function dataManagerSchemes(){
-		oTable = $('#dataManagerSchemeTable').dataTable({
-			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
-			},
-			"bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center","bSortable":false}
-			],
-			"aaSorting": [[ 1, "desc" ]],
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'shipment-report', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
-			}
-		});
+		//oTable = $('#dataManagerSchemeTable').dataTable({
+		//	"oLanguage": {
+		//	    "sLengthMenu": "_MENU_ records per page"
+		//	},
+		//	"bJQueryUI": false,
+		//	"bAutoWidth": false,
+		//	"bInfo": true,
+		//	"bScrollCollapse": true,
+		//	"sPaginationType": "full_numbers",
+		//	"bRetrieve": true,                        
+		//	"aoColumns": [
+		//	    {"sClass":"center"},
+		//	    {"sClass":"center"},
+		//	    {"sClass":"center"},
+		//	    {"sClass":"center"},
+		//	    {"sClass":"center","bSortable":false}
+		//	],
+		//	"aaSorting": [[ 1, "desc" ]],
+		//	"bProcessing": true,
+		//	"bServerSide": true,
+		//	"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'shipment-report', 'format' => 'html')); ?>",
+		//	"fnServerData": function ( sSource, aoData, fnCallback ) {
+		//	    $.ajax({
+		//		"dataType": 'json',
+		//		"type": "POST",
+		//		"url": sSource,
+		//		"data": aoData,
+		//		"success": fnCallback
+		//	    });
+		//	}
+		//});
 	}
         function removeSchemes(schemeType,mid){
 		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 

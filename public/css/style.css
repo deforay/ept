@@ -154,7 +154,7 @@ h4{color:#5e5e5e; font-size:1em; margin-bottom:9px;  }
 h5{color:#0c80a5; font-size:1em; font-weight:normal;  }
 .tail{ background:url(../images/tail.gif) bottom repeat-x; padding-bottom:22px; margin-bottom:21px}
 .txt-1{ float:right; display:block; margin-bottom:31px; font-weight:bold; color:#5e5e5e}
-.txt{ text-transform:uppercase; color:#0c80a5; display:block; font-size:16px; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; font-weight:bold}
+.txt{ /*text-transform:uppercase;*/ color:#0c80a5; display:block; font-size:16px; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; font-weight:bold}
 .link_1{color:#0c80a5; text-decoration:none}
 .link_1:hover{text-decoration: underline }
 .link_2{color:#df7a18; text-decoration:none}
