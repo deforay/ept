@@ -46,7 +46,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
     public function updateShipmentStatusByDistribution($distributionId, $status) {
         if (isset($status) && $status != null && $status != "") {
-            return $this->update(array('status' => $status), "distribution_id = $distributionId");
+            return $this->update(array('response_switch' =>'on','status' => $status), "distribution_id = $distributionId");
         } else {
             return 0;
         }

@@ -156,13 +156,13 @@ class Application_Service_Shipments {
 				$mailedOn=  explode(' ', $aRow['last_new_shipment_mailed_on']);
 				$mailedOn=  Pt_Commons_General::humanDateFormat($mailedOn[0]).' '.$mailedOn[1];
             }
-			if($aRow['status'] != 'finalized'){
+			if($aRow['status'] != 'finalized' && $aRow['status'] != 'ready' && $aRow['status'] != 'pending'){
 				$responseSwitch = "<select onchange='responseSwitch(this.value,".$aRow['shipment_id'].")'>";
 				$responseSwitch .= "<option value='on'".(isset($aRow['response_switch']) && $aRow['response_switch'] =="on" ? " selected='selected' " : "").">On</option>";
 				$responseSwitch .= "<option value='off'".(isset($aRow['response_switch']) && $aRow['response_switch'] =="off" ? " selected='selected' " : "").">Off</option>";
 				$responseSwitch .= "</select>";
 			}else{
-				$responseSwitch = 'Not Applicable';
+				$responseSwitch = '-';
 			}
            
             //$row[] = $aRow['shipment_code'];
