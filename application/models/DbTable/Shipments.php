@@ -303,6 +303,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         //->order('s.shipment_date')
         //->order('spm.participant_id')
         ;
+		
+		if(isset($parameters['currentType'])){
+			if($parameters['currentType'] == 'active'){
+				$sQuery = $sQuery->where("s.response_switch = 'on'");
+			}else if ($parameters['currentType'] == 'inactive'){
+				$sQuery = $sQuery->where("s.response_switch = 'off'");
+			}
+		}
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -334,6 +342,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
                 ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                 ->where("s.lastdate_response >=  CURDATE()");
 
+		if(isset($parameters['currentType'])){
+			if($parameters['currentType'] == 'active'){
+				$sQuery = $sQuery->where("s.response_switch = 'on'");
+			}else if ($parameters['currentType'] == 'inactive'){
+				$sQuery = $sQuery->where("s.response_switch = 'off'");
+			}
+		}
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 
