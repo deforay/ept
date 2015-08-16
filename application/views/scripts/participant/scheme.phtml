@@ -1,7 +1,7 @@
+<h2 class="txt text-info">Participant/Laboratory Information</h2>
 <div id="view-content">
-<span class="txt">Participant/Laboratory Information</span>
-	<br>
-			<table>
+
+			<table class="table" id="participantsTable">
 				<thead>
 					<tr>
 					<th>Participant ID</th>
@@ -31,3 +31,23 @@
 			</table>
 			
 </div>
+<script type="text/javascript">
+		
+	
+	
+	$(document).ready(function(){
+		$('#participantsTable').dataTable({
+			"oLanguage": {
+			    "sLengthMenu": "_MENU_ records per page"
+			},
+			"bJQueryUI": false,
+			"bAutoWidth": false,
+			"bInfo": true,
+			"bScrollCollapse": true,
+			"sPaginationType": "full_numbers",
+			"bRetrieve": true,                        
+			
+		});
+	});
+	
+</script>

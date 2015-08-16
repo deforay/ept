@@ -8,23 +8,18 @@
 </style>
 
 
-
-		
+<h1 class="txt text-info">Contact Us</h1>
+		<p>Please fill in this form to apply as a Participant for the ePT Program or to send us questions or feedback. </p>
 <form name="contactForm" id="contactForm" method="post" action="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>">
 
-    <table style="width: 50%;margin: auto;" cellspacing="15" cellpadding="15">
-		<tr>
-			<td colspan="2">
-				<h1 class="txt" style="text-align: center;">Contact Us</span></h1>
-				<p>Please fill in this form to apply as a Participant for the ePT Program or to send us questions or feedback. </p>
-			</td>
-		</tr>
+    <table style="width: 70%;margin: auto;" class="table table-striped table-hover" cellspacing="15" cellpadding="15">
+
         <tr> 
-            <th>
+            <th style="width:25%;">
 				<label for="first_name" class="first_name" data-icon="u"> First Name <span class="mandatory">*</span> </label>
 			</th>
             <td>
-				<input id="first_name" name="first_name" class="isRequired" title="Please enter your first name" type="text" placeholder="your first name"/>
+				<input id="first_name" name="first_name" class="isRequired form-control" title="Please enter your first name" type="text" placeholder="Please enter your first name"/>
 			</td>
         </tr>
         <tr> 
@@ -32,7 +27,7 @@
 				<label for="last_name" class="last_name" data-icon="u"> Last Name <span class="mandatory">*</span> </label>
 			</th>
             <td>
-				<input id="last_name" name="last_name" class="isRequired" title="Please enter your last name" type="text" placeholder="your last name"/>
+				<input id="last_name" name="last_name" class="isRequired form-control" title="Please enter your last name" type="text" placeholder="Please enter your last name"/>
 			</td>
         </tr>
         <tr>
@@ -40,7 +35,7 @@
 				<label for="email" class="email" data-icon="u"> Your Email <span class="mandatory">*</span> </label>
 			</th>
             <td>
-				<input id="email" name="email" class="isRequired isEmail" title="Please enter your email" type="text" placeholder="your email"/>
+				<input id="email" name="email" class="isRequired form-control isEmail" title="Please enter your email" type="text" placeholder="Please enter your email"/>
 			</td>
         </tr>
         <tr>
@@ -48,7 +43,7 @@
 				<label for="phone" class="phone" data-icon="u"> Your Phone/Mobile <span class="mandatory">*</span></label>
 			</th>
             <td>
-				<input id="phone" name="phone" class="isRequired" title="Please enter your contact number" type="text" placeholder="your contact number"/>
+				<input id="phone" name="phone" class="isRequired form-control" title="Please enter your contact number" type="text" placeholder="Please enter your contact number"/>
 			</td>
         </tr>
         <tr>
@@ -56,7 +51,7 @@
 				<label for="agency" class="agency" data-icon="u">How can we help you? <span class="mandatory">*</span></label>
 			</th>
             <td>
-				<select name="reasonId" id="reasonId" onchange='fillreason()' title="Please choose an option">
+				<select name="reasonId" id="reasonId" onchange='fillreason()' class="form-control" title="Please choose an option">
 					<option>--Select--</toption>
 					<option value="1">Request to participate in PT program</option>
 					<option value="2">Add New tester to Current PT Program</option>
@@ -70,7 +65,7 @@
 				<label for="agency" class="agency" data-icon="u"> Lab/Agency Name </label>
 			</th>
             <td>
-				<input id="agency" name="agency" class="" title="Please enter your lab/agency name" type="text" placeholder="your lab/agency name"/>
+				<input id="agency" name="agency" class="form-control" title="Please enter your lab/agency name" type="text" placeholder="Please enter your lab/agency name"/>
 			</td>
         </tr>
         <tr>
@@ -78,7 +73,7 @@
 				<label for="additionalInfo" class="additionalInfo" data-icon="u"> Additional Info <span class="mandatory">*</span> </label>
 			</th>
             <td>
-				<textarea id="additionalInfo" name="additionalInfo" class="isRequired" title="Please enter some more information" type="text" placeholder="additional information"></textarea>
+				<textarea id="additionalInfo" name="additionalInfo" class="isRequired form-control" title="Please enter some more information" type="text" placeholder="Please add any additional information here"></textarea>
 			</td>
         </tr>
 		<tr>
@@ -92,9 +87,9 @@
 								</div>
 							</td>
 							<td style="padding-top:3px;" align="center">
-								<input type="text" style="margin:0;width:200px;padding:3px;margin-top:8px" id="challengeResponse" placeholder="Enter text from image on left" class="isRequired" title="Please enter the text from the image." maxlength="40">
-									<br/>
-								<button onclick="getCaptcha('capChaw');return false;" class="button button-rounded button-small" style="font-size:12px;margin:5px;"><i class="icon-refresh icon-white"></i> Get New Image</button>
+								<input type="text" style="margin:0;width:200px;padding:3px;margin-top:8px" id="challengeResponse" class="form-control" placeholder="Enter text from image on left" class="isRequired" title="Please enter the text from the image." maxlength="40">
+									
+								<button onclick="getCaptcha('capChaw');return false;" class="btn btn-small btn-info" style="font-size:12px;margin-top:5px;"><i class="icon-refresh icon-white"></i> Get New Image</button>
 							</td>
 							
 						</tr>
@@ -104,7 +99,7 @@
 		</tr>
 		<tr>
 			<td colspan="2" align="center">
-				<button class="button button-rounded button-primary" onclick="validateContactUs();return false;">Contact Us</button>
+				<button class="btn btn-primary" onclick="validateContactUs();return false;">Contact Us</button>
 				
 			</td>
 		</tr>

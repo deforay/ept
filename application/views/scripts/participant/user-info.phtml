@@ -1,35 +1,37 @@
+<h2 class="txt text-info" style="margin-left:23px">User Information</h2>
+
 <form name="userInfoForm" id="userInfoForm" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">
 
-    <span class="txt" style="margin-left:23px">User Information</span>
+    
     <br>
-    <table style="width: 95%;margin: auto;">
+    <table style="width: 95%;margin: auto;" class="table table-striped table-hover">
 
         <tr align="left"  class="dark">
-            <td>Login or primary e-mail address</td>
+            <td>Primary e-mail address (used for login)</td>
             <td>
                 <?php echo $this->rsUser['primary_email']; ?>
                 <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
             </td>
         </tr>
         <tr align="left" class="light">
-            <td>User First Name <span class="mandatory">*</span></td>
-            <td><input id="fname" type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired"  title="Please enter your first name here" placeholder="Please enter your first name here"  /></td>
+            <td>First Name <span class="mandatory">*</span></td>
+            <td><input id="fname" type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control"  title="Please enter your first name here" placeholder="Please enter your first name here"  /></td>
         </tr>
         <tr align="left" class="dark">
-            <td>User Last Name <span class="mandatory">*</span></td>
-            <td><input id="lname" type="text" id="lname" name="lname" size="50" maxlength="45" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter your last name here" placeholder="Please enter your last name here"  /></td>
+            <td>Last Name <span class="mandatory">*</span></td>
+            <td><input id="lname" type="text" id="lname" name="lname" size="50" maxlength="45" class=" form-control" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter your last name here" placeholder="Please enter your last name here"  /></td>
         </tr>
         <tr align="left" class="light">
-            <td>Secondary e-mail Address <span class="mandatory">*</span></td>
-            <td><input id="semail" type="text" id="semail" name="semail" size="50" maxlength="45" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></td>
+            <td>Secondary e-mail address <span class="mandatory">*</span></td>
+            <td><input id="semail" type="text" id="semail" name="semail" size="50" maxlength="45" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></td>
         </tr>
         <tr align="left" class="dark">
             <td>Cell Phone Number <span class="mandatory">*</span></td>
-            <td><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired isNumeric"   title="Please enter your contact number here" placeholder="Please enter your contact number here"  /></td>
+            <td><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired isNumeric form-control"   title="Please enter your contact number here" placeholder="Please enter your contact number here"  /></td>
         </tr>
         <tr align="left" class="light"> 
             <td>Phone Number</td>
-            <td><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['phone']; ?>" class="isNumeric"/></td>
+            <td><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['phone']; ?>" class="isNumeric form-control"/></td>
         </tr>
        <!-- <tr align="left" class="dark">
             <td>UserFld1</td>
@@ -47,8 +49,8 @@
     </table>
     <br>
     <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-        <input name="submitbtn" class="button button-rounded button-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
-        <input name="reset" class="button button-rounded button-caution" type="button" onclick="document.location.href='/participant/dashboard'" tabindex="8" value="Cancel" />
+        <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
+        <input name="reset" class="btn btn-warning" type="button" onclick="document.location.href='/participant/dashboard'" tabindex="8" value="Cancel" />
     </div>
 
 </form>

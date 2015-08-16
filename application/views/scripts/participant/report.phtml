@@ -20,10 +20,10 @@
     }
 
 </style>
+<h2 class="txt text-info" style="margin-left:0em">Individual Report</h2>
 <div id="view-content">
-    <span class="txt" style="margin-left:0em">Individual Report</span>
-    <br>
-    <table>
+    
+    <table class="table table-striped">
         <tr class="dark">
             <td>Shipment Date</td>
             <td>Scheme</td>
@@ -32,7 +32,7 @@
         <tr class="light">
             <td><input type="text" id="dateRange" name="dateRange"  class="form-control" readonly="readonly" style="background: #fff" placeholder ="Click here to pick a Date Range"/></td>
             <td>
-                <select id="scheme" name="scheme"  class="">
+                <select id="scheme" name="scheme"  class="form-control">
                     <option value=""> -- Select Scheme Type --</option>
                     <?php
                     foreach ($this->schemes as $scheme) {
@@ -46,7 +46,7 @@
             <td><button class="btn btn-success btn-sm" onclick="individualSchemes()"><span>Get Report</span></button></td>
         </tr>
     </table>
-    <table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="individualReportTable">
+    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered" id="individualReportTable">
         <thead>
             <tr>
                 <th>Scheme</th>
@@ -59,7 +59,7 @@
         </thead>
         <tbody>
             <tr>
-                <td colspan="6" class="dataTables_empty">Please pick date range and Scheme Type to proceed</td>
+                <td colspan="6" class="dataTables_empty" style="text-align: center;font-size:15px;font-weight:bold;">Please pick date range and Scheme Type to proceed</td>
             </tr>
         </tbody>
     </table>
