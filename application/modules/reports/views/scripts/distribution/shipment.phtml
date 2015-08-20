@@ -159,9 +159,17 @@ if (count($this->shipment) > 0) {
         $buttonCount = (int)ceil($this->responseCount["reported_count"] / 50);
         $responseCnt=$this->responseCount["reported_count"];
         $start=1;
+        if($this->responseCount["reported_count"]>=50){
         $lastEnd=50;
+        }else{
+          $lastEnd=$this->responseCount["reported_count"];
+        }
         for ($i = 1; $i <= $buttonCount; $i++) {
+          if($this->responseCount["reported_count"]>=50){
           $end=$i*50;
+          }else{
+              $end=$this->responseCount["reported_count"];
+          }
           if($end>$this->responseCount["reported_count"]){
                $sub=$this->responseCount["reported_count"]-$lastEnd;
                $start=$lastEnd+1;
@@ -211,12 +219,20 @@ if (count($this->shipment) > 0) {
           <?php
           if ($shipment['report_generated'] == 'yes') {
                
-               $buttonCount = (int)ceil($this->responseCount["reported_count"] / 50);
+              $buttonCount = (int)ceil($this->responseCount["reported_count"] / 50);
         $responseCnt=$this->responseCount["reported_count"];
         $start=1;
+        if($this->responseCount["reported_count"]>=50){
         $lastEnd=50;
+        }else{
+          $lastEnd=$this->responseCount["reported_count"];
+        }
         for ($i = 1; $i <= $buttonCount; $i++) {
+          if($this->responseCount["reported_count"]>=50){
           $end=$i*50;
+          }else{
+              $end=$this->responseCount["reported_count"];
+          }
           if($end>$this->responseCount["reported_count"]){
                $sub=$this->responseCount["reported_count"]-$lastEnd;
                $start=$lastEnd+1;
@@ -337,7 +353,7 @@ if (count($this->shipment) > 0) {
                 ).then(function() {
                     if (individual == 'success') {
                          $( "#"+startVal+'-'+endVal+"-bulk-participant-report").remove();
-                       $( "#summaryDiv" ).append('<a href="<?php echo $this->baseUrl() ;?>/uploads/reports/<?php echo $shipment['shipment_code'] ?>/<?php echo $shipment['shipment_code'] ?>-'+startVal+'-'+endVal+'-bulk-participant-report.pdf" id="'+startVal+'-'+endVal+'-bulk-participant-report" class="btn btn-info btn-sm" target="_BLANK" style="margin-top:10px;"> <i class="icon-file-text"></i>Download '+startVal+'-'+ endVal +' Participants Report</a>');
+                       $( "#summaryDiv" ).append('<a href="<?php echo $this->baseUrl() ;?>/uploads/reports/<?php echo $shipment['shipment_code'] ?>/<?php echo $shipment['shipment_code'] ?>-'+startVal+'-'+endVal+'-bulk-participant-report.pdf" id="'+startVal+'-'+endVal+'-bulk-participant-report" class="btn btn-info btn-sm" target="_BLANK" style="margin-top:10px;"> <i class="icon-file-text"></i> Download '+startVal+'-'+ endVal +' Participants Report</a>');
                     }
                     
                     $.unblockUI();
