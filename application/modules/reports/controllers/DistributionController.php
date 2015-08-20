@@ -42,6 +42,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $reEvaluate = false;
             $evalService = new Application_Service_Evaluation();
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id,$reEvaluate);
+             $this->view->responseCount = $evalService->getResponseCount($id,$shipment[0]['distribution_id']);
             //$this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
             $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
         }else{
@@ -55,13 +56,18 @@ class Reports_DistributionController extends Zend_Controller_Action
         if($this->_hasParam('sId')){
             ini_set('memory_limit', '-1');
             $id = (int)base64_decode($this->_getParam('sId'));
+            $sLimit = (int)$this->_getParam('limitVal');
+            $sOffset = (int)$this->_getParam('offsetVal');
+             $startValue = (int)$this->_getParam('startVal');
+            $endValue = (int)$this->_getParam('endVal');
+            $this->view->bulkfileNameVal =$startValue.'-'.$endValue;
             $comingFrom = $this->_getParam('comingFrom');
             $reportService = new Application_Service_Reports();
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
             $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
             $evalService = new Application_Service_Evaluation();
-            $this->view->result = $evalService->getEvaluateReportsInPdf($id);
+            $this->view->result = $evalService->getEvaluateReportsInPdf($id,$sLimit,$sOffset);
             $commonService = new Application_Service_Common();
             $schemeService = new Application_Service_Schemes();
             $this->view->possibleDtsResults = $schemeService->getPossibleResults('dts');

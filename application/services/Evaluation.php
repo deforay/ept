@@ -171,6 +171,19 @@ class Application_Service_Evaluation {
                 ->group('s.shipment_id');
         return $db->fetchAll($sql);
     }
+    
+     public function getResponseCount($shipmentId,$distributionId) {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('s' => 'shipment'),array(''))
+                ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id',array(''))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00')")))
+                ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type',array(''))
+                ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id',array(''))
+		->where("s.shipment_id = ?", $shipmentId)
+                ->where("s.distribution_id = ?", $distributionId)
+                ->group('s.shipment_id');
+        return $db->fetchRow($sql);
+    }
 
     public function getShipmentToEvaluate($shipmentId, $reEvaluate = false) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -868,7 +881,7 @@ class Application_Service_Evaluation {
         return $shipmentResult;
     }
 
-    public function getEvaluateReportsInPdf($shipmentId) {
+    public function getEvaluateReportsInPdf($shipmentId,$sLimit,$sOffset) {
         //echo $shipmentId;die;
         $responseResult = "";
         $vlCalculation = "";
@@ -882,6 +895,9 @@ class Application_Service_Evaluation {
                 ->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->where("substring(sp.evaluation_status,4,1) != '0'");
+		 if (isset($sLimit) && isset($sOffset)) {
+		    $sql = $sql->limit($sLimit, $sOffset);
+		}
         //error_log($sql);die;
         $shipmentResult = $db->fetchAll($sql);
 
@@ -913,7 +929,8 @@ class Application_Service_Evaluation {
                         ->join(array('refdbs' => 'reference_result_dbs'), 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', array('refdbs.reference_result', 'refdbs.sample_label', 'resdbs.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdbs.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("resdbs.shipment_map_id = ?", $res['map_id']);
-
+			
+               
                 $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
             } else if ($res['scheme_type'] == 'dts') {
 
@@ -926,6 +943,8 @@ class Application_Service_Evaluation {
 						->joinLeft(array('dtstk3' => 'r_testkitname_dts'), 'dtstk3.TestKitName_ID=resdts.test_kit_name_3', array('testkit3'=>'dtstk3.TestKit_Name'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("resdts.shipment_map_id = ?", $res['map_id']);
+			
+			 
                 $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
             } else if ($res['scheme_type'] == 'eid') {
 
@@ -935,6 +954,8 @@ class Application_Service_Evaluation {
                         ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'))
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("reseid.shipment_map_id = ?", $res['map_id']);
+			
+			
                 //error_log($sQuery);
                 $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
             } else if ($res['scheme_type'] == 'vl') {

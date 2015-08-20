@@ -619,7 +619,7 @@ foreach($this->result['shipment'] as $result){
         $shipmentCode=$result['shipment_code'];
         $j++;
 }
-$mergePdf = $shipmentCode."-bulk-participant-report.pdf";
+$mergePdf = $shipmentCode."-".$this->bulkfileNameVal."-bulk-participant-report.pdf";
 $mergeFilePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$mergePdf;
 $pdfNew ->save($mergeFilePath);
 
