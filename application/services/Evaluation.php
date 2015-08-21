@@ -914,12 +914,14 @@ class Application_Service_Evaluation {
             }
 
             foreach ($dmResult as $dmRes) {
+				$participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $res['first_name'] . $res['last_name'] . "-" . $res['map_id']);
+				$participantFileName = str_replace(" ", "-", $participantFileName);
                 if (count($mapRes) == 0) {
-                    $mapRes[$dmRes['dm_id']] = $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $res['first_name'] . $res['last_name'] . "-" . $res['map_id'];
+                    $mapRes[$dmRes['dm_id']] = $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $participantFileName;
                 } else if (array_key_exists($dmRes['dm_id'], $mapRes)) {
-                    $mapRes[$dmRes['dm_id']].="," . $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $res['first_name'] . $res['last_name'] . "-" . $res['map_id'];
+                    $mapRes[$dmRes['dm_id']].="," . $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $participantFileName;
                 } else {
-                    $mapRes[$dmRes['dm_id']] = $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $res['first_name'] . $res['last_name'] . "-" . $res['map_id'];
+                    $mapRes[$dmRes['dm_id']] = $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $participantFileName;
                 }
             }
             if ($res['scheme_type'] == 'dbs') {
