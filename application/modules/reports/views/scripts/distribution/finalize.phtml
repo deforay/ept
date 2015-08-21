@@ -156,7 +156,7 @@ if (count($this->shipment) > 0) {
     if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] != 'finalized') {
         ?>
         <div align="center">
-            <a href="javascript:void(0)" class="btn btn-danger" onclick="finalizeReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i> Finalize this Shipment</a>
+            <a href="javascript:void(0)" class="btn btn-sm btn-danger" style="margin-top:10px;"  onclick="finalizeReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i> Finalize Summay Shipment</a>
         </div>
         <?php
     }

@@ -111,6 +111,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $evalService = new Application_Service_Evaluation();
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id,$reEvaluate);
             $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
+            $this->view->responseCount = $evalService->getResponseCount($id,$shipment[0]['distribution_id']);
         }else{
             $this->_redirect("/reports/finalize/");
         }
