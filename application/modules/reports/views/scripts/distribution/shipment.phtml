@@ -209,7 +209,7 @@ if (count($this->shipment) > 0) {
         if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf")) {
           ?>
            
-                    document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code'] ."-summary.pdf"); ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_BLANK' style='margin-top:10px'><i class='icon-file-text'></i> Download  Summary Report</a></a>";
+                    document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code'] ."-summary.pdf"); ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_BLANK' style='margin-top:10px'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
                 <?php
         }
     }
@@ -353,7 +353,7 @@ if (count($this->shipment) > 0) {
                 ).then(function() {
                     if (individual == 'success') {
                          $( "#"+startVal+'-'+endVal+"-bulk-participant-report").remove();
-                       $( "#summaryDiv" ).append('<a href="<?php echo $this->baseUrl() ;?>/uploads/reports/<?php echo $shipment['shipment_code'] ?>/<?php echo $shipment['shipment_code'] ?>-'+startVal+'-'+endVal+'-bulk-participant-report.pdf" id="'+startVal+'-'+endVal+'-bulk-participant-report" class="btn btn-info btn-sm" target="_BLANK" style="margin-top:10px;"> <i class="icon-file-text"></i> Download '+startVal+'-'+ endVal +' Participants Report</a>');
+                       $( "#summaryDiv" ).append('&nbsp<a href="<?php echo $this->baseUrl() ;?>/uploads/reports/<?php echo $shipment['shipment_code'] ?>/<?php echo $shipment['shipment_code'] ?>-'+startVal+'-'+endVal+'-bulk-participant-report.pdf" id="'+startVal+'-'+endVal+'-bulk-participant-report" class="btn btn-info btn-sm" target="_BLANK" style="margin-top:10px;"> <i class="icon-file-text"></i> &nbsp Download '+startVal+'-'+ endVal +' Participants Report</a>');
                     }
                     
                     $.unblockUI();
@@ -379,7 +379,7 @@ if (count($this->shipment) > 0) {
                 
                     if (summary == 'success') {
                          $("#summaryReport").remove();
-                        $("#summaryDiv").append(" <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-summary.pdf"); ?>\" class='btn btn-success btn-sm' id='summaryReport' target='_BLANK' style='margin-top:10px;'><i class='icon-file-text'></i> Download Summary Report</a> ");
+                        $("#summaryDiv").append("&nbsp <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-summary.pdf"); ?>\" class='btn btn-success btn-sm' id='summaryReport' target='_BLANK' style='margin-top:10px;'><i class='icon-file-text'></i>&nbsp Download Summary Report</a> ");
                     }
                     
                     $.unblockUI();
