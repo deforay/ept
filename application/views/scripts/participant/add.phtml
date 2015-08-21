@@ -1,5 +1,7 @@
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
-
+<div class="box">
+    
+<div class="box-body">
 <h2 class="txt text-info">Participant/Laboratory Information</h2>
 <form name="participantEdit" id="participantEdit"  method="post"   action="<?php echo $this->url(array("controller" => "participant", "action" => "add", "module" => "default"), null, true) ?>">
     <div id="view-content">
@@ -206,12 +208,14 @@
         <input name="submitbtn" class="btn btn-primary" type="submit"  onclick="validateNow();
                 return false;" tabindex="7" value="Submit"  /> 
         &nbsp;&nbsp;&nbsp;
-        <input name="reset" class="btn btn-warning" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_testers()" /> 
+        <input name="reset" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_testers()" /> 
 
     </p>
 </div>	
 </div>
-    </form>			
+</form>
+</div>    
+</div>    
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script>
 

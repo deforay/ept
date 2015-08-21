@@ -1,9 +1,9 @@
-<h2 class="txt text-info" style="margin-left:23px">User Information</h2>
 
-<form name="userInfoForm" id="userInfoForm" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">
 
-    
-    <br>
+<form class="box" name="userInfoForm" id="userInfoForm" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">
+
+    <h2 class="txt text-info" style="margin-left:23px">User Information</h2>
+    <div class="box-body">
     <table style="width: 95%;margin: auto;" class="table table-striped table-hover">
 
         <tr align="left"  class="dark">
@@ -50,9 +50,9 @@
     <br>
     <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
         <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
-        <input name="reset" class="btn btn-warning" type="button" onclick="document.location.href='/participant/dashboard'" tabindex="8" value="Cancel" />
+        <input name="reset" class="btn btn-danger" type="button" onclick="document.location.href='/participant/dashboard'" tabindex="8" value="Cancel" />
     </div>
-
+    </div>
 </form>
 <script type="text/javascript">
     function validateNow(){

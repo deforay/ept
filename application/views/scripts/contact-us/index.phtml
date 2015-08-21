@@ -7,8 +7,9 @@
 	}
 </style>
 
-
-<h1 class="txt text-info">Contact Us</h1>
+<div class="box">
+<div class="box-body">
+<h2 class="txt text-info">Contact Us</h2>
 		<p>Please fill in this form to apply as a Participant for the ePT Program or to send us questions or feedback. </p>
 <form name="contactForm" id="contactForm" method="post" action="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>">
 
@@ -107,7 +108,8 @@
     </table>
 
 </form>
-
+</div>
+</div>
         <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
         <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
         <script type="text/javascript">

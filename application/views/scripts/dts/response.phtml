@@ -9,7 +9,8 @@ date_default_timezone_set('America/New_York');
         text-align: center;
     }
 </style>
-<form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller" => "dts", "action" => "response"), null, true) ?>">
+<form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller" => "dts", "action" => "response"), null, true) ?>" class="box" style="">
+                <div class="box-body">
 
     <input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response']; ?>" />
     <input type="hidden" id ="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
@@ -324,6 +325,7 @@ date_default_timezone_set('America/New_York');
     $vHelper = $this->getHelper('DateFormat');
     $dtFormat = $vHelper->getDateFormat();
     ?>
+                </div>
 </form>
 <?php if (!$this->isEditable) {
     ?>

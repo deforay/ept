@@ -2,6 +2,9 @@
 
 <style>
 
+th,.center{
+	text-align: center;
+}
 	
 </style>
 <section id="content">
@@ -39,54 +42,63 @@
                         
             </div>
 			<h1 style="text-transform:none;border-bottom:1px solid #999;">ePT Dashboard <span style="font-size:13px;font-weight:normal;">Track all your PT Shipment responses</span></h1>
+		
+		
+		
+		
+		<div class="box">
+                <div class="box-body">
+					<h3 class="txt text-info">Overview</h3>
+					<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="overviewTable">
+						<thead>
+							<tr>
+								<th>Year</th>
+								<th>Scheme Type</th>
+								<th>Total Schemes Shipped</th>
+								<th>Timely Responses Received</th>
+								<th>Responses not received yet</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+							<td colspan="5" class="dataTables_empty">Loading data from server</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+		</div>
+		<div class="box">
+                <div class="box-body">
+					<h3 class="txt text-info">Current/Active Schemes</h3>
+					<input type="radio" name="currentType" class="currentType" id="currentType1" value="all" /> All Schemes &nbsp;&nbsp;&nbsp;
+					<input type="radio" name="currentType" class="currentType" id="currentType2" value="active" checked="checked" /> Active Schemes only &nbsp;&nbsp;&nbsp;
+					<input type="radio" name="currentType" class="currentType" id="currentType3" value="inactive" /> Inactive Schemes only
+					<br/><br/>
+					<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="currentSchemeTable">
+							<thead>
+								<tr>
+									<th style="width:100px;">Shipment<br/>Date</th>
+									<th style="width:50px;">Scheme</th>
+									<th style="width:100px;">Shipment Code</th>
+									<th>Participant</th>
+									<th style="width:110px;">Last Date</th>
+									<th style="width:100px;">Response<br/>Date</th>
+									<th style="width:100px;">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+							<tr>
+								<td colspan="8" class="dataTables_empty">Loading data from server</td>
+							</tr>
+							</tbody>
+					</table>
+				</div>
+		</div>
 			
-		<h3 class="txt text-info">Overview</h3>
-		<table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="overviewTable">
-			<thead>
-				<tr>
-					<th>Year</th>
-					<th>Scheme Type</th>
-					<th>Total Schemes Shipped</th>
-					<th>Timely Responses Received</th>
-					<th>Responses not received yet</th>
-				</tr>
-			</thead>
-			<tbody>
-			    <tr>
-				<td colspan="5" class="dataTables_empty">Loading data from server</td>
-			    </tr>
-			</tbody>
-		</table>
-			
-		<br>
-	       <h3 class="txt text-info">Current/Active Schemes</h3>
-		   <input type="radio" name="currentType" class="currentType" id="currentType1" value="all" /> All Schemes &nbsp;&nbsp;&nbsp;
-		   <input type="radio" name="currentType" class="currentType" id="currentType2" value="active" checked="checked" /> Active Schemes only &nbsp;&nbsp;&nbsp;
-		   <input type="radio" name="currentType" class="currentType" id="currentType3" value="inactive" /> Inactive Schemes only
-		   <br/><br/>
-	       <table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="currentSchemeTable">
-			       <thead>
-				       <tr>
-					       <th style="width:100px;">Shipment<br/>Date</th>
-					       <th style="width:50px;">Scheme</th>
-					       <th style="width:100px;">Shipment Code</th>
-					       <th>Participant</th>
-					       <th style="width:110px;">Last Date</th>
-					       <th style="width:100px;">Response<br/>Date</th>
-					       <th style="width:100px;">Action</th>
-				       </tr>
-			       </thead>
-			       <tbody>
-				   <tr>
-				       <td colspan="8" class="dataTables_empty">Loading data from server</td>
-				   </tr>
-			       </tbody>
-	       </table>
-			
-			
-		  <br>
+		  		<div class="box">
+                <div class="box-body">
 			<h3 class="txt text-info">Defaulted Schemes</h3>
-			<table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="defaultedSchemeTable">
+			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="defaultedSchemeTable">
 					<thead>
 						<tr>
 							<th style="width:30px;">Year</th>
@@ -106,9 +118,12 @@
 					    </tr>
 					</tbody>
 			</table>
-			<br>
+				</div>
+				</div>
+						<div class="box">
+                <div class="box-body">
 			<h3 class="txt text-info">All Schemes</h3>
-			<table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="allSchemeTable">
+			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="allSchemeTable">
 				<thead>
 				    <tr>
 					<th style="width:30px;">Year</th>
@@ -128,10 +143,11 @@
 				    </tr>
 				</tbody>
 			</table>
-			
+				</div>
+			</div>
 			<!--<br>
 			<span class="txt">Shipment Report</span>-->
-<!--			<table cellpadding="0" cellspacing="0" border="0" class="display datatable" id="dataManagerSchemeTable">
+<!--			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dataManagerSchemeTable">
 				<thead>
 				    <tr>
 					<th>Year</th>

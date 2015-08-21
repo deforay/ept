@@ -7,7 +7,8 @@
 	}
 </style>
 
-
+<div class="box">
+	<div class="box-body">
 <h2 class="txt text-info" style="text-align: center;">Login - <span> Proficiency Testing</span></h2>
 		
 <form name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>" onsubmit="validateLogin();return false;">
@@ -69,7 +70,8 @@
     </table>
 
 </form>
-
+</div>
+</div>
         <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
         <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
         <script type="text/javascript">
