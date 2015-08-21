@@ -223,12 +223,18 @@ foreach($this->result['shipment'] as $result){
 	$labInfo.='	<td><strong>Response Date</strong> <br>'.$responseDate.'</td>';
 	$labInfo.='	<td><strong>Shipment Test Date</strong> <br>'.$shipmentTestDate.'</td>';
 	$labInfo.='	<td>';
-	if(isset($this->haveCustom) && $this->haveCustom == 'yes') {
-		$labInfo.='	<strong>'.$this->customField1.'</strong> <br>'.$this->shipment['custom_field_1'];
-	}
+	$labInfo.='	<strong>Algorithm</strong> <br>'.ucfirst($attributes['algorithm']);
 	$labInfo.=' </td>';
 	$labInfo.='</tr>';
 	$labInfo.='<tr>';
+	$labInfo.='	<td>';
+	$labInfo.='	<strong>Supervisor Name</strong> <br>'.($result['participant_supervisor']);
+	$labInfo.=' </td>';	
+	$labInfo.='	<td>';
+	if(isset($this->haveCustom) && $this->haveCustom == 'yes') {
+		$labInfo.='	<strong>'.$this->customField1.'</strong> <br>'.$this->shipment['custom_field_1'];
+	}
+	$labInfo.=' </td>';	
 	$labInfo.='	<td>';
 	if(isset($this->haveCustom) && $this->haveCustom == 'yes') {
 		$labInfo.='	<strong>'.$this->customField2.'</strong> <br>'.$this->shipment['custom_field_2'];
@@ -560,12 +566,7 @@ foreach($this->result['shipment'] as $result){
 	//}
 	if(trim($result['shipment_comment'])!="" || trim($result['evaluationComments'])!="" || trim($result['optional_eval_comment'])!=""){
 		$comment='<br/><br/><table border="1" style="width:100%;font-size:13px;" cellpadding="3">';
-		if(trim($result['shipment_comment'])!=""){
-			$comment.='<tr>';
-			$comment.='<td style="font-weight:bold;width:30%;">Message from the PT Admin</td>';
-			$comment.='<td style="width:70%;">'.$result['shipment_comment'].'</td>';
-			$comment.='</tr>';
-		}
+
 		
 		if(trim($result['evaluationComments'])!=""){
 			$comment.='<tr>';
@@ -580,6 +581,12 @@ foreach($this->result['shipment'] as $result){
 			$comment.='<td style="width:70%;">'.$result['optional_eval_comment'].'</td>';
 			$comment.='</tr>';
 		}
+		
+		if(trim($result['shipment_comment'])!=""){
+			$comment.='<tr>';
+			$comment.='<td style="font-weight:bold;" colspan="2">'.$result['shipment_comment'].'</td>';
+			$comment.='</tr>';
+		}		
 		
 		$comment.='</table>';
 		$pdf->writeHTML($comment, true, false, true, false, '');
@@ -619,6 +626,7 @@ foreach($this->result['shipment'] as $result){
         $shipmentCode=$result['shipment_code'];
         $j++;
 }
+//$mergePdf = $shipmentCode."-bulk-participant-report.pdf";
 $mergePdf = $shipmentCode."-".$this->bulkfileNameVal."-bulk-participant-report.pdf";
 $mergeFilePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$mergePdf;
 $pdfNew ->save($mergeFilePath);
