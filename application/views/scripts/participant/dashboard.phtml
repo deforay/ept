@@ -1,62 +1,20 @@
 
-
-<style>
-
-th,.center{
-	text-align: center;
-}
-	
-</style>
-<section id="content">
-    <div class="main">
-            <div class="container_24">
-            	<div class="container">
-<!--                    <div class="grid_8 alpha">
-                        <div class="suffix_1">
-                           <div class="box">
-                           	<div class="indent-box">
-                            	<ul class="list1">
-                                    <li><a href="#"  class="current">Overview</a> </li>
-                                    <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">Participant</a></li>
-                                    <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"scheme"),null,true) ?>">Schemes</a></li>
-                                    <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"report"),null,true) ?>">Report</a></li>
-                                </ul>
-                            </div>
-                           </div>
-                        </div>
-                    </div>
--->                      <!-- <div class="grid_10 alpha">
-                        
-                           <div class="tail container">
-                              <img alt="" src="<?php echo $this->baseUrl("images/manicon.PNG"); ?>" width="50" height="50" class="img-left" />
-                              <span class="txt">Your ePT User Profile <a href="<?php echo $this->url(array('controller'=>'participant','action'=>'user-info'),'default',true); ?>" class="link" style="font-size:10px;text-transform: lowercase;">modify</a> </span>
-                              
-							  <div style="margin-left: 60px;">
-                        	  	<h3 style="width:700px;"><span style="color:#df7a18;"> Your Name : </span> <?php echo( ($this->authNameSpace->first_name ) . "  " . ($this->authNameSpace->last_name ) );?> <br/>
-                        		 <span style="color:#df7a18"> Your Email : </span> <?php echo( $this->authNameSpace->email);?>
-                        </div>
-                              <br class="clear" />          
-                        </div>
-                    </div>-->
-                </div>        
-                        
-            </div>
-			<h1 style="text-transform:none;border-bottom:1px solid #999;">ePT Dashboard <span style="font-size:13px;font-weight:normal;">Track all your PT Shipment responses</span></h1>
-		
-		
-		
-		
+<section class="content-header">
+    <h1> Dashboard </h1>
+</section>
+<section class="content">
+    
 		<div class="box">
                 <div class="box-body">
-					<h3 class="txt text-info">Overview</h3>
+					<h3 class="txt text-info">Schemes Overview</h3>
 					<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="overviewTable">
 						<thead>
 							<tr>
 								<th>Year</th>
 								<th>Scheme Type</th>
-								<th>Total Schemes Shipped</th>
-								<th>Timely Responses Received</th>
-								<th>Responses not received yet</th>
+								<th>Total Schemes <br>Shipped</th>
+								<th>Reported Within <br>Due Date</th>
+								<th>Responses <br>not received yet</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -67,224 +25,11 @@ th,.center{
 					</table>
 				</div>
 		</div>
-		<div class="box">
-                <div class="box-body">
-					<h3 class="txt text-info">Current/Active Schemes</h3>
-					<input type="radio" name="currentType" class="currentType" id="currentType1" value="all" /> All Schemes &nbsp;&nbsp;&nbsp;
-					<input type="radio" name="currentType" class="currentType" id="currentType2" value="active" checked="checked" /> Active Schemes only &nbsp;&nbsp;&nbsp;
-					<input type="radio" name="currentType" class="currentType" id="currentType3" value="inactive" /> Inactive Schemes only
-					<br/><br/>
-					<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="currentSchemeTable">
-							<thead>
-								<tr>
-									<th style="width:100px;">Shipment<br/>Date</th>
-									<th style="width:50px;">Scheme</th>
-									<th style="width:100px;">Shipment Code</th>
-									<th>Participant</th>
-									<th style="width:110px;">Last Date</th>
-									<th style="width:100px;">Response<br/>Date</th>
-									<th style="width:100px;">Action</th>
-								</tr>
-							</thead>
-							<tbody>
-							<tr>
-								<td colspan="8" class="dataTables_empty">Loading data from server</td>
-							</tr>
-							</tbody>
-					</table>
-				</div>
-		</div>
 			
-		  		<div class="box">
-                <div class="box-body">
-			<h3 class="txt text-info">Defaulted Schemes</h3>
-			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="defaultedSchemeTable">
-					<thead>
-						<tr>
-							<th style="width:30px;">Year</th>
-							  <th style="width:100px;">Shipment<br/>Date</th>
-					       <th style="width:50px;">Scheme</th>
-					       <th style="width:100px;">Shipment Code</th>
-							<th>Participant</th>
-							<th style="width:100px;">Last Date</th>
-							<th>Status</th>
-							<th style="width:100px;">Response<br/>Date</th>
-							<th style="width:100px;">Action</th>
-						</tr>
-					</thead>
-					<tbody>
-					    <tr>
-						<td colspan="9" class="dataTables_empty">Loading data from server</td>
-					    </tr>
-					</tbody>
-			</table>
-				</div>
-				</div>
-						<div class="box">
-                <div class="box-body">
-			<h3 class="txt text-info">All Schemes</h3>
-			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="allSchemeTable">
-				<thead>
-				    <tr>
-					<th style="width:30px;">Year</th>
-					<th style="width:100px;">Shipment<br/>Date</th>
-					<th style="width:50px;">Scheme</th>
-					<th style="width:100px;">Shipment Code</th>
-					<th>Participant</th>
-					<th style="width:100px;">Response<br/>Date</th>
-					<th style="width:100px;">Action</th>
-					<th>Report</th>
-	    
-				    </tr>
-				</thead>
-				<tbody>
-				    <tr>
-					<td colspan="8" class="dataTables_empty">Loading data from server</td>
-				    </tr>
-				</tbody>
-			</table>
-				</div>
-			</div>
-			<!--<br>
-			<span class="txt">Shipment Report</span>-->
-<!--			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dataManagerSchemeTable">
-				<thead>
-				    <tr>
-					<th>Year</th>
-					<th>Shipment Date</th>
-					<th>Scheme</th>
-					<th>Shipment Code</th>
-					<th>Report</th>
-	    
-				    </tr>
-				</thead>
-				<tbody>
-				    <tr>
-					<td colspan="5" class="dataTables_empty">Loading data from server</td>
-				    </tr>
-				</tbody>
-			</table>
--->    </div>
 </section>
 
 <script>
-	
-
-	function allSchemes(){
-		schemeTable = $('#allSchemeTable').dataTable({
-			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
-			},
-			"bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":""},
-			    {"sClass":"center"},
-			    {"sClass":"center","bSortable":false},
-			    {"sClass":"center","bSortable":false}
-			],
-			"aaSorting": [[ 1, "desc" ]],
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'all-schemes', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
-			}
-		});
-	}
-	
-	function defaultSchemes(){
-		dsTable = $('#defaultedSchemeTable').dataTable({
-			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
-			},
-			"bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":""},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center","bSortable":false}
-			],
-			"aaSorting": [[ 0, "desc" ]],
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'default-scheme', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
-			}
-		});
-	}
-	
-	function currentSchemes(){
-		csTable = $('#currentSchemeTable').dataTable({
-			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
-			},
-			"bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": false,
-			"bDestroy": true,
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":""},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center","bSortable":false}
-			],
-			"aaSorting": [[ 3, "asc" ]],
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'current-schemes', 'format' => 'html')); ?>",
-			"fnServerParams": function ( aoData ) {
-				aoData.push( { "name": "currentType", "value": $('input[name=currentType]').filter(':checked').val() } );
-			},
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
-			}
-		});
-	}
-	
+	var oTable = null;
 	function overviewSchemes(){
 		oTable = $('#overviewTable').dataTable({
 			"oLanguage": {
@@ -320,71 +65,8 @@ th,.center{
 		});
 	}
 	
-	function dataManagerSchemes(){
-		//oTable = $('#dataManagerSchemeTable').dataTable({
-		//	"oLanguage": {
-		//	    "sLengthMenu": "_MENU_ records per page"
-		//	},
-		//	"bJQueryUI": false,
-		//	"bAutoWidth": false,
-		//	"bInfo": true,
-		//	"bScrollCollapse": true,
-		//	"sPaginationType": "full_numbers",
-		//	"bRetrieve": true,                        
-		//	"aoColumns": [
-		//	    {"sClass":"center"},
-		//	    {"sClass":"center"},
-		//	    {"sClass":"center"},
-		//	    {"sClass":"center"},
-		//	    {"sClass":"center","bSortable":false}
-		//	],
-		//	"aaSorting": [[ 1, "desc" ]],
-		//	"bProcessing": true,
-		//	"bServerSide": true,
-		//	"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'shipment-report', 'format' => 'html')); ?>",
-		//	"fnServerData": function ( sSource, aoData, fnCallback ) {
-		//	    $.ajax({
-		//		"dataType": 'json',
-		//		"type": "POST",
-		//		"url": sSource,
-		//		"data": aoData,
-		//		"success": fnCallback
-		//	    });
-		//	}
-		//});
-	}	
-	
-	
-	
-	
-	
-	
-	
 	$(document).ready(function(){
 		overviewSchemes();
-		currentSchemes();
-		defaultSchemes();
-		allSchemes();
-		dataManagerSchemes();
-
-		$('#currentType1,#currentType2,#currentType3').click(function(){
-			currentSchemes();
-		});
 	});
 	
-	
-        function removeSchemes(schemeType,mid){
-		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 
-			$.blockUI();
-			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'Dts', 'action' => 'delete')); ?>", { mid: mid, format: "html" },
-			    function (data) {
-				alert("Response removed successfully");
-				schemeTable.fnDraw();
-				csTable.fnDraw();
-				dsTable.fnDraw();
-				$.unblockUI();
-			});
-		}		
-		
-	}
 </script>

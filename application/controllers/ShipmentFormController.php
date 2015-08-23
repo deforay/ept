@@ -9,6 +9,7 @@ class ShipmentFormController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
                 ->initContext();
         $this->_helper->layout()->pageName = 'shipmentForm';
+        
     }
 
     public function indexAction()
@@ -18,7 +19,10 @@ class ShipmentFormController extends Zend_Controller_Action
             $params = $this->_getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getAllShipmentForm($params);
+          }else{
+            $this->_helper->layout()->setLayout('home');
           }
+          
         
     }
 

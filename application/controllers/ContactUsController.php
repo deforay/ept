@@ -8,7 +8,6 @@ class ContactUsController extends Zend_Controller_Action
          $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $ajaxContext->addActionContext('index', 'html')
                         ->initContext();
-        $this->_helper->layout()->sideBarCollapse = true;
     }
 
     public function indexAction()
@@ -17,6 +16,11 @@ class ContactUsController extends Zend_Controller_Action
             $params = $this->getRequest()->getPost();
             $common = new Application_Service_Common();
             $this->view->message = $common->contactForm($params);
+        }else{
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if(!isset($authNameSpace->dm_id)){
+                $this->_helper->layout()->setLayout('home');
+            }
         }
     }
 

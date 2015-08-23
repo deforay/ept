@@ -7,7 +7,7 @@ class ParticipantController extends Zend_Controller_Action {
     public function init() {
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-                ->addActionContext('default-scheme', 'html')
+                ->addActionContext('defaulted-schemes', 'html')
                 ->addActionContext('current-schemes', 'html')
                 ->addActionContext('all-schemes', 'html')
                 ->addActionContext('report', 'html')
@@ -119,7 +119,7 @@ class ParticipantController extends Zend_Controller_Action {
         $this->view->siteType = $participantService->getSiteTypeList();
     }
 
-    public function defaultSchemeAction() {
+    public function defaultedSchemesAction() {
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_DEFAULTED
             $params = $this->_getAllParams();

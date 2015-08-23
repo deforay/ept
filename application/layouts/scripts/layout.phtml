@@ -29,6 +29,14 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
          folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/skins/_all-skins.min.css'); ?>">
 
+	  
+	  <style>
+	  
+	  .center{
+		  text-align: center;
+	  }
+		  
+	  </style>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -39,7 +47,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 	<script src="<?php echo $this->baseUrl('assets/plugins/jQuery/jQuery-2.1.4.min.js'); ?>"></script>
   </head>
 
-  <body class="hold-transition skin-blue sidebar-mini <?php echo (isset($this->layout()->sideBarCollapse) && $this->layout()->sideBarCollapse) ? "sidebar-collapse" : ""; ?>">
+  <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
 
       <header class="main-header">
@@ -61,7 +69,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
               <?php if(isset($authNameSpace->dm_id)){ ?>
               <li class="dropdown user user-menu">
                 <a href="<?php echo $this->url(array("controller"=>"participant","action"=>"dashboard"),null,true) ?>">
-                  <span class="hidden-xs"><?php echo $authNameSpace->first_name." ".$authNameSpace->last_name; ?></span>
+                  <i class="icon icon-dashboard"></i> <span class=""><?php echo $authNameSpace->first_name." ".$authNameSpace->last_name; ?></span>
                 </a>
               </li>
 			  <?php } else{ ?>
@@ -91,7 +99,35 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			
 				 
 				 
- <?php if(isset($authNameSpace->dm_id)){ ?>
+		  <?php if(isset($authNameSpace->dm_id)){ ?>
+			  <li>
+				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"dashboard"),null,true) ?>">
+				  <i class="icon icon-home"></i> <span>Dashboard</span>
+				</a>
+			  </li>
+			  <li>
+				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"current-schemes"),null,true) ?>">
+				  <i class="icon icon-home"></i> <span>Report PT Data</span>
+				</a>
+			  </li>
+              <li class="treeview">
+                <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span>View PT Result </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
+                <ul class="treeview-menu">
+				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"report"),null,true) ?>"> Individual Report</a></li>
+				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"summary-report"),null,true) ?>"> Summary Report</a></li>
+                </ul>
+              </li>
+			  <li>
+				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"all-schemes"),null,true) ?>">
+				  <i class="icon icon-home"></i> <span>All Schemes</span>
+				</a>
+			  </li>
+			  <li>
+				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"defaulted-schemes"),null,true) ?>">
+				  <i class="icon icon-home"></i> <span>Defaulted Schemes</span>
+				</a>
+			  </li>
+			  	  
               <li class="treeview">
                 <a href="#" class="" data-toggle="" role="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-user"></i> <span>My Account</span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
                 <ul class="treeview-menu">
@@ -99,14 +135,6 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">PT Participant Info</a></li>
 				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"scheme"),null,true) ?>">Scheme Information</a></li>
 				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"password"),null,true) ?>">Change Password</a></li>                                
-                </ul>
-              </li>
-              <li class="treeview">
-                <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span>My PT </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
-                <ul class="treeview-menu">
-				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"dashboard"),null,true) ?>">Overview</a></li>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"report"),null,true) ?>"> Individual Report</a></li>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"summary-report"),null,true) ?>"> Summary Report</a></li>
                 </ul>
               </li>
 			  <li><a href="<?php echo $this->url(array("controller"=>"contact-us"),null,true) ?>"><i class="icon icon-envelope"></i> <span>Contact Us </span></a></li>

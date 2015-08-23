@@ -17,8 +17,10 @@ class IndexController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        //$this->_helper->layout()->setLayout('home');
-        $this->_helper->layout()->sideBarCollapse = true;
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if(!isset($authNameSpace->dm_id)){
+            $this->_helper->layout()->setLayout('home');
+        }
         
     }
 

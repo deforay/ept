@@ -9,7 +9,12 @@ date_default_timezone_set('America/New_York');
         text-align: center;
     }
 </style>
-<form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller" => "dts", "action" => "response"), null, true) ?>" class="box" style="">
+<section class="content-header">
+    <h1>Dried Tube Specimen (DTS) for Rapid HIV Testing</h1>
+</section>
+<section class="content">
+<div class="box">
+<form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller" => "dts", "action" => "response"), null, true) ?>">
                 <div class="box-body">
 
     <input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response']; ?>" />
@@ -28,8 +33,8 @@ date_default_timezone_set('America/New_York');
     $lastDate = new Zend_Date($this->shipment['lastdate_response'], Zend_Date::ISO_8601);
     $response=$date->compare($lastDate,Zend_Date::DATES)
     ?>
-    <div id="view-content">
-        <h2 align="CENTER"> Dried Tube Specimens (DTS) for Rapid HIV Testing </h2>
+    <div>
+        
         <?php
         if ($response == 1 && $this->shipment['status'] == 'finalized') {
             ?>
@@ -53,7 +58,8 @@ date_default_timezone_set('America/New_York');
                 <td><h4 class="text-info"> Participant Name </h4> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] ); ?></td>
                 <td><h4 class="text-info"> Participant Code </h4> <?php echo $this->participant['unique_identifier'] ?></td>
                 <td><h4 class="text-info"> Affiliation </h4> <?php echo ( $this->participant['affiliation'] ); ?> </td>
-                <td><h4 class="text-info"> Phone No </h4> <?php echo ( $this->participant['mobile'] . ' <br/> ' . $this->participant['phone'] ); ?></td>
+                <td><h4 class="text-info"> Phone No </h4> <?php echo ( $this->participant['phone'] ); ?></td>
+                <td><h4 class="text-info"> Mobile No </h4> <?php echo ( $this->participant['mobile'] ); ?></td>
             </tr>
         </table>
 
@@ -61,7 +67,7 @@ date_default_timezone_set('America/New_York');
             <tr class="dark">
                 <td style="width:20%;"><label>Shipment Date</label></td>
                 <td style="width:30%;"><?php echo $this->dateFormat($this->shipment['shipment_date']); ?></td>
-                <td style="width:20%;"><label>Last Response Date</label></td>
+                <td style="width:20%;"><label>Result Due Date</label></td>
                 <td><?php echo $this->dateFormat($this->shipment['lastdate_response']); ?> </td>
             </tr>
 
@@ -70,12 +76,12 @@ date_default_timezone_set('America/New_York');
             <tr class ="light">
                 <td><label>Shipment Receipt Date</label></td>
                 <td>
-                    <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:230px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker" readonly="readonly"   title="Please enter Test Receipt Date" />
+                    <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker" readonly="readonly"   title="Please enter Test Receipt Date" />
                     <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('receiptDate')"> Clear</i>
                 </td>
                 <td><label>Sample Rehydration Date</label></td>
                 <td>
-                    <input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" style="width:230px;float:left;" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class="form-control datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  />
+                    <input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class="form-control datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  />
                     <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('sampleRehydrationDate')"> Clear</i>
                 </td>
             </tr>
@@ -83,12 +89,12 @@ date_default_timezone_set('America/New_York');
             <tr class ="dark">
                 <td><label>Testing Date</label></td> 
                 <td>
-                    <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:230px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="form-control datepicker" readonly="readonly" title="Please enter Shipment Test Date"  />
+                    <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="form-control datepicker" readonly="readonly" title="Please enter Shipment Test Date"  />
                 <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"> Clear</i>
                 </td>		
                 <td><label>Algorithm Used</label></td> 
                 <td>
-                    <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:230px;">
+                    <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;">
                         <option value="">--Select--</option>	
                         <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>	
                         <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>	
@@ -219,9 +225,9 @@ date_default_timezone_set('America/New_York');
             ?>
             <tr align="CENTER" class="light">
                 <th>Exp Date</th>
-                <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="width:160px;float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date1')"> Clear</i></td>
-                <td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="width:160px;float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date2')"> Clear</i></td>
-                <td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="width:160px;float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date3')"> Clear</i></td>
+                <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="width:140px;float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date1')"> Clear</i></td>
+                <td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="width:140px;float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date2')"> Clear</i></td>
+                <td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="width:140px;float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date3')"> Clear</i></td>
 
             </tr>
             <thead> 
@@ -263,7 +269,7 @@ date_default_timezone_set('America/New_York');
                     </td>
 
                     <td   width="20%" >
-                        <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" class="form-control"   <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" style="float: left;width:200px;">
+                        <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" class="form-control"   <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" style="float: left;width:150px;">
                             <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                         </select> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                     </td>
@@ -288,7 +294,7 @@ date_default_timezone_set('America/New_York');
         <table class="table table-bordered">
             <tr>
                 <th>Supervisor Review</th>
-                <td><select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control"  title="Please select if Supervisor Approval was conducted or not"><option value=""> -- Select -- </option>
+                <td class="col-lg-2"><select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control"  title="Please select if Supervisor Approval was conducted or not"><option value=""> -- Select -- </option>
                         <option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>YES</option>
                         <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>NO</option></select></td>
                 <th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
@@ -325,8 +331,9 @@ date_default_timezone_set('America/New_York');
     $vHelper = $this->getHelper('DateFormat');
     $dtFormat = $vHelper->getDateFormat();
     ?>
-                </div>
+    </div>
 </form>
+
 <?php if (!$this->isEditable) {
     ?>
     <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
@@ -336,6 +343,8 @@ date_default_timezone_set('America/New_York');
 }
 ?>
 
+</div>
+</section>
 <script>
 
     function goto_dashboard() {

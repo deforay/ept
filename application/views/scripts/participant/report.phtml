@@ -1,11 +1,6 @@
-
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <style>
-    .txt{
-        border-bottom:1px solid #888;
-        margin-bottom:10px;
-        margin-top:30px;
-    }
+    
     .dataTables_paginate, .dataTables_info{
         margin-top: 5px;
         vertical-align: middle !important;
@@ -20,9 +15,17 @@
     }
 
 </style>
+<section class="content-header">
+    <h1>
+        Individual Reports
+        <small>Download Participant-wise Individual Reports for each Shipment</small>
+    </h1>
+    
+</section>
+<section class="content">
 <div class="box">
 <div class="box-body">
-<h2 class="txt text-info" style="margin-left:0em">Individual Report</h2>
+
 
     
     <table class="table table-striped">
@@ -48,6 +51,7 @@
             <td><button class="btn btn-success btn-sm" onclick="individualSchemes()"><span>Get Report</span></button></td>
         </tr>
     </table>
+    <br><br>
     <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered" id="individualReportTable">
         <thead>
             <tr>
@@ -67,7 +71,7 @@
     </table>
 </div>
 </div>
-
+</section>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/raphael.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>

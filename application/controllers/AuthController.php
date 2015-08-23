@@ -6,8 +6,7 @@ class AuthController extends Zend_Controller_Action
     public function init()
     {
         /* Initialize action controller here */
-    	//$this->_helper->layout()->setLayout('home');
-		$this->_helper->layout()->sideBarCollapse = true;
+    	$this->_helper->layout()->setLayout('home');
     }
 
     public function indexAction()
@@ -55,7 +54,7 @@ class AuthController extends Zend_Controller_Action
 	    		//$authNameSpace->UserFld2 = $rs->UserFld2;
 	    		//$authNameSpace->UserFld3 = $rs->UserFld3;
 	    		
-    			$this->_redirect('/participant/dashboard');
+    			$this->_redirect('/participant/current-schemes');
     		
     		}else
     		{
