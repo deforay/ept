@@ -102,12 +102,12 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 		  <?php if(isset($authNameSpace->dm_id)){ ?>
 			  <li>
 				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"dashboard"),null,true) ?>">
-				  <i class="icon icon-home"></i> <span>Dashboard</span>
+				  <i class="icon icon-dashboard"></i> <span>Dashboard</span>
 				</a>
 			  </li>
 			  <li>
 				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"current-schemes"),null,true) ?>">
-				  <i class="icon icon-home"></i> <span>Report PT Data</span>
+				  <i class="icon icon-list-ul"></i> <span>Report PT Data</span>
 				</a>
 			  </li>
               <li class="treeview">
@@ -119,12 +119,12 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
               </li>
 			  <li>
 				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"all-schemes"),null,true) ?>">
-				  <i class="icon icon-home"></i> <span>All Schemes</span>
+				  <i class="icon icon-list-ul"></i> <span>All Schemes</span>
 				</a>
 			  </li>
 			  <li>
 				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"defaulted-schemes"),null,true) ?>">
-				  <i class="icon icon-home"></i> <span>Defaulted Schemes</span>
+				  <i class="icon icon-exclamation"></i> <span>Defaulted Schemes</span>
 				</a>
 			  </li>
 			  	  
