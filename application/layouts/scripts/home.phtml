@@ -29,7 +29,39 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
          folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/skins/_all-skins.min.css'); ?>">
 
-
+	<style>
+	  .layout-boxed,.skin-blue .wrapper, .skin-blue .main-sidebar, .skin-blue .left-side,.content-wrapper{
+		/*background: none;
+		border:0;
+		box-shadow : none;*/
+	  }
+	  .layout-boxed{
+		background: #fff;
+	  }
+	  
+	   .skin-blue .wrapper, .skin-blue .main-sidebar, .skin-blue .left-side,.content-wrapper{
+		background: #ecf0f5;
+		border:0;
+		box-shadow : none;
+	  }
+	  
+	  .layout-boxed .wrapper{
+		box-shadow : none;
+	  }
+	  .layout-boxed .wrapper, header, header .navbar .container{
+		max-width:1100px !important;
+	  }
+	  
+	  
+	  .layout-boxed .wrapper {
+  max-width: 1150px;
+  margin: 0 auto;
+  min-height: 100%;
+  /*box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);*/
+  position: relative;
+}
+	  
+	</style>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -76,15 +108,21 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
             </header>      <!-- Left side column. contains the logo and sidebar -->
 
       <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
+      <div class="content-wrapper" style="float:left;clear:both;background: #F9F9F9;width:100%;padding-bottom:20px;margin-bottom:10px;">
         <!-- Content Header (Page header) -->
 		<section class="content">
+		  <div class="col-lg-12">
+			<div class="col-lg-2" style="text-align: center;padding:10px;"><img src="<?php echo $this->baseUrl(); ?>/images/country/country-flag.jpg" style="max-height:100px;"/></div>
+			<div class="col-lg-8" style="text-align: center;padding:10px;"><img src="<?php echo $this->baseUrl(); ?>/images/ept-logo.png" style="margin-top:0px;"/></div>
+			<div class="col-lg-2" style="text-align: center;padding:10px;"><img src="<?php echo $this->baseUrl(); ?>/images/country/institute-logo.jpg" style="max-height:100px;"/></div>						
+		  </div>
 		  <?php echo $this->layout()->content; ?>
-		  <br/>
+		  
 		</section>
       
       </div><!-- /.content-wrapper -->
-      <footer class="main-footer">
+      <footer class="main-footer" style="">
+		
         <div class="pull-right hidden-xs">
           <strong><a href="http://aslm.org">Funded by ASLM</a></strong>
         </div>
