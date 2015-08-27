@@ -18,6 +18,7 @@ class IndexController extends Zend_Controller_Action
     public function indexAction()
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $this->_helper->layout()->activeMenu = 'home';
         if(!isset($authNameSpace->dm_id)){
             $this->_helper->layout()->setLayout('home');
         }

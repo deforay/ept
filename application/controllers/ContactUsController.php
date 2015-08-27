@@ -12,6 +12,7 @@ class ContactUsController extends Zend_Controller_Action
 
     public function indexAction()
     {
+        $this->_helper->layout()->activeMenu = 'contact-us';
         if($this->getRequest()->isPost()){
             $params = $this->getRequest()->getPost();
             $common = new Application_Service_Common();

@@ -17,6 +17,7 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
+        
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_OVERVIEW
             $params = $this->_getAllParams();
@@ -28,13 +29,14 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function dashboardAction() {
-
+        $this->_helper->layout()->activeMenu = 'dashboard';
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $this->view->authNameSpace = $authNameSpace;
     }
 
     public function reportAction() {
-        //SHIPMENT_ALL
+        $this->_helper->layout()->activeMenu = 'view-reports';
+        $this->_helper->layout()->activeSubMenu = 'individual-reports';
         if ($this->getRequest()->isPost()) {
             $params = $this->_getAllParams();
             $shipmentService = new Application_Service_Shipments();
@@ -45,6 +47,8 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function userInfoAction() {
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'user-info';
         $userService = new Application_Service_DataManagers();
         if ($this->_request->isPost()) {
             $params = $this->_request->getPost();
@@ -55,17 +59,23 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function testersAction() {
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'testers';
         $dbUsersProfile = new Application_Service_Participants();
         $this->view->rsUsersProfile = $dbUsersProfile->getUsersParticipants();
     }
 
     public function schemeAction() {
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'scheme';
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dbUsersProfile = new Application_Service_Participants();
         $this->view->participantSchemes = $dbUsersProfile->getParticipantSchemes($authNameSpace->dm_id);
     }
 
     public function passwordAction() {
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'change-password';
         if ($this->getRequest()->isPost()) {
             $user = new Application_Service_DataManagers();
             $newPassword = $this->getRequest()->getPost('newpassword');
@@ -80,6 +90,8 @@ class ParticipantController extends Zend_Controller_Action {
     public function testereditAction() {
         // action body
         // Get
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'testers';
         $participantService = new Application_Service_Participants();
         $commonService = new Application_Service_Common();
         if ($this->getRequest()->isPost()) {
@@ -102,6 +114,8 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function addAction() {
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'testers';
         $participantService = new Application_Service_Participants();
         $commonService = new Application_Service_Common();
         if ($this->getRequest()->isPost()) {
@@ -120,6 +134,7 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function defaultedSchemesAction() {
+        $this->_helper->layout()->activeMenu = 'defaulted-schemes';
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_DEFAULTED
             $params = $this->_getAllParams();
@@ -129,6 +144,7 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function currentSchemesAction() {
+        $this->_helper->layout()->activeMenu = 'current-schemes';
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_CURRENT
             $params = $this->_getAllParams();
@@ -138,6 +154,7 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function allSchemesAction() {
+        $this->_helper->layout()->activeMenu = 'all-schemes';
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_ALL
             $params = $this->_getAllParams();
@@ -170,6 +187,8 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function summaryReportAction() {
+        $this->_helper->layout()->activeMenu = 'view-reports';
+        $this->_helper->layout()->activeSubMenu = 'summary-reports';
         if ($this->getRequest()->isPost()) {
             $params = $this->_getAllParams();
             $shipmentService = new Application_Service_Shipments();

@@ -1,5 +1,9 @@
 <?php
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
+
+$activeMenu = isset($this->layout()->activeMenu) ? $this->layout()->activeMenu : "";
+$activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->activeSubMenu : "";
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -91,7 +95,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
             <li class="header">MAIN NAVIGATION</li>
-			<li class="active">
+			<li class="<?php echo ($activeMenu == 'home') ? ' active ' : '';  ?>">
               <a href="/">
                 <i class="icon icon-home"></i> <span>Home</span>
               </a>
@@ -100,44 +104,44 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 				 
 				 
 		  <?php if(isset($authNameSpace->dm_id)){ ?>
-			  <li>
+			  <li class="<?php echo ($activeMenu == 'dashboard') ? ' active ' : '';  ?>">
 				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"dashboard"),null,true) ?>">
 				  <i class="icon icon-dashboard"></i> <span>Dashboard</span>
 				</a>
 			  </li>
-			  <li>
+			  <li class="<?php echo ($activeMenu == 'current-schemes') ? ' active ' : '';  ?>">
 				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"current-schemes"),null,true) ?>">
 				  <i class="icon icon-list-ul"></i> <span>Report PT Data</span>
 				</a>
 			  </li>
-              <li class="treeview">
+              <li class="treeview <?php echo ($activeMenu == 'view-reports') ? ' active ' : '';  ?>">
                 <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span>View PT Result </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
                 <ul class="treeview-menu">
-				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"report"),null,true) ?>"> Individual Report</a></li>
-				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"summary-report"),null,true) ?>"> Summary Report</a></li>
+				  <li class="<?php echo ($activeSubMenu == 'individual-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"report"),null,true) ?>"> Individual Report</a></li>
+				  <li class="<?php echo ($activeSubMenu == 'summary-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"summary-report"),null,true) ?>"> Summary Report</a></li>
                 </ul>
               </li>
-			  <li>
+			  <li class="<?php echo ($activeMenu == 'all-schemes') ? ' active ' : '';  ?>">
 				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"all-schemes"),null,true) ?>">
 				  <i class="icon icon-list-ul"></i> <span>All Schemes</span>
 				</a>
 			  </li>
-			  <li>
+			  <li class="<?php echo ($activeMenu == 'defaulted-schemes') ? ' active ' : '';  ?>">
 				<a href="<?php echo $this->url(array("controller"=>"participant","action"=>"defaulted-schemes"),null,true) ?>">
 				  <i class="icon icon-exclamation"></i> <span>Defaulted Schemes</span>
 				</a>
 			  </li>
 			  	  
-              <li class="treeview">
+              <li class="treeview <?php echo ($activeMenu == 'my-account') ? ' active ' : '';  ?>">
                 <a href="#" class="" data-toggle="" role="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-user"></i> <span>My Account</span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
                 <ul class="treeview-menu">
-				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"user-info"),null,true) ?>">My Login Information</a></li>
-				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">PT Participant Info</a></li>
-				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"scheme"),null,true) ?>">Scheme Information</a></li>
-				  <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"password"),null,true) ?>">Change Password</a></li>                                
+				  <li class="<?php echo ($activeSubMenu == 'user-info') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"user-info"),null,true) ?>">My Login Information</a></li>
+				  <li class="<?php echo ($activeSubMenu == 'testers') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">PT Participant Info</a></li>
+				  <li class="<?php echo ($activeSubMenu == 'scheme') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"scheme"),null,true) ?>">Scheme Information</a></li>
+				  <li class="<?php echo ($activeSubMenu == 'change-password') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"password"),null,true) ?>">Change Password</a></li>                                
                 </ul>
               </li>
-			  <li><a href="<?php echo $this->url(array("controller"=>"contact-us"),null,true) ?>"><i class="icon icon-envelope"></i> <span>Contact Us </span></a></li>
+			  <li class="<?php echo ($activeMenu == 'contact-us') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"contact-us"),null,true) ?>"><i class="icon icon-envelope"></i> <span>Contact Us </span></a></li>
 			  <?php } ?>				 
 
 
