@@ -295,16 +295,16 @@
 		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 	}
 	
-	function removeEiaRow(obj,sampleId) {
+	function removeEiaRow(obj) {
 		$(obj.parentNode.parentNode).fadeOut("normal",function(){
 			$(this).remove();
-			$('#sampleEia'+sampleId).remove();
+			//$('#sampleEia'+sampleId).remove();
 		});
 	}
-	function removeHivRow(obj,sampleId) {
+	function removeHivRow(obj) {
 		$(obj.parentNode.parentNode).fadeOut("normal",function(){
 			$(this).remove();
-			$('#sampleEia'+sampleId).remove();
+			//$('#sampleEia'+sampleId).remove();
 		});
 	}
 	

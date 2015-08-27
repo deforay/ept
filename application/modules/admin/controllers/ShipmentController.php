@@ -66,6 +66,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             if ($sid == 'vl') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->vlControls = $scheme->getSchemeControls($sid);
+                $this->view->vlAssay = $scheme->getVlAssay();
             } else if ($sid == 'eid') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
@@ -137,12 +138,19 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
 
                 $schemeService = new Application_Service_Schemes();
-                $this->view->wb = $schemeService->getDbsWb();
-                $this->view->eia = $schemeService->getDbsEia();
-                $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts');
-                //Zend_Debug::dump($d);die;
-                $this->view->allTestKits = $schemeService->getAllDtsTestKit();
-                if ($response === false) {
+                if($response['shipment']['scheme_type'] == 'dts'){
+                    $this->view->wb = $schemeService->getDbsWb();
+                    $this->view->eia = $schemeService->getDbsEia();
+                    $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts');
+                    $this->view->allTestKits = $schemeService->getAllDtsTestKit();                    
+                }else if($response['shipment']['scheme_type'] == 'vl'){
+                    
+                    $this->view->vlAssay = $schemeService->getVlAssay();
+                    
+                }
+                
+                // oOps !! Nothing to edit....
+                if ($response== null || $response == "" || $response === false) {
                     $this->_redirect("/admin/shipment");
                 }
             } else {

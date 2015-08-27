@@ -213,7 +213,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_type', 'shipment_code', 'first_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $aColumns = array('DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'first_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -295,6 +295,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          * Get data to display
          */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id','s.status','s.response_switch'))
+				->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
                 ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id","spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')","RESPONSE" => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,3,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,3,1)='9' AND s.lastdate_response>= CURDATE()) OR (s.status= 'finalized') THEN 'Enter Result' END")))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
@@ -378,7 +379,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
                 }
             }
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
-            $row[] = strtoupper($aRow['scheme_type']);
+            $row[] = ($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['lastdate_response']);
@@ -406,7 +407,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_type', 'shipment_code', 'first_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $aColumns = array('year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'first_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -489,6 +490,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.status','SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id','s.response_switch'))
                 ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id","spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "ACTION" => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,2,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,2,1)='9' AND s.lastdate_response>= CURDATE()) OR (s.status= 'finalized') THEN 'Enter Result' END"), "STATUS" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'On Time' WHEN '2' THEN 'Late' WHEN '0' THEN 'No Response' END")))
+				->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name','p.participant_id'))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
                 ->where("pmm.dm_id=?", $this->_session->dm_id)
@@ -561,7 +563,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
             $row[] = $aRow['SHIP_YEAR'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
-            $row[] = strtoupper($aRow['scheme_type']);
+            $row[] = ($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['lastdate_response']);
@@ -588,7 +590,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_type', 'shipment_code', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $aColumns = array('year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -672,6 +674,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id','s.status','s.response_switch'))
                 ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.report_generated','spm.map_id', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,3,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,3,1)='9' AND s.lastdate_response >= CURDATE()) OR (substr(spm.evaluation_status,3,1)='9' AND s.status= 'finalized') THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
+				->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name','p.participant_id'))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
                 ->where("pmm.dm_id=?", $this->_session->dm_id)
@@ -741,7 +744,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $aRow['lastdate_response'];
             $row[] = $aRow['SHIP_YEAR'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
-            $row[] = strtoupper($aRow['scheme_type']);
+            $row[] = ($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);

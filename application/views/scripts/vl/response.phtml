@@ -1,6 +1,16 @@
 <?php date_default_timezone_set('America/New_York');?>
+<style>
+    th{
+        text-align: center;
+    }
+</style>
+<section class="content-header">
+    <h1>Viral Load</h1>
+</section>
+<section class="content">
+<div class="box">
 <form name="vlResponseForm" id="vlResponseForm" method="post"   action="<?php echo $this->url(array("controller"=>"vl","action"=>"response"),null,true) ?>">
-
+<div class="box-body">
 <input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response'];?>" />
 <input type="hidden" id ="smid" name="smid" value="<?php echo $this->shipment['map_id'];?>" />
 <input type="hidden" id ="shipmentId" name="shipmentId" value="<?php echo $this->shipId;?>" />
@@ -18,76 +28,75 @@ $count++;  ?>
 
 ?>
 <div id="view-content">
-<h2 align="CENTER"> Viral Load </h2>
-<br>
 <div id=error></div>
-<table>
+<table class="table">
 <tr>
-	<td> <span class="txt"> Participant Name </span> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?></td>
-		<td><span class="txt"> Participant Code </span> <?php echo $this->participant['unique_identifier'] ?></td>
-	<td><span class="txt"> Affiliation </span> <?php echo ( $this->participant['affiliation'] );?> </td>
-	<td><span class="txt"> Phone No </span> <?php  echo ( $this->participant['mobile']  . '<br/>' .   $this->participant['phone'] ); ?></td>
+	<td> <h4 class="text-info">  Participant Name </h4> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?></td>
+		<td><h4 class="text-info">  Participant Code </h4> <?php echo $this->participant['unique_identifier'] ?></td>
+	<td><h4 class="text-info">  Affiliation </h4> <?php echo ( $this->participant['affiliation'] );?> </td>
+	<td><h4 class="text-info"> Phone No </h4> <?php echo ( $this->participant['phone'] ); ?></td>
+                <td><h4 class="text-info"> Mobile No </h4> <?php echo ( $this->participant['mobile'] ); ?></td>
 </tr>
 </table>
 
-<table>
+<table class="table">
 	<tr class="dark">
-		<td>Shipment Date</td>
+		<td><label>Shipment Date</label></td>
 		<td><?php echo $this->dateFormat($this->shipment['shipment_date']);?></td>
-		<td>Result Due Date <?php  ?></td>
+		<td><label>Result Due Date</label></td>
 		<td><?php echo $this->dateFormat($this->shipment['lastdate_response']);?> </td>
 	</tr>
 	
 	
 	
 	<tr class ="light">
-		<td>Shipment Receipt Date</td>
-		<td><input type="text" id="receiptDate" name="receiptDate" maxlength="11" value="<?php  echo $this->dateFormat($this->shipment["shipment_receipt_date"]);  ?>"  class="isRequired datepicker" readonly="readonly" /></td>
-		<td>Sample Rehydration Date</td>
-		<td><input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate"value="<?php  echo  $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>" class="isRequired datepicker" readonly="readonly" /></td>
+		<td><label>Shipment Receipt Date</label></td>
+		<td><input type="text" id="receiptDate" name="receiptDate" maxlength="11" value="<?php  echo $this->dateFormat($this->shipment["shipment_receipt_date"]);  ?>"  class="isRequired datepicker form-control" readonly="readonly" /></td>
+		<td><label>Sample Rehydration Date</label></td>
+		<td><input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate"value="<?php  echo  $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>" class="isRequired datepicker form-control" readonly="readonly" /></td>
 	</tr>
 	<tr>
-		<td>Testing Date</td> 
-		<td><input type="text" id="testDate" name="testDate" maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>"  class="isRequired datepicker" readonly="readonly" /></td>		
+		<td><label>Testing Date</label></td> 
+		<td><input type="text" id="testDate" name="testDate" maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>"  class="isRequired datepicker form-control" readonly="readonly" /></td>		
 
 		<td></td>
 		<td></td>
 	</tr>
 	
 	<tr class ="dark">
-		<td>Viral Load Assay:</td>
+		<td><label>Viral Load Assay</label></td>
 		<td>
-		<select id="vlAssay" name="vlAssay">
+		<select id="vlAssay" name="vlAssay" class=" form-control">
 			<option>--Select--</option>
 			<?php
-			foreach($this->vlAssay as $vlAssay){
+			foreach($this->vlAssay as $id => $name){
 			?>
-				<option value="<?php echo $vlAssay['id']; ?>"  <?php echo ($this->shipment['attributes']['vl_assay'] == $vlAssay['id']) ? "selected='selected'" : "";?>><?php echo $vlAssay['name']; ?></option>	
+				<option value="<?php echo $id; ?>"  <?php echo ($this->shipment['attributes']['vl_assay'] == $id) ? "selected='selected'" : "";?>><?php echo $name; ?></option>	
 			<?php
 			}
 			?>
 		</select>
 		</td>
-		<td>Assay Lot Number:</td> 
+		<td><label>Assay Lot Number</label></td> 
 		<td>
-			<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired"  value="<?php echo $this->shipment['attributes']['assay_lot_number'];?>"/>
+			<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired form-control"  value="<?php echo $this->shipment['attributes']['assay_lot_number'];?>"/>
 		</td>
 	</tr>
 
 	<tr class ="dark">
-		<td>Assay Expiration Date:</td>
+		<td><label>Assay Expiration Date</label></td>
 		<td>
-			<input type="text" name="assayExpirationDate" id="assayExpirationDate" class="isRequired expDatepicker" readonly="readonly"  value="<?php echo $this->dateFormat($this->shipment['attributes']['assay_expiration_date']);?>"/>
+			<input type="text" name="assayExpirationDate" id="assayExpirationDate" class="isRequired expDatepicker form-control" readonly="readonly"  value="<?php echo $this->dateFormat($this->shipment['attributes']['assay_expiration_date']);?>"/>
 		</td>
-		<td>Specimen Volume:</td> 
+		<td><label>Specimen Volume</label></td> 
 		<td>
-			<input type="text" name="specimenVolume" id="specimenVolume" class="isRequired"  value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
+			<input type="text" name="specimenVolume" id="specimenVolume" class="isRequired form-control"  value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
 		</td>
 	</tr>
 	
 </table>
 
-<table style="width: max-content;" border="1">
+<table class="table table-bordered table-striped" style="width:70%;margin:0 auto;">
 <thead>
 	<tr align="CENTER" class="dark" >
 		<th style="width:35%;">Control/Sample</th>
@@ -107,7 +116,7 @@ $count++;
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
 		</th>
         <td>
-			<input type="text" name="vlResult[]" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?>  value="<?php echo $sample['reported_viral_load']; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
+			<input type="text" name="vlResult[]" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control"   value="<?php echo $sample['reported_viral_load']; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
 		</td>
     </tr>
 
@@ -116,25 +125,25 @@ $count++;
 
 </table>
 <br>
-<table>
+<table class="table">
 <tr>
 	<th>Supervisor Review</th>
 	<td>
-		<select name="supervisorApproval" id="supervisorApproval" class="isRequired">
+		<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
 			<option>--Select--</option>
 			<option value="yes" <?php if($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>Yes</option>
 			<option value="no" <?php if($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>No</option>
 		</select>
 	</td>
 	<th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
-	<td><input name="participantSupervisor" id="participantSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>  type="text" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
+	<td><input name="participantSupervisor" id="participantSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>  type="text" class=" form-control" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
 	
 </tr>
 <tr>
 
 <th>Comments </th>
 <td colspan="3">
-<textarea name="userComments" id="userComments" size="120" maxlength="40"><?php echo $this->shipment['user_comment'] ; ?></textarea>
+<textarea name="userComments" id="userComments" class=" form-control" size="120" maxlength="40"><?php echo $this->shipment['user_comment'] ; ?></textarea>
 
 </td>
 </tr>
@@ -144,9 +153,9 @@ $count++;
 	<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 				<p>
 					
-					<input name="submitbtn" class="css_btn_class" type="submit" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
+					<input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
 					&nbsp;&nbsp;&nbsp;
-					<input name="cancel" class="css_btn_class" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" /> 
+					<input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" /> 
 					
 				</p>
 	</div>
@@ -156,16 +165,27 @@ $count++;
 $genderHelper = $this->getHelper('DateFormat');
 $dtFormat=  $genderHelper->getDateFormat();
 ?>
-</form>
+
+
+
 <?php if(!$this->isEditable){
 		?>
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-			<input name="cancel" class="css_btn_class" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />
+			<input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />
 		</div>
 		<?php
 }
 ?>
+
+
+</div>
+</form>
+
+
  
+ 
+</div>
+</section>
 <script>
 	
 	function goto_dashboard(){

@@ -2090,3 +2090,17 @@ INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `descr
 (15, 'Review all testing procedures prior to performing client testing and contact your supervisor for improvement.', 'Participant did not meet the score criteria (Participant Score is 80 and Required Score is 95)'),
 (16, 'Ensure to provide to provide panel receipt date. ', 'Panel receipt date missing in PT report form.'),
 (17, 'Please test DTS sample as per National HIV Testing algorithm. Review and refer to SOP for testing.', 'For Test (1/2/3) testing is not performed with country approved test kit.');
+
+
+-- Amit Aug 26 2015
+
+
+CREATE TABLE IF NOT EXISTS `reference_vl_methods` (
+  `shipment_id` int(11) NOT NULL,
+  `sample_id` int(11) NOT NULL,
+  `assay` int(11) NOT NULL,
+  `value` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `reference_vl_methods`
+ ADD PRIMARY KEY (`shipment_id`,`sample_id`,`assay`);

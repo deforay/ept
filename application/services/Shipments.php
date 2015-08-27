@@ -510,17 +510,33 @@ class Application_Service_Shipments {
                 );
             }
         } else if ($params['schemeId'] == 'vl') {
+			//Zend_Debug::dump($params['vlRef']);die;
             for ($i = 0; $i < $size; $i++) {
                 $dbAdapter->insert('reference_result_vl', array(
                     'shipment_id' => $lastId,
                     'sample_id' => ($i + 1),
                     'sample_label' => $params['sampleName'][$i],
-                    'reference_result' => $params['vlResult'][$i],
+                    //'reference_result' => $params['vlResult'][$i],
                     'control' => $params['control'][$i],
                     'mandatory' => $params['mandatory'][$i],
-                    'sample_score' => (isset($params['score'][$i]) ? $params['score'][$i] : 0)
-                        )
+                    'sample_score' => 1
+                    )
                 );
+				if (isset($params['vlRef'][$i + 1]['assay'])) {
+					$assaySize = count($params['vlRef'][$i + 1]['assay']);;
+					for ($e = 0; $e < $assaySize; $e++) {
+						if(trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != ""){
+							$dbAdapter->insert('reference_vl_methods',
+											   array(
+												'shipment_id' => $lastId,
+												'sample_id' => ($i + 1),
+												'assay' => $params['vlRef'][$i + 1]['assay'][$e],
+												'value' => $params['vlRef'][$i + 1]['value'][$e]
+												)
+										);
+						}
+					}
+				}
             }
         } else if ($params['schemeId'] == 'dts') {
             for ($i = 0; $i < $size; $i++) {
@@ -767,6 +783,9 @@ class Application_Service_Shipments {
         $eia = '';
         $wb = '';
         $rhiv = '';
+		
+		$returnArray = array();
+		
         if ($shipment['scheme_type'] == 'dts') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                             ->join(array('ref' => 'reference_result_dts'), 'ref.shipment_id=s.shipment_id')
@@ -777,6 +796,10 @@ class Application_Service_Shipments {
             $eia = $db->fetchAll($db->select()->from('reference_dts_eia')->where("shipment_id = ?", $sid));
             $wb = $db->fetchAll($db->select()->from('reference_dts_wb')->where("shipment_id = ?", $sid));
             $rhiv = $db->fetchAll($db->select()->from('reference_dts_rapid_hiv')->where("shipment_id = ?", $sid));
+			$returnArray['eia'] = $eia;
+			$returnArray['wb'] = $wb;
+			$returnArray['rhiv'] = $rhiv;
+			
         } else if ($shipment['scheme_type'] == 'dbs') {
 
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
@@ -787,12 +810,23 @@ class Application_Service_Shipments {
 
             $eia = $db->fetchAll($db->select()->from('reference_dbs_eia')->where("shipment_id = ?", $sid));
             $wb = $db->fetchAll($db->select()->from('reference_dbs_wb')->where("shipment_id = ?", $sid));
+			$returnArray['eia'] = $eia;
+			$returnArray['wb'] = $wb;
+			
         } else if ($shipment['scheme_type'] == 'eid') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                             ->join(array('ref' => 'reference_result_eid'), 'ref.shipment_id=s.shipment_id')
                             ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults('eid');
+        } else if ($shipment['scheme_type'] == 'vl') {
+            $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
+                            ->join(array('ref' => 'reference_result_vl'), 'ref.shipment_id=s.shipment_id')
+                            ->where("s.shipment_id = ?", $sid));
+            $possibleResults = "";
+			
+			$returnArray['vlReferenceMethods'] = $db->fetchAll($db->select()->from('reference_vl_methods')->where("shipment_id = ?", $sid));
+			
         } else if ($shipment['scheme_type'] == 'tb') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                             ->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=s.shipment_id')
@@ -801,8 +835,12 @@ class Application_Service_Shipments {
         } else {
             return false;
         }
+		
+		$returnArray['shipment'] = $shipment;
+		$returnArray['reference'] = $reference;
+		$returnArray['possibleResults'] = $possibleResults;
 
-        return array('shipment' => $shipment, 'reference' => $reference, 'possibleResults' => $possibleResults, 'eia' => $eia, 'wb' => $wb, 'rhiv' => $rhiv);
+        return $returnArray;
     }
 
     public function updateShipment($params) {
@@ -832,18 +870,39 @@ class Application_Service_Shipments {
                 );
             }
         } else if ($scheme == 'vl') {
+			//var_dump($params['vlRef']);die;
             $dbAdapter->delete('reference_result_vl', 'shipment_id = ' . $params['shipmentId']);
+			$dbAdapter->delete('reference_vl_methods', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
                 $dbAdapter->insert('reference_result_vl', array(
                     'shipment_id' => $params['shipmentId'],
                     'sample_id' => ($i + 1),
                     'sample_label' => $params['sampleName'][$i],
-                    'reference_result' => $params['vlResult'][$i],
+                    //'reference_result' => $params['vlResult'][$i],
                     'control' => $params['control'][$i],
                     'mandatory' => $params['mandatory'][$i],
-                    'sample_score' => $params['score'][$i]
-                        )
+                    'sample_score' => 1
+                    )
                 );
+				
+				if (isset($params['vlRef'][$i + 1]['assay'])) {
+					$assaySize = count($params['vlRef'][$i + 1]['assay']);;
+					for ($e = 0; $e < $assaySize; $e++) {
+						if(trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != ""){
+							$dbAdapter->insert('reference_vl_methods',
+											   array(
+												'shipment_id' => $params['shipmentId'],
+												'sample_id' => ($i + 1),
+												'assay' => $params['vlRef'][$i + 1]['assay'][$e],
+												'value' => $params['vlRef'][$i + 1]['value'][$e]
+												)
+										);
+						}
+					}
+				}				
+				
+				
+				
             }
         }else if ($scheme == 'tb') {
             $dbAdapter->delete('reference_result_tb', 'shipment_id = ' . $params['shipmentId']);

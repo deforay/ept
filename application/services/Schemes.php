@@ -77,8 +77,13 @@ class Application_Service_Schemes {
 
     public function getVlAssay() {
 
-        $db = new Application_Model_DbTable_VlAssay();
-        return $db->fetchAll();
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $res = $db->fetchAll($db->select()->from('r_vl_assay'));
+        $response = array();
+        foreach ($res as $row) {
+            $response[$row['id']] = $row['name'];
+        }
+        return $response;
     }
 
     public function getDbsEia() {
