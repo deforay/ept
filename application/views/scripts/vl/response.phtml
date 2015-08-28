@@ -29,7 +29,8 @@ $count++;  ?>
 ?>
 <div id="view-content">
 <div id=error></div>
-<table class="table">
+
+<table class="table table-bordered table-striped">
 <tr>
 	<td> <h4 class="text-info">  Participant Name </h4> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?></td>
 		<td><h4 class="text-info">  Participant Code </h4> <?php echo $this->participant['unique_identifier'] ?></td>
@@ -38,13 +39,13 @@ $count++;  ?>
                 <td><h4 class="text-info"> Mobile No </h4> <?php echo ( $this->participant['mobile'] ); ?></td>
 </tr>
 </table>
-
-<table class="table">
+<hr>
+<table class="table table-bordered table-striped" style="width:90%;margin:10px auto;">
 	<tr class="dark">
-		<td><label>Shipment Date</label></td>
-		<td><?php echo $this->dateFormat($this->shipment['shipment_date']);?></td>
-		<td><label>Result Due Date</label></td>
-		<td><?php echo $this->dateFormat($this->shipment['lastdate_response']);?> </td>
+		<td style="width:25%;"><label>Shipment Date</label></td>
+		<td style="width:25%;"><?php echo $this->dateFormat($this->shipment['shipment_date']);?></td>
+		<td style="width:25%;"><label>Result Due Date</label></td>
+		<td style="width:25%;"><?php echo $this->dateFormat($this->shipment['lastdate_response']);?> </td>
 	</tr>
 	
 	
@@ -95,26 +96,35 @@ $count++;  ?>
 	</tr>
 	
 </table>
-
-<table class="table table-bordered table-striped" style="width:70%;margin:0 auto;">
+<hr>
+<table class="table table-bordered table-striped" style="width:90%;margin:10px auto;">
 <thead>
-	<tr align="CENTER" class="dark" >
-		<th style="width:35%;">Control/Sample</th>
+	<tr align="center" class="dark" >
+		<th style="width:30%;">Control/Sample</th>
 		<th>Viral Load (log<sub>10</sub> copies/ml)</th>		
 	</tr>
 </thead>
-
+<tfoot>
+	<tr>
+		<td colspan="2" style="font-size:1.1em;">
+			Please Note :
+			<ul style="margin:10px;">
+				<li>Viral Load should be entered in log<sub>10</sub> copies/ml</li>
+			</ul>
+		</td>
+	</tr>
+</tfoot>
 <?php $count =0;  
 foreach($this->allSamples as $sample){ 
 $count++;
 ?>
 
 
-	<tr align="CENTER" class="light" >
-		<th>
+	<tr class="light" >
+		<td>
 			<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
-		</th>
+		</td>
         <td>
 			<input type="text" name="vlResult[]" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control"   value="<?php echo $sample['reported_viral_load']; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
 		</td>
@@ -124,11 +134,11 @@ $count++;
 <?php } ?>
 
 </table>
-<br>
-<table class="table">
+<hr>
+<table class="table table-bordered table-striped" style="width:90%;margin:10px auto;">
 <tr>
-	<th>Supervisor Review</th>
-	<td>
+	<th style="width:20%;">Supervisor Review</th>
+	<td style="width:20%;">
 		<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
 			<option>--Select--</option>
 			<option value="yes" <?php if($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>Yes</option>
