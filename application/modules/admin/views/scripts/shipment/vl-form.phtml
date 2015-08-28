@@ -93,6 +93,11 @@ $count = 0;
 <div id="sampleReferenceBlockHolder">
 
 </div> <!-- sampleReferenceBlockHolder -->
+<?php
+$vHelper = $this->getHelper('DateFormat');
+	$dtFormat=  $vHelper->getDateFormat();
+
+?>
 <script type="text/javascript">
 	var sampleCounter = <?php  echo $count+1; ?>;
 	

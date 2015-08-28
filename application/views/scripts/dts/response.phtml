@@ -8,6 +8,9 @@ date_default_timezone_set('America/New_York');
     th{
         text-align: center;
     }
+	table,th,td{
+		border-color:#ccc !important;
+	}
 </style>
 <section class="content-header">
     <h1>Dried Tube Specimen (DTS) for Rapid HIV Testing</h1>
@@ -131,7 +134,7 @@ date_default_timezone_set('America/New_York');
                     <th >Test-1</th>
                     <th >Test-2</th>
                     <th >Test-3</th>
-
+                    <th></th>
                 </tr>
             </thead>
             <tr align="CENTER" class="light" >
@@ -184,7 +187,7 @@ date_default_timezone_set('America/New_York');
                     </select>
                     <input type="text" class="form-control"  maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
                 </td>
-
+                <td rowspan="3"></td>
 
 
             </tr>
