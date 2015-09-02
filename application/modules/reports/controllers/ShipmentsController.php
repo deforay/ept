@@ -50,7 +50,8 @@ class Reports_ShipmentsController extends Zend_Controller_Action
         $reportService = new Application_Service_Reports();
         if($this->_hasParam('shipmentId')){
             $shipmentId = base64_decode($this->_getParam('shipmentId'));
-            $this->view->result=$reportService->getShipmentParticipant($shipmentId);
+            $schemeType = ($this->_getParam('schemeType'));
+            $this->view->result=$reportService->getShipmentParticipant($shipmentId,$schemeType);
         }
         
     }
