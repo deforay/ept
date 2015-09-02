@@ -32,7 +32,7 @@ class VlController extends Zend_Controller_Action
     		
     		
     		
-    		$this->_redirect("/participant/dashboard");
+    		$this->_redirect("/participant/current-schemes");
     		
     		//die;            
         }else{

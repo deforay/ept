@@ -58,16 +58,16 @@ date_default_timezone_set('America/New_York');
         <span class="pull-right">Fields marked <span class='mandatory'>*</span> are mandatory</span>
         <table class="table table-bordered table-striped">
             <tr>
-                <td><h4 class="text-info"> Participant Name </h4> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] ); ?></td>
-                <td><h4 class="text-info"> Participant Code </h4> <?php echo $this->participant['unique_identifier'] ?></td>
-                <td><h4 class="text-info"> Affiliation </h4> <?php echo ( $this->participant['affiliation'] ); ?> </td>
-                <td><h4 class="text-info"> Phone No </h4> <?php echo ( $this->participant['phone'] ); ?></td>
-                <td><h4 class="text-info"> Mobile No </h4> <?php echo ( $this->participant['mobile'] ); ?></td>
+                <td style="width:20%;"><h4 class="text-info"> Participant Name </h4> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] ); ?></td>
+                <td style="width:20%;"><h4 class="text-info"> Participant Code </h4> <?php echo $this->participant['unique_identifier'] ?></td>
+                <td style="width:20%;"><h4 class="text-info"> Affiliation </h4> <?php echo ( $this->participant['affiliation'] ); ?> </td>
+                <td style="width:20%;"><h4 class="text-info"> Phone No </h4> <?php echo ( $this->participant['phone'] ); ?></td>
+                <td style="width:20%;"><h4 class="text-info"> Mobile No </h4> <?php echo ( $this->participant['mobile'] ); ?></td>
             </tr>
         </table>
 
 <hr>
-<table class="table table-bordered table-striped" style="width:90%;margin:10px auto;">
+<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
             <tr class="dark">
                 <td style="width:20%;"><label>Shipment Date</label></td>
                 <td style="width:30%;"><?php echo $this->dateFormat($this->shipment['shipment_date']); ?></td>
@@ -297,7 +297,7 @@ date_default_timezone_set('America/New_York');
         </table>
         <?php } ?>
 <hr>
-<table class="table table-bordered table-striped" style="width:90%;margin:10px auto;">
+<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
             <tr>
                 <th style="width:20%;">Supervisor Review</th>
                 <td style="width:20%;"><select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control"  title="Please select if Supervisor Approval was conducted or not"><option value=""> -- Select -- </option>

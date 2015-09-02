@@ -33,17 +33,17 @@ $count++;  ?>
 <div id="view-content">
 <div id=error></div>
 
-<table class="table table-bordered table-striped">
+<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 <tr>
-	<td> <h4 class="text-info">  Participant Name </h4> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?></td>
-		<td><h4 class="text-info">  Participant Code </h4> <?php echo $this->participant['unique_identifier'] ?></td>
-	<td><h4 class="text-info">  Affiliation </h4> <?php echo ( $this->participant['affiliation'] );?> </td>
-	<td><h4 class="text-info"> Phone No </h4> <?php echo ( $this->participant['phone'] ); ?></td>
-                <td><h4 class="text-info"> Mobile No </h4> <?php echo ( $this->participant['mobile'] ); ?></td>
+	<td style="width:20%;"> <h4 class="text-info">  Participant Name </h4> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?></td>
+	<td style="width:20%;"><h4 class="text-info">  Participant Code </h4> <?php echo $this->participant['unique_identifier'] ?></td>
+	<td style="width:20%;"><h4 class="text-info">  Affiliation </h4> <?php echo ( $this->participant['affiliation'] );?> </td>
+	<td style="width:20%;"><h4 class="text-info"> Phone No </h4> <?php echo ( $this->participant['phone'] ); ?></td>
+    <td style="width:20%;"><h4 class="text-info"> Mobile No </h4> <?php echo ( $this->participant['mobile'] ); ?></td>
 </tr>
 </table>
 <hr>
-<table class="table table-bordered table-striped" style="width:90%;margin:10px auto;">
+<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 	<tr class="dark">
                 <td style="width:20%;"><label>Shipment Date</label></td>
                 <td style="width:30%;"><?php echo $this->dateFormat($this->shipment['shipment_date']); ?></td>
@@ -124,8 +124,8 @@ $count++;  ?>
 			Please Note :
 			<ul style="margin:10px;">
 				<li>Viral Load should be entered in log<sub>10</sub> copies/ml</li>
-				<li>XXXXXXXXXXXXXXXXXXXXXX</li>
-				<li>XXXXXXXXXXXXXXXXXXXXXX</li>
+				<li>Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).</li>
+				<li>For negative or undetectable result, please enter 0.00.</li>
 			</ul>
 		</td>
 	</tr>
@@ -151,7 +151,7 @@ $count++;
 
 </table>
 <hr>
-<table class="table table-bordered table-striped" style="width:90%;margin:10px auto;">
+<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 <tr>
 	<th style="width:20%;">Supervisor Review</th>
 	<td style="width:20%;">

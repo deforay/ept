@@ -2007,21 +2007,26 @@ class Application_Service_Reports {
 	
 			$firstSheet = new PHPExcel_Worksheet($excel, 'Instructions');
 			$excel->addSheet($firstSheet, 0);
-			$firstSheet->setTitle('Overall');
+			$firstSheet->setTitle('OVERALL');
 			
 			$schemeService = new Application_Service_Schemes();
 			$assayList = $schemeService->getVlAssay();
+			$countOfVlAssaySheet = 1;
+			foreach($assayList as $assayId => $assayName){
+				$newsheet = new PHPExcel_Worksheet($excel, '');
+				$excel->addSheet($newsheet, $countOfVlAssaySheet);
+				$sheetNameArray = explode("-",preg_replace('/[^A-Za-z0-9\-]/', '-', $assayName));
+				
+				$newsheet->setTitle(strtoupper($sheetNameArray[0]));
+				$countOfVlAssaySheet++;
+			}
+			
 			//var_dump($assayList);die;
-			//foreach($assayList as $assayId => $assayName){
-			//	$newsheet = new PHPExcel_Worksheet($excel, '');
-			//	$excel->addSheet($newsheet, 0);
-			//	$newsheet->setTitle($assayName);
-			//}
 				
 			$excel->setActiveSheetIndex(0);
 	
 			$writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-			$filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . '.xls';
+			$filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') .rand(). '.xls';
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			return $filename;
 		
