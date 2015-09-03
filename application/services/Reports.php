@@ -1996,7 +1996,7 @@ class Application_Service_Reports {
 				)
 			);
 	
-			$query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'))
+			$query = $db->select()->from('shipment')
 					->where("shipment_id = ?", $shipmentId);
 			$result = $db->fetchRow($query);
 	
@@ -2004,20 +2004,114 @@ class Application_Service_Reports {
 			$refQuery = $db->select()->from(array('refRes' => 'reference_result_vl'))->where("refRes.shipment_id = ?", $shipmentId);
 			$refResult = $db->fetchAll($refQuery);
 			
+			$colNamesArray = array();
+			$colNamesArray[] = "Participant ID";
+			$colNamesArray[] = "Assay";
 	
-			$firstSheet = new PHPExcel_Worksheet($excel, 'Instructions');
+			$firstSheet = new PHPExcel_Worksheet($excel, 'Overall Results');
+			$firstSheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$firstSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$colNameCount = 2;
+			foreach($refResult as $refRow){
+				$colNamesArray[] = $refRow['sample_label'];
+				$firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);	
+				$colNameCount++;
+			}
+			$firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$colNamesArray[] = "Date Received";
+			$firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$colNamesArray[] = "Date Tested";
 			$excel->addSheet($firstSheet, 0);
 			$firstSheet->setTitle('OVERALL');
 			
+			$queryOverAll = $db->select()->from(array('s'=>'shipment'))
+								//->join(array('ref' => 'reference_result_vl'),"ref.shipment_id = s.shipment_id")
+								->joinLeft(array('spm' => 'shipment_participant_map'),"spm.shipment_id = s.shipment_id")
+								->joinLeft(array('p' => 'participant'),"p.participant_id = spm.participant_id")
+								->where("s.shipment_id = ?", $shipmentId);
+			$resultOverAll = $db->fetchAll($queryOverAll);
+			
+			$row = 1; // $row 0 is already the column headings
+			
 			$schemeService = new Application_Service_Schemes();
 			$assayList = $schemeService->getVlAssay();
+			
+			$assayWiseData = array();
+			
+			foreach($resultOverAll as $rowOverAll){
+				$row++;
+				
+				$queryResponse = $db->select()->from(array('res' => 'response_result_vl'))
+								->where("res.shipment_map_id = ?", $rowOverAll['map_id']);
+				$resultResponse = $db->fetchAll($queryResponse);
+				
+				$attributes = json_decode($rowOverAll['attributes'], true);
+				$assayName = (array_key_exists ($attributes['vl_assay'] , $assayList )) ? $assayList[$attributes['vl_assay']] : "";
+				
+				
+				// we are also building the data required for other Assay Sheets
+				if($attributes['vl_assay'] > 0){
+					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['unique_identifier'];
+					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayName;
+				}
+				
+				
+				$firstSheet->getCellByColumnAndRow(0, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$col = 2;
+				foreach($resultResponse as $responseRow){
+					$firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['reported_viral_load'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					// we are also building the data required for other Assay Sheets
+					if($attributes['vl_assay'] > 0){
+						$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['reported_viral_load'];
+					}
+				}
+				
+				$receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00") ? $rowOverAll['shipment_receipt_date'] : "";
+				$testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00") ? $rowOverAll['shipment_test_date'] : "";
+				$firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);	
+				$firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);	
+				
+				// we are also building the data required for other Assay Sheets
+				if($attributes['vl_assay'] > 0){
+					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $receiptDate;
+					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $testDate;
+				}				
+				
+				
+			}
+			
+			//Zend_Debug::dump($assayWiseData);die;
+			
+			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$assayRes = $db->fetchAll($db->select()->from('r_vl_assay'));
+			
 			$countOfVlAssaySheet = 1;
-			foreach($assayList as $assayId => $assayName){
+			foreach($assayRes as $assayRow){
 				$newsheet = new PHPExcel_Worksheet($excel, '');
 				$excel->addSheet($newsheet, $countOfVlAssaySheet);
-				$sheetNameArray = explode("-",preg_replace('/[^A-Za-z0-9\-]/', '-', $assayName));
 				
-				$newsheet->setTitle(strtoupper($sheetNameArray[0]));
+				$i = 0;
+				foreach($colNamesArray as $colName){
+					$newsheet->getCellByColumnAndRow($i, 20)->setValueExplicit(html_entity_decode($colName, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$i++;
+				}
+				
+				
+				
+				$assayData = isset($assayWiseData[$assayRow['id']]) ? $assayWiseData[$assayRow['id']] : array();
+				//var_dump($assayData);die;
+				$newsheet->setTitle(strtoupper($assayRow['short_name']));
+				$row = 20; // $row 1-16 already occupied
+
+				foreach($assayData as $assayKey => $assayRow){
+					$row++;
+					$noOfCols = count($assayRow);
+					for($c=0;$c<$noOfCols;$c++){
+						$newsheet->getCellByColumnAndRow($c, $row)->setValueExplicit(html_entity_decode($assayRow[$c], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);	
+					}
+				}
+				
 				$countOfVlAssaySheet++;
 			}
 			

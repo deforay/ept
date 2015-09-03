@@ -2104,3 +2104,11 @@ CREATE TABLE IF NOT EXISTS `reference_vl_methods` (
 
 ALTER TABLE `reference_vl_methods`
  ADD PRIMARY KEY (`shipment_id`,`sample_id`,`assay`);
+ 
+ 
+ -- Amit Sep 03 2015
+ 
+ ALTER TABLE  `r_vl_assay` ADD  `short_name` VARCHAR( 255 ) NOT NULL AFTER  `name` ;
+ INSERT INTO `r_vl_assay` (`id`, `name`, `short_name`) VALUES (NULL, 'Other', 'Other');
+ 
+ 
