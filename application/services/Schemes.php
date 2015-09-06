@@ -65,14 +65,25 @@ class Application_Service_Schemes {
 
     public function getEidExtractionAssay() {
 
-        $db = new Application_Model_DbTable_EidExtractionAssay();
-        return $db->fetchAll();
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $res = $db->fetchAll($db->select()->from('r_eid_extraction_assay'));
+        $response = array();
+        foreach ($res as $row) {
+            $response[$row['id']] = $row['name'];
+        }
+        return $response;    
     }
 
     public function getEidDetectionAssay() {
-
-        $db = new Application_Model_DbTable_EidDetectionAssay();
-        return $db->fetchAll();
+    
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $res = $db->fetchAll($db->select()->from('r_eid_detection_assay'));
+        $response = array();
+        foreach ($res as $row) {
+            $response[$row['id']] = $row['name'];
+        }
+        return $response;    
+    
     }
 
     public function getVlAssay() {

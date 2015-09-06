@@ -31,7 +31,7 @@ class EidController extends Zend_Controller_Action
 
     		// Zend_Debug::dump($data);die;
 
-    		$this->_redirect("/participant/dashboard");
+    		$this->_redirect("/participant/current-schemes");
 
     		//die;
         }else{
