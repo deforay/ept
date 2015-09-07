@@ -154,7 +154,7 @@ if (count($this->shipment) > 0) {
     <br/>
     <br/>
     <div align="right" style="" class="col-lg-6">
-        <a href="javascript:void(0)" class="btn btn-sm  btn-warning" style="margin-top:10px;" onclick="generateSummaryReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate Summary Report for this Shipment</a>
+        <a href="javascript:void(0)" class="btn btn-sm  btn-warning" style="margin-top:10px;clear:both !important;" onclick="generateSummaryReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate Summary Report for this Shipment</a>
         <?php
         $buttonCount = (int)ceil($this->responseCount["reported_count"] / 50);
         $responseCnt=$this->responseCount["reported_count"];
@@ -379,7 +379,7 @@ if (count($this->shipment) > 0) {
                 
                     if (summary == 'success') {
                          $("#summaryReport").remove();
-                        $("#summaryDiv").append("&nbsp <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-summary.pdf"); ?>\" class='btn btn-success btn-sm' id='summaryReport' target='_BLANK' style='margin-top:10px;'><i class='icon-file-text'></i>&nbsp Download Summary Report</a> ");
+                        $("#summaryDiv").append("&nbsp <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-summary.pdf"); ?>\" class='btn btn-success btn-sm' id='summaryReport' target='_BLANK' style='margin-top:10px;float:left;clear:both !important;'><i class='icon-file-text'></i>&nbsp Download Summary Report</a> ");
                     }
                     
                     $.unblockUI();

@@ -28,9 +28,9 @@
 			<td>
 
 			<?php
-			foreach($this->extractionAssay as $eAssay){
-				 if(isset($attributes['extraction_assay']) && $attributes['extraction_assay'] == $eAssay['id']){
-					echo $eAssay['name'];
+			foreach($this->extractionAssay as $eAssayId => $eAssayName){
+				 if(isset($attributes['extraction_assay']) && $attributes['extraction_assay'] == $eAssayId){
+					echo $eAssayName;
 					break;
 				 }
 			}
@@ -41,9 +41,9 @@
 			
 			<?php
 			
-			foreach($this->detectionAssay as $dAssay){
-				 if(isset($attributes['detection_assay']) && $attributes['detection_assay'] == $dAssay['id']){
-					echo $dAssay['name'];
+			foreach($this->detectionAssay as $dAssayId => $dAssayName){
+				 if(isset($attributes['detection_assay']) && $attributes['detection_assay'] == $dAssayId){
+					echo $dAssayName;
 					break;
 				 }
 			}

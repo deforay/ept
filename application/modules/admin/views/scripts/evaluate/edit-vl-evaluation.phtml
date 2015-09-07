@@ -28,9 +28,9 @@
 			<td>
 
 			<?php
-			foreach($this->vlAssay as $vlAssay){
-				if(isset($attributes['vl_assay']) && $attributes['vl_assay'] == $vlAssay['id']){
-				   echo $vlAssay['name'];
+			foreach($this->vlAssay as $vlAssayId => $vlAssayName){
+				if(isset($attributes['vl_assay']) && $attributes['vl_assay'] == $vlAssayId){
+				   echo $vlAssayName;
 				   break;
 				}
 			}

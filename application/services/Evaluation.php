@@ -1710,6 +1710,7 @@ class Application_Service_Evaluation {
 				}
 
 				// matching reported and reference results
+				$correctResponse = false;
 				if (isset($result['reported_result']) && $result['reported_result'] != null) {
 					if($controlTesKitFail != 'Fail'){
 						if ($result['reference_result'] == $result['reported_result']) {

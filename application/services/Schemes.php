@@ -256,23 +256,23 @@ class Application_Service_Schemes {
 
         $vlAssayArray = $this->getVlAssay();
 
-        foreach ($vlAssayArray as $vlAssay) {
+        foreach ($vlAssayArray as $vlAssayId => $vlAssayName) {
             $sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('shipment_id', 'sample_id'))
                     ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array())
                     ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('participant_id'))
                     ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
                     ->where('sp.shipment_id = ? ', $sId)
-                    ->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssay['id'] . '"%');
+                    ->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayId . '"%');
 
             $response = $db->fetchAll($sql);
             $sampleWise = array();
             foreach ($response as $row) {
-                $sampleWise[$vlAssay['id']][$row['sample_id']][] = $row['reported_viral_load'];
+                $sampleWise[$vlAssayId][$row['sample_id']][] = $row['reported_viral_load'];
             }
-            if (!isset($sampleWise[$vlAssay['id']])) {
+            if (!isset($sampleWise[$vlAssayId])) {
                 continue;
             }
-            foreach ($sampleWise[$vlAssay['id']] as $sample => $reportedVl) {
+            foreach ($sampleWise[$vlAssayId] as $sample => $reportedVl) {
 
                 if ($reportedVl != "" && $reportedVl != null && count($reportedVl) > 7) {
                     $inputArray = $origArray = $reportedVl;
