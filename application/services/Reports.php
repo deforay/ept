@@ -2079,7 +2079,14 @@ class Application_Service_Reports {
 				$resultResponse = $db->fetchAll($queryResponse);
 				
 				$attributes = json_decode($rowOverAll['attributes'], true);
-				$assayName = (array_key_exists ($attributes['vl_assay'] , $assayList )) ? $assayList[$attributes['vl_assay']] : "";
+				
+				if(isset($attributes['other_assay']) && $attributes['other_assay'] != ""){
+					$assayName = "Other - ".$attributes['other_assay'];
+				}else{
+					$assayName = (array_key_exists ($attributes['vl_assay'] , $assayList )) ? $assayList[$attributes['vl_assay']] : "";	
+				}
+				
+				
 				
 				
 				// we are also building the data required for other Assay Sheets

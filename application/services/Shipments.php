@@ -442,6 +442,11 @@ class Application_Service_Shipments {
                 "assay_lot_number" => $params['assayLotNumber'],
                 "assay_expiration_date" => Pt_Commons_General::dateFormat($params['assayExpirationDate']),
                 "specimen_volume" => $params['specimenVolume']);
+			
+			if(isset($params['otherAssay']) && $params['otherAssay'] != ""){
+				$attributes['other_assay'] = $params['otherAssay'];
+			}
+			
             $attributes = json_encode($attributes);
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),

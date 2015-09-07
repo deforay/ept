@@ -6,6 +6,9 @@
 	table,th,td{
 		border-color:#ccc !important;
 	}
+	.hideOtherAssay{
+		display:none;
+	}
 </style>
 <section class="content-header">
     <h1>Viral Load</h1>
@@ -73,14 +76,16 @@ $count++;  ?>
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"> Clear</i>
 		</td>		
 
-		<td></td>
-		<td></td>
+		<td><label>Specimen Volume</label></td> 
+		<td>
+			<input type="text" name="specimenVolume" id="specimenVolume" class="isRequired form-control"  value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
+		</td>
 	</tr>
 	
 	<tr class ="dark">
 		<td><label>Viral Load Assay</label></td>
 		<td>
-		<select id="vlAssay" name="vlAssay" class=" form-control">
+		<select id="vlAssay" name="vlAssay" class=" form-control" onchange="showHideOtherAssay(this.value)">
 			<option>--Select--</option>
 			<?php
 			foreach($this->vlAssay as $id => $name){
@@ -91,10 +96,11 @@ $count++;  ?>
 			?>
 		</select>
 		</td>
-		<td><label>Assay Lot Number</label></td> 
-		<td>
-			<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired form-control"  value="<?php echo $this->shipment['attributes']['assay_lot_number'];?>"/>
+		<td class="hideOtherAssay"><label>Please specify Other Assay Name</label></td> 
+		<td class="hideOtherAssay">
+			<input type="text" name="otherAssay" id="otherAssay" class="form-control"  value="<?php echo $this->shipment['attributes']['other_assay'];?>"/>
 		</td>
+		
 	</tr>
 
 	<tr class ="dark">
@@ -103,9 +109,9 @@ $count++;  ?>
 			<input type="text" name="assayExpirationDate" id="assayExpirationDate" style="width:180px;float:left;"  class="isRequired expDatepicker form-control" readonly="readonly"  value="<?php echo $this->dateFormat($this->shipment['attributes']['assay_expiration_date']);?>"/>
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('assayExpirationDate')"> Clear</i>
 		</td>
-		<td><label>Specimen Volume</label></td> 
+		<td><label>Assay Lot Number</label></td> 
 		<td>
-			<input type="text" name="specimenVolume" id="specimenVolume" class="isRequired form-control"  value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
+			<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired form-control"  value="<?php echo $this->shipment['attributes']['assay_lot_number'];?>"/>
 		</td>
 	</tr>
 	
@@ -217,8 +223,24 @@ $dtFormat=  $genderHelper->getDateFormat();
 	function goto_dashboard(){
 		window.history.back();
 	}
+	
+	function showHideOtherAssay(assayVal){
+		if (assayVal == 6) {
+			$(".hideOtherAssay").show();
+			$("#otherAssay").addClass("isRequired");
+			$("#otherAssay").val("");
+		}else{
+			$(".hideOtherAssay").hide();
+			$("#otherAssay").removeClass("isRequired");
+		}
+	}
 
 	$(function() {
+		<?php
+		 if(isset($this->shipment['attributes']['vl_assay']) && $this->shipment['attributes']['vl_assay'] != ""){
+			echo "showHideOtherAssay(".$this->shipment['attributes']['vl_assay'].");";
+		 }
+		?>
   	   // $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>',maxDate: '0', minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
   	    //$(".expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 		$(".datepicker,.expDatepicker").datepicker({dateFormat: '<?php echo $dtFormat; ?>'});
