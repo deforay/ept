@@ -202,6 +202,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'mobile' => $params['pphone2'],
             'phone' => $params['pphone1'],
             'email' => $params['pemail'],
+			'contact_name' => $params['contactname'],
             'affiliation' => $params['partAff'],
             'network_tier' => $params['network'],
             'testing_volume' => $params['testingVolume'],
@@ -235,8 +236,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
         $noOfRows = $this->update($data, "participant_id = " . $params['participantId']);
 		$db = Zend_Db_Table_Abstract::getAdapter();
+		
 		if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
-				$db->delete('participant_enrolled_programs_map', "participant_id = " . $params['participantId']);			
+				$db->delete('participant_enrolled_programs_map', "participant_id = " . $params['participantId']);
+				//var_dump($params['enrolledProgram']);die;
 				foreach ($params['enrolledProgram'] as $epId) {
 					$db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $params['participantId']));
 				}
@@ -278,6 +281,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'mobile' => $params['pphone2'],
             'phone' => $params['pphone1'],
             'email' => $params['pemail'],
+			'contact_name' => $params['contactname'],
             'affiliation' => $params['partAff'],
             'network_tier' => $params['network'],
             'testing_volume' => $params['testingVolume'],
@@ -331,6 +335,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'last_name' => $params['plname'],
             'mobile' => $params['pphone2'],
             'phone' => $params['pphone1'],
+			'contact_name' => $params['contactname'],
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
             'network_tier' => $params['network'],

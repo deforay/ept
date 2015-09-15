@@ -155,6 +155,34 @@
                 </div>
             </div>
 
+            <hr style="border:1px solid #ccc;background: #ccc;width:90%;"/>
+
+            <div class="form-group col-lg-12">
+                <label class="col-lg-2 control-label">PT Participant Login</label>
+
+                <div class="col-lg-5">
+                    <select class="form-control" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more PT Participant Logins" data-selected-text-format="count>3">
+                        <?php foreach ($this->dataManagers as $dm) {
+                            ?>
+                            <option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name'] . " " . $dm['last_name']; ?></option>
+                            <?php
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+             <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">Contact Name </label>
+
+                <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="Please enter the contact name here"/></div>
+            </div>
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">E-mail <span class="mandatory">*</span></label>
+
+                <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" placeholder="Please enter the email id here"/></div>
+            </div>
+            
+
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Shipping Address (include city and country)</label>
 
@@ -169,28 +197,7 @@
                                              class="form-control" title="Please enter the Zip/Postal here"
                                              placeholder="Please enter the Zip/Postal here"/></div>
             </div>
-
-            <hr style="border:1px solid #ccc;background: #ccc;width:90%;"/>
-
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">PT Participant Login</label>
-
-                <div class="col-lg-8">
-                    <select class="form-control" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more PT Participant Logins" data-selected-text-format="count>3">
-                        <?php foreach ($this->dataManagers as $dm) {
-                            ?>
-                            <option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name'] . " " . $dm['last_name']; ?></option>
-                            <?php
-                        }
-                        ?>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">E-mail Address <span class="mandatory">*</span></label>
-
-                <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" placeholder="Please enter the email id here"/></div>
-            </div>
+            
             
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Cell/Mobile No.</label>

@@ -74,7 +74,7 @@
     </tr>
     <tr> <th>
             <label>Country <span class="mandatory">*</span></label></th>
-        <td colspan=3><select name="country" id="country"  class="isRequired form-control" title="Please choose the country here" style="width:285px;">
+        <td><select name="country" id="country"  class="isRequired form-control" title="Please choose the country here" style="width:285px;">
                 <option value="">--Select Country--</option>
                 <?php foreach ($this->countriesList as $cou) {
                     ?>
@@ -83,15 +83,11 @@
                 }
                 ?>
             </select></td>
-    </tr>
-    <tr>
         <th>Region <span class="mandatory">*</span></th>
         <td>
             <input type="text" id="region" size="25" maxlength="45" name="region" class="form-control isRequired" title="Please enter region here" placeholder="Please enter region here"/>
         </td>
-        <th>
-            <label>Zip Code (if applicable)</label></th>
-        <td><input type="text" id="zip" name="zip" size="25" maxlength="45" class="form-control" title="Please enter the zip here" placeholder="Please enter the zip here" /></td>
+        
     </tr>
     <tr> <th>
             <label>Longitude </label></th>
@@ -125,8 +121,7 @@
     <tr>
         <th><label>Enrolled Programs </label></th>
         <td>
-            <select name="enrolledProgram" id="enrolledProgram" class="form-control" style="width:285px;">
-                <option value="">--Select--</option>
+            <select name="enrolledProgram" id="enrolledProgram" multiple="multiple" style="width:285px;">
                 <?php foreach ($this->enrolledPrograms as $enrolledPrograms) {
                     ?>
                     <option value="<?php echo $enrolledPrograms['r_epid']; ?>"><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
@@ -153,15 +148,29 @@
     </tr>
 
     <tr>
-        <th>Shipping Address (include city and country) </th>
-        <td colspan=3><textarea id="shippingAddress" name="shippingAddress" size="50" 
-                                class="form-control" title="Please enter the address here"
-                                placeholder="Please enter the Shipping Address here"></textarea></td>
-    </tr>
-
-    <tr>
+        <th>Participant/Lab Contact Name</th>
+        <td><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="Please enter the contact name here"/></td>
         <th>Participant e-mail Address <span class="mandatory">*</span></th>
         <td><input type="text" id="pemail" name="pemail" size="25" maxlength="45" value="<?php echo $this->rsParticipant['email']; ?>" title="Please enter the Participant's Email here" placeholder="Please enter the Participant's Email here" class="form-control isRequired isEmail"/></td>
+    </tr>
+   
+    <tr>
+        <th>Participant Phone Number</th>
+        <td><input type="text" id="pphone1" name="pphone1" size="25" maxlength="45" value="<?php echo $this->rsParticipant['phone']; ?>" title="Please enter the Participant's Phone here" placeholder="Please enter the Participant's Phone here" class=" form-control isNumeric" /></td>
+        <th>Participant Cell/Mobile Number</th>
+        <td><input type="text" id="pphone2" name="pphone2" size="25" maxlength="45" value="<?php echo $this->rsParticipant['mobile']; ?>" class="form-control" title="Please enter the Participant's Mobile Number here" placeholder="Please enter the Participant's Mobile Number here" class=" form-control isNumeric"/></td>
+    </tr>
+    <tr>
+        <th>Shipping Address (include city and country) </th>
+        <td><textarea id="shippingAddress" name="shippingAddress" size="50" 
+                                class="form-control" title="Please enter the address here"
+                                placeholder="Please enter the Shipping Address here"></textarea></td>        
+        <th>
+            <label>Zip Code (if applicable)</label></th>
+        <td><input type="text" id="zip" name="zip" size="25" maxlength="45" class="form-control" title="Please enter the zip here" placeholder="Please enter the zip here" /></td>
+    </tr>
+ <tr>
+
         <th>Network <span class="mandatory">*</span></th>
         <td>
             <select name="network" id="network"  class="isRequired form-control" title="Please select Network">
@@ -173,14 +182,7 @@
                 ?>
             </select>
         </td>
-    </tr>
-    <tr>
-        <th>Participant Phone Number</th>
-        <td><input type="text" id="pphone1" name="pphone1" size="25" maxlength="45" value="<?php echo $this->rsParticipant['phone']; ?>" title="Please enter the Participant's Phone here" placeholder="Please enter the Participant's Phone here" class=" form-control isNumeric" /></td>
-        <th>Participant Cell/Mobile Number</th>
-        <td><input type="text" id="pphone2" name="pphone2" size="25" maxlength="45" value="<?php echo $this->rsParticipant['mobile']; ?>" class="form-control" title="Please enter the Participant's Mobile Number here" placeholder="Please enter the Participant's Mobile Number here" class=" form-control isNumeric"/></td>
-    </tr>
-    <tr>
+
         <th>Participant Affiliation <span class="mandatory">*</span></th>
         <td>
             <select name="partAff" id="partAff"  class="isRequired form-control" title="Please choose the affiliation here" style="width: 285px">
@@ -191,7 +193,9 @@
                 <?php }
                 ?>
             </select>
-        </td>
+        </td>        
+    </tr>
+    <tr>
         <th>Schemes <span class="mandatory">*</span></th>
         <td>
             <select id="scheme" name="scheme[]" multiple="multiple" style="width:285px;">
@@ -204,6 +208,8 @@
                 ?>
             </select>
         </td>
+        <td></td>
+        <td></td>
     </tr>
 
 </table>
@@ -228,6 +234,11 @@
             $(document).ready(function() {
                 $("#scheme").select2({
                     placeholder: "Select one or more schemes",
+                    allowClear: true
+                });
+                
+                $("#enrolledProgram").select2({
+                    placeholder: "Select one or more Enrolled Programs",
                     allowClear: true
                 });
             })

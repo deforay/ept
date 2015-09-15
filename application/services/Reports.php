@@ -2016,6 +2016,9 @@ class Application_Service_Reports {
 			$colNamesArray[] = "Region";
 			$colNamesArray[] = "Site Type";
 			$colNamesArray[] = "Assay";
+			$colNamesArray[] = "Assay Expiration Date";
+			$colNamesArray[] = "Assay Lot Number";
+			$colNamesArray[] = "Specimen Volume";
 	
 			$firstSheet = new PHPExcel_Worksheet($excel, 'Overall Results');
 			$excel->addSheet($firstSheet, 0);
@@ -2026,6 +2029,9 @@ class Application_Service_Reports {
 			$firstSheet->getCellByColumnAndRow(3, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			$firstSheet->getCellByColumnAndRow(4, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			$firstSheet->getCellByColumnAndRow(5, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$firstSheet->getCellByColumnAndRow(6, 1)->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$firstSheet->getCellByColumnAndRow(7, 1)->setValueExplicit(html_entity_decode("Assay Lot Number", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$firstSheet->getCellByColumnAndRow(8, 1)->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			
 			$firstSheet->getStyleByColumnAndRow(0, 1)->applyFromArray($borderStyle);
 			$firstSheet->getStyleByColumnAndRow(1, 1)->applyFromArray($borderStyle);
@@ -2033,13 +2039,13 @@ class Application_Service_Reports {
 			$firstSheet->getStyleByColumnAndRow(3, 1)->applyFromArray($borderStyle);
 			$firstSheet->getStyleByColumnAndRow(4, 1)->applyFromArray($borderStyle);
 			$firstSheet->getStyleByColumnAndRow(5, 1)->applyFromArray($borderStyle);
+			$firstSheet->getStyleByColumnAndRow(6, 1)->applyFromArray($borderStyle);
+			$firstSheet->getStyleByColumnAndRow(7, 1)->applyFromArray($borderStyle);
+			$firstSheet->getStyleByColumnAndRow(8, 1)->applyFromArray($borderStyle);
 			
 			$firstSheet->getDefaultRowDimension()->setRowHeight(15);
 			
-			
-			
-			
-			$colNameCount = 6;
+			$colNameCount = 9;
 			foreach($refResult as $refRow){
 				$colNamesArray[] = $refRow['sample_label'];
 				$firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2049,11 +2055,22 @@ class Application_Service_Reports {
 			$firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
 			$firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			
+
+			
 			$colNamesArray[] = "Date Received";
 			$firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
 			$firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			
 			$colNamesArray[] = "Date Tested";
+			
+			$firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
+			$firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Supervisor Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			
+			$colNamesArray[] = "Supervisor Name";
+			
+			$firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
+			$firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Participant Comment", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);			
+			$colNamesArray[] = "Participant Comments";
 			
 			$firstSheet->setTitle('OVERALL');
 			
@@ -2086,9 +2103,20 @@ class Application_Service_Reports {
 					$assayName = (array_key_exists ($attributes['vl_assay'] , $assayList )) ? $assayList[$attributes['vl_assay']] : "";	
 				}
 				
+				$assayExpirationDate = "";
+				if(isset($attributes['assay_expiration_date']) && $attributes['assay_expiration_date'] != ""){
+					$assayExpirationDate = Pt_Commons_General::humanDateFormat($attributes['assay_expiration_date']);
+				}
 				
+				$assayLotNumber = "";
+				if(isset($attributes['assay_lot_number']) && $attributes['assay_lot_number'] != ""){
+					$assayLotNumber = ($attributes['assay_lot_number']);
+				}
 				
-				
+				$specimenVolume = "";
+				if(isset($attributes['specimen_volume']) && $attributes['specimen_volume'] != ""){
+					$specimenVolume = ($attributes['specimen_volume']);
+				}
 				// we are also building the data required for other Assay Sheets
 				if($attributes['vl_assay'] > 0){
 					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['unique_identifier'];
@@ -2097,6 +2125,9 @@ class Application_Service_Reports {
 					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['region'];
 					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['site_type'];
 					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayName;
+					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayExpirationDate;
+					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayLotNumber;
+					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $specimenVolume;
 				}
 				
 				
@@ -2106,7 +2137,12 @@ class Application_Service_Reports {
 				$firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				$firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				$firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				$col = 6;
+				$firstSheet->getCellByColumnAndRow(6, $row)->setValueExplicit(html_entity_decode($assayExpirationDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$firstSheet->getCellByColumnAndRow(7, $row)->setValueExplicit(html_entity_decode($assayLotNumber, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$firstSheet->getCellByColumnAndRow(8, $row)->setValueExplicit(html_entity_decode($specimenVolume, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+
+				
+				$col = 9;
 				foreach($resultResponse as $responseRow){
 					$firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['reported_viral_load'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 					// we are also building the data required for other Assay Sheets
@@ -2124,7 +2160,12 @@ class Application_Service_Reports {
 				if($attributes['vl_assay'] > 0){
 					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $receiptDate;
 					$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $testDate;
-				}				
+				}
+				
+				$firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['participant_supervisor'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['user_comment'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);				
+				$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['participant_supervisor'];
+				$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['user_comment'];
 				
 				
 			}
@@ -2254,9 +2295,12 @@ class Application_Service_Reports {
 			$firstSheet->getCellByColumnAndRow(4, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			$firstSheet->getStyleByColumnAndRow(4, 1)->applyFromArray($borderStyle);
 			
+			$firstSheet->getCellByColumnAndRow(5, 1)->setValueExplicit(html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$firstSheet->getStyleByColumnAndRow(5, 1)->applyFromArray($borderStyle);
+			
 			$firstSheet->getDefaultRowDimension()->setRowHeight(15);
 			
-			$colNameCount = 5;
+			$colNameCount = 6;
 			foreach($refResult as $refRow){
 				$firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				$firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
@@ -2306,6 +2350,7 @@ class Application_Service_Reports {
 				$attributes = json_decode($rowOverAll['attributes'], true);
 				$extraction = (array_key_exists ($attributes['extraction_assay'] , $extractionAssayList )) ? $extractionAssayList[$attributes['extraction_assay']] : "";
 				$detection = (array_key_exists ($attributes['detection_assay'] , $detectionAssayList )) ? $detectionAssayList[$attributes['detection_assay']] : "";
+				$sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_General::humanDateFormat($attributes['sample_rehydration_date']) : "";
 				
 				
 				$firstSheet->getCellByColumnAndRow(0, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2313,8 +2358,9 @@ class Application_Service_Reports {
 				$firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(html_entity_decode($rowOverAll['department_name'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				$firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				$firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				$firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				$col = 5;
+				$firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				
+				$col = 6;
 				foreach($resultResponse as $responseRow){
 					$firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				}

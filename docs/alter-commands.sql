@@ -2111,4 +2111,8 @@ ALTER TABLE `reference_vl_methods`
  ALTER TABLE  `r_vl_assay` ADD  `short_name` VARCHAR( 255 ) NOT NULL AFTER  `name` ;
  INSERT INTO `r_vl_assay` (`id`, `name`, `short_name`) VALUES (NULL, 'Other', 'Other');
  
+ -- Amit 13 Sep 2015
+ 
+ ALTER TABLE `participant` ADD `contact_name` VARCHAR(255) NULL DEFAULT NULL AFTER `phone`;
+ 
  

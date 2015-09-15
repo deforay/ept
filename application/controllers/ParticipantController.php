@@ -82,7 +82,7 @@ class ParticipantController extends Zend_Controller_Action {
             $oldPassword = $this->getRequest()->getPost('oldpassword');
             $response = $user->changePassword($oldPassword, $newPassword);
             if ($response) {
-                $this->_redirect("/participant/dashboard");
+                $this->_redirect('/participant/current-schemes');
             }
         }
     }

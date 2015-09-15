@@ -1,4 +1,8 @@
-<?php date_default_timezone_set('America/New_York');?>
+<?php
+
+date_default_timezone_set('America/New_York');
+
+?>
 <style>
     th{
         text-align: center;
@@ -78,14 +82,14 @@ $count++;  ?>
 
 		<td><label>Specimen Volume</label></td> 
 		<td>
-			<input type="text" name="specimenVolume" id="specimenVolume" class="isRequired form-control"  value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
+			<input type="text" name="specimenVolume" id="specimenVolume" class="form-control"  value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
 		</td>
 	</tr>
 	
 	<tr class ="dark">
-		<td><label>Viral Load Assay</label></td>
+		<td><label>Viral Load Assay <span class="mandatory">*</span></label></td>
 		<td>
-		<select id="vlAssay" name="vlAssay" class=" form-control" onchange="showHideOtherAssay(this.value)">
+		<select id="vlAssay" name="vlAssay" class="isRequired form-control" onchange="showHideOtherAssay(this.value)">
 			<option>--Select--</option>
 			<?php
 			foreach($this->vlAssay as $id => $name){
@@ -96,9 +100,9 @@ $count++;  ?>
 			?>
 		</select>
 		</td>
-		<td class="hideOtherAssay"><label>Please specify Other Assay Name</label></td> 
+		<td class="hideOtherAssay"><label>Please specify Other Assay Name <span class="mandatory">*</span></label></td> 
 		<td class="hideOtherAssay">
-			<input type="text" name="otherAssay" id="otherAssay" class="form-control"  value="<?php echo $this->shipment['attributes']['other_assay'];?>"/>
+			<input type="text" name="otherAssay" id="otherAssay" class="form-control"  value="<?php echo (isset($this->shipment['attributes']['other_assay']) && ($this->shipment['attributes']['other_assay'] != "")) ? $this->shipment['attributes']['other_assay'] : ""; ?>" title="Please specify Other Assay Name" />
 		</td>
 		
 	</tr>
@@ -148,7 +152,7 @@ $count++;
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
 		</td>
         <td>
-			<input type="text" name="vlResult[]" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control"   value="<?php echo $sample['reported_viral_load']; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
+			<input type="text" name="vlResult[]" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control vlResultValues"   value="<?php echo $sample['reported_viral_load']; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
 		</td>
     </tr>
 
@@ -228,8 +232,9 @@ $dtFormat=  $genderHelper->getDateFormat();
 		if (assayVal == 6) {
 			$(".hideOtherAssay").show();
 			$("#otherAssay").addClass("isRequired");
-			$("#otherAssay").val("");
+			//$("#otherAssay").val("");
 		}else{
+			$("#otherAssay").val("")
 			$(".hideOtherAssay").hide();
 			$("#otherAssay").removeClass("isRequired");
 		}
@@ -254,15 +259,25 @@ $dtFormat=  $genderHelper->getDateFormat();
 	
 	
 	function validateNow(){
-
+		
 		flag = deforayValidator.init({
 			formId: 'vlResponseForm'
 		});
+		$(".vlResultValues").each(function(){
+				if(parseFloat($(this).val()) < 0 || parseFloat($(this).val()) > 7){
+					alert("VL Result has to be between 1 and 7");
+					flag = false;
+					return false;
+				}
+			});
 		if(flag){
 			if(moment($("#receipt_date").val(), "DD-MMM-YYYY").isAfter($("#test_date").val(), "DD-MMM-YYYY")){
 				alert('Testing Date has to come after the Shipment Receipt Date');
 				return false;
-			}				
+			}
+			
+			
+			
 			$.blockUI();
 			document.getElementById('vlResponseForm').submit();
 		}
