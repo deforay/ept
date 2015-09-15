@@ -142,11 +142,9 @@ class MYPDF extends TCPDF {
             $labInfo.='</tr>';
         $labInfo.='</table><br/><br/>';
 	
-	
-	
-	
-	
-	 $labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+	if($this->shipment["scheme_type"]=='dts')
+	{
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
             $labInfo.='<tr style="background-color:#F7F7F7;">';
                 $labInfo.='<td style="font-weight:bold;width:25%">Shipment Date</td>';
                 $labInfo.='<td style="width:25%">'.$this->dateFormat($this->shipment["shipment_date"]).'</td>';
@@ -169,6 +167,7 @@ class MYPDF extends TCPDF {
                 $labInfo.='<td style="font-weight:bold;width:25%">Algorithm Used</td>'; 
                 $labInfo.='<td style="font-weight:bold;width:25%"></td>';
             $labInfo.='</tr>';
+			
         $labInfo.='</table><br/><br/>';
 	
 		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
@@ -209,7 +208,7 @@ class MYPDF extends TCPDF {
 				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-3</td>';
 				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Final Result * </td>';
 			$labInfo.='</tr>';
-			foreach($this->referenceDetails as $sample){
+			foreach($this->shipment["referenceResult"] as $sample){
 				$labInfo.='<tr style="background-color:#F7F7F7;">';
 					$labInfo.='<td style="font-weight:bold;">'.$sample['sample_label'].'</td>';
 					$labInfo.='<td></td>';
@@ -233,6 +232,138 @@ class MYPDF extends TCPDF {
 				$labInfo.='<td colspan="3"></td>';
 			$labInfo.='</tr>';
 		$labInfo.='</table>';
+	}else if($this->shipment["scheme_type"]=='vl'){
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+            $labInfo.='<tr style="background-color:#F7F7F7;">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Shipment Date</td>';
+                $labInfo.='<td style="width:25%">'.$this->dateFormat($this->shipment["shipment_date"]).'</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">Result Due Date</td>';
+                $labInfo.='<td style="width:25%">'.$this->dateFormat($this->shipment["lastdate_response"]).'</td>';
+            $labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Testing Date</td> ';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';		
+                $labInfo.='<td style="font-weight:bold;width:25%">Specimen Volume</td>'; 
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Viral Load Assay</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">Assay Expiration Date</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Assay Lot Number</td> ';
+                $labInfo.='<td style="font-weight:bold;" colspan="3"></td>';
+                
+            $labInfo.='</tr>';
+			
+		$labInfo.='</table><br/><br/>';
+		
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+			$labInfo.='<tr style="background-color:#CCCCCC;">';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:50%">Control/Sample</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:50%">Viral Load (log10 copies/ml)</td>';
+			$labInfo.='</tr>';
+			
+			if(count($this->shipment["referenceResult"])>0){
+				foreach($this->shipment["referenceResult"] as $referenceRes){
+					$labInfo.='<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
+						$labInfo.='<td style="font-weight:bold;">'.$referenceRes['sample_label'].'</td>';
+						$labInfo.='<td style="font-weight:bold;"></td>';
+					$labInfo.='</tr>';
+				}
+			}
+			
+			$labInfo.='</table><br/><br/>';
+			
+			$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+			$labInfo.='<tr style="background-color:#CCCCCC;">';
+				$labInfo.='<td style="font-weight:bold;">Supervisor Review</td>';
+				$labInfo.='<td>Yes/No</td>';
+				$labInfo.='<td style="font-weight:bold;">Supervisor Name</td>';
+				$labInfo.='<td></td>';
+			$labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="font-weight:bold;">Comments</td>';
+				$labInfo.='<td colspan="3"></td>';
+			$labInfo.='</tr>';
+			$labInfo.='</table>';
+	}else if($this->shipment["scheme_type"]=='eid'){
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+            $labInfo.='<tr style="background-color:#F7F7F7;">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Shipment Date</td>';
+                $labInfo.='<td style="width:25%">'.$this->dateFormat($this->shipment["shipment_date"]).'</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">Result Due Date</td>';
+                $labInfo.='<td style="width:25%">'.$this->dateFormat($this->shipment["lastdate_response"]).'</td>';
+            $labInfo.='</tr>';
+
+            $labInfo.='<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">Testing Date</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+
+            $labInfo.='<tr style="background-color:#F7F7F7;">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Extraction Assay</td> ';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';		
+                $labInfo.='<td style="font-weight:bold;width:25%">Detection Assay</td>'; 
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
+                $labInfo.='<td style="font-weight:bold;" colspan="3"></td>';
+            $labInfo.='</tr>';
+			
+        $labInfo.='</table><br/><br/>';
+		
+		
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+			$labInfo.='<tr style="background-color:#CCCCCC;">';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Control/Sample</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Your Results</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:25%">HIV CT/OD</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:25%">IC/QS Values</td>';
+			$labInfo.='</tr>';
+			if(count($this->shipment["referenceResult"])>0){
+				foreach($this->shipment["referenceResult"] as $referenceRes){
+					$labInfo.='<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
+						$labInfo.='<td style="font-weight:bold;">'.$referenceRes['sample_label'].'</td>';
+						$labInfo.='<td style="font-weight:bold;"></td>';
+						$labInfo.='<td style="font-weight:bold;"></td>';
+						$labInfo.='<td style="font-weight:bold;"></td>';
+					$labInfo.='</tr>';
+				}
+			}
+		$labInfo.='</table><br/><br/>';
+		
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+			$labInfo.='<tr style="background-color:#CCCCCC;">';
+				$labInfo.='<td style="font-weight:bold;">Supervisor Review</td>';
+				$labInfo.='<td>Yes/No</td>';
+				$labInfo.='<td style="font-weight:bold;">Supervisor Name</td>';
+				$labInfo.='<td></td>';
+			$labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="font-weight:bold;">Comments</td>';
+				$labInfo.='<td colspan="3"></td>';
+			$labInfo.='</tr>';
+		$labInfo.='</table>';
+	}
 	
 	$pdf->writeHTML($labInfo, true, false, true, false, '');
 	

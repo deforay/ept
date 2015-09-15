@@ -20,11 +20,25 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
     }
     
      public function getShipmentRowInfo($sId) {
-		return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('s' => 'shipment'))
+		$result=$this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('s' => 'shipment'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
 			->group('s.shipment_id')
 			->where("s.shipment_id = ?", $sId));
+		if($result!=""){
+			$tableName="reference_result_dts";
+			if($result['scheme_type']=='vl'){
+				$tableName="reference_result_vl";
+			}elseif($result['scheme_type']=='eid'){
+				$tableName="reference_result_eid";
+			}
+			elseif($result['scheme_type']=='dts'){
+				$tableName="reference_result_dts";
+			}
+			$result['referenceResult']=$this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array($tableName))
+											->where('shipment_id = ? ',$result['shipment_id']));
+		}
+		return $result;
     }
 
     public function updateShipmentStatus($shipmentId, $status) {

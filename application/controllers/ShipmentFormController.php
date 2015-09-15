@@ -32,8 +32,8 @@ class ShipmentFormController extends Zend_Controller_Action
         if($this->_hasParam('sId')){
             $id = (int)base64_decode($this->_getParam('sId'));
             $reportService = new Application_Service_Reports();
-            $schemeService = new Application_Service_Schemes();
-            $this->view->referenceDetails = $schemeService->getDtsReferenceData($id);
+            //$schemeService = new Application_Service_Schemes();
+            //$this->view->referenceDetails = $schemeService->getDtsReferenceData($id);
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
             $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
