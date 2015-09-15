@@ -160,7 +160,18 @@
         <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
         <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
         <script type="text/javascript">
-			$("#tableCss").remove();
+			$(document).ready(function(){
+				 <?php
+					$alertMsg = new Zend_Session_Namespace('alertSpace');
+					if(isset($alertMsg->message) && $alertMsg->message != ""){
+					?>
+					  alert("<?php echo $alertMsg->message;?>");
+					<?php
+					  $alertMsg->message="";
+					  unset($alertMsg->message);        
+					}
+					?>
+			})
             function getCaptcha(captchaDivId){
                 $.blockUI();
                 var d = new Date();
