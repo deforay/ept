@@ -1,0 +1,212 @@
+<?php
+//Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
+
+//Zend_Debug::dump($this->shipment);die;
+require_once('tcpdf/tcpdf.php');
+	
+class MYPDF extends TCPDF {
+	
+	public function setSchemeName($header,$logo,$logoRight) {
+		//$this->scheme_name = $schemeName;
+		$this->header = $header;
+		$this->logo = $logo;
+		$this->logoRight = $logoRight;
+	}
+	
+	//Page header
+	public function Header() {
+        // Logo
+        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+		if(trim($this->logo)!=""){
+			if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo)) {
+				$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo;
+				$this->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			}
+		}
+		if(trim($this->logoRight)!=""){
+			if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logoRight)) {
+				$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logoRight;
+				$this->Image($image_file, 180, 10, 20, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			}
+		}
+       
+        // Set font
+		$this->SetFont('times', '', 12);
+        
+		$this->header=str_replace("<div","<span",trim($this->header));
+		$this->header=str_replace("</div>","</span><br/>",$this->header);
+	
+		//error_log($this->header);
+		//$y = $this->getY();
+		$html=$this->header;
+	
+		$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
+
+		$html='<p  style="font-weight: bold;text-align:center;">DRIED TUBE SPECIMENS - HIV VIRAL LOAD TESTING (VL)</p>';
+		$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
+		$html='<hr/>';
+		$this->writeHTMLCell(0, 0, 10, 45, $html, 0, 0, 0, true, 'J', true);
+    }
+
+    // Page footer
+    public function Footer() {
+		
+        // Position at 15 mm from bottom
+        $this->SetY(-15);
+        // Set font
+        $this->SetFont('helvetica', 'I', 8);
+        // Page number
+        $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+    }
+}
+
+	
+	// create new PDF document
+	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+	$pdf->setSchemeName($this->header,$this->logo,$this->logoRight);
+	// set document information
+	//$pdf->SetCreator(PDF_CREATOR);
+	//$pdf->SetAuthor('Nicola Asuni');
+	//$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
+	//$pdf->SetSubject('TCPDF Tutorial');
+	//$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
+	// set default header data
+	$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+	
+	// set header and footer fonts
+	$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+	
+	// set default monospaced font
+	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+	
+	// set margins
+	
+	$pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+	
+	// set auto page breaks
+	$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+	
+	// set image scale factor
+	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	
+	// set some language-dependent strings (optional)
+	if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	    require_once(dirname(__FILE__).'/lang/eng.php');
+	    $pdf->setLanguageArray($l);
+	}
+
+	// ---------------------------------------------------------
+	
+	// set font
+	$pdf->SetFont('times', '', 12);
+	
+	// add a page
+	$pdf->AddPage();
+	
+	$labInfo='<span class="pull-right">Fields marked <span class="mandatory">*</span> are mandatory</span><br/>';
+	$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+            $labInfo.='<tr style="background-color:#dbe4ee;">';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> Participant Name </span> </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Participant Code </span> </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Affiliation </span>  </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Phone No </span> </td>';
+            $labInfo.='</tr>';
+	    $labInfo.='<tr>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['first_name'] . ' ' . $this->participant['last_name'].'</td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['unique_identifier'].'</td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['affiliation'].'</td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['mobile'] . ' <br/> ' . $this->participant['phone'].'</td>';
+            $labInfo.='</tr>';
+        $labInfo.='</table><br/><br/>';
+	
+	 $labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+            $labInfo.='<tr style="background-color:#F7F7F7;">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Shipment Date</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">'.$this->dateFormat($this->shipment['shipment_date']).'</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">Result Due Date <?php ?></td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">'.$this->dateFormat($this->shipment["lastdate_response"]).'</td>';
+            $labInfo.='</tr>';
+            
+            $labInfo.='<tr style="background-color:#CCCCCC;">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+
+            $labInfo.='<tr style="background-color:#F7F7F7;">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Testing Date</td> ';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';		
+                $labInfo.='<td style="font-weight:bold;width:25%">Specimen Volume</td>'; 
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Viral Load Assay</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">Assay Expiration Date</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
+            $labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+                $labInfo.='<td style="font-weight:bold;width:25%">Assay Lot Number</td> ';
+                $labInfo.='<td style="font-weight:bold;" colspan="3"></td>';
+                
+            $labInfo.='</tr>';
+			
+			
+        $labInfo.='</table><br/><br/>';
+	
+		
+		
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+			$labInfo.='<tr style="background-color:#CCCCCC;">';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:50%">Control/Sample</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:50%">Viral Load (log<sub>10</sub> copies/ml)</td>';
+			$labInfo.='</tr>';
+			
+			foreach($this->referenceDetails as $sample){
+				$labInfo.='<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
+					$labInfo.='<td style="font-weight:bold;">'.$sample['sample_label'];
+					if($sample['mandatory']==1){
+						$labInfo.='*';
+					}
+					$labInfo.='</td>';
+					$labInfo.='<td style="font-weight:bold;"></td>';
+				$labInfo.='</tr>';
+			}
+			
+		$labInfo.='</table><br/><br/>';
+		
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+			$labInfo.='<tr style="background-color:#CCCCCC;">';
+				$labInfo.='<td style="font-weight:bold;">Supervisor Review</td>';
+				$labInfo.='<td></td>';
+				$labInfo.='<td style="font-weight:bold;">Supervisor Name</td>';
+				$labInfo.='<td></td>';
+			$labInfo.='</tr>';
+			
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="font-weight:bold;">Comments</td>';
+				$labInfo.='<td colspan="3"></td>';
+			$labInfo.='</tr>';
+		$labInfo.='</table>';
+	
+	$pdf->writeHTML($labInfo, true, false, true, false, '');
+	
+	$fileName=$this->shipment["shipment_code"].".pdf";
+	$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
+	$fileName = str_replace(" ", "-", $fileName);
+	$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$fileName;
+	//$created=$pdf->Output($filePath, "F");
+	
+	$pdf->Output($fileName, 'I');
+
+//============================================================+
+// END OF FILE
+//============================================================+
+//echo $fileName;

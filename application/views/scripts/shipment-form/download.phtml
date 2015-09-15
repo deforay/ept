@@ -273,13 +273,17 @@ class MYPDF extends TCPDF {
 		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 			$labInfo.='<tr style="background-color:#CCCCCC;">';
 				$labInfo.='<td style="text-align:center;font-weight:bold;width:50%">Control/Sample</td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:50%">Viral Load (log10 copies/ml)</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:50%">Viral Load (log<sub>10</sub> copies/ml)</td>';
 			$labInfo.='</tr>';
 			
 			if(count($this->shipment["referenceResult"])>0){
 				foreach($this->shipment["referenceResult"] as $referenceRes){
 					$labInfo.='<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
-						$labInfo.='<td style="font-weight:bold;">'.$referenceRes['sample_label'].'</td>';
+						$labInfo.='<td style="font-weight:bold;">'.$referenceRes['sample_label'];
+						if($referenceRes['mandatory']==1){
+							$labInfo.='*';
+						}
+						$labInfo.='</td>';
 						$labInfo.='<td style="font-weight:bold;"></td>';
 					$labInfo.='</tr>';
 				}
@@ -341,7 +345,11 @@ class MYPDF extends TCPDF {
 			if(count($this->shipment["referenceResult"])>0){
 				foreach($this->shipment["referenceResult"] as $referenceRes){
 					$labInfo.='<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
-						$labInfo.='<td style="font-weight:bold;">'.$referenceRes['sample_label'].'</td>';
+						$labInfo.='<td style="font-weight:bold;">'.$referenceRes['sample_label'];
+						if($referenceRes['mandatory']==1){
+							$labInfo.='*';
+						}
+						$labInfo.='</td>';
 						$labInfo.='<td style="font-weight:bold;"></td>';
 						$labInfo.='<td style="font-weight:bold;"></td>';
 						$labInfo.='<td style="font-weight:bold;"></td>';

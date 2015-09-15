@@ -155,9 +155,23 @@ class Application_Service_Schemes {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('reference_result_dts'))
                 ->where('shipment_id = ? ', $shipmentId);
-        return $db->fetchAll($sql);        
+        return $db->fetchAll($sql);
     }
-
+    
+    public function getVlReferenceData($shipmentId){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('reference_result_vl'))
+                ->where('shipment_id = ? ', $shipmentId);
+        return $db->fetchAll($sql);
+    }
+    
+    public function getEidReferenceData($shipmentId){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('reference_result_eid'))
+                ->where('shipment_id = ? ', $shipmentId);
+        return $db->fetchAll($sql);
+    }
+    
     public function getDbsSamples($sId, $pId) {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
