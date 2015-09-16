@@ -234,7 +234,9 @@ class Application_Service_Shipments {
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes = array("sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
                 "extraction_assay" => $params['extractionAssay'],
-                "detection_assay" => $params['detectionAssay']);
+                "detection_assay" => $params['detectionAssay'],
+				"uploaded_file" => $params['uploadedFilePath']);
+			
             $attributes = json_encode($attributes);
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
@@ -441,7 +443,9 @@ class Application_Service_Shipments {
                 "vl_assay" => $params['vlAssay'],
                 "assay_lot_number" => $params['assayLotNumber'],
                 "assay_expiration_date" => Pt_Commons_General::dateFormat($params['assayExpirationDate']),
-                "specimen_volume" => $params['specimenVolume']);
+                "specimen_volume" => $params['specimenVolume'],
+				"uploaded_file" => $params['uploadedFilePath']
+				);
 			
 			if(isset($params['otherAssay']) && $params['otherAssay'] != ""){
 				$attributes['other_assay'] = $params['otherAssay'];

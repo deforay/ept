@@ -20,7 +20,10 @@ class ShipmentFormController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getAllShipmentForm($params);
           }else{
-            $this->_helper->layout()->setLayout('home');
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+                    if(!isset($authNameSpace->dm_id)){
+                        $this->_helper->layout()->setLayout('home');
+                    }
           }
           
         

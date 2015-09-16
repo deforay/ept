@@ -1,4 +1,6 @@
-<?php date_default_timezone_set('America/New_York'); ?>
+<?php
+	date_default_timezone_set('America/New_York');
+?>
 
 <section class="content-header">
     <h1>Early Infant Diagnosis</h1>
@@ -6,7 +8,7 @@
 <section class="content">
 <div class="box">
 
-<form name="eidResponseForm" id="eidResponseForm" method="post"   action="<?php echo $this->url(array("controller" => "eid", "action" => "response"), null, true) ?>">
+<form name="eidResponseForm" id="eidResponseForm" method="post" enctype="multipart/form-data"   action="<?php echo $this->url(array("controller" => "eid", "action" => "response"), null, true) ?>">
 <div class="box-body">
     <input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response']; ?>" />
     <input type="hidden" id ="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
@@ -15,7 +17,9 @@
     <input type="hidden" id ="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
     <input type="hidden" id ="smid" name="smid" value="<?php echo $this->shipment['map_id']; ?>" />
     <input type="hidden" id ="evId" name="evId" value="<?php echo $this->eID; ?>" />
-
+<input type="hidden" id ="schemeCode" name="schemeCode" value="<?php echo $this->shipment['shipment_code'];?>" />
+<input type="hidden" id ="participantName" name="participantName" value="<?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] );?>" />
+<input type="hidden" id ="participantId" name="participantId" value="<?php echo ( $this->participant['unique_identifier'] );?>" />
 
     <div id="view-content">
 		<?php
@@ -163,6 +167,31 @@
 <hr>
 <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 <tr>
+	<th style="width:20%;">Upload File</th>
+	<td colspan="3">
+		<?php
+		$hideUploadFileArea = false;
+		if(isset($this->shipment['attributes']['uploaded_file']) &&
+		   $this->shipment['attributes']['uploaded_file'] != "" &&
+		   file_exists(UPLOAD_PATH.DIRECTORY_SEPARATOR.$this->shipment['attributes']['uploaded_file'])
+		   )
+		{
+			$hideUploadFileArea = true;
+			?>
+			<span id="uploadeFileLink">
+				<a id="uploadeFileLink" href="/uploads/<?php echo $this->shipment['attributes']['uploaded_file'] ?>" download><?php echo basename($this->shipment['attributes']['uploaded_file']); ?></a>&nbsp;&nbsp;&nbsp;<a href="javascript:removeUploadedFile();" class="text-danger"><i class="icon icon-remove-sign"></i> Remove</a>	
+			</span>
+			
+			<?php
+		}
+		?>
+		<div id="uploadFileArea" <?php echo (isset($hideUploadFileArea) && $hideUploadFileArea) ? "style='display:none;'" : ''; ?>>
+			<input type="file" name="uploadedFile" />
+			<input type="hidden" name="MAX_FILE_SIZE" value="5000000" />
+		</div>
+	</td>
+</tr>	
+<tr>
 	<th style="width:20%;">Supervisor Review</th>
 	<td style="width:20%;">
 		<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
@@ -171,7 +200,7 @@
                         <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>NO</option>
                     </select>
                 </td>
-                <th><label id ="labSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> class="form-control">Supervisor Name</label></th> 
+                <th><label id ="labSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
                 <td><input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>  value="<?php echo $this->shipment['participant_supervisor']; ?>"/></td>
 
             </tr>
@@ -222,6 +251,14 @@ $dtFormat=  $genderHelper->getDateFormat();
         window.history.back();
     }
 
+	function removeUploadedFile() {
+		if (window.confirm("Do you really want to remove this file?")) { 
+	  		$("#uploadeFileLink").hide();
+			$("#uploadFileArea").show();
+		}
+
+	}
+	
     function validateNow() {
 
         flag = deforayValidator.init({
