@@ -139,7 +139,21 @@ class MYPDF extends TCPDF {
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
-            $labInfo.='</tr>';
+        $labInfo.='</tr>';
+			
+		$labInfo.='<tr style="background-color:#dbe4ee;">';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> Contact Name </span> </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Email Address </span> </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Contact Phone Number </span>  </td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+        $labInfo.='</tr>';
+		$labInfo.='<tr>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+        $labInfo.='</tr>';
+		
         $labInfo.='</table><br/><br/>';
 	
 	if($this->shipment["scheme_type"]=='dts')
@@ -256,7 +270,7 @@ class MYPDF extends TCPDF {
             $labInfo.='</tr>';
 			
 			$labInfo.='<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
-                $labInfo.='<td style="font-weight:bold;width:25%">Viral Load Assay</td>';
+                $labInfo.='<td style="font-weight:bold;width:25%">Viral Load Assay *</td>';
                 $labInfo.='<td style="font-weight:bold;width:25%"></td>';
                 $labInfo.='<td style="font-weight:bold;width:25%">Assay Expiration Date</td>';
                 $labInfo.='<td style="font-weight:bold;width:25%"></td>';
