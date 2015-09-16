@@ -129,9 +129,9 @@ class MYPDF extends TCPDF {
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
         $labInfo.='</tr>';
 		$labInfo.='<tr>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['contact_name'].'</td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['email'].'</td>';
+                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['phone'].'</td>';
                 $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
         $labInfo.='</tr>';
 		
