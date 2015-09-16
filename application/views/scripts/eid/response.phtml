@@ -18,7 +18,28 @@
 
 
     <div id="view-content">
-        
+		<?php
+        if ($this->isEditable) {
+			if ($response == 1 && $this->shipment['status'] == 'finalized') {
+				?>
+				<h4 align="CENTER" style="color:red">Your response is late and this shipment has been finalized. Your result will not be evaluated </h4>
+				<?php
+			} else if ($response == 1) {
+				?>
+				<h4 align="CENTER" style="color:red">Your response is late.</h4>
+				<?php
+			} else if ($this->shipment['status'] == 'finalized') {
+				?>
+				<h4 align="CENTER" style="color:red">This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications. </h4>
+				<?php
+			}
+		}else{
+			?>
+				<h4 align="CENTER" style="color:red">Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.</h4>
+				<?php
+		}
+        ?>
+        <br>
         <div id=error></div>
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
         <tr>

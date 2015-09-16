@@ -105,49 +105,14 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
     public function isShipmentEditable($shipmentId, $participantId) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $row = $this->fetchRow("shipment_id = " . $shipmentId . " AND participant_id = " . $participantId);
         $shipment = $db->fetchRow($db->select()->from(array('s' => 'shipment'))
                         ->where("s.shipment_id = ?", $shipmentId));
-        $responseAfterFinalised = Application_Service_Common::getConfig('response_after_evaluate');
-        $date = new Zend_Date();
-        $lastDate = new Zend_Date($shipment["lastdate_response"], Zend_Date::ISO_8601);
         
         if($shipment["status"] == 'finalized' || $shipment["response_switch"] == 'off'){
             return false;
         }else{
             return true;
         }
-        
-        //if ($responseAfterFinalised == 'yes') {
-        //    // only if current date is lesser than last date
-        //    if ($date->compare($lastDate,Zend_Date::DATES) <= 0 || $shipment["status"] == 'finalized') {
-        //        return true;
-        //    } else {
-        //        return false;
-        //    }
-        //} else {
-        //    if ($date->compare($lastDate,Zend_Date::DATES) <= 0) {
-        //        return true;
-        //    } else {
-        //        return false;
-        //    }
-        //}
-
-        //$now= date("Y-m-d");
-        //$todaydate= strtotime($now);
-        //$lastResponseDate = strtotime($shipment["lastdate_response"]);
-        //$dateDifference = $lastResponseDate - $todaydate;
-        //$day=floor($dateDifference/3600/24);
-        //$canEdit =  substr($row['evaluation_status'],2 ,1); // getting the 3rd character
-        // if($canEdit == 9){
-        //if($day<0){
-        //   return false; 
-        //}else{
-        //   return true; 
-        //}
-        //  }else{
-        //      return false;
-        //   }
     }
 
     public function addEnrollementDetails($params) {
