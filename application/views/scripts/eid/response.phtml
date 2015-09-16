@@ -23,6 +23,9 @@
 
     <div id="view-content">
 		<?php
+		$date = new Zend_Date();
+		$lastDate = new Zend_Date($this->shipment['lastdate_response'], Zend_Date::ISO_8601);
+		$response=$date->compare($lastDate,Zend_Date::DATES);
         if ($this->isEditable) {
 			if ($response == 1 && $this->shipment['status'] == 'finalized') {
 				?>
