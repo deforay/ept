@@ -50,6 +50,8 @@
           <actionMethod actionName="index"/>
           <actionMethod actionName="sendMail"/>
           <actionMethod actionName="checkDuplicate"/>
+          <actionMethod actionName="delete"/>
+          <actionMethod actionName="deleteResponse"/>
         </controllerFile>
         <controllerFile controllerName="ContactUs">
           <actionMethod actionName="index"/>
@@ -57,10 +59,12 @@
         <controllerFile controllerName="Eid">
           <actionMethod actionName="index"/>
           <actionMethod actionName="response"/>
+          <actionMethod actionName="delete"/>
         </controllerFile>
         <controllerFile controllerName="Vl">
           <actionMethod actionName="index"/>
           <actionMethod actionName="response"/>
+          <actionMethod actionName="delete"/>
         </controllerFile>
         <controllerFile controllerName="Resources">
           <actionMethod actionName="index"/>
@@ -742,6 +746,18 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="ShipmentForm">
             <viewScriptFile forActionName="download"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Eid">
+            <viewScriptFile forActionName="delete"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Vl">
+            <viewScriptFile forActionName="delete"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Common">
+            <viewScriptFile forActionName="delete"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Common">
+            <viewScriptFile forActionName="deleteResponse"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

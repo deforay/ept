@@ -342,6 +342,58 @@ class Application_Service_Shipments {
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
+	
+    public function removeDtsEidResults($mapId) {
+        try {
+            $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $data = array(
+                "shipment_receipt_date" =>'',
+                "shipment_test_date" =>'',
+                "attributes" => '',
+                "shipment_test_report_date" => '',
+                "supervisor_approval" =>'',
+                "participant_supervisor" =>'',
+                "user_comment" => '',
+                "final_result" => '',
+                "updated_by_user" => $authNameSpace->dm_id,
+                "updated_on_user" => new Zend_Db_Expr('now()')
+            );
+             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+            
+             $responseDb = new Application_Model_DbTable_ResponseEid();
+             $responseDb->delete("shipment_map_id=$mapId");
+        } catch (Exception $e) {
+            return($e->getMessage());
+            return "Unable to delete. Please try again later or contact system admin for help";
+        }
+    }
+	
+    public function removeDtsVlResults($mapId) {
+        try {
+            $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $data = array(
+                "shipment_receipt_date" =>'',
+                "shipment_test_date" =>'',
+                "attributes" => '',
+                "shipment_test_report_date" => '',
+                "supervisor_approval" =>'',
+                "participant_supervisor" =>'',
+                "user_comment" => '',
+                "final_result" => '',
+                "updated_by_user" => $authNameSpace->dm_id,
+                "updated_on_user" => new Zend_Db_Expr('now()')
+            );
+             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+            
+             $responseDb = new Application_Model_DbTable_ResponseVl();
+             $responseDb->delete("shipment_map_id=$mapId");
+        } catch (Exception $e) {
+            return($e->getMessage());
+            return "Unable to delete. Please try again later or contact system admin for help";
+        }
+    }	
 
     public function updateDbsResults($params) {
 

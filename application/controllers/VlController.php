@@ -5,7 +5,7 @@ class VlController extends Zend_Controller_Action
 
     public function init()
     {
-        /* Initialize action controller here */
+
     }
 
     public function indexAction()
@@ -80,7 +80,8 @@ class VlController extends Zend_Controller_Action
     	}
     }
 
-	public function downloadAction(){
+    public function downloadAction()
+    {
 		$this->_helper->layout()->disableLayout();
 		$sID= $this->getRequest()->getParam('sid');
 	    $pID= $this->getRequest()->getParam('pid');
@@ -99,8 +100,17 @@ class VlController extends Zend_Controller_Action
 		$shipment = $schemeService->getShipmentData($sID,$pID);
 	    $shipment['attributes'] = json_decode($shipment['attributes'],true);
 	    $this->view->shipment = $shipment;
-	}
+    }
+
+    public function deleteAction()
+    {
+
+    }
+
+
 }
+
+
 
 
 

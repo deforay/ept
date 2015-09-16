@@ -5,9 +5,7 @@ class DtsController extends Zend_Controller_Action
 
     public function init()
     {
-      $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('delete', 'html')
-                ->initContext();
+
     }
 
     public function indexAction()
@@ -62,15 +60,7 @@ class DtsController extends Zend_Controller_Action
 	
     public function deleteAction()
     {
-        if($this->_hasParam('mid')){
-            if ($this->getRequest()->isPost()) {
-                $mapId = (int)base64_decode($this->_getParam('mid'));
-                $shipmentService = new Application_Service_Shipments();
-                $this->view->result = $shipmentService->removeDtsResults($mapId);
-            }
-        }else{
-            $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
-        }
+
     }
 	
 	public function downloadAction(){
