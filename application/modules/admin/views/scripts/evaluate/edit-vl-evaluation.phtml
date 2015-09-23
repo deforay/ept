@@ -92,7 +92,28 @@ $dtFormat=  $genderHelper->getDateFormat();
     <tr>
         <th>User Comments</th>
         <td colspan="3"><textarea class="form-control" name="userComments" id="userComments"><?php echo $this->evaluateData['shipment']['user_comment']; ?></textarea></td>
-    </tr>		
+    </tr>
+	<tr>
+		<th>Uploaded File (if any)</th>
+		<td>
+			<?php
+			if(isset($attributes['uploaded_file']) &&
+			   $attributes['uploaded_file'] != "" &&
+			   file_exists(UPLOAD_PATH.DIRECTORY_SEPARATOR.$attributes['uploaded_file'])
+			   )
+			{
+				?>
+				
+					<a href="/uploads/<?php echo $attributes['uploaded_file'] ?>" download><?php echo basename($attributes['uploaded_file']); ?></a>
+				
+				
+				<?php
+			}
+			?>
+			</td>
+		<td></td>
+		<td></td>
+	</tr>	
 	</table>
 	
 	<?php

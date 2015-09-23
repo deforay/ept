@@ -119,7 +119,7 @@ if ($this->scheme == 'eid') {
                 <tr class="<?php echo $class ?>">
                     <th style="vertical-align: middle;text-align: center;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
                     <td style="vertical-align: middle;text-align: center;">
-            <?php echo $this->dropdownSelectedText($possibleResults, $result['reported_result'], true); ?>
+                        <?php echo $this->dropdownSelectedText($possibleResults, $result['reported_result'], true); ?>
                         <input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
                     </td>
                 </tr>
@@ -420,27 +420,99 @@ if ($this->scheme == 'eid') {
             <td><?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?></td>
         </tr>
         <tr>
-            <th>Shipment Received on</th>
-            <td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_receipt_date']); ?></td>
-            <th>Samples Tested on</th>
-            <td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_test_date']); ?></td>
-        </tr>
-        <tr>
-            <th>VL Assay</th>
-            <td>
+		<th>Shipment Received on</th>
+		<td>
+		
+			<?php echo $this->dateFormat($this->evaluateData['shipment']["shipment_receipt_date"]); ?>
+			
+		</td>
+		<td><label>Sample Rehydration Date</label></td>
+		<td>
+			<?php  echo  $this->dateFormat($attributes["sample_rehydration_date"]); ?>
+		</td>
+	</tr>
+	<tr>
+		<th><label>Samples Tested on</label></th> 
+		<td>
+			<?php  echo  $this->dateFormat($this->evaluateData['shipment']["shipment_test_date"]); ?>
+			
+		</td>		
 
-    <?php
-    foreach ($this->vlAssay as $vlAssay) {
-        if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == $vlAssay['id']) {
-            echo $vlAssay['name'];
-            break;
-        }
-    }
-    ?>			
-            </td>
-            <th></th>
+		<th><label>Specimen Volume</label></th> 
+		<td>
+			<?php echo $attributes['specimen_volume'];?>
+		</td>
+	</tr>
+			
+		<tr>
+		<td><label>Viral Load Assay</label></td>
+		<td>
+			<?php
+			foreach($this->vlAssay as $id => $name){
+                echo ($attributes['vl_assay'] == $id) ? $name : "";
+                break;
+			}
+			?>
+		</select>
+		</td>
+        <?php if(isset($attributes['other_assay']) && ($attributes['other_assay'] != "")) { ?>
+		<td class=""><label>Other Assay Name</label></td> 
+		<td class="">
+            <?php echo (isset($attributes['other_assay']) && ($attributes['other_assay'] != "")) ? $attributes['other_assay'] : ""; ?>
+		</td>
+		<?php } else{
+            ?>
             <td></td>
-        </tr>
+            <td></td>
+            <?php
+        } ?>
+	</tr>		
+		<tr>
+			<th>Assay Expiration Date</th>
+			<td>
+				<?php echo $this->dateFormat($attributes['assay_expiration_date']);?>
+				
+			</td>
+		<th><label>Assay Lot Number</label></th> 
+		<td>
+			<?php echo $attributes['assay_lot_number'];?>
+		</td>
+		</tr>
+    <tr>
+         <th>Supervisor Review</th>
+        <td>
+            <?php echo strtoupper($this->evaluateData['shipment']['supervisor_approval']); ?>
+        </td>
+        <th>Supervisor Name</th>
+        <td>
+            <?php echo $this->evaluateData['shipment']['participant_supervisor']; ?>
+        </td>
+    </tr>
+    <tr>
+        <th>User Comments</th>
+        <td colspan="3"><?php echo $this->evaluateData['shipment']['user_comment']; ?></td>
+    </tr>
+	<tr>
+		<th>Uploaded File (if any)</th>
+		<td>
+			<?php
+			if(isset($attributes['uploaded_file']) &&
+			   $attributes['uploaded_file'] != "" &&
+			   file_exists(UPLOAD_PATH.DIRECTORY_SEPARATOR.$attributes['uploaded_file'])
+			   )
+			{
+				?>
+				
+					<a href="/uploads/<?php echo $attributes['uploaded_file'] ?>" download><?php echo basename($attributes['uploaded_file']); ?></a>
+				
+				
+				<?php
+			}
+			?>
+			</td>
+		<td></td>
+		<td></td>
+	</tr>    
     </table>
 
     <?php ?>
@@ -467,13 +539,22 @@ if ($this->scheme == 'eid') {
                         ?>
                 <tr class="<?php echo $class ?>">
                     <td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
-                    <td style="vertical-align: middle;"></td>
+                    <td style="vertical-align: middle;">
+                        <?php
+        if (isset($this->vlRange[$attributes['vl_assay']])) {
+            echo "<strong>Min</strong> : " . $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . "<strong>Max</strong> : " . $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+        } else {
+            echo "Not enough responses for this VL Assay";
+        }
+        ?>
+                    </td>
                 </tr>
                 <tr class="<?php echo $class ?>">
                     <th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
                     <td style="vertical-align: middle;">
-                        <select class="form-control" name="reported[]"><?php echo $result['reported_viral_load	']; ?></select>
-            <?php echo $result['sample_id']; ?>
+                        
+                        <?php echo $result['reported_viral_load']; ?>
+            <?php //echo $result['sample_id']; ?>
                     </td>
                 </tr>
             <?php
@@ -491,7 +572,7 @@ if ($this->scheme == 'eid') {
         <tr>
             <th style="text-align: center;font-size:17px;">Sample</th>
             <th style="text-align: center;font-size:17px;width:220px;">Results</th>
-            <th style="text-align: center;font-size:17px;">Score</th>
+            <th style="text-align: center;font-size:17px;">Pass/Fail</th>
         </tr>
 
     <?php
@@ -517,15 +598,7 @@ if ($this->scheme == 'eid') {
                 </td>
                 <td rowspan="2" style="vertical-align: middle;text-align: center;">
                     <h1>
-            <?php
-            if (isset($this->vlRange[$attributes['vl_assay']])) {
-                echo $score = ($this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'] >= $result['reported_viral_load']) ? $result['sample_score'] : 0;
-                $total+= $score;
-            } else {
-                echo "-";
-                $total = "N/A";
-            }
-            ?>
+                        -
                     </h1>
                 </td>
             </tr>
@@ -540,10 +613,6 @@ if ($this->scheme == 'eid') {
                     $counter++;
                 }
                 ?>
-        <tr class="totalResult">
-            <td colspan="2" style="vertical-align: middle;text-align:right;"><h3>Total Score</h3></td>
-            <td style="vertical-align: middle;text-align:center;"><h1><?php echo $total; ?></h1></td>
-        </tr>
     </table>
                     <?php
                 } else {

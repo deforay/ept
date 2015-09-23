@@ -178,11 +178,21 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function deleteDtsResponseAction()
     {
+		
         if($this->_hasParam('mid')){
             if ($this->getRequest()->isPost()) {
                 $mapId = (int)base64_decode($this->_getParam('mid'));
+                $schemeType = ($this->_getParam('schemeType'));
                 $shipmentService = new Application_Service_Shipments();
-                $this->view->result = $shipmentService->removeDtsResults($mapId);
+				if($schemeType == 'dts'){
+					$this->view->result = $shipmentService->removeDtsResults($mapId);
+				}else if($schemeType == 'eid'){
+					$this->view->result = $shipmentService->removeDtsEidResults($mapId);
+				} else if($schemeType == 'vl'){
+					$this->view->result = $shipmentService->removeDtsVlResults($mapId);
+				}else {
+					$this->view->result = "Failed to delete";
+				}
             }
         }else{
             $this->view->message = "Unable to delete. Please try again later or contact system admin for help";

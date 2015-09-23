@@ -944,7 +944,7 @@ class Application_Service_Shipments {
                     'reference_ic_qs' => $params['icQs'][$i],
                     'control' => $params['control'][$i],
                     'mandatory' => $params['mandatory'][$i],
-                    'sample_score' => $params['score'][$i]
+                    'sample_score' => 1
                         )
                 );
             }

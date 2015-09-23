@@ -155,7 +155,7 @@
                                                 <?php
                                                 if($shipment['shipment_status']!='finalized' && $shipment['shipment_test_report_date']!='' && $shipment['shipment_test_report_date']!='0000-00-00 00:00:00'){
                                                 ?>
-						<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('Dts','<?php echo base64_encode($shipment['map_id']); ?>')"><span><i class="icon-remove"></i> Delete</span></a>
+						<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('<?php echo $shipment['scheme_type']; ?>','<?php echo base64_encode($shipment['map_id']); ?>')"><span><i class="icon-remove"></i> Delete</span></a>
                                                 <?php
                                                 }
                                                  ?>
@@ -261,12 +261,12 @@
         function removeSchemes(schemeType,mid){
 		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 
 			$.blockUI();
-			$.post("<?php echo $this->url(array('module'=>'admin','controller' =>'evaluate', 'action' => 'delete-dts-response')); ?>", { mid: mid, format: "html" },
+			$.post("<?php echo $this->url(array('module'=>'admin','controller' =>'evaluate', 'action' => 'delete-dts-response'), 'default', true); ?>", { mid: mid, schemeType : schemeType, format: "html" },
 			    function (data) {
 				alert("Response has been removed successfully. Please wait while we reload this evaluation.");
                                // oTable.fnStandingRedraw();
                                // oTable.fnDraw();
-					 document.location.href= document.location;
+					document.location.href= document.location;
 				$.unblockUI();
 			});
 		}		
