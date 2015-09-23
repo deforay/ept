@@ -315,7 +315,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
                 ->where("pmm.dm_id=?", $this->_session->dm_id)
                 ->where("s.status='shipped' OR s.status='evaluated'")
-                ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
+                //->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                 //->where("s.lastdate_response >=  CURDATE()")
         //->order('s.shipment_date')
         //->order('spm.participant_id')
@@ -340,7 +340,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //error_log($sQuery);
+        //echo($sQuery);die;
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */
