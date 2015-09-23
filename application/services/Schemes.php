@@ -410,8 +410,12 @@ class Application_Service_Schemes {
         return $schemeListDb->countEnrollmentSchemes();
     }
     public function getScheme($sid) {
-        $schemeListDb = new Application_Model_DbTable_SchemeList();
-        return $schemeListDb->fetchRow($schemeListDb->select()->where("scheme_id = ?", $sid));
+        if($sid != null){
+            $schemeListDb = new Application_Model_DbTable_SchemeList();
+            return $schemeListDb->fetchRow($schemeListDb->select()->where("scheme_id = ?", $sid));
+        }else{
+            return null;
+        }
     }
 
     public function addTestkit($params) {

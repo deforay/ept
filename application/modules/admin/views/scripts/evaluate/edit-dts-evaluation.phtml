@@ -11,9 +11,9 @@ $attributes = json_decode($this->evaluateData['shipment']['attributes'], true);
     </tr>
     <tr>
         <th>Shipment Date</th>
-        <td><input id="shipmentDate" type="text" name="shipmentDate" value="<?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
+        <td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_date']); ?></td>
         <th>Result Due Date</th>
-        <td><input type="text" id="responseDate" name="responseDate" value="<?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
+        <td><?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?></td>
     </tr>
     <tr>
         <th>Shipment Received on</th>

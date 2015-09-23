@@ -733,42 +733,71 @@ class Application_Service_Evaluation {
         $admin = $authNameSpace->primary_email;
         $size = count($params['sampleId']);
 
-        $shipdata = array(
-            "shipment_date" => Pt_Commons_General::dateFormat($params['shipmentDate']),
-            "lastdate_response" => Pt_Commons_General::dateFormat($params['responseDate']),
-            "updated_by_admin" => $admin,
-           "updated_on_admin" => new Zend_Db_Expr('now()')
-        );
-       
-        $db->update('shipment', $shipdata, "shipment_id = " . $params['shipmentId']);
-        $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['rehydrationDate']);
-        $attributes["algorithm"] = $params['algorithm'];
-        $attributes = json_encode($attributes);
-
-        $mapdata = array(
-            "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receivedOn']),
-            "shipment_test_date" => Pt_Commons_General::dateFormat($params['testedOn']),
-            "attributes" => $attributes,
-            "supervisor_approval" => $params['supervisorApproval'],
-            "participant_supervisor" => $params['participantSupervisor'],
-            "user_comment" => $params['userComments'],
-            "updated_by_admin" => $admin,
-            "updated_on_admin" => new Zend_Db_Expr('now()')
-        );
-		if(isset($params['customField1']) && trim($params['customField1']) != ""){
-			$mapdata['custom_field_1'] = $params['customField1'];
-		}
-		
-		if(isset($params['customField2']) && trim($params['customField2']) != ""){
-			$mapdata['custom_field_2'] = $params['customField2'];
-		}
-        $db->update('shipment_participant_map', $mapdata, "map_id = " . $params['smid']);
 
         if ($params['scheme'] == 'eid') {
+			
+            $attributes = array("sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+                "extraction_assay" => $params['extractionAssay'],
+                "detection_assay" => $params['detectionAssay']);
+			
+			if(isset($params['otherAssay']) && $params['otherAssay'] != ""){
+				$attributes['other_assay'] = $params['otherAssay'];
+			}
+			if(isset($params['uploadedFilePath']) && $params['uploadedFilePath'] != ""){
+				$attributes['uploadedFilePath'] = $params['uploadedFilePath'];
+			}
+			
+            $attributes = json_encode($attributes);
+            $mapData = array(
+                "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
+                "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
+                "attributes" => $attributes,
+				"supervisor_approval" => $params['supervisorApproval'],
+				"participant_supervisor" => $params['participantSupervisor'],
+				"user_comment" => $params['userComments'],
+				"updated_by_admin" => $admin,
+			   "updated_on_admin" => new Zend_Db_Expr('now()')
+            );
+			
+			if(isset($params['customField1']) && trim($params['customField1']) != ""){
+				$mapData['custom_field_1'] = $params['customField1'];
+			}
+			
+			if(isset($params['customField2']) && trim($params['customField2']) != ""){
+				$mapData['custom_field_2'] = $params['customField2'];
+			}				
+
+            $db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);				
+			
             for ($i = 0; $i < $size; $i++) {
                 $db->update('response_result_eid', array('reported_result' => $params['reported'][$i], 'updated_by' => $admin, 'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
             }
         } else if ($params['scheme'] == 'dts') {
+			
+			
+			$attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['rehydrationDate']);
+			$attributes["algorithm"] = $params['algorithm'];
+			$attributes = json_encode($attributes);
+	
+			$mapdata = array(
+				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receivedOn']),
+				"shipment_test_date" => Pt_Commons_General::dateFormat($params['testedOn']),
+				"attributes" => $attributes,
+				"supervisor_approval" => $params['supervisorApproval'],
+				"participant_supervisor" => $params['participantSupervisor'],
+				"user_comment" => $params['userComments'],
+				"updated_by_admin" => $admin,
+				"updated_on_admin" => new Zend_Db_Expr('now()')
+			);
+			if(isset($params['customField1']) && trim($params['customField1']) != ""){
+				$mapdata['custom_field_1'] = $params['customField1'];
+			}
+			
+			if(isset($params['customField2']) && trim($params['customField2']) != ""){
+				$mapdata['custom_field_2'] = $params['customField2'];
+			}
+			$db->update('shipment_participant_map', $mapdata, "map_id = " . $params['smid']);			
+			
             for ($i = 0; $i < $size; $i++) {
                 $db->update('response_result_dts', array(
                     'test_kit_name_1' => $params['test_kit_name_1'],
@@ -788,6 +817,43 @@ class Application_Service_Evaluation {
                     'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
             }
         } else if ($params['scheme'] == 'vl') {
+		   
+			$attributes = array(
+				"sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+                "vl_assay" => $params['vlAssay'],
+                "assay_lot_number" => $params['assayLotNumber'],
+                "assay_expiration_date" => Pt_Commons_General::dateFormat($params['assayExpirationDate']),
+                "specimen_volume" => $params['specimenVolume']
+				);
+			
+			if(isset($params['otherAssay']) && $params['otherAssay'] != ""){
+				$attributes['other_assay'] = $params['otherAssay'];
+			}
+			if(isset($params['uploadedFilePath']) && $params['uploadedFilePath'] != ""){
+				$attributes['uploadedFilePath'] = $params['uploadedFilePath'];
+			}
+			
+            $attributes = json_encode($attributes);
+            $mapData = array(
+                "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
+                "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
+                "attributes" => $attributes,
+				"supervisor_approval" => $params['supervisorApproval'],
+				"participant_supervisor" => $params['participantSupervisor'],
+				"user_comment" => $params['userComments'],
+				"updated_by_admin" => $admin,
+			   "updated_on_admin" => new Zend_Db_Expr('now()')
+            );
+			
+			if(isset($params['customField1']) && trim($params['customField1']) != ""){
+				$mapData['custom_field_1'] = $params['customField1'];
+			}
+			
+			if(isset($params['customField2']) && trim($params['customField2']) != ""){
+				$mapData['custom_field_2'] = $params['customField2'];
+			}				
+
+            $db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);	
 
             for ($i = 0; $i < $size; $i++) {
 

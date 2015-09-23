@@ -2115,4 +2115,6 @@ ALTER TABLE `reference_vl_methods`
  
  ALTER TABLE `participant` ADD `contact_name` VARCHAR(255) NULL DEFAULT NULL AFTER `phone`;
  
- 
+ -- Amit 23Sep 2015
+
+ALTER TABLE `shipment` ADD `number_of_controls` INT NOT NULL AFTER `number_of_samples`;

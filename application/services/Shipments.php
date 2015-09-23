@@ -540,13 +540,20 @@ class Application_Service_Shipments {
         $distroService = new Application_Service_Distribution();
         $distro = $distroService->getDistribution($params['distribution']);
 
+		$controlCount = 0;
+		foreach($params['control'] as $control){
+			if($control == 1){
+				$controlCount+=1;
+			}
+		}
 
         $data = array(
             'shipment_code' => $params['shipmentCode'],
             'distribution_id' => $params['distribution'],
             'scheme_type' => $scheme,
             'shipment_date' => $distro['distribution_date'],
-            'number_of_samples' => count($params['sampleName']),
+            'number_of_samples' => count($params['sampleName']) - $controlCount,
+			'number_of_controls' => $controlCount,
             'lastdate_response' => Pt_Commons_General::dateFormat($params['lastDate']),
             'created_on_admin' => new Zend_Db_Expr('now()'),
             'created_by_admin' => $authNameSpace->primary_email
@@ -914,6 +921,17 @@ class Application_Service_Shipments {
         $scheme = $shipmentRow['scheme_type'];
 
         $size = count($params['sampleName']);
+		
+
+		$controlCount = 0;
+		foreach($params['control'] as $control){
+			if($control == 1){
+				$controlCount+=1;
+			}
+		}
+		
+		//$size = $size - $controlCount;
+		
         if ($scheme == 'eid') {
             $dbAdapter->delete('reference_result_eid', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
@@ -1142,8 +1160,12 @@ class Application_Service_Shipments {
                 // ------------------>
             }
         }
-
-        $dbAdapter->update('shipment', array('number_of_samples' => $size, 'shipment_code' => $params['shipmentCode'], 'lastdate_response' => Pt_Commons_General::dateFormat($params['lastDate'])), 'shipment_id = ' . $params['shipmentId']);
+		
+        $dbAdapter->update('shipment', array('number_of_samples' => $size - $controlCount,
+											 'number_of_controls' => $controlCount,
+											 'shipment_code' => $params['shipmentCode'],
+											 'lastdate_response' => Pt_Commons_General::dateFormat($params['lastDate'])),
+											 'shipment_id = ' . $params['shipmentId']);
     }
 
     public function getShipmentOverview($parameters) {

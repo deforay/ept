@@ -136,14 +136,14 @@ $count++;  ?>
 	</tr>
 
 	<tr class ="dark">
-		<td><label>Assay Expiration Date</label></td>
+		<td><label>Assay Expiration Date <span class="mandatory">*</span></label></td>
 		<td>
-			<input type="text" name="assayExpirationDate" id="assayExpirationDate" style="width:180px;float:left;"  class="isRequired expDatepicker form-control" readonly="readonly"  value="<?php echo $this->dateFormat($this->shipment['attributes']['assay_expiration_date']);?>"/>
+			<input type="text" name="assayExpirationDate" id="assayExpirationDate" style="width:180px;float:left;"  class="isRequired expDatepicker form-control" readonly="readonly"  value="<?php echo $this->dateFormat($this->shipment['attributes']['assay_expiration_date']);?>" title="Please enter Assay Expiration date" placeholder="Please enter Assay Expiration date"/>
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('assayExpirationDate')"> Clear</i>
 		</td>
-		<td><label>Assay Lot Number</label></td> 
+		<td><label>Assay Lot Number <span class="mandatory">*</span></label></td> 
 		<td>
-			<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired form-control"  value="<?php echo $this->shipment['attributes']['assay_lot_number'];?>"/>
+			<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired form-control"  value="<?php echo $this->shipment['attributes']['assay_lot_number'];?>" title="Please enter Assay lot number" placeholder="Please enter Assay lot number"/>
 		</td>
 	</tr>
 	

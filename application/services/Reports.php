@@ -117,7 +117,6 @@ class Application_Service_Reports {
             $sQuery = $sQuery->where("pmm.dm_id = ?", $parameters['dataManager']);
         }
 
-
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->having($sWhere);
         }

@@ -19,37 +19,64 @@
 		</tr>
 		<tr>
 			<th>Shipment Received on</th>
-			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_receipt_date']); ?></td>
-			<th>Samples Tested on</th>
-			<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_test_date']); ?></td>
+			<td>
+			
+				<input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->evaluateData['shipment']["shipment_receipt_date"]); ?>" class="form-control datepicker" readonly="readonly"   title="Please enter Test Receipt Date" />
+				<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('receiptDate')"> Clear</i>
+			</td>
+			<td><label>Sample Rehydration Date</label></td>
+			<td>
+				<input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate"  style="width:180px;float:left;" value="<?php  echo  $this->dateFormat($attributes["sample_rehydration_date"]); ?>" class="isRequired datepicker form-control" readonly="readonly" />
+				<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('sampleRehydrationDate')"> Clear</i>
+			</td>
 		</tr>
 		<tr>
 			<th>Extraction Assay</th>
 			<td>
-
-			<?php
-			foreach($this->extractionAssay as $eAssayId => $eAssayName){
-				 if(isset($attributes['extraction_assay']) && $attributes['extraction_assay'] == $eAssayId){
-					echo $eAssayName;
-					break;
-				 }
-			}
-			?>			
+<select id="extractionAssay" name="extractionAssay" class="form-control">
+                        <option value="">--Select--</option>
+                        <?php
+                        foreach ($this->extractionAssay as $eAssayId => $eAssayName) {
+                            ?>
+                            <option value="<?php echo $eAssayId; ?>" <?php echo (isset($attributes['extraction_assay']) && $attributes['extraction_assay'] == $eAssayId) ? "selected='selected'" : "" ?>><?php echo $eAssayName; ?></option>	
+                            <?php
+                        }
+                        ?>
+                    </select>
+					
 			</td>
 			<th>Detection Assay</th>
 			<td>
-			
-			<?php
-			
-			foreach($this->detectionAssay as $dAssayId => $dAssayName){
-				 if(isset($attributes['detection_assay']) && $attributes['detection_assay'] == $dAssayId){
-					echo $dAssayName;
-					break;
-				 }
-			}
-			?>			
+			 <select id="detectionAssay" name="detectionAssay" class="form-control">
+                        <option value="">--Select--</option>
+                        <?php
+                        foreach ($this->detectionAssay as $dAssayId => $dAssayName) {
+                            ?>
+                            <option value="<?php echo $dAssayId; ?>" <?php echo (isset($attributes['detection_assay']) && $attributes['detection_assay'] == $dAssayId) ? "selected='selected'" : "" ?>><?php echo $dAssayName; ?></option>	
+                            <?php
+                        }
+                        ?>				
+                    </select>		
 			</td>
 		</tr>
+    <tr>
+         <th>Supervisor Review</th>
+        <td>
+            <select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control"  title="Please select if Supervisor Approval was conducted or not">
+                <option value=""> -- Select -- </option>
+                <option value="yes" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') echo " selected "; ?>>YES</option>
+                <option value="no" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'no') echo " selected "; ?>>NO</option>
+            </select>
+        </td>
+        <th  id ="labSupervisor" <?php echo(isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</th>
+        <td>
+            <input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo(isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?>  class="form-control" value="<?php echo $this->evaluateData['shipment']['participant_supervisor']; ?>"/>
+        </td>
+    </tr>
+    <tr>
+        <th>User Comments</th>
+        <td colspan="3"><textarea class="form-control" name="userComments" id="userComments"><?php echo $this->evaluateData['shipment']['user_comment']; ?></textarea></td>
+    </tr>	
 	</table>
 	
 	<?php
@@ -110,7 +137,7 @@
 		<tr>
 			<th style="text-align: center;font-size:17px;">Sample</th>
 			<th style="text-align: center;font-size:17px;">Results</th>
-			<th style="text-align: center;font-size:17px;">Score</th>
+			<th style="text-align: center;font-size:17px;">Pass/Fail</th>
 		</tr>
 			
 		<?php
@@ -126,7 +153,7 @@
 				<tr class="<?php echo $class ?>">
 					<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
 					<td style="vertical-align: middle;"><select class="form-control" name="reference[]" disabled="disabled"><?php echo $this->dropdownSelection($possibleResults,$result['reference_result'],true); ?></select></td>
-					<td rowspan="2" style="vertical-align: middle;text-align: center;"><h1><?php echo $score = ($result['reference_result'] == $result['reported_result']) ? $result['sample_score'] : 0; $total+= $score; ?></h1></td>
+					<td rowspan="2" style="vertical-align: middle;text-align: center;"><h1>-</h1></td>
 				</tr>
 				<tr class="<?php echo $class ?>">
 					<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
@@ -139,8 +166,10 @@
 			$counter++;
 		}
 		?>
-		<tr class="totalResult">
-			<td colspan="2" style="vertical-align: middle;text-align:right;"><h3>Total Score</h3></td>
-			<td style="vertical-align: middle;text-align:center;"><h1><?php echo $total; ?></h1></td>
-		</tr>
 </table>
+<script>
+	
+	function clearDate(id) {
+		$("#" + id).val('');
+	}
+</script>
