@@ -738,7 +738,12 @@ class Application_Service_Evaluation {
 			
             $attributes = array("sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
                 "extraction_assay" => $params['extractionAssay'],
-                "detection_assay" => $params['detectionAssay']);
+                "detection_assay" => $params['detectionAssay'],
+				"extraction_assay_expiry_date" => Pt_Commons_General::dateFormat($params['extractionAssayExpiryDate']),
+                "detection_assay_expiry_date" => Pt_Commons_General::dateFormat($params['detectionAssayExpiryDate']),
+                "extraction_assay_lot_no" => $params['extractionAssayLotNo'],
+                "detection_assay_lot_no" => $params['detectionAssayLotNo'],
+				);
 			
 			if(isset($params['otherAssay']) && $params['otherAssay'] != ""){
 				$attributes['other_assay'] = $params['otherAssay'];
@@ -746,7 +751,7 @@ class Application_Service_Evaluation {
 			if(isset($params['uploadedFilePath']) && $params['uploadedFilePath'] != ""){
 				$attributes['uploadedFilePath'] = $params['uploadedFilePath'];
 			}
-			
+
             $attributes = json_encode($attributes);
             $mapData = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),

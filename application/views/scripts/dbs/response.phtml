@@ -13,7 +13,7 @@
 //  $dt= DateTime::createFromFormat('Y-m-d',$this->shipment["shipment_receipt_date"]); echo $dt->format('d-M-Y'); 
     ?>
     <div id="view-content">
-        <h2 align="CENTER"> Dried Blood Spot</h2>
+        <h1><?php echo $this->shipment['scheme_name'];?></h1>
         <br>
         <div id=error></div>
         <table>

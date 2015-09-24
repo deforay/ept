@@ -235,6 +235,10 @@ class Application_Service_Shipments {
             $attributes = array("sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
                 "extraction_assay" => $params['extractionAssay'],
                 "detection_assay" => $params['detectionAssay'],
+                "extraction_assay_expiry_date" => Pt_Commons_General::dateFormat($params['extractionAssayExpiryDate']),
+                "detection_assay_expiry_date" => Pt_Commons_General::dateFormat($params['detectionAssayExpiryDate']),
+                "extraction_assay_lot_no" => $params['extractionAssayLotNo'],
+                "detection_assay_lot_no" => $params['detectionAssayLotNo'],
 				"uploaded_file" => $params['uploadedFilePath']);
 			
             $attributes = json_encode($attributes);

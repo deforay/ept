@@ -59,25 +59,47 @@
                     </select>		
 			</td>
 		</tr>
-    <tr>
-         <th>Supervisor Review</th>
-        <td>
-            <select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control"  title="Please select if Supervisor Approval was conducted or not">
-                <option value=""> -- Select -- </option>
-                <option value="yes" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') echo " selected "; ?>>YES</option>
-                <option value="no" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'no') echo " selected "; ?>>NO</option>
-            </select>
-        </td>
-        <th  id ="labSupervisor" <?php echo(isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</th>
-        <td>
-            <input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo(isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?>  class="form-control" value="<?php echo $this->evaluateData['shipment']['participant_supervisor']; ?>"/>
-        </td>
-    </tr>
-    <tr>
-        <th>User Comments</th>
-        <td colspan="3"><textarea class="form-control" name="userComments" id="userComments"><?php echo $this->evaluateData['shipment']['user_comment']; ?></textarea></td>
-    </tr>
-	<tr>
+		<tr>
+			<td><label>Extraction Assay Lot No.</label></td> 
+			<td>
+				<input type="text" id="extractionAssayLotNo" name="extractionAssayLotNo"  style=""  maxlength="11" value="<?php  echo ($attributes['extraction_assay_lot_no']); ?>"  class="isRequired form-control" />
+			</td>
+			<td><label>Detection Assay Lot No.</label></td> 
+			<td>
+				<input type="text" id="detectionAssayLotNo" name="detectionAssayLotNo"  style=""  maxlength="11" value="<?php  echo ($attributes['detection_assay_lot_no']); ?>"  class="isRequired form-control" />
+			</td>
+		</tr>
+		<tr>
+			<td><label>Extraction Assay Expiry Date</label></td> 
+			<td>
+				<input type="text" id="extractionAssayExpiryDate" name="extractionAssayExpiryDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($attributes['extraction_assay_expiry_date']); ?>"  class="isRequired datepicker form-control" readonly="readonly" />
+				<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('extractionAssayExpiryDate')"> Clear</i>					
+			</td>
+			<td><label>Detection Assay Expiry Date</label></td> 
+			<td>
+				<input type="text" id="detectionAssayExpiryDate" name="detectionAssayExpiryDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($attributes['detection_assay_expiry_date']); ?>"  class="isRequired datepicker form-control" readonly="readonly" />
+				<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('detectionAssayExpiryDate')"> Clear</i>					
+			</td>
+		</tr>
+		<tr>
+			 <th>Supervisor Review</th>
+			<td>
+				<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control"  title="Please select if Supervisor Approval was conducted or not">
+					<option value=""> -- Select -- </option>
+					<option value="yes" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') echo " selected "; ?>>YES</option>
+					<option value="no" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'no') echo " selected "; ?>>NO</option>
+				</select>
+			</td>
+			<th  id ="labSupervisor" <?php echo(isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</th>
+			<td>
+				<input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo(isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?>  class="form-control" value="<?php echo $this->evaluateData['shipment']['participant_supervisor']; ?>"/>
+			</td>
+		</tr>
+		<tr>
+			<th>User Comments</th>
+			<td colspan="3"><textarea class="form-control" name="userComments" id="userComments"><?php echo $this->evaluateData['shipment']['user_comment']; ?></textarea></td>
+		</tr>
+		<tr>
 		<th>Uploaded File (if any)</th>
 		<td>
 			<?php
@@ -115,7 +137,8 @@
 			<caption><legend>Controls</legend></caption>
 				<tr>
 					<th style="text-align: center;font-size:17px;">Control</th>
-					<th style="text-align: center;font-size:17px;">Results</th>
+					<th style="text-align: center;font-size:17px;">Reference</th>
+					<th style="text-align: center;font-size:17px;">Response</th>
 				</tr>
 					
 				<?php
@@ -128,11 +151,8 @@
 					}
 					?>
 						<tr class="<?php echo $class ?>">
-							<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
+							<td style="vertical-align: middle;"><?php echo $result['sample_label']; ?></td>
 							<td style="vertical-align: middle;"><select class="form-control" name="reference[]" disabled="disabled"><?php echo $this->dropdownSelection($possibleResults,$result['reference_result'],true); ?></select></td>
-						</tr>
-						<tr class="<?php echo $class ?>">
-							<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
 							<td style="vertical-align: middle;">
 								<select class="form-control" name="reported[]"><?php echo $this->dropdownSelection($possibleResults,$result['reported_result'],true); ?></select>
 								<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
@@ -152,7 +172,8 @@
 		<caption><legend>Samples</legend></caption>
 		<tr>
 			<th style="text-align: center;font-size:17px;">Sample</th>
-			<th style="text-align: center;font-size:17px;">Results</th>
+			<th style="text-align: center;font-size:17px;">Reference Results</th>
+			<th style="text-align: center;font-size:17px;">Response</th>
 			<th style="text-align: center;font-size:17px;">Pass/Fail</th>
 		</tr>
 			
@@ -167,17 +188,17 @@
 			}
 			?>
 				<tr class="<?php echo $class ?>">
-					<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
-					<td style="vertical-align: middle;"><select class="form-control" name="reference[]" disabled="disabled"><?php echo $this->dropdownSelection($possibleResults,$result['reference_result'],true); ?></select></td>
-					<td rowspan="2" style="vertical-align: middle;text-align: center;"><h1>-</h1></td>
-				</tr>
-				<tr class="<?php echo $class ?>">
-					<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
+					<td style="vertical-align: middle;"><?php echo $result['sample_label']; ?></td>
+					<td style="vertical-align: middle;">
+						<select class="form-control" name="reference[]" disabled="disabled"><?php echo $this->dropdownSelection($possibleResults,$result['reference_result'],true); ?></select>
+					</td>
 					<td style="vertical-align: middle;">
 						<select class="form-control" name="reported[]"><?php echo $this->dropdownSelection($possibleResults,$result['reported_result'],true); ?></select>
 						<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
 					</td>
+					<td style="vertical-align: middle;text-align: center;"><h1>-</h1></td>
 				</tr>
+				
 			<?php
 			$counter++;
 		}

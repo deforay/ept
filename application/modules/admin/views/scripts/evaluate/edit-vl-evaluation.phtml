@@ -129,10 +129,10 @@ $dtFormat=  $genderHelper->getDateFormat();
 			<caption><legend>Controls</legend></caption>
 				<tr>
 					<th style="text-align: center;font-size:17px;">Control</th>
-					<th style="text-align: center;font-size:17px;">Results</th>
 					<th style="text-align: center;font-size:17px;">Lower Limit</th>
 					<th style="text-align: center;font-size:17px;">Higer Limit</th>
-					<th style="text-align: center;font-size:17px;">Sample Pass/Fail</th>
+					<th style="text-align: center;font-size:17px;">Response</th>
+					<th style="text-align: center;font-size:17px;">Pass/Fail</th>
 				</tr>
 					
 				<?php
@@ -146,35 +146,35 @@ $dtFormat=  $genderHelper->getDateFormat();
 					?>
 
 				<tr class="<?php echo $class ?>">
-					<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
-					<td style="vertical-align: middle;text-align:center;">
+					<td style="vertical-align: middle;"><?php echo $result['sample_label']; ?></td>
+					
+					<td style="vertical-align: middle;text-align: center;">
 						<?php
 							if(isset($this->vlRange[$attributes['vl_assay']])){
-								echo "<strong>Min</strong> : ".$this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . "<strong>Max</strong> : ".$this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+								$this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
 							}else{
 								echo "Not enough responses for this VL Assay";
 							}
 						?>
 					</td>
-					<td rowspan="2" style="vertical-align: middle;text-align: center;">
-						-
+					<td style="vertical-align: middle;text-align: center;">
+						<?php
+							if(isset($this->vlRange[$attributes['vl_assay']])){
+								echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+							}else{
+								echo "Not enough responses for this VL Assay";
+							}
+						?>
 					</td>
-
-					<td rowspan="2" style="vertical-align: middle;text-align: center;">
-						-
+					<td style="vertical-align: middle;text-align:center;">
+						<input type="text" name="reported[]" value="<?php echo $result['reported_viral_load']; ?>" class="form-control" />
+								<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
 					</td>
-
-					<td rowspan="2" style="vertical-align: middle;text-align: center;">
+					<td style="vertical-align: middle;text-align: center;">
 						-
 					</td>
 				</tr>
-						<tr class="<?php echo $class ?>">
-							<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
-							<td style="vertical-align: middle;">
-								<input type="text" name="reported[]" value="<?php echo $result['reported_viral_load']; ?>" class="form-control" />
-								<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
-							</td>
-						</tr>
+						
 					<?php
 					$counter++;
 				}
@@ -208,27 +208,33 @@ $dtFormat=  $genderHelper->getDateFormat();
 			}
 			?>
 				<tr class="<?php echo $class ?>">
-					<td style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reference)"; ?></td>
-					<td style="vertical-align: middle;text-align:center;">
+					<td style="vertical-align: middle;"><?php echo $result['sample_label']; ?></td>
+
+					<td style="vertical-align: middle;text-align: center;">
 						<?php
 							if(isset($this->vlRange[$attributes['vl_assay']])){
-								echo "<strong>Min</strong> : ".$this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . "<strong>Max</strong> : ".$this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+								echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
 							}else{
 								echo "Not enough responses for this VL Assay";
 							}
 						?>
 					</td>
-					<td rowspan="2" style="vertical-align: middle;text-align: center;"> - </td>
-					<td rowspan="2" style="vertical-align: middle;text-align: center;"> - </td>
-					<td rowspan="2" style="vertical-align: middle;text-align: center;"> - </td>
-				</tr>
-				<tr class="<?php echo $class ?>">
-					<th style="vertical-align: middle;"><?php echo $result['sample_label'] . " (Reported)"; ?></th>
+					<td style="vertical-align: middle;text-align: center;">
+						<?php
+							if(isset($this->vlRange[$attributes['vl_assay']])){
+								echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+							}else{
+								echo "Not enough responses for this VL Assay";
+							}
+						?>
+					</td>					
 					<td style="vertical-align: middle;text-align:center;">
 						<input type="text" name="reported[]" value="<?php echo $result['reported_viral_load']; ?>" class="form-control" />
 						<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
 					</td>
+					<td style="vertical-align: middle;text-align: center;"> - </td>
 				</tr>
+				
 			<?php
 			$counter++;
 		}

@@ -14,6 +14,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
     public function getShipmentData($sId, $pId) {
 
         return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('s' => $this->_name))
+								->join(array('sl'=>'scheme_list'),'s.scheme_type=sl.scheme_id',array('scheme_name'))
                                 ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
                                 ->where("s.shipment_id = ?", $sId)
                                 ->where("sp.participant_id = ?", $pId));
@@ -399,14 +400,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 			$delete='';
 			if($isEditable){
 				if($aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
-					$delete='<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" class="text-danger" style="text-decoration:underline;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
+					$delete='<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
 				}else{
 					$buttonText = "Enter Response";
-					$download='<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="text-default" style="text-decoration:underline;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+					$download='<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
 				}
 			}
             
-			$row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="text-success" style="text-decoration:underline;"> <i class="icon icon-edit"></i>  '.$buttonText.' </a>'
+			$row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-success" style="margin:3px 0;"> <i class="icon icon-edit"></i>  '.$buttonText.' </a>'
 					.$delete
 					.$download;
             
@@ -598,14 +599,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 			$delete='';
 			if($isEditable){
 				if($aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
-					$delete='<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" class="text-danger" style="text-decoration:underline;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
+					$delete='<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
 				}else{
 					$buttonText = "Enter Response";
-					$download='<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="text-default" style="text-decoration:underline;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+					$download='<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
 				}
 			}
             
-			$row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="text-success" style="text-decoration:underline;"> <i class="icon icon-edit"></i>  '.$buttonText.' </a>'
+			$row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-success"  style="margin:3px 0;"> <i class="icon icon-edit"></i>  '.$buttonText.' </a>'
 					.$delete
 					.$download;			
 
@@ -796,14 +797,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 			$delete='';
 			if($isEditable){
 				if($aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
-					$delete='<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" class="text-danger" style="text-decoration:underline;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
+					$delete='<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
 				}else{
 					$buttonText = "Enter Response";
-					$download='<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="text-default" style="text-decoration:underline;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+					$download='<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
 				}
 			}
             
-			$row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="text-success" style="text-decoration:underline;"> <i class="icon icon-edit"></i>  '.$buttonText.' </a>'
+			$row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-success"  style="margin:3px 0;"> <i class="icon icon-edit"></i>  '.$buttonText.' </a>'
 					.$delete
 					.$download;
 					
