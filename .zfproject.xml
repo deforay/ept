@@ -207,6 +207,7 @@
               <actionMethod actionName="updateShipmentComment"/>
               <actionMethod actionName="updateShipmentStatus"/>
               <actionMethod actionName="deleteDtsResponse"/>
+              <actionMethod actionName="vlRange"/>
             </controllerFile>
             <controllerFile controllerName="ContactUs">
               <actionMethod actionName="index"/>
@@ -440,6 +441,9 @@
               </viewControllerScriptsDirectory>
               <viewControllerScriptsDirectory forControllerName="Shipment">
                 <viewScriptFile forActionName="responseSwitch"/>
+              </viewControllerScriptsDirectory>
+              <viewControllerScriptsDirectory forControllerName="Evaluate">
+                <viewScriptFile forActionName="vlRange"/>
               </viewControllerScriptsDirectory>
             </viewScriptsDirectory>
             <viewHelpersDirectory/>

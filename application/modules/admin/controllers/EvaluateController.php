@@ -11,6 +11,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     ->addActionContext('update-shipment-comment', 'html')
                     ->addActionContext('update-shipment-status', 'html')
                     ->addActionContext('delete-dts-response', 'html')
+                    ->addActionContext('vl-range', 'html')
                     ->initContext();        
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -199,20 +200,18 @@ class Admin_EvaluateController extends Zend_Controller_Action
         }
     }
 
+    public function vlRangeAction()
+    {
+        if($this->_hasParam('sid')){
+            if ($this->getRequest()->isPost()) {
+                $shipmentId = (int)base64_decode($this->_getParam('sid'));
+				$schemeService = new Application_Service_Schemes();
+				$this->view->result = $schemeService->getVlRangeInformation($shipmentId);
+            }
+        }else{
+            $this->view->message = "Unable to fetch Viral Load Range for this Shipment.";
+        }// action body
+    }
+
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

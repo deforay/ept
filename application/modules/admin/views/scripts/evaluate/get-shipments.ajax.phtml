@@ -1,12 +1,10 @@
 <?php
-//&& $this->shipments[0]["shipment_test_report_date"]!='' && $this->shipments[0]["shipment_test_report_date"]!='0000-00-00 00:00:00' &&  $this->shipments[0]["shipment_test_report_date"]!=null && $this->shipments[0]["shipment_test_report_date"]!='NULL'
 //Zend_Debug::dump($this->shipments);die;
 if($this->shipments == false && count($this->shipments) <= 0){
 	echo "<br/><br/><br/><h4 style='text-align:center;'>Unable fetch shipments. Please try again later or contact system admin for help</h4>";
 }else{
 	?>
 	
-  
     <div class="modal-dialog" style="width:100%;">
         <div class="modal-header">
           <h4 class="modal-title">Shipments Under PT Survey <?php echo $this->shipments[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipments[0]['distribution_date']); ?>)</h4>
@@ -42,15 +40,25 @@ if($this->shipments == false && count($this->shipments) <= 0){
 					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
 					<td style="text-align: center;"><?php echo ucfirst($shipment['shipment_status']) ?></td>
 					<td style="text-align: center;">
-						<?php //if (isset($shipment["reported_count"]) && $shipment["reported_count"] > 0 && $shipment["responseDate"]!=null && $shipment["responseDate"]!='NULL' && $shipment["responseDate"]!='' ) { ?>
-						<?php if (isset($shipment["reported_count"]) && $shipment["reported_count"] > 0) { ?>
-						<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
-                                                <?php if($nonResponse > 0){?>
-                                                <a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> Not Responded Participants</span></a>
-						<?php }
-                                                }else { ?>
-						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
-						<?php }?>
+						<?php if (isset($shipment["reported_count"]) && $shipment["reported_count"] > 0) {
+								if($shipment['scheme_type'] != 'vl') {
+							?>
+								<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
+								<?php
+								}else{
+									?>
+								<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
+								<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> VL Range</span></a>	
+									<?php
+								}
+								
+								
+								if($nonResponse > 0){ ?>
+										<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> Not Responded Participants</span></a>
+								<?php }
+								} else { ?>
+									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
+						<?php } ?>
 					</td>
 				</tr>
 				<?php
@@ -68,7 +76,19 @@ if($this->shipments == false && count($this->shipments) <= 0){
 		  </table>
         </div>
     </div><!-- /.modal-dialog -->
-	
-	
 	<?php
 }
+?>
+<div id="vlRangeDiv">
+	
+</div>
+<script>
+	function getVLReferenceScores(sid){
+		$.blockUI();
+			$.post("<?php echo $this->url(array('module'=>'admin','controller' =>'evaluate', 'action' => 'vl-range'), 'default', true); ?>", { sid: sid, format: "html" },
+			function (data) {
+				$("#vlRangeDiv").html(data);
+				$.unblockUI();
+			});	
+	}
+</script>

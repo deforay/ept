@@ -262,6 +262,27 @@ class Application_Service_Schemes {
         return $response;
     }
 
+    public function getVlRangeInformation($sId) {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('sample_id', 'vl_assay', 'low_limit', 'high_limit', 'sd', 'mean'))
+                            ->join(array('s'=>'shipment'),'s.shipment_id = rvc.shipment_id')
+                            ->join(array('ref'=>'reference_result_vl'),'s.shipment_id = ref.shipment_id')
+                            ->join(array('a'=>'r_vl_assay'),'a.id = rvc.vl_assay',array('assay_name' => 'name'))
+                            ->where('s.shipment_id = ?', $sId);
+        $res = $db->fetchAll($sql);
+        $response = array();
+        foreach ($res as $row) {
+            $response[$row['vl_assay']][$row['sample_id']]['sample_label'] = $row['sample_label'];
+            $response[$row['vl_assay']][$row['sample_id']]['assay_name'] = $row['assay_name'];
+            $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
+            $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];
+            $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['sd'];
+            $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['mean'];
+        }
+
+        return $response;
+    }
+
     public function setVlRange($sId) {
 
 
@@ -323,7 +344,7 @@ class Application_Service_Schemes {
                     //}
 
                     $data = array('shipment_id' => $sId,
-                        'vl_assay' => $vlAssay['id'],
+                        'vl_assay' => $vlAssayId,
                         'sample_id' => $sample,
                         'q1' => $q1,
                         'q3' => $q3,

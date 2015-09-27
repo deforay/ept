@@ -1,0 +1,43 @@
+<style>
+  td{
+		  vertical-align: middle !important;
+  }
+</style>
+<form class="form">
+<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+    <thead>
+        <tr>
+            <th style="text-align: center;">VL Assay</th>
+            <th style="text-align: center;">Sample ID</th>
+            <th style="text-align: center;">Low Limit</th>
+            <th style="text-align: center;">High Limit</th>
+            <th style="text-align: center;">Low Limit</th>
+            <th style="text-align: center;">High Limit</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($this->result as $assay => $result) {
+                foreach($result as $sampleId => $row){
+            ?>
+            <tr>
+                <td><?php echo $row['assay_name']; ?></td>
+                <td><?php echo $row['sample_label']; ?></td>
+                <td><input type="text" class="form-control" name="low[]" style="width:100px;margin:0 auto;"></td>
+                <td><input type="text" class="form-control" name="high[]" style="width:100px;margin:0 auto;"></td>
+                <td><?php echo $row['low']; ?></td>
+                <td><?php echo $row['high']; ?></td>
+                
+            </tr>
+            <?php
+            }
+         } ?>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="6" style="text-align: center;">
+                <input type="button" value="Update" class="btn btn-primary" onclick="alert('Functionality yet to be implemented');">
+            </td>
+        </tr>
+    </tfoot>
+</table>
+</form>
