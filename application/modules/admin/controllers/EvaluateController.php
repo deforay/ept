@@ -23,6 +23,10 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $evalService = new Application_Service_Evaluation();
             $evalService->getAllDistributions($params);
         }
+		if($this->_hasParam('scheme') && $this->_hasParam('showcalc')){
+            $this->view->showcalc = ($this->_getParam('showcalc'));
+            $this->view->scheme = $this->_getParam('scheme');
+		}
     }
 
     public function getShipmentsAction()
@@ -202,16 +206,39 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function vlRangeAction()
     {
-        if($this->_hasParam('sid')){
-            if ($this->getRequest()->isPost()) {
-                $shipmentId = (int)base64_decode($this->_getParam('sid'));
+		if($this->_hasParam('manualLow')){
+			$params = $this->getRequest()->getPost();
+			$schemeService = new Application_Service_Schemes();
+			$schemeService->updateVlInformation($params);
+			$shipmentId = (int)base64_decode($this->_getParam('sid'));
+			$this->_redirect("/admin/evaluate/index/scheme/vl/showcalc/".base64_encode($shipmentId));
+		}
+		if($this->_hasParam('sid')){
+			if ($this->getRequest()->isPost()) {
+				$shipmentId = (int)base64_decode($this->_getParam('sid'));
 				$schemeService = new Application_Service_Schemes();
 				$this->view->result = $schemeService->getVlRangeInformation($shipmentId);
-            }
-        }else{
-            $this->view->message = "Unable to fetch Viral Load Range for this Shipment.";
-        }// action body
+				$this->view->shipmentId = $shipmentId;
+			}
+		}else{
+			$this->view->message = "Unable to fetch Viral Load Range for this Shipment.";
+		}// action body
+		
+    }
+
+    public function recalculateVlRangeAction()
+    {
+        if($this->_hasParam('sid')){
+			
+			$shipmentId = (int)($this->_getParam('sid'));
+			$schemeService = new Application_Service_Schemes();
+			$this->view->result = $schemeService->setVlRange($shipmentId);
+			$this->_redirect("/admin/evaluate/index/scheme/vl/showcalc/".base64_encode($shipmentId));
+		}else{
+			$this->_redirect("/admin/evaluate/");
+		}
     }
 
 
 }
+

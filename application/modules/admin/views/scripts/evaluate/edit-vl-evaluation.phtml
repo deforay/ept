@@ -151,7 +151,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 					<td style="vertical-align: middle;text-align: center;">
 						<?php
 							if(isset($this->vlRange[$attributes['vl_assay']])){
-								$this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
+								echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
 							}else{
 								echo "Not enough responses for this VL Assay";
 							}

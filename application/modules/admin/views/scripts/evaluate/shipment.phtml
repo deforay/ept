@@ -157,13 +157,13 @@
 					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
 						<a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
 						<a class="btn btn-primary btn-xs" href="/admin/evaluate/view/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-search"></i> View</span></a>&nbsp;
-                                                <?php
-                                                if($shipment['shipment_status']!='finalized' && $shipment['shipment_test_report_date']!='' && $shipment['shipment_test_report_date']!='0000-00-00 00:00:00'){
-                                                ?>
+					<?php
+					if($shipment['shipment_status']!='finalized' && $shipment['shipment_test_report_date']!='' && $shipment['shipment_test_report_date']!='0000-00-00 00:00:00'){
+					?>
 						<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('<?php echo $shipment['scheme_type']; ?>','<?php echo base64_encode($shipment['map_id']); ?>')"><span><i class="icon-remove"></i> Delete</span></a>
-                                                <?php
-                                                }
-                                                 ?>
+					<?php
+					}
+					 ?>
 					</td>
 				</tr>
 				<?php

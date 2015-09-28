@@ -131,7 +131,7 @@ class Application_Service_Evaluation {
          * Output
          */
         $output = array(
-            "sEcho" => intval($parameters['sEcho']),
+            "sEcho" => isset($parameters['sEcho']) ? intval($parameters['sEcho']) : 0,
             "iTotalRecords" => $iTotal,
             "iTotalDisplayRecords" => $iFilteredTotal,
             "aaData" => array()
@@ -471,113 +471,9 @@ class Application_Service_Evaluation {
             }
             $db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
         } else if ($shipmentResult[0]['scheme_type'] == 'dts') {
-			$shipmentResult = $this->evaluateDts($shipmentResult,$shipmentId);
+			$shipmentResult = $this->evaluateDtsHivSerology($shipmentResult,$shipmentId);
         } else if ($shipmentResult[0]['scheme_type'] == 'vl') {
-            $counter = 0;
-            $maxScore = 0;
-            $vlRange = $schemeService->getVlRange($shipmentId);
-            if ($reEvaluate || $vlRange == null || $vlRange == "" || count($vlRange) == 0) {
-                $schemeService->setVlRange($shipmentId);
-                $vlRange = $schemeService->getVlRange($shipmentId);
-            }
-
-            foreach ($shipmentResult as $shipment) {
-                $createdOnUser = explode(" ", $shipment['created_on_user']);
-                if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
-
-                    $createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
-                } else {
-                    $datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
-                    $createdOn = new Zend_Date($datearray);
-                }
-
-                $lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
-                //Zend_Debug::dump($createdOn->isEarlier($lastDate));die;
-                if ($createdOn->isEarlier($lastDate)) {
-
-                    $results = $schemeService->getVlSamples($shipmentId, $shipment['participant_id']);
-                    $totalScore = 0;
-                    $maxScore = 0;
-                    $mandatoryResult = "";
-                    $scoreResult = "";
-                    $failureReason = array();
-
-                    $attributes = json_decode($shipment['attributes'], true);
-
-                    foreach ($results as $result) {
-                        $responseAssay = json_decode($result['attributes'], true);
-                        $responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : "";
-                        if (isset($vlRange[$responseAssay])) {
-                            // matching reported and low/high limits
-                            if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
-                                if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
-                                    $totalScore += $result['sample_score'];
-                                } else {
-                                    if ($result['sample_score'] > 0) {
-                                        $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
-                                    }
-                                }
-                            }
-                        } else {
-                            $totalScore = "N/A";
-                        }
-
-                        $maxScore += $result['sample_score'];
-
-                        // checking if mandatory fields were entered and were entered right
-                        if ($result['mandatory'] == 1) {
-                            if ((!isset($result['reported_viral_load']) || $result['reported_viral_load'] == "" || $result['reported_viral_load'] == null)) {
-                                $mandatoryResult = 'Fail';
-                                $failureReason[]['warning'] = "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported";
-                            }
-                            //else if(($result['reported_viral_load'] != $result['reported_viral_load'])){
-                            //	$mandatoryResult = 'Fail';
-                            //	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
-                            //}
-                        }
-                    }
-
-                    // checking if total score and maximum scores are the same
-                    if ($totalScore == 'N/A') {
-                        $failureReason[]['warning'] = "Could not determine score. Not enough responses found in the chosen VL Assay.";
-                        $scoreResult = 'Fail';
-                    } else if ($totalScore != $maxScore) {
-                        $scoreResult = 'Fail';
-                        $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
-                    } else {
-                        $scoreResult = 'Pass';
-                    }
-
-
-                    // if any of the results have failed, then the final result is fail
-                    if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
-                        $finalResult = 2;
-                    } else {
-                        $finalResult = 1;
-                    }
-                    $shipmentResult[$counter]['shipment_score'] = $totalScore;
-                    $shipmentResult[$counter]['max_score'] = $maxScore;
-
-                    $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
-
-                    $shipmentResult[$counter]['display_result'] = $fRes[0];
-                    $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
-
-
-
-                    // let us update the total score in DB
-                    if ($totalScore == 'N/A') {
-                        $totalScore = 0;
-                    }
-                    $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
-                    $counter++;
-                } else {
-                    $failureReason = array('warning' => "Response was submitted after the last response date.");
-
-                    $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
-                }
-            }
-            $db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
+            $shipmentResult = $this->evaluateDtsViralLoad($shipmentResult,$shipmentId, $reEvaluate);
         }
 
         return $shipmentResult;
@@ -761,7 +657,7 @@ class Application_Service_Evaluation {
 				"participant_supervisor" => $params['participantSupervisor'],
 				"user_comment" => $params['userComments'],
 				"updated_by_admin" => $admin,
-			   "updated_on_admin" => new Zend_Db_Expr('now()')
+			    "updated_on_admin" => new Zend_Db_Expr('now()')
             );
 			
 			if(isset($params['customField1']) && trim($params['customField1']) != ""){
@@ -772,7 +668,7 @@ class Application_Service_Evaluation {
 				$mapData['custom_field_2'] = $params['customField2'];
 			}				
 
-            $db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);				
+            $db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
 			
             for ($i = 0; $i < $size; $i++) {
                 $db->update('response_result_eid', array('reported_result' => $params['reported'][$i], 'updated_by' => $admin, 'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
@@ -1355,7 +1251,121 @@ class Application_Service_Evaluation {
     }
 	
 	
-	public function evaluateDts($shipmentResult,$shipmentId){
+	public function evaluateDtsViralLoad($shipmentResult,$shipmentId,$reEvaluate){
+		$counter = 0;
+		$maxScore = 0;
+		$scoreHolder = array();
+		$schemeService = new Application_Service_Schemes();
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+	
+		$vlRange = $schemeService->getVlRange($shipmentId);
+		if ($reEvaluate || $vlRange == null || $vlRange == "" || count($vlRange) == 0) {
+			$schemeService->setVlRange($shipmentId);
+			$vlRange = $schemeService->getVlRange($shipmentId);
+		}
+
+		foreach ($shipmentResult as $shipment) {
+			$createdOnUser = explode(" ", $shipment['created_on_user']);
+			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
+
+				$createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
+			} else {
+				$datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
+				$createdOn = new Zend_Date($datearray);
+			}
+
+			$lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
+			//Zend_Debug::dump($createdOn->isEarlier($lastDate));die;
+			if ($createdOn->compare($lastDate,Zend_date::DATES) <= 0) {
+
+				$results = $schemeService->getVlSamples($shipmentId, $shipment['participant_id']);
+				$totalScore = 0;
+				$maxScore = 0;
+				$mandatoryResult = "";
+				$scoreResult = "";
+				$failureReason = array();
+
+				$attributes = json_decode($shipment['attributes'], true);
+
+				foreach ($results as $result) {
+					$responseAssay = json_decode($result['attributes'], true);
+					$responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : "";
+					if (isset($vlRange[$responseAssay])) {
+						// matching reported and low/high limits
+						if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
+							if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
+								$totalScore += $result['sample_score'];
+							} else {
+								if ($result['sample_score'] > 0) {
+									$failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+								}
+							}
+						}
+					} else {
+						$totalScore = "N/A";
+					}
+
+					$maxScore += $result['sample_score'];
+
+					// checking if mandatory fields were entered and were entered right
+					if ($result['mandatory'] == 1) {
+						if ((!isset($result['reported_viral_load']) || $result['reported_viral_load'] == "" || $result['reported_viral_load'] == null)) {
+							$mandatoryResult = 'Fail';
+							$failureReason[]['warning'] = "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported";
+						}
+						//else if(($result['reported_viral_load'] != $result['reported_viral_load'])){
+						//	$mandatoryResult = 'Fail';
+						//	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+						//}
+					}
+				}
+
+				// checking if total score and maximum scores are the same
+				if ($totalScore == 'N/A') {
+					$failureReason[]['warning'] = "Could not determine score. Not enough responses found in the chosen VL Assay.";
+					$scoreResult = 'Fail';
+				} else if ($totalScore != $maxScore) {
+					$scoreResult = 'Fail';
+					$failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
+				} else {
+					$scoreResult = 'Pass';
+				}
+
+
+				// if any of the results have failed, then the final result is fail
+				if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
+					$finalResult = 2;
+				} else {
+					$finalResult = 1;
+				}
+				$shipmentResult[$counter]['shipment_score'] = $totalScore;
+				$shipmentResult[$counter]['max_score'] = $maxScore;
+
+				$fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
+
+				$shipmentResult[$counter]['display_result'] = $fRes[0];
+				$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
+
+				// let us update the total score in DB
+				if ($totalScore == 'N/A') {
+					$totalScore = 0;
+				}
+				$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
+				$counter++;
+			} else {
+				$failureReason = array('warning' => "Response was submitted after the last response date.");
+
+				$db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
+			}
+		}
+		$db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
+		return $shipmentResult;
+	}
+	
+	public function evaluateDtsHivSerology($shipmentResult,$shipmentId){
 
 		$counter = 0;
 		$maxScore = 0;

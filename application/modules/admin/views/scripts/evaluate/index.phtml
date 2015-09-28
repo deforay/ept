@@ -79,7 +79,6 @@
     });
 
 
-
     function getShipments(did) {
         $.blockUI();
         //oTable.fnStandingRedraw();
@@ -91,7 +90,13 @@
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'get-shipments')); ?>", {did: did, format: "html"},
         function (data) {
             $("#shipments").html(data);
-            //
+            <?php
+            if(isset($this->scheme) && isset($this->showcalc)  && $this->scheme == 'vl'){
+                ?>
+                getVLReferenceScores('<?php echo ($this->showcalc); ?>');
+                <?php
+            }
+            ?>
             $.unblockUI();
         });
     }

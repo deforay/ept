@@ -2115,6 +2115,13 @@ ALTER TABLE `reference_vl_methods`
  
  ALTER TABLE `participant` ADD `contact_name` VARCHAR(255) NULL DEFAULT NULL AFTER `phone`;
  
- -- Amit 23Sep 2015
+ -- Amit 23 Sep 2015
 
 ALTER TABLE `shipment` ADD `number_of_controls` INT NOT NULL AFTER `number_of_samples`;
+
+-- Amit 28 Sep 2015
+
+ALTER TABLE `reference_vl_calculation` ADD `calculated_on` DATETIME NULL DEFAULT NULL AFTER `high_limit`, ADD `manual_low_limit` DOUBLE(10,2) NOT NULL DEFAULT '0' AFTER `calculated_on`, ADD `manual_high_limit` DOUBLE(10,2) NOT NULL DEFAULT '0' AFTER `manual_low_limit`, ADD `updated_on` DATETIME NULL DEFAULT NULL AFTER `manual_high_limit`, ADD `updated_by` INT NULL DEFAULT NULL AFTER `updated_on`;
+
+ALTER TABLE `reference_vl_calculation` ADD PRIMARY KEY( `shipment_id`, `sample_id`, `vl_assay`);
+ALTER TABLE `reference_vl_calculation` ADD `use_range` VARCHAR(255) NOT NULL DEFAULT 'calculated' ;

@@ -3,9 +3,43 @@
 		  vertical-align: middle !important;
   }
 </style>
-<form class="form">
+<?php
+$updatedOn = $calculatedOn = "";
+$useRange = 'calculated';
+if(isset($this->result['updated_on']) && $this->result['updated_on'] != ""){
+  $updatedOnArray = explode(" ",$this->result['updated_on']);
+  $updatedOn = "Updated manually on<br>".$this->dateFormat($updatedOnArray[0]). " ".$updatedOnArray[1];
+}
+if(isset($this->result['calculated_on']) && $this->result['calculated_on'] != ""){
+  $calculatedOnArray = explode(" ",$this->result['calculated_on']);
+  $calculatedOn = "Calculated automatically on<br>".$this->dateFormat($calculatedOnArray[0]). " ".$calculatedOnArray[1];
+}
+if(isset($this->result['use_range']) && $this->result['use_range'] != ""){
+  $useRange = $this->result['use_range'];
+}
+
+
+
+unset($this->result['updated_on']);
+unset($this->result['calculated_on']);
+unset($this->result['use_range']);
+
+?>
+<form class="form" method="post" action="/admin/evaluate/vl-range">
 <table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
     <thead>
+	  <tr>
+		<th></th>
+		<th></th>
+		<th style="text-align: center;" colspan="2"><?php echo $updatedOn; ?></th>
+		<th style="text-align: center;" colspan="2"><?php echo $calculatedOn; ?></th>
+	  </tr>
+	  <tr>
+		<th></th>
+		<th></th>
+		<th style="text-align: center;" colspan="2"><input type="radio" name="useRange" value="manual" <?php echo ($useRange=='manual' ? " checked='checked' " : ""); ?> /> Use Manually Updated VL Range</th>
+		<th style="text-align: center;" colspan="2"><input type="radio" name="useRange" value="calculated" <?php echo ($useRange=='calculated' ? " checked='checked' " : ""); ?>  /> Use Calculated VL Range</th>
+	  </tr>
         <tr>
             <th style="text-align: center;">VL Assay</th>
             <th style="text-align: center;">Sample ID</th>
@@ -16,28 +50,52 @@
         </tr>
     </thead>
     <tbody>
-        <?php foreach($this->result as $assay => $result) {
+        <?php
+			$counter = 0;
+
+			foreach($this->result as $assay => $result) {
                 foreach($result as $sampleId => $row){
+				 // Zend_Debug::dump($row);continue;
             ?>
             <tr>
                 <td><?php echo $row['assay_name']; ?></td>
                 <td><?php echo $row['sample_label']; ?></td>
-                <td><input type="text" class="form-control" name="low[]" style="width:100px;margin:0 auto;"></td>
-                <td><input type="text" class="form-control" name="high[]" style="width:100px;margin:0 auto;"></td>
+                <td>
+				  <input type="text" class="form-control" name="manualLow[]" value="<?php echo isset($row['manual_low_limit']) ? $row['manual_low_limit'] : ""; ?>" style="width:100px;margin:0 auto;">
+				  <input type="hidden" class="form-control" name="sampleId[]" value="<?php echo $row['sample_id']; ?>" style="width:100px;margin:0 auto;">
+				  <input type="hidden" class="form-control" name="assayId[]" value="<?php echo $row['vl_assay']; ?>" style="width:100px;margin:0 auto;">
+				</td>
+                <td>
+				  <input type="text" class="form-control" name="manualHigh[]" value="<?php echo isset($row['manual_high_limit']) ? $row['manual_high_limit'] : ""; ?>" style="width:100px;margin:0 auto;">
+				</td>
                 <td><?php echo $row['low']; ?></td>
                 <td><?php echo $row['high']; ?></td>
-                
             </tr>
             <?php
             }
+			$counter++;
          } ?>
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="6" style="text-align: center;">
-                <input type="button" value="Update" class="btn btn-primary" onclick="alert('Functionality yet to be implemented');">
-            </td>
+		  <td></td>
+		  <td></td>
+          <td colspan="2" style="text-align: center;">
+				<input type="hidden" name="sid" value="<?php echo base64_encode($this->shipmentId); ?>">
+                <input type="submit" value="Update" class="btn btn-primary">
+				
+          </td>
+		  <td colspan="2" style="text-align: center;">
+			<input type="button" value="Re-Calculate" class="btn btn-danger" onclick="recalculate(<?php echo (int)$this->shipmentId; ?>);">
+		  </td>
+			
         </tr>
     </tfoot>
 </table>
 </form>
+
+<script>
+  function recalculate(sid) {
+	document.location.href = "/admin/evaluate/recalculate-vl-range/sid/"+sid;
+  }
+</script>
