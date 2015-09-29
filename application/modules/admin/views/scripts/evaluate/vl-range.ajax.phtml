@@ -26,50 +26,60 @@ unset($this->result['use_range']);
 
 ?>
 <form class="form" method="post" action="/admin/evaluate/vl-range">
-<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+<table class="table table-bordered table-striped table-hover" style="width:80%;margin:0 auto;">
     <thead>
 	  <tr>
 		<th></th>
 		<th></th>
 		<th style="text-align: center;" colspan="2"><?php echo $updatedOn; ?></th>
 		<th style="text-align: center;" colspan="2"><?php echo $calculatedOn; ?></th>
-	  </tr>
-	  <tr>
 		<th></th>
-		<th></th>
-		<th style="text-align: center;" colspan="2"><input type="radio" name="useRange" value="manual" <?php echo ($useRange=='manual' ? " checked='checked' " : ""); ?> /> Use Manually Updated VL Range</th>
-		<th style="text-align: center;" colspan="2"><input type="radio" name="useRange" value="calculated" <?php echo ($useRange=='calculated' ? " checked='checked' " : ""); ?>  /> Use Calculated VL Range</th>
 	  </tr>
         <tr>
-            <th style="text-align: center;">VL Assay</th>
             <th style="text-align: center;">Sample ID</th>
+            <th style="text-align: center;">VL Assay</th>
             <th style="text-align: center;">Low Limit</th>
             <th style="text-align: center;">High Limit</th>
             <th style="text-align: center;">Low Limit</th>
             <th style="text-align: center;">High Limit</th>
+            <th style="text-align: center;">Use Range</th>
+			
         </tr>
     </thead>
     <tbody>
         <?php
 			$counter = 0;
 
-			foreach($this->result as $assay => $result) {
-                foreach($result as $sampleId => $row){
-				 // Zend_Debug::dump($row);continue;
+			foreach($this->result as $sampleId => $result) {
+			  $numberOfAssays = (count($result));
+			  $sampleAddedToTableAlready = array();
+                foreach($result as  $assay => $row){
+
             ?>
             <tr>
+				<?php if(!in_array($sampleId,$sampleAddedToTableAlready)){
+				  $sampleAddedToTableAlready[] = $sampleId;
+				  ?>
+				  <td style="text-align: center;" rowspan="<?php echo $numberOfAssays; ?>"><?php echo $row['sample_label']; ?></td>
+				<?php } ?>
                 <td><?php echo $row['assay_name']; ?></td>
-                <td><?php echo $row['sample_label']; ?></td>
+                
                 <td>
-				  <input type="text" class="form-control" name="manualLow[]" value="<?php echo isset($row['manual_low_limit']) ? $row['manual_low_limit'] : ""; ?>" style="width:100px;margin:0 auto;">
-				  <input type="hidden" class="form-control" name="sampleId[]" value="<?php echo $row['sample_id']; ?>" style="width:100px;margin:0 auto;">
-				  <input type="hidden" class="form-control" name="assayId[]" value="<?php echo $row['vl_assay']; ?>" style="width:100px;margin:0 auto;">
+				  <input type="text" class="form-control" name="manualLow[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo isset($row['manual_low_limit']) ? $row['manual_low_limit'] : ""; ?>" style="width:100px;margin:0 auto;">
+				  <input type="hidden" class="form-control" name="sampleId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['sample_id']; ?>" style="width:100px;margin:0 auto;">
+				  <input type="hidden" class="form-control" name="assayId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['vl_assay']; ?>" style="width:100px;margin:0 auto;">
 				</td>
                 <td>
-				  <input type="text" class="form-control" name="manualHigh[]" value="<?php echo isset($row['manual_high_limit']) ? $row['manual_high_limit'] : ""; ?>" style="width:100px;margin:0 auto;">
+				  <input type="text" class="form-control" name="manualHigh[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo isset($row['manual_high_limit']) ? $row['manual_high_limit'] : ""; ?>" style="width:100px;margin:0 auto;">
 				</td>
                 <td><?php echo $row['low']; ?></td>
                 <td><?php echo $row['high']; ?></td>
+				<td>
+				  <select name="useRange[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" class="form-control">
+					<option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>>Calculated</option>
+					<option value="manual" <?php echo ($row['use_range'] == 'manual') ? " selected='selected' " : "" ?>>Manual</option>
+				  </select>
+				</td>
             </tr>
             <?php
             }
@@ -88,7 +98,7 @@ unset($this->result['use_range']);
 		  <td colspan="2" style="text-align: center;">
 			<input type="button" value="Re-Calculate" class="btn btn-danger" onclick="recalculate(<?php echo (int)$this->shipmentId; ?>);">
 		  </td>
-			
+		  <td></td>
         </tr>
     </tfoot>
 </table>

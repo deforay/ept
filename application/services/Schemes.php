@@ -269,7 +269,6 @@ class Application_Service_Schemes {
                     $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];                    
             }
         }
-
         return $response;
     }
 
@@ -280,40 +279,53 @@ class Application_Service_Schemes {
                             ->join(array('a'=>'r_vl_assay'),'a.id = rvc.vl_assay',array('assay_name' => 'name'))
                             ->where('rvc.shipment_id = ?', $sId);
         $res = $db->fetchAll($sql);
+        
+        
         $response = array();
         
         foreach ($res as $row) {
-            $response[$row['vl_assay']][$row['sample_id']]['sample_label'] = $row['sample_label'];
-            $response[$row['vl_assay']][$row['sample_id']]['sample_id'] = $row['sample_id'];
-            $response[$row['vl_assay']][$row['sample_id']]['vl_assay'] = $row['vl_assay'];
-            $response[$row['vl_assay']][$row['sample_id']]['assay_name'] = $row['assay_name'];
-            $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
-            $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];
-            $response[$row['vl_assay']][$row['sample_id']]['manual_low_limit'] = $row['manual_low_limit'];
-            $response[$row['vl_assay']][$row['sample_id']]['manual_high_limit'] = $row['manual_high_limit'];
+            
+            //$response[$row['vl_assay']][$row['sample_id']]['sample_label'] = $row['sample_label'];
+            //$response[$row['vl_assay']][$row['sample_id']]['sample_id'] = $row['sample_id'];
+            //$response[$row['vl_assay']][$row['sample_id']]['vl_assay'] = $row['vl_assay'];
+            //$response[$row['vl_assay']][$row['sample_id']]['assay_name'] = $row['assay_name'];
+            //$response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
+            //$response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];
+            //$response[$row['vl_assay']][$row['sample_id']]['manual_low_limit'] = $row['manual_low_limit'];
+            //$response[$row['vl_assay']][$row['sample_id']]['manual_high_limit'] = $row['manual_high_limit'];
+            //$response[$row['vl_assay']][$row['sample_id']]['use_range'] = $row['use_range'];
+            
+            $response[$row['sample_id']][$row['vl_assay']]['sample_label'] = $row['sample_label'];
+            $response[$row['sample_id']][$row['vl_assay']]['sample_id'] = $row['sample_id'];
+            $response[$row['sample_id']][$row['vl_assay']]['vl_assay'] = $row['vl_assay'];
+            $response[$row['sample_id']][$row['vl_assay']]['assay_name'] = $row['assay_name'];
+            $response[$row['sample_id']][$row['vl_assay']]['low'] = $row['low_limit'];
+            $response[$row['sample_id']][$row['vl_assay']]['high'] = $row['high_limit'];
+            $response[$row['sample_id']][$row['vl_assay']]['manual_low_limit'] = $row['manual_low_limit'];
+            $response[$row['sample_id']][$row['vl_assay']]['manual_high_limit'] = $row['manual_high_limit'];
+            $response[$row['sample_id']][$row['vl_assay']]['use_range'] = $row['use_range'];            
+            
             if(!isset($response['updated_on'])){
                 $response['updated_on'] = $row['updated_on'];    
             }
             if(!isset($response['calculated_on'])){
                 $response['calculated_on'] = $row['calculated_on'];    
-            }
-            if(!isset($response['use_range']) || $response['use_range'] == ""){
-                $response['use_range'] = $row['use_range'];    
-            }
+            }        
         }
         return $response;
     }
     
     public function updateVlInformation($params){
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $count = count($params['sampleId']);
-        //Zend_Debug::dump($params);die;
-        for($i=0;$i<$count;$i++){
-            $data['manual_low_limit'] = $params['manualLow'][$i];
-            $data['manual_high_limit'] = $params['manualHigh'][$i];
-            $data['use_range'] = $params['useRange'];
-            $data['updated_on'] = new Zend_Db_Expr('now()');
-            $db->update('reference_vl_calculation', $data, "shipment_id = ".base64_decode($params['sid'])." and sample_id = " . $params['sampleId'][$i] . " and "." vl_assay = " . $params['assayId'][$i] );    
+        foreach($params['sampleId'] as $assayId => $samples){
+            foreach($samples as $sampid){
+                $data['manual_low_limit'] = $params['manualLow'][$assayId][$sampid];
+                $data['manual_high_limit'] = $params['manualHigh'][$assayId][$sampid];
+                $data['use_range'] = $params['useRange'][$assayId][$sampid];
+                $data['updated_on'] = new Zend_Db_Expr('now()');
+                echo "shipment_id = ".base64_decode($params['sid'])." and sample_id = " . $sampid . " and "." vl_assay = " . $assayId ;
+                $db->update('reference_vl_calculation', $data, "shipment_id = ".base64_decode($params['sid'])." and sample_id = " . $sampid . " and "." vl_assay = " . $assayId );
+            }
         }
     }
 
@@ -332,7 +344,6 @@ class Application_Service_Schemes {
                     ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
                     ->where('sp.shipment_id = ? ', $sId)
                     ->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayId . '"%');
-
             $response = $db->fetchAll($sql);
             $sampleWise = array();
             foreach ($response as $row) {
@@ -401,8 +412,7 @@ class Application_Service_Schemes {
                     if(isset($rvcRow['use_range']) && $rvcRow['use_range'] != ""){
                         $data['use_range'] = $rvcRow['use_range'];
                     }
-
-                    $db->delete('reference_vl_calculation', "sample_id=$sample and shipment_id=$sId");
+                    $db->delete('reference_vl_calculation', "vl_assay = ".$vlAssayId." and sample_id=$sample and shipment_id=$sId");
                     $db->insert('reference_vl_calculation', $data);
                 }
             }
