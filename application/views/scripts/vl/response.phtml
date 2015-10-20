@@ -108,7 +108,7 @@ $count++;  ?>
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"> Clear</i>
 		</td>		
 
-		<td><label>Specimen Volume</label></td> 
+		<td><label>Specimen Volume used for testing</label></td> 
 		<td>
 			<input type="text" name="specimenVolume" id="specimenVolume" class="form-control"  value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
 		</td>
@@ -151,12 +151,6 @@ $count++;  ?>
 <hr>
 <table class="table table-bordered table-striped" style="width:60%;margin:10px auto;">
 <thead>
-	<tr align="center" class="dark" >
-		<th style="width:50%;">Control/Sample</th>
-		<th>Viral Load (log<sub>10</sub> copies/ml)</th>		
-	</tr>
-</thead>
-<tfoot>
 	<tr>
 		<td colspan="2" style="font-size:1.1em;">
 			Please Note :
@@ -167,6 +161,13 @@ $count++;  ?>
 			</ul>
 		</td>
 	</tr>
+	<tr align="center" class="" >
+		<th style="width:50%;">Control/Sample</th>
+		<th>Viral Load (log<sub>10</sub> copies/ml)</th>		
+	</tr>
+</thead>
+<tfoot>
+	
 </tfoot>
 <?php $count =0;  
 foreach($this->allSamples as $sample){ 
