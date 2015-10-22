@@ -38,7 +38,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"> Clear</i>
 		</td>		
 
-		<th><label>Specimen Volume</label></th> 
+		<th><label>Specimen Volume used for testing</label></th> 
 		<td>
 			<input type="text" name="specimenVolume" id="specimenVolume" class="form-control"  value="<?php echo $attributes['specimen_volume'];?>"/>
 		</td>
@@ -128,10 +128,10 @@ $dtFormat=  $genderHelper->getDateFormat();
 		<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
 			<caption><legend>Controls</legend></caption>
 				<tr>
-					<th style="text-align: center;font-size:17px;">Control</th>
+					<th style="text-align: center;font-size:17px;width:200px;">Control</th>
 					<th style="text-align: center;font-size:17px;">Lower Limit</th>
 					<th style="text-align: center;font-size:17px;">Higer Limit</th>
-					<th style="text-align: center;font-size:17px;">Response</th>
+					<th style="text-align: center;font-size:17px;width:120px;">Response</th>
 					<th style="text-align: center;font-size:17px;">Pass/Fail</th>
 				</tr>
 					
@@ -139,9 +139,9 @@ $dtFormat=  $genderHelper->getDateFormat();
 				$counter = 1;
 				foreach($this->evaluateData['controlResults'] as $result){
 					if(($counter%2) == 0){
-						$class = "evenResult";
+						$class = "evenR";
 					}else{
-						$class = "oddResult";
+						$class = "oddR";
 					}
 					?>
 
@@ -188,11 +188,11 @@ $dtFormat=  $genderHelper->getDateFormat();
 	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
 		<caption><legend>Samples</legend></caption>
 		<tr>
-			<th style="text-align: center;font-size:17px;">Sample</th>
-			<th style="text-align: center;font-size:17px;width:220px;">Results</th>
-			<th style="text-align: center;font-size:17px;">Lower Limit</th>
-			<th style="text-align: center;font-size:17px;">Higher Limit</th>
-			<th style="text-align: center;font-size:17px;">Sample Pass/Fail</th>
+					<th style="text-align: center;font-size:17px;width:200px;">Sample</th>
+					<th style="text-align: center;font-size:17px;">Lower Limit</th>
+					<th style="text-align: center;font-size:17px;">Higer Limit</th>
+					<th style="text-align: center;font-size:17px;width:120px;">Response</th>
+					<th style="text-align: center;font-size:17px;">Pass/Fail</th>
 			
 		</tr>
 			
@@ -202,9 +202,9 @@ $dtFormat=  $genderHelper->getDateFormat();
 		$counter = 1;
 		foreach($this->evaluateData['results'] as $result){
 			if(($counter%2) == 0){
-				$class = "evenResult";
+				$class = "evenR";
 			}else{
-				$class = "oddResult";
+				$class = "oddR";
 			}
 			?>
 				<tr class="<?php echo $class ?>">
