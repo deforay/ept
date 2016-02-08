@@ -39,8 +39,9 @@ if($this->shipments == false && count($this->shipments) <= 0){
 					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
 					<td style="text-align: center;">
 						<a class="btn btn-danger btn-xs" href="/reports/finalize/view-finalized-shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-search"></i> View</span></a>
-						<a class="btn btn-info btn-xs" href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>" target='_BLANK'><span><i class="icon-check"></i> Download Summary Report</span></a>
-						<a class="btn btn-info btn-xs" href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>" target='_BLANK'><span><i class="icon-check"></i> Download Participants Report</span></a>
+						<!-- <a class="btn btn-info btn-xs" href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>" target='_BLANK'><span><i class="icon-check"></i> Download Summary Report</span></a> -->
+						
+						
 					</td>
 				</tr>
 				<?php

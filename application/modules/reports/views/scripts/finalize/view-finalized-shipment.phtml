@@ -145,20 +145,60 @@ if (count($this->shipment) > 0) {
     <br/>
     <br/>
     
-    <div align="center" style="padding-top:3px;">
-        <span id="summaryDiv" >
+    <div align="center" style="padding-top:3px;text-align:center;" id="summaryDiv" >
+        <table class="table table-condensed table-bordered" style="width:340px;margin:0 auto;">
+            <tr>
+                <td>
+            <?php
+            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf"))
+            {
+            ?>
+            <a href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code'] ."-summary.pdf"); ?>" class="btn btn-info" target="_BLANK" style="width:100%;"><i class="icon-file-text"></i> Download Summary Report</a>
+            <?php
+            
+            }
+            ?>
+            </td>
+            </tr>
         <?php
-        if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf"))
-        {
+        if ($shipment['report_generated'] == 'yes') {
+               
+            $buttonCount = (int)ceil($this->responseCount["reported_count"] / 50);
+            $responseCnt=$this->responseCount["reported_count"];
+            $start=1;
+            if($this->responseCount["reported_count"]>=50){
+                $lastEnd=50;
+            }else{
+              $lastEnd=$this->responseCount["reported_count"];
+            }
+            for ($i = 1; $i <= $buttonCount; $i++) {
+              if($this->responseCount["reported_count"]>=50){
+                $end=$i*50;
+              }else{
+                  $end=$this->responseCount["reported_count"];
+              }
+              if($end>$this->responseCount["reported_count"]){
+                   $sub=$this->responseCount["reported_count"]-$lastEnd;
+                   $start=$lastEnd+1;
+                   $end=$lastEnd+$sub;
+              }else{
+                if($i!=1){
+                     $start=$lastEnd+1;
+                     $lastEnd=$end;
+                }
+              }
+              if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf")) {
+              ?>
+              <tr><td>
+              
+              <a href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf"); ?>"  style="width:100%;" class='btn btn-info' target='_BLANK' id="<?php echo $start."-".$end."-bulk-participant-report"; ?>" style=''><i class='icon-file-text'></i> Download <?php echo $start; ?> - <?php echo $end;?> Participants Report</a>
+              </td></tr>
+               <?php
+              }
+            }
+          }
         ?>
-        <a href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code'] ."-summary.pdf"); ?>" class="btn btn-info" target="_BLANK"><i class="icon-file-text"></i> Download Summary Report</a>
-        <?php }
-        if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-bulk-participant-report.pdf"))
-        {
-        ?>
-        <a href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>" class="btn btn-info" target="_BLANK"><i class="icon-file-text"></i> Download Participants Report</a>
-        <?php } ?>
-        </span>
+        </table>
     </div>
     
     <script type="text/javascript" charset="utf-8">
