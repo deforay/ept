@@ -757,7 +757,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             "iTotalDisplayRecords" => $iFilteredTotal,
             "aaData" => array()
         );
-
+		$globalQcAccess = Application_Service_Common::getConfig('qc_access');
         $general = new Pt_Commons_General();
         $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
         foreach ($rResult as $aRow) {
@@ -783,9 +783,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 					$qcBtnText = "Edit QC";
 					$aRow['qc_date']=$general->humanDateFormat($aRow['qc_date']);
 				}
-				
-				$qcChkbox='<input type="checkbox" class="checkTablePending" name="subchk[]" id="'. $aRow['map_id'].'"  value="' . $aRow['map_id'] . '" onclick="addQc(\''.$aRow['map_id'].'\',this);"  />';
-				$qcResponse='<br/><a href="javascript:void(0);" onclick="addSingleQc(\''.$aRow['map_id'].'\',\''.$aRow['qc_date'].'\')" class="btn btn-primary"  style="margin:3px 0;"> <i class="icon icon-edit"></i>'. $qcBtnText.'</a>';
+				if($globalQcAccess=='yes'){
+					if($this->_session->qc_access=='yes'){
+						$qcChkbox='<input type="checkbox" class="checkTablePending" name="subchk[]" id="'. $aRow['map_id'].'"  value="' . $aRow['map_id'] . '" onclick="addQc(\''.$aRow['map_id'].'\',this);"  />';
+						$qcResponse='<br/><a href="javascript:void(0);" onclick="addSingleQc(\''.$aRow['map_id'].'\',\''.$aRow['qc_date'].'\')" class="btn btn-primary"  style="margin:3px 0;"> <i class="icon icon-edit"></i>'. $qcBtnText.'</a>';	
+					}
+				}
 			}
 			$row[]=$qcChkbox;
             $row[] = $aRow['SHIP_YEAR'];

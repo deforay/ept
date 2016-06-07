@@ -162,6 +162,8 @@ class ParticipantController extends Zend_Controller_Action {
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getShipmentAll($params);
         }
+        $commonService = new Application_Service_Common();
+        $this->view->globalQcAccess=$commonService->getConfig('qc_access');
     }
 
     public function downloadAction() {
