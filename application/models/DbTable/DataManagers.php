@@ -17,6 +17,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             'primary_email' => $params['userId'],
             'password' => $params['password'],
             'force_password_reset' => 1,
+            'qc_access' => $params['qcAccess'],
             'status' => $params['status'],
 			'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()')
@@ -189,9 +190,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             'last_name' => $params['lname'],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
-	    'institute' => $params['institute'],
+			'institute' => $params['institute'],
             'secondary_email' => $params['semail'],
-	    'updated_by' => $authNameSpace->admin_id,
+			'updated_by' => $authNameSpace->admin_id,
+			'qc_access' => $params['qcAccess'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
         

@@ -1,13 +1,21 @@
-
+<?php 
+$genderHelper = $this->getHelper('DateFormat');
+$dtFormat=  $genderHelper->getDateFormat();
+?>
 <section class="content-header">
     <h1> All PT Schemes </h1>
 </section>
 <section class="content">
 <div class="box">
                 <div class="box-body">
+					<input type="hidden" name="participantMapId" id="participantMapId"/>
+					<div style="padding-top:20px;">
+                        <a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) Add QC</b></a>
+					</div>
 			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="allSchemeTable">
 				<thead>
 				    <tr>
+					<th></th>
 					<th style="width:30px;">Year</th>
 					<th style="width:100px;">Shipment<br/>Date</th>
 					<th style="width:50px;">Scheme</th>
@@ -28,8 +36,27 @@
 				</div>
 			</div>
 </section>
+
+<div class="deleteAction dialog" id="migrateBox">
+	<div style="padding:10px;">
+        <span onClick="hidedefModal()" class="closeModal"></span>
+        <h3>Add QC</h3>
+        <table  class="display datatable table table-bordered table-hover table-striped ">
+			<tr>
+				<th>QC Date</th>
+				<td>:</td>
+				<td><input type="text" id="qcDate" name="qcDate"  style="width:180px;float:left;"  maxlength="11" value=""  class="isRequired form-control" readonly="readonly" /></td>
+			</tr>
+		</table>
+		
+		<div class="box-footer" style="text-align: center">
+			<button class="btn btn-primary" onclick="submitQcForm();return false;">Submit</button>
+		</div>
+    </div>
+</div>
 <script>
     var schemeTable = null;
+	var selectedQc=[];
 	function allSchemes(){
 		schemeTable = $('#allSchemeTable').dataTable({
 			"oLanguage": {
@@ -42,6 +69,7 @@
 			"sPaginationType": "full_numbers",
 			"bRetrieve": true,                        
 			"aoColumns": [
+				{"bSortable":false},
 			    {"sClass":"center"},
 			    {"sClass":"center"},
 			    {"sClass":"center"},
@@ -52,6 +80,17 @@
 			    {"sClass":"center","bSortable":false}
 			],
 			"aaSorting": [[ 1, "desc" ]],
+			"fnDrawCallback": function() {
+                var checkBoxes=document.getElementsByName("subchk[]");
+                len = checkBoxes.length;
+                for(c=0;c<len;c++){
+                    if (jQuery.inArray(checkBoxes[c].id,selectedQc) != -1 )
+                    {
+                        checkBoxes[c].setAttribute("checked",true);
+                    }
+                }
+                
+            },
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'all-schemes', 'format' => 'html')); ?>",
@@ -67,18 +106,15 @@
 		});
 	}
 	
-    
 	
 	$(document).ready(function(){
-
 		allSchemes();
 		
-
 	});
     
     
 	
-        function removeSchemes(schemeType,mid){
+    function removeSchemes(schemeType,mid){
 		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'Dts', 'action' => 'delete')); ?>", { mid: mid, format: "html" },
@@ -90,4 +126,60 @@
 		}		
 		
 	}
+	
+	function addQc(mapId,obj){
+		if(obj.checked==true)
+        {
+			if($.inArray(mapId,selectedQc) == -1){
+			selectedQc.push(mapId);
+			}
+		}else{
+			selectedQc.remove(mapId);
+		}
+		$("#participantMapId").val(selectedQc);
+		$("#qcCount").text(selectedQc.length);
+        
+    }
+	function addSingleQc(mapId,qcDate) {
+		//$("#qcDate").val(qcDate);
+        if($.inArray(mapId,selectedQc) == -1){
+			selectedQc.push(mapId);
+			$("#participantMapId").val(selectedQc);
+		}
+		showQcForm();
+    }
+	function showQcForm() {
+        showdefModal("migrateBox", 600,400);
+		$("#qcDate").datepicker({dateFormat: '<?php echo $dtFormat; ?>'});
+    }
+	
+	function submitQcForm() {
+		participantMapId=$("#participantMapId").val();
+		qcDate=$("#qcDate").val();
+		if (participantMapId!="" && qcDate!="") {
+            $.post("<?php echo $this->url(array('module'=>'default','controller' =>'participant', 'action' => 'add-qc')); ?>", { mapId: participantMapId,qcDate:qcDate,format: "html" },
+			function(data){
+			if(data>0)
+			{
+				schemeTable.fnDraw();
+				$("#countChecksPending").text("0");
+				selectedQc = '';
+				alert("Qc details added successfully");
+				hidedefModal();
+			}
+			});
+			
+        }else{
+			alert("Please select the date");
+		}
+        
+    }
+	
+	function checkQcStatus() {
+        if(selectedQc.length==0){
+			alert("Please select any one shipment");
+		}else{
+			showQcForm();
+		}
+    }
 </script>

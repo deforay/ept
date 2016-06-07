@@ -15,13 +15,14 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.5 -->
     <link rel="stylesheet" href="<?php echo $this->baseUrl('assets/bootstrap/css/bootstrap.min.css'); ?>">
-<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
         <!--[if IE 7]>
       <link rel="stylesheet" href="<?php echo $this->baseUrl("css/font-awesome-ie7.min.css"); ?>" type="text/css" media="all">
       <![endif]-->	
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery-ui.min.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
-
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
+	
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="<?php echo $this->baseUrl('js/html5shiv.min.js'); ?>"></script>
@@ -176,6 +177,12 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
 		</section>
       
       </div><!-- /.content-wrapper -->
+	  
+	  <div id="dDiv" class="dialog"> 
+            <div style="text-align:center"><span onclick="closeLayoutModal();" style="float:right;clear:both;" class="closeModal"></span></div> 
+            <iframe id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0' >some problem</iframe> 
+	  </div>
+	  
       <footer class="main-footer">
         <div class="pull-right hidden-xs">
           <strong><a href="http://aslm.org">Funded by ASLM</a></strong>
@@ -205,8 +212,33 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayModal.js"); ?>"></script>	
 
-    <!-- AdminLTE App -->
-    <script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
-    
+  <!-- AdminLTE App -->
+  <script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
+  
+  <script type="text/javascript">
+	function layoutModal(url,w,h){
+	     showdefModal('dDiv',w,h);
+	     document.getElementById('dFrame').style.height=h+'px';
+	     document.getElementById('dFrame').style.width=w+'px';
+	     document.getElementById('dFrame').src = url;
+  }
+      
+  function closeLayoutModal(){
+      document.getElementById('dFrame').src = "";
+      //window.location.reload(true);
+      hidedefModal();
+  }
+  
+  Array.prototype.remove= function(){
+    var what, a= arguments, L= a.length, ax;
+    while(L && this.length){
+        what= a[--L];
+        while((ax= this.indexOf(what))!= -1){
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+}
+  </script>
   </body>
 </html>

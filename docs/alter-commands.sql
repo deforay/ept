@@ -2125,3 +2125,14 @@ ALTER TABLE `reference_vl_calculation` ADD `calculated_on` DATETIME NULL DEFAULT
 
 ALTER TABLE `reference_vl_calculation` ADD PRIMARY KEY( `shipment_id`, `sample_id`, `vl_assay`);
 ALTER TABLE `reference_vl_calculation` ADD `use_range` VARCHAR(255) NOT NULL DEFAULT 'calculated' ;
+
+
+--ilahir 07-JUN-2016
+
+INSERT INTO `eanalyze`.`global_config` (`name`, `value`) VALUES ('qc_access', 'yes');
+ALTER TABLE  `data_manager` ADD  `qc_access` VARCHAR( 100 ) NULL DEFAULT NULL AFTER  `
+force_password_reset` ;
+
+ALTER TABLE  `shipment_participant_map` ADD  `qc_date` DATE NULL DEFAULT NULL ;
+ALTER TABLE  `shipment_participant_map` ADD  `qc_done_by` INT NULL DEFAULT NULL ;
+ALTER TABLE  `shipment_participant_map` ADD  `qc_created_on` DATETIME NULL DEFAULT NULL ;

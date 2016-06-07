@@ -1434,4 +1434,22 @@ class Application_Service_Shipments {
         
         return $db->fetchAll($sql);
     }
+	
+	
+	public function addQcDetails($params) {
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->beginTransaction();
+        try {
+            $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            $noOfRowsAffected = $shipmentParticipantDb->addQcInfo($params);
+			if($noOfRowsAffected>0){
+				$db->commit();
+				return $noOfRowsAffected;
+			}
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+        }
+    }
 }

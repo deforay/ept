@@ -13,6 +13,7 @@ class ParticipantController extends Zend_Controller_Action {
                 ->addActionContext('report', 'html')
                 ->addActionContext('summary-report', 'html')
                 ->addActionContext('shipment-report', 'html')
+                ->addActionContext('add-qc', 'html')
                 ->initContext();
     }
 
@@ -197,5 +198,12 @@ class ParticipantController extends Zend_Controller_Action {
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
     }
-
+    
+    public function addQcAction() {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $shipmentService = new Application_Service_Shipments();
+            $this->view->result =$shipmentService->addQcDetails($params);
+        }
+    }
 }
