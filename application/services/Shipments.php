@@ -295,6 +295,7 @@ class Application_Service_Shipments {
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
                 "updated_by_user" => $authNameSpace->dm_id,
+                "mode_id" => $params['modeOfReceipt'],
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 			
@@ -517,6 +518,7 @@ class Application_Service_Shipments {
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
                 "updated_by_user" => $authNameSpace->dm_id,
+				"mode_id" => $params['modeOfReceipt'],
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 

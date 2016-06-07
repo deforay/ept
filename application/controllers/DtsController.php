@@ -55,6 +55,9 @@ class DtsController extends Zend_Controller_Action
         $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
         $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
 		
+		$commonService = new Application_Service_Common();
+		$this->view->modeOfReceipt=$commonService->getAllModeOfReceipt();
+		
 	}
     }
 	

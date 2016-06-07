@@ -2136,3 +2136,23 @@ force_password_reset` ;
 ALTER TABLE  `shipment_participant_map` ADD  `qc_date` DATE NULL DEFAULT NULL ;
 ALTER TABLE  `shipment_participant_map` ADD  `qc_done_by` INT NULL DEFAULT NULL ;
 ALTER TABLE  `shipment_participant_map` ADD  `qc_created_on` DATETIME NULL DEFAULT NULL ;
+
+
+CREATE TABLE IF NOT EXISTS `r_modes_of_receipt` (
+  `mode_id` int(11) NOT NULL AUTO_INCREMENT,
+  `mode_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`mode_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Dumping data for table `r_modes_of_receipt`
+--
+
+INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
+(1, 'Courier'),
+(2, 'Email'),
+(3, 'Scan'),
+(4, 'SMS');
+
+
+ALTER TABLE  `shipment_participant_map` ADD  `mode_id` INT NULL DEFAULT NULL ;

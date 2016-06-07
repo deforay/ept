@@ -202,6 +202,10 @@ class Application_Service_Common {
         $db = new Application_Model_DbTable_TempMail();
         return $db->insertTempMailDetails($to, $cc,$bcc, $subject, $message, $fromMail, $fromName);
     }
-
+	
+	public function getAllModeOfReceipt(){
+		$db = new Application_Model_DbTable_ModeOfReceipt();
+		return $db->fetchAllModeOfReceipt();
+	}
 }
 
