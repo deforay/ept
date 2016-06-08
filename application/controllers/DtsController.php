@@ -20,18 +20,22 @@ class DtsController extends Zend_Controller_Action
 	if($this->_request->isPost()){
 	    $data = $this->getRequest()->getPost();			
 	    $shipmentService->updateDtsResults($data);
-	    $this->_redirect("/participant/current-schemes");
+		if(isset($data['comingFrom']) && trim($data['comingFrom'])!=''){
+			$this->_redirect("/participant/".$data['comingFrom']);
+		}else{
+			$this->_redirect("/participant/current-schemes");
+		}
 	}
 	else{
 	    $sID= $this->getRequest()->getParam('sid');
 	    $pID= $this->getRequest()->getParam('pid');
 	    $eID =$this->getRequest()->getParam('eid');
+		$this->view->comingFrom =$this->getRequest()->getParam('comingFrom');
 		
 		$access = $shipmentService->checkParticipantAccess($pID);
 		if($access == false){
 			$this->_redirect("/participant/current-schemes");
 		}
-		
 	    
 	    $participantService = new Application_Service_Participants();
 	    $this->view->participant = $participantService->getParticipantDetails($pID);

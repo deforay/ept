@@ -301,6 +301,8 @@ class Application_Service_Shipments {
 			
 			if(isset($params['qcDate']) && trim($params['qcDate'])!=""){
 				$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
+				$data['qc_done_by'] = $authNameSpace->dm_id;
+				$data['qc_created_on'] = new Zend_Db_Expr('now()');
 			}else{
 				$data['qc_date']=NULL;
 			}
@@ -530,6 +532,8 @@ class Application_Service_Shipments {
 			
 			if(isset($params['qcDate']) && trim($params['qcDate'])!=""){
 				$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
+				$data['qc_done_by'] = $authNameSpace->dm_id;
+				$data['qc_created_on'] = new Zend_Db_Expr('now()');
 			}else{
 				$data['qc_date']=NULL;
 			}

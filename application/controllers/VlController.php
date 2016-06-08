@@ -56,15 +56,19 @@ class VlController extends Zend_Controller_Action
             $shipmentService->updateVlResults($data);
     		
     		
-    		
-    		$this->_redirect("/participant/current-schemes");
+    		if(isset($data['comingFrom']) && trim($data['comingFrom'])!=''){
+			$this->_redirect("/participant/".$data['comingFrom']);
+			}else{
+				$this->_redirect("/participant/current-schemes");
+			}
     		
     		//die;            
         }else{
             $sID= $this->getRequest()->getParam('sid');
             $pID= $this->getRequest()->getParam('pid');
             $eID =$this->getRequest()->getParam('eid');
-        
+			$this->view->comingFrom =$this->getRequest()->getParam('comingFrom');
+			
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);
             //Zend_Debug::dump($schemeService->getVlSamples($sID,$pID));

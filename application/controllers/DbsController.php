@@ -20,13 +20,19 @@ class DbsController extends Zend_Controller_Action
 		$shipmentService = new Application_Service_Shipments();		
 		if($this->_request->isPost()){		
 			$data = $this->getRequest()->getPost();			
-			$shipmentService->updateDbsResults($data);			
-			$this->_redirect("/participant/dashboard");    				
+			$shipmentService->updateDbsResults($data);
+			if(isset($data['comingFrom']) && trim($data['comingFrom'])!=''){
+			$this->_redirect("/participant/".$data['comingFrom']);
+			}else{
+				$this->_redirect("/participant/dashboard");
+			}
+			
     	}
     	else{
 			$sID= $this->getRequest()->getParam('sid');
 			$pID= $this->getRequest()->getParam('pid');
 			$eID =$this->getRequest()->getParam('eid');
+			$this->view->comingFrom =$this->getRequest()->getParam('comingFrom');
 			
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
