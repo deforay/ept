@@ -296,10 +296,14 @@ class Application_Service_Shipments {
                 "user_comment" => $params['userComments'],
                 "updated_by_user" => $authNameSpace->dm_id,
                 "mode_id" => $params['modeOfReceipt'],
-				"qc_date" => Pt_Commons_General::dateFormat($params['qcDate']),
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 			
+			if(isset($params['qcDate']) && trim($params['qcDate'])!=""){
+				$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
+			}else{
+				$data['qc_date']=NULL;
+			}
 			if(isset($params['customField1']) && trim($params['customField1']) != ""){
 				$data['custom_field_1'] = $params['customField1'];
 			}
@@ -521,10 +525,15 @@ class Application_Service_Shipments {
                 "user_comment" => $params['userComments'],
                 "updated_by_user" => $authNameSpace->dm_id,
 				"mode_id" => $params['modeOfReceipt'],
-				"qc_date" => Pt_Commons_General::dateFormat($params['qcDate']),
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
-
+			
+			if(isset($params['qcDate']) && trim($params['qcDate'])!=""){
+				$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
+			}else{
+				$data['qc_date']=NULL;
+			}
+			
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $eidResponseDb = new Application_Model_DbTable_ResponseVl();

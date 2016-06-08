@@ -3,7 +3,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $genderHelper = $this->getHelper('DateFormat');
 $dtFormat=  $genderHelper->getDateFormat();
 ?>
-<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+
 <section class="content-header">
     <h1> All PT Schemes </h1>
 </section>
@@ -12,11 +12,16 @@ $dtFormat=  $genderHelper->getDateFormat();
                 <div class="box-body">
 					<table class="table">
 						<tr>
-							<td style="width:20%;">Quality Check Date</td>
-							
-							<td style="width:30%;">
-								<input type="text" id="qcDate" name="qcDate"  class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder ="Click here to pick a Date Range"/>
+							<td style="width:25%;">Shipment Quality is Checked</td>
+							<td style="width:20%;">
+								<select id="qualityChecked" name="qualityChecked"  class="form-control">
+								<option value=""> -- Select --</option>
+								<option value="yes">Yes</option>
+								<option value="no">No</option>
+								
+								</select>
 							</td>
+							
 							<td>
 								<button class="btn btn-success btn-sm" onclick="schemeTable.fnDraw()"><span>Search</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button>
 							</td>
@@ -73,7 +78,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 		</div>
     </div>
 </div>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+
 <script>
     var schemeTable = null;
 	var selectedQc=[];
@@ -115,7 +120,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'all-schemes', 'format' => 'html')); ?>",
 			"fnServerParams": function (aoData) {
-                aoData.push({"name": "qcDate", "value": $("#qcDate").val()});
+                aoData.push({"name": "qualityChecked", "value": $("#qualityChecked").val()});
             },
 			"fnServerData": function ( sSource, aoData, fnCallback ) {
 			    $.ajax({
@@ -132,20 +137,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 	
 	$(document).ready(function(){
 		allSchemes();
-		$('#qcDate').daterangepicker({
-            format: 'DD-MMM-YYYY',
-            ranges: {
-			'Last 60 Days': [moment().subtract('days', 59), moment()],
-			'Last 90 Days': [moment().subtract('days', 89), moment()],
-			'Last 180 Days': [moment().subtract('days', 179), moment()],
-			'Last 12 Months': [moment().subtract('month', 12), moment()],
-			'Last 18 Months': [moment().subtract('month', 18), moment()],
-            }
-        },
-        function(start, end) {
-                    startDate = start.format('YYYY-MM-DD');
-                    endDate = end.format('YYYY-MM-DD');
-        });
+		
 	});
     
     

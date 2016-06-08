@@ -718,15 +718,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
-		if(isset($parameters['qcDate']) && trim($parameters['qcDate'])!=""){
-			$expQcDate=explode(" ",$parameters['qcDate']);
-			if(trim($expQcDate[0])!=""){
-				$startDate=Pt_Commons_General::dateFormat($expQcDate[0]);
-				$sQuery = $sQuery->where("spm.qc_date >= ?",$startDate);
-			}
-			if(trim($expQcDate[2])!=""){
-				$endDate=Pt_Commons_General::dateFormat($expQcDate[2]);
-				$sQuery = $sQuery->where("spm.qc_date <= ?",$endDate);
+		if(isset($parameters['qualityChecked']) && trim($parameters['qualityChecked'])!=""){
+			if($parameters['qualityChecked']=='yes'){
+				$sQuery = $sQuery->where("spm.qc_date IS NOT NULL");
+			}else{
+				$sQuery = $sQuery->where("spm.qc_date IS NULL");
 			}
 		}
         if (isset($sOrder) && $sOrder != "") {
