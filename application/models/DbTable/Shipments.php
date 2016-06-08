@@ -777,7 +777,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             
             $aRow['lastdate_response'];
 			
-			$qcBtnText = "Add QC";
+			$qcBtnText = "Quality Check";
 			if($aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
 				if($aRow['qc_date']!=""){
 					$qcBtnText = "Edit QC";

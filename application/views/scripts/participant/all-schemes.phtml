@@ -10,16 +10,15 @@ $dtFormat=  $genderHelper->getDateFormat();
 <div class="box">
                 <div class="box-body">
 					<?php
-					if($this->globalQcAccess=='yes'){
-					if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access=='yes'){
+					if($this->globalQcAccess=='yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access=='yes')){
 					?>
-					<input type="hidden" name="participantMapId" id="participantMapId"/>
-					<div style="padding-top:20px;">
-                        <a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) Add QC</b></a>
-					</div>
+						<input type="hidden" name="participantMapId" id="participantMapId"/>
+						<div style="padding-top:20px;">
+							<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) Selected for Quality Check</b></a>
+						</div>
 					<?php
 					}
-					} ?>
+					?>
 			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="allSchemeTable">
 				<thead>
 				    <tr>
@@ -48,11 +47,10 @@ $dtFormat=  $genderHelper->getDateFormat();
 <div class="deleteAction dialog" id="migrateBox">
 	<div style="padding:10px;">
         <span onClick="hidedefModal()" class="closeModal"></span>
-        <h3>Add QC</h3>
+        <h3>Quality Check Done</h3>
         <table  class="display datatable table table-bordered table-hover table-striped ">
 			<tr>
-				<th>QC Date</th>
-				<td>:</td>
+				<th>QC Done on : </th>
 				<td><input type="text" id="qcDate" name="qcDate"  style="width:180px;float:left;"  maxlength="11" value=""  class="isRequired form-control" readonly="readonly" /></td>
 			</tr>
 		</table>

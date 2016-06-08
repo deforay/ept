@@ -31,6 +31,7 @@ class DtsController extends Zend_Controller_Action
 		if($access == false){
 			$this->_redirect("/participant/current-schemes");
 		}
+		
 	    
 	    $participantService = new Application_Service_Participants();
 	    $this->view->participant = $participantService->getParticipantDetails($pID);
@@ -57,6 +58,7 @@ class DtsController extends Zend_Controller_Action
 		
 		$commonService = new Application_Service_Common();
 		$this->view->modeOfReceipt=$commonService->getAllModeOfReceipt();
+		$this->view->globalQcAccess=$commonService->getConfig('qc_access');
 		
 	}
     }
