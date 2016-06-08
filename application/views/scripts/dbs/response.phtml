@@ -46,9 +46,20 @@
                 <td>Testing Date</td> 
                 <td><input type="text" id="testDate" name="testDate" size="11" maxlength="11" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="isRequired datepicker" readonly="readonly" title="Please enter Shipment Test Date"  /></td>
 
-                <td></td> 
-                <td>
-                </td>
+                <td>Mode of Receipt</td>
+				<td>
+					<select name="modeOfReceipt" id="modeOfReceipt" class="" title="Please choose the mode of receipt">
+						<option value="">--Select--</option>
+						
+						<?php
+						foreach ($this->modeOfReceipt as $receipt){
+						?>
+						<option value="<?php echo $receipt['mode_id']; ?>"  <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
+						<?php
+						}
+						?>
+					</select>
+				</td>
             </tr>
 
         </table>

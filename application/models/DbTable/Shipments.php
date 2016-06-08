@@ -718,7 +718,17 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
-
+		if(isset($parameters['qcDate']) && trim($parameters['qcDate'])!=""){
+			$expQcDate=explode(" ",$parameters['qcDate']);
+			if(trim($expQcDate[0])!=""){
+				$startDate=Pt_Commons_General::dateFormat($expQcDate[0]);
+				$sQuery = $sQuery->where("spm.qc_date >= ?",$startDate);
+			}
+			if(trim($expQcDate[2])!=""){
+				$endDate=Pt_Commons_General::dateFormat($expQcDate[2]);
+				$sQuery = $sQuery->where("spm.qc_date <= ?",$endDate);
+			}
+		}
         if (isset($sOrder) && $sOrder != "") {
             $sQuery = $sQuery->order($sOrder);
         }
@@ -777,10 +787,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             
             $aRow['lastdate_response'];
 			
-			$qcBtnText = "Quality Check";
+			$qcBtnText = " Quality Check";
 			if($aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
 				if($aRow['qc_date']!=""){
-					$qcBtnText = "Edit QC";
+					$qcBtnText = " Edit Quality Check";
 					$aRow['qc_date']=$general->humanDateFormat($aRow['qc_date']);
 				}
 				if($globalQcAccess=='yes'){

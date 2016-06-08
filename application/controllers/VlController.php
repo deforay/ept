@@ -80,7 +80,7 @@ class VlController extends Zend_Controller_Action
 			
 			$commonService = new Application_Service_Common();
 			$this->view->modeOfReceipt=$commonService->getAllModeOfReceipt();
-		
+			$this->view->globalQcAccess=$commonService->getConfig('qc_access');
     	}
     }
 
