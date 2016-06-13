@@ -12,18 +12,13 @@ $dtFormat=  $genderHelper->getDateFormat();
                 <div class="box-body">
 					<table class="table">
 						<tr>
-							<td style="width:25%;">Shipment Quality is Checked</td>
-							<td style="width:20%;">
-								<select id="qualityChecked" name="qualityChecked"  class="form-control">
-								<option value=""> -- Select --</option>
-								<option value="yes">Yes</option>
-								<option value="no">No</option>
+							<td style="width:100%;">
+								<select id="qualityChecked" name="qualityChecked" onchange="schemeTable.fnDraw()"  class="form-control">
+								<option value=""> -- Filter PT Schemes --</option>
+								<option value="yes">Show Responded PT Schemes</option>
+								<option value="no">Show Not Responded PT Schemes</option>
 								
 								</select>
-							</td>
-							
-							<td>
-								<button class="btn btn-success btn-sm" onclick="schemeTable.fnDraw()"><span>Search</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button>
 							</td>
 						</tr>
 					</table>
@@ -31,8 +26,8 @@ $dtFormat=  $genderHelper->getDateFormat();
 					if($this->globalQcAccess=='yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access=='yes')){
 					?>
 						<input type="hidden" name="participantMapId" id="participantMapId"/>
-						<div style="padding-top:20px;">
-							<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) Selected for Quality Check</b></a>
+						<div style="padding-top:20px;display:none;" id="qcTopButton">
+							<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) Selected for Bulk Quality Check</b></a>
 						</div>
 					<?php
 					}
@@ -121,6 +116,11 @@ $dtFormat=  $genderHelper->getDateFormat();
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'all-schemes', 'format' => 'html')); ?>",
 			"fnServerParams": function (aoData) {
                 aoData.push({"name": "qualityChecked", "value": $("#qualityChecked").val()});
+				if($("#qualityChecked").val() == 'yes'){
+					$("#qcTopButton").show();
+				}else{
+					$("#qcTopButton").hide();
+				}
             },
 			"fnServerData": function ( sSource, aoData, fnCallback ) {
 			    $.ajax({
@@ -205,7 +205,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 	
 	function checkQcStatus() {
         if(selectedQc.length==0){
-			alert("Please select any one shipment");
+			alert("Please select at least one shipment to proceed with QC");
 		}else{
 			showQcForm();
 		}
