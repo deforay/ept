@@ -94,9 +94,9 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
 
 
             <tr class ="light">
-                <td><label> Shipment Receipt Date</label></td>
+                <td><label> Test Receipt Date</label></td>
                 <td>
-                    <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker" readonly="readonly"   title="Please enter Shipment Receipt Date" />
+                    <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker" readonly="readonly"   title="Please enter Test Receipt Date" />
                     <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('receiptDate')"> Clear</i>
                 </td>
                 <td><label>Sample Rehydration Date</label></td>
