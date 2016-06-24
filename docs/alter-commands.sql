@@ -2155,3 +2155,8 @@ INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 
 
 ALTER TABLE  `shipment_participant_map` ADD  `mode_id` INT NULL DEFAULT NULL ;
+
+--Pal 24th-JUN-2016
+ALTER TABLE `data_manager` ADD `enable_adding_test_response_date` VARCHAR(45) NULL DEFAULT NULL AFTER `qc_access`;
+
+INSERT INTO `eanalyze`.`r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES (NULL, 'Online Response');
