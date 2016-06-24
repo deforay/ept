@@ -931,20 +931,21 @@ class Application_Service_Evaluation {
                 $schemeService = new Application_Service_Schemes();
                 $vlAssayResultSet = $schemeService->getVlAssay();
                 $vlAssayList = array();
-                foreach ($vlAssayResultSet as $vlAssayRow) {
-                    $vlAssayList[$vlAssayRow['id']] = $vlAssayRow['name'];
-                }
-
+				
+                //foreach ($vlAssayResultSet as $vlAssayRow) {
+                //    $vlAssayList[$vlAssayRow['id']] = $vlAssayRow['name'];
+                //}
+				//print_r($vlAssayList);die;
                 $vlRange = $schemeService->getVlRange($shipmentId);
                 $results = $schemeService->getVlSamples($shipmentId, $res['participant_id']);
-
+				
                 $attributes = json_decode($res['attributes'], true);
                 $counter = 0;
                 $toReturn = array();
                 foreach ($results as $result) {
                     //$toReturn = array();
                     $responseAssay = json_decode($result['attributes'], true);
-                    $toReturn[$counter]['vl_assay'] = $vlAssayList[$responseAssay['vl_assay']];
+                    $toReturn[$counter]['vl_assay'] = $vlAssayResultSet[$responseAssay['vl_assay']];
                     $responseAssay = $responseAssay['vl_assay'];
 
                     $toReturn[$counter]['sample_label'] = $result['sample_label'];
@@ -1001,8 +1002,10 @@ class Application_Service_Evaluation {
             $db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);
         }
         if ($res['scheme_type'] == 'vl') {
-            $schemeService = new Application_Service_Schemes();
-            $vlAssayResultSet = $schemeService->getVlAssay();
+            //$schemeService = new Application_Service_Schemes();
+            //$vlAssayResultSet = $schemeService->getVlAssay();
+			$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
+			
             foreach ($vlAssayResultSet as $vlAssayRow) {
                 $vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
                                 ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
@@ -1011,10 +1014,11 @@ class Application_Service_Evaluation {
                 if (count($vlCalRes) > 0) {
                     $vlCalculation[$vlAssayRow['id']] = $vlCalRes;
                     $vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
+                    $vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];
                 }
             }
         }
-
+		
         $result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'dmResult' => $mapRes);
 
         return $result;
