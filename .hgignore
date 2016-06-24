@@ -6,6 +6,7 @@ afq.komodoproject
 ^public/docs/(?!index.php)
 ^public/temporary/cache(?!index.php)
 ^public/temporary/(?!index.php)
+^library/Zend
 error_log
 Thumbs.db
 Thumbs.db.orig

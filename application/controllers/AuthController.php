@@ -49,6 +49,7 @@ class AuthController extends Zend_Controller_Action
 	    		$authNameSpace->phone = $rs->phone;
 	    		$authNameSpace->email = $rs->primary_email;
 	    		$authNameSpace->qc_access = $rs->qc_access;
+	    		$authNameSpace->enable_adding_test_response_date = $rs->enable_adding_test_response_date;
 	    		$authNameSpace->force_password_reset = $rs->force_password_reset;
 	    		// PT Provider Dependent Configuration 
 	    		//$authNameSpace->UserFld1 = $rs->UserFld1;
