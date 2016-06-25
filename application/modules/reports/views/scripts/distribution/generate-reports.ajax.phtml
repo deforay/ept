@@ -166,8 +166,11 @@ foreach($this->result['shipment'] as $result){
 		$splitDate=explode(" ",$result['responseResult'][0]['responseDate']);
 		$responseDate=$this->dateFormat($splitDate[0]);
 	}
+	$attributes='';
+	if(isset($result['responseResult'][0]['attributes'])){
+		$attributes = json_decode($result['responseResult'][0]['attributes'], true);	
+	}
 	
-	$attributes = json_decode($result['responseResult'][0]['attributes'], true);
 	
 	$sampleRehydrationDate = "";
 	if(isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date'])!=""){
@@ -223,7 +226,9 @@ foreach($this->result['shipment'] as $result){
 	$labInfo.='	<td><strong>Response Date</strong> <br>'.$responseDate.'</td>';
 	$labInfo.='	<td><strong>Shipment Test Date</strong> <br>'.$shipmentTestDate.'</td>';
 	$labInfo.='	<td>';
+	if(isset($attributes['algorithm'])){
 	$labInfo.='	<strong>Algorithm</strong> <br>'.ucfirst($attributes['algorithm']);
+	}
 	$labInfo.=' </td>';
 	$labInfo.='</tr>';
 	$labInfo.='<tr>';
@@ -497,13 +502,11 @@ foreach($this->result['shipment'] as $result){
 		$shipmentScore=$result['shipment_score'];
 	}
 	
-	if(isset($result['documentation_score']) && trim($result['documentation_score'])!=""){
-		$documentationScore=$result['documentation_score'];
-	}
 	
-	$maxDocumentationPoints = $config->evaluation->dts->documentationScore;
-	$maxResponsePoints = 100-$maxDocumentationPoints;
-	$score=$shipmentScore+$documentationScore;
+	
+	//$maxDocumentationPoints = $config->evaluation->dts->documentationScore;
+	//$maxResponsePoints = 100-$maxDocumentationPoints;
+	$score=$shipmentScore;
 	//$score=100*round($shipmentScore/$result['max_score'],2);
 	
 	
@@ -515,11 +518,11 @@ foreach($this->result['shipment'] as $result){
 	}else{
 		$wishes='<p>You have received a score of '.round($score,2).'%.</p><br/>';
 	}
-	if($result['is_excluded'] != 'yes'){
-		$wishes.="<br/><strong style='font-weight:bold;'>Score Breakup:</strong>";
-		$wishes.="<br/>Score for Correct Responses (out of $maxResponsePoints) : $shipmentScore (You reported ".$correctSamplesCount." samples correctly out of ".$totalProperSamples. ")";
-		$wishes.="<br/>Score for Documentation (out of $maxDocumentationPoints) : $documentationScore";
-	}
+	//if($result['is_excluded'] != 'yes'){
+		//$wishes.="<br/><strong style='font-weight:bold;'>Score Breakup:</strong>";
+		//$wishes.="<br/>Score for Correct Responses (out of $maxResponsePoints) : $shipmentScore (You reported ".$correctSamplesCount." samples correctly out of ".$totalProperSamples. ")";
+		//$wishes.="<br/>Score for Documentation (out of $maxDocumentationPoints) : $documentationScore";
+	//}
 	
 	
 	$pdf->SetLeftMargin(15);
@@ -533,6 +536,7 @@ foreach($this->result['shipment'] as $result){
 				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results</h5>';
 				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
 				<tr>
+					<td style="">Platform </td>
 					<td style="">Specimen ID </td>
 					<td style="">Mean<br/>(log<sub>10</sub> copies/ml)</td>
 					<td style="">S.D.</td>
@@ -543,10 +547,11 @@ foreach($this->result['shipment'] as $result){
 				//Zend_Debug::dump($vlCal['vlAssay']);
 				$countCal=count($vlCal)-1;
 				for($c=0;$c<$countCal;$c++){
+					if(isset($vlCal[$c]['mean'])){
 					$calRes.='<tr>';
-					//if($c==0){
-					//$calRes.='<td style="text-align:center;" rowspan="'.$countCal.'">'.$vlCal['vlAssay'].'</td>';	
-					//}
+					if($c==0){
+					$calRes.='<td style="text-align:center;" rowspan="'.$countCal.'">'.$vlCal['shortName'].'</td>';	
+					}
 					
 					
 					$calRes.='<td>'.$vlCal[$c]['sample_label'].'</td>
@@ -554,6 +559,7 @@ foreach($this->result['shipment'] as $result){
 						<td>'.$vlCal[$c]['sd'].'</td>
 						<td>'.$vlCal[$c]['cv'].'</td>
 					  </tr>';
+					}
 				}
 				$calRes.='</table>';
 				

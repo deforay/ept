@@ -260,13 +260,19 @@ class Application_Service_Schemes {
                 if($row['use_range'] == 'manual'){
                     $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['manual_low_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['manual_high_limit'];
+                    $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['mean'];
+                    $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['sd'];
                 }else{
                     $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
-                    $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];                    
+                    $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];
+                    $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['mean'];
+                    $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['sd'];
                 }
             }else{
                     $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
-                    $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];                    
+                    $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];
+                    $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['mean'];
+                    $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['sd'];
             }
         }
         return $response;
