@@ -239,21 +239,36 @@ class Application_Service_Shipments {
                 "detection_assay_expiry_date" => Pt_Commons_General::dateFormat($params['detectionAssayExpiryDate']),
                 "extraction_assay_lot_no" => $params['extractionAssayLotNo'],
                 "detection_assay_lot_no" => $params['detectionAssayLotNo'],
-				"uploaded_file" => $params['uploadedFilePath']);
+		"uploaded_file" => $params['uploadedFilePath']);
 			
             $attributes = json_encode($attributes);
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
-                "shipment_test_report_date" => new Zend_Db_Expr('now()'),
+		//"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "attributes" => $attributes,
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
+		"mode_id" => $params['modeOfReceipt'],
                 "updated_by_user" => $authNameSpace->dm_id,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
-
+            
+	    if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
+		$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+	    }
+	       
+	    $data['qc_done'] = $params['qcDone'];
+	    if(isset($data['qc_done']) && trim($data['qc_done'])=="yes"){
+		    $data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
+		    $data['qc_done_by'] = trim($params['qcDoneBy']);
+		    $data['qc_created_on'] = new Zend_Db_Expr('now()');
+	    }else{
+		    $data['qc_date']=NULL;
+		    $data['qc_done_by'] = NULL;
+		    $data['qc_created_on'] = NULL;
+	    }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $eidResponseDb = new Application_Model_DbTable_ResponseEid();
@@ -289,8 +304,8 @@ class Application_Service_Shipments {
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
+		//"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "attributes" => $attributes,
-                "shipment_test_report_date" => Pt_Commons_General::dateFormat($params['testReceiptDate']),
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
@@ -298,14 +313,22 @@ class Application_Service_Shipments {
                 "mode_id" => $params['modeOfReceipt'],
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
-			
-			if(isset($params['qcDate']) && trim($params['qcDate'])!=""){
+	    
+	                if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
+		            $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+	                }
+	       
+			$data['qc_done'] = $params['qcDone'];
+			if(isset($data['qc_done']) && trim($data['qc_done'])=="yes"){
 				$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
-				$data['qc_done_by'] = $authNameSpace->dm_id;
+				$data['qc_done_by'] = trim($params['qcDoneBy']);
 				$data['qc_created_on'] = new Zend_Db_Expr('now()');
 			}else{
 				$data['qc_date']=NULL;
+				$data['qc_done_by'] = NULL;
+				$data['qc_created_on'] = NULL;
 			}
+			
 			if(isset($params['customField1']) && trim($params['customField1']) != ""){
 				$data['custom_field_1'] = $params['customField1'];
 			}
@@ -424,15 +447,28 @@ class Application_Service_Shipments {
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
                 "attributes" => $attributes,
-                "shipment_test_report_date" => new Zend_Db_Expr('now()'),
+                //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
-				"mode_id" => $params['modeOfReceipt'],
+		"mode_id" => $params['modeOfReceipt'],
                 "updated_by_user" => $authNameSpace->dm_id,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
-
+               if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
+		  $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+	       }
+	       
+	       $data['qc_done'] = $params['qcDone'];
+		if(isset($data['qc_done']) && trim($data['qc_done'])=="yes"){
+			$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
+			$data['qc_done_by'] = trim($params['qcDoneBy']);
+			$data['qc_created_on'] = new Zend_Db_Expr('now()');
+		}else{
+			$data['qc_date']=NULL;
+			$data['qc_done_by'] = NULL;
+			$data['qc_created_on'] = NULL;
+		}
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $dbsResponseDb = new Application_Model_DbTable_ResponseDbs();
@@ -469,14 +505,29 @@ class Application_Service_Shipments {
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
                 "attributes" => $attributes,
-                "shipment_test_report_date" => new Zend_Db_Expr('now()'),
+                //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
+		"mode_id" => $params['modeOfReceipt'],
                 "updated_by_user" => $authNameSpace->dm_id,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
-
+               
+	        if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
+		    $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+	        }
+		
+	        $data['qc_done'] = $params['qcDone'];
+		if(isset($data['qc_done']) && trim($data['qc_done'])=="yes"){
+			$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
+			$data['qc_done_by'] = trim($params['qcDoneBy']);
+			$data['qc_created_on'] = new Zend_Db_Expr('now()');
+		}else{
+			$data['qc_date']=NULL;
+			$data['qc_done_by'] = NULL;
+			$data['qc_created_on'] = NULL;
+		}
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
@@ -521,21 +572,27 @@ class Application_Service_Shipments {
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
                 "attributes" => $attributes,
-                "shipment_test_report_date" => Pt_Commons_General::dateFormat($params['testReceiptDate']),
+		//"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
                 "updated_by_user" => $authNameSpace->dm_id,
-				"mode_id" => $params['modeOfReceipt'],
+		"mode_id" => $params['modeOfReceipt'],
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
+	                if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
+		            $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+	                }
 			
-			if(isset($params['qcDate']) && trim($params['qcDate'])!=""){
+			$data['qc_done'] = $params['qcDone'];
+			if(isset($data['qc_done']) && trim($data['qc_done']) == "yes"){
 				$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
-				$data['qc_done_by'] = $authNameSpace->dm_id;
+				$data['qc_done_by'] = trim($params['qcDoneBy']);
 				$data['qc_created_on'] = new Zend_Db_Expr('now()');
 			}else{
 				$data['qc_date']=NULL;
+				$data['qc_done_by'] = NULL;
+				$data['qc_created_on'] = NULL;
 			}
 			
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);

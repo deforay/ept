@@ -147,7 +147,7 @@ $count++;  ?>
 			<input type="text" name="assayExpirationDate" id="assayExpirationDate" style="width:180px;float:left;"  class="isRequired expDatepicker form-control" readonly="readonly"  value="<?php echo $this->dateFormat($this->shipment['attributes']['assay_expiration_date']);?>" title="Please enter Assay Expiration date" placeholder="Please enter Assay Expiration date"/>
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('assayExpirationDate')"> Clear</i>
 		</td>
-		<td><label>Assay Lot Number <span class="mandatory">*</span></label></td> 
+		<td><label>Assay Lot Number <span class="mandatory">*</span></label></td>
 		<td>
 			<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired form-control"  value="<?php echo $this->shipment['attributes']['assay_lot_number'];?>" title="Please enter Assay lot number" placeholder="Please enter Assay lot number"/>
 		</td>
@@ -156,7 +156,7 @@ $count++;  ?>
 		<?php
 		if(isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date!= null && $authNameSpace->enable_adding_test_response_date!= '' && $authNameSpace->enable_adding_test_response_date=='yes'){
 			?>
-			<td><label> Shipment Test Response Date </label></td>
+			<td><label> Response Date </label></td>
 			<td>
 			    <input type="text" id="testReceiptDate" name="testReceiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $testReceiptDate; ?>" class="form-control datepicker" readonly="readonly"   title="Please enter Shipment Test Response Date " />
 			    <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testReceiptDate')"> Clear</i>
@@ -164,17 +164,11 @@ $count++;  ?>
 		<?php } ?>
 		<td><label>Mode of Receipt</label></td>
 		<td>
-			<select name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
-				<option>--Select--</option>
+			<select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
 				<?php
 				foreach ($this->modeOfReceipt as $receipt){
-					if(isset($this->shipment["mode_id"]) && $this->shipment["mode_id"]!= ''){
-					   $selectedReceiptId = $this->shipment["mode_id"];
-					}else{
-					   $selectedReceiptId =5;	
-					}
 				?>
-				  <option value="<?php echo $receipt['mode_id']; ?>"  <?php echo ($selectedReceiptId == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
+				  <option value="<?php echo $receipt['mode_id']; ?>"  <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
 				<?php
 				}
 				?>
@@ -189,13 +183,32 @@ $count++;  ?>
 		if($this->globalQcAccess=='yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access!= null && $authNameSpace->qc_access!= '' && $authNameSpace->qc_access=='yes')){
 	?>
 	<tr>
+	   <td><label>QC Done</label></td>
+	   <td><input type="radio" id="qcDoneYes" name="qcDone" value="yes" <?php echo ($this->shipment['qc_done']=="yes") ? " checked='checked' " : ""; ?> onclick="checkQcStatus();"/> <strong>Yes</strong>&nbsp;&nbsp;<input type="radio" class="isRequired" id="qcDoneNo" name="qcDone" title="Please select QC done status" <?php echo ($this->shipment['qc_done']== null || $this->shipment['qc_done']=="" || $this->shipment['qc_done']=="no") ? " checked='checked' " : ""; ?> value="no" onclick="checkQcStatus();"/> <strong>No</strong> </td>
+	   <td colspan="2"></td>
+	</tr>
+	
+	<?php
+	$display = "display:none";
+	$isRquired = "";
+	if(isset($this->shipment['qc_done']) && $this->shipment['qc_done'] == "yes"){
+	   $display = "";
+	   $isRquired = "isRequired";
+	}
+	?>
+	   <tr id="qcSection" style="<?php echo $display; ?>;">
 		<td><label>QC Date</label></td>
 		<td>
-			<input type="text" id="qcDate" name="qcDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["qc_date"]); ?>"   class="form-control datepicker" readonly="readonly" title="Please enter Shipment Test Date"  />
+			<input type="text" id="qcDate" name="qcDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["qc_date"]); ?>"   class="form-control datepicker <?php echo $isRquired; ?>" readonly="readonly" title="Please enter QC Date"  />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('qcDate')"> Clear</i>
 		</td>
-		<td colspan="2"></td>
-	</tr>
+		<td>
+			<label>QC Done By</label>
+		</td>
+		<td>
+			<input type="text" id="qcDoneBy" name="qcDoneBy" class="form-control <?php echo $isRquired; ?>" title="Please enter QC done by name"  value="<?php echo $this->shipment['qc_done_by']; ?>"/>
+		</td>
+	  </tr>
 	<?php } ?>
 </table>
 <hr>
@@ -270,13 +283,13 @@ $count++;
 	<th style="width:20%;">Supervisor Review</th>
 	<td style="width:20%;">
 		<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
-			<option>--Select--</option>
+			<option value="">--Select--</option>
 			<option value="yes" <?php if($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>Yes</option>
 			<option value="no" <?php if($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>No</option>
 		</select>
 	</td>
 	<th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
-	<td><input name="participantSupervisor" id="participantSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>  type="text" class=" form-control" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
+	<td><input name="participantSupervisor" id="participantSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>  type="text" class="form-control" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
 	
 </tr>
 
@@ -312,7 +325,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 <?php if(!$this->isEditable){
 		?>
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-			<input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />
+			<input name="cancel" class="btn btn-info" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />
 		</div>
 		<?php
 }
@@ -355,10 +368,9 @@ $dtFormat=  $genderHelper->getDateFormat();
 
 	$(function() {
 		<?php
-		 if(isset($this->shipment['attributes']['vl_assay']) && $this->shipment['attributes']['vl_assay'] != ""){
-			echo "showHideOtherAssay(".$this->shipment['attributes']['vl_assay'].");";
-		 }
-		?>
+		 if(isset($this->shipment['attributes']['vl_assay']) && $this->shipment['attributes']['vl_assay'] != ""){ ?>
+			showHideOtherAssay("<?php echo $this->shipment['attributes']['vl_assay']; ?>");
+		<?php } ?>
   	   // $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>',maxDate: '0', minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
   	    //$(".expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
 		$(".datepicker,.expDatepicker").datepicker({dateFormat: '<?php echo $dtFormat; ?>'});
@@ -410,6 +422,21 @@ $dtFormat=  $genderHelper->getDateFormat();
 	});
 	
 	function clearDate(id) {
-		$("#" + id).val('');
+	    $("#" + id).val('');
+	}
+	
+	function checkQcStatus(){
+	   var radioValue = $("input[name='qcDone']:checked"). val();
+	   if(radioValue == "yes"){
+		$("#qcSection").show();
+		$("#qcDate").addClass("isRequired");
+		$("#qcDoneBy").addClass("isRequired");
+	   }else{
+		$("#qcSection").hide();
+		$("#qcDate").val("");
+		$("#qcDoneBy").val("");
+		$("#qcDate").removeClass("isRequired");
+		$("#qcDoneBy").removeClass("isRequired");
+	   }
 	}
   </script>

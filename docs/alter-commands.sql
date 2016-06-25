@@ -2160,3 +2160,18 @@ ALTER TABLE  `shipment_participant_map` ADD  `mode_id` INT NULL DEFAULT NULL ;
 ALTER TABLE `data_manager` ADD `enable_adding_test_response_date` VARCHAR(45) NULL DEFAULT NULL AFTER `qc_access`;
 
 INSERT INTO `eanalyze`.`r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES (NULL, 'Online Response');
+
+--Pal 25th-JUN-2016
+ALTER TABLE `shipment_participant_map` CHANGE `qc_done_by` `qc_done_by` VARCHAR(255) NULL DEFAULT NULL;
+
+ALTER TABLE `shipment_participant_map` ADD `qc_done` VARCHAR(45) NULL DEFAULT NULL AFTER `last_not_participated_mail_count`;
+
+ALTER TABLE `shipment_participant_map` CHANGE `qc_done` `qc_done` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'no';
+
+-- Re-ordered mode--
+INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
+(1, 'Online Response'),
+(2, 'Courier'),
+(3, 'Email'),
+(4, 'Scan'),
+(5, 'SMS');

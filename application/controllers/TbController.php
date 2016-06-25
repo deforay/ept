@@ -45,6 +45,10 @@ class TbController extends Zend_Controller_Action
             $this->view->eID = $eID;
     
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID,$pID);
+	    
+	    $commonService = new Application_Service_Common();
+	    $this->view->modeOfReceipt=$commonService->getAllModeOfReceipt();
+	    $this->view->globalQcAccess=$commonService->getConfig('qc_access');
     	}
     }
     

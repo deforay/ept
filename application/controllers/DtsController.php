@@ -55,15 +55,15 @@ class DtsController extends Zend_Controller_Action
 	    //
 	    $this->view->isEditable = $shipmentService->isShipmentEditable($sID,$pID);
 		
-		$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-        $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
-        $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
-        $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
+	    $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+	    $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
+	    $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
+	    $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
 		
-		$commonService = new Application_Service_Common();
-		$this->view->modeOfReceipt=$commonService->getAllModeOfReceipt();
-		$this->view->globalQcAccess=$commonService->getConfig('qc_access');
-		
+	    $commonService = new Application_Service_Common();
+	    $this->view->modeOfReceipt=$commonService->getAllModeOfReceipt();
+	    $this->view->globalQcAccess=$commonService->getConfig('qc_access');
+
 	}
     }
 	
