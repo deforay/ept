@@ -367,8 +367,12 @@ class Application_Service_Shipments {
                 "participant_supervisor" =>'',
                 "user_comment" => '',
                 "final_result" => '',
+		"updated_on_user" => new Zend_Db_Expr('now()'),
                 "updated_by_user" => $authNameSpace->dm_id,
-                "updated_on_user" => new Zend_Db_Expr('now()')
+		"qc_date"=>'',
+		"qc_done_by" => '',
+		"qc_created_on" => '',
+		"mode_id" => ''
             );
              $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
             
@@ -393,8 +397,12 @@ class Application_Service_Shipments {
                 "participant_supervisor" =>'',
                 "user_comment" => '',
                 "final_result" => '',
-                "updated_by_user" => $authNameSpace->dm_id,
-                "updated_on_user" => new Zend_Db_Expr('now()')
+		"updated_on_user" => new Zend_Db_Expr('now()'),
+		"updated_by_user" => $authNameSpace->dm_id,
+		"qc_date"=>'',
+		"qc_done_by" => '',
+		"qc_created_on" => '',
+		"mode_id" => ''
             );
              $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
             
@@ -419,8 +427,12 @@ class Application_Service_Shipments {
                 "participant_supervisor" =>'',
                 "user_comment" => '',
                 "final_result" => '',
-                "updated_by_user" => $authNameSpace->dm_id,
-                "updated_on_user" => new Zend_Db_Expr('now()')
+                "updated_on_user" => new Zend_Db_Expr('now()'),
+		"updated_by_user" => $authNameSpace->dm_id,
+		"qc_date"=>'',
+		"qc_done_by" => '',
+		"qc_created_on" => '',
+		"mode_id" => ''
             );
              $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
             
