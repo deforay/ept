@@ -1,7 +1,16 @@
 <?php
 //Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
 
-//Zend_Debug::dump($this->result);die;
+//Zend_Debug::dump($this->result);
+//foreach($this->result['vlGraphResult'] as $key=>$vlRes){
+//	//print_r($vlRes);
+//	echo "Low ".$vlRes['low'];
+//	echo "hig ".$vlRes['high']."<br/>";
+//	foreach($vlRes['vl'] as $val){
+//		echo $val;
+//	}
+//}
+//die;
 require_once('tcpdf/tcpdf.php');
 $schemeType = $this->result['shipment'][0]['scheme_type'];
 //var_dump($this->result['shipment'][0]['responseResult'][0]['testkit1']);die;
@@ -476,27 +485,45 @@ foreach($this->result['shipment'] as $result){
 							<td style="">High</td>
 							<td style="">Your Grade</td>
 						</tr>';
-			foreach($result['responseResult'] as $response){
-				$labRes.='<tr>
-							<td style="text-align:center;">'.$response['sample_label'].'</td>
-							<td>'.$response['reported_viral_load'].'</td>
-							<td>'.$response['mean'].'</td>
-							<td>'.$response['sd'].'</td>
-							<td>'.$response['low'].'</td>
-							<td>'.$response['high'].'</td>
-							<td>'.$response['grade'].'</td>
-						  </tr>';
+			if($result['is_excluded'] == 'yes'){
+				foreach($result['responseResult'] as $response){
+					$labRes.='<tr>
+								<td style="text-align:center;">'.$response['sample_label'].'</td>
+								<td>'.$response['reported_viral_load'].'</td>
+								<td>'.$response['mean'].'</td>
+								<td>'.$response['sd'].'</td>
+								<td>'.$response['low'].'</td>
+								<td>'.$response['high'].'</td>
+								<td>Manual Exclusion</td>
+							  </tr>';
+				}
+			}else{
+				foreach($result['responseResult'] as $response){
+					$labRes.='<tr>
+								<td style="text-align:center;">'.$response['sample_label'].'</td>
+								<td>'.$response['reported_viral_load'].'</td>
+								<td>'.$response['mean'].'</td>
+								<td>'.$response['sd'].'</td>
+								<td>'.$response['low'].'</td>
+								<td>'.$response['high'].'</td>
+								<td>'.$response['grade'].'</td>
+							  </tr>';
+				}
 			}
 			$labRes.='</table>';
 			$pdf->SetLeftMargin(15);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
-			
-			
-			
-			
 		}
 	}
 	
+	include_once("pChart/class/pData.class.php"); 
+	include_once("pChart/class/pDraw.class.php");
+	include_once("pChart/class/pImage.class.php"); 
+	include_once("pChart/class/pScatter.class.php"); 
+	
+	
+ 
+ 
 	
 	if(trim($result['shipment_score'])!=""){
 		$shipmentScore=$result['shipment_score'];
@@ -506,14 +533,15 @@ foreach($this->result['shipment'] as $result){
 	
 	//$maxDocumentationPoints = $config->evaluation->dts->documentationScore;
 	//$maxResponsePoints = 100-$maxDocumentationPoints;
-	$score=$shipmentScore;
+	$score=($shipmentScore/count($result['responseResult']))*100;
 	//$score=100*round($shipmentScore/$result['max_score'],2);
 	
 	
-	if($result['is_excluded'] == 'yes'){
-		$wishes='<p>Your response was not considered for evaluation</p><br/>';
-	}
-	else if($score>=$this->passPercentage){
+	//if($result['is_excluded'] == 'yes'){
+	//	$wishes='<p>Your response was not considered for evaluation</p><br/>';
+	//}
+	
+	if($score>=$this->passPercentage){
 		$wishes='<p>Congratulations! You have received a satisfactory score of '.round($score,2).'%.</p><br/>';
 	}else{
 		$wishes='<p>You have received a score of '.round($score,2).'%.</p><br/>';
@@ -566,6 +594,86 @@ foreach($this->result['shipment'] as $result){
 				$pdf->writeHTML($calRes, true, false, true, false, '');
 			}
 		}
+		
+		foreach($this->result['vlGraphResult'] as $key=>$vlRes){
+		/* Create and populate the pData object */
+		$myData = new pData();  
+		foreach($vlRes['vl'] as $val){
+			$myData->addPoints($val,"Probe 1");
+		}
+		$myData->addPoints(array($vlRes['low'],$vlRes['high']),"Probe 2");
+		/* Create the X axis and the binded series */
+		//for ($i=0;$i<=360;$i=$i+10) { $myData->addPoints(rand(1,20)*10+rand(0,$i),"Probe 1"); }
+		//for ($i=0;$i<=360;$i=$i+10) { $myData->addPoints(rand(1,2)*10+rand(0,$i),"Probe 2"); }
+		$myData->setAxisName(0,"X-Index");
+		$myData->setAxisXY(0,AXIS_X);
+		$myData->setAxisPosition(0,AXIS_POSITION_TOP);
+		
+		/* Create the Y axis and the binded series */
+		for ($i=0;$i<=390;$i=$i+1) { $myData->addPoints($i,"Probe 3"); }
+		$myData->setSerieOnAxis("Probe 3",1);
+		$myData->setAxisName(1,"Y-Index");
+		$myData->setAxisXY(1,AXIS_Y);
+		$myData->setAxisPosition(1,AXIS_POSITION_LEFT);
+		
+		/* Create the 1st scatter chart binding */
+		$myData->setScatterSerie("Probe 1","Probe 3",0);
+		$myData->setScatterSerieDescription(0,"This year");
+		$myData->setScatterSerieColor(0,array("R"=>0,"G"=>0,"B"=>0));
+		
+		/* Create the 2nd scatter chart binding */
+		$myData->setScatterSerie("Probe 2","Probe 3",1);
+		$myData->setScatterSerieDescription(1,"Last Year");
+		
+		/* Create the pChart object */
+		$myPicture = new pImage(400,400,$myData);
+		
+		/* Draw the background */
+		$Settings = array("R"=>170, "G"=>183, "B"=>87, "Dash"=>1, "DashR"=>190, "DashG"=>203, "DashB"=>107);
+		$myPicture->drawFilledRectangle(0,0,400,400,$Settings);
+		
+		/* Overlay with a gradient */
+		$Settings = array("StartR"=>219, "StartG"=>231, "StartB"=>139, "EndR"=>1, "EndG"=>138, "EndB"=>68, "Alpha"=>50);
+		$myPicture->drawGradientArea(0,0,400,400,DIRECTION_VERTICAL,$Settings);
+		$myPicture->drawGradientArea(0,0,400,20,DIRECTION_VERTICAL,array("StartR"=>0,"StartG"=>0,"StartB"=>0,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>80));
+		
+		/* Write the picture title */ 
+		$myPicture->setFontProperties(array("FontName"=>"../fonts/Silkscreen.ttf","FontSize"=>6));
+		$myPicture->drawText(10,13,"drawScatterBestFit() - Linear regression",array("R"=>255,"G"=>255,"B"=>255));
+		
+		/* Add a border to the picture */
+		$myPicture->drawRectangle(0,0,399,399,array("R"=>0,"G"=>0,"B"=>0));
+		
+		/* Set the default font */
+		$myPicture->setFontProperties(array("FontName"=>"../fonts/pf_arma_five.ttf","FontSize"=>6));
+		
+		/* Set the graph area */
+		$myPicture->setGraphArea(50,60,350,360);
+		
+		/* Create the Scatter chart object */
+		$myScatter = new pScatter($myPicture,$myData);
+		
+		/* Draw the scale */
+		$myScatter->drawScatterScale();
+		
+		/* Turn on shadow computing */
+		$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
+
+		/* Draw a scatter plot chart */
+		$myScatter->drawScatterPlotChart();
+	
+		/* Draw the legend */
+		$myScatter->drawScatterLegend(280,380,array("Mode"=>LEGEND_HORIZONTAL,"Style"=>LEGEND_NOBORDER));
+	
+		$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR.$result['shipment_code']. DIRECTORY_SEPARATOR.'scatter-chart.png';
+		//$myPicture->autoOutput("pictures/example.drawBubbleChart.png"); 
+		$myPicture->render("$image_file");
+		
+		$pdf->Image($image_file, 5, $pdf->getY()+5, '', '', '', '', '', false, 300);
+		if (file_exists($image_file)) {
+			unlink($image_file);
+		}
+}
 	}
 	//if(trim($result['distribution_date'])!=""){
 	//	$result['distribution_date']=$this->dateFormat($result['distribution_date']);

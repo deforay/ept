@@ -938,8 +938,46 @@ class Application_Service_Evaluation {
 				//print_r($vlAssayList);die;
                 $vlRange = $schemeService->getVlRange($shipmentId);
                 $results = $schemeService->getVlSamples($shipmentId, $res['participant_id']);
+                //$assayResults = $schemeService->getShipmentParticipantBassedAssay($shipmentId);
 				
                 $attributes = json_decode($res['attributes'], true);
+				$attributes['vl_assay'];
+				
+				
+//				$sQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id','sp.participant_id','attributes'))
+//						->where("is_excluded=?",'no')
+//                        ->where("sp.shipment_id = ?", $shipmentId);
+//				$spmResult=$db->fetchAll($sQuery);
+				
+				$sql = $db->select()->from(array('ref' => 'reference_result_vl'),array('sample_id','ref.sample_label'))
+                ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
+                ->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
+                ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+				->where("is_excluded=?",'no')
+                ->where('sp.shipment_id = ? ', $shipmentId);
+				$spmResult=$db->fetchAll($sql);
+				
+				$vlCalQuery=$db->select()->from(array('refvlcal' => 'reference_vl_calculation'), array('refvlcal.sample_id','refvlcal.low_limit','refvlcal.high_limit'))
+										->where("refvlcal.vl_assay = ?", $attributes['vl_assay'])
+										->where("refvlcal.shipment_id = ?", $shipmentId);
+				//die;
+				$vlGraphResult = array();
+				foreach($spmResult as $val){
+					$valAttributes = json_decode($val['attributes'], true);
+					if($attributes['vl_assay']==$valAttributes['vl_assay']){
+						if (array_key_exists($val['sample_label'], $vlGraphResult)) {
+							$vlGraphResult[$val['sample_label']]['vl'][]=$val['reported_viral_load'];
+						}else{
+							$vlGraphResult[$val['sample_label']]=array();							
+							$vlGraphResult[$val['sample_label']]['low']= $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'];
+							$vlGraphResult[$val['sample_label']]['high']= $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'];
+							
+						}
+					}
+				}
+				
+				//print_r($vlGraphResult);
+				//die;
                 $counter = 0;
                 $toReturn = array();
                 foreach ($results as $result) {
@@ -1019,7 +1057,7 @@ class Application_Service_Evaluation {
             }
         }
 		
-        $result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'dmResult' => $mapRes);
+        $result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'dmResult' => $mapRes,'vlGraphResult'=>$vlGraphResult);
 
         return $result;
     }
