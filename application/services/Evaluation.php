@@ -932,10 +932,6 @@ class Application_Service_Evaluation {
                 $vlAssayResultSet = $schemeService->getVlAssay();
                 $vlAssayList = array();
 				
-                //foreach ($vlAssayResultSet as $vlAssayRow) {
-                //    $vlAssayList[$vlAssayRow['id']] = $vlAssayRow['name'];
-                //}
-				//print_r($vlAssayList);die;
                 $vlRange = $schemeService->getVlRange($shipmentId);
                 $results = $schemeService->getVlSamples($shipmentId, $res['participant_id']);
                 //$assayResults = $schemeService->getShipmentParticipantBassedAssay($shipmentId);
@@ -944,17 +940,14 @@ class Application_Service_Evaluation {
 				$attributes['vl_assay'];
 				
 				
-//				$sQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id','sp.participant_id','attributes'))
-//						->where("is_excluded=?",'no')
-//                        ->where("sp.shipment_id = ?", $shipmentId);
-//				$spmResult=$db->fetchAll($sQuery);
-				
 				$sql = $db->select()->from(array('ref' => 'reference_result_vl'),array('sample_id','ref.sample_label'))
-                ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
-                ->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
-                ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-				->where("is_excluded=?",'no')
-                ->where('sp.shipment_id = ? ', $shipmentId);
+					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
+					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
+					->join(array('p' => 'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier'))
+					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+					->where("is_excluded=?",'no')
+					->where('sp.shipment_id = ? ', $shipmentId);
+				
 				$spmResult=$db->fetchAll($sql);
 				
 				$vlCalQuery=$db->select()->from(array('refvlcal' => 'reference_vl_calculation'), array('refvlcal.sample_id','refvlcal.low_limit','refvlcal.high_limit'))
@@ -967,8 +960,9 @@ class Application_Service_Evaluation {
 					if($attributes['vl_assay']==$valAttributes['vl_assay']){
 						if (array_key_exists($val['sample_label'], $vlGraphResult)) {
 							$vlGraphResult[$val['sample_label']]['vl'][]=$val['reported_viral_load'];
+							$vlGraphResult[$val['sample_label']]['pId'][]="lab ".$val['unique_identifier'];
 						}else{
-							$vlGraphResult[$val['sample_label']]=array();							
+							$vlGraphResult[$val['sample_label']]=array();
 							$vlGraphResult[$val['sample_label']]['low']= $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'];
 							$vlGraphResult[$val['sample_label']]['high']= $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'];
 							
