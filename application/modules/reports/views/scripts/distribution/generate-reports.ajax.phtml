@@ -485,8 +485,9 @@ foreach($this->result['shipment'] as $result){
 							<td style="">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
 							<td style="">Mean<br/>(log<sub>10</sub> copies/ml)</td>
 							<td style="">S.D.</td>
-							<td style="">Low</td>
-							<td style="">High</td>
+							<td style=""># of Labs</td>
+							<td style="">Low <br/> Acceptable Limit</td>
+							<td style="">High <br/> Acceptable Limit</td>
 							<td style="">Your Grade</td>
 						</tr>';
 			if($result['is_excluded'] == 'yes'){
@@ -496,6 +497,7 @@ foreach($this->result['shipment'] as $result){
 								<td>'.$response['reported_viral_load'].'</td>
 								<td>'.$response['mean'].'</td>
 								<td>'.$response['sd'].'</td>
+								<td>'.$response['no_of_participants'].'</td>
 								<td>'.$response['low'].'</td>
 								<td>'.$response['high'].'</td>
 								<td>Manual Exclusion</td>
@@ -508,6 +510,7 @@ foreach($this->result['shipment'] as $result){
 								<td>'.$response['reported_viral_load'].'</td>
 								<td>'.$response['mean'].'</td>
 								<td>'.$response['sd'].'</td>
+								<td>'.$response['no_of_participants'].'</td>
 								<td>'.$response['low'].'</td>
 								<td>'.$response['high'].'</td>
 								<td>'.$response['grade'].'</td>
@@ -525,9 +528,6 @@ foreach($this->result['shipment'] as $result){
 	include_once("pChart/class/pImage.class.php"); 
 	include_once("pChart/class/pScatter.class.php"); 
 	
-	
- 
- 
 	
 	if(trim($result['shipment_score'])!=""){
 		$shipmentScore=$result['shipment_score'];
@@ -675,6 +675,7 @@ foreach($this->result['shipment'] as $result){
 					<td style="">Specimen ID </td>
 					<td style="">Mean<br/>(log<sub>10</sub> copies/ml)</td>
 					<td style="">S.D.</td>
+					<td style=""># of Labs</td>
 					<td style="">CV</td>
 				</tr>';
 				//Zend_Debug::dump($vlCal[0]['low_limit']);
@@ -692,6 +693,7 @@ foreach($this->result['shipment'] as $result){
 					$calRes.='<td>'.$vlCal[$c]['sample_label'].'</td>
 						<td>'.$vlCal[$c]['mean'].'</td>
 						<td>'.$vlCal[$c]['sd'].'</td>
+						<td>'.$vlCal['participant-count'][$vlCal[$c]['sample_label']].'</td>
 						<td>'.$vlCal[$c]['cv'].'</td>
 					  </tr>';
 					}
