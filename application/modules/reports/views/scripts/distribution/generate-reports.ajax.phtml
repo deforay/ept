@@ -571,7 +571,15 @@ foreach($this->result['shipment'] as $result){
 			foreach($vlRes['vl'] as $val){
 				$myData->addPoints($val,"Probe 1");
 			}
+			if(isset($vlRes['NA'])){
+				foreach($vlRes['NA'] as $val){
+					$myData->addPoints($val,"Probe 5");
+				}
+			}
+			
+
 			$myData->addPoints(array($vlRes['low'],$vlRes['high']),"Probe 2");
+			$myData->addPoints(array($vlRes['pVal']),"Probe 4");
 			/* Create the X axis and the binded series */
 			
 			$myData->setAxisName(0,"X-Index");
@@ -588,11 +596,21 @@ foreach($this->result['shipment'] as $result){
 			/* Create the 1st scatter chart binding */
 			$myData->setScatterSerie("Probe 1","Probe 3",0);
 			$myData->setScatterSerieDescription(0,"VL Val");
-			$myData->setScatterSerieColor(0,array("R"=>0,"G"=>0,"B"=>0));
+			$myData->setScatterSerieColor(0,array("R"=>28,"G"=>87,"B"=>3));
 			
 			/* Create the 2nd scatter chart binding */
 			$myData->setScatterSerie("Probe 2","Probe 3",1);
 			$myData->setScatterSerieDescription(1,"Low/High Val");
+			
+			/* Create the 3rd scatter chart binding */
+			$myData->setScatterSerie("Probe 4","Probe 3",2);
+			$myData->setScatterSerieDescription(2,"PT Val");
+			$myData->setScatterSerieColor(2,array("R"=>15,"G"=>50,"B"=>190));
+			
+			/* Create the 4th scatter chart binding */
+			$myData->setScatterSerie("Probe 5","Probe 3",3);
+			$myData->setScatterSerieDescription(3,"PT Val");
+			$myData->setScatterSerieColor(3,array("R"=>205,"G"=>8,"B"=>8));
 			
 			/* Create the pChart object */
 			$myPicture = new pImage(400,400,$myData);
@@ -664,7 +682,7 @@ foreach($this->result['shipment'] as $result){
 			}
 			$c++;
 		}
-	
+		
 		if(count($this->result['vlCalculation'])>0){
 				
 			foreach($this->result['vlCalculation'] as $vlCal){
