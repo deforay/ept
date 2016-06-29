@@ -1,16 +1,6 @@
 <?php
 //Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
-
-//Zend_Debug::dump($this->result);
-//foreach($this->result['vlGraphResult'] as $key=>$vlRes){
-//	//print_r($vlRes);
-//	echo "Low ".$vlRes['low'];
-//	echo "hig ".$vlRes['high']."<br/>";
-//	foreach($vlRes['vl'] as $val){
-//		echo $val;
-//	}
-//}
-//die;
+//Zend_Debug::dump($this->result);die;
 require_once('tcpdf/tcpdf.php');
 $schemeType = $this->result['shipment'][0]['scheme_type'];
 //var_dump($this->result['shipment'][0]['responseResult'][0]['testkit1']);die;
@@ -718,6 +708,37 @@ foreach($this->result['shipment'] as $result){
 				}
 				$calRes.='</table>';
 				
+				$pdf->writeHTML($calRes, true, false, true, false, '');
+			}
+		}
+		
+		if(count($this->result['pendingAssay'])>0){
+			foreach($this->result['pendingAssay'] as $key=>$vlCal){
+				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results</h5>';
+				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
+				<tr>
+					<td style="">Platform </td>
+					<td style="">Specimen ID </td>
+					<td style="">Low Acceptable Limit</td>
+					<td style="">High Acceptable Limit</td>
+					<td style=""># of Labs</td>
+				</tr>';
+				$n=count($vlCal['specimen']);
+				$l=0;
+				foreach($vlCal['specimen'] as $key=>$val){
+					$calRes.='<tr>';
+					if($l==0){
+					$calRes.='<td style="text-align:center;" rowspan="'.$n.'">'.$vlCal['shortName'].'</td>';
+					}
+					$calRes.='<td>'.$key.'</td>';
+					$calRes.='<td>'.min($val).'</td>';
+					$calRes.='<td>'.max($val).'</td>';
+					$calRes.='<td>'.count($val).'</td>';
+					$calRes.='</tr>';
+					$l++;
+				}
+				
+				$calRes.='</table>';
 				$pdf->writeHTML($calRes, true, false, true, false, '');
 			}
 		}
