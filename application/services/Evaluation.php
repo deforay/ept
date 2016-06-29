@@ -954,7 +954,7 @@ class Application_Service_Evaluation {
 					$valAttributes = json_decode($val['attributes'], true);
 					if($attributes['vl_assay']==$valAttributes['vl_assay']){
 						if (array_key_exists($val['sample_label'], $vlGraphResult)) {
-							if ($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'] <= $val['reported_viral_load'] && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'] >= $val['reported_viral_load']) {
+							if (isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'] <= $val['reported_viral_load'] && isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'] >= $val['reported_viral_load']) {
                                 $vlGraphResult[$val['sample_label']]['vl'][]=$val['reported_viral_load'];
                             } else {
                                 $vlGraphResult[$val['sample_label']]['NA'][]=$val['reported_viral_load'];
@@ -962,13 +962,17 @@ class Application_Service_Evaluation {
 							//$vlGraphResult[$val['sample_label']]['pId'][]="lab ".$val['unique_identifier'];
 						}else{
 							$vlGraphResult[$val['sample_label']]=array();
-							if ($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'] <= $val['reported_viral_load'] && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'] >= $val['reported_viral_load']) {
+							if (isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'] <= $val['reported_viral_load'] && isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'] >= $val['reported_viral_load']) {
                                 $vlGraphResult[$val['sample_label']]['vl'][]=$val['reported_viral_load'];
                             } else {
                                 $vlGraphResult[$val['sample_label']]['NA'][]=$val['reported_viral_load'];
                             }
-							$vlGraphResult[$val['sample_label']]['low']= $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'];
-							$vlGraphResult[$val['sample_label']]['high']= $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'];
+							if(isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'])){
+								$vlGraphResult[$val['sample_label']]['low']= $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'];
+							}
+							if(isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'])){
+								$vlGraphResult[$val['sample_label']]['high']= $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'];
+							}
 						}
 					}
 				}
@@ -1064,95 +1068,23 @@ class Application_Service_Evaluation {
             $db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
             $db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);
         }
-        if ($res['scheme_type'] == 'vl') {
-            //$schemeService = new Application_Service_Schemes();
-            //$vlAssayResultSet = $schemeService->getVlAssay();
-			$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
-			//print_r($vlAssayResultSet);die;
-			$refVlQuery=$db->select()->from(array('ref' => 'reference_vl_calculation'),array('ref.vl_assay'))
-							->where('ref.shipment_id = ? ', $shipmentId)
-							->group('vl_assay');
-			
-			$vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id','vl.name','vl.short_name'))
-							->where("vl.id NOT IN ($refVlQuery)");
-			$pendingResult=$db->fetchAll($vlQuery);
-			$penResult = array();
-			foreach ($pendingResult as $pendingRow) {
-				$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('ref.sample_id','ref.sample_label'))
-						->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
-						->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
-						->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-						->where('sp.shipment_id = ? ', $shipmentId);
-				
-				$cResult=$db->fetchAll($cQuery);
-				
-				foreach($cResult as $val){
-					$valAttributes = json_decode($val['attributes'], true);
-					if($pendingRow['id']==$valAttributes['vl_assay']){
-						if (array_key_exists($pendingRow['id'], $penResult)) {
-							$penResult[$pendingRow['id']]['specimen'][$val['sample_label']][]=$val['reported_viral_load'];
-						}else{
-							$penResult[$pendingRow['id']]=array();
-							$penResult[$pendingRow['id']]['specimen'][$val['sample_label']][]=$val['reported_viral_load'];
-							$penResult[$pendingRow['id']]['vlAssay']=$pendingRow['name'];
-							$penResult[$pendingRow['id']]['shortName']=$pendingRow['short_name'];
-							
-						}
-					}
-				}
-			}
-			//print_r($penResult);
-			//die;
+        
 		
-            foreach ($vlAssayResultSet as $vlAssayRow) {
-                $vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
-                                ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
-                                ->where("vlCal.shipment_id=?", $res['shipment_id'])->where("vlCal.vl_assay=?", $vlAssayRow['id']));
-				
-				$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('ref.sample_id','ref.sample_label'))
-					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
-					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
-					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-					->where('sp.shipment_id = ? ', $shipmentId);
-				
-				$cResult=$db->fetchAll($cQuery);
-				
-				$labResult = array();
-				
-				foreach($cResult as $val){
-					$valAttributes = json_decode($val['attributes'], true);
-					if($vlAssayRow['id']==$valAttributes['vl_assay']){
-						if (array_key_exists($val['sample_label'], $labResult)) {
-							$labResult[$val['sample_label']]+=1;
-						}else{
-							$labResult[$val['sample_label']]=array();
-							$labResult[$val['sample_label']]=1;
-						}
-					}
-				}
-				
-                if (count($vlCalRes) > 0) {
-                    $vlCalculation[$vlAssayRow['id']] = $vlCalRes;
-                    $vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
-                    $vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];
-                    $vlCalculation[$vlAssayRow['id']]['participant-count'] = $labResult;
-                }
-            }
-        }
-		
-        $result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'dmResult' => $mapRes,'vlGraphResult'=>$vlGraphResult,'pendingAssay'=>$penResult);
+        $result = array('shipment' => $shipmentResult,'dmResult' => $mapRes,'vlGraphResult'=>$vlGraphResult);
 
         return $result;
     }
 
     public function getSummaryReportsInPdf($shipmentId) {
         $responseResult = "";
+		$vlCalculation = "";
+		$penResult = "";
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score'))
                 ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_code'))
                 ->where("s.shipment_id = ?", $shipmentId);
-        //error_log($sql);
+		
         $shipmentResult = $db->fetchRow($sql);
         $i = 0;
         if ($shipmentResult != "") {
@@ -1350,12 +1282,103 @@ class Application_Service_Evaluation {
                 }
             } else if ($shipmentResult['scheme_type'] == 'vl') {
                 
-            }
-
+				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes','spm.is_excluded'))
+                        ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
+                        ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
+                        ->where("spm.shipment_id = ?", $shipmentId)
+                        ->where("spm.shipment_test_report_date IS NOT NULL")
+                        ->where("spm.shipment_test_report_date!=''")
+                        ->group('spm.map_id');
+				
+                $sQueryRes = $db->fetchAll($sQuery);
+				if (count($sQueryRes) > 0) {
+					$shipmentResult['summaryResult'][] = $sQueryRes;
+				}
+				
+				$query=$db->select()->from(array('refvl' => 'reference_result_vl'),array('refvl.sample_score'))
+								->where('refvl.shipment_id = ? ',$shipmentId);
+				$smpleResult=$db->fetchAll($query);
+				$shipmentResult['no_of_samples']=count($smpleResult);
+				
+				$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
+				
+				//print_r($shipmentResult);die;
+				$refVlQuery=$db->select()->from(array('ref' => 'reference_vl_calculation'),array('ref.vl_assay'))
+								->where('ref.shipment_id = ? ',$shipmentId)
+								->group('vl_assay');
+				
+				$vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id','vl.name','vl.short_name'))
+								->where("vl.id NOT IN ($refVlQuery)");
+				$pendingResult=$db->fetchAll($vlQuery);
+				$penResult = array();
+				foreach ($pendingResult as $pendingRow) {
+					$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('ref.sample_id','ref.sample_label'))
+							->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
+							->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
+							->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+							->where('sp.shipment_id = ? ', $shipmentId);
+					
+					$cResult=$db->fetchAll($cQuery);
+					
+					foreach($cResult as $val){
+						$valAttributes = json_decode($val['attributes'], true);
+						if($pendingRow['id']==$valAttributes['vl_assay']){
+							if (array_key_exists($pendingRow['id'], $penResult)) {
+								$penResult[$pendingRow['id']]['specimen'][$val['sample_label']][]=$val['reported_viral_load'];
+							}else{
+								$penResult[$pendingRow['id']]=array();
+								$penResult[$pendingRow['id']]['specimen'][$val['sample_label']][]=$val['reported_viral_load'];
+								$penResult[$pendingRow['id']]['vlAssay']=$pendingRow['name'];
+								$penResult[$pendingRow['id']]['shortName']=$pendingRow['short_name'];
+								
+							}
+						}
+					}
+				}
+			
+				foreach ($vlAssayResultSet as $vlAssayRow) {
+					$vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
+									->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
+									->where("vlCal.shipment_id=?", $shipmentId)->where("vlCal.vl_assay=?", $vlAssayRow['id']));
+					
+					$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('ref.sample_id','ref.sample_label'))
+						->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
+						->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
+						->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+						->where('sp.shipment_id = ? ', $shipmentId);
+					
+					$cResult=$db->fetchAll($cQuery);
+					
+					$labResult = array();
+					
+					foreach($cResult as $val){
+						$valAttributes = json_decode($val['attributes'], true);
+						if($vlAssayRow['id']==$valAttributes['vl_assay']){
+							if (array_key_exists($val['sample_label'], $labResult)) {
+								$labResult[$val['sample_label']]+=1;
+							}else{
+								$labResult[$val['sample_label']]=array();
+								$labResult[$val['sample_label']]=1;
+							}
+						}
+					}
+					
+					if (count($vlCalRes) > 0) {
+						$vlCalculation[$vlAssayRow['id']] = $vlCalRes;
+						$vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
+						$vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];
+						$vlCalculation[$vlAssayRow['id']]['participant-count'] = $labResult;
+					}
+				}
+			}
+            
             $i++;
         }
+		$result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation,'pendingAssay'=>$penResult);
+
+        return $result;
         //Zend_Debug::dump($shipmentResult);die;
-        return $shipmentResult;
+        //return $shipmentResult;
     }
 
     public function getResponseReports($shipmentId) {
