@@ -502,11 +502,11 @@ foreach($this->result['shipment'] as $result){
 					$labRes.='<tr>
 								<td style="text-align:center;">'.$response['sample_label'].'</td>
 								<td>'.$response['reported_viral_load'].'</td>
-								<td>'.$response['mean'].'</td>
-								<td>'.$response['sd'].'</td>
+								<td>'.round($response['mean'],2).'</td>
+								<td>'.round($response['sd'],2).'</td>
 								<td>'.$response['no_of_participants'].'</td>
-								<td>'.$response['low'].'</td>
-								<td>'.$response['high'].'</td>
+								<td>'.round($response['low'],2).'</td>
+								<td>'.round($response['high'],2).'</td>
 								<td>'.$response['grade'].'</td>
 							  </tr>';
 				}
@@ -524,7 +524,11 @@ foreach($this->result['shipment'] as $result){
 	
 	
 	if(trim($result['shipment_score'])!=""){
-		$shipmentScore=($result['shipment_score']/$result['shipment_score'])*100;
+		if($result['shipment_score'] != 0){
+			$shipmentScore=($result['shipment_score']/$result['shipment_score'])*100;
+		}else{
+			$result['shipment_score'] = 0;
+		}
 	}
 	
 	
