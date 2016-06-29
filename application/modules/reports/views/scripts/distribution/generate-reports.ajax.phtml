@@ -543,10 +543,12 @@ foreach($this->result['shipment'] as $result){
 	//	$wishes='<p>Your response was not considered for evaluation</p><br/>';
 	//}
 	
-	if($score>=$this->passPercentage){
-		$wishes='<p>Congratulations! You have received a satisfactory score of '.round($shipmentScore,2).'%.</p><br/>';
-	}else{
-		$wishes='<p>You have received a score of '.round($shipmentScore,2).'%.</p><br/>';
+	if($schemeType != 'vl'){
+		if($score>=$this->passPercentage){
+			$wishes='<p>Congratulations! You have received a satisfactory score of '.round($shipmentScore,2).'%.</p><br/>';
+		}else{
+			$wishes='<p>You have received a score of '.round($shipmentScore,2).'%.</p><br/>';
+		}
 	}
 	//if($result['is_excluded'] != 'yes'){
 		//$wishes.="<br/><strong style='font-weight:bold;'>Score Breakup:</strong>";
