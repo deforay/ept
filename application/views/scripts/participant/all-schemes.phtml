@@ -145,7 +145,7 @@ $dtFormat=  $genderHelper->getDateFormat();
     function removeSchemes(schemeType,mid){
 		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 
 			$.blockUI();
-			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'Dts', 'action' => 'delete')); ?>", { mid: mid, format: "html" },
+			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'common', 'action' => 'delete-response')); ?>", { schemeType:schemeType, mid: mid, format: "html" },
 			    function (data) {
 				alert("Response removed successfully");
 				schemeTable.fnDraw();

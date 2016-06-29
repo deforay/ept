@@ -52,6 +52,7 @@ class VlController extends Zend_Controller_Action
 					
 				}
 			  }
+			
            
             $shipmentService->updateVlResults($data);
     		

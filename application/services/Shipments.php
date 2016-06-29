@@ -614,6 +614,7 @@ class Application_Service_Shipments {
 			$data['qc_created_on'] = NULL;
 		}
 	    }
+		
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $eidResponseDb = new Application_Model_DbTable_ResponseVl();

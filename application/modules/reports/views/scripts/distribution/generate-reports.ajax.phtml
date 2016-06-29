@@ -53,7 +53,7 @@ class MYPDF extends TCPDF {
 	//error_log($this->header);
 	//$y = $this->getY();
 	$html=$this->header;
-	
+	
 	$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
 	//$this->writeHTML($html, true, false, true, true, 'L');
 	
@@ -204,8 +204,13 @@ foreach($this->result['shipment'] as $result){
 	
 	$labInfo.='<tr>';
 	$labInfo.='	<td><strong>Participant Code</strong> <br>'.$result['unique_identifier'].'</td>';
-	$labInfo.='	<td><strong>Performing Participant</strong>  <br>'.$result['first_name']." ".$result['last_name'].'</td>';
+	if($result['scheme_type'] != 'vl'){
+		$labInfo.='	<td><strong>Performing Participant</strong>  <br>'.$result['first_name']." ".$result['last_name'].'</td>';
+	}
 	$labInfo.='	<td><strong>PT Survey Name and Date</strong> <br>'.$result['distribution_code'].'('.$result['shipment_date'].')</td>';
+	if($result['scheme_type'] == 'vl'){
+		$labInfo.='	<td></td>'; // to compensate for the cell that we removed for Performing Participant name
+	}
 	$labInfo.='</tr>';
 	
 
@@ -475,8 +480,8 @@ foreach($this->result['shipment'] as $result){
 							<td style="">Mean<br/>(log<sub>10</sub> copies/ml)</td>
 							<td style="">S.D.</td>
 							<td style=""># of Labs</td>
-							<td style="">Low <br/> Acceptable Limit</td>
-							<td style="">High <br/> Acceptable Limit</td>
+							<td style="">Lowest <br/> Acceptable Limit</td>
+							<td style="">Highest <br/> Acceptable Limit</td>
 							<td style="">Your Grade</td>
 						</tr>';
 			if($result['is_excluded'] == 'yes'){
@@ -484,11 +489,11 @@ foreach($this->result['shipment'] as $result){
 					$labRes.='<tr>
 								<td style="text-align:center;">'.$response['sample_label'].'</td>
 								<td>'.$response['reported_viral_load'].'</td>
-								<td>'.$response['mean'].'</td>
-								<td>'.$response['sd'].'</td>
+								<td>'.round($response['mean'],2).'</td>
+								<td>'.round($response['sd'],2).'</td>
 								<td>'.$response['no_of_participants'].'</td>
-								<td>'.$response['low'].'</td>
-								<td>'.$response['high'].'</td>
+								<td>'.round($response['low'],2).'</td>
+								<td>'.round($response['high'],2).'</td>
 								<td>Manual Exclusion</td>
 							  </tr>';
 				}
@@ -519,7 +524,7 @@ foreach($this->result['shipment'] as $result){
 	
 	
 	if(trim($result['shipment_score'])!=""){
-		$shipmentScore=$result['shipment_score'];
+		$shipmentScore=($result['shipment_score']/$result['shipment_score'])*100;
 	}
 	
 	
@@ -535,9 +540,9 @@ foreach($this->result['shipment'] as $result){
 	//}
 	
 	if($score>=$this->passPercentage){
-		$wishes='<p>Congratulations! You have received a satisfactory score of '.round($score,2).'%.</p><br/>';
+		$wishes='<p>Congratulations! You have received a satisfactory score of '.round($shipmentScore,2).'%.</p><br/>';
 	}else{
-		$wishes='<p>You have received a score of '.round($score,2).'%.</p><br/>';
+		$wishes='<p>You have received a score of '.round($shipmentScore,2).'%.</p><br/>';
 	}
 	//if($result['is_excluded'] != 'yes'){
 		//$wishes.="<br/><strong style='font-weight:bold;'>Score Breakup:</strong>";
@@ -654,7 +659,7 @@ foreach($this->result['shipment'] as $result){
 			if($k!=0){
 			$vlGraphTable='<table>';
 			$vlGraphTable.='<tr>';
-			}
+			}
 			$vlGraphTable.='<td><img src="'.$image_file.'" width="300"></td>';
 			if($k==0){
 				$vlGraphTable.='</tr>';

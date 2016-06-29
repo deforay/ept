@@ -4,7 +4,8 @@
   }
 </style>
 <?php
-$updatedOn = $calculatedOn = "";
+$updatedOn = "Manually Entered Limits";
+$calculatedOn = "System Calculated Limits";
 $useRange = 'calculated';
 if(isset($this->result['updated_on']) && $this->result['updated_on'] != ""){
   $updatedOnArray = explode(" ",$this->result['updated_on']);
@@ -26,18 +27,21 @@ unset($this->result['use_range']);
 
 ?>
 <form class="form" method="post" action="/admin/evaluate/vl-range">
-<table class="table table-bordered table-striped table-hover" style="width:80%;margin:0 auto;">
+<table class="table table-bordered table-striped table-hover" style="width:100%;margin:0 auto;">
     <thead>
 	  <tr>
 		<th></th>
 		<th></th>
+		<th colspan="2"></th>
 		<th style="text-align: center;" colspan="2"><?php echo $updatedOn; ?></th>
 		<th style="text-align: center;" colspan="2"><?php echo $calculatedOn; ?></th>
-		<th></th>
+		
 	  </tr>
         <tr>
             <th style="text-align: center;">Sample ID</th>
             <th style="text-align: center;">VL Assay</th>
+            <th style="text-align: center;">Mean</th>
+            <th style="text-align: center;">SD</th>
             <th style="text-align: center;">Low Limit</th>
             <th style="text-align: center;">High Limit</th>
             <th style="text-align: center;">Low Limit</th>
@@ -63,6 +67,8 @@ unset($this->result['use_range']);
 				  <td style="text-align: center;" rowspan="<?php echo $numberOfAssays; ?>"><?php echo $row['sample_label']; ?></td>
 				<?php } ?>
                 <td><?php echo $row['assay_name']; ?></td>
+                <td><?php echo $row['mean']; ?></td>
+                <td><?php echo $row['sd']; ?></td>
                 
                 <td>
 				  <input type="text" class="form-control" name="manualLow[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo isset($row['manual_low_limit']) ? $row['manual_low_limit'] : ""; ?>" style="width:100px;margin:0 auto;">
@@ -76,8 +82,8 @@ unset($this->result['use_range']);
                 <td><?php echo $row['high']; ?></td>
 				<td>
 				  <select name="useRange[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" class="form-control">
-					<option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>>Calculated</option>
-					<option value="manual" <?php echo ($row['use_range'] == 'manual') ? " selected='selected' " : "" ?>>Manual</option>
+					<option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>>System Generated</option>
+					<option value="manual" <?php echo ($row['use_range'] == 'manual') ? " selected='selected' " : "" ?>>Manually Entered</option>
 				  </select>
 				</td>
             </tr>

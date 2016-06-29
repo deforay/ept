@@ -2078,11 +2078,11 @@ INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `descr
 (3, 'Review all testing procedures prior to performing client testing as reported result does not match expected result.', 'Sample (1/2/3?) reported result does not match with expected result.'),
 (4, 'You are required to test all samples in PT panel', 'Sample (1/2/3) was not reported '),
 (5, 'Ensure expired test kit are not be used for testing. If test kits are not available, please contact your superior.', 'Test kit XYZ expired M days before the test date DD-MON-YYY.'),
-(6, 'Ensure expiry date information is submitted for all performed tests.', 'Result not evaluated Ð test kit expiry date (first/second/third) is not reported with PT response.'),
-(7, 'Ensure test kit name is reported for all performed tests.', 'Result not evaluated Ð name of test kit not reported.'),
+(6, 'Ensure expiry date information is submitted for all performed tests.', 'Result not evaluated ? test kit expiry date (first/second/third) is not reported with PT response.'),
+(7, 'Ensure test kit name is reported for all performed tests.', 'Result not evaluated ? name of test kit not reported.'),
 (8, 'Please use the approved test kits according to the SOP/National HIV Testing algorithm for confirmatory and tie-breaker.', 'Testkit XYZ repeated for all 3 test kits'),
 (9, 'Please use the approved test kits according to the SOP/National HIV Testing algorithm for confirmatory and tie-breaker.', 'Test kit repeated for confirmatory or tiebreaker test (T1/T2/T3).'),
-(10, 'Ensure test kit lot number is reported for all performed tests. ', 'Result not evaluated Ð Test Kit lot number (first/second/third) is not reported.'),
+(10, 'Ensure test kit lot number is reported for all performed tests. ', 'Result not evaluated ? Test Kit lot number (first/second/third) is not reported.'),
 (11, 'Ensure to provide supervisor approval along with his name.', 'Missing supervisor approval for reported result.'),
 (12, 'Ensure to provide sample rehydration date', 'Re-hydration date missing in PT report form.'),
 (13, 'Ensure to provide to provide panel testing date.', 'Testing date missing in PT report form.'),
@@ -2129,7 +2129,7 @@ ALTER TABLE `reference_vl_calculation` ADD `use_range` VARCHAR(255) NOT NULL DEF
 
 --ilahir 07-JUN-2016
 
-INSERT INTO `eanalyze`.`global_config` (`name`, `value`) VALUES ('qc_access', 'yes');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('qc_access', 'yes');
 ALTER TABLE  `data_manager` ADD  `qc_access` VARCHAR( 100 ) NULL DEFAULT NULL AFTER  `force_password_reset` ;
 
 ALTER TABLE  `shipment_participant_map` ADD  `qc_date` DATE NULL DEFAULT NULL ;
@@ -2159,7 +2159,7 @@ ALTER TABLE  `shipment_participant_map` ADD  `mode_id` INT NULL DEFAULT NULL ;
 --Pal 24th-JUN-2016
 ALTER TABLE `data_manager` ADD `enable_adding_test_response_date` VARCHAR(45) NULL DEFAULT NULL AFTER `qc_access`;
 
-INSERT INTO `eanalyze`.`r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES (NULL, 'Online Response');
+INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES (NULL, 'Online Response');
 
 --Pal 25th-JUN-2016
 ALTER TABLE `shipment_participant_map` CHANGE `qc_done_by` `qc_done_by` VARCHAR(255) NULL DEFAULT NULL;
@@ -2169,6 +2169,7 @@ ALTER TABLE `shipment_participant_map` ADD `qc_done` VARCHAR(45) NULL DEFAULT NU
 ALTER TABLE `shipment_participant_map` CHANGE `qc_done` `qc_done` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'no';
 
 -- Re-ordered mode--
+Delete from `r_modes_of_receipt`;
 INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 (1, 'Online Response'),
 (2, 'Courier'),

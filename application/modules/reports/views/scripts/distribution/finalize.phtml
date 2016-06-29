@@ -218,7 +218,7 @@ if (count($this->shipment) > 0) {
     if ($shipment['report_generated'] == 'yes') {
         if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf")) {
           ?>
-           document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code'] ."-summary.pdf"); ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_BLANK' style='margin-top:10px;clear:both;float:left;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
+           document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code'] ."-summary.pdf"); ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_blank' style='margin-top:10px;clear:both;float:left;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
         <?php
         }
     }

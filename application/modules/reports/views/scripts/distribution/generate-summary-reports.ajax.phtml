@@ -257,64 +257,64 @@ if ($this->result['shipment'] != "") {
         $referenceRes.='</table>';
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
         
-        if (count($this->result['shipment']['summaryResult']) > 0) {
-            
-            
-            foreach ($this->result['shipment']['summaryResult'] as $result) {
-                $acceptableCount = 0;
-                $notAcceptableScore = 0;
-                $countIsExcluded = 0;
-                $partCount = count($result);
-                
-                for ($i = 0; $i < $partCount; $i++) {
-                    if($result[$i]['is_excluded']=='yes'){
-                        $countIsExcluded++;
-                    }
-                    
-                    $score=($result[$i]['shipment_score']/$this->result['shipment']['no_of_samples'])*100;
-                    
-                    if($score==100){
-                        $acceptableCount++;
-                    }else{
-                        $notAcceptableScore++;
-                    }
-                }
-            }
-           
-            // set font
-            $pdf->SetFont('times', 'B', 12);
-            
-            $overview= '<table border="1" style="font-size:13px;"><tr>';
-            $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Responses </td>';
-            $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Acceptable</td>';
-            $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Not Acceptable</td>';
-            $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Is Excluded</td>';
-            $overview.='</tr>';
-            
-            
-            $overview.='<tr>';
-            $overview.='<td style="text-align:center;">' . $partCount . '</td>';
-            $overview.='<td style="text-align:center;">' . $acceptableCount.'</td>';
-            $overview.='<td style="text-align:center;">' . $notAcceptableScore.'</td>';
-            $overview.='<td style="text-align:center;">'.$countIsExcluded.'</td>';
-            
-            $overview.='</tr>';
-
-            $overview.='</table><br/>';
-            $pdf->writeHTML($overview, true, false, true, false, '');     
-        }
+        //if (count($this->result['shipment']['summaryResult']) > 0) {
+        //    
+        //    
+        //    foreach ($this->result['shipment']['summaryResult'] as $result) {
+        //        $acceptableCount = 0;
+        //        $notAcceptableScore = 0;
+        //        $countIsExcluded = 0;
+        //        $partCount = count($result);
+        //        
+        //        for ($i = 0; $i < $partCount; $i++) {
+        //            if($result[$i]['is_excluded']=='yes'){
+        //                $countIsExcluded++;
+        //            }
+        //            
+        //            $score=($result[$i]['shipment_score']/$this->result['shipment']['no_of_samples'])*100;
+        //            
+        //            if($score==100){
+        //                $acceptableCount++;
+        //            }else{
+        //                $notAcceptableScore++;
+        //            }
+        //        }
+        //    }
+        //   
+        //    // set font
+        //    $pdf->SetFont('times', 'B', 12);
+        //    
+        //    $overview= '<table border="1" style="font-size:13px;"><tr>';
+        //    $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Responses </td>';
+        //    $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Acceptable</td>';
+        //    $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Not Acceptable</td>';
+        //    $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Is Excluded</td>';
+        //    $overview.='</tr>';
+        //    
+        //    
+        //    $overview.='<tr>';
+        //    $overview.='<td style="text-align:center;">' . $partCount . '</td>';
+        //    $overview.='<td style="text-align:center;">' . $acceptableCount.'</td>';
+        //    $overview.='<td style="text-align:center;">' . $notAcceptableScore.'</td>';
+        //    $overview.='<td style="text-align:center;">'.$countIsExcluded.'</td>';
+        //    
+        //    $overview.='</tr>';
+        //
+        //    $overview.='</table><br/>';
+        //    $pdf->writeHTML($overview, true, false, true, false, '');     
+        //}
         if(count($this->result['vlCalculation'])>0){
 				
 			foreach($this->result['vlCalculation'] as $vlCal){
-				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results</h5>';
+				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results | No. of Labs : '.$vlCal['participant-count'][$vlCal[0]['sample_label']].' </h5>';
 				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
 				<tr>
 					<td style="background-color:#dbe4ee;text-align:center;">Platform </td>
 					<td style="background-color:#dbe4ee;text-align:center;">Specimen ID </td>
 					<td style="background-color:#dbe4ee;text-align:center;">Mean<br/>(log<sub>10</sub> copies/ml)</td>
 					<td style="background-color:#dbe4ee;text-align:center;">S.D.</td>
-					<td style="background-color:#dbe4ee;text-align:center;"># of Labs</td>
-					<td style="background-color:#dbe4ee;text-align:center;">CV</td>
+					<td style="background-color:#dbe4ee;text-align:center;">Lowest Acceptable Limit</td>
+					<td style="background-color:#dbe4ee;text-align:center;">Highest Acceptable Limit</td>
 				</tr>';
 				
 				$countCal=count($vlCal)-1;
@@ -327,10 +327,10 @@ if ($this->result['shipment'] != "") {
 					
 					
 					$calRes.='<td>'.$vlCal[$c]['sample_label'].'</td>
-						<td>'.$vlCal[$c]['mean'].'</td>
-						<td>'.$vlCal[$c]['sd'].'</td>
-						<td>'.$vlCal['participant-count'][$vlCal[$c]['sample_label']].'</td>
-						<td>'.$vlCal[$c]['cv'].'</td>
+						<td>'.round($vlCal[$c]['mean'],2).'</td>
+						<td>'.round($vlCal[$c]['sd'],2).'</td>
+						<td>'.round($vlCal[$c]['low_limit'],2).'</td>
+						<td>'.round($vlCal[$c]['high_limit'],2).'</td>
 					  </tr>';
 					}
 				}
@@ -342,14 +342,13 @@ if ($this->result['shipment'] != "") {
 		
 		if(count($this->result['pendingAssay'])>0){
 			foreach($this->result['pendingAssay'] as $key=>$vlCal){
-				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results</h5>';
+				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results | Not enough Labs in this Assay</h5>';
 				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
 				<tr>
 					<td style="background-color:#dbe4ee;text-align:center;">Platform </td>
 					<td style="background-color:#dbe4ee;text-align:center;">Specimen ID </td>
-					<td style="background-color:#dbe4ee;text-align:center;">Low </td>
-					<td style="background-color:#dbe4ee;text-align:center;">High Acceptable Limit</td>
-					<td style="background-color:#dbe4ee;text-align:center;"># of Labs</td>
+					<td style="background-color:#dbe4ee;text-align:center;">Lowest Reported Value</td>
+					<td style="background-color:#dbe4ee;text-align:center;">Highest Reported Limit</td>
 				</tr>';
 				$n=count($vlCal['specimen']);
 				$l=0;
@@ -361,7 +360,6 @@ if ($this->result['shipment'] != "") {
 					$calRes.='<td>'.$key.'</td>';
 					$calRes.='<td>'.min($val).'</td>';
 					$calRes.='<td>'.max($val).'</td>';
-					$calRes.='<td>'.count($val).'</td>';
 					$calRes.='</tr>';
 					$l++;
 				}
@@ -642,7 +640,7 @@ if ($this->result['shipment'] != "") {
         }
     }
     
-    if(isset($this->responseResult) && count($this->responseResult)>0  && $this->responseResult!=''){
+    if($this->result['shipment']['scheme_type'] == 'dts' && isset($this->responseResult) && count($this->responseResult)>0  && $this->responseResult!=''){
         $y = $pdf->getY() + 5;
         $chart1 = new PieChart(700, 400);
         $dataSet = new XYDataSet();

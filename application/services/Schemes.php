@@ -280,7 +280,7 @@ class Application_Service_Schemes {
 
     public function getVlRangeInformation($sId) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('sample_id', 'vl_assay', 'low_limit', 'high_limit','calculated_on','manual_high_limit','manual_low_limit','updated_on','use_range'))
+        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('sample_id', 'vl_assay', 'low_limit', 'high_limit','calculated_on','manual_high_limit','manual_low_limit','mean','sd','updated_on','use_range'))
                             ->join(array('ref'=>'reference_result_vl'),'rvc.sample_id = ref.sample_id',array('sample_label'))
                             ->join(array('a'=>'r_vl_assay'),'a.id = rvc.vl_assay',array('assay_name' => 'name'))
                             ->where('rvc.shipment_id = ?', $sId);
@@ -307,6 +307,8 @@ class Application_Service_Schemes {
             $response[$row['sample_id']][$row['vl_assay']]['assay_name'] = $row['assay_name'];
             $response[$row['sample_id']][$row['vl_assay']]['low'] = $row['low_limit'];
             $response[$row['sample_id']][$row['vl_assay']]['high'] = $row['high_limit'];
+            $response[$row['sample_id']][$row['vl_assay']]['mean'] = $row['mean'];
+            $response[$row['sample_id']][$row['vl_assay']]['sd'] = $row['sd'];
             $response[$row['sample_id']][$row['vl_assay']]['manual_low_limit'] = $row['manual_low_limit'];
             $response[$row['sample_id']][$row['vl_assay']]['manual_high_limit'] = $row['manual_high_limit'];
             $response[$row['sample_id']][$row['vl_assay']]['use_range'] = $row['use_range'];            
@@ -345,15 +347,17 @@ class Application_Service_Schemes {
 
         foreach ($vlAssayArray as $vlAssayId => $vlAssayName) {
             $sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('shipment_id', 'sample_id'))
-                    ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array())
-                    ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('participant_id'))
-                    ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-                    ->where('sp.shipment_id = ? ', $sId)
-                    ->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayId . '"%');
+                      ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array())
+                      ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('participant_id'))
+                      ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+                      ->where('sp.shipment_id = ? ', $sId)
+                      ->where("sp.is_excluded = 'no' ")
+                      ->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayId . '"%');
+                      
             $response = $db->fetchAll($sql);
             $sampleWise = array();
             foreach ($response as $row) {
-                $sampleWise[$vlAssayId][$row['sample_id']][] = $row['reported_viral_load'];
+                $sampleWise[$vlAssayId][$row['sample_id']][] = ($row['reported_viral_load']);
             }
             if (!isset($sampleWise[$vlAssayId])) {
                 continue;
@@ -377,16 +381,28 @@ class Application_Service_Schemes {
                     $quartileHighLimit = $q3 + ($iqr * 1.5);
 
                     $newArray = array();
+                    $removeArray = array();
                     foreach ($inputArray as $a) {
-                        if ($a >= $quartileLowLimit && $a <= $quartileHighLimit) {
+                        if ($a >= round($quartileLowLimit,2) && $a <= round($quartileHighLimit,2)) {
                             $newArray[] = $a;
+                        }else{
+                            $removeArray[] = $a;
                         }
                     }
+                    
+
+                    //Zend_Debug::dump("Under Assay $vlAssayId-Sample $sample - COUNT AFTER REMOVING OUTLIERS: ".count($newArray) . " FOLLOWING ARE OUTLIERS");
+                    //Zend_Debug::dump($removeArray);
+                    
                     $avg = $this->getAverage($newArray);
                     $sd = $this->getStdDeviation($newArray);
-
-                    $cv = $sd / $avg;
-
+                    
+                    if($avg == 0){
+                        $cv = 0;    
+                    }else{
+                        $cv = $sd / $avg;    
+                    }
+                    
                     $finalLow = $avg - (3 * $sd);
                     $finalHigh = $avg + (3 * $sd);
 
