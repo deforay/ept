@@ -477,19 +477,23 @@ foreach($this->result['shipment'] as $result){
 			
             			
 		}else{
-			$labRes='<h5>'.$result['responseResult'][0]['vl_assay'].'</h5>';
+			$labRes='<h5>'.$result['responseResult'][0]['vl_assay'];
+			if(isset($attributes['vl_assay']) && $attributes['vl_assay']==6){
+				$labRes.=" - ".$attributes['other_assay'];
+			}
+			$labRes.='</h5>';
 			
 			if($result['responseResult'][0]['no_of_participants'] > 6) {
 					$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
 								<tr>
-									<td style="">Specimen ID </td>
-									<td style="">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
-									<td style="">Mean<br/>(log<sub>10</sub> copies/ml)</td>
-									<td style="">S.D.</td>
-									<td style=""># of Labs</td>
-									<td style="">Lowest <br/> Acceptable Limit</td>
-									<td style="">Highest <br/> Acceptable Limit</td>
-									<td style="">Your Grade</td>
+									<td style="background-color:#dbe4ee;">Specimen ID </td>
+									<td style="background-color:#dbe4ee;">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
+									<td style="background-color:#dbe4ee;">Mean<br/>(log<sub>10</sub> copies/ml)</td>
+									<td style="background-color:#dbe4ee;">S.D.</td>
+									<td style="background-color:#dbe4ee;"># of Labs</td>
+									<td style="background-color:#dbe4ee;">Lowest <br/> Acceptable Limit</td>
+									<td style="background-color:#dbe4ee;">Highest <br/> Acceptable Limit</td>
+									<td style="background-color:#dbe4ee;">Your Grade</td>
 								</tr>';
 					if($result['is_excluded'] == 'yes'){
 						foreach($result['responseResult'] as $response){
@@ -519,14 +523,15 @@ foreach($this->result['shipment'] as $result){
 						}
 					}
 					$labRes.='</table>';
+					
 			}else{
 				
 				$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
 								<tr>
-									<td style="">Specimen ID </td>
-									<td style="">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
-									<td style=""># of Labs</td>
-									<td style="">Your Grade</td>
+									<td style="background-color:#dbe4ee;">Specimen ID </td>
+									<td style="background-color:#dbe4ee;">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
+									<td style="background-color:#dbe4ee;"># of Labs</td>
+									<td style="background-color:#dbe4ee;">Your Grade</td>
 								</tr>';
 					
 						foreach($result['responseResult'] as $response){
@@ -545,16 +550,22 @@ foreach($this->result['shipment'] as $result){
 				
 			}
 			
+			if(isset($attributes['vl_assay']) && $attributes['vl_assay']==6){
+				$labRes.='<h5>"Other Platforms were not analyzed or graded since there were less than 6 participating labs using the same platform."</h5>';
+			}
 			
 			$pdf->SetLeftMargin(15);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
+			
+			$footerHead='<h5>0.00 = Target Not Detected or less than lower limit of detection</h5><br/>';
+			$pdf->writeHTML($footerHead, true, false, true, false, '');
 		}
 	}
 	
-	include_once("pChart/class/pData.class.php"); 
-	include_once("pChart/class/pDraw.class.php");
-	include_once("pChart/class/pImage.class.php"); 
-	include_once("pChart/class/pScatter.class.php"); 
+	//include_once("pChart/class/pData.class.php"); 
+	//include_once("pChart/class/pDraw.class.php");
+	//include_once("pChart/class/pImage.class.php"); 
+	//include_once("pChart/class/pScatter.class.php"); 
 	
 	
 	if(trim($result['shipment_score'])!=""){

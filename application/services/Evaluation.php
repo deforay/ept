@@ -1068,83 +1068,9 @@ class Application_Service_Evaluation {
             $db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
             $db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);
         }
-        if ($res['scheme_type'] == 'vl') {
-            //$schemeService = new Application_Service_Schemes();
-            //$vlAssayResultSet = $schemeService->getVlAssay();
-			$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
-			//print_r($vlAssayResultSet);die;
-			$refVlQuery=$db->select()->from(array('ref' => 'reference_vl_calculation'),array('ref.vl_assay'))
-							->where('ref.shipment_id = ? ', $shipmentId)
-							->group('vl_assay');
-			
-			$vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id'))
-							->where("vl.id NOT IN ($refVlQuery)");
-			$pendingResult=$db->fetchAll($vlQuery);
-			foreach ($pendingResult as $pendingRow) {
-				$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('ref.sample_id','ref.sample_label'))
-						->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
-						->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
-						->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-						->where('sp.shipment_id = ? ', $shipmentId);
-				$cResult=$db->fetchAll($cQuery);
-				$penResult = array();
-				foreach($cResult as $val){
-					$valAttributes = json_decode($val['attributes'], true);
-					if($pendingRow['id']==$valAttributes['vl_assay']){
-						
-						if (array_key_exists($pendingRow['id'], $penResult)) {
-							$penResult[$pendingRow['id']][$val['sample_label']][]=$val['reported_viral_load'];
-						}else{
-							$penResult[$pendingRow['id']]=array();
-							$penResult[$pendingRow['id']][$val['sample_label']][]=$val['reported_viral_load'];
-							
-						}
-					}
-				}
-			//	//$pendingResult[$pendingRow['id']]=$labResult;
-			//	print_r($penResult);
-			//die;
-				
-			}
-			
+        
 		
-            foreach ($vlAssayResultSet as $vlAssayRow) {
-                $vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
-                                ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
-                                ->where("vlCal.shipment_id=?", $res['shipment_id'])->where("vlCal.vl_assay=?", $vlAssayRow['id']));
-				
-				$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('ref.sample_id','ref.sample_label'))
-					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
-					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
-					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-					->where('sp.shipment_id = ? ', $shipmentId);
-				
-				$cResult=$db->fetchAll($cQuery);
-				
-				$labResult = array();
-				
-				foreach($cResult as $val){
-					$valAttributes = json_decode($val['attributes'], true);
-					if($vlAssayRow['id']==$valAttributes['vl_assay']){
-						if (array_key_exists($val['sample_label'], $labResult)) {
-							$labResult[$val['sample_label']]+=1;
-						}else{
-							$labResult[$val['sample_label']]=array();
-							$labResult[$val['sample_label']]=1;
-						}
-					}
-				}
-				
-                if (count($vlCalRes) > 0) {
-                    $vlCalculation[$vlAssayRow['id']] = $vlCalRes;
-                    $vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
-                    $vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];
-                    $vlCalculation[$vlAssayRow['id']]['participant-count'] = $labResult;
-                }
-            }
-        }
-		
-        $result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'dmResult' => $mapRes,'vlGraphResult'=>$vlGraphResult);
+        $result = array('shipment' => $shipmentResult,'dmResult' => $mapRes,'vlGraphResult'=>$vlGraphResult);
 
         return $result;
     }
@@ -1399,17 +1325,28 @@ class Application_Service_Evaluation {
 						if($pendingRow['id']==$valAttributes['vl_assay']){
 							if (array_key_exists($pendingRow['id'], $penResult)) {
 								$penResult[$pendingRow['id']]['specimen'][$val['sample_label']][]=$val['reported_viral_load'];
+								if($pendingRow['id']==6){
+									if(isset($penResult[$pendingRow['id']]['otherAssayName'])){
+										if(!in_array($valAttributes['other_assay'],$penResult[$pendingRow['id']]['otherAssayName'])){
+											$penResult[$pendingRow['id']]['otherAssayName'][]=$valAttributes['other_assay'];	
+										}
+									}
+								}
 							}else{
 								$penResult[$pendingRow['id']]=array();
 								$penResult[$pendingRow['id']]['specimen'][$val['sample_label']][]=$val['reported_viral_load'];
 								$penResult[$pendingRow['id']]['vlAssay']=$pendingRow['name'];
 								$penResult[$pendingRow['id']]['shortName']=$pendingRow['short_name'];
+								if($pendingRow['id']==6){
+									$penResult[$pendingRow['id']]['otherAssayName'][]=$valAttributes['other_assay'];
+								}
 								
 							}
 						}
 					}
 				}
-			
+				//print_r($penResult);
+				//die;
 				foreach ($vlAssayResultSet as $vlAssayRow) {
 					$vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
 									->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
@@ -1424,10 +1361,14 @@ class Application_Service_Evaluation {
 					$cResult=$db->fetchAll($cQuery);
 					
 					$labResult = array();
+					$otherAssayName = array();
 					
 					foreach($cResult as $val){
 						$valAttributes = json_decode($val['attributes'], true);
 						if($vlAssayRow['id']==$valAttributes['vl_assay']){
+							if($vlAssayRow['id']==6){
+								$otherAssayName[]=$valAttributes['other_assay'];
+							}
 							if (array_key_exists($val['sample_label'], $labResult)) {
 								$labResult[$val['sample_label']]+=1;
 							}else{
@@ -1438,12 +1379,19 @@ class Application_Service_Evaluation {
 					}
 					
 					if (count($vlCalRes) > 0) {
+						
+						
 						$vlCalculation[$vlAssayRow['id']] = $vlCalRes;
 						$vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
 						$vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];
 						$vlCalculation[$vlAssayRow['id']]['participant-count'] = $labResult;
+						if($vlAssayRow['id']==6){
+							$vlCalculation[$vlAssayRow['id']]['otherAssayName']=array_unique($otherAssayName);
+						}
 					}
 				}
+				//print_r($vlCalculation);
+				//die;
 			}
             
             $i++;
