@@ -271,7 +271,7 @@ foreach($this->result['shipment'] as $result){
 		
 		$labInfo.='<tr>';
 		$labInfo.='	<td><strong>PT Panel </strong> <br>'.$result['distribution_code'].'('.$result['shipment_date'].')</td>';
-		$labInfo.='	<td><strong>Panel Receipt Date</strong> <br>'.$shipmentReceiptDate.'</td>';
+		$labInfo.='	<td><strong>Date PT Panel Received</strong> <br>'.$shipmentReceiptDate.'</td>';
 		
 
 		
@@ -283,7 +283,7 @@ foreach($this->result['shipment'] as $result){
 		
 		$labInfo.='<tr>';
 		$labInfo.='	<td><strong>Your Lab Id</strong> <br>'.$result['unique_identifier'].'</td>';
-		$labInfo.='	<td><strong>Shipment Test Date</strong> <br>'.$shipmentTestDate.'</td>';
+		$labInfo.='	<td><strong>Date PT Panel Tested</strong> <br>'.$shipmentTestDate.'</td>';
 		$labInfo.='</tr>';
 		
 		
@@ -798,8 +798,11 @@ foreach($this->result['shipment'] as $result){
 		$comment.='</table>';
 		$pdf->writeHTML($comment, true, false, true, false, '');
 	}
-	
-	$html='<p>Thank you for participating in the '.($result['scheme_name']).' Proficiency Testing Program.</p>';
+	if($schemeType != 'vl'){
+		$html='<p>Thank you for participating in the '.($result['scheme_name']).' Proficiency Testing Program.</p>';
+	}else{
+		$html='<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
+	}
 	$pdf->writeHTML($html, true, false, true, false, '');
 	
 	if (ob_get_contents()) ob_end_clean();
