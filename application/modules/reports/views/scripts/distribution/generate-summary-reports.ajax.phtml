@@ -337,11 +337,11 @@ if ($this->result['shipment'] != "") {
 					
 					
 					$calRes.='<td>'.$vlCal[$c]['sample_label'].'</td>
-						<td>'.round($vlCal[$c]['mean'],2).'</td>
-						<td>'.round($vlCal[$c]['sd'],2).'</td>
-						<td>'.round($vlCal[$c]['low_limit'],2).'</td>
-						<td>'.round($vlCal[$c]['high_limit'],2).'</td>
-						<td>'.round($vlCal[$c]['cv'],2).'</td>
+						<td>'.number_format(round($vlCal[$c]['mean'],2),2,'.','').'</td>
+						<td>'.number_format(round($vlCal[$c]['sd'],2),2,'.','').'</td>
+						<td>'.number_format(round($vlCal[$c]['low_limit'],2),2,'.','').'</td>
+						<td>'.number_format(round($vlCal[$c]['high_limit'],2),2,'.','').'</td>
+						<td>'.number_format(round($vlCal[$c]['cv'],2),2,'.','').'</td>
 					  </tr>';
 					}
 				}

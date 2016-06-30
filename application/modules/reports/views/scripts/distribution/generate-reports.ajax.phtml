@@ -477,6 +477,7 @@ foreach($this->result['shipment'] as $result){
 			
             			
 		}else{
+			//Vl report
 			$labRes='<h5>'.$result['responseResult'][0]['vl_assay'];
 			if(isset($attributes['vl_assay']) && $attributes['vl_assay']==6){
 				$labRes.=" - ".$attributes['other_assay'];
@@ -500,11 +501,11 @@ foreach($this->result['shipment'] as $result){
 							$labRes.='<tr>
 										<td style="text-align:center;">'.$response['sample_label'].'</td>
 										<td>'.$response['reported_viral_load'].'</td>
-										<td>'.round($response['mean'],2).'</td>
-										<td>'.round($response['sd'],2).'</td>
+										<td>'.number_format(round($response['mean'],2),2,'.','').'</td>
+										<td>'.number_format(round($response['sd'],2),2,'.','').'</td>
 										<td>'.$response['no_of_participants'].'</td>
-										<td>'.round($response['low'],2).'</td>
-										<td>'.round($response['high'],2).'</td>
+										<td>'.number_format(round($response['low'],2),2,'.','').'</td>
+										<td>'.number_format(round($response['high'],2),2,'.','').'</td>
 										<td>Manual Exclusion</td>
 									  </tr>';
 						}
@@ -513,11 +514,11 @@ foreach($this->result['shipment'] as $result){
 							$labRes.='<tr>
 										<td style="text-align:center;">'.$response['sample_label'].'</td>
 										<td>'.$response['reported_viral_load'].'</td>
-										<td>'.round($response['mean'],2).'</td>
-										<td>'.round($response['sd'],2).'</td>
+										<td>'.number_format(round($response['mean'],2),2,'.','').'</td>
+										<td>'.number_format(round($response['sd'],2),2,'.','').'</td>
 										<td>'.$response['no_of_participants'].'</td>
-										<td>'.round($response['low'],2).'</td>
-										<td>'.round($response['high'],2).'</td>
+										<td>'.number_format(round($response['low'],2),2,'.','').'</td>
+										<td>'.number_format(round($response['high'],2),2,'.','').'</td>
 										<td>'.$response['grade'].'</td>
 									  </tr>';
 						}
