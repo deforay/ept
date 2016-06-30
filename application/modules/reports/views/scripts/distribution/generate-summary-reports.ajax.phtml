@@ -20,12 +20,13 @@ if ($this->result['shipment'] != "") {
 // Extend the TCPDF class to create custom Header and Footer
     class MYPDF extends TCPDF {
 
-        public function setSchemeName($header, $schemeName, $logo,$logoRight,$comingFrom) {
+        public function setSchemeName($header, $schemeName, $logo,$logoRight,$comingFrom,$schemeType) {
             $this->scheme_name = $schemeName;
             $this->header = $header;
             $this->logo = $logo;
             $this->logoRight = $logoRight;
             $this->comingFrom = $comingFrom;
+            $this->schemeType = $schemeType;
         }
 
         //Page header
@@ -58,8 +59,12 @@ if ($this->result['shipment'] != "") {
             $this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
             //$this->writeHTML($html, true, false, true, true, 'L');
 
-            $html = '<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</p>';
-            $this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
+            if($this->schemeType != 'vl'){
+                $html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p>';
+            }else{
+                $html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral load using Dried Tube Specimen<br><strong>All participants results summary report</strong></p>';		
+            }
+            $this->writeHTMLCell(0, 0, 30, 30, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 45, $html, 0, 0, 0, true, 'J', true);
         }
@@ -112,7 +117,7 @@ if ($this->result['shipment'] != "") {
     }
 
 //$pdf->setSchemeName($this->result['scheme_name']);
-    $pdf->setSchemeName($this->header, $this->result['shipment']['scheme_name'], $this->logo,$this->logoRight,$this->comingFrom);
+    $pdf->setSchemeName($this->header, $this->result['shipment']['scheme_name'], $this->logo,$this->logoRight,$this->comingFrom,$this->result['shipment']['scheme_type']);
     //$pdf->checkComingFrom($this->comingFrom);
 // add a page
 //$pdf->AddPage();
@@ -251,7 +256,7 @@ if ($this->result['shipment'] != "") {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes.='<tr>';
-        $referenceRes.='<td style="font-weight:bold;width:20%;">PT Survey</td><td style="font-weight:normal;width:30%;">' . $this->result['shipment']['distribution_code'] . '<br>(' . $this->dateFormat($this->result['shipment']['shipment_date']) . ')</td>';
+        $referenceRes.='<td style="font-weight:bold;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $this->result['shipment']['distribution_code'] . '<br>(' . $this->dateFormat($this->result['shipment']['shipment_date']) . ')</td>';
         $referenceRes.='<td style="font-weight:bold;width:20%;">Shipment Code</td><td style="font-weight:normal;width:30%;">' . $this->result['shipment']['shipment_code'] . '</td>';
         $referenceRes.='</tr>';
         $referenceRes.='</table>';
@@ -315,6 +320,7 @@ if ($this->result['shipment'] != "") {
 					<td style="background-color:#dbe4ee;text-align:center;">S.D.</td>
 					<td style="background-color:#dbe4ee;text-align:center;">Lowest Acceptable Limit</td>
 					<td style="background-color:#dbe4ee;text-align:center;">Highest Acceptable Limit</td>
+					<td style="background-color:#dbe4ee;text-align:center;">CV</td>
 				</tr>';
 				
 				$countCal=count($vlCal)-1;
@@ -331,6 +337,7 @@ if ($this->result['shipment'] != "") {
 						<td>'.round($vlCal[$c]['sd'],2).'</td>
 						<td>'.round($vlCal[$c]['low_limit'],2).'</td>
 						<td>'.round($vlCal[$c]['high_limit'],2).'</td>
+						<td>'.round($vlCal[$c]['cv'],2).'</td>
 					  </tr>';
 					}
 				}
@@ -347,8 +354,6 @@ if ($this->result['shipment'] != "") {
 				<tr>
 					<td style="background-color:#dbe4ee;text-align:center;">Platform </td>
 					<td style="background-color:#dbe4ee;text-align:center;">Specimen ID </td>
-					<td style="background-color:#dbe4ee;text-align:center;">Lowest Reported Value</td>
-					<td style="background-color:#dbe4ee;text-align:center;">Highest Reported Limit</td>
 				</tr>';
 				$n=count($vlCal['specimen']);
 				$l=0;
@@ -358,8 +363,6 @@ if ($this->result['shipment'] != "") {
 					$calRes.='<td style="text-align:center;" rowspan="'.$n.'">'.$vlCal['shortName'].'</td>';
 					}
 					$calRes.='<td>'.$key.'</td>';
-					$calRes.='<td>'.min($val).'</td>';
-					$calRes.='<td>'.max($val).'</td>';
 					$calRes.='</tr>';
 					$l++;
 				}

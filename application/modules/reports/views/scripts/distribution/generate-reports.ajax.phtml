@@ -19,12 +19,13 @@ if(sizeof($this->result['shipment'])>0){
 class MYPDF extends TCPDF {
 	public $scheme_name = '';
 
-	public function setSchemeName($header, $schemeName, $logo,$logoRight,$comingFrom) {
+	public function setSchemeName($header, $schemeName, $logo,$logoRight,$comingFrom,$schemeType) {
 		$this->scheme_name = $schemeName;
 		$this->header = $header;
 		$this->logo = $logo;
 		$this->logoRight = $logoRight;
 		$this->comingFrom = $comingFrom;
+		$this->schemeType = $schemeType;
 	}
     
 	//Page header
@@ -53,11 +54,15 @@ class MYPDF extends TCPDF {
 	//error_log($this->header);
 	//$y = $this->getY();
 	$html=$this->header;
-	
+
 	$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
 	//$this->writeHTML($html, true, false, true, true, 'L');
+	if($this->schemeType != 'vl'){
+		$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p>';
+	}else{
+		$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Viral Load Using Dried Tube Specimen<br><strong>Individual participant results report </strong></p>';		
+	}
 	
-	$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p>';
 	$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
 	$html='<hr/>';
 	$this->writeHTMLCell(0, 0, 10, 45, $html, 0, 0, 0, true, 'J', true);
@@ -94,7 +99,7 @@ foreach($this->result['shipment'] as $result){
 	// create new PDF document
 	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	
-	$pdf->setSchemeName($this->header,$result['scheme_name'],$this->logo,$this->logoRight,$this->comingFrom);
+	$pdf->setSchemeName($this->header,$result['scheme_name'],$this->logo,$this->logoRight,$this->comingFrom,$schemeType);
 	// set document information
 	//$pdf->SetCreator(PDF_CREATOR);
 	//$pdf->SetAuthor('Nicola Asuni');
@@ -203,11 +208,11 @@ foreach($this->result['shipment'] as $result){
 	$labInfo='<table cellpadding="2">';
 	
 	$labInfo.='<tr>';
-	$labInfo.='	<td><strong>Participant Code</strong> <br>'.$result['unique_identifier'].'</td>';
+	$labInfo.='	<td><strong>Your Lab ID</strong> <br>'.$result['unique_identifier'].'</td>';
 	if($result['scheme_type'] != 'vl'){
 		$labInfo.='	<td><strong>Performing Participant</strong>  <br>'.$result['first_name']." ".$result['last_name'].'</td>';
 	}
-	$labInfo.='	<td><strong>PT Survey Name and Date</strong> <br>'.$result['distribution_code'].'('.$result['shipment_date'].')</td>';
+	$labInfo.='	<td><strong>PT Panel Name and Date</strong> <br>'.$result['distribution_code'].'('.$result['shipment_date'].')</td>';
 	if($result['scheme_type'] == 'vl'){
 		$labInfo.='	<td></td>'; // to compensate for the cell that we removed for Performing Participant name
 	}
@@ -473,45 +478,74 @@ foreach($this->result['shipment'] as $result){
             			
 		}else{
 			$labRes='<h5>'.$result['responseResult'][0]['vl_assay'].'</h5>';
-			$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
-						<tr>
-							<td style="">Specimen ID </td>
-							<td style="">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
-							<td style="">Mean<br/>(log<sub>10</sub> copies/ml)</td>
-							<td style="">S.D.</td>
-							<td style=""># of Labs</td>
-							<td style="">Lowest <br/> Acceptable Limit</td>
-							<td style="">Highest <br/> Acceptable Limit</td>
-							<td style="">Your Grade</td>
-						</tr>';
-			if($result['is_excluded'] == 'yes'){
-				foreach($result['responseResult'] as $response){
-					$labRes.='<tr>
-								<td style="text-align:center;">'.$response['sample_label'].'</td>
-								<td>'.$response['reported_viral_load'].'</td>
-								<td>'.round($response['mean'],2).'</td>
-								<td>'.round($response['sd'],2).'</td>
-								<td>'.$response['no_of_participants'].'</td>
-								<td>'.round($response['low'],2).'</td>
-								<td>'.round($response['high'],2).'</td>
-								<td>Manual Exclusion</td>
-							  </tr>';
-				}
+			
+			if($result['responseResult'][0]['no_of_participants'] > 6) {
+					$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
+								<tr>
+									<td style="">Specimen ID </td>
+									<td style="">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
+									<td style="">Mean<br/>(log<sub>10</sub> copies/ml)</td>
+									<td style="">S.D.</td>
+									<td style=""># of Labs</td>
+									<td style="">Lowest <br/> Acceptable Limit</td>
+									<td style="">Highest <br/> Acceptable Limit</td>
+									<td style="">Your Grade</td>
+								</tr>';
+					if($result['is_excluded'] == 'yes'){
+						foreach($result['responseResult'] as $response){
+							$labRes.='<tr>
+										<td style="text-align:center;">'.$response['sample_label'].'</td>
+										<td>'.$response['reported_viral_load'].'</td>
+										<td>'.round($response['mean'],2).'</td>
+										<td>'.round($response['sd'],2).'</td>
+										<td>'.$response['no_of_participants'].'</td>
+										<td>'.round($response['low'],2).'</td>
+										<td>'.round($response['high'],2).'</td>
+										<td>Manual Exclusion</td>
+									  </tr>';
+						}
+					}else{
+						foreach($result['responseResult'] as $response){
+							$labRes.='<tr>
+										<td style="text-align:center;">'.$response['sample_label'].'</td>
+										<td>'.$response['reported_viral_load'].'</td>
+										<td>'.round($response['mean'],2).'</td>
+										<td>'.round($response['sd'],2).'</td>
+										<td>'.$response['no_of_participants'].'</td>
+										<td>'.round($response['low'],2).'</td>
+										<td>'.round($response['high'],2).'</td>
+										<td>'.$response['grade'].'</td>
+									  </tr>';
+						}
+					}
+					$labRes.='</table>';
 			}else{
-				foreach($result['responseResult'] as $response){
-					$labRes.='<tr>
-								<td style="text-align:center;">'.$response['sample_label'].'</td>
-								<td>'.$response['reported_viral_load'].'</td>
-								<td>'.round($response['mean'],2).'</td>
-								<td>'.round($response['sd'],2).'</td>
-								<td>'.$response['no_of_participants'].'</td>
-								<td>'.round($response['low'],2).'</td>
-								<td>'.round($response['high'],2).'</td>
-								<td>'.$response['grade'].'</td>
-							  </tr>';
-				}
+				
+				$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
+								<tr>
+									<td style="">Specimen ID </td>
+									<td style="">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
+									<td style=""># of Labs</td>
+									<td style="">Your Grade</td>
+								</tr>';
+					
+						foreach($result['responseResult'] as $response){
+							$labRes.='<tr>
+										<td style="text-align:center;">'.$response['sample_label'].'</td>
+										<td>'.$response['reported_viral_load'].'</td>
+										<td>'.$response['no_of_participants'].'</td>
+										<td>Not Evaluated</td>
+									  </tr>';
+							
+						}
+						
+					
+					$labRes.='</table>';				
+					$labRes.='<p>Your result is not evaluated because not enough labs reported using this Assay</p><br>';
+				
 			}
-			$labRes.='</table>';
+			
+			
 			$pdf->SetLeftMargin(15);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
 		}
@@ -549,6 +583,14 @@ foreach($this->result['shipment'] as $result){
 		}else{
 			$wishes='<p>You have received a score of '.round($shipmentScore,2).'%.</p><br/>';
 		}
+		
+
+	
+	$pdf->SetLeftMargin(15);
+	
+	$pdf->writeHTML($wishes, true, false, true, false, '');
+	
+	
 	}
 	//if($result['is_excluded'] != 'yes'){
 		//$wishes.="<br/><strong style='font-weight:bold;'>Score Breakup:</strong>";
@@ -556,10 +598,6 @@ foreach($this->result['shipment'] as $result){
 		//$wishes.="<br/>Score for Documentation (out of $maxDocumentationPoints) : $documentationScore";
 	//}
 	
-	
-	$pdf->SetLeftMargin(15);
-	
-	$pdf->writeHTML($wishes, true, false, true, false, '');
 	
 	if($schemeType=='vl'){
 		/*
