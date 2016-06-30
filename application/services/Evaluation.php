@@ -839,7 +839,7 @@ class Application_Service_Evaluation {
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
                 ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
-                ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('first_name', 'last_name'))
+                ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('first_name', 'last_name','lab_name','unique_identifier'))
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result')
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->where("substring(sp.evaluation_status,4,1) != '0'");
@@ -1499,7 +1499,7 @@ class Application_Service_Evaluation {
 				// checking if total score and maximum scores are the same
 				if ($totalScore == 'N/A') {
 					$failureReason[]['warning'] = "Could not determine score. Not enough responses found in the chosen VL Assay.";
-					$scoreResult = 'Fail';
+					$scoreResult = 'Exclude';
 				} else if ($totalScore != $maxScore) {
 					$scoreResult = 'Fail';
 					if($maxScore != 0){
@@ -1516,7 +1516,10 @@ class Application_Service_Evaluation {
 
 				// if $finalResult == 3 , then  excluded
 				
-					if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
+					if ($scoreResult == 'Exclude') {
+						$finalResult = 3;
+					}
+					else if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
 						$finalResult = 2;
 					} else {
 						$finalResult = 1;

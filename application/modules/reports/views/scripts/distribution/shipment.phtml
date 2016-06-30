@@ -133,7 +133,7 @@ if (count($this->shipment) > 0) {
                 ?>
                 <tr>
                     <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
-                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?></td>
+                    <td style="vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name']. "(".$shipment['unique_identifier'].")" ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
