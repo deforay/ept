@@ -73,7 +73,7 @@ class MYPDF extends TCPDF {
     public function Footer() {
 		$underReport="";
 		if(trim($this->comingFrom)!=""){
-			// $underReport='       (Under Review)';
+			// $underReport='      - Report Under Review';
 		}
         // Position at 15 mm from bottom
         $this->SetY(-15);
@@ -205,64 +205,94 @@ foreach($this->result['shipment'] as $result){
 	
 	//Coment Details
 	
-	$labInfo='<table cellpadding="2">';
 	
-	$labInfo.='<tr>';
-	$labInfo.='	<td><strong>Your Lab ID</strong> <br>'.$result['unique_identifier'].'</td>';
-	if($result['scheme_type'] != 'vl'){
+	if($schemeType != 'vl'){
+		
+		$labInfo='<table cellpadding="2">';
+		
+		$labInfo.='<tr>';
+		$labInfo.='	<td><strong>Participant Code</strong> <br>'.$result['unique_identifier'].'</td>';
+
 		$labInfo.='	<td><strong>Performing Participant</strong>  <br>'.$result['first_name']." ".$result['last_name'].'</td>';
-	}
-	$labInfo.='	<td><strong>PT Panel Name and Date</strong> <br>'.$result['distribution_code'].'('.$result['shipment_date'].')</td>';
-	if($result['scheme_type'] == 'vl'){
-		$labInfo.='	<td></td>'; // to compensate for the cell that we removed for Performing Participant name
-	}
-	$labInfo.='</tr>';
 	
+		$labInfo.='	<td><strong>PT Panel Name and Date</strong> <br>'.$result['distribution_code'].'('.$result['shipment_date'].')</td>';
 
+		$labInfo.='</tr>';
+		
+	
+	
+		
+		$labInfo.='<tr>';
+		$labInfo.='	<td><strong>Shipment Date</strong> <br>'.$result['shipment_date'].'</td>';
+		$labInfo.='	<td><strong>Shipment Code</strong> <br>'.$result['shipment_code'].'</td>';
+		$labInfo.='	<td><strong>Shipment Type</strong>  <br>'.$result['scheme_name']." ".$result['last_name'].'</td>';
+		$labInfo.='</tr>';
+		
+		$labInfo.='<tr>';
+		$labInfo.='	<td><strong>Panel Receipt Date</strong> <br>'.$shipmentReceiptDate.'</td>';
+		$labInfo.='	<td><strong>Rehydration Date</strong> <br>'.$sampleRehydrationDate.'</td>';
+	
+		$labInfo.='	<td><strong>Result Due Date</strong> <br>'.$result['lastdate_response'].'</td>';
+		$labInfo.='</tr>';
+		
+		$labInfo.='<tr>';
+		$labInfo.='	<td><strong>Response Date</strong> <br>'.$responseDate.'</td>';
+		$labInfo.='	<td><strong>Shipment Test Date</strong> <br>'.$shipmentTestDate.'</td>';
+		$labInfo.='	<td>';
+		if(isset($attributes['algorithm'])){
+		$labInfo.='	<strong>Algorithm</strong> <br>'.ucfirst($attributes['algorithm']);
+		}
+		$labInfo.=' </td>';
+		$labInfo.='</tr>';
+		$labInfo.='<tr>';
+		$labInfo.='	<td>';
+		$labInfo.='	<strong>Supervisor Name</strong> <br>'.($result['participant_supervisor']);
+		$labInfo.=' </td>';	
+		$labInfo.='	<td>';
+		if(isset($this->haveCustom) && $this->haveCustom == 'yes') {
+			$labInfo.='	<strong>'.$this->customField1.'</strong> <br>'.$this->shipment['custom_field_1'];
+		}
+		$labInfo.=' </td>';	
+		$labInfo.='	<td>';
+		if(isset($this->haveCustom) && $this->haveCustom == 'yes') {
+			$labInfo.='	<strong>'.$this->customField2.'</strong> <br>'.$this->shipment['custom_field_2'];
+		}
+		$labInfo.=' </td>';
+		$labInfo.='</tr>';
+	
+		
+		$labInfo.='</table>';
+		//shipment_test_date
+		$pdf->writeHTML($labInfo, true, false, true, false, '');
+	
+	}else{
+		
+		$labInfo='<table cellpadding="2">';
+		
+		$labInfo.='<tr>';
+		$labInfo.='	<td><strong>PT Panel </strong> <br>'.$result['distribution_code'].'('.$result['shipment_date'].')</td>';
+		$labInfo.='	<td><strong>Panel Receipt Date</strong> <br>'.$shipmentReceiptDate.'</td>';
+		
 
-	
-	$labInfo.='<tr>';
-	$labInfo.='	<td><strong>Shipment Date</strong> <br>'.$result['shipment_date'].'</td>';
-	$labInfo.='	<td><strong>Shipment Code</strong> <br>'.$result['shipment_code'].'</td>';
-	$labInfo.='	<td><strong>Shipment Type</strong>  <br>'.$result['scheme_name']." ".$result['last_name'].'</td>';
-	$labInfo.='</tr>';
-	
-	$labInfo.='<tr>';
-	$labInfo.='	<td><strong>Panel Receipt Date</strong> <br>'.$shipmentReceiptDate.'</td>';
-	$labInfo.='	<td><strong>Rehydration Date</strong> <br>'.$sampleRehydrationDate.'</td>';
+		
 
-	$labInfo.='	<td><strong>Result Due Date</strong> <br>'.$result['lastdate_response'].'</td>';
-	$labInfo.='</tr>';
+		$labInfo.='</tr>';
+		
 	
-	$labInfo.='<tr>';
-	$labInfo.='	<td><strong>Response Date</strong> <br>'.$responseDate.'</td>';
-	$labInfo.='	<td><strong>Shipment Test Date</strong> <br>'.$shipmentTestDate.'</td>';
-	$labInfo.='	<td>';
-	if(isset($attributes['algorithm'])){
-	$labInfo.='	<strong>Algorithm</strong> <br>'.ucfirst($attributes['algorithm']);
-	}
-	$labInfo.=' </td>';
-	$labInfo.='</tr>';
-	$labInfo.='<tr>';
-	$labInfo.='	<td>';
-	$labInfo.='	<strong>Supervisor Name</strong> <br>'.($result['participant_supervisor']);
-	$labInfo.=' </td>';	
-	$labInfo.='	<td>';
-	if(isset($this->haveCustom) && $this->haveCustom == 'yes') {
-		$labInfo.='	<strong>'.$this->customField1.'</strong> <br>'.$this->shipment['custom_field_1'];
-	}
-	$labInfo.=' </td>';	
-	$labInfo.='	<td>';
-	if(isset($this->haveCustom) && $this->haveCustom == 'yes') {
-		$labInfo.='	<strong>'.$this->customField2.'</strong> <br>'.$this->shipment['custom_field_2'];
-	}
-	$labInfo.=' </td>';
-	$labInfo.='</tr>';
-
 	
-	$labInfo.='</table>';
-	//shipment_test_date
-	$pdf->writeHTML($labInfo, true, false, true, false, '');
+		
+		$labInfo.='<tr>';
+		$labInfo.='	<td><strong>Your Lab Id</strong> <br>'.$result['unique_identifier'].'</td>';
+		$labInfo.='	<td><strong>Shipment Test Date</strong> <br>'.$shipmentTestDate.'</td>';
+		$labInfo.='</tr>';
+		
+		
+	
+		
+		$labInfo.='</table>';
+		//shipment_test_date
+		$pdf->writeHTML($labInfo, true, false, true, false, '');		
+	}
 	
 	if(sizeof($result['responseResult'])>0){
 		if($schemeType != 'vl'){
@@ -484,7 +514,7 @@ foreach($this->result['shipment'] as $result){
 			}
 			$labRes.='</h5>';
 			
-			if($result['responseResult'][0]['no_of_participants'] > 6) {
+			if($result['responseResult'][0]['no_of_participants'] > 7) {
 					$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
 								<tr>
 									<td style="background-color:#dbe4ee;">Specimen ID </td>
@@ -547,13 +577,13 @@ foreach($this->result['shipment'] as $result){
 						
 					
 					$labRes.='</table>';				
-					$labRes.='<p>Your result is not evaluated because not enough labs reported using this Assay</p><br>';
+					$labRes.='<h5>'.$result['responseResult'][0]['vl_assay'].' Platforms were not analyzed or graded</h5>';
 				
 			}
 			
-			if(isset($attributes['vl_assay']) && $attributes['vl_assay']==6){
-				$labRes.='<h5>"Other Platforms were not analyzed or graded since there were less than 6 participating labs using the same platform."</h5>';
-			}
+			//if(isset($attributes['vl_assay']) && $attributes['vl_assay']==6){
+			//	$labRes.='<h5>"Other Platforms were not analyzed or graded"</h5>';
+			//}
 			
 			$pdf->SetLeftMargin(15);
 			$pdf->writeHTML($labRes, true, false, true, false, '');
@@ -769,7 +799,7 @@ foreach($this->result['shipment'] as $result){
 		$pdf->writeHTML($comment, true, false, true, false, '');
 	}
 	
-	$html='<p>Thank you for participating in the HIV Serology '.strtoupper($result['scheme_type']).' Proficiency Testing Program.</p>';
+	$html='<p>Thank you for participating in the '.($result['scheme_name']).' Proficiency Testing Program.</p>';
 	$pdf->writeHTML($html, true, false, true, false, '');
 	
 	if (ob_get_contents()) ob_end_clean();

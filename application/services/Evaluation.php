@@ -941,7 +941,7 @@ class Application_Service_Evaluation {
 				
 				
 				$sql = $db->select()->from(array('ref' => 'reference_result_vl'),array('sample_id','ref.sample_label'))
-					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
+					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('*'))
 					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
 					->join(array('p' => 'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
@@ -980,7 +980,7 @@ class Application_Service_Evaluation {
 				
 				//<-- count no.of labs participans in particular sample
 				$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('sample_id','ref.sample_label'))
-					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
+					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.*'))
 					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 					->where('sp.shipment_id = ? ', $shipmentId);
@@ -1019,6 +1019,8 @@ class Application_Service_Evaluation {
                     $toReturn[$counter]['shipment_id'] = $result['shipment_id'];
                     $toReturn[$counter]['responseDate'] = $result['responseDate'];
                     $toReturn[$counter]['shipment_score'] = $result['shipment_score'];
+                    $toReturn[$counter]['shipment_test_date'] = $result['shipment_test_date'];
+                    $toReturn[$counter]['shipment_receipt_date'] = $result['shipment_receipt_date'];
                     $toReturn[$counter]['max_score'] = $result['max_score'];
                     $toReturn[$counter]['reported_viral_load'] = $result['reported_viral_load'];
                     $toReturn[$counter]['no_of_participants'] = $labResult[$result['sample_label']];
@@ -1032,7 +1034,7 @@ class Application_Service_Evaluation {
                             }
                         }
 
-                        if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
+                        if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null && trim($result['reported_viral_load']) != null) {
                             if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
                                 $grade = 'Acceptable';
                             } else {
@@ -1042,7 +1044,9 @@ class Application_Service_Evaluation {
                                     $grade = '-';
                                 }
                             }
-                        }
+                        }else{
+							$grade = 'Not Acceptable';
+						}
 
                         $toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['low'];
                         $toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['high'];
@@ -1327,6 +1331,7 @@ class Application_Service_Evaluation {
 								$penResult[$pendingRow['id']]['specimen'][$val['sample_label']][]=$val['reported_viral_load'];
 								if($pendingRow['id']==6){
 									if(isset($penResult[$pendingRow['id']]['otherAssayName'])){
+										$valAttributes['other_assay'] = (isset($valAttributes['other_assay']) ? $valAttributes['other_assay'] : "");
 										if(!in_array($valAttributes['other_assay'],$penResult[$pendingRow['id']]['otherAssayName'])){
 											$penResult[$pendingRow['id']]['otherAssayName'][]=$valAttributes['other_assay'];	
 										}
@@ -1338,7 +1343,7 @@ class Application_Service_Evaluation {
 								$penResult[$pendingRow['id']]['vlAssay']=$pendingRow['name'];
 								$penResult[$pendingRow['id']]['shortName']=$pendingRow['short_name'];
 								if($pendingRow['id']==6){
-									$penResult[$pendingRow['id']]['otherAssayName'][]=$valAttributes['other_assay'];
+									$penResult[$pendingRow['id']]['otherAssayName'][]=(isset($valAttributes['other_assay']) ? $valAttributes['other_assay'] : "");
 								}
 								
 							}

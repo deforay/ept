@@ -351,17 +351,20 @@ if ($this->result['shipment'] != "") {
 			}
 		}
 		
+        
+        $uncalculatedAssayList = null;
+        
 		if(count($this->result['pendingAssay'])>0){
 			foreach($this->result['pendingAssay'] as $vlId=>$vlCal){
                 if($pdf->getY()>=250){
                     $pdf->AddPage();
                 }
-				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results | Not enough Labs in this Assay</h5>';
+                
+				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results</h5>';
 				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
 				<tr>
 					<td style="background-color:#dbe4ee;text-align:center;">Platform </td>
 					<td style="background-color:#dbe4ee;text-align:center;">No. of Labs</td>
-					<td style="background-color:#dbe4ee;text-align:center;">Specimen ID </td>
 				</tr>';
 				$n=count($vlCal['specimen']);
 				$l=0;
@@ -369,24 +372,35 @@ if ($this->result['shipment'] != "") {
 					$calRes.='<tr>';
 					if($l==0){
                         if($vlId==6){
-                            $calRes.='<td style="text-align:center;" rowspan="'.$n.'">'.implode(",",$vlCal['otherAssayName']).'</td>';        
+                            $calRes.='<td style="text-align:center;">'.implode(",",$vlCal['otherAssayName']).'</td>';
+                            $uncalculatedAssayList[] = "Other";
                         }else{
-                            $calRes.='<td style="text-align:center;" rowspan="'.$n.'">'.$vlCal['shortName'].'</td>';
+                            $calRes.='<td style="text-align:center;">'.$vlCal['shortName'].'</td>';
+                            $uncalculatedAssayList[] = $vlCal['vlAssay'];
                         }
 					
 					}
 					$calRes.='<td>'.count($val).'</td>';
-					$calRes.='<td>'.$key.'</td>';
 					$calRes.='</tr>';
-					$l++;
+                    break; // JUST ONE ROW IS ENOUGH
+					//$l++;
 				}
+                
+                
 				
 				$calRes.='</table>';
-                if($vlId==6){
-                    $calRes.='<h5>"Other Platforms were not analyzed or graded since there were less than 6 participating labs using the same platform."</h5>';
-                }
+
 				$pdf->writeHTML($calRes, true, false, true, false, '');
+                
+                
 			}
+            
+            $uncalculatedAssayList = array_unique($uncalculatedAssayList);
+            $uncalculatedAssays = implode(", ",$uncalculatedAssayList);
+            $unCalRes='<h5>'.$uncalculatedAssays.' Platforms were not analyzed or graded.</h5>';
+            
+            $pdf->writeHTML($unCalRes, true, false, true, false, '');            
+            
 		}
         $footerHead='<br/><h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
         $pdf->writeHTML($footerHead, true, false, true, false, '');
