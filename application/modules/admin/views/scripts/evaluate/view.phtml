@@ -566,9 +566,9 @@ if ($this->scheme == 'eid') {
                 <tr>
 					<th style="text-align: center;font-size:17px;">Control</th>
 					<th style="text-align: center;font-size:17px;">Lower Limit</th>
-					<th style="text-align: center;font-size:17px;">Higer Limit</th>
+					<th style="text-align: center;font-size:17px;">Higher Limit</th>
 					<th style="text-align: center;font-size:17px;">Response</th>
-					<th style="text-align: center;font-size:17px;">Pass/Fail</th>
+					<th style="text-align: center;font-size:17px;">Acceptable ?</th>
 				</tr>
 
                     <?php
@@ -601,7 +601,26 @@ if ($this->scheme == 'eid') {
                         ?>
                     </td>
                     <td style="vertical-align: middle;"><?php echo $result['reported_viral_load']; ?></td>
-                    <td style="vertical-align: middle;"><h1>-</h1></td>
+                    <td style="vertical-align: middle;">
+						
+					<?php
+						if(isset($this->vlRange[$attributes['vl_assay']])){
+								$hi = $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+								$lo = $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
+								if($result['reported_viral_load'] <= $hi && $result['reported_viral_load'] >= $lo){
+									echo "Yes";
+								}else{
+									echo "No";
+								}							
+								
+							}else{
+								echo "N/A";
+							}
+						?>						
+					
+					</td>
+					
+					
                 </tr>
                 
             <?php
@@ -619,9 +638,9 @@ if ($this->scheme == 'eid') {
         <tr>
             <th style="text-align: center;font-size:17px;">Sample</th>
             <th style="text-align: center;font-size:17px;">Lower Limit</th>
-            <th style="text-align: center;font-size:17px;">Higer Limit</th>
+            <th style="text-align: center;font-size:17px;">Higher Limit</th>
             <th style="text-align: center;font-size:17px;">Response</th>
-            <th style="text-align: center;font-size:17px;">Pass/Fail</th>
+            <th style="text-align: center;font-size:17px;">Acceptable?</th>
         </tr>
 
     <?php
@@ -659,9 +678,20 @@ if ($this->scheme == 'eid') {
                     <input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
                 </td>                
                 <td style="vertical-align: middle;text-align: center;">
-                    <h1>
-                        -
-                    </h1>
+<?php
+						if(isset($this->vlRange[$attributes['vl_assay']])){
+								$hi = $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+								$lo = $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
+								if($result['reported_viral_load'] <= $hi && $result['reported_viral_load'] >= $lo){
+									echo "Yes";
+								}else{
+									echo "No";
+								}							
+								
+							}else{
+								echo "N/A";
+							}
+						?>
                 </td>
             </tr>
 
@@ -750,6 +780,7 @@ if (isset($this->evaluateData['evalComments'])) {
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 ?>
 
+<?php if ($this->scheme == 'dts') { ?>
 <legend>Summary of all Laboratory Scores</legend>
 <table class="table table-bordered table-striped">
     <tr>
@@ -765,6 +796,7 @@ $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs"
         <td style="text-align: center;"><?php echo ($this->evaluateData['fullScorers'] / $this->evaluateData['totalParticipants']) * 100; ?> %</td>
     </tr>
 </table>
+<?php } ?>
 <br/>
 <?php if (isset($this->evaluateData['shipment']['shipment_comment']) && $this->evaluateData['shipment']['shipment_comment'] != "") { ?>
     <legend>Comment from PT Admin</legend>

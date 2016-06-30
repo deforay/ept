@@ -1425,11 +1425,13 @@ class Application_Service_Evaluation {
 		$counter = 0;
 		$maxScore = 0;
 		$scoreHolder = array();
+		$finalResult = null;
 		$schemeService = new Application_Service_Schemes();
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+		$passPercentage = $config->evaluation->vl->passPercentage;
 	
 		$vlRange = $schemeService->getVlRange($shipmentId);
 		
@@ -1500,37 +1502,48 @@ class Application_Service_Evaluation {
 					$scoreResult = 'Fail';
 				} else if ($totalScore != $maxScore) {
 					$scoreResult = 'Fail';
-					$failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
+					if($maxScore != 0){
+						$totalScore = ($totalScore/$maxScore)*100;
+					}
+					$failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passPercentage</strong>)";
 				} else {
+					if($maxScore != 0){
+						$totalScore = ($totalScore/$maxScore)*100;
+					}
 					$scoreResult = 'Pass';
 				}
 
 
-				// if any of the results have failed, then the final result is fail
-				if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
-					$finalResult = 2;
-				} else {
-					$finalResult = 1;
-				}
+				// if $finalResult == 3 , then  excluded
+				
+					if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
+						$finalResult = 2;
+					} else {
+						$finalResult = 1;
+					}
+				
 				$shipmentResult[$counter]['shipment_score'] = $totalScore;
-				$shipmentResult[$counter]['max_score'] = $maxScore;
+				$shipmentResult[$counter]['max_score'] = $passPercentage; //$maxScore;
+				
+				
 
 				$fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
 
 				$shipmentResult[$counter]['display_result'] = $fRes[0];
 				$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
-
+				//Zend_Debug::dump($shipmentResult[$counter]);
 				// let us update the total score in DB
 				if ($totalScore == 'N/A') {
 					$totalScore = 0;
 				}
 				$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
-				$counter++;
+				
 			} else {
 				$failureReason = array('warning' => "Response was submitted after the last response date.");
 
 				$db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
 			}
+			$counter++;
 		}
 		$db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
 		return $shipmentResult;

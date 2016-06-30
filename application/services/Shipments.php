@@ -255,8 +255,10 @@ class Application_Service_Shipments {
             );
             
 	    if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
-		$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
-	    }
+			$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+	    }else{
+			$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+		}
 	       
 	    if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access =='yes'){
 		$data['qc_done'] = $params['qcDone'];
@@ -316,8 +318,10 @@ class Application_Service_Shipments {
             );
 	    
 	    if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
-		$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
-	    }
+			$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+	    }else{
+			$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+		}
 	    
 	    if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access =='yes'){
 		$data['qc_done'] = $params['qcDone'];
@@ -471,7 +475,9 @@ class Application_Service_Shipments {
             );
 	    if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
 	       $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
-	    }
+	    }else{
+			$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+		}
 	    
 	    if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access =='yes'){
 		$data['qc_done'] = $params['qcDone'];
@@ -532,7 +538,9 @@ class Application_Service_Shipments {
                
 	    if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
 		$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
-	    }
+	    }else{
+			$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+		}
 	    
 	    if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access =='yes'){
 		$data['qc_done'] = $params['qcDone'];
@@ -600,7 +608,9 @@ class Application_Service_Shipments {
             );
 	    if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
 		$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
-	    }
+	    }else{
+			$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+		}
 	    
 	    if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access =='yes'){
 		$data['qc_done'] = $params['qcDone'];

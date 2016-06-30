@@ -120,7 +120,7 @@
 		<?php
 			$editList = array();
 			$viewList = array();
-			//Zend_Debug::dump($this->shipment);
+			
 			//ZEND_DEBUG();
 			foreach($this->shipment as $shipment){
 					$btnClassName="btn-success";
@@ -140,7 +140,7 @@
 			      }
                                 
 					if(isset($shipment['final_result']) && $shipment['final_result']==2){
-						$btnClassName="btn-danger";
+						$btnClassName="btn-danger ".$shipment['final_result'];
 					}else if(isset($warnings) && count($warnings) >0){
 						$btnClassName="btn-warning";
 					}

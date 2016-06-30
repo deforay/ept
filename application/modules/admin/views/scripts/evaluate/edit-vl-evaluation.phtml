@@ -132,7 +132,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 					<th style="text-align: center;font-size:17px;">Lower Limit</th>
 					<th style="text-align: center;font-size:17px;">Higer Limit</th>
 					<th style="text-align: center;font-size:17px;width:120px;">Response</th>
-					<th style="text-align: center;font-size:17px;">Pass/Fail</th>
+					<th style="text-align: center;font-size:17px;">Acceptable ?</th>
 				</tr>
 					
 				<?php
@@ -171,7 +171,21 @@ $dtFormat=  $genderHelper->getDateFormat();
 								<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
 					</td>
 					<td style="vertical-align: middle;text-align: center;">
-						-
+						<?php
+						if(isset($this->vlRange[$attributes['vl_assay']])){
+								$hi = $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+								$lo = $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
+								if($result['reported_viral_load'] <= $hi && $result['reported_viral_load'] >= $lo){
+									echo "Yes";
+								}else{
+									echo "No";
+								}
+								
+								
+							}else{
+								echo "N/A";
+							}
+						?>
 					</td>
 				</tr>
 						
@@ -190,9 +204,9 @@ $dtFormat=  $genderHelper->getDateFormat();
 		<tr>
 					<th style="text-align: center;font-size:17px;width:200px;">Sample</th>
 					<th style="text-align: center;font-size:17px;">Lower Limit</th>
-					<th style="text-align: center;font-size:17px;">Higer Limit</th>
+					<th style="text-align: center;font-size:17px;">Higher Limit</th>
 					<th style="text-align: center;font-size:17px;width:120px;">Response</th>
-					<th style="text-align: center;font-size:17px;">Pass/Fail</th>
+					<th style="text-align: center;font-size:17px;">Acceptable?</th>
 			
 		</tr>
 			
@@ -232,7 +246,22 @@ $dtFormat=  $genderHelper->getDateFormat();
 						<input type="text" name="reported[]" value="<?php echo $result['reported_viral_load']; ?>" class="form-control" />
 						<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
 					</td>
-					<td style="vertical-align: middle;text-align: center;"> - </td>
+					<td style="vertical-align: middle;text-align: center;">
+						<?php
+						if(isset($this->vlRange[$attributes['vl_assay']])){
+								$hi = $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+								$lo = $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
+								if($result['reported_viral_load'] <= $hi && $result['reported_viral_load'] >= $lo){
+									echo "Yes";
+								}else{
+									echo "No";
+								}							
+								
+							}else{
+								echo "N/A";
+							}
+						?>
+					</td>
 				</tr>
 				
 			<?php
