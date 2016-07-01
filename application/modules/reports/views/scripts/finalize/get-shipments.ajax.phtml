@@ -46,7 +46,7 @@ if($this->shipments == false && count($this->shipments) <= 0){
 						if ($shipment['report_generated'] == 'yes') {
 							if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf")) {
 								?>
-						<a class="btn btn-success btn-xs" href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-bulk-participant-report.pdf"); ?>" target='_BLANK'><span><i class="icon-check"></i> Download Summary Report</span></a>
+						<a class="btn btn-success btn-xs" href="<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-summary.pdf"); ?>" target='_BLANK'><span><i class="icon-check"></i> Download Summary Report</span></a>
 							<?php
 							}
 							$buttonCount = (int)ceil($reported / 50);
