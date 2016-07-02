@@ -2176,3 +2176,25 @@ INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 (3, 'Email'),
 (4, 'Scan'),
 (5, 'SMS');
+
+--Pal 2nd-JUL-2016
+INSERT INTO `eanalyze`.`global_config` (`name`, `value`) VALUES ('text_under_logo', '');
+
+CREATE TABLE IF NOT EXISTS `publications` (
+  `publication_id` int(11) NOT NULL AUTO_INCREMENT,
+  `content` text,
+  `file_name` varchar(255) DEFAULT NULL,
+  `added_by` int(11) NOT NULL,
+  `added_on` datetime NOT NULL,
+  `status` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`publication_id`)
+)
+
+CREATE TABLE IF NOT EXISTS `home_banner` (
+  `banner_id` int(11) NOT NULL AUTO_INCREMENT,
+  `image` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`banner_id`)
+)
+
+INSERT INTO `home_banner` (`banner_id`, `image`) VALUES
+(1, '');

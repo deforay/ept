@@ -1,6 +1,3 @@
-<?php
-// Zend_Debug::dump($this->allSchemes);die;
-?>
 <div class="well">
     <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
@@ -17,7 +14,13 @@
 				<input type="text" class="form-control" id="instituteName" name="instituteName" placeholder="Enter Institute Name" title="Enter Institute Name" value="<?php echo $this->config->instituteName; ?>" />
 			</div>
 	     </div>
-        <div class="form-group">
+	     <div class="form-group">
+			<label for="text_under_logo" class="col-lg-3 control-label">Text Under Logo</label>
+			<div class="col-lg-6">
+				<input type="text" class="form-control" id="text_under_logo" name="text_under_logo" placeholder="Enter Text Under Logo" title="Enter Text Under Logo" value="<?php echo $this->text_under_logo; ?>" />
+			</div>
+	     </div>
+            <div class="form-group">
 			<label for="schemeId" class="col-lg-3 control-label">Choose Active Schemes <span class="mandatory">*</span></label>
 			<div class="col-lg-6">
                             <select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">

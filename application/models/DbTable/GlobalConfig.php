@@ -25,8 +25,8 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         // the column names will now become view variables
         return $arr;
     }
+    
     public function updateConfigDetails($params) {
-      
         foreach ($params as $fieldName => $fieldValue) {
               if($fieldName=='schemeId'){
                   $schemeDb = new Application_Model_DbTable_SchemeList();
@@ -38,6 +38,10 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                  $this->update(array('value' => $fieldValue),"name='" . $fieldName . "'");
               }
         }
+    }
+    
+    public function getTextUnderLogoContent(){
+        return $this->fetchRow('name = "text_under_logo"');
     }
 
 }

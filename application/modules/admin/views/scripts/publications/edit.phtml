@@ -1,0 +1,91 @@
+<div class="well">
+    <form name="editPublicationForm" id="editPublicationForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "publications", "action" => "edit"),'default', true) ?>" class="form-horizontal bs-example" role="form" enctype="multipart/form-data" onsubmit="validateNow();return false;">
+        <fieldset>
+            <legend>Edit Publication</legend>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Content <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><textarea type="text" id="content" name="content"
+                                             class="isRequired form-control" title="Please enter the content here"
+                                             placeholder="Please enter the content here" onblur="checkDuplicate('publications', 'content','content','<?php echo "publication_id##" . $this->publication['publication_id']; ?>', 'The content that you entered already exist. Please try something else.');"><?php echo $this->publication['content']; ?></textarea></div>
+            </div>
+            <div class="form-group">
+                <?php
+                 $display = 'display:block';
+                 $isRequired = 'isRequired';
+                 if(isset($this->publication['file_name']) && trim($this->publication['file_name'])!= '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'document'. DIRECTORY_SEPARATOR . $this->publication['file_name'])){
+                    $display = 'display:none';
+		    $isRequired = '';
+                    ?>
+                    <label class="col-lg-3 control-label change-file">Change file </label>
+                    <div class="col-lg-5 change-file" style="margin-top:10px;"><span><a href="/uploads/document/<?php echo $this->publication['file_name']; ?>" target="_blank"><?php echo $this->publication['file_name']; ?></a></span><span style="margin-left:8%;"><a href="javascript:void(0);" title="Remove" onclick="getDeletedFile('<?php echo $this->publication['file_name']; ?>');" style="font-size:18px;font-weight:800;color:#e74c3c;"> X</a></span></div>
+                 <?php } ?>
+                <label class="col-lg-3 control-label choose-file" style="<?php echo $display; ?>">Choose file <span class="mandatory">*</span></label>
+                <div class="col-lg-5 choose-file" style="<?php echo $display; ?>"><input type="file" id="document" name="document"
+                                             class="form-control <?php echo $isRequired; ?>" title="Please select the file"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Status <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5">
+                    <select type="text" id="status" name="status" class="isRequired form-control"
+                            title="Please select publication status">
+                        <option
+                            value="active" <?php echo ($this->publication['status'] == "active") ? "selected='selected'" : ""; ?>>
+                            Active
+                        </option>
+                        <option
+                            value="inactive" <?php echo ($this->publication['status'] == "inactive") ? "selected='selected'" : ""; ?>>
+                            Inactive
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <br>
+
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input type="hidden" id="publicationId" name="publicationId" value="<?php echo $this->publication['publication_id']; ?>"/>
+                <input type="hidden" id="removedFile" name="removedFile"/>
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/publications';"
+                       tabindex="8" value="Cancel"/>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+    var duplicated = false;
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+	objValue=document.getElementById(obj).value;
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: objValue, fnct: fnct, format: "html" },
+            function (data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    $("#"+obj).val("");
+		    $("#"+obj).focus();
+                }
+                else {
+                    duplicated = false;
+                }
+		return duplicated;
+            });
+    }
+
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'editPublicationForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('editPublicationForm').submit();
+        }
+    }
+    
+    function getDeletedFile(file){
+        $(".change-file").remove();
+        $(".choose-file").css("display","block");
+        $("#removedFile").val(file);
+	$("#document").addClass("isRequired");
+    }
+</script>

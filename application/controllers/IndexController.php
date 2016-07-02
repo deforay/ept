@@ -15,14 +15,16 @@ class IndexController extends Zend_Controller_Action
         }
     }
 
-    public function indexAction()
-    {
+    public function indexAction(){
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $this->_helper->layout()->activeMenu = 'home';
+        $commonServices = new Application_Service_Common(); 
+        $publicationService = new Application_Service_Publication();
         if(!isset($authNameSpace->dm_id)){
             $this->_helper->layout()->setLayout('home');
         }
-        
+        $this->view->banner = $commonServices->getHomeBanner();
+        $this->view->publications = $publicationService->getAllActivePublications();
     }
 
 

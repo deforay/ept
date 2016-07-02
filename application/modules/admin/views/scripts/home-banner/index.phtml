@@ -1,0 +1,47 @@
+<link href="<?php echo $this->baseUrl('css/editor.css'); ?>" rel="stylesheet">
+<link href="<?php echo $this->baseUrl('css/fileupload_style.css'); ?>" rel="stylesheet">
+<form class="form-horizontal" role="form" name="addHomeBanner" id="addHomeBanner"  method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-banner', 'action' => 'index'), 'default', true); ?>" autocomplete="off" enctype="multipart/form-data">
+	<legend>Home Banner <span class="muted pull-right" style="font-size:15px;"></legend>
+	<div class="container">
+	<div class="col-md-8">
+		<input type="hidden" id="existImage" name="existImage" value="<?php if(isset($this->banner['image']) && trim($this->banner['image'])!= '') { echo $this->banner['image']; } ?>"/>
+		<div class="fileupload fileupload-new" data-provides="fileupload">
+			<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+				<?php if(isset($this->banner['image']) && trim($this->banner['image'])!= '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-banner'. DIRECTORY_SEPARATOR . $this->banner['image'])){ ?>
+					<img src="<?php echo $this->baseUrl('uploads/home-banner/'.$this->banner['image']); ?>" />
+				<?php }else{ ?>
+					<img src="<?php echo $this->baseUrl('images/no-image-available.gif'); ?>" />
+				<?php } ?>
+				
+			</div>
+			
+			<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+			<div>
+			  <span class="btn btn-file"><span class="fileupload-new">Select image</span><span class="fileupload-exists">Change</span>
+			  <input type="file" name="home_banner" id="home_banner"/></span>
+			  <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+			</div>
+		</div>
+	</div>
+  
+	<div class="form-group">
+	  <div class="col-lg-offset-2 col-lg-10">
+	      <input type="button" class="btn btn-info" value="Update" onclick="validateNow();return false;">
+	      <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>" class="btn btn-danger">Cancel</a>
+	  </div>
+	</div>
+</form>
+<script src="<?php echo $this->baseUrl('js/bootstrap-fileupload.js'); ?>"></script>
+<script type="text/javascript">
+	duplicateName=true;
+	function validateNow(){
+		flag = deforayValidator.init({
+		    formId: 'addHomeBanner'
+		});
+		if(flag){
+		    if(duplicateName){
+			document.getElementById('addHomeBanner').submit();
+		    }
+		}
+	}
+</script>

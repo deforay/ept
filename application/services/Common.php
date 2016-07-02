@@ -203,9 +203,44 @@ class Application_Service_Common {
         return $db->insertTempMailDetails($to, $cc,$bcc, $subject, $message, $fromMail, $fromName);
     }
 	
-	public function getAllModeOfReceipt(){
-		$db = new Application_Model_DbTable_ModeOfReceipt();
-		return $db->fetchAllModeOfReceipt();
-	}
+    public function getAllModeOfReceipt(){
+	$db = new Application_Model_DbTable_ModeOfReceipt();
+	return $db->fetchAllModeOfReceipt();
+    }
+    
+    public function updateHomeBanner($params){
+	$filterRules = array(
+                    '*' => 'StripTags',
+                    '*' => 'StringTrim'
+                );
+
+        $filter = new Zend_Filter_Input($filterRules, null, $params);
+
+        if ($filter->isValid()) {
+
+            $params = $filter->getEscaped();
+            $db= new Application_Model_DbTable_HomeBanner();
+            $db->getAdapter()->beginTransaction();
+
+            try {
+                $result=$db->updateHomeBannerDetails($params);
+                $db->getAdapter()->commit();
+            } catch (Exception $exc) {
+                $db->getAdapter()->rollBack();
+                error_log($exc->getMessage());
+                error_log($exc->getTraceAsString());
+            }
+        }
+    }
+    
+    public function getHomeBannerDetails(){
+	$db= new Application_Model_DbTable_HomeBanner();
+	return $db->fetchHomeBannerDetails();
+    }
+    
+    public function getHomeBanner(){
+	$db= new Application_Model_DbTable_HomeBanner();
+	return $db->fetchHomeBanner();
+    }
 }
 
