@@ -160,7 +160,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
                 ->joinLeft(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('ONTIME' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)"), 'NORESPONSE' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)"), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00')")))
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id')
 				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
-                ->where("s.status='shipped' OR s.status='evaluated'")
+                ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
                 ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                 ->where("pmm.dm_id=?", $this->_session->dm_id)
                 ->group('s.scheme_type')
@@ -403,7 +403,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 					$delete='<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
 				}else{
 					$buttonText = "Enter Response";
-					$download='<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+					$download='<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK" download > <i class="icon icon-download"></i> Download Form</a>';
 				}
 			}
             
@@ -602,7 +602,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 					$delete='<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
 				}else{
 					$buttonText = "Enter Response";
-					$download='<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+					$download='<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK" download> <i class="icon icon-download"></i> Download Form</a>';
 				}
 			}
             
@@ -781,7 +781,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
                 }
             }
             
-            $aRow['lastdate_response'];
+            //$aRow['lastdate_response'];
 			
 			$qcBtnText = " Quality Check";
 			if($aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
@@ -835,7 +835,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 					.$download
 					.$qcResponse;
 					
-            $row[] = '<a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : underline;" target="_BLANK">' . $aRow['REPORT'] . '</a>';
+			$downloadReports= " N.A. ";		
+            if ($aRow['status']=='finalized') {
+                 $downloadReports = '<a href="/uploads/reports/' . $aRow['shipment_code']. '/'.$aRow['shipment_code'].'-summary.pdf" class="btn btn-primary" style="text-decoration : none;" target="_BLANK" download>Download Summary Report</a>';
+				 $downloadReports .= '<a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : none;" class="btn btn-info" target="_BLANK" download> Download Individual ' . $aRow['REPORT'] . '</a>';
+            }					
+            $row[] = $downloadReports;
 
             $output['aaData'][] = $row;
         }
@@ -1160,7 +1165,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);
-            $row[] = '<a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : underline;" target="_BLANK">' . $aRow['REPORT'] . '</a>';
+            $row[] = '<a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : underline;" target="_BLANK" download>' . $aRow['REPORT'] . '</a>';
 
             $output['aaData'][] = $row;
         }
@@ -1312,7 +1317,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $row[] = $aRow['shipment_code'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR .$aRow['shipment_code']. "-summary.pdf") && $aRow['status']=='finalized') {
-                 $row[] = '<a href="/uploads/reports/' . $aRow['shipment_code']. '/'.$aRow['shipment_code'].'-summary.pdf"  style="text-decoration : none;" target="_BLANK">Report</a>';
+                 $row[] = '<a href="/uploads/reports/' . $aRow['shipment_code']. '/'.$aRow['shipment_code'].'-summary.pdf"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
             } else {
                 $row[] = '';
             }
@@ -1321,6 +1326,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
         echo json_encode($output);
     }
+	
     public function getAllShipmentFormDetails($parameters) {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
@@ -1412,9 +1418,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          */
 
         $sQuery = $db->select()->from(array('s' => 'shipment'))
-                ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-		->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
-		->group('s.shipment_id');
+					->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+					->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+					->group('s.shipment_id');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -1458,7 +1464,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-			$row[] = '<a href="/shipment-form/download/sId/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_BLANK"> Download </a>';
+			$row[] = '<a href="/shipment-form/download/sId/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_BLANK" download> Download Report</a>';
             $output['aaData'][] = $row;
         }
 

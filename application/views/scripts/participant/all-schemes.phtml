@@ -10,25 +10,25 @@ $dtFormat=  $genderHelper->getDateFormat();
 <section class="content">
 <div class="box">
                 <div class="box-body">
+
+					<?php
+					if($this->globalQcAccess=='yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access=='yes')){
+					?>					
 					<table class="table">
 						<tr>
 							<td style="width:100%;">
 								<select id="qualityChecked" name="qualityChecked" onchange="schemeTable.fnDraw()"  class="form-control">
-								<option value=""> -- Filter PT Schemes --</option>
-								<option value="yes">Show Responded PT Schemes</option>
-								<option value="no">Show Not Responded PT Schemes</option>
-								
+								<option value=""> -- Filter QC Checked Responses --</option>
+								<option value="yes">Show QC Checked Responses</option>
+								<option value="no">Show Not QC Checked Responses</option>
 								</select>
 							</td>
 						</tr>
 					</table>
-					<?php
-					if($this->globalQcAccess=='yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access=='yes')){
-					?>
-						<input type="hidden" name="participantMapId" id="participantMapId"/>
-						<div style="padding-top:20px;display:none;" id="qcTopButton">
-							<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) Selected for Bulk Quality Check</b></a>
-						</div>
+					<input type="hidden" name="participantMapId" id="participantMapId"/>
+					<div style="padding-top:20px;display:none;" id="qcTopButton">
+						<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) Selected for Bulk Quality Check</b></a>
+					</div>
 					<?php
 					}
 					?>

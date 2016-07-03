@@ -22,8 +22,11 @@
                 </th>
             </tr>
             <tr>
-                <th>Lab or Participant ID <span class="mandatory">*</span></th>
-        <td><input type="text" id="pid" name="pid" size="25" maxlength="45" class="form-control" value="<?php echo $this->rsParticipant['unique_identifier']; ?>" class="isRequired" title="Please enter the Participant's ID here" /></td>
+                <th>Lab or Participant ID</th>
+                    <td>
+                        <?php echo $this->rsParticipant['unique_identifier']; ?>
+                        <input type="hidden" id="pid" name="pid" size="25" maxlength="45" class="form-control" value="<?php echo $this->rsParticipant['unique_identifier']; ?>"/>
+                    </td>
                 <th id="firstNameLable">Participant First Name <span class="mandatory">*</span></th>
                 <td><input type="text" id="pfname" name="pfname" size="25" maxlength="45"  class="form-control isRequired"  title="Please enter the Participant's Lab/First Name here" placeholder="Please enter the Participant's Lab/First Name here" value="<?php echo $this->rsParticipant['first_name']; ?>"/></td>
 

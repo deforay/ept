@@ -56,7 +56,7 @@ class AuthController extends Zend_Controller_Action
 	    		//$authNameSpace->UserFld2 = $rs->UserFld2;
 	    		//$authNameSpace->UserFld3 = $rs->UserFld3;
 	    		
-    			$this->_redirect('/participant/current-schemes');
+    			$this->_redirect('/participant/dashboard');
     		
     		}else
     		{

@@ -2178,7 +2178,7 @@ INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 (5, 'SMS');
 
 --Pal 2nd-JUL-2016
-INSERT INTO `eanalyze`.`global_config` (`name`, `value`) VALUES ('text_under_logo', '');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('text_under_logo', '');
 
 CREATE TABLE IF NOT EXISTS `publications` (
   `publication_id` int(11) NOT NULL AUTO_INCREMENT,
