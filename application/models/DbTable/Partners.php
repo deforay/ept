@@ -185,7 +185,7 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
       return $partnerId;
     }
     
-    public function fetchAllActivePartners($params){
+    public function fetchAllActivePartners(){
         $sql = $this->select()->where("status = ? ","active")->order("added_on DESC");
 	return $this->fetchAll($sql);
     }

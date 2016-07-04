@@ -118,7 +118,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			   <?php
 			   $text = $this->GetTextUnderLogo();
 			   if(isset($text) && $text['value']!= null && trim($text['value'])!= ''){
-			      echo ucwords($text['value']);
+			      echo '<h5>'.ucwords($text['value']).'</h5>';
 			   }
 			   ?>
 			</div>

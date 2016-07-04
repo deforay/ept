@@ -22,8 +22,8 @@ class Application_Service_Partner {
 	return $partnersDb->updatePartnerDetails($params);
     }
     
-    public function getAllActivePartners($params){
+    public function getAllActivePartners(){
         $partnersDb = new Application_Model_DbTable_Partners();
-	return $partnersDb->fetchAllActivePartners($params);
+	return $partnersDb->fetchAllActivePartners();
     }
 }
