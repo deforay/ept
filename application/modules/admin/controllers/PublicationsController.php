@@ -29,13 +29,13 @@ class Admin_PublicationsController extends Zend_Controller_Action
     }
     
     public function editAction(){
-       $publicationService = new Application_Service_Publication();
-       if ($this->getRequest()->isPost()) {
+        $publicationService = new Application_Service_Publication();
+        if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $publicationService->updatePublication($params);
             $this->_redirect("/admin/publications");
         }
-       if($this->_hasParam('id')){
+        if($this->_hasParam('id')){
             $publicationId = (int)$this->_getParam('id');
             $this->view->publication = $publicationService->getPublication($publicationId);
         }else{

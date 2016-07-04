@@ -2203,3 +2203,15 @@ INSERT INTO `home_banner` (`banner_id`, `image`) VALUES
 
 ALTER TABLE `data_manager` ADD `enable_choosing_mode_of_receipt` VARCHAR(45) NULL DEFAULT NULL AFTER `enable_adding_test_response_date`;
 
+CREATE TABLE IF NOT EXISTS `partners` (
+  `partner_id` int(11) NOT NULL AUTO_INCREMENT,
+  `partner_name` varchar(500) DEFAULT NULL,
+  `link` varchar(500) DEFAULT NULL,
+  `added_by` int(11) NOT NULL,
+  `added_on` datetime NOT NULL,
+  `status` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`partner_id`)
+)
+
+INSERT INTO `partners` (`partner_id`, `partner_name`, `link`, `added_by`, `added_on`, `status`) VALUES
+(1, 'CDC-Centers for Disease Control and Prevention', '', 1, '2016-07-04 17:58:43', 'active');

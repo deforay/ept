@@ -110,7 +110,6 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
     </div>
 
 
-
     <div class="col-lg-4 omega">
 	<?php
 	if(isset($this->publications) && count($this->publications) >0){ ?>
@@ -129,12 +128,24 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 		<?php } ?>
 	    </ul>
 	<?php } ?>
-        <div class="indent">
-            <h2>Partners</h2>
-            <ul>
-                <li>CDC-Centers for Disease Control and Prevention</li>
-            </ul>
-        </div>
+	
+	<?php
+	if(isset($this->partners) && count($this->partners) >0){ ?>
+	    <div class="indent">
+		<h2>Partners</h2>
+		<ul>
+		    <?php
+		    foreach($this->partners as $partner) {
+			$text = ucwords($partner['partner_name']);
+			if(isset($partner['link']) && trim($partner['link'])!= ''){
+			    $text = '<a href="'.$partner['link'].'" target="_blank">'.ucwords($partner['partner_name']).'</a>';
+			}
+		    ?>
+		      <li><?php echo $text; ?></li>
+		    <?php } ?>
+		</ul>
+	    </div>
+	<?php } ?>
     </div>
 
 
