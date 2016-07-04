@@ -156,6 +156,10 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
 					<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('detectionAssayExpiryDate')"> Clear</i>					
 				</td>
             </tr>
+	    
+	    <?php
+	    if((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes')) {
+	    ?>
 	    <tr class="light">
 		<?php
 		   if(isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date!= null && $authNameSpace->enable_adding_test_response_date!= '' && $authNameSpace->enable_adding_test_response_date=='yes'){
@@ -166,26 +170,38 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
 				    <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testReceiptDate')"> Clear</i>
 				</td>
 		<?php } ?>
-				<td><label>Mode of Receipt</label></td>
-			<td>
-				<select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
-					<?php
-					foreach ($this->modeOfReceipt as $receipt){
-					?>
-					<option value="<?php echo $receipt['mode_id']; ?>"  <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
-					<?php
-					}
-					?>
-				</select>
-			</td>
-			<?php
-			if(!isset($authNameSpace->enable_adding_test_response_date) || $authNameSpace->enable_adding_test_response_date== null || $authNameSpace->enable_adding_test_response_date== '' || $authNameSpace->enable_adding_test_response_date=='no'){ ?>
-			 <td colspan="2"></td>
-			<?php } ?>
+		
+		<?php
+		if(isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt!= null && $authNameSpace->enable_choosing_mode_of_receipt!= '' && $authNameSpace->enable_choosing_mode_of_receipt=='yes'){
+		 ?>
+		<td><label>Mode of Receipt</label></td>
+		<td>
+			<select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
+				<?php
+				foreach ($this->modeOfReceipt as $receipt){
+				?>
+				<option value="<?php echo $receipt['mode_id']; ?>"  <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
+				<?php
+				}
+				?>
+			</select>
+		</td>
+		<?php } ?>
+		
+		<?php
+		if(!isset($authNameSpace->enable_adding_test_response_date) || $authNameSpace->enable_adding_test_response_date== null || $authNameSpace->enable_adding_test_response_date== '' || $authNameSpace->enable_adding_test_response_date=='no'){ ?>
+		 <td colspan="2"></td>
+		<?php } ?>
+		
+		<?php
+		if(!isset($authNameSpace->enable_choosing_mode_of_receipt) || $authNameSpace->enable_choosing_mode_of_receipt== null || $authNameSpace->enable_choosing_mode_of_receipt== '' || $authNameSpace->enable_choosing_mode_of_receipt=='no'){ ?>
+		 <td colspan="2"></td>
+		<?php } ?>
 	    </tr>
+	    <?php } ?>
 	    
 	    <?php
-			if($this->globalQcAccess=='yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access=='yes')){
+		if($this->globalQcAccess=='yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access=='yes')){
 		?>
 	    <tr>
 			<td><label>QC Done</label></td>

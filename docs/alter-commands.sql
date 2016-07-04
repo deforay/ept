@@ -2198,3 +2198,8 @@ CREATE TABLE IF NOT EXISTS `home_banner` (
 
 INSERT INTO `home_banner` (`banner_id`, `image`) VALUES
 (1, '');
+
+--Pal 4th-JUL-2016
+
+ALTER TABLE `data_manager` ADD `enable_choosing_mode_of_receipt` VARCHAR(45) NULL DEFAULT NULL AFTER `enable_adding_test_response_date`;
+
