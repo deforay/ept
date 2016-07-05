@@ -9,7 +9,8 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
     public function insertTempMailDetails($to, $cc,$bcc, $subject, $message, $fromMail, $fromName) {
         
         $result = $this->insert(array(
-            'message' => strip_tags(html_entity_decode(stripslashes($message),ENT_QUOTES,'UTF-8')),
+            //'message' => strip_tags(html_entity_decode(stripslashes($message),ENT_QUOTES,'UTF-8')),
+            'message' => $message,
             'from_mail' => $fromMail,
             'to_email' => trim($to),
             'subject' => $subject,
