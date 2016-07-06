@@ -27,8 +27,8 @@ class AuthController extends Zend_Controller_Action
     		$adapter->setIdentity($params['username']);
     		$adapter->setCredential($params['password']);
 			
-            $select = $adapter->getDbSelect();
-            $select->where('status = "active"');			
+                $select = $adapter->getDbSelect();
+                $select->where('status = "active"');			
 			
     		// STEP 2 : Let's Authenticate
     		$auth = Zend_Auth::getInstance();
@@ -36,8 +36,7 @@ class AuthController extends Zend_Controller_Action
     		
 			//echo "hi";
     		if($res->isValid()){
-				
-				Zend_Session::rememberMe(60 * 60 * 5); // asking the session to be active for 5 hours
+			Zend_Session::rememberMe(60 * 60 * 5); // asking the session to be active for 5 hours
 
     			$rs = $adapter->getResultRowObject();
     			

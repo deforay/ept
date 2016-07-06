@@ -69,7 +69,9 @@
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'testkit'),'default',true); ?>">Testkits</a></li>
 		<li class="divider"></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'global-config'),'default',true); ?>">ePT Global Settings</a></li>
-                <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'dts-settings'),'default',true); ?>">DTS Settings</a></li>
+		<?php if(in_array('dts',$adminSession->activeSchemes)){ ?>
+                  <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'dts-settings'),'default',true); ?>">DTS Settings</a></li>
+		<?php } ?>
 		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'report-config'),'default',true); ?>">PDF Report Settings</a></li>				
 		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'custom-fields'),'default',true); ?>">Shipment Custom Fields</a></li>				
                 <li class="divider"></li>
@@ -88,7 +90,7 @@
               <ul class="dropdown-menu">
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'distributions'),'default',true); ?>">PT Survey</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'shipment'),'default',true); ?>">Shipments</a></li>
-				<li class="divider"></li>
+		<li class="divider"></li>
                 <li><a href="javascript:void(0);">Packaging</a></li>
               </ul>
             </li>
@@ -108,9 +110,9 @@
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'participant-performance'),'default',true); ?>">Participant Performance Report</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'corrective-actions'),'default',true); ?>">Corrective Actions Report</a></li>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipment-response'),'default',true); ?>">Shipment Response Report</a></li>
-				<?php if(in_array('dts',$adminSession->activeSchemes)){ ?>
+		<?php if(in_array('dts',$adminSession->activeSchemes)){ ?>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'testkit'),'default',true); ?>">TestKit Report For DTS</a></li>
-				<?php } ?>
+		<?php } ?>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments'),'default',true); ?>">Shipments Report</a></li>		
               </ul>
             </li>

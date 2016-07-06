@@ -11,10 +11,9 @@ class Admin_LoginController extends Zend_Controller_Action
     public function indexAction()
     {
         if($this->getRequest()->isPost()){
-            
             $params = $this->getRequest()->getPost();
-    		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-    		$adapter = new Zend_Auth_Adapter_DbTable($db, "system_admin", "primary_email", "password");
+    	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+    	    $adapter = new Zend_Auth_Adapter_DbTable($db, "system_admin", "primary_email", "password");
             
             $select = $adapter->getDbSelect();
             $select->where('status = "active"');
@@ -27,7 +26,7 @@ class Admin_LoginController extends Zend_Controller_Action
     		
 			
     		if($res->isValid()){
-				Zend_Session::rememberMe(36000); // keeping the session cookie active for 10 hours
+		       Zend_Session::rememberMe(36000); // keeping the session cookie active for 10 hours
 
     			$rs = $adapter->getResultRowObject();
     			
@@ -40,13 +39,13 @@ class Admin_LoginController extends Zend_Controller_Action
 	    		$authNameSpace->secondary_email = $rs->secondary_email;
 	    		$authNameSpace->force_password_reset = $rs->force_password_reset;
 				
-				$schemeService = new Application_Service_Schemes();
-				$allSchemes = $schemeService->getAllSchemes();
-				$schemeList = array();
-				foreach($allSchemes as $scheme){
-					$schemeList[] = $scheme->scheme_id;
-				}
-				$authNameSpace->activeSchemes = $schemeList;
+			$schemeService = new Application_Service_Schemes();
+			$allSchemes = $schemeService->getAllSchemes();
+			$schemeList = array();
+			foreach($allSchemes as $scheme){
+				$schemeList[] = $scheme->scheme_id;
+			}
+			$authNameSpace->activeSchemes = $schemeList;
 	    		
     			$this->_redirect('/admin');
     		
