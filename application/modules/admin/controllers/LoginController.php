@@ -43,7 +43,7 @@ class Admin_LoginController extends Zend_Controller_Action
 			$allSchemes = $schemeService->getAllSchemes();
 			$schemeList = array();
 			foreach($allSchemes as $scheme){
-				$schemeList[] = $scheme->scheme_id;
+			    $schemeList[] = $scheme->scheme_id;
 			}
 			$authNameSpace->activeSchemes = $schemeList;
 	    		

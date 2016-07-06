@@ -858,8 +858,6 @@ class Application_Service_Reports {
 
             // to count the total positive and negative, we need to know which r_possibleresults are positive and negative
             // so the following ...
-	    $rPositive = 0;
-	    $rNegative = 0;
 	    $rInderminate = 0;
             if ($parameters['scheme'] == 'dts') {
                 $rPositive = 4;
@@ -967,8 +965,6 @@ class Application_Service_Reports {
 
 
         foreach ($rResult as $aRow) {
-
-
             $row = array();
 	    $exclamation = "";
 	    if($aRow['mandatory'] == 0){
