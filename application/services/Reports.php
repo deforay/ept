@@ -856,9 +856,11 @@ class Application_Service_Reports {
             $refTable = "reference_result_" . $parameters['scheme'];
             $resTable = "response_result_" . $parameters['scheme'];
 
-
             // to count the total positive and negative, we need to know which r_possibleresults are positive and negative
             // so the following ...
+	    $rPositive = 0;
+	    $rNegative = 0;
+	    $rInderminate = 0;
             if ($parameters['scheme'] == 'dts') {
                 $rPositive = 4;
                 $rNegative = 5;
@@ -884,7 +886,6 @@ class Application_Service_Reports {
                 ->join(array('rp' => 'r_possibleresult'), 'ref.reference_result=rp.id')
                 ->where("res.sample_id = ref.sample_id")
                 ->group(array('sp.shipment_id', 'ref.sample_label'));
-
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -969,10 +970,10 @@ class Application_Service_Reports {
 
 
             $row = array();
-			$exclamation = "";
-			if($aRow['mandatory'] == 0){
-				$exclamation = "&nbsp;&nbsp;&nbsp;<i class='icon-exclamation' style='color:red;'></i>";
-			}
+	    $exclamation = "";
+	    if($aRow['mandatory'] == 0){
+		$exclamation = "&nbsp;&nbsp;&nbsp;<i class='icon-exclamation' style='color:red;'></i>";
+	    }
             $row[] = $aRow['scheme_name'];
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['sample_label'].$exclamation;
@@ -983,9 +984,6 @@ class Application_Service_Reports {
             $row[] = $aRow['total_responses'];
             $row[] = $aRow['valid_responses'];
            // $row[] = $aRow['total_passed'];
-
-
-
             $output['aaData'][] = $row;
         }
 
