@@ -8,7 +8,7 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
     
         date_default_timezone_set('GMT');
-        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "participants.csv";
+        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "participants-mail.csv";
         if (!file_exists($filename) || !is_readable($filename))
             return FALSE;    
         $data = array();
@@ -35,19 +35,25 @@ try {
                 $fromMail = '';
                 $fromName = '';
                 //Subject
-                $subject.= 'PT Report - VL2016';
+                $subject.= 'PT Results Report - VL2016';
                 //Message
-                $message.= '<table border="0" cellspacing="0" cellpadding="0" style="width:100%;background-color:#DFDFDF;">';
+                $message.= '<table border="0" cellspacing="0" cellpadding="0" style="width:100%;background-color:#FFF;">';
                     $message.= '<tr><td align="center">';
                       $message.= '<table cellpadding="3" style="width:92%;font-family:Helvetica,Arial,sans-serif;margin:30px 0px 30px 0px;padding:2% 0% 0% 2%;background-color:#ffffff;">';
-                        $message.= '<tr><td colspan="2">Dear <strong>'.ucwords($participant[0]).'</strong>,</td></tr>';
-                        $message.= '<tr><td colspan="2">Please login to http://ept/auth/login with the following credentials </td></tr>';
+                        //$message.= '<tr><td colspan="2">Dear <strong>'.ucwords($participant[0]).'</strong>,</td></tr>';
+                        $message.= '<tr><td colspan="2">Dear Participant,</td></tr>';
+                        $message.= '<tr><td colspan="2">Please login to https://ept.vlsmartconnect.com/auth/login with the following credentials </td></tr>';
                         $message.= '<tr><td width="12%"><strong>Login ID</strong> : </td><td>'.$participant[3].'</td></tr>';
                         $message.= '<tr><td width="12%"><strong>Password</strong> : </td><td>'.$participant[4].'</td></tr>';
-                        $message.= '<tr><td colspan="2">Once you login you can download the PT Reports.</td></tr>';
-                        $message.= '<tr><td colspan="2">You can find a quick help video here http://youtube.com</td></tr>';
-                        $message.= '<tr><td colspan="2">For any assistance or guidance you can reach support@deforay.com</td></tr>';
+                        $message.= '<tr><td colspan="2">This Login ID and Password is unique to your laboratory, please save this Login ID and Password for future use. You will have the option to change them when at a later date.</td></tr>';
+                        $message.= '<tr><td colspan="2">Once you login you can download your VL2016-A PT results summary report for '.($participant[0]).'.</td></tr>';
+                        $message.= '<tr><td colspan="2">You can find a quick help video here http://bit.ly/ept-vl2016-intro</td></tr>';
+                        $message.= '<tr><td colspan="2">For any assistance or guidance you can reach us at pt@vlsmartconnect.com</td></tr>';
+                        $message.= '<tr><td colspan="2">We request you to fill in this short Feedback form : http://bit.ly/vl2016-feedback</td></tr>';
                         $message.= '<tr><td colspan="2">Thanks</td></tr>';
+                        $message.= '<tr><td colspan="2"></td></tr>';
+                        $message.= '<tr><td colspan="2"></td></tr>';
+                        $message.= '<tr><td colspan="2"><small>This is a system generated mail. Please do not reply to this email</small></td></tr>';
                       $message.= '</table>';
                     $message.= '</tr></td>';
                 $message.= '</table>';

@@ -816,7 +816,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 //                $row[] ='';
 //            }
 
-			$buttonText = "View/Edit";
+			$buttonText = "View";
 			$download='';
 			$delete='';
 			

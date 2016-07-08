@@ -21,6 +21,7 @@ class CaptchaController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $session = new Zend_Session_Namespace('DACAPTCHA');
+            //$this->view->result = "success";
             if ($session->code == $params['challenge_field']) {
                  $this->view->result = "success";
             } else {

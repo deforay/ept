@@ -2215,3 +2215,6 @@ CREATE TABLE IF NOT EXISTS `partners` (
 
 INSERT INTO `partners` (`partner_id`, `partner_name`, `link`, `added_by`, `added_on`, `status`) VALUES
 (1, 'CDC-Centers for Disease Control and Prevention', '', 1, '2016-07-04 17:58:43', 'active');
+
+-- Amit Jul 5 2016
+ALTER TABLE `data_manager` ADD `last_login` DATETIME NULL DEFAULT NULL AFTER `updated_by`;

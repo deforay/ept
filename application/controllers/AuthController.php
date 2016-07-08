@@ -21,6 +21,8 @@ class AuthController extends Zend_Controller_Action
     	if($this->getRequest()->isPost()){
     		//die;
     		//echo "Post";
+			$params['username'] = trim($params['username']);
+			$params['password'] = trim($params['password']);
     		$params = $this->getRequest()->getPost();
     		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
     		$adapter = new Zend_Auth_Adapter_DbTable($db, "data_manager", "primary_email", "password");
@@ -56,6 +58,10 @@ class AuthController extends Zend_Controller_Action
 	    		//$authNameSpace->UserFld2 = $rs->UserFld2;
 	    		//$authNameSpace->UserFld3 = $rs->UserFld3;
 	    		
+				$userService = new Application_Service_DataManagers();
+				$userService->updateLastLogin($rs->dm_id);				
+				
+				
     			$this->_redirect('/participant/dashboard');
     		
     		}else

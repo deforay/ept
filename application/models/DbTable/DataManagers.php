@@ -248,6 +248,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             return false;
         }
     }
+	
+    public function updateLastLogin($dmId){
+        
+        $noOfRows = $this->update(array('last_login' => new Zend_Db_Expr('now()')),"dm_id = ".$dmId);
+        if($noOfRows != null && count($noOfRows) ==1){
+            return true;
+        }else{
+            return false;
+        }
+    }
     
     
 }

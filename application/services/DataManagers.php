@@ -11,6 +11,13 @@ class Application_Service_DataManagers {
         $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->updateUser($params);
     }
+    
+    public function updateLastLogin($dmId){
+        $userDb = new Application_Model_DbTable_DataManagers();
+        return $userDb->updateLastLogin($dmId);
+    }
+	
+	
     public function getAllUsers($params){
         $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->getAllUsers($params);
