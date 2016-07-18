@@ -682,7 +682,7 @@ class Application_Service_Shipments {
                     'reference_ic_qs' => $params['icQs'][$i],
                     'control' => $params['control'][$i],
                     'mandatory' => $params['mandatory'][$i],
-                    'sample_score' => (isset($params['score'][$i]) ? $params['score'][$i] : 0)
+                    'sample_score' => 1
                         )
                 );
             }
@@ -807,6 +807,11 @@ class Application_Service_Shipments {
         } else if ($params['schemeId'] == 'dbs') {
 
             for ($i = 0; $i < $size; $i++) {
+				if(isset($params['score'][$i]) && $params['score'][$i] != null && $params['score'][$i] != ""){
+					$sampScore = $params['score'][$i];
+				}else{
+					$sampScore = 1;
+				}
                 $dbAdapter->insert('reference_result_dbs', array(
                     'shipment_id' => $lastId,
                     'sample_id' => ($i + 1),
@@ -814,7 +819,7 @@ class Application_Service_Shipments {
                     'reference_result' => $params['possibleResults'][$i],
                     'control' => $params['control'][$i],
                     'mandatory' => $params['mandatory'][$i],
-                    'sample_score' => $params['score'][$i]
+                    'sample_score' => $sampScore
                         )
                 );
                 // <------ Insert reference_dbs_eia table

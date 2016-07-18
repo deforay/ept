@@ -196,7 +196,17 @@
 						<select class="form-control" name="reported[]"><?php echo $this->dropdownSelection($possibleResults,$result['reported_result'],true); ?></select>
 						<input type="hidden" name="sampleId[]" value="<?php echo $result['sample_id']; ?>" />
 					</td>
-					<td style="vertical-align: middle;text-align: center;"><h1>-</h1></td>
+					<td style="vertical-align: middle;text-align: center;">
+						
+							<?php
+							if($result['reported_result'] == $result['reference_result']){
+								echo "Pass";
+							}else{
+								echo "Fail";
+							}
+							?>
+						
+					</td>
 				</tr>
 				
 			<?php
