@@ -280,7 +280,7 @@ class Application_Service_Schemes {
 
     public function getVlRangeInformation($sId) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('sample_id', 'vl_assay', 'low_limit', 'high_limit','calculated_on','manual_high_limit','manual_low_limit','mean','sd','updated_on','use_range'))
+        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id','sample_id', 'vl_assay', 'low_limit', 'high_limit','calculated_on','manual_high_limit','manual_low_limit','mean','sd','updated_on','use_range'))
                             ->join(array('ref'=>'reference_result_vl'),'rvc.sample_id = ref.sample_id',array('sample_label'))
                             ->join(array('a'=>'r_vl_assay'),'a.id = rvc.vl_assay',array('assay_name' => 'name'))
                             ->where('rvc.shipment_id = ?', $sId);
@@ -301,6 +301,7 @@ class Application_Service_Schemes {
             //$response[$row['vl_assay']][$row['sample_id']]['manual_high_limit'] = $row['manual_high_limit'];
             //$response[$row['vl_assay']][$row['sample_id']]['use_range'] = $row['use_range'];
             
+            $response[$row['sample_id']][$row['vl_assay']]['shipment_id'] = $row['shipment_id'];
             $response[$row['sample_id']][$row['vl_assay']]['sample_label'] = $row['sample_label'];
             $response[$row['sample_id']][$row['vl_assay']]['sample_id'] = $row['sample_id'];
             $response[$row['sample_id']][$row['vl_assay']]['vl_assay'] = $row['vl_assay'];
@@ -562,5 +563,40 @@ class Application_Service_Schemes {
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getDtsTestkitDetails($testkitId);
     }
-
+    
+    public function getVlManualValue($shipmentId,$sampleId,$vlAssay){
+        if(trim($shipmentId)!="" && trim($sampleId)!="" && trim($vlAssay)!=""){
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id','sample_id', 'vl_assay', 'manual_mean', 'manual_sd','manual_cv','manual_high_limit','manual_low_limit','use_range'))
+                            ->join(array('ref'=>'reference_result_vl'),'rvc.sample_id = ref.sample_id',array('sample_label'))
+                            ->join(array('a'=>'r_vl_assay'),'a.id = rvc.vl_assay',array('assay_name' => 'name'))
+                            ->where('rvc.shipment_id = ?', $shipmentId)
+                            ->where('rvc.sample_id = ?', $sampleId)
+                            ->where('rvc.vl_assay = ?', $vlAssay);
+            return $db->fetchRow($sql);
+        }
+    }
+    
+    public function updateVlManualValue($params) {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->beginTransaction();
+        try {
+            $shipmentId=base64_decode($params['shipmentId']);
+            $sampleId=base64_decode($params['sampleId']);
+            $vlAssay=base64_decode($params['vlAssay']);
+            if(trim($shipmentId)!="" && trim($sampleId)!="" && trim($vlAssay)!=""){
+                $data['manual_mean'] = $params['manualMean'];
+                $data['manual_sd'] = $params['manualSd'];
+                $data['manual_cv'] = $params['manualCv'];
+                $data['manual_low_limit'] = $params['manualLowLimit'];
+                $data['manual_high_limit'] = $params['manualHighLimit'];
+                $db->update('reference_vl_calculation', $data, "shipment_id = ".$shipmentId." and sample_id = ".$sampleId." and "." vl_assay = ".$vlAssay );
+                $db->commit();
+                return $params['shipmentId'];
+            }
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log($e->getMessage());
+        }
+    }
 }

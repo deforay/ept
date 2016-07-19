@@ -229,7 +229,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
     public function recalculateVlRangeAction()
     {
         if($this->_hasParam('sid')){
-			
 			$shipmentId = (int)($this->_getParam('sid'));
 			$schemeService = new Application_Service_Schemes();
 			$this->view->result = $schemeService->setVlRange($shipmentId);
@@ -238,7 +237,24 @@ class Admin_EvaluateController extends Zend_Controller_Action
 			$this->_redirect("/admin/evaluate/");
 		}
     }
-
+	
+	public function addManualLimitsAction(){
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->layout()->setLayout('modal');
+		$schemeService = new Application_Service_Schemes();
+		if($this->_hasParam('id')){
+			$combineId = base64_decode($this->_getParam('id'));
+			$expStr=explode("#",$combineId);
+			$shipmentId=(int)$expStr[0];
+			$sampleId=(int)$expStr[1];
+			$vlAssay=(int)$expStr[2];
+			$this->view->result = $schemeService->getVlManualValue($shipmentId,$sampleId,$vlAssay);
+		}
+		if ($this->getRequest()->isPost()) {
+			$params = $this->getRequest()->getPost();
+			$this->view->updatedResult=$schemeService->updateVlManualValue($params);
+		}
+	}
 
 }
 

@@ -47,6 +47,7 @@ unset($this->result['use_range']);
             <th style="text-align: center;">Low Limit</th>
             <th style="text-align: center;">High Limit</th>
             <th style="text-align: center;">Use Range</th>
+            <th style="text-align: center;">Action</th>
 			
         </tr>
     </thead>
@@ -71,12 +72,12 @@ unset($this->result['use_range']);
                 <td><?php echo $row['sd']; ?></td>
                 
                 <td>
-				  <input type="text" class="form-control" name="manualLow[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo isset($row['manual_low_limit']) ? $row['manual_low_limit'] : ""; ?>" style="width:100px;margin:0 auto;">
+				  <?php echo isset($row['manual_low_limit']) ? $row['manual_low_limit'] : ""; ?>
 				  <input type="hidden" class="form-control" name="sampleId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['sample_id']; ?>" style="width:100px;margin:0 auto;">
 				  <input type="hidden" class="form-control" name="assayId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['vl_assay']; ?>" style="width:100px;margin:0 auto;">
 				</td>
                 <td>
-				  <input type="text" class="form-control" name="manualHigh[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo isset($row['manual_high_limit']) ? $row['manual_high_limit'] : ""; ?>" style="width:100px;margin:0 auto;">
+				  <?php echo isset($row['manual_high_limit']) ? $row['manual_high_limit'] : ""; ?>
 				</td>
                 <td><?php echo $row['low']; ?></td>
                 <td><?php echo $row['high']; ?></td>
@@ -85,6 +86,9 @@ unset($this->result['use_range']);
 					<option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>>System Generated</option>
 					<option value="manual" <?php echo ($row['use_range'] == 'manual') ? " selected='selected' " : "" ?>>Manually Entered</option>
 				  </select>
+				</td>
+				<td>
+				  <a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="layoutModal('<?php echo $this->url(array('module'=>'admin','controller' =>'evaluate', 'action' => 'add-manual-limits'), 'default', true); ?><?php echo '/id/'.base64_encode($row['shipment_id'].'#'.$row['sample_id'].'#'.$row['vl_assay']); ?>','700','400')"><span><i class="icon-edit"></i> Add Manual</span></a>
 				</td>
             </tr>
             <?php

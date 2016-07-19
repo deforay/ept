@@ -2218,3 +2218,8 @@ INSERT INTO `partners` (`partner_id`, `partner_name`, `link`, `added_by`, `added
 
 -- Amit Jul 5 2016
 ALTER TABLE `data_manager` ADD `last_login` DATETIME NULL DEFAULT NULL AFTER `updated_by`;
+
+--ilahir Jul 19 2016
+ALTER TABLE  `reference_vl_calculation` ADD  `manual_mean` DOUBLE( 20, 10 ) NOT NULL AFTER  `calculated_on` ;
+ALTER TABLE  `reference_vl_calculation` ADD  `manual_sd` DOUBLE( 20, 10 ) NOT NULL AFTER  `manual_mean` ;
+ALTER TABLE  `reference_vl_calculation` ADD  `manual_	cv` DOUBLE( 20, 10 ) NOT NULL AFTER  `manual_sd` ;

@@ -1,0 +1,56 @@
+<form name="addManualLimitForm" id="addManualLimitForm" method="post" action="<?php echo $this->url(array("module"=>"admin", "controller" => "evaluate", "action" => "add-manual-limits"),'default', true) ?>" class="form-horizontal" onsubmit="validateNow();return false;">
+<table class="table table-bordered table-striped table-hover" style="width:100%;margin:0 auto;">
+    <tr>
+        <th>Sample ID</th>
+        <td><?php echo $this->result['sample_label']; ?></td>
+        <th>VL Assay</th>
+        <td><?php echo $this->result['assay_name']; ?></td>
+    </tr>
+    <tr>
+        <th>Manual Mean</th>
+        <td>
+            <input type="text" class="form-control" id="manualMean" name="manualMean" value="<?php echo $this->result['manual_mean']; ?>" style="width:100px;margin:0 auto;">
+            <input type="hidden" class="form-control" name="shipmentId" value="<?php echo base64_encode($this->result['shipment_id']); ?>" style="width:100px;margin:0 auto;">
+            <input type="hidden" class="form-control" name="sampleId" value="<?php echo base64_encode($this->result['sample_id']); ?>" style="width:100px;margin:0 auto;">
+            <input type="hidden" class="form-control" name="vlAssay" value="<?php echo base64_encode($this->result['vl_assay']); ?>" style="width:100px;margin:0 auto;">
+        </td>
+        <th>Manual SD</th>
+        <td>
+            <input type="text" class="form-control" id="manualSd" name="manualSd" value="<?php echo $this->result['manual_sd']; ?>" style="width:100px;margin:0 auto;">
+        </td>
+    </tr>
+    <tr>
+        <th>Manual CV</th>
+        <td>
+            <input type="text" class="form-control" id="manualCv" name="manualCv" value="<?php echo $this->result['manual_cv']; ?>" style="width:100px;margin:0 auto;">
+        </td>
+        <th>Manual Low Limit</th>
+        <td>
+            <input type="text" class="form-control" id="manualLowLimit" name="manualLowLimit" value="<?php echo $this->result['manual_low_limit']; ?>" style="width:100px;margin:0 auto;">
+        </td>
+    </tr>
+    <tr>
+        
+        <th>Manual High Limit</th>
+        <td>
+            <input type="text" class="form-control" id="manualHighLimit" name="manualHighLimit" value="<?php echo $this->result['manual_high_limit']; ?>" style="width:100px;margin:0 auto;">
+        </td>
+    </tr>
+    
+</table>
+
+<input type="submit" value="Submit" class="btn btn-primary">
+<input type="button" value="Close" class="btn btn-danger" onclick="parent.closeLayoutModal()">
+</form>
+<script type="text/javascript">
+    function validateNow(){
+        document.getElementById('addManualLimitForm').submit();
+    }
+    <?php
+    if(isset($this->updatedResult) && trim($this->updatedResult)!=""){
+    ?>
+        parent.closeVlModal('<?php echo $this->updatedResult; ?>');
+    <?php
+    }
+    ?>
+</script>

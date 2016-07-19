@@ -112,5 +112,12 @@
         }
 
     }
-
+    
+    function closeVlModal(id) {
+        if (id!='') {
+            closeLayoutModal();
+            alert("Vl manual value updated successfully");
+            getVLReferenceScores(id);
+        }
+    }
 </script>
