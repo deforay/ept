@@ -260,8 +260,8 @@ class Application_Service_Schemes {
                 if($row['use_range'] == 'manual'){
                     $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['manual_low_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['manual_high_limit'];
-                    $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['mean'];
-                    $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['sd'];
+                    $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['manual_mean'];
+                    $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['manual_sd'];
                 }else{
                     $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];

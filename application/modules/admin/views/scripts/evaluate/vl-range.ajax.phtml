@@ -4,8 +4,8 @@
   }
 </style>
 <?php
-$updatedOn = "Manually Entered Limits";
-$calculatedOn = "System Calculated Limits";
+$updatedOn = "Manually Entered Range";
+$calculatedOn = "System Calculated Range";
 $useRange = 'calculated';
 if(isset($this->result['updated_on']) && $this->result['updated_on'] != ""){
   $updatedOnArray = explode(" ",$this->result['updated_on']);
@@ -13,7 +13,7 @@ if(isset($this->result['updated_on']) && $this->result['updated_on'] != ""){
 }
 if(isset($this->result['calculated_on']) && $this->result['calculated_on'] != ""){
   $calculatedOnArray = explode(" ",$this->result['calculated_on']);
-  $calculatedOn = "Calculated automatically on<br>".$this->dateFormat($calculatedOnArray[0]). " ".$calculatedOnArray[1];
+  $calculatedOn = "Calculated automatically on ".$this->dateFormat($calculatedOnArray[0]). " ".$calculatedOnArray[1];
 }
 if(isset($this->result['use_range']) && $this->result['use_range'] != ""){
   $useRange = $this->result['use_range'];
@@ -27,14 +27,13 @@ unset($this->result['use_range']);
 
 ?>
 <form class="form" method="post" action="/admin/evaluate/vl-range">
-<table class="table table-bordered table-striped table-hover" style="width:100%;margin:0 auto;">
+<table class="table table-bordered table-striped table-hover table-condensed" style="width:100%;margin:0 auto;">
     <thead>
 	  <tr>
 		<th></th>
-		<th></th>
-		<th colspan="2"></th>
+		<th style="width:120px;"></th>
+		<th style="text-align: center;" colspan="4"><?php echo $calculatedOn; ?></th>
 		<th style="text-align: center;" colspan="2"><?php echo $updatedOn; ?></th>
-		<th style="text-align: center;" colspan="2"><?php echo $calculatedOn; ?></th>
 		
 	  </tr>
         <tr>
@@ -68,9 +67,10 @@ unset($this->result['use_range']);
 				  <td style="text-align: center;" rowspan="<?php echo $numberOfAssays; ?>"><?php echo $row['sample_label']; ?></td>
 				<?php } ?>
                 <td><?php echo $row['assay_name']; ?></td>
-                <td><?php echo $row['mean']; ?></td>
-                <td><?php echo $row['sd']; ?></td>
-                
+                <td><?php echo round($row['mean'],4); ?></td>
+                <td><?php echo round($row['sd'],4); ?></td>
+                <td><?php echo round($row['low'],4); ?></td>
+                <td><?php echo round($row['high'],4); ?></td>
                 <td>
 				  <?php echo isset($row['manual_low_limit']) ? $row['manual_low_limit'] : ""; ?>
 				  <input type="hidden" class="form-control" name="sampleId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['sample_id']; ?>" style="width:100px;margin:0 auto;">
@@ -78,9 +78,7 @@ unset($this->result['use_range']);
 				</td>
                 <td>
 				  <?php echo isset($row['manual_high_limit']) ? $row['manual_high_limit'] : ""; ?>
-				</td>
-                <td><?php echo $row['low']; ?></td>
-                <td><?php echo $row['high']; ?></td>
+				</td>				
 				<td>
 				  <select name="useRange[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" class="form-control">
 					<option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>>System Generated</option>
@@ -88,7 +86,7 @@ unset($this->result['use_range']);
 				  </select>
 				</td>
 				<td>
-				  <a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="layoutModal('<?php echo $this->url(array('module'=>'admin','controller' =>'evaluate', 'action' => 'add-manual-limits'), 'default', true); ?><?php echo '/id/'.base64_encode($row['shipment_id'].'#'.$row['sample_id'].'#'.$row['vl_assay']); ?>','700','400')"><span><i class="icon-edit"></i> Add Manual</span></a>
+				  <a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="layoutModal('<?php echo $this->url(array('module'=>'admin','controller' =>'evaluate', 'action' => 'add-manual-limits'), 'default', true); ?><?php echo '/id/'.base64_encode($row['shipment_id'].'#'.$row['sample_id'].'#'.$row['vl_assay']); ?>','700','400')"><span><i class="icon-edit"></i> Manual</span></a>
 				</td>
             </tr>
             <?php
@@ -98,15 +96,10 @@ unset($this->result['use_range']);
     </tbody>
     <tfoot>
         <tr>
-		  <td></td>
-		  <td></td>
-          <td colspan="2" style="text-align: center;">
+          <td colspan="10" style="text-align: center;">
 				<input type="hidden" name="sid" value="<?php echo base64_encode($this->shipmentId); ?>">
-                <input type="submit" value="Update" class="btn btn-primary">
-				
-          </td>
-		  <td colspan="2" style="text-align: center;">
-			<input type="button" value="Re-Calculate" class="btn btn-danger" onclick="recalculate(<?php echo (int)$this->shipmentId; ?>);">
+                <input type="submit" value="Update Changes" class="btn btn-primary">
+				<input type="button" value="Re-Calculate" class="btn btn-danger" onclick="recalculate(<?php echo (int)$this->shipmentId; ?>);">
 		  </td>
 		  <td></td>
         </tr>

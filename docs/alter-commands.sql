@@ -2222,4 +2222,4 @@ ALTER TABLE `data_manager` ADD `last_login` DATETIME NULL DEFAULT NULL AFTER `up
 --ilahir Jul 19 2016
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_mean` DOUBLE( 20, 10 ) NOT NULL AFTER  `calculated_on` ;
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_sd` DOUBLE( 20, 10 ) NOT NULL AFTER  `manual_mean` ;
-ALTER TABLE  `reference_vl_calculation` ADD  `manual_	cv` DOUBLE( 20, 10 ) NOT NULL AFTER  `manual_sd` ;
+ALTER TABLE  `reference_vl_calculation` ADD  `manual_cv` DOUBLE( 20, 10 ) NOT NULL AFTER  `manual_sd` ;
