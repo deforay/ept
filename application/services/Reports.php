@@ -2192,6 +2192,54 @@ class Application_Service_Reports {
 					$newsheet->getStyleByColumnAndRow($i, $startAt)->applyFromArray($borderStyle);
 					$i++;
 				}
+				//get vl_assay wise low high limit
+				$refVlCalci = $db->fetchAll($db->select()->from(array('rvc'=>'reference_vl_calculation'))
+							    ->join(array('rrv'=>'reference_result_vl'),'rrv.sample_id=rvc.sample_id',array('sample_label'))
+							    ->where('rvc.shipment_id='.$result['shipment_id'])->where('rvc.vl_assay='.$assayRow['id']));
+				if(count($refVlCalci)>0){
+				    //write in excel low and high limit title
+				    $newsheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				    $newsheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Mean', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				    $newsheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('SD', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				    $newsheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode('Low Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				    $newsheet->getCellByColumnAndRow(0, 5)->setValueExplicit(html_entity_decode('High Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				    
+				    $k = 1;
+				    $manual = array();
+				    foreach($refVlCalci as $calculation){
+					$newsheet->getCellByColumnAndRow($k, 1)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$newsheet->getCellByColumnAndRow($k, 2)->setValueExplicit(html_entity_decode($calculation['mean'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$newsheet->getCellByColumnAndRow($k, 3)->setValueExplicit(html_entity_decode($calculation['sd'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$newsheet->getCellByColumnAndRow($k, 4)->setValueExplicit(html_entity_decode($calculation['low_limit'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$newsheet->getCellByColumnAndRow($k, 5)->setValueExplicit(html_entity_decode($calculation['high_limit'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					if($calculation['manual_mean']!=0){
+					    $manual[] = 'yes';
+					}elseif($calculation['manual_sd']!=0){
+					    $manual[] = 'yes';
+					}elseif($calculation['manual_low_limit']!=0){
+					    $manual[] = 'yes';
+					}elseif($calculation['manual_high_limit']!=0){
+					    $manual[] = 'yes';
+					}
+					$k++;
+				    }
+				    if(count($manual)>0){
+					$newsheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$newsheet->getCellByColumnAndRow(0, 8)->setValueExplicit(html_entity_decode('Manual Mean', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$newsheet->getCellByColumnAndRow(0, 9)->setValueExplicit(html_entity_decode('Manual SD', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$newsheet->getCellByColumnAndRow(0, 10)->setValueExplicit(html_entity_decode('Manual Low Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$newsheet->getCellByColumnAndRow(0, 11)->setValueExplicit(html_entity_decode('Manual High Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$k = 1;
+					foreach($refVlCalci as $calculation){
+					    $newsheet->getCellByColumnAndRow($k, 7)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					    $newsheet->getCellByColumnAndRow($k, 8)->setValueExplicit(html_entity_decode($calculation['manual_mean'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					    $newsheet->getCellByColumnAndRow($k, 9)->setValueExplicit(html_entity_decode($calculation['manual_sd'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					    $newsheet->getCellByColumnAndRow($k, 10)->setValueExplicit(html_entity_decode($calculation['manual_low_limit'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					    $newsheet->getCellByColumnAndRow($k, 11)->setValueExplicit(html_entity_decode($calculation['manual_high_limit'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					    $k++;
+					}
+				    }
+				}
 				
 				$assayData = isset($assayWiseData[$assayRow['id']]) ? $assayWiseData[$assayRow['id']] : array();
 				//var_dump($assayData);die;
