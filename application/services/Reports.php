@@ -1969,12 +1969,12 @@ class Application_Service_Reports {
 					'bold' => true,
 				),
 				'alignment' => array(
-					'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+					'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
 					'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
 				),
 				'borders' => array(
 					'outline' => array(
-						'style' => PHPExcel_Style_Border::BORDER_THICK,
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
 					),
 				)
 			);
@@ -1993,6 +1993,17 @@ class Application_Service_Reports {
 					),
 				)
 			);
+			$vlBorderStyle = array(
+				'alignment' => array(
+					'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+				),
+				'borders' => array(
+					'outline' => array(
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
+					),
+				)
+			);
+			
 	
 			$query = $db->select()->from('shipment')
 					->where("shipment_id = ?", $shipmentId);
@@ -2204,6 +2215,12 @@ class Application_Service_Reports {
 				    $newsheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode('Low Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				    $newsheet->getCellByColumnAndRow(0, 5)->setValueExplicit(html_entity_decode('High Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				    
+				    $newsheet->getStyleByColumnAndRow(0, 1)->applyFromArray($styleArray);
+				    $newsheet->getStyleByColumnAndRow(0, 2)->applyFromArray($styleArray);
+				    $newsheet->getStyleByColumnAndRow(0, 3)->applyFromArray($styleArray);
+				    $newsheet->getStyleByColumnAndRow(0, 4)->applyFromArray($styleArray);
+				    $newsheet->getStyleByColumnAndRow(0, 5)->applyFromArray($styleArray);
+				    
 				    $k = 1;
 				    $manual = array();
 				    foreach($refVlCalci as $calculation){
@@ -2212,6 +2229,11 @@ class Application_Service_Reports {
 					$newsheet->getCellByColumnAndRow($k, 3)->setValueExplicit(html_entity_decode($calculation['sd'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 					$newsheet->getCellByColumnAndRow($k, 4)->setValueExplicit(html_entity_decode($calculation['low_limit'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 					$newsheet->getCellByColumnAndRow($k, 5)->setValueExplicit(html_entity_decode($calculation['high_limit'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$newsheet->getStyleByColumnAndRow($k, 1)->applyFromArray($vlBorderStyle);
+					$newsheet->getStyleByColumnAndRow($k, 2)->applyFromArray($vlBorderStyle);
+					$newsheet->getStyleByColumnAndRow($k, 3)->applyFromArray($vlBorderStyle);
+					$newsheet->getStyleByColumnAndRow($k, 4)->applyFromArray($vlBorderStyle);
+					$newsheet->getStyleByColumnAndRow($k, 5)->applyFromArray($vlBorderStyle);
 					if($calculation['manual_mean']!=0){
 					    $manual[] = 'yes';
 					}elseif($calculation['manual_sd']!=0){
@@ -2229,6 +2251,11 @@ class Application_Service_Reports {
 					$newsheet->getCellByColumnAndRow(0, 9)->setValueExplicit(html_entity_decode('Manual SD', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 					$newsheet->getCellByColumnAndRow(0, 10)->setValueExplicit(html_entity_decode('Manual Low Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 					$newsheet->getCellByColumnAndRow(0, 11)->setValueExplicit(html_entity_decode('Manual High Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$newsheet->getStyleByColumnAndRow(0, 7)->applyFromArray($styleArray);
+					$newsheet->getStyleByColumnAndRow(0, 8)->applyFromArray($styleArray);
+					$newsheet->getStyleByColumnAndRow(0, 9)->applyFromArray($styleArray);
+					$newsheet->getStyleByColumnAndRow(0, 10)->applyFromArray($styleArray);
+					$newsheet->getStyleByColumnAndRow(0, 11)->applyFromArray($styleArray);
 					$k = 1;
 					foreach($refVlCalci as $calculation){
 					    $newsheet->getCellByColumnAndRow($k, 7)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2236,10 +2263,16 @@ class Application_Service_Reports {
 					    $newsheet->getCellByColumnAndRow($k, 9)->setValueExplicit(html_entity_decode($calculation['manual_sd'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 					    $newsheet->getCellByColumnAndRow($k, 10)->setValueExplicit(html_entity_decode($calculation['manual_low_limit'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 					    $newsheet->getCellByColumnAndRow($k, 11)->setValueExplicit(html_entity_decode($calculation['manual_high_limit'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					    $newsheet->getStyleByColumnAndRow($k, 7)->applyFromArray($vlBorderStyle);
+					    $newsheet->getStyleByColumnAndRow($k, 8)->applyFromArray($vlBorderStyle);
+					    $newsheet->getStyleByColumnAndRow($k, 9)->applyFromArray($vlBorderStyle);
+					    $newsheet->getStyleByColumnAndRow($k, 10)->applyFromArray($vlBorderStyle);
+					    $newsheet->getStyleByColumnAndRow($k, 11)->applyFromArray($vlBorderStyle);
 					    $k++;
 					}
 				    }
 				}
+				//
 				
 				$assayData = isset($assayWiseData[$assayRow['id']]) ? $assayWiseData[$assayRow['id']] : array();
 				//var_dump($assayData);die;
