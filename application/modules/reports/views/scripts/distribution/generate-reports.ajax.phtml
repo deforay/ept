@@ -206,7 +206,7 @@ foreach($this->result['shipment'] as $result){
 	//Coment Details
 	
 	
-	if($schemeType != 'vl'){
+	if($schemeType != 'vl' && $schemeType!='eid'){
 		
 		$labInfo='<table cellpadding="2">';
 		
@@ -265,7 +265,34 @@ foreach($this->result['shipment'] as $result){
 		//shipment_test_date
 		$pdf->writeHTML($labInfo, true, false, true, false, '');
 	
-	}else{
+	}
+	else if($schemeType=='eid'){
+		$labInfo='<table cellpadding="2">';
+		$labInfo.='<tr>';
+		$labInfo.='	<td><strong>PT Panel Name and Date</strong> <br>'.$result['distribution_code'].'('.$result['shipment_date'].')</td>';
+		$labInfo.='	<td><strong>PT Panel Received</strong> <br>'.$shipmentReceiptDate.'</td>';
+		$labInfo.='</tr>';
+		
+		$labInfo.='<tr>';
+		//$labInfo.='	<td><strong>Lab Id</strong> <br>'.$result['unique_identifier'].'</td>';
+		$labInfo.='	<td><strong>Extraction Assay </strong> <br>'.$result['extractionAssayVal'].'</td>';
+		$labInfo.='	<td><strong>PT Panel Tested </strong> <br> '.$shipmentTestDate.'</td>';
+		$labInfo.='</tr>';
+		
+		$labInfo.='<tr>';
+		$labInfo.='	<td><strong>Detection Assay </strong> <br>'.$result['detectionAssayVal'].'</td>';
+		$labInfo.='	<td><strong>Response Date</strong> <br>'.$responseDate.'</td>';
+		$labInfo.='</tr>';
+		
+		$labInfo.='<tr>';
+		$labInfo.='	<td><strong>Lab Id</strong> <br>'.$result['unique_identifier'].'</td>';
+		$labInfo.='</tr>';
+		
+		$labInfo.='</table>';
+		
+		$pdf->writeHTML($labInfo, true, false, true, false, '');
+	}
+	else{
 		
 		$labInfo='<table cellpadding="2">';
 		
@@ -295,7 +322,7 @@ foreach($this->result['shipment'] as $result){
 	}
 	
 	if(sizeof($result['responseResult'])>0){
-		if($schemeType != 'vl'){
+		if($schemeType != 'vl' && $schemeType!='eid'){
 			$labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span><table border="1" style="font-size:13px;">';
 			$labRes .='<tr style="background-color:#dbe4ee;"><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
 			$labRes .='<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td><td>'.$result['responseResult'][0]['testkit1'].'</td><td>'.$result['responseResult'][0]['testkit2'].'</td><td>'.$result['responseResult'][0]['testkit3'].'</td><td colspan="4"></td></tr>';
@@ -504,9 +531,44 @@ foreach($this->result['shipment'] as $result){
 				$failRes.= '</table>';
 				$pdf->writeHTML($failRes, true, false, true, false, '');
 			}
+		}
+		else if($schemeType=='eid'){
+		
+			$n=count($result['responseResult']);
+			$labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
+			$labRes .= '<table border="1" style="font-size:13px;">';
+			$labRes .= '<tr style="background-color:#dbe4ee;">';
+			$labRes .= '<td colspan="'.($n+2).'" style="text-align:center;font-weight:bold;">Sample ID</td>';
+			$labRes .= '</tr>';
+			$labRes.='<tr style="background-color:#dbe4ee;">';
+			$labRes.='<td></td>';
+			//Sample codes
+			foreach($result['responseResult'] as $response){
+				$labRes.='<td style="text-align:center;font-weight:bold;">'.$response['sample_label'].'</td>';
+			}
 			
-            			
-		}else{
+			$labRes.='<td style="text-align:center;font-weight:bold;">Score *</td>';
+			$labRes.='</tr>';
+			$labRes.='<tr>';
+			$labRes.='<td>Expected Result</td>';
+			foreach($result['responseResult'] as $response){
+				$labRes.='<td style="text-align:center;">'.ucfirst(strtolower($response['referenceResult'])).'</td>';
+			}
+			$labRes.='<td rowspan="2" style="text-align:center;">'.$result['shipment_score'].'</td>';
+			$labRes.='</tr>';
+			$labRes.='<tr>';
+			$labRes.='<td>Your Results</td>';
+			foreach($result['responseResult'] as $response){
+				$labRes.='<td style="text-align:center;">'.ucfirst(strtolower($response['labResult'])).'</td>';
+			}
+			$labRes.='</tr>';
+			
+			$labRes .= '</table>';
+			
+			$pdf->SetLeftMargin(15);
+			$pdf->writeHTML($labRes, true, false, true, false, '');
+		}
+		else{
 			//Vl report
 			$labRes='<h5>'.$result['responseResult'][0]['vl_assay'];
 			if(isset($attributes['vl_assay']) && $attributes['vl_assay']==6){

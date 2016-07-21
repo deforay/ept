@@ -776,6 +776,7 @@ class Application_Service_Evaluation {
         $responseResult = "";
         $vlCalculation = "";
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$schemeService = new Application_Service_Schemes();
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment'))
                 ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score','sp.participant_supervisor'))
@@ -796,6 +797,7 @@ class Application_Service_Evaluation {
         //$mapRes="";
         $mapRes = array();
         $penResult = array();
+		$vlGraphResult = array();
         foreach ($shipmentResult as $res) {
             $dmResult = $db->fetchAll($db->select()->from(array('pmm' => 'participant_manager_map'))
                             ->join(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('institute'))
@@ -840,7 +842,18 @@ class Application_Service_Evaluation {
 			 
                 $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
             } else if ($res['scheme_type'] == 'eid') {
-
+				
+				$extractionAssay = $schemeService->getEidExtractionAssay();
+                $detectionAssay = $schemeService->getEidDetectionAssay();
+				$attributes = json_decode($res['attributes'], true);
+				
+				if(isset($attributes['extraction_assay'])){
+					$shipmentResult[$i]['extractionAssayVal']=$extractionAssay[$attributes['extraction_assay']];
+				}
+				if(isset($attributes['detection_assay'])){
+					$shipmentResult[$i]['detectionAssayVal']=$detectionAssay[$attributes['detection_assay']];
+				}
+				
                 $sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'responseDate' => 'reseid.created_on'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=reseid.reported_result', array('labResult' => 'respr.response'))
                         ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
@@ -848,11 +861,11 @@ class Application_Service_Evaluation {
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
                         ->where("reseid.shipment_map_id = ?", $res['map_id']);
 			
-			
+				//$vlAssayResultSet[$responseAssay['vl_assay']]
                 //error_log($sQuery);
                 $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+				
             } else if ($res['scheme_type'] == 'vl') {
-                $schemeService = new Application_Service_Schemes();
                 $vlAssayResultSet = $schemeService->getVlAssay();
                 $vlAssayList = array();
 				
@@ -1167,10 +1180,9 @@ class Application_Service_Evaluation {
                 $shipmentResult['participantScores'] = $db->fetchAll($sql);
             } else if ($shipmentResult['scheme_type'] == 'eid') {
                 $schemeService = new Application_Service_Schemes();
-
                 $extractionAssay = $schemeService->getEidExtractionAssay();
                 $detectionAssay = $schemeService->getEidDetectionAssay();
-
+				
                 foreach ($extractionAssay as $extractionAssayVal) {
                     foreach ($detectionAssay as $detectionAssayVal) {
                         $extId = $extractionAssayVal['id'];
@@ -1189,6 +1201,8 @@ class Application_Service_Evaluation {
                                 ->where("substring(spm.evaluation_status,4,1) != '0'")
                                 ->group('spm.map_id');
                         //echo "<br/>";
+						
+						
                         $sQueryRes = $db->fetchAll($sQuery);
 
                         if (count($sQueryRes) > 0) {
