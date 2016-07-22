@@ -125,128 +125,145 @@ if ($this->result['shipment'] != "") {
     if ($this->result['shipment']['scheme_type'] == 'eid') {
         $pdf->AddPage('P', 'A4');
         if (isset($this->result['shipment']['summaryResult']) && sizeof($this->result['shipment']['summaryResult']) > 0) {
+            
             foreach ($this->result['shipment']['summaryResult'] as $result) {
-
-                $maxScore = 0;
-                $belowScore = 0;
-                $partCount = count($result) - 1;
-                //Zend_Debug::dump($result['correctCount']);
+                $overAllMaxScore = 0;
+                $overAllBelowScore = 0;
+                $partCount=count($result);
                 for ($i = 0; $i < $partCount; $i++) {
                     if ($this->result['shipment']['max_score'] == $result[$i]['shipment_score']) {
-                        $maxScore++;
+                        $overAllMaxScore++;
                     } else {
-                        $belowScore++;
+                        $overAllBelowScore++;
                     }
                 }
-
-                $scoringPer = round(($maxScore / $partCount) * 100, 2);
-
-// set font
-                $pdf->SetFont('times', 'B', 12);
-                $sampleCode = '<div style="border: 2px solid #000000;">';
-
-                $sampleCode.='<table style="margin-left:5px;"><tr><td style="">Summary of All Laboratories using ' . $result[0]['eidExtracName'] . ' / ' . $result[0]['eidDetecName'] . '</td></tr>';
-                $sampleCode.='<tr><td style="">Extraction Assay - ' . $result[0]['eidExtracName'] . '</td></tr>';
-                $sampleCode.='<tr><td style="">Detection Assay - ' . $result[0]['eidDetecName'] . ' </td></tr></table>';
-
-//$pdf->writeHTML($html, true, false, true, false, '');
-//$y = $pdf->getY();
-// set some text to print
-
-                $sampleCode.='<table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Performing Assay Pair </td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring "' . $this->result['shipment']['max_score'] . '"</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Total Number of Laboratories Scoring Below "' . $this->result['shipment']['max_score'] . '" </td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Percentage of Laboratories Scoring "' . $this->result['shipment']['max_score'] . '"</td></tr>';
-
-                $sampleCode.='<tr>';
-                $sampleCode.='<td style="text-align:center;">' . $partCount . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $maxScore . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $belowScore . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $scoringPer . '%</td>';
-                $sampleCode.='</tr>';
-
-                $sampleCode.='</table><br/><br/>';
-
-//$pdf->writeHTML($html, true, false, true, false, '');
-
-                $sampleCount = count($result['correctCount']);
-                $sampleCode.='<table border="1">';
-                $sampleCode.='<tr>';
-                $sampleCode.='<td rowspan="2"></td>';
-                $sampleCode.='<td colspan="' . $sampleCount . '" style="background-color:#dbe4ee;text-align:center;">Sample ID</td>';
-                $sampleCode.='<td></td>';
-                $sampleCode.='</tr>';
-
-                $sampleCode.='<tr>';
-
-                foreach ($result['correctCount'] as $sample) {
-                    $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">' . $sample['sample_label'] . '</td>';
+            }
+            $scoringPer = round(($overAllMaxScore / $partCount) * 100, 2);
+            // set font
+            $pdf->SetFont('times', 'B', 12);
+            $overAllSumRes = '<h3>Summary of All Laboratory Scores*</h3>';
+            $overAllSumRes.='<table border="1">';
+            $overAllSumRes.='<tr style="background-color:#dbe4ee;">';
+            $overAllSumRes.='<td style="text-align:center;">Total Number of Participating Laboratories</td>';
+            $overAllSumRes.='<td style="text-align:center;">Total Number of Laboratories Scoring "'.$this->result['shipment']['max_score'].'"</td>';
+            $overAllSumRes.='<td style="text-align:center;">Total Number of Laboratories Scoring Below "'.$this->result['shipment']['max_score'].'"</td>';
+            $overAllSumRes.='<td style="text-align:center;">Percentage of Laboratories Scoring "' . $this->result['shipment']['max_score'] . '"</td>';
+            $overAllSumRes.='</tr>';
+            
+            $overAllSumRes.='<tr>';
+            $overAllSumRes.='<td style="text-align:center;">' . $partCount . '</td>';
+            $overAllSumRes.='<td style="text-align:center;">' . $overAllMaxScore . '</td>';
+            $overAllSumRes.='<td style="text-align:center;">' . $overAllBelowScore . '</td>';
+            $overAllSumRes.='<td style="text-align:center;">' . $scoringPer . '%</td>';
+            $overAllSumRes.='</tr>';
+                
+            $overAllSumRes.='</table>';
+            
+            $pdf->writeHTML($overAllSumRes, true, false, true, false, '');
+            
+            $n=count($this->result['shipment']['correctRes']);
+            if($n>0){
+                $overAllCorrectRes = '<h3>Percentage of all Laboratories Reporting Correctly*</h3>';
+                $overAllCorrectRes.='<table border="1">';
+                
+                $overAllCorrectRes.='<tr style="background-color:#dbe4ee;">';
+                $overAllCorrectRes.='<td style="text-align:center;font-weight:bold;" colspan="'.($n+2).'">Sample Id</td>';
+                $overAllCorrectRes.='</tr>';
+                
+                $overAllCorrectRes.='<tr style="background-color:#dbe4ee;">';
+                $overAllCorrectRes.='<td></td>';
+                foreach($this->result['shipment']['correctRes'] as $cKey=>$cVal){
+                    $overAllCorrectRes.='<td style="text-align:center;">'.$cKey.'</td>';
                 }
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average</td>';
-                $sampleCode.='</tr>';
-                $sampleCode.='<tr>';
-                $sampAvg = '0';
-                $sampPerAvg = '0';
-                $sampleCode.='<td rowspan="2" style="background-color:#dbe4ee;text-align:center;">Correctly Reported</td>';
-
-                foreach ($result['correctCount'] as $sample) {
-                    $sampAvg+=$sample["correctRes"];
-                    $sampleCode.='<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] . '</td>';
+                $overAllCorrectRes.='<td style="text-align:center;">Average</td>';
+                $overAllCorrectRes.='</tr>';
+                
+                $avg='';
+                $overAllCorrectRes.='<tr>';
+                $overAllCorrectRes.='<td style="text-align:center;">Correctly Reported</td>';
+                foreach($this->result['shipment']['correctRes'] as $cKey=>$cVal){
+                    $avg+=round(($cVal/ $partCount) * 100,2);
+                    $overAllCorrectRes.='<td style="text-align:center;">'.round(($cVal/ $partCount) * 100,2).'%</td>';
                 }
-
-                $sampleCode.='<td style="text-align:center;">' . round(($sampAvg / $sampleCount), 2) . '</td>';
-                $sampleCode.='</tr>';
-
-                $sampleCode.='<tr>';
-                foreach ($result['correctCount'] as $sample) {
-                    $sampPerAvg+=(($sample["correctRes"] / $partCount) * 100);
-                    $sampleCode.='<td style="text-align:center;">' . (($sample["correctRes"] / $partCount) * 100) . '%</td>';
-                }
-                $sampleCode.='<td style="text-align:center;">' . round(($sampPerAvg / $sampleCount), 2) . '%</td>';
-                $sampleCode.='</tr>';
-
-                $sampleCode.='</table>';
-                $sampleCode.='</div></br></br>';
-
-                //----------------Participant Performance Overview  start----------------
-                $sampleCode.='<span style="text-decoration: underline;">Participant Performance Overview</span><br/><table border="1" style="margin-left:5px;"><tr>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;"># of Shipments</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;"># of Responses</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;"># of Valid Responses</td>';
-                $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
-
-                $sampleCode.='<tr>';
-                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_shipped'] . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . $this->participantPerformance['valid_responses'] . '</td>';
-                $sampleCode.='<td style="text-align:center;">' . round($this->participantPerformance['average_score'], 2) . '</td>';
-                $sampleCode.='</tr>';
-
-                $sampleCode.='</table><br/>';
-                $pdf->writeHTML($sampleCode, true, false, true, false, '');
-                //----------------Participant Performance Overview  Ends----------------     
-                //----------------Participant Corrective Action Overview  start----------------
-                if(count($this->correctiveness) > 0){
-                    $correctiveOverview='<div><span style="text-decoration: underline;">Corrective Action Overview </span><br/>
-                            <table border="1" style="margin-left:5px;"><tr>';
-                    $correctiveOverview.='<td style="background-color:#dbe4ee;text-align:center;">Corrective Action</td>';
-                    $correctiveOverview.='<td style="background-color:#dbe4ee;text-align:center;">Responses having Corrective Action</td>';
-    
-                    $correctiveOverview.='</tr>';
-                    foreach ($this->correctiveness as $correctiveness) {
-                        $correctiveOverview.='<tr>';
-                        $correctiveOverview.='<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
-                        $correctiveOverview.='<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
-                        
-                        $correctiveOverview.='</tr>';
+                $overAllCorrectRes.='<td style="text-align:center;">'.round(($avg/$n),2).'%</td>';
+                $overAllCorrectRes.='</tr>';
+                $overAllCorrectRes.='</table>';
+                
+                $pdf->writeHTML($overAllCorrectRes, true, false, true, false, '');
+            }
+            
+            $k=count($this->result['shipment']['avgAssayResult']);
+            $avgAssay="";
+            if($k>0){
+                foreach($this->result['shipment']['avgAssayResult'] as $assayResult){
+                    
+                    $avgAssay.= '<div style="border: 2px solid #000000;padding:5px;">';
+                    $avgAssay.= '<span>Summary of All Laboratories using '.$assayResult['vlAssay'].'</span><br/>';
+                    
+                    $avgAssay.='<table border="1">';
+                    $avgAssay.='<tr style="background-color:#dbe4ee;">';
+                    $avgAssay.='<td style="text-align:center;">Total Number of Laboratories Performing Assay Pair</td>';
+                    $avgAssay.='<td style="text-align:center;">Total Number of Laboratories Scoring "'.$this->result['shipment']['max_score'].'"</td>';
+                    $avgAssay.='<td style="text-align:center;">Total Number of Laboratories Scoring Below "'.$this->result['shipment']['max_score'].'"</td>';
+                    $avgAssay.='<td style="text-align:center;">Percentage of Laboratories Scoring "'.$this->result['shipment']['max_score'].'"</td>';
+                    $avgAssay.='</tr>';
+                    
+                    $avgAssay.='<tr>';
+                    $avgAssay.='<td style="text-align:center;">'.$assayResult['participantCount'].'</td>';
+                    $avgAssay.='<td style="text-align:center;">';
+                    $assayResult['maxScore']=(isset($assayResult['maxScore']) ? $assayResult['maxScore'] : "0");
+                    $avgAssay.=$assayResult['maxScore'];
+                    $avgAssay.='</td>';
+                    $avgAssay.='<td style="text-align:center;">';
+                    $assayResult['belowScore']=(isset($assayResult['belowScore']) ? $assayResult['belowScore'] : "0");
+                    $avgAssay.=$assayResult['belowScore'];
+                    $avgAssay.='</td>';
+                    $avgAssay.='<td style="text-align:center;">';
+                    $avgAssay.= round(($assayResult['maxScore'] / $assayResult['participantCount']) * 100, 2)."%";
+                    $avgAssay.='</td>';
+                    $avgAssay.='</tr>';
+                    $avgAssay.='</table>';
+                    
+                    
+                    $m=count($assayResult['specimen']);
+                    $avgAssay.='<br/><br/><table border="1" style="width:80%;margin-left:20%;">';
+                    $avgAssay.='<tr style="background-color:#dbe4ee;">';
+                    $avgAssay.='<td style="text-align:center;" colspan="'.($m+2).'">Sample Id</td>';
+                    $avgAssay.='</tr>';
+                    
+                    $avgAssay.='<tr style="background-color:#dbe4ee;">';
+                    $avgAssay.='<td></td>';
+                    foreach($assayResult['specimen'] as $sKey=>$sample){
+                        $avgAssay.='<td style="text-align:center;">'.$sKey.'</td>';
                     }
-                    $correctiveOverview.='</table></div><br/><br/>';    
-                    //----------------Participant Corrective Action Overview  Ends----------------    
-                    $pdf->writeHTML($correctiveOverview, true, false, true, false, '');
+                    $avgAssay.='<td style="text-align:center;">Average</td>';
+                    $avgAssay.='</tr>'
+                    ;
+                    $sampleAvg='';
+                    $sCount=count($assayResult['specimen']);
+                    $avgAssay.='<tr>';
+                    $avgAssay.='<td rowspan="2" style="text-align:center;background-color:#dbe4ee;">Correctly Reported</td>';
+                    foreach($assayResult['specimen'] as $sKey=>$sample){
+                        $sampleAvg+=$sample['correctRes'];
+                        $avgAssay.='<td style="text-align:center;">'.$sample['correctRes'].'</td>';
+                    }
+                    $avgAssay.='<td style="text-align:center;">'.round(($sampleAvg/$sCount),2).'</td>';
+                    $avgAssay.='</tr>';
+                    
+                    $sampleAvgInPer='';
+                    $avgAssay.='<tr>';
+                    foreach($assayResult['specimen'] as $sKey=>$sample){
+                        $sampleAvgInPer+=$sample['correctRes'];
+                        $avgAssay.='<td style="text-align:center;">'.round(($sample['correctRes']/$assayResult['participantCount'])*100,2).'%</td>';
+                    }
+                    $avgAssay.='<td style="text-align:center;">'.round(($sampleAvgInPer/$sCount)*100,2).'%</td>';
+                    $avgAssay.='</tr>';
+                    $avgAssay.='</table>';
+                    
+                    $avgAssay.= '</div><br/>';
                 }
-
-// ---------------------------------------------------------
+                
+                $pdf->writeHTML($avgAssay, true, false, true, false, '');
             }
         }
     }

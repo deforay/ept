@@ -1183,44 +1183,90 @@ class Application_Service_Evaluation {
                 $extractionAssay = $schemeService->getEidExtractionAssay();
                 $detectionAssay = $schemeService->getEidDetectionAssay();
 				
-                foreach ($extractionAssay as $extractionAssayVal) {
-                    foreach ($detectionAssay as $detectionAssayVal) {
-                        $extId = $extractionAssayVal['id'];
-                        $detId = $detectionAssayVal['id'];
-
-                        $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'))
-                                ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=spm.shipment_id', array('refeid.sample_label'))
-                                ->join(array('eidExtrac' => 'r_eid_extraction_assay'), "eidExtrac.id=$extId", array('eidExtracName' => 'eidExtrac.name'))
-                                ->join(array('eidDetec' => 'r_eid_detection_assay'), "eidDetec.id=$detId", array('eidDetecName' => 'eidDetec.name'))
-                                ->where("spm.shipment_id = ?", $shipmentId)
-                                ->where("spm.attributes LIKE '%\"extraction_assay\":\"$extId\"%' ")
-                                ->where("spm.attributes LIKE '%\"detection_assay\":\"$detId\"%' ")
-                                ->where("spm.final_result IS NOT NULL")
-                                ->where("spm.final_result!=''")
-                                //->where("spm.final_result = ?",'2')
-                                ->where("substring(spm.evaluation_status,4,1) != '0'")
-                                ->group('spm.map_id');
-                        //echo "<br/>";
-						
-						
-                        $sQueryRes = $db->fetchAll($sQuery);
-
-                        if (count($sQueryRes) > 0) {
-                            $tQuery = $db->select()->from(array('refeid' => 'reference_result_eid'), array('refeid.sample_id', 'refeid.sample_label', 'refeid.mandatory'))
-                                    ->join(array('reseid' => 'response_result_eid'), 'reseid.sample_id=refeid.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN reseid.reported_result=refeid.reference_result THEN 1 ELSE 0 END)")))
-                                    ->join(array('spm' => 'shipment_participant_map'), 'reseid.shipment_map_id=spm.map_id and refeid.shipment_id=spm.shipment_id', array())
-                                    ->where("spm.attributes LIKE '%\"extraction_assay\":\"$extId\"%' ")
-                                    ->where("spm.attributes LIKE '%\"detection_assay\":\"$detId\"%' ")
-                                    ->where("spm.final_result IS NOT NULL")
-                                    ->where("spm.final_result!=''")
-                                    ->where("substring(spm.evaluation_status,4,1) != '0'")
-                                    ->where("spm.shipment_id = ?", $shipmentId)
-                                    ->group(array("refeid.sample_id"));
-                            $shipmentResult['summaryResult'][] = $sQueryRes;
-                            $shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
-                        }
-                    }
+				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'))
+                        //->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
+                        ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
+                        ->where("spm.shipment_id = ?", $shipmentId)
+                        ->where("spm.shipment_test_report_date IS NOT NULL")
+                        ->where("spm.shipment_test_report_date!=''")
+                        ->group('spm.map_id');
+				
+                $sQueryRes = $db->fetchAll($sQuery);
+				
+				if (count($sQueryRes) > 0) {
+					$shipmentResult['summaryResult'][] = $sQueryRes;
+				}
+				
+				$cQuery = $db->select()->from(array('refeid' => 'reference_result_eid'),array('refeid.sample_id', 'refeid.sample_label','refeid.reference_result','refeid.mandatory'))
+						->join(array('s' => 'shipment'), 's.shipment_id=refeid.shipment_id',array('s.shipment_id'))
+						->join(array('spm' => 'shipment_participant_map'),'s.shipment_id=spm.shipment_id',array('spm.map_id','spm.attributes','spm.shipment_score'))
+						->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.shipment_map_id = spm.map_id and reseid.sample_id = refeid.sample_id', array('reported_result'))
+						->where('spm.shipment_id = ? ', $shipmentId)
+						->where("spm.shipment_test_report_date IS NOT NULL")
+                        ->where("spm.shipment_test_report_date!=''");
+				$cResult=$db->fetchAll($cQuery);
+				$correctResult = array();
+				foreach($cResult as $cVal){
+					//Formed correct result
+					if (array_key_exists($cVal['sample_label'], $correctResult)) {
+						if($cVal['reported_result']==$cVal['reference_result']){
+							$correctResult[$cVal['sample_label']]+=1;
+						}
+					}else{
+						$correctResult[$cVal['sample_label']]=array();
+						if($cVal['reported_result']==$cVal['reference_result']){
+							$correctResult[$cVal['sample_label']]=1;
+						}else{
+							$correctResult[$cVal['sample_label']]=0;
+						}
+					}
+				}
+				$shipmentResult['correctRes'] = $correctResult;
+				
+				$extAssayResult = array();
+                foreach ($extractionAssay as $eKey=>$extractionAssayVal) {
+					
+					$labResult = array();
+					$maxScore = 0;
+					$belowScore = 0;
+					$parCount=0;
+					$correctRes=0;
+					foreach($cResult as $val){
+						$valAttributes = json_decode($val['attributes'], true);
+						//Formed array based on r_eid_extraction_assay table
+						if($eKey==$valAttributes['extraction_assay']){
+							if (array_key_exists($eKey,$extAssayResult)) {
+								//$extAssayResult[$eKey]['specimen'][$val['sample_label']][]=$val['reported_result'];
+								if($val['reported_result']==$val['reference_result']){
+									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']+1 : "1");
+									//$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']+1;
+								}else{
+									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] : "0");
+								}
+							}else{
+								$extAssayResult[$eKey]=array();
+								//$extAssayResult[$eKey]['specimen'][$val['sample_label']][]=$val['reported_result'];
+								$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=$correctRes;
+								$extAssayResult[$eKey]['vlAssay']=$extractionAssayVal;
+								if($val['reported_result']==$val['reference_result']){
+									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=1;
+								}
+							}
+							
+							
+							if ($shipmentResult['max_score'] == $val['shipment_score']) {
+								$extAssayResult[$eKey]['maxScore']=$maxScore++;
+							}else{
+								$extAssayResult[$eKey]['belowScore']=$belowScore++;
+							}
+							$extAssayResult[$eKey]['participantCount']=$parCount++;
+						}
+					}
+					
                 }
+				$shipmentResult['avgAssayResult'] = $extAssayResult;
+				//Zend_Debug::dump($shipmentResult);
+				//die;
             } else if ($shipmentResult['scheme_type'] == 'vl') {
                 
 				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes','spm.is_excluded'))
