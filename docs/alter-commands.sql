@@ -2223,3 +2223,13 @@ ALTER TABLE `data_manager` ADD `last_login` DATETIME NULL DEFAULT NULL AFTER `up
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_mean` DOUBLE( 20, 10 ) NOT NULL AFTER  `calculated_on` ;
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_sd` DOUBLE( 20, 10 ) NOT NULL AFTER  `manual_mean` ;
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_cv` DOUBLE( 20, 10 ) NOT NULL AFTER  `manual_sd` ;
+
+
+--ilahir Jul 25 2016
+
+ALTER TABLE  `reference_vl_calculation` ADD  `manual_q1` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `calculated_on` ;
+ALTER TABLE  `reference_vl_calculation` ADD  `manual_q3` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `manual_q1` ,
+ADD  `manual_iqr` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `manual_q3` ;
+
+ALTER TABLE  `reference_vl_calculation` ADD  `manual_quartile_low` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `manual_iqr` ;
+ALTER TABLE  `reference_vl_calculation` ADD  `manual_quartile_high` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `manual_quartile_low` ;
