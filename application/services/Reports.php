@@ -2257,7 +2257,7 @@ class Application_Service_Reports {
 				    $newsheet->getStyleByColumnAndRow(0, 5)->applyFromArray($styleArray);
 				    
 				    $k = 1;
-				    $manual = array();
+				    //$manual = array();
 				    foreach($refVlCalci as $calculation){
 					$newsheet->getCellByColumnAndRow($k, 1)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 					$newsheet->getCellByColumnAndRow($k, 2)->setValueExplicit(html_entity_decode($calculation['mean'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2269,18 +2269,18 @@ class Application_Service_Reports {
 					$newsheet->getStyleByColumnAndRow($k, 3)->applyFromArray($vlBorderStyle);
 					$newsheet->getStyleByColumnAndRow($k, 4)->applyFromArray($vlBorderStyle);
 					$newsheet->getStyleByColumnAndRow($k, 5)->applyFromArray($vlBorderStyle);
-					if($calculation['manual_mean']!=0){
-					    $manual[] = 'yes';
-					}elseif($calculation['manual_sd']!=0){
-					    $manual[] = 'yes';
-					}elseif($calculation['manual_low_limit']!=0){
-					    $manual[] = 'yes';
-					}elseif($calculation['manual_high_limit']!=0){
-					    $manual[] = 'yes';
-					}
+					//if($calculation['manual_mean']!=0){
+					//    $manual[] = 'yes';
+					//}elseif($calculation['manual_sd']!=0){
+					//    $manual[] = 'yes';
+					//}elseif($calculation['manual_low_limit']!=0){
+					//    $manual[] = 'yes';
+					//}elseif($calculation['manual_high_limit']!=0){
+					//    $manual[] = 'yes';
+					//}
 					$k++;
 				    }
-				    if(count($manual)>0){
+				    //if(count($manual)>0){
 					$newsheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 					$newsheet->getCellByColumnAndRow(0, 8)->setValueExplicit(html_entity_decode('Manual Mean', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 					$newsheet->getCellByColumnAndRow(0, 9)->setValueExplicit(html_entity_decode('Manual SD', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2305,7 +2305,7 @@ class Application_Service_Reports {
 					    $newsheet->getStyleByColumnAndRow($k, 11)->applyFromArray($vlBorderStyle);
 					    $k++;
 					}
-				    }
+				    //}
 				}
 				//
 				
