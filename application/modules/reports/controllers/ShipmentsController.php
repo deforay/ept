@@ -9,6 +9,8 @@ class Reports_ShipmentsController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
                     ->addActionContext('get-shipment-participant-list', 'html')
                     ->addActionContext('shipments-export', 'html')
+                    ->addActionContext('vl-sample-analysis', 'html')
+                    ->addActionContext('vl-sample-analysis-result', 'html')
                     ->initContext();
         $this->_helper->layout()->pageName = 'report';                
     }
@@ -64,7 +66,23 @@ class Reports_ShipmentsController extends Zend_Controller_Action
             $this->view->exported=$reportService->exportShipmentsReport($params);
         }
     }
-
+    
+    public function vlSampleAnalysisAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $reportService->getAllVlAssayDistributionReports($params);
+        }
+    }
+    public function vlSampleAnalysisResultAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+           $this->view->vlSampleResult= $reportService->getAllVlSampleResult($params);
+        }
+    }
 
 }
 

@@ -10,7 +10,7 @@
         }
     }
 </style>
-<legend><h3>Vl Assay Distribution</h3></legend>
+<legend><h3>Vl Sample Analysis</h3></legend>
 <table  style="margin:20px 0;" class="table table-bordered">
     <tr>
         <td style="width:150px;text-align: center;font-weight:bold;">
@@ -94,53 +94,53 @@
 		    });
 	    }
             function drawTable() {
-		if ($("#dateRange").val()=="" || $("#shipmentId").val()=="") {
+		if ($("#dateRange").val()=="" ) {
 			alert("Please pick date range and shipment to proceed");
 			return false;
 		}
-                //$("#shipmentTable").removeClass("hide");
-                //$.blockUI;
-                //oTable = $('#shipmentTable').dataTable({
-                //    "oLanguage": {
-                //        "sLengthMenu": "_MENU_ records per page",
-                //        "sEmptyTable": "No data to show"
-                //    },
-                //    "bPaginate": paginate,
-                //    "bJQueryUI": false,
-                //    "bAutoWidth": false,
-                //    "bInfo": true,
-                //    "bScrollCollapse": true,
-                //    "sPaginationType": "bootstrap",
-                //    "bRetrieve": false,
-                //    "bDestroy": true,
-                //    "aoColumns": [
-                //        {"sClass": "center"},
-                //        {"sClass": "center"},
-                //        {"sClass": "center"},
-                //        {"sClass": "center"},
-                //    ],
-                //    "aaSorting": [[1, "asc"]],
-                //    "bProcessing": true,
-                //    "bServerSide": true,
-                //    "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'vl-assay-distribution', 'format' => 'html')); ?>",
-                //    "fnServerParams": function(aoData) {
-                //        aoData.push({"name": "shipmentId", "value": $("#shipmentId").val()});
-                //        aoData.push({"name": "startDate", "value": startDate});
-                //        aoData.push({"name": "endDate", "value": endDate});
-                //    },
-                //    "fnServerData": function(sSource, aoData, fnCallback) {
-                //        $.ajax({
-                //            "dataType": 'json',
-                //            "type": "POST",
-                //            "url": sSource,
-                //            "data": aoData,
-                //            "success": fnCallback
-                //        });
-                //    }, "fnRowCallback": function(nRow, aData, iDisplayIndex) {
-                //        $.unblockUI;
-                //    },
-                //});
-                showPieChart($("#shipmentId").val());
+                $("#shipmentTable").removeClass("hide");
+                $.blockUI;
+                oTable = $('#shipmentTable').dataTable({
+                    "oLanguage": {
+                        "sLengthMenu": "_MENU_ records per page",
+                        "sEmptyTable": "No data to show"
+                    },
+                    "bPaginate": paginate,
+                    "bJQueryUI": false,
+                    "bAutoWidth": false,
+                    "bInfo": true,
+                    "bScrollCollapse": true,
+                    "sPaginationType": "bootstrap",
+                    "bRetrieve": false,
+                    "bDestroy": true,
+                    "aoColumns": [
+                        {"sClass": "center"},
+                        {"sClass": "center"},
+                        {"sClass": "center"},
+                        {"sClass": "center"},
+                    ],
+                    "aaSorting": [[1, "asc"]],
+                    "bProcessing": true,
+                    "bServerSide": true,
+                    "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'vl-assay-distribution', 'format' => 'html')); ?>",
+                    "fnServerParams": function(aoData) {
+                        aoData.push({"name": "shipmentId", "value": $("#shipmentId").val()});
+                        aoData.push({"name": "startDate", "value": startDate});
+                        aoData.push({"name": "endDate", "value": endDate});
+                    },
+                    "fnServerData": function(sSource, aoData, fnCallback) {
+                        $.ajax({
+                            "dataType": 'json',
+                            "type": "POST",
+                            "url": sSource,
+                            "data": aoData,
+                            "success": fnCallback
+                        });
+                    }, "fnRowCallback": function(nRow, aData, iDisplayIndex) {
+                        $.unblockUI;
+                    },
+                });
+                //showPieChart($("#shipmentId").val());
             }
 	   function showPieChart(shipmentId)
            {

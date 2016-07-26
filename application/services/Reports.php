@@ -3950,4 +3950,43 @@ class Application_Service_Reports {
 	}
 	return $vlParticipantCount;
     }
+    public function getAllVlSampleResult($params)
+    {
+	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+	$shipmentId = $params['shipmentId'];
+	$vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id','vl.name','vl.short_name'));
+	$assayResult=$db->fetchAll($vlQuery);
+	foreach ($assayResult as $assayRow) {
+	    $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'),array('sp.map_id','sp.attributes'))
+				->where("sp.shipment_id='".$shipmentId."'");
+	    $cResult=$db->fetchAll($cQuery);
+	    foreach($cResult as $val){
+		$valAttributes = json_decode($val['attributes'], true);
+		if($assayRow['id']==$valAttributes['vl_assay']){
+		    $pQuery = $db->select()->from(array('rrv' => 'response_result_vl'),array("total_shipped" => new Zend_Db_Expr('count("rrv.shipment_map_id")')))
+				->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
+				->where("sp.shipment_id='".$shipmentId."'")
+				->where("rrv.calculated_score='pass'");
+		    $sResult['accept']=$db->fetchAll($pQuery);
+		    if($sResult['accept']){
+		    $k = $k + 1;
+		    }
+		}
+	    }
+	}
+	
+	
+	$fQuery = $db->select()->from(array('rrv' => 'response_result_vl'),array("total_shipped" => new Zend_Db_Expr('count("rrv.shipment_map_id")')))
+				->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
+				->where("sp.shipment_id='".$shipmentId."'")
+				->where("rrv.calculated_score='fail'");
+	$cResult['fail']=$db->fetchAll($fQuery);
+	
+	$eQuery = $db->select()->from(array('rrv' => 'response_result_vl'),array("total_shipped" => new Zend_Db_Expr('count("rrv.shipment_map_id")')))
+				->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
+				->where("sp.shipment_id='".$shipmentId."'")
+				->where("rrv.calculated_score='excluded'");
+	$cResult['excluded']=$db->fetchAll($eQuery);
+	return $cResult;
+    }
 }
