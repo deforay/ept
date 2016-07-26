@@ -1,0 +1,99 @@
+<?php
+
+function getAverage($inputArray) {
+    return array_sum($inputArray) / count($inputArray);
+}
+
+$vlRange = $this->vlRange;
+$sampleId = $this->sampleId;
+$shipmentId = $this->shipmentId;
+
+$assayNames = array();
+$range = null;
+$mean = null;
+$low = null;
+$high = null;
+$sampleName = null;
+
+foreach($vlRange as $assayId => $responseData){
+    $data = $responseData[$sampleId];
+    $sampleName = $data['sample_label'];
+    $sampleRange = array();
+    $assayNames[] = "'".$responseData[$sampleId]['assay_name']."'";
+    $sampleRange[] = $low[] =  round($data['low'],4);
+    $sampleRange[] = round($data['q1'],4);
+    $sampleRange[] = $mean[] =  round($data['mean'],4);
+    $sampleRange[] = round($data['q3'],4);
+    $sampleRange[] = $high[] = round($data['high'],4);
+    $range[] = "[".implode(",",$sampleRange)."]";
+    //$assayNames[] = $responseData['assay_name'];
+}
+
+$overallMean = round(getAverage($mean),4);
+
+?>
+<br>
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+    VL Sample Analysis for <?php echo $sampleName ?>
+    <button class="btn btn-primary btn-sm pull-right" onclick="window.location.href='/admin/evaluate/index/scheme/vl/showcalc/<?php echo base64_encode($shipmentId); ?>';"><span><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</span></button>
+</h4>
+
+<div id="container"></div>
+
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script>
+    $(function () {
+    $('#container').highcharts({
+
+        chart: {
+            type: 'boxplot'
+        },
+
+        title: {
+            text: ''
+        },
+
+        legend: {
+            enabled: false
+        },
+
+        xAxis: {
+            categories: [<?php echo implode(",",$assayNames); ?>],
+            title: {
+                text: 'Sample'
+            }
+        },
+
+        yAxis: {
+            title: {
+                text: 'Calculations'
+            },
+            plotLines: [{
+                value: <?php echo $overallMean; ?>,
+                color: 'red',
+                width: 1,
+                label: {
+                    text: 'Theoretical Mean: <?php echo $overallMean; ?>',
+                    align: 'left',
+                    style: {
+                        color: 'gray'
+                    }
+                }
+            }]
+        },
+
+        series: [{
+            name: 'Range',
+            data: [
+                <?php echo implode(",",$range); ?>
+            ],
+            tooltip: {
+                headerFormat: '<em><strong>{point.key}</strong></em><br/>'
+            }
+        }]
+
+    });
+});
+</script>

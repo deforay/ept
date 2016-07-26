@@ -64,7 +64,9 @@ unset($this->result['use_range']);
 				<?php if(!in_array($sampleId,$sampleAddedToTableAlready)){
 				  $sampleAddedToTableAlready[] = $sampleId;
 				  ?>
-				  <td style="text-align: center;" rowspan="<?php echo $numberOfAssays; ?>"><?php echo $row['sample_label']; ?></td>
+				  <td style="text-align: center;" rowspan="<?php echo $numberOfAssays; ?>">
+					<a href="/admin/evaluate/vl-sample-plot/shipment/<?php echo $row['shipment_id']; ?>/sample/<?php echo $row['sample_id']; ?>" style="text-decoration:underline;" class="btn btn-primary"><?php echo $row['sample_label']; ?></a>
+				  </td>
 				<?php } ?>
                 <td><?php echo $row['assay_name']; ?></td>
                 <td><?php echo round($row['mean'],4); ?></td>

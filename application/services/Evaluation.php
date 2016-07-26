@@ -1452,6 +1452,7 @@ class Application_Service_Evaluation {
 				$attributes = json_decode($shipment['attributes'], true);
 
 				foreach ($results as $result) {
+					$calcResult = "";
 					$responseAssay = json_decode($result['attributes'], true);
 					$responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : "";
 					if (isset($vlRange[$responseAssay])) {
@@ -1459,29 +1460,34 @@ class Application_Service_Evaluation {
 						if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
 							if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
 								$totalScore += $result['sample_score'];
+								$calcResult = "pass";
 							} else {
 								if ($result['sample_score'] > 0) {
 									$failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
 								}
+								$calcResult = "fail";
 							}
 						}
 					} else {
 						$totalScore = "N/A";
+						$calcResult = "excluded";
 					}
 
 					$maxScore += $result['sample_score'];
+					
+					$db->update('response_result_vl', array('calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 
-					// checking if mandatory fields were entered and were entered right
-					if ($result['mandatory'] == 1) {
-						if ((!isset($result['reported_viral_load']) || $result['reported_viral_load'] == "" || $result['reported_viral_load'] == null)) {
-							$mandatoryResult = 'Fail';
-							$failureReason[]['warning'] = "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported";
-						}
-						//else if(($result['reported_viral_load'] != $result['reported_viral_load'])){
-						//	$mandatoryResult = 'Fail';
-						//	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
-						//}
-					}
+					//// checking if mandatory fields were entered and were entered right
+					//if ($result['mandatory'] == 1) {
+					//	if ((!isset($result['reported_viral_load']) || $result['reported_viral_load'] == "" || $result['reported_viral_load'] == null)) {
+					//		$mandatoryResult = 'Fail';
+					//		$failureReason[]['warning'] = "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported";
+					//	}
+					//	//else if(($result['reported_viral_load'] != $result['reported_viral_load'])){
+					//	//	$mandatoryResult = 'Fail';
+					//	//	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
+					//	//}
+					//}
 				}
 
 				// checking if total score and maximum scores are the same
@@ -1504,14 +1510,14 @@ class Application_Service_Evaluation {
 
 				// if $finalResult == 3 , then  excluded
 				
-					if ($scoreResult == 'Exclude') {
-						$finalResult = 3;
-					}
-					else if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
-						$finalResult = 2;
-					} else {
-						$finalResult = 1;
-					}
+				if ($scoreResult == 'Exclude') {
+					$finalResult = 3;
+				}
+				else if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
+					$finalResult = 2;
+				} else {
+					$finalResult = 1;
+				}
 				
 				$shipmentResult[$counter]['shipment_score'] = $totalScore;
 				$shipmentResult[$counter]['max_score'] = $passPercentage; //$maxScore;
