@@ -3925,10 +3925,10 @@ class Application_Service_Reports {
     }
 
     //vl assay particpant count pie chart
-    public function getAllVlAssayParticipantCount()
+    public function getAllVlAssayParticipantCount($params)
     {
 	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$shipmentId = '1';
+	$shipmentId = $params['shipmentId'];
 	$vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id','vl.name','vl.short_name'));
 	$assayResult=$db->fetchAll($vlQuery);
 	$i = 0;
