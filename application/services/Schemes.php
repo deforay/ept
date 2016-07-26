@@ -248,9 +248,16 @@ class Application_Service_Schemes {
         return $db->fetchAll($sql);
     }
 
-    public function getVlRange($sId) {
+    public function getVlRange($sId,$sampleId = null) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $res = $db->fetchAll($db->select()->from('reference_vl_calculation')->where('shipment_id = ?', $sId));
+        $sql = $db->select()->from(array('rvc'=>'reference_vl_calculation'))
+                  ->join(array('ref'=>'reference_result_vl'),'rvc.sample_id = ref.sample_id',array('sample_label'))
+                  ->join(array('a'=>'r_vl_assay'),'a.id = rvc.vl_assay',array('assay_name' => 'name'))
+                  ->where('rvc.shipment_id = ?', $sId);
+        if($sampleId != null){
+            $sql = $sql->where('rvc.sample_id = ?', $sampleId);
+        }
+        $res = $db->fetchAll($sql);
         $response = array();
         foreach ($res as $row) {
             $response[$row['vl_assay']][$row['sample_id']]['sample_id'] = $row['sample_id'];
@@ -258,32 +265,56 @@ class Application_Service_Schemes {
             
             if(isset($row['use_range']) && $row['use_range'] != ""){
                 if($row['use_range'] == 'manual'){
+                    $response[$row['vl_assay']][$row['sample_id']]['q1'] = $row['manual_q1'];
+                    $response[$row['vl_assay']][$row['sample_id']]['q3'] = $row['manual_q3'];                    
+                    $response[$row['vl_assay']][$row['sample_id']]['quartile_low'] = $row['manual_quartile_low'];
+                    $response[$row['vl_assay']][$row['sample_id']]['quartile_high'] = $row['manual_quartile_high'];
                     $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['manual_low_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['manual_high_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['manual_mean'];
                     $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['manual_sd'];
+                    $response[$row['vl_assay']][$row['sample_id']]['assay_name'] = $row['assay_name'];
+                    $response[$row['vl_assay']][$row['sample_id']]['sample_label'] = $row['sample_label'];
                 }else{
+                    $response[$row['vl_assay']][$row['sample_id']]['q1'] = $row['q1'];
+                    $response[$row['vl_assay']][$row['sample_id']]['q3'] = $row['q3'];                    
+                    $response[$row['vl_assay']][$row['sample_id']]['quartile_low'] = $row['quartile_low'];
+                    $response[$row['vl_assay']][$row['sample_id']]['quartile_high'] = $row['quartile_high'];
                     $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['mean'];
                     $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['sd'];
+                    $response[$row['vl_assay']][$row['sample_id']]['assay_name'] = $row['assay_name'];
+                    $response[$row['vl_assay']][$row['sample_id']]['sample_label'] = $row['sample_label'];
                 }
             }else{
+                    $response[$row['vl_assay']][$row['sample_id']]['q1'] = $row['q1'];
+                    $response[$row['vl_assay']][$row['sample_id']]['q3'] = $row['q3'];
+                    $response[$row['vl_assay']][$row['sample_id']]['quartile_low'] = $row['quartile_low'];
+                    $response[$row['vl_assay']][$row['sample_id']]['quartile_high'] = $row['quartile_high'];                
                     $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['mean'];
                     $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['sd'];
+                    $response[$row['vl_assay']][$row['sample_id']]['assay_name'] = $row['assay_name'];
+                    $response[$row['vl_assay']][$row['sample_id']]['sample_label'] = $row['sample_label'];
             }
         }
         return $response;
     }
 
-    public function getVlRangeInformation($sId) {
+    public function getVlRangeInformation($sId, $sampleId = null) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id','sample_id', 'vl_assay', 'low_limit', 'high_limit','calculated_on','manual_high_limit','manual_low_limit','mean','sd','updated_on','use_range'))
                             ->join(array('ref'=>'reference_result_vl'),'rvc.sample_id = ref.sample_id',array('sample_label'))
                             ->join(array('a'=>'r_vl_assay'),'a.id = rvc.vl_assay',array('assay_name' => 'name'))
                             ->where('rvc.shipment_id = ?', $sId);
+        
+        if($sampleId != null){
+            $sql = $sql->where('rvc.sample_id = ?', $sampleId);
+        }
+        
+        //die($sql);
         $res = $db->fetchAll($sql);
         
         
