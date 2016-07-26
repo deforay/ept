@@ -3956,37 +3956,74 @@ class Application_Service_Reports {
 	$shipmentId = $params['shipmentId'];
 	$vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id','vl.name','vl.short_name'));
 	$assayResult=$db->fetchAll($vlQuery);
+	
+	$i = 0;
+	$totalResult = array();
 	foreach ($assayResult as $assayRow) {
+	    $a = 0;
+	    $f = 0;
+	    $e = 0;
 	    $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'),array('sp.map_id','sp.attributes'))
 				->where("sp.shipment_id='".$shipmentId."'");
+				
+	    
 	    $cResult=$db->fetchAll($cQuery);
 	    foreach($cResult as $val){
 		$valAttributes = json_decode($val['attributes'], true);
 		if($assayRow['id']==$valAttributes['vl_assay']){
-		    $pQuery = $db->select()->from(array('rrv' => 'response_result_vl'),array("total_shipped" => new Zend_Db_Expr('count("rrv.shipment_map_id")')))
-				->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
-				->where("sp.shipment_id='".$shipmentId."'")
+		    //check pass result
+		    $pQuery = $db->select()->from(array('rrv' => 'response_result_vl'))
+				//->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
+				->where("rrv.shipment_map_id='".$val['map_id']."'")
 				->where("rrv.calculated_score='pass'");
-		    $sResult['accept']=$db->fetchAll($pQuery);
-		    if($sResult['accept']){
-		    $k = $k + 1;
+		    $pResult=$db->fetchAll($pQuery);
+		    if($pResult){
+		    $a = $a + count($pResult);
+		    }
+		    
+		    //check fail result
+		    $fQuery = $db->select()->from(array('rrv' => 'response_result_vl'))
+				->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
+				->where("rrv.shipment_map_id='".$val['map_id']."'")
+				->where("rrv.calculated_score='fail'");
+		    $fResult=$db->fetchAll($fQuery);
+		    if($fResult){
+		    $f = $f + count($fResult);
+		    }
+		    
+		    //check excluded
+		    $eQuery = $db->select()->from(array('rrv' => 'response_result_vl'))
+				->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
+				->where("rrv.shipment_map_id='".$val['map_id']."'")
+				->where("rrv.calculated_score='excluded'");
+		    $eResult=$db->fetchAll($eQuery);
+		    if($eResult){
+		    $e = $e + count($eResult);
 		    }
 		}
 	    }
+	    $totalResult[$i]['accept'] = $a;
+	    $totalResult[$i]['fail'] = $f;
+	    $totalResult[$i]['excluded'] = $e;
+	    $totalResult[$i]['name']  = $assayRow['short_name'];
+	    $i++;
 	}
+	$x = 0;
+	$resultAccept = array();
+	$resultFail = array();
+	$resultEx = array();
+	foreach($totalResult as $result){
+	    array_push($resultAccept,$result['accept']);
+	    array_push($resultFail,$result['fail']);
+	    array_push($resultEx,$result['excluded']);
+	    $x++;
+	}
+	$resultAccept['name'] = 'accept';
+	$resultFail['name'] = 'fail';
+	$resultEx['name'] = 'excluded';
 	
-	
-	$fQuery = $db->select()->from(array('rrv' => 'response_result_vl'),array("total_shipped" => new Zend_Db_Expr('count("rrv.shipment_map_id")')))
-				->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
-				->where("sp.shipment_id='".$shipmentId."'")
-				->where("rrv.calculated_score='fail'");
-	$cResult['fail']=$db->fetchAll($fQuery);
-	
-	$eQuery = $db->select()->from(array('rrv' => 'response_result_vl'),array("total_shipped" => new Zend_Db_Expr('count("rrv.shipment_map_id")')))
-				->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
-				->where("sp.shipment_id='".$shipmentId."'")
-				->where("rrv.calculated_score='excluded'");
-	$cResult['excluded']=$db->fetchAll($eQuery);
-	return $cResult;
+	$totalResult = array($resultAccept,$resultFail,$resultEx,'nameList'=>$totalResult);
+	//Zend_Debug::dump($totalResult);die;
+	return $totalResult;
     }
 }

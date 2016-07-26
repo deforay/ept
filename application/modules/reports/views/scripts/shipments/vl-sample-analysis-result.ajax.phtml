@@ -1,0 +1,81 @@
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script type="text/javascript">
+            $(document).ready(function() {
+                var color1 = "green";
+		var color2 = "red";
+		var color3 = "gray";
+                $('#container').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: ''
+        },
+        xAxis: {
+            //categories: ['Name1','Name2','Name3','Name4','Name5','Name6']
+            categories: [<?php
+            foreach($this->vlSampleResult['nameList'] as $assay){
+                echo "'".$assay['name']."',";
+            }
+            ?>]
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: ''
+            },
+            stackLabels: {
+                enabled: true,
+                style: {
+                    fontWeight: 'bold',
+                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                }
+            }
+        },
+        legend: {
+            align: 'right',
+            x: -30,
+            verticalAlign: 'top',
+            y: 25,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+            borderColor: '#CCC',
+            borderWidth: 1,
+            shadow: false
+        },
+        tooltip: {
+            headerFormat: '<b>{point.x}</b><br/>',
+            pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+        },
+        plotOptions: {
+            column: {
+                stacking: 'normal',
+                dataLabels: {
+                    enabled: true,
+                    color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                    style: {
+                        textShadow: '0 0 3px black'
+                    }
+                }
+            }
+        },
+        series:[
+            <?php
+            $i=0;
+            foreach($this->vlSampleResult as $assay){
+                if($i<3){
+                ?>
+                {name:'<?php echo $assay['name'];?>',data:[<?php echo $assay['0'].",".$assay['1'].",".$assay['2'].",".$assay['3'].",".$assay['4'].",".$assay['5'];?>],color: color<?php echo $i+1;?>},
+                
+                <?php
+            }
+            $i++;
+            }
+            ?>
+        ]
+    });
+            });
+</script>
