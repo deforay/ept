@@ -3953,59 +3953,75 @@ class Application_Service_Reports {
     public function getAllVlSampleResult($params)
     {
 	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$shipmentId = $params['shipmentId'];
-	$vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id','vl.name','vl.short_name'));
-	$assayResult=$db->fetchAll($vlQuery);
-	
-	$i = 0;
 	$totalResult = array();
-	foreach ($assayResult as $assayRow) {
-	    $a = 0;
-	    $f = 0;
-	    $e = 0;
-	    $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'),array('sp.map_id','sp.attributes'))
-				->where("sp.shipment_id='".$shipmentId."'");
-	    $cResult=$db->fetchAll($cQuery);
-	    foreach($cResult as $val){
-		$valAttributes = json_decode($val['attributes'], true);
-		if($assayRow['id']==$valAttributes['vl_assay']){
-		    //check pass result
-		    $pQuery = $db->select()->from(array('rrv' => 'response_result_vl'),array('passResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='pass',1,0))"),'failResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='fail',1,0))"),'exResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='excluded',1,0))")))
-				->where("rrv.shipment_map_id='".$val['map_id']."'")
-				->group("rrv.shipment_map_id");
-		    $pResult=$db->fetchRow($pQuery);
-		    if($pResult){
-		    $a = $a + $pResult['passResult'];
-		    $f = $f + $pResult['failResult'];
-		    $e = $e + $pResult['exResult'];
+	if($params['shipmentId']!=''){
+	    $shipmentId = $params['shipmentId'];
+	    $shQuery=$db->select()->from(array('s' => 'shipment'))->where("s.shipment_id='".$shipmentId."'");
+	    $shimentResult=$db->fetchAll($shQuery);
+	}else{
+	    $shQuery=$db->select()->from(array('s' => 'shipment'))->where("s.scheme_type='vl'");
+	    if (isset($params['start']) && $params['start'] != "" && isset($params['end']) && $params['end'] != "") {
+		$shQuery = $shQuery->where("DATE(s.shipment_date) >= ?", $params['start']);
+		$shQuery = $shQuery->where("DATE(s.shipment_date) <= ?", $params['end']);
+	    }
+	    $shimentResult=$db->fetchAll($shQuery);
+	}
+	if($shimentResult){
+	    $vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id','vl.name','vl.short_name'));
+	    $assayResult=$db->fetchAll($vlQuery);
+	    $s = 0;
+	    foreach($shimentResult as $shipData){
+		$shipmentId = $shipData['shipment_id'];
+		$i = 0;
+		$totalResult = array();
+		foreach ($assayResult as $assayRow) {
+		    $a = 0;
+		    $f = 0;
+		    $e = 0;
+		    $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'),array('sp.map_id','sp.attributes'))
+					->where("sp.shipment_id='".$shipmentId."'");
+		    $cResult=$db->fetchAll($cQuery);
+		    foreach($cResult as $val){
+			$valAttributes = json_decode($val['attributes'], true);
+			if($assayRow['id']==$valAttributes['vl_assay']){
+			    //check pass result
+			    $pQuery = $db->select()->from(array('rrv' => 'response_result_vl'),array('passResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='pass',1,0))"),'failResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='fail',1,0))"),'exResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='excluded',1,0))")))
+					->where("rrv.shipment_map_id='".$val['map_id']."'")
+					->group("rrv.shipment_map_id");
+			    $pResult=$db->fetchRow($pQuery);
+			    if($pResult){
+			    $a = $a + $pResult['passResult'];
+			    $f = $f + $pResult['failResult'];
+			    $e = $e + $pResult['exResult'];
+			    }
+			}
 		    }
+		    $totalResult[$s][$i]['accept'] = $a;
+		    $totalResult[$s][$i]['fail'] = $f;
+		    $totalResult[$s][$i]['excluded'] = $e;
+		    $totalResult[$s][$i]['name']  = $assayRow['short_name'];
+		    $i++;
 		}
 	    }
-	    $totalResult[$i]['accept'] = $a;
-	    $totalResult[$i]['fail'] = $f;
-	    $totalResult[$i]['excluded'] = $e;
-	    $totalResult[$i]['name']  = $assayRow['short_name'];
-	    $i++;
+	    $resultAccept = array();
+	    $resultFail = array();
+	    $resultEx = array();
+	    foreach($totalResult as $result){
+		foreach($result as $data){
+		array_push($resultAccept,$data['accept']);
+		array_push($resultFail,$data['fail']);
+		array_push($resultEx,$data['excluded']);
+		}
+	    }
+	    $resultAcc[] = $resultAccept;
+	    $resultFa[] = $resultFail;
+	    $resultExe[] = $resultEx;
+	    
+	    $resultAcc['name'] = 'accept';
+	    $resultFa['name'] = 'fail';
+	    $resultExe['name'] = 'excluded';
+	    $totalResult = array($resultAcc,$resultFa,$resultExe,'nameList'=>$totalResult);
 	}
-	$x = 0;
-	$resultAccept = array();
-	$resultFail = array();
-	$resultEx = array();
-	foreach($totalResult as $result){
-	    array_push($resultAccept,$result['accept']);
-	    array_push($resultFail,$result['fail']);
-	    array_push($resultEx,$result['excluded']);
-	    $x++;
-	}
-	$resultAcc[] = $resultAccept;
-	$resultFa[] = $resultFail;
-	$resultExe[] = $resultEx;
-	
-	$resultAcc['name'] = 'accept';
-	$resultFa['name'] = 'fail';
-	$resultExe['name'] = 'excluded';
-	$totalResult = array($resultAcc,$resultFa,$resultExe,'nameList'=>$totalResult);
-	//Zend_Debug::dump($totalResult);die;
 	return $totalResult;
     }
 }

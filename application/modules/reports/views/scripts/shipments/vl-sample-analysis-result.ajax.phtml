@@ -17,7 +17,7 @@
         xAxis: {
             //categories: ['Name1','Name2','Name3','Name4','Name5','Name6']
             categories: [<?php
-            foreach($this->vlSampleResult['nameList'] as $assay){
+            foreach($this->vlSampleResult['nameList'][0] as $assay){
                 echo "'".$assay['name']."',";
             }
             ?>]

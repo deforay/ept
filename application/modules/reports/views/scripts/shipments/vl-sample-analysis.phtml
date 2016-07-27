@@ -87,14 +87,18 @@
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", { schemeType: schemeType,startDate: startDate,endDate: endDate, format: "html" },
 		    function (data) {
 			if(data!=0){
+			barChart = true;
 		       $("#shipmentId").html(data);
+			}else{
+			$("#shipmentId").html("<option value=''>-- Select Date Range to populate this list --</option>");
+			$("#shipmentchart").html('');
+			barChart = false;    
 			}
 			$.unblockUI();
 		    });
 	    }
             function drawTable() {
-		console.log($("#dateRange").val());
-		if ($("#dateRange").val()=="" ||  $("#shipmentId").val()=="") {
+		if ($("#dateRange").val()=="") {
 			alert("Please pick date range and shipment to proceed");
 			return false;
 		}else{
@@ -140,12 +144,15 @@
                         $.unblockUI;
                     },
                 });
-                showBarChart($("#shipmentId").val());
+		if(barChart){
+                showBarChart();
+		}
 		}
             }
-	   function showBarChart(shipmentId)
+	   function showBarChart()
            {
-            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis-result')); ?>", { shipmentId: shipmentId, format: "html" },
+	    shipmentId = $("#shipmentId").val();
+            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis-result')); ?>", { shipmentId: shipmentId,start:startDate,end:endDate, format: "html" },
                 function (data) {
                    $("#shipmentchart").html(data);
                     $.unblockUI();
