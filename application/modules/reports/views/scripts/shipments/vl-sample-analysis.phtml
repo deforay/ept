@@ -80,22 +80,24 @@
 		schemeType = 'vl';
 		if (startDate == "" || endDate=="") {
 			alert('Please pick a date range to fetch shipment list');
-			$("#scheme").val("")
 			$('#dateRange').focus();
 			return false;
 		}
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", { schemeType: schemeType,startDate: startDate,endDate: endDate, format: "html" },
 		    function (data) {
+			if(data!=0){
 		       $("#shipmentId").html(data);
+			}
 			$.unblockUI();
 		    });
 	    }
             function drawTable() {
-		if ($("#dateRange").val()=="" ) {
+		console.log($("#dateRange").val());
+		if ($("#dateRange").val()=="" ||  $("#shipmentId").val()=="") {
 			alert("Please pick date range and shipment to proceed");
 			return false;
-		}
+		}else{
                 $("#shipmentTable").removeClass("hide");
                 $.blockUI;
                 oTable = $('#shipmentTable').dataTable({
@@ -139,6 +141,7 @@
                     },
                 });
                 showBarChart($("#shipmentId").val());
+		}
             }
 	   function showBarChart(shipmentId)
            {

@@ -82,14 +82,15 @@
 		schemeType = 'vl';
 		if (startDate == "" || endDate=="") {
 			alert('Please pick a date range to fetch shipment list');
-			$("#scheme").val("")
 			$('#dateRange').focus();
 			return false;
 		}
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", { schemeType: schemeType,startDate: startDate,endDate: endDate, format: "html" },
 		    function (data) {
+			if(data!=0){
 		       $("#shipmentId").html(data);
+			}
 			$.unblockUI();
 		    });
 	    }
@@ -122,7 +123,7 @@
                 //    "aaSorting": [[1, "asc"]],
                 //    "bProcessing": true,
                 //    "bServerSide": true,
-                //    "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'vl-assay-distribution', 'format' => 'html')); ?>",
+                //    "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution', 'format' => 'html')); ?>",
                 //    "fnServerParams": function(aoData) {
                 //        aoData.push({"name": "shipmentId", "value": $("#shipmentId").val()});
                 //        aoData.push({"name": "startDate", "value": startDate});
@@ -144,7 +145,7 @@
             }
 	   function showPieChart(shipmentId)
            {
-            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'vl-participant-count')); ?>", { shipmentId: shipmentId, format: "html" },
+            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-participant-count')); ?>", { shipmentId: shipmentId, format: "html" },
                 function (data) {
                    $("#shipmentchart").html(data);
                     $.unblockUI();
