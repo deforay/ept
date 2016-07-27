@@ -68,8 +68,7 @@
             foreach($this->vlSampleResult as $assay){
                 if($i<3){
                 ?>
-                {name:'<?php echo $assay['name'];?>',data:[<?php echo $assay['0'].",".$assay['1'].",".$assay['2'].",".$assay['3'].",".$assay['4'].",".$assay['5'];?>],color: color<?php echo $i+1;?>},
-                
+                {name:'<?php echo $assay['name'];?>',data:[<?php echo implode(",",$assay[0]);?>],color: color<?php echo $i+1;?>},
                 <?php
             }
             $i++;

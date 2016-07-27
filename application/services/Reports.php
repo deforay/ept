@@ -3965,40 +3965,19 @@ class Application_Service_Reports {
 	    $e = 0;
 	    $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'),array('sp.map_id','sp.attributes'))
 				->where("sp.shipment_id='".$shipmentId."'");
-				
-	    
 	    $cResult=$db->fetchAll($cQuery);
 	    foreach($cResult as $val){
 		$valAttributes = json_decode($val['attributes'], true);
 		if($assayRow['id']==$valAttributes['vl_assay']){
 		    //check pass result
-		    $pQuery = $db->select()->from(array('rrv' => 'response_result_vl'))
-				//->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
+		    $pQuery = $db->select()->from(array('rrv' => 'response_result_vl'),array('passResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='pass',1,0))"),'failResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='fail',1,0))"),'exResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='excluded',1,0))")))
 				->where("rrv.shipment_map_id='".$val['map_id']."'")
-				->where("rrv.calculated_score='pass'");
-		    $pResult=$db->fetchAll($pQuery);
+				->group("rrv.shipment_map_id");
+		    $pResult=$db->fetchRow($pQuery);
 		    if($pResult){
-		    $a = $a + count($pResult);
-		    }
-		    
-		    //check fail result
-		    $fQuery = $db->select()->from(array('rrv' => 'response_result_vl'))
-				->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
-				->where("rrv.shipment_map_id='".$val['map_id']."'")
-				->where("rrv.calculated_score='fail'");
-		    $fResult=$db->fetchAll($fQuery);
-		    if($fResult){
-		    $f = $f + count($fResult);
-		    }
-		    
-		    //check excluded
-		    $eQuery = $db->select()->from(array('rrv' => 'response_result_vl'))
-				->join(array('sp'=>'shipment_participant_map'),'sp.map_id=rrv.shipment_map_id')
-				->where("rrv.shipment_map_id='".$val['map_id']."'")
-				->where("rrv.calculated_score='excluded'");
-		    $eResult=$db->fetchAll($eQuery);
-		    if($eResult){
-		    $e = $e + count($eResult);
+		    $a = $a + $pResult['passResult'];
+		    $f = $f + $pResult['failResult'];
+		    $e = $e + $pResult['exResult'];
 		    }
 		}
 	    }
@@ -4018,11 +3997,14 @@ class Application_Service_Reports {
 	    array_push($resultEx,$result['excluded']);
 	    $x++;
 	}
-	$resultAccept['name'] = 'accept';
-	$resultFail['name'] = 'fail';
-	$resultEx['name'] = 'excluded';
+	$resultAcc[] = $resultAccept;
+	$resultFa[] = $resultFail;
+	$resultExe[] = $resultEx;
 	
-	$totalResult = array($resultAccept,$resultFail,$resultEx,'nameList'=>$totalResult);
+	$resultAcc['name'] = 'accept';
+	$resultFa['name'] = 'fail';
+	$resultExe['name'] = 'excluded';
+	$totalResult = array($resultAcc,$resultFa,$resultExe,'nameList'=>$totalResult);
 	//Zend_Debug::dump($totalResult);die;
 	return $totalResult;
     }
