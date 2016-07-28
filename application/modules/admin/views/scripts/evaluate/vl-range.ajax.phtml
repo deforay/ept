@@ -26,7 +26,7 @@ unset($this->result['calculated_on']);
 unset($this->result['use_range']);
 
 ?>
-<form class="form" method="post" action="/admin/evaluate/vl-range">
+<form class="form" name="vlRangeForm" id="vlRangeForm" method="post" action="/admin/evaluate/vl-range" onsubmit="validateVlRangeForm();return false;">
 <table class="table table-bordered table-striped table-hover table-condensed" style="width:100%;margin:0 auto;">
     <thead>
 	  <tr>
@@ -68,21 +68,24 @@ unset($this->result['use_range']);
 					<a href="/admin/evaluate/vl-sample-plot/shipment/<?php echo $row['shipment_id']; ?>/sample/<?php echo $row['sample_id']; ?>" style="text-decoration:underline;" class="btn btn-primary"><?php echo $row['sample_label']; ?></a>
 				  </td>
 				<?php } ?>
-                <td><?php echo $row['assay_name']; ?></td>
-                <td><?php echo round($row['mean'],4); ?></td>
-                <td><?php echo round($row['sd'],4); ?></td>
-                <td><?php echo round($row['low'],4); ?></td>
-                <td><?php echo round($row['high'],4); ?></td>
-                <td>
-				  <?php echo isset($row['manual_low_limit']) ? $row['manual_low_limit'] : ""; ?>
+                <td class="manualRange<?php echo $row['vl_assay'].$row['sample_id']; ?>"><?php echo $row['assay_name']; ?></td>
+                <td class="manualRange<?php echo $row['vl_assay'].$row['sample_id']; ?>">
+				  <?php echo round($row['mean'],4); ?>
 				  <input type="hidden" class="form-control" name="sampleId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['sample_id']; ?>" style="width:100px;margin:0 auto;">
 				  <input type="hidden" class="form-control" name="assayId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['vl_assay']; ?>" style="width:100px;margin:0 auto;">
+				  <input type="hidden" id="manualRange<?php echo $row['vl_assay'].$row['sample_id']; ?>" title="Please enter the manual data for <?php echo $row['sample_label']; ?> sample and <?php echo $row['assay_name']; ?> assay" value="<?php echo isset($row['manual_low_limit']) ? round($row['manual_low_limit'],4) : ''; ?>">
 				</td>
-                <td>
-				  <?php echo isset($row['manual_high_limit']) ? $row['manual_high_limit'] : ""; ?>
+                <td class="manualRange<?php echo $row['vl_assay'].$row['sample_id']; ?>"><?php echo round($row['sd'],4); ?></td>
+                <td class="manualRange<?php echo $row['vl_assay'].$row['sample_id']; ?>"><?php echo round($row['low'],4); ?></td>
+                <td class="manualRange<?php echo $row['vl_assay'].$row['sample_id']; ?>"><?php echo round($row['high'],4); ?></td>
+                <td class="manualRange<?php echo $row['vl_assay'].$row['sample_id']; ?>" id="mLowLimitCol<?php echo $row['vl_assay'].$row['sample_id']; ?>">
+				  <?php echo isset($row['manual_low_limit']) ? round($row['manual_low_limit'],4) : ""; ?>
+				</td>
+                <td class="manualRange<?php echo $row['vl_assay'].$row['sample_id']; ?>" id="mHighLimitCol<?php echo $row['vl_assay'].$row['sample_id']; ?>">
+				  <?php echo isset($row['manual_high_limit']) ? round($row['manual_high_limit'],4) : ""; ?>
 				</td>				
-				<td>
-				  <select name="useRange[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" class="form-control">
+				<td class="manualRange<?php echo $row['vl_assay'].$row['sample_id']; ?>">
+				  <select name="useRange[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" id="<?php echo $row['vl_assay'].$row['sample_id']; ?>" class="form-control" onchange="checkManualRes(this)">
 					<option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>>System Generated</option>
 					<option value="manual" <?php echo ($row['use_range'] == 'manual') ? " selected='selected' " : "" ?>>Manually Entered</option>
 				  </select>
@@ -112,5 +115,27 @@ unset($this->result['use_range']);
 <script>
   function recalculate(sid) {
 	document.location.href = "/admin/evaluate/recalculate-vl-range/sid/"+sid;
+  }
+  
+  function checkManualRes(obj) {
+	if (obj.value=='manual') {
+      $("#manualRange"+obj.id).addClass("isRequired");
+	  if ($("#manualRange"+obj.id).val()=="") {
+        $(".manualRange"+obj.id).css("background-color","#ffb3b3");
+      }
+    }else{
+	  $("#manualRange"+obj.id).removeClass("isRequired");
+	  $(".manualRange"+obj.id).css("background-color","");
+	}
+  }
+  
+  function validateVlRangeForm(){
+	flag = deforayValidator.init({
+		formId: 'vlRangeForm'
+	});
+	if (flag) {
+		$.blockUI();
+		document.getElementById('vlRangeForm').submit();
+	}
   }
 </script>

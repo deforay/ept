@@ -10,22 +10,22 @@
      <tr>
         <th>Manual Q1</th>
         <td>
-            <input type="text" class="form-control" id="manualQ1" name="manualQ1" value="<?php echo $this->result['manual_q1']; ?>" style="width:100px;margin:0 auto;">
+            <input type="text" class="form-control manualClass" id="manualQ1" name="manualQ1" value="<?php echo $this->result['manual_q1']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual Q1">
         </td>
         <th>Manual Q3</th>
         <td>
-            <input type="text" class="form-control" id="manualQ3" name="manualQ3" value="<?php echo $this->result['manual_q3']; ?>" style="width:100px;margin:0 auto;">
+            <input type="text" class="form-control manualClass" id="manualQ3" name="manualQ3" value="<?php echo $this->result['manual_q3']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual Q3">
         </td>
     </tr>
     
     <tr>
         <th>Manual IQR</th>
         <td>
-            <input type="text" class="form-control" id="manualIqr" name="manualIqr" value="<?php echo $this->result['manual_iqr']; ?>" style="width:100px;margin:0 auto;">
+            <input type="text" class="form-control manualClass" id="manualIqr" name="manualIqr" value="<?php echo $this->result['manual_iqr']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual IQR">
         </td>
         <th>Manual Quartile Low</th>
         <td>
-            <input type="text" class="form-control" id="manualQuartileLow" name="manualQuartileLow" value="<?php echo $this->result['manual_quartile_low']; ?>" style="width:100px;margin:0 auto;">
+            <input type="text" class="form-control manualClass" id="manualQuartileLow" name="manualQuartileLow" value="<?php echo $this->result['manual_quartile_low']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual quartile low">
         </td>
         
     </tr>
@@ -33,11 +33,11 @@
     <tr>
         <th>Manual Quartile High</th>
         <td>
-            <input type="text" class="form-control" id="manualQuartileHigh" name="manualQuartileHigh" value="<?php echo $this->result['manual_quartile_high']; ?>" style="width:100px;margin:0 auto;">
+            <input type="text" class="form-control manualClass" id="manualQuartileHigh" name="manualQuartileHigh" value="<?php echo $this->result['manual_quartile_high']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual quartile high">
         </td>
         <th>Manual Mean</th>
         <td>
-            <input type="text" class="form-control" id="manualMean" name="manualMean" value="<?php echo $this->result['manual_mean']; ?>" style="width:100px;margin:0 auto;">
+            <input type="text" class="form-control manualClass" id="manualMean" name="manualMean" value="<?php echo $this->result['manual_mean']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual mean">
             <input type="hidden" class="form-control" name="shipmentId" value="<?php echo base64_encode($this->result['shipment_id']); ?>" style="width:100px;margin:0 auto;">
             <input type="hidden" class="form-control" name="sampleId" value="<?php echo base64_encode($this->result['sample_id']); ?>" style="width:100px;margin:0 auto;">
             <input type="hidden" class="form-control" name="vlAssay" value="<?php echo base64_encode($this->result['vl_assay']); ?>" style="width:100px;margin:0 auto;">
@@ -47,22 +47,22 @@
     <tr>
         <th>Manual SD</th>
         <td>
-            <input type="text" class="form-control" id="manualSd" name="manualSd" value="<?php echo $this->result['manual_sd']; ?>" style="width:100px;margin:0 auto;">
+            <input type="text" class="form-control manualClass" id="manualSd" name="manualSd" value="<?php echo $this->result['manual_sd']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual SD">
         </td>
         <th>Manual CV</th>
         <td>
-            <input type="text" class="form-control" id="manualCv" name="manualCv" value="<?php echo $this->result['manual_cv']; ?>" style="width:100px;margin:0 auto;">
+            <input type="text" class="form-control manualClass" id="manualCv" name="manualCv" value="<?php echo $this->result['manual_cv']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual CV">
         </td>
         
     </tr>
     <tr>
         <th>Manual Low Limit</th>
         <td>
-            <input type="text" class="form-control" id="manualLowLimit" name="manualLowLimit" value="<?php echo $this->result['manual_low_limit']; ?>" style="width:100px;margin:0 auto;">
+            <input type="text" class="form-control manualClass" id="manualLowLimit" name="manualLowLimit" value="<?php echo $this->result['manual_low_limit']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual low limit">
         </td>
         <th>Manual High Limit</th>
         <td>
-            <input type="text" class="form-control" id="manualHighLimit" name="manualHighLimit" value="<?php echo $this->result['manual_high_limit']; ?>" style="width:100px;margin:0 auto;">
+            <input type="text" class="form-control manualClass" id="manualHighLimit" name="manualHighLimit" value="<?php echo $this->result['manual_high_limit']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual high limit">
         </td>
     </tr>
     
@@ -73,13 +73,39 @@
 </form>
 <script type="text/javascript">
     function validateNow(){
-        document.getElementById('addManualLimitForm').submit();
+        flag = deforayValidator.init({
+            formId: 'addManualLimitForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('addManualLimitForm').submit();
+        }
     }
     <?php
     if(isset($this->updatedResult) && trim($this->updatedResult)!=""){
     ?>
-        parent.closeVlModal('<?php echo $this->updatedResult; ?>');
+        parent.closeVlModal('<?php echo $this->updatedResult; ?>','<?php echo $this->sampleId; ?>','<?php echo $this->vlAssay; ?>','<?php echo $this->mLowLimit; ?>','<?php echo $this->mHighLimit; ?>');
     <?php
     }
     ?>
+    chkValidate=false;
+    function checkManualVal(val) {
+        if (val!="") {
+            $(".manualClass").addClass("isRequired");
+        }else{
+            $(".manualClass").each(function() {
+                if(this.value!=''){
+                    chkValidate=true;
+                    return false;
+                }else{
+                    chkValidate=false;
+                }
+            });
+            if (!chkValidate) {
+                $(".manualClass").removeClass("isRequired");
+            }else{
+                $(".manualClass").addClass("isRequired");
+            }
+        }
+    }
 </script>

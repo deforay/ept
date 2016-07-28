@@ -265,7 +265,12 @@ class Admin_EvaluateController extends Zend_Controller_Action
 		}
 		if ($this->getRequest()->isPost()) {
 			$params = $this->getRequest()->getPost();
-			$this->view->updatedResult=$schemeService->updateVlManualValue($params);
+			$updatedResult=$schemeService->updateVlManualValue($params);
+			$this->view->updatedResult=$updatedResult;
+			$this->view->sampleId=base64_decode($params['sampleId']);
+			$this->view->vlAssay=base64_decode($params['vlAssay']);
+			$this->view->mLowLimit=round($params['manualLowLimit'],4);
+			$this->view->mHighLimit=round($params['manualHighLimit'],4);
 		}
 	}
 
