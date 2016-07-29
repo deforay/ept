@@ -848,10 +848,12 @@ class Application_Service_Evaluation {
 				$attributes = json_decode($res['attributes'], true);
 				
 				if(isset($attributes['extraction_assay'])){
-					$shipmentResult[$i]['extractionAssayVal']=$extractionAssay[$attributes['extraction_assay']];
+					//$shipmentResult[$i]['extractionAssayVal']=$extractionAssay[$attributes['extraction_assay']];
+					$shipmentResult[$i]['extractionAssayVal']=(isset($extractionAssay[$attributes['extraction_assay']]) ? $extractionAssay[$attributes['extraction_assay']] : "");
 				}
 				if(isset($attributes['detection_assay'])){
-					$shipmentResult[$i]['detectionAssayVal']=$detectionAssay[$attributes['detection_assay']];
+					
+					$shipmentResult[$i]['detectionAssayVal']=(isset($detectionAssay[$attributes['detection_assay']]) ? $detectionAssay[$attributes['detection_assay']] : "");
 				}
 				
                 $sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'responseDate' => 'reseid.created_on'))
