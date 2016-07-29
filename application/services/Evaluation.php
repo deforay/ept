@@ -1288,52 +1288,7 @@ class Application_Service_Evaluation {
 						}
 					}
 				}
-				//Zend_Debug::dump($extAssayResult);die;
-					
 				
-//                foreach ($extractionAssay as $eKey=>$extractionAssayVal) {
-//					
-//					$labResult = array();
-//					$maxScore = 0;
-//					$belowScore = 0;
-//					$parCount=0;
-//					$correctRes=0;
-//					
-//					
-//					
-//					foreach($cResult as $val){
-//						$valAttributes = json_decode($val['attributes'], true);
-//						//Formed array based on r_eid_extraction_assay table
-//						if($eKey==$valAttributes['extraction_assay']){
-//							if (array_key_exists($eKey,$extAssayResult)) {
-//								//$extAssayResult[$eKey]['specimen'][$val['sample_label']][]=$val['reported_result'];
-//								if($val['reported_result']==$val['reference_result']){
-//									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']+1 : "1");
-//									//$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']+1;
-//								}else{
-//									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] : "0");
-//								}
-//							}else{
-//								$extAssayResult[$eKey]=array();
-//								//$extAssayResult[$eKey]['specimen'][$val['sample_label']][]=$val['reported_result'];
-//								$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=$correctRes;
-//								$extAssayResult[$eKey]['vlAssay']=$extractionAssayVal;
-//								if($val['reported_result']==$val['reference_result']){
-//									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=1;
-//								}
-//							}
-//							
-//							
-//							if ($shipmentResult['max_score'] == $val['shipment_score']) {
-//								$extAssayResult[$eKey]['maxScore']=$maxScore++;
-//							}else{
-//								$extAssayResult[$eKey]['belowScore']=$belowScore++;
-//							}
-//							$extAssayResult[$eKey]['participantCount']=$parCount++;
-//						}
-//					}
-//					
-//                }
 				$shipmentResult['avgAssayResult'] = $extAssayResult;
 				//Zend_Debug::dump($shipmentResult);
 				//die;
