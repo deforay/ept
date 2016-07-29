@@ -193,6 +193,9 @@ if ($this->result['shipment'] != "") {
             }
             
             $k=count($this->result['shipment']['avgAssayResult']);
+            
+            //Zend_Debug::dump($this->result['shipment']['avgAssayResult']);die;
+            
             $avgAssay="";
             if($k>0){
                 foreach($this->result['shipment']['avgAssayResult'] as $assayResult){
@@ -228,7 +231,7 @@ if ($this->result['shipment'] != "") {
                     $m=count($assayResult['specimen']);
                     $avgAssay.='<br/><br/><table border="1" style="width:80%;margin-left:20%;">';
                     $avgAssay.='<tr style="background-color:#dbe4ee;">';
-                    $avgAssay.='<td style="text-align:center;" colspan="'.($m+2).'">Sample Id</td>';
+                    $avgAssay.='<td style="text-align:center;" colspan="'.($m+2).'">Sample ID</td>';
                     $avgAssay.='</tr>';
                     
                     $avgAssay.='<tr style="background-color:#dbe4ee;">';

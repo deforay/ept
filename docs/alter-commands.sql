@@ -2233,3 +2233,11 @@ ADD  `manual_iqr` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `manual_q3` ;
 
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_quartile_low` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `manual_iqr` ;
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_quartile_high` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `manual_quartile_low` ;
+
+
+-- Amit Jul 29 2016
+INSERT INTO `r_eid_detection_assay` (`id`, `name`) VALUES (NULL, 'Abbott RealTime HIV-1 Qualitative Assay');
+INSERT INTO `r_eid_extraction_assay` (`id`, `name`) VALUES (NULL, 'Abbott RealTime HIV-1 Qualitative Assay');
+INSERT INTO `r_eid_detection_assay` (`id`, `name`) VALUES (NULL, 'Other');
+INSERT INTO `r_eid_extraction_assay` (`id`, `name`) VALUES (NULL, 'Other');
+

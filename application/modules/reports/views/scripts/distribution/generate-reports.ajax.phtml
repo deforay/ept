@@ -552,14 +552,14 @@ foreach($this->result['shipment'] as $result){
 			$labRes.='<tr>';
 			$labRes.='<td>Expected Result</td>';
 			foreach($result['responseResult'] as $response){
-				$labRes.='<td style="text-align:center;">'.ucfirst(strtolower($response['referenceResult'])).'</td>';
+				$labRes.='<td style="text-align:center;">'.$response['referenceResult'].'</td>';
 			}
 			$labRes.='<td rowspan="2" style="text-align:center;">'.$result['shipment_score'].'</td>';
 			$labRes.='</tr>';
 			$labRes.='<tr>';
 			$labRes.='<td>Your Results</td>';
 			foreach($result['responseResult'] as $response){
-				$labRes.='<td style="text-align:center;">'.ucfirst(strtolower($response['labResult'])).'</td>';
+				$labRes.='<td style="text-align:center;">'.$response['labResult'].'</td>';
 			}
 			$labRes.='</tr>';
 			

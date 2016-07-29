@@ -1203,8 +1203,10 @@ class Application_Service_Evaluation {
 						->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.shipment_map_id = spm.map_id and reseid.sample_id = refeid.sample_id', array('reported_result'))
 						->where('spm.shipment_id = ? ', $shipmentId)
 						->where("spm.shipment_test_report_date IS NOT NULL")
-                        ->where("spm.shipment_test_report_date!=''");
+                        ->where("refeid.control = 0");
 				$cResult=$db->fetchAll($cQuery);
+				
+				
 				$correctResult = array();
 				foreach($cResult as $cVal){
 					//Formed correct result
@@ -1231,6 +1233,9 @@ class Application_Service_Evaluation {
 					$belowScore = 0;
 					$parCount=0;
 					$correctRes=0;
+					
+					Zend_Debug::dump($cResult);die;
+					
 					foreach($cResult as $val){
 						$valAttributes = json_decode($val['attributes'], true);
 						//Formed array based on r_eid_extraction_assay table
@@ -1576,18 +1581,21 @@ class Application_Service_Evaluation {
                     $scoreResult = "";
                     $failureReason = array();
                     foreach ($results as $result) {
-
                         // matching reported and reference results
                         if (isset($result['reported_result']) && $result['reported_result'] != null) {
                             if ($result['reference_result'] == $result['reported_result']) {
-                                $totalScore += $result['sample_score'];
+								if(0 == $result['control']) {
+									$totalScore += $result['sample_score'];
+								}
                             } else {
                                 if ($result['sample_score'] > 0) {
                                     $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                 }
                             }
                         }
-                        $maxScore += $result['sample_score'];
+						if(0 == $result['control']) {
+							$maxScore += $result['sample_score'];
+						}
 
                         // checking if mandatory fields were entered and were entered right
                         //if ($result['mandatory'] == 1) {
@@ -1600,7 +1608,7 @@ class Application_Service_Evaluation {
                         //    }
                         //}
                     }
-
+					
 					$totalScore = ($totalScore/$maxScore)*100;
 					$maxScore = 100; 
 					
@@ -1618,7 +1626,7 @@ class Application_Service_Evaluation {
                     } else {
                         $finalResult = 1;
                     }
-                    $shipmentResult[$counter]['shipment_score'] = $totalScore;
+                    $shipmentResult[$counter]['shipment_score'] = $totalScore = round($totalScore,2);
                     $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
                     $shipmentResult[$counter]['final_result'] = $finalResult;
 
