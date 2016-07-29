@@ -250,7 +250,8 @@ if ($this->result['shipment'] != "") {
                         $sampleAvg+=$sample['correctRes'];
                         $avgAssay.='<td style="text-align:center;">'.$sample['correctRes'].'</td>';
                     }
-                    $avgAssay.='<td style="text-align:center;">'.round(($sampleAvg/$sCount),2).'</td>';
+                    $avg=round(($sampleAvg/$sCount),2);
+                    $avgAssay.='<td style="text-align:center;">'.$avg.'</td>';
                     $avgAssay.='</tr>';
                     
                     $sampleAvgInPer='';
@@ -259,7 +260,7 @@ if ($this->result['shipment'] != "") {
                         $sampleAvgInPer+=$sample['correctRes'];
                         $avgAssay.='<td style="text-align:center;">'.round(($sample['correctRes']/$assayResult['participantCount'])*100,2).'%</td>';
                     }
-                    $avgAssay.='<td style="text-align:center;">'.round(($sampleAvgInPer/$sCount)*100,2).'%</td>';
+                    $avgAssay.='<td style="text-align:center;">'.round(($avg/$assayResult['participantCount'])*100,2).'%</td>';
                     $avgAssay.='</tr>';
                     $avgAssay.='</table>';
                     
