@@ -1203,10 +1203,8 @@ class Application_Service_Evaluation {
 						->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.shipment_map_id = spm.map_id and reseid.sample_id = refeid.sample_id', array('reported_result'))
 						->where('spm.shipment_id = ? ', $shipmentId)
 						->where("spm.shipment_test_report_date IS NOT NULL")
-                        ->where("refeid.control = 0");
+						->where("spm.shipment_test_report_date!=''");
 				$cResult=$db->fetchAll($cQuery);
-				
-				
 				$correctResult = array();
 				foreach($cResult as $cVal){
 					//Formed correct result
@@ -1223,52 +1221,119 @@ class Application_Service_Evaluation {
 						}
 					}
 				}
+				
+				
 				$shipmentResult['correctRes'] = $correctResult;
 				
 				$extAssayResult = array();
-                foreach ($extractionAssay as $eKey=>$extractionAssayVal) {
-					
-					$labResult = array();
-					$maxScore = 0;
-					$belowScore = 0;
-					$parCount=0;
-					$correctRes=0;
-					
-					Zend_Debug::dump($cResult);die;
-					
-					foreach($cResult as $val){
-						$valAttributes = json_decode($val['attributes'], true);
-						//Formed array based on r_eid_extraction_assay table
+				$correctRes=0;
+				$maxScore = 0;
+				$belowScore = 0;
+				
+				foreach($sQueryRes as $sVal){
+					$valAttributes = json_decode($sVal['attributes'], true);
+					foreach ($extractionAssay as $eKey=>$extractionAssayVal) {
 						if($eKey==$valAttributes['extraction_assay']){
 							if (array_key_exists($eKey,$extAssayResult)) {
-								//$extAssayResult[$eKey]['specimen'][$val['sample_label']][]=$val['reported_result'];
-								if($val['reported_result']==$val['reference_result']){
-									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']+1 : "1");
-									//$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']+1;
+								
+								$extAssayResult[$eKey]['participantCount']=(isset($extAssayResult[$eKey]['participantCount']) ? $extAssayResult[$eKey]['participantCount']+1 : "1");
+								
+								if ($shipmentResult['max_score'] == $sVal['shipment_score']) {
+									$extAssayResult[$eKey]['maxScore']=(isset($extAssayResult[$eKey]['maxScore']) ? $extAssayResult[$eKey]['maxScore']+1 : "1");
 								}else{
-									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] : "0");
+									$extAssayResult[$eKey]['belowScore']=(isset($extAssayResult[$eKey]['belowScore']) ? $extAssayResult[$eKey]['belowScore']+1 : "1");
+								}
+								
+								$cQuery = $db->select()->from(array('refeid' => 'reference_result_eid'),array('refeid.sample_id', 'refeid.sample_label','refeid.reference_result','refeid.mandatory'))
+									->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.sample_id = refeid.sample_id', array('reported_result'))
+									->where('refeid.shipment_id = ? ', $shipmentId)
+									->where('reseid.shipment_map_id = ? ', $sVal['map_id']);
+								$cResult=$db->fetchAll($cQuery);
+								foreach($cResult as $val){
+									if($val['reported_result']==$val['reference_result']){
+										$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']+1 : "1");
+									}else{
+										$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] : "0");
+									}
 								}
 							}else{
+								
 								$extAssayResult[$eKey]=array();
-								//$extAssayResult[$eKey]['specimen'][$val['sample_label']][]=$val['reported_result'];
-								$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=$correctRes;
 								$extAssayResult[$eKey]['vlAssay']=$extractionAssayVal;
-								if($val['reported_result']==$val['reference_result']){
-									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=1;
+								$extAssayResult[$eKey]['participantCount']=1;
+								if ($shipmentResult['max_score'] == $sVal['shipment_score']) {
+									$extAssayResult[$eKey]['maxScore']=1;
+								}else{
+									$extAssayResult[$eKey]['belowScore']=1;
 								}
+								
+								
+								$cQuery = $db->select()->from(array('refeid' => 'reference_result_eid'),array('refeid.sample_id', 'refeid.sample_label','refeid.reference_result','refeid.mandatory'))
+									->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.sample_id = refeid.sample_id', array('reported_result'))
+									->where('refeid.shipment_id = ? ', $shipmentId)
+									->where('reseid.shipment_map_id = ? ', $sVal['map_id']);
+								
+								$cResult=$db->fetchAll($cQuery);
+								
+								foreach($cResult as $val){
+									if($val['reported_result']==$val['reference_result']){
+										$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']+1 : "1");
+									}else{
+										$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] : "0");
+									}
+								}
+								//$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=$correctRes;
 							}
 							
-							
-							if ($shipmentResult['max_score'] == $val['shipment_score']) {
-								$extAssayResult[$eKey]['maxScore']=$maxScore++;
-							}else{
-								$extAssayResult[$eKey]['belowScore']=$belowScore++;
-							}
-							$extAssayResult[$eKey]['participantCount']=$parCount++;
 						}
 					}
+				}
+				//Zend_Debug::dump($extAssayResult);die;
 					
-                }
+				
+//                foreach ($extractionAssay as $eKey=>$extractionAssayVal) {
+//					
+//					$labResult = array();
+//					$maxScore = 0;
+//					$belowScore = 0;
+//					$parCount=0;
+//					$correctRes=0;
+//					
+//					
+//					
+//					foreach($cResult as $val){
+//						$valAttributes = json_decode($val['attributes'], true);
+//						//Formed array based on r_eid_extraction_assay table
+//						if($eKey==$valAttributes['extraction_assay']){
+//							if (array_key_exists($eKey,$extAssayResult)) {
+//								//$extAssayResult[$eKey]['specimen'][$val['sample_label']][]=$val['reported_result'];
+//								if($val['reported_result']==$val['reference_result']){
+//									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']+1 : "1");
+//									//$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']+1;
+//								}else{
+//									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=(isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] : "0");
+//								}
+//							}else{
+//								$extAssayResult[$eKey]=array();
+//								//$extAssayResult[$eKey]['specimen'][$val['sample_label']][]=$val['reported_result'];
+//								$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=$correctRes;
+//								$extAssayResult[$eKey]['vlAssay']=$extractionAssayVal;
+//								if($val['reported_result']==$val['reference_result']){
+//									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']=1;
+//								}
+//							}
+//							
+//							
+//							if ($shipmentResult['max_score'] == $val['shipment_score']) {
+//								$extAssayResult[$eKey]['maxScore']=$maxScore++;
+//							}else{
+//								$extAssayResult[$eKey]['belowScore']=$belowScore++;
+//							}
+//							$extAssayResult[$eKey]['participantCount']=$parCount++;
+//						}
+//					}
+//					
+//                }
 				$shipmentResult['avgAssayResult'] = $extAssayResult;
 				//Zend_Debug::dump($shipmentResult);
 				//die;
