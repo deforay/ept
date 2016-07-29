@@ -385,7 +385,7 @@ class Application_Service_Schemes {
                       ->where('sp.shipment_id = ? ', $sId)
                       ->where("sp.is_excluded = 'no' ")
                       ->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayId . '"%');
-                      
+                      //echo $sql;die;
             $response = $db->fetchAll($sql);
             $sampleWise = array();
             foreach ($response as $row) {

@@ -859,9 +859,11 @@ class Application_Service_Evaluation {
                 $sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'responseDate' => 'reseid.created_on'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=reseid.reported_result', array('labResult' => 'respr.response'))
                         ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
-                        ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'))
+                        ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory')) 
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
-                        ->where("reseid.shipment_map_id = ?", $res['map_id']);
+						->where("refeid.control = 0")
+                        ->where("reseid.shipment_map_id = ?", $res['map_id'])
+						->order(array('refeid.sample_id'));
 			
 				//$vlAssayResultSet[$responseAssay['vl_assay']]
                 //error_log($sQuery);
@@ -1205,7 +1207,9 @@ class Application_Service_Evaluation {
 						->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.shipment_map_id = spm.map_id and reseid.sample_id = refeid.sample_id', array('reported_result'))
 						->where('spm.shipment_id = ? ', $shipmentId)
 						->where("spm.shipment_test_report_date IS NOT NULL")
+						->where("refeid.control = 0")
 						->where("spm.shipment_test_report_date!=''");
+
 				$cResult=$db->fetchAll($cQuery);
 				$correctResult = array();
 				foreach($cResult as $cVal){
@@ -1249,7 +1253,9 @@ class Application_Service_Evaluation {
 								$cQuery = $db->select()->from(array('refeid' => 'reference_result_eid'),array('refeid.sample_id', 'refeid.sample_label','refeid.reference_result','refeid.mandatory'))
 									->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.sample_id = refeid.sample_id', array('reported_result'))
 									->where('refeid.shipment_id = ? ', $shipmentId)
+									->where("refeid.control = 0")
 									->where('reseid.shipment_map_id = ? ', $sVal['map_id']);
+									
 								$cResult=$db->fetchAll($cQuery);
 								foreach($cResult as $val){
 									if($val['reported_result']==$val['reference_result']){
@@ -1273,6 +1279,7 @@ class Application_Service_Evaluation {
 								$cQuery = $db->select()->from(array('refeid' => 'reference_result_eid'),array('refeid.sample_id', 'refeid.sample_label','refeid.reference_result','refeid.mandatory'))
 									->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.sample_id = refeid.sample_id', array('reported_result'))
 									->where('refeid.shipment_id = ? ', $shipmentId)
+									->where("refeid.control = 0")
 									->where('reseid.shipment_map_id = ? ', $sVal['map_id']);
 								
 								$cResult=$db->fetchAll($cQuery);
@@ -1517,49 +1524,76 @@ class Application_Service_Evaluation {
 					//}
 				}
 
-				// checking if total score and maximum scores are the same
-				if ($totalScore == 'N/A') {
-					$failureReason[]['warning'] = "Could not determine score. Not enough responses found in the chosen VL Assay.";
-					$scoreResult = 'Exclude';
-				} else if ($totalScore != $maxScore) {
-					$scoreResult = 'Fail';
-					if($maxScore != 0){
-						$totalScore = ($totalScore/$maxScore)*100;
-					}
-					$failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passPercentage</strong>)";
-				} else {
-					if($maxScore != 0){
-						$totalScore = ($totalScore/$maxScore)*100;
-					}
-					$scoreResult = 'Pass';
-				}
-
-
-				// if $finalResult == 3 , then  excluded
+					
+					
+					// if we are excluding this result, then let us not give pass/fail				
+					if ($shipment['is_excluded'] == 'yes') {
+						$finalResult = '';
+						$totalScore = 0;
+						$failureReason = array();
+						$shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
+						$shipmentResult[$counter]['documentation_score'] = 0;
+						$shipmentResult[$counter]['display_result'] = 'Excluded';
+						$shipmentResult[$counter]['is_followup'] = 'yes';
+						$failureReason[] = array('warning' => 'Excluded from Evaluation');
+						$finalResult = 3;
+						$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
+					} else {
+						$shipment['is_excluded'] = 'no';
+								
+		
+						// checking if total score and maximum scores are the same
+						if ($totalScore == 'N/A') {
+							$failureReason[]['warning'] = "Could not determine score. Not enough responses found in the chosen VL Assay.";
+							$scoreResult = 'Not Evaluated';
+						} else if ($totalScore != $maxScore) {
+							$scoreResult = 'Fail';
+							if($maxScore != 0){
+								$totalScore = ($totalScore/$maxScore)*100;
+							}
+							$failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passPercentage</strong>)";
+						} else {
+							if($maxScore != 0){
+								$totalScore = ($totalScore/$maxScore)*100;
+							}
+							$scoreResult = 'Pass';
+						}
+		
+		
+						// if $finalResult == 3 , then  excluded
+						
+						if ($scoreResult == 'Not Evaluated') {
+							$finalResult = 4;
+						}
+						else if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
+							$finalResult = 2;
+						} else {
+							$finalResult = 1;
+						}
+						
+						$shipmentResult[$counter]['shipment_score'] = $totalScore;
+						$shipmentResult[$counter]['max_score'] = $passPercentage; //$maxScore;
+						
+						
+		
+						$fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
+		
+						$shipmentResult[$counter]['display_result'] = $fRes[0];
+						$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
+						//Zend_Debug::dump($shipmentResult[$counter]);
+						// let us update the total score in DB
+						if ($totalScore == 'N/A') {
+							$totalScore = 0;
+						}
+						
+						
+						
+						
+						
+					}				
 				
-				if ($scoreResult == 'Exclude') {
-					$finalResult = 3;
-				}
-				else if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
-					$finalResult = 2;
-				} else {
-					$finalResult = 1;
-				}
-				
-				$shipmentResult[$counter]['shipment_score'] = $totalScore;
-				$shipmentResult[$counter]['max_score'] = $passPercentage; //$maxScore;
 				
 				
-
-				$fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
-
-				$shipmentResult[$counter]['display_result'] = $fRes[0];
-				$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
-				//Zend_Debug::dump($shipmentResult[$counter]);
-				// let us update the total score in DB
-				if ($totalScore == 'N/A') {
-					$totalScore = 0;
-				}
 				$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
 				
 			} else {
@@ -1631,32 +1665,56 @@ class Application_Service_Evaluation {
                         //}
                     }
 					
-					$totalScore = ($totalScore/$maxScore)*100;
-					$maxScore = 100; 
 					
-                    // checking if total score and maximum scores are the same
-                    if ($totalScore != $maxScore) {
-                        $scoreResult = 'Fail';
-                        $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
-                    } else {
-                        $scoreResult = 'Pass';
-                    }
+						$totalScore = ($totalScore/$maxScore)*100;
+						$maxScore = 100; 
+					
+					
+					
+					// if we are excluding this result, then let us not give pass/fail				
+					if ($shipment['is_excluded'] == 'yes') {
+						$finalResult = '';
+						$totalScore = 0;
+						$shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
+						$shipmentResult[$counter]['documentation_score'] = 0;
+						$shipmentResult[$counter]['display_result'] = '';
+						$shipmentResult[$counter]['is_followup'] = 'yes';
+						$failureReason[] = array('warning' => 'Excluded from Evaluation');
+						$finalResult = 3;
+						$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
+					} else {
+						$shipment['is_excluded'] = 'no';
+						
+						
+						// checking if total score and maximum scores are the same
+						if ($totalScore != $maxScore) {
+							$scoreResult = 'Fail';
+							$failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
+						} else {
+							$scoreResult = 'Pass';
+						}
+	
+						// if any of the results have failed, then the final result is fail
+						if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
+							$finalResult = 2;
+						} else {
+							$finalResult = 1;
+						}
+						$shipmentResult[$counter]['shipment_score'] = $totalScore = round($totalScore,2);
+						$shipmentResult[$counter]['max_score'] = 100; //$maxScore;
+						$shipmentResult[$counter]['final_result'] = $finalResult;
+	
+	
+						$fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
+	
+						$shipmentResult[$counter]['display_result'] = $fRes[0];
+						$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);						
+							
+						
 
-                    // if any of the results have failed, then the final result is fail
-                    if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
-                        $finalResult = 2;
-                    } else {
-                        $finalResult = 1;
-                    }
-                    $shipmentResult[$counter]['shipment_score'] = $totalScore = round($totalScore,2);
-                    $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
-                    $shipmentResult[$counter]['final_result'] = $finalResult;
-
-
-                    $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
-
-                    $shipmentResult[$counter]['display_result'] = $fRes[0];
-                    $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
+					}
+					
+					
                     // let us update the total score in DB
                     $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
                     //$counter++;

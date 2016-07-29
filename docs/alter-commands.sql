@@ -2240,4 +2240,5 @@ INSERT INTO `r_eid_detection_assay` (`id`, `name`) VALUES (NULL, 'Abbott RealTim
 INSERT INTO `r_eid_extraction_assay` (`id`, `name`) VALUES (NULL, 'Abbott RealTime HIV-1 Qualitative Assay');
 INSERT INTO `r_eid_detection_assay` (`id`, `name`) VALUES (NULL, 'Other');
 INSERT INTO `r_eid_extraction_assay` (`id`, `name`) VALUES (NULL, 'Other');
+INSERT INTO `r_results` (`result_id`, `result_name`) VALUES ('4', 'Not Evaluated');
 
