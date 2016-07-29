@@ -113,11 +113,15 @@
 
     }
     
-    function closeVlModal(id) {
-        if (id!='') {
+    function closeVlModal(sId,sampleId,vlAssay,mLowLimit,mHighLimit) {
+        if (sId!='') {
             closeLayoutModal();
             alert("Vl manual value updated successfully");
-            getVLReferenceScores(id);
+            $("#manualRange"+vlAssay.toString()+sampleId.toString()).val(mHighLimit);
+            $("#mLowLimitCol"+vlAssay.toString()+sampleId.toString()).html(mLowLimit);
+            $("#mHighLimitCol"+vlAssay.toString()+sampleId.toString()).html(mHighLimit);
+            $(".manualRange"+vlAssay.toString()+sampleId.toString()).css("background-color","");
+            //getVLReferenceScores(sId);
         }
     }
 </script>
