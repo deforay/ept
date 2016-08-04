@@ -281,7 +281,7 @@ foreach($this->result['shipment'] as $result){
 		
 		$labInfo.='<tr>';
 		$labInfo.='	<td><strong>Detection Assay </strong> <br>'.$result['detectionAssayVal'].'</td>';
-		$labInfo.='	<td><strong>Response Date</strong> <br>'.$responseDate.'</td>';
+		$labInfo.='	<td><strong>Results Submitted Date</strong> <br>'.$responseDate.'</td>';
 		$labInfo.='</tr>';
 		
 		$labInfo.='<tr>';
@@ -860,11 +860,15 @@ foreach($this->result['shipment'] as $result){
 		$comment.='</table>';
 		$pdf->writeHTML($comment, true, false, true, false, '');
 	}
-	if($schemeType != 'vl'){
-		$html='<p>Thank you for participating in the '.($result['scheme_name']).' Proficiency Testing Program.</p>';
-	}else{
+	if($schemeType=='vl'){
 		$html='<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
 	}
+	else if($schemeType=='eid'){
+		$html='<p>Thank you for participating in HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot.</p>';
+	}else{
+		$html='<p>Thank you for participating in the '.($result['scheme_name']).' Proficiency Testing Program.</p>';
+	}
+	
 	$pdf->writeHTML($html, true, false, true, false, '');
 	
 	if (ob_get_contents()) ob_end_clean();
