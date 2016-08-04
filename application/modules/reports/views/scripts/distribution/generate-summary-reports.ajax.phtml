@@ -203,7 +203,7 @@ if ($this->result['shipment'] != "") {
             $avgAssay="";
             if($k>0){
                 foreach($this->result['shipment']['avgAssayResult'] as $assayResult){
-                    
+                    $avgAssay='';
                     $avgAssay.= '<div style="border: 2px solid #000000;padding:5px;">';
                     $avgAssay.= '<span>Summary of All Laboratories using '.$assayResult['vlAssay'].'</span><br/>';
                     
@@ -244,8 +244,7 @@ if ($this->result['shipment'] != "") {
                         $avgAssay.='<td style="text-align:center;">'.$sKey.'</td>';
                     }
                     $avgAssay.='<td style="text-align:center;">Average</td>';
-                    $avgAssay.='</tr>'
-                    ;
+                    $avgAssay.='</tr>';
                     $sampleAvg='';
                     $sCount=count($assayResult['specimen']);
                     $avgAssay.='<tr>';
@@ -269,9 +268,11 @@ if ($this->result['shipment'] != "") {
                     $avgAssay.='</table>';
                     
                     $avgAssay.= '</div><br/>';
+                    $pdf->writeHTML($avgAssay, true, false, true, false, '');
+                    if($pdf->getY()>=250){
+                        $pdf->AddPage();
+                    }
                 }
-                
-                $pdf->writeHTML($avgAssay, true, false, true, false, '');
             }
         }
     }
