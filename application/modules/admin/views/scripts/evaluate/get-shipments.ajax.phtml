@@ -48,7 +48,7 @@ if($this->shipments == false && count($this->shipments) <= 0){
 								}else{
 									?>
 								<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
-								<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> VL Range</span></a>	
+								<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> VL Range</span></a>
 									<?php
 								}
 								
