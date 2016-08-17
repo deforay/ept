@@ -262,7 +262,6 @@ if (count($this->shipment) > 0) {
               }
               if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf")) {
               ?>
-              alert('<?php echo $this->shipment[0]['shipment_id']."indivitualReportTab-".$start,"-".$end; ?>');
                 if (getCookie('<?php echo $this->shipment[0]['shipment_id']."indivitualReportTab-".$start,"-".$end; ?>')) {
                     $("#summaryDiv").append("&nbsp;&nbsp;<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf"); ?>\" class='btn btn-info btn-sm' target='_BLANK' id=\"<?php echo $start."-".$end."-bulk-participant-report"; ?>\" style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download <?php echo $start; ?> - <?php echo $end;?> Participants Report</a> ");
                 }
