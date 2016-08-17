@@ -71,16 +71,16 @@ class MYPDF extends TCPDF {
 
     // Page footer
     public function Footer() {
-		$underReport="";
-		if(trim($this->comingFrom)!=""){
-			// $underReport='      - Report Under Review';
+		$finalizeReport="";
+		if(trim($this->comingFrom)=="finalize"){
+			$finalizeReport=' - FINALIZED';
 		}
         // Position at 15 mm from bottom
         $this->SetY(-15);
         // Set font
         $this->SetFont('helvetica', 'I', 8);
         // Page number
-        $this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$underReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
 	
     }
 }

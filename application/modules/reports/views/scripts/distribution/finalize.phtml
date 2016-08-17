@@ -168,6 +168,7 @@ if (count($this->shipment) > 0) {
         }else{
           $lastEnd=$this->responseCount["reported_count"];
         }
+        $m=0;
         for ($i = 1; $i <= $buttonCount; $i++) {
           if($this->responseCount["reported_count"]>=50){
           $end=$i*50;
@@ -187,6 +188,7 @@ if (count($this->shipment) > 0) {
         ?>
         <a href="javascript:void(0)" class="btn btn-sm  btn-danger" style="margin-top:10px;" onclick="generateReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>','50','<?php echo ($start-1);?>','<?php echo $start; ?>','<?php echo $end; ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate <?php echo $start; ?> to <?php echo $end;?> Reports for this Shipment</a>
         <?php
+        $m++;
         }
         ?>
         </div>
@@ -199,8 +201,8 @@ if (count($this->shipment) > 0) {
 
         </span>
     </div>
-    <div style="col-lg-12" align="center">
-    <a href="javascript:void(0)" class="btn btn-primary col-lg-5" style="margin:10px auto;float: none;"  onclick="finalizeReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i> Finalize this Shipment</a> <br/>
+    <div class="col-lg-12" align="center" id="finalizeBtn" style="display:none;clear: both;">
+    <a href="javascript:void(0)" class="btn btn-primary col-lg-5" id="" style="margin:10px auto;float: none;"  onclick="finalizeReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i> Finalize this Shipment</a> <br/>
     </div>
     <script type="text/javascript" charset="utf-8">
 
@@ -214,19 +216,23 @@ if (count($this->shipment) > 0) {
             checkReportDate = true;
         <?php
     }
-    
-    if ($shipment['report_generated'] == 'yes') {
-        if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf")) {
-          ?>
-           document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code'] ."-summary.pdf"); ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_blank' style='margin-top:10px;clear:both;float:left;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
-        <?php
-        }
-    }
     ?>
+    
         $(document).ready(function () {
-        
-        
-        
+            
+            if (getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>summaryReportTab')) {
+            <?php
+            if ($shipment['report_generated'] == 'yes') {
+                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf")) {
+                ?>
+                   document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code'] ."-summary.pdf"); ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_blank' style='margin-top:10px;clear:both;float:left;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
+                <?php
+                }
+            }
+            ?>
+            }
+    
+            finalizeShipmentBtn();
         <?php
           if ($shipment['report_generated'] == 'yes') {
                
@@ -256,8 +262,10 @@ if (count($this->shipment) > 0) {
               }
               if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf")) {
               ?>
-               $("#summaryDiv").append("&nbsp;&nbsp;<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf"); ?>\" class='btn btn-info btn-sm' target='_BLANK' id=\"<?php echo $start."-".$end."-bulk-participant-report"; ?>\" style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download <?php echo $start; ?> - <?php echo $end;?> Participants Report</a> ");
-               
+              alert('<?php echo $this->shipment[0]['shipment_id']."indivitualReportTab-".$start,"-".$end; ?>');
+                if (getCookie('<?php echo $this->shipment[0]['shipment_id']."indivitualReportTab-".$start,"-".$end; ?>')) {
+                    $("#summaryDiv").append("&nbsp;&nbsp;<a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf"); ?>\" class='btn btn-info btn-sm' target='_BLANK' id=\"<?php echo $start."-".$end."-bulk-participant-report"; ?>\" style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download <?php echo $start; ?> - <?php echo $end;?> Participants Report</a> ");
+                }
               <?php
               }
             }
@@ -369,20 +377,31 @@ if (count($this->shipment) > 0) {
         
         
          function generateReport(sId,limit,offset,startVal,endVal) {
+            if (!getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>indivitualReportTab-'+startVal+'-'+endVal)) {
+                if(getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab')){
+                    countReport=parseInt(countReport)+parseInt(1);
+                }else{
+                    countReport=1;
+                }
+                setCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab',countReport);
+            }
+            
+            setCookie('<?php echo $this->shipment[0]['shipment_id']; ?>indivitualReportTab-'+startVal+'-'+endVal,'yes');
             if (checkReportDate) {
                 $.blockUI();
                 var individual = null;
                 $.when(
                   
-                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {sId: sId,'comingFrom':'generateReport',limitVal:limit,offsetVal:offset,startVal: startVal,endVal: endVal, format: "html"},
+                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {sId: sId,'comingFrom':'finalize',limitVal:limit,offsetVal:offset,startVal: startVal,endVal: endVal, format: "html"},
                     function (data) {
                         individual = data;
                   })
                 
                 ).then(function() {
                     if (individual == 'success') {
-                         $( "#"+startVal+'-'+endVal+"-bulk-participant-report").remove();
-                       $( "#summaryDiv" ).append('&nbsp<a href="<?php echo $this->baseUrl() ;?>/uploads/reports/<?php echo $shipment['shipment_code'] ?>/<?php echo $shipment['shipment_code'] ?>-'+startVal+'-'+endVal+'-bulk-participant-report.pdf" id="'+startVal+'-'+endVal+'-bulk-participant-report" class="btn btn-info btn-sm" target="_BLANK" style="margin-top:10px;float:left;clear:both;"> <i class="icon-file-text"></i> &nbsp Download '+startVal+'-'+ endVal +' Participants Report</a>');
+                        finalizeShipmentBtn();
+                        $( "#"+startVal+'-'+endVal+"-bulk-participant-report").remove();
+                        $( "#summaryDiv" ).append('&nbsp<a href="<?php echo $this->baseUrl() ;?>/uploads/reports/<?php echo $shipment['shipment_code'] ?>/<?php echo $shipment['shipment_code'] ?>-'+startVal+'-'+endVal+'-bulk-participant-report.pdf" id="'+startVal+'-'+endVal+'-bulk-participant-report" class="btn btn-info btn-sm" target="_BLANK" style="margin-top:10px;float:left;clear:both;"> <i class="icon-file-text"></i> &nbsp Download '+startVal+'-'+ endVal +' Participants Report</a>');
                     }
                     
                     $.unblockUI();
@@ -396,17 +415,26 @@ if (count($this->shipment) > 0) {
         }
         
         function generateSummaryReport(sId) {
+            if (!getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>summaryReportTab')) {
+                if(getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab')){
+                    countReport=parseInt(countReport)+parseInt(1);
+                }else{
+                    countReport=1;
+                }
+                setCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab',countReport);
+            }
+            setCookie('<?php echo $this->shipment[0]['shipment_id']; ?>summaryReportTab','yes');
             if (checkReportDate) {
                 $.blockUI();
                 var summary = null;
                 $.when(
-                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {sId: sId,'comingFrom':'generateReport', format: "html"},
+                  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {sId: sId,'comingFrom':'finalize', format: "html"},
                     function (data) {
                         summary = data;
                 })
                 
                 ).then(function() {
-                
+                    finalizeShipmentBtn();
                     if (summary == 'success') {
                          $("#summaryReport").remove();
                         $("#summaryDiv").append("&nbsp <a href=\"<?php echo $this->baseUrl("uploads/reports/" . $shipment['shipment_code'] . "/".$shipment['shipment_code']."-summary.pdf"); ?>\" class='btn btn-success btn-sm' id='summaryReport' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i>&nbsp Download Summary Report</a> ");
@@ -421,7 +449,13 @@ if (count($this->shipment) > 0) {
                 alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']);?>).\n\n\nYou can change the PT Survey Date and retry.");
             }
         }
-
+    function finalizeShipmentBtn() {
+        countReport=getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab');
+        if (countReport>'<?php echo $m; ?>') {
+            //alert(countReport);
+            $("#finalizeBtn").css('display','block');
+        }
+    }
 
     </script>
 
