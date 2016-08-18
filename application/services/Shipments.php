@@ -221,6 +221,7 @@ class Application_Service_Shipments {
     }
 
     public function updateEidResults($params) {
+		//Zend_Debug::dump($params);die;
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
             return false;
         }
@@ -607,7 +608,7 @@ class Application_Service_Shipments {
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 	    if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
-		$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+			$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
 	    }else{
 			$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
 		}

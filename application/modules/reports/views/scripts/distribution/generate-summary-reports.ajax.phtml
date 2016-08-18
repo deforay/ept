@@ -63,9 +63,9 @@ if ($this->result['shipment'] != "") {
                 $html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral load using Dried Tube Specimen<br><strong>All participants results summary report</strong></p>';
             }
             else if($this->schemeType == 'eid'){
-                $html='<p  style="font-weight: bold;text-align:center;">HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot</p>';
+                $html='<h3 style="font-weight: bold;text-align:center;">HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot</h3>';
             }else{
-                $html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p>';
+                $html='<h3 style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</h3>';
             }
             
             $this->writeHTMLCell(0, 0, 30, 30, $html, 0, 0, 0, true, 'J', true);
@@ -146,10 +146,10 @@ if ($this->result['shipment'] != "") {
             $overAllSumRes = '<h3>Summary of All Laboratory Scores*</h3>';
             $overAllSumRes.='<table border="1">';
             $overAllSumRes.='<tr style="background-color:#dbe4ee;">';
-            $overAllSumRes.='<td style="text-align:center;">Total Number of Participating Laboratories</td>';
-            $overAllSumRes.='<td style="text-align:center;">Total Number of Laboratories Scoring "'.$this->result['shipment']['max_score'].'"</td>';
-            $overAllSumRes.='<td style="text-align:center;">Total Number of Laboratories Scoring Below "'.$this->result['shipment']['max_score'].'"</td>';
-            $overAllSumRes.='<td style="text-align:center;">Percentage of Laboratories Scoring "' . $this->result['shipment']['max_score'] . '"</td>';
+            $overAllSumRes.='<td style="text-align:center;">Total number of participating laboratories</td>';
+            $overAllSumRes.='<td style="text-align:center;">Total number of laboratories scoring "'.$this->result['shipment']['max_score'].'"</td>';
+            $overAllSumRes.='<td style="text-align:center;">Total number of laboratories scoring below "'.$this->result['shipment']['max_score'].'"</td>';
+            $overAllSumRes.='<td style="text-align:center;">Percentage of laboratories scoring "' . $this->result['shipment']['max_score'] . '"</td>';
             $overAllSumRes.='</tr>';
             
             $overAllSumRes.='<tr>';
@@ -165,7 +165,7 @@ if ($this->result['shipment'] != "") {
             
             $n=count($this->result['shipment']['correctRes']);
             if($n>0){
-                $overAllCorrectRes = '<h3>Percentage of all Laboratories Reporting Correctly*</h3>';
+                $overAllCorrectRes = '<h3>Percentage of all laboratories reporting correctly*</h3>';
                 $overAllCorrectRes.='<table border="1">';
                 
                 $overAllCorrectRes.='<tr style="background-color:#dbe4ee;">';
@@ -190,6 +190,7 @@ if ($this->result['shipment'] != "") {
                 $overAllCorrectRes.='<td style="text-align:center;">'.round(($avg/$n),2).'%</td>';
                 $overAllCorrectRes.='</tr>';
                 $overAllCorrectRes.='</table>';
+                $overAllCorrectRes.='* Includes In-house and Other assays<br>';
                 
                 $pdf->writeHTML($overAllCorrectRes, true, false, true, false, '');
             }

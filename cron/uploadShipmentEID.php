@@ -32,7 +32,7 @@ try {
     foreach ($data as $row) {
         //Zend_Debug::dump($row);continue;
         if($row[1] == "" || $row[1] == null) break;
-        $arr = array( "hdLastDate" => $row[0],
+        $arr = array( "hdLastDate" => '2016-07-31',
                      "shipmentId" => $row[1],
                      "participantId" => $row[2],
                     "smid" => $row[3],

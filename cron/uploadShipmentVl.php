@@ -13,6 +13,8 @@ try {
     
         date_default_timezone_set('GMT');
         $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "spm.csv";
+        
+        
         if (!file_exists($filename) || !is_readable($filename))
             return FALSE;    
         $data = array();
@@ -59,7 +61,9 @@ try {
                  "supervisorApproval" => "no",
                  "participantSupervisor" => "",
                  "userComments" =>"",
-                 "uploadedFilePath" => "");
+                 "uploadedFilePath" => "",
+                 "testReceiptDate" => $row[37]
+                 );
         
         $shipmentService->updateVlResults($arr);
         

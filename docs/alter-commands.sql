@@ -2188,13 +2188,13 @@ CREATE TABLE IF NOT EXISTS `publications` (
   `added_on` datetime NOT NULL,
   `status` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`publication_id`)
-)
+);
 
 CREATE TABLE IF NOT EXISTS `home_banner` (
   `banner_id` int(11) NOT NULL AUTO_INCREMENT,
   `image` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`banner_id`)
-)
+);
 
 INSERT INTO `home_banner` (`banner_id`, `image`) VALUES
 (1, '');
@@ -2211,7 +2211,7 @@ CREATE TABLE IF NOT EXISTS `partners` (
   `added_on` datetime NOT NULL,
   `status` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`partner_id`)
-)
+);
 
 INSERT INTO `partners` (`partner_id`, `partner_name`, `link`, `added_by`, `added_on`, `status`) VALUES
 (1, 'CDC-Centers for Disease Control and Prevention', '', 1, '2016-07-04 17:58:43', 'active');

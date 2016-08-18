@@ -858,7 +858,7 @@ class Application_Service_Evaluation {
 				
                 $sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'responseDate' => 'reseid.created_on'))
                         ->join(array('respr' => 'r_possibleresult'), 'respr.id=reseid.reported_result', array('labResult' => 'respr.response'))
-                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id'))
+                        ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id','sp.shipment_receipt_date','sp.shipment_test_date'))
                         ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory')) 
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
 						->where("refeid.control = 0")
@@ -882,7 +882,7 @@ class Application_Service_Evaluation {
 				
 				$sql = $db->select()->from(array('ref' => 'reference_result_vl'),array('sample_id','ref.sample_label'))
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('*'))
-					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
+					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date'))
 					->join(array('p' => 'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 					->where("is_excluded=?",'no')
@@ -921,7 +921,7 @@ class Application_Service_Evaluation {
 				//<-- count no.of labs participans in particular sample
 				$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('sample_id','ref.sample_label'))
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.*'))
-					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
+					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 					->where('sp.shipment_id = ? ', $shipmentId);
 				
@@ -948,7 +948,7 @@ class Application_Service_Evaluation {
                 foreach ($results as $result) {
                     //$toReturn = array();
                     $responseAssay = json_decode($result['attributes'], true);
-                    $toReturn[$counter]['vl_assay'] = $vlAssayResultSet[$responseAssay['vl_assay']];
+                    $toReturn[$counter]['vl_assay'] = isset($vlAssayResultSet[$responseAssay['vl_assay']]) ? $vlAssayResultSet[$responseAssay['vl_assay']] : "";
                     $responseAssay = $responseAssay['vl_assay'];
 					
 					$vlGraphResult[$result['sample_label']]['pVal']=$result['reported_viral_load'];
@@ -1389,7 +1389,11 @@ class Application_Service_Evaluation {
 						$valAttributes = json_decode($val['attributes'], true);
 						if($vlAssayRow['id']==$valAttributes['vl_assay']){
 							if($vlAssayRow['id']==6){
-								$otherAssayName[]=$valAttributes['other_assay'];
+								if(isset($valAttributes['other_assay'])){
+									$otherAssayName[]=$valAttributes['other_assay'];
+								}else{
+									$otherAssayName[]="";
+								}
 							}
 							if (array_key_exists($val['sample_label'], $labResult)) {
 								$labResult[$val['sample_label']]+=1;
@@ -1463,7 +1467,8 @@ class Application_Service_Evaluation {
 		}
 
 		foreach ($shipmentResult as $shipment) {
-			$createdOnUser = explode(" ", $shipment['created_on_user']);
+			
+			$createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
 			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
 				$createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
@@ -1473,6 +1478,7 @@ class Application_Service_Evaluation {
 			}
 
 			$lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
+			
 			//Zend_Debug::dump($createdOn->isEarlier($lastDate));die;
 			if ($createdOn->compare($lastDate,Zend_date::DATES) <= 0) {
 
@@ -1619,7 +1625,7 @@ class Application_Service_Evaluation {
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		
             foreach ($shipmentResult as $shipment) {
-                $createdOnUser = explode(" ", $shipment['created_on_user']);
+                $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
                 if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
                     $createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);

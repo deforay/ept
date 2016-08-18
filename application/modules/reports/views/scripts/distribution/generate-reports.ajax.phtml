@@ -1,5 +1,5 @@
 <?php
-//Zend_Debug::dump($this->result);die;
+
 require_once('tcpdf/tcpdf.php');
 $schemeType = $this->result['shipment'][0]['scheme_type'];
 //var_dump($this->result['shipment'][0]['responseResult'][0]['testkit1']);die;
@@ -57,10 +57,16 @@ class MYPDF extends TCPDF {
 
 	$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
 	//$this->writeHTML($html, true, false, true, true, 'L');
-	if($this->schemeType != 'vl'){
-		$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</p>';
-	}else{
-		$html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Viral Load Using Dried Tube Specimen<br><strong>Individual participant results report </strong></p>';		
+	if($this->schemeType == 'vl'){
+		
+		$html='<h3 style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Viral Load Using Dried Tube Specimen</h3>';		
+	}else if($this->schemeType == 'eid'){
+		//HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot.
+		$html='<h3 style="font-weight: bold;text-align:center;">HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot</h3>';		
+	}
+	else{
+		$html='<h3 style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</h3>';
+		
 	}
 	
 	$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
@@ -88,6 +94,8 @@ $totalPages=count($this->result['shipment']);
 $j=1;
 //$this->result['dmResult'];
 foreach($this->result['shipment'] as $result){
+	
+	//Zend_Debug::dump($result['responseResult'][0]);die;
 	
 	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
 		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
@@ -276,7 +284,7 @@ foreach($this->result['shipment'] as $result){
 		$labInfo.='<tr>';
 		//$labInfo.='	<td><strong>Lab Id</strong> <br>'.$result['unique_identifier'].'</td>';
 		$labInfo.='	<td><strong>Extraction Assay </strong> <br>'.$result['extractionAssayVal'].'</td>';
-		$labInfo.='	<td><strong>PT Panel Tested </strong> <br> '.$shipmentTestDate.'</td>';
+		$labInfo.='	<td><strong>PT Panel Tested </strong> <br>'.$shipmentTestDate.'</td>';
 		$labInfo.='</tr>';
 		
 		$labInfo.='<tr>';
@@ -547,19 +555,19 @@ foreach($this->result['shipment'] as $result){
 				$labRes.='<td style="text-align:center;font-weight:bold;">'.$response['sample_label'].'</td>';
 			}
 			
-			$labRes.='<td style="text-align:center;font-weight:bold;">Score *</td>';
+			$labRes.='<td style="text-align:center;font-weight:bold;">Score(%)</td>';
 			$labRes.='</tr>';
 			$labRes.='<tr>';
 			$labRes.='<td>Expected Result</td>';
 			foreach($result['responseResult'] as $response){
-				$labRes.='<td style="text-align:center;">'.$response['referenceResult'].'</td>';
+				$labRes.='<td style="text-align:left;">'.$response['referenceResult'].'</td>';
 			}
-			$labRes.='<td rowspan="2" style="text-align:center;">'.$result['shipment_score'].'</td>';
+			$labRes.='<td rowspan="2" style="text-align:center;"><br>'.$result['shipment_score'].'</td>';
 			$labRes.='</tr>';
 			$labRes.='<tr>';
 			$labRes.='<td>Your Results</td>';
 			foreach($result['responseResult'] as $response){
-				$labRes.='<td style="text-align:center;">'.$response['labResult'].'</td>';
+				$labRes.='<td style="text-align:left;">'.$response['labResult'].'</td>';
 			}
 			$labRes.='</tr>';
 			
@@ -681,21 +689,29 @@ foreach($this->result['shipment'] as $result){
 	//	$wishes='<p>Your response was not considered for evaluation</p><br/>';
 	//}
 	
-	if($schemeType != 'vl'){
-		if($score>=$this->passPercentage){
-			$wishes='<p>Congratulations! You have received a satisfactory score of '.round($shipmentScore,2).'%.</p><br/>';
-		}else{
-			$wishes='<p>You have received a score of '.round($shipmentScore,2).'%.</p><br/>';
-		}
-		
-
-	
-	$pdf->SetLeftMargin(15);
-	
-	$pdf->writeHTML($wishes, true, false, true, false, '');
 	
 	
-	}
+	
+	
+	//if($schemeType != 'vl'){
+	//	if($score>=$this->passPercentage){
+	//		$wishes='<p>Congratulations! You have received a satisfactory score of '.round($shipmentScore,2).'%.</p><br/>';
+	//	}else{
+	//		$wishes='<p>You have received a score of '.round($shipmentScore,2).'%.</p><br/>';
+	//	}
+	//	
+	//
+	//
+	//	$pdf->SetLeftMargin(15);
+	//
+	//	$pdf->writeHTML($wishes, true, false, true, false, '');
+	//
+	//}
+	
+	
+	
+	
+	
 	//if($result['is_excluded'] != 'yes'){
 		//$wishes.="<br/><strong style='font-weight:bold;'>Score Breakup:</strong>";
 		//$wishes.="<br/>Score for Correct Responses (out of $maxResponsePoints) : $shipmentScore (You reported ".$correctSamplesCount." samples correctly out of ".$totalProperSamples. ")";
