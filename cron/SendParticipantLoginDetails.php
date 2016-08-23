@@ -8,7 +8,7 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
     
         date_default_timezone_set('GMT');
-        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "participants-mail.csv";
+        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "participants-mail-new-eid.csv";
         if (!file_exists($filename) || !is_readable($filename))
             return FALSE;    
         $data = array();
@@ -35,7 +35,7 @@ try {
                 $fromMail = '';
                 $fromName = '';
                 //Subject
-                $subject.= 'PT Results Report - VL2016';
+                $subject.= 'PT Results Summary Report and Individual Report - EID2016-I';
                 //Message
                 $message.= '<table border="0" cellspacing="0" cellpadding="0" style="width:100%;background-color:#FFF;">';
                     $message.= '<tr><td align="center">';
@@ -46,10 +46,10 @@ try {
                         $message.= '<tr><td width="12%"><strong>Login ID</strong> : </td><td>'.$participant[3].'</td></tr>';
                         $message.= '<tr><td width="12%"><strong>Password</strong> : </td><td>'.$participant[4].'</td></tr>';
                         $message.= '<tr><td colspan="2">This Login ID and Password is unique to your laboratory, please save this Login ID and Password for future use. You will have the option to change them when at a later date.</td></tr>';
-                        $message.= '<tr><td colspan="2">Once you login you can download your VL2016-A PT results summary report for '.($participant[0]).'.</td></tr>';
+                        $message.= '<tr><td colspan="2">Once you login you can download your EID2016-I PT results summary report AND individual report for '.($participant[0]).'.</td></tr>';
                         $message.= '<tr><td colspan="2">You can find a quick help video here http://bit.ly/ept-vl2016-intro</td></tr>';
                         $message.= '<tr><td colspan="2">For any assistance or guidance you can reach us at pt@vlsmartconnect.com</td></tr>';
-                        $message.= '<tr><td colspan="2">We request you to fill in this short Feedback form : http://bit.ly/vl2016-feedback</td></tr>';
+                        $message.= '<tr><td colspan="2">We request that you complete a short Feedback form : http://bit.ly/eid2016-feedback</td></tr>';
                         $message.= '<tr><td colspan="2">Thanks</td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';
