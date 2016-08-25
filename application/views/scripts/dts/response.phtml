@@ -436,7 +436,8 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
 <?php if (!$this->isEditable) {
     ?>
     <div id="respond" style="margin: 0 auto; text-align: center;padding:10px;">
-        <input name="cancel" class="btn btn-info" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />
+        <!--<input name="cancel" class="btn btn-info" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />-->
+		<a href="javascript:void(0)" id="reset" tabindex="8" class="btn btn-info" onclick="javascript:goto_dashboard()" >Back</a>
     </div>
     <?php
 }

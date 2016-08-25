@@ -342,7 +342,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 <?php if(!$this->isEditable){
 		?>
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-			<input name="cancel" class="btn btn-info" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />
+			<a href="javascript:void(0)" id="reset" tabindex="8" class="btn btn-info" onclick="javascript:goto_dashboard()" >Back</a>
 		</div>
 		<?php
 }

@@ -2,7 +2,9 @@
     <h1>
         Participant/Laboratory Information
         <small>Manage participant information</small>
+		<?php if($this->isEditable){ ?>
 		<input class="btn btn-info" type="button" onclick="document.location='/participant/add'" style="float:right;" tabindex="7" value="Add PT Participant">
+		<?php } ?>
     </h1>
 </section>
 <section class="content">

@@ -945,8 +945,13 @@ class Application_Service_Shipments {
         }
     }
 
-    public function isShipmentEditable($shipmentId, $participantId) {
-        $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
+    public function isShipmentEditable($shipmentId=NULL, $participantId=NULL) {
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+		if($authNameSpace->view_only_access=='yes'){
+			return false;
+		}
+		
+		$spMap = new Application_Model_DbTable_ShipmentParticipantMap();
         return $spMap->isShipmentEditable($shipmentId, $participantId);
     }
 

@@ -64,6 +64,12 @@ class ParticipantController extends Zend_Controller_Action {
         $this->_helper->layout()->activeSubMenu = 'testers';
         $dbUsersProfile = new Application_Service_Participants();
         $this->view->rsUsersProfile = $dbUsersProfile->getUsersParticipants();
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+		if($authNameSpace->view_only_access=='yes'){
+            $this->view->isEditable = false;
+        }else{
+            $this->view->isEditable = true;
+        }
     }
 
     public function schemeAction() {
@@ -102,12 +108,18 @@ class ParticipantController extends Zend_Controller_Action {
         } else {
             $this->view->rsParticipant = $participantService->getParticipantDetails($this->_getParam('psid'));
         }
-
+        
         $this->view->affiliates = $participantService->getAffiliateList();
         $this->view->countriesList = $commonService->getcountriesList();
         $this->view->networks = $participantService->getNetworkTierList();
         $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
         $this->view->siteType = $participantService->getSiteTypeList();
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+		if($authNameSpace->view_only_access=='yes'){
+            $this->view->isEditable = false;
+        }else{
+            $this->view->isEditable = true;
+        }
     }
 
     public function schemeinfoAction() {
@@ -132,6 +144,12 @@ class ParticipantController extends Zend_Controller_Action {
         $this->view->countriesList = $commonService->getcountriesList();
         $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
         $this->view->siteType = $participantService->getSiteTypeList();
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+		if($authNameSpace->view_only_access=='yes'){
+            $this->view->isEditable = false;
+        }else{
+            $this->view->isEditable = true;
+        }
     }
 
     public function defaultedSchemesAction() {

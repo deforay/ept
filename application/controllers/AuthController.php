@@ -50,6 +50,7 @@ class AuthController extends Zend_Controller_Action
 	    		$authNameSpace->phone = $rs->phone;
 	    		$authNameSpace->email = $rs->primary_email;
 	    		$authNameSpace->qc_access = $rs->qc_access;
+	    		$authNameSpace->view_only_access = $rs->view_only_access;
 	    		$authNameSpace->enable_adding_test_response_date = $rs->enable_adding_test_response_date;
 	    		$authNameSpace->enable_choosing_mode_of_receipt = $rs->enable_choosing_mode_of_receipt;
 	    		$authNameSpace->force_password_reset = $rs->force_password_reset;

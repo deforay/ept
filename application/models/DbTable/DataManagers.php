@@ -20,8 +20,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             'qc_access' => $params['qcAccess'],
             'enable_adding_test_response_date' => $params['receiptDateOption'],
             'enable_choosing_mode_of_receipt' => $params['modeOfReceiptOption'],
+			'view_only_access' => $params['viewOnlyAccess'],
             'status' => $params['status'],
-	    'created_by' => $authNameSpace->admin_id,
+			'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()')
         );
         return $this->insert($data);
@@ -192,12 +193,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             'last_name' => $params['lname'],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
-	    'institute' => $params['institute'],
+			'institute' => $params['institute'],
             'secondary_email' => $params['semail'],
-	    'qc_access' => $params['qcAccess'],
-	    'enable_adding_test_response_date' => $params['receiptDateOption'],
-	    'enable_choosing_mode_of_receipt' => $params['modeOfReceiptOption'],
-	    'updated_by' => $authNameSpace->admin_id,
+			'qc_access' => $params['qcAccess'],
+			'enable_adding_test_response_date' => $params['receiptDateOption'],
+			'enable_choosing_mode_of_receipt' => $params['modeOfReceiptOption'],
+			'view_only_access' => $params['viewOnlyAccess'],
+			'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
         
