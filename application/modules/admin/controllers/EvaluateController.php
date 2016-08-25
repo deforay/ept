@@ -206,7 +206,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function vlRangeAction()
     {
-		if($this->_hasParam('manualLow')){
+		if($this->_hasParam('manualRange')){
 			$params = $this->getRequest()->getPost();
 			$schemeService = new Application_Service_Schemes();
 			$schemeService->updateVlInformation($params);

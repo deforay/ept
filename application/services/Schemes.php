@@ -359,11 +359,11 @@ class Application_Service_Schemes {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         foreach($params['sampleId'] as $assayId => $samples){
             foreach($samples as $sampid){
-                $data['manual_low_limit'] = $params['manualLow'][$assayId][$sampid];
-                $data['manual_high_limit'] = $params['manualHigh'][$assayId][$sampid];
+                //$data['manual_low_limit'] = $params['manualLow'][$assayId][$sampid];
+                //$data['manual_high_limit'] = $params['manualHigh'][$assayId][$sampid];
                 $data['use_range'] = $params['useRange'][$assayId][$sampid];
                 $data['updated_on'] = new Zend_Db_Expr('now()');
-                echo "shipment_id = ".base64_decode($params['sid'])." and sample_id = " . $sampid . " and "." vl_assay = " . $assayId ;
+                //echo "shipment_id = ".base64_decode($params['sid'])." and sample_id = " . $sampid . " and "." vl_assay = " . $assayId ;
                 $db->update('reference_vl_calculation', $data, "shipment_id = ".base64_decode($params['sid'])." and sample_id = " . $sampid . " and "." vl_assay = " . $assayId );
             }
         }
