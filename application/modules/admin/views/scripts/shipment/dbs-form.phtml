@@ -28,6 +28,10 @@ $dtFormat=  $vHelper->getDateFormat();
 	.modal-backdrop{
 		z-index: 900 !important;
 	}
+	#mbd{
+    overflow-y:scroll;
+    max-height:100%;
+	}
 </style>
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 	<thead>
@@ -68,8 +72,8 @@ $dtFormat=  $vHelper->getDateFormat();
 				<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" />
 			</td>
 			<td>
-				<a data-toggle="modal" href="#sampleEia1" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a>
-				<a data-toggle="modal" href="#sampleWb1" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB</a>
+				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleEia1', 900,500);loadCal()"><i class="icon-beaker"></i> EIA </a>
+				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleWb1', 900,500);loadCal()"><i class="icon-beaker"></i> WB</a>
 				<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i>Sample/Control</a>
 				
 			</td>
@@ -105,8 +109,8 @@ $dtFormat=  $vHelper->getDateFormat();
 				</td> \
 				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 				<td> \
-					<a data-toggle="modal" href="#sampleEia'+sampleCounter+'" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a> \
-					<a data-toggle="modal" href="#sampleWb'+sampleCounter+'" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB </a> \
+					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia'+sampleCounter+'\', 900,500);loadCal()"><i class="icon-beaker"></i> EIA </a> \
+					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleWb'+sampleCounter+'\', 900,500);loadCal()"><i class="icon-beaker"></i> WB </a> \
 					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
 					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 				</td> \
@@ -122,7 +126,8 @@ $dtFormat=  $vHelper->getDateFormat();
 	}
 	
 	function addNewEiaBlock(sampleId) {
-		$("#eiaBlockHolder").after('<div id="sampleEia'+sampleId+'" class="modal fade" tabindex="-1" data-width="860" style="display: none;">\
+		$("#eiaBlockHolder").after('<div id="sampleEia'+sampleId+'" class="dialog">\
+					<span onClick="hidedefModal()" class="closeModal"></span>\
 				  <div class="modal-header">\
 					<h4 class="modal-title">EIA</h4>\
 				  </div>\
@@ -157,7 +162,7 @@ $dtFormat=  $vHelper->getDateFormat();
 					</div>\
 				  </div>\
 				  <div class="modal-footer">\
-					<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>\
+					<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleEia'+sampleId+'\')">OK</button>\
 				  </div>\
 				</div>');
 		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
@@ -193,7 +198,8 @@ $dtFormat=  $vHelper->getDateFormat();
 	});
 	
 	function addNewWbBlock(sampleWbId) {
-		$("#wbBlockHolder").after('<div id="sampleWb'+sampleWbId+'" class="modal fade" tabindex="-1" data-width="960" style="display: none;">\
+		$("#wbBlockHolder").after('<div id="sampleWb'+sampleWbId+'" class="dialog" tabindex="-1">\
+				<span onClick="hidedefModal()" class="closeModal"></span>\
 				  <div class="modal-header">\
 					<h4 class="modal-title">WB</h4>\
 				  </div>\
@@ -242,7 +248,7 @@ $dtFormat=  $vHelper->getDateFormat();
 					</div>\
 				  </div>\
 				  <div class="modal-footer">\
-					<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>\
+					<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleWb'+sampleWbId+'\')">OK</button>\
 				  </div>\
 				</div>');
 		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
@@ -282,4 +288,17 @@ $dtFormat=  $vHelper->getDateFormat();
 		$(".datepicker").removeClass("hasDatepicker");
 		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'})
 	}
+	
+	function closeShipmentModal(divId) {
+		document.getElementById(divId).innerHTML=getEl("mbd").innerHTML;
+		
+		$("#mbd input:text" ).each(function(i, obj) {
+		    $("#"+divId+" input:text:eq("+i+")").val($(this).val());
+		});
+		$("#mbd select" ).each(function(i, obj) {
+		    $("#"+divId+" select:eq("+i+")").val($(this).val());
+		});
+	    
+		hidedefModal();
+    }
 </script>
