@@ -21,9 +21,10 @@ class AuthController extends Zend_Controller_Action
     	if($this->getRequest()->isPost()){
     		//die;
     		//echo "Post";
-			$params['username'] = trim($params['username']);
-			$params['password'] = trim($params['password']);
-    		$params = $this->getRequest()->getPost();
+		$params = $this->getRequest()->getPost();
+		//Zend_Debug::dump($params);die;
+		$params['username'] = trim($params['username']);
+		$params['password'] = trim($params['password']);
     		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
     		$adapter = new Zend_Auth_Adapter_DbTable($db, "data_manager", "primary_email", "password");
     		$adapter->setIdentity($params['username']);

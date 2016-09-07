@@ -193,20 +193,29 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
             'last_name' => $params['lname'],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
-			'institute' => $params['institute'],
             'secondary_email' => $params['semail'],
-			'qc_access' => $params['qcAccess'],
-			'enable_adding_test_response_date' => $params['receiptDateOption'],
-			'enable_choosing_mode_of_receipt' => $params['modeOfReceiptOption'],
-			'view_only_access' => $params['viewOnlyAccess'],
-			'updated_by' => $authNameSpace->admin_id,
+	    'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
         
+	if(isset($params['institute']) && $params['institute'] != ""){
+            $data['institute'] = $params['institute'];
+        }
+	if(isset($params['qcAccess']) && $params['qcAccess'] != ""){
+            $data['qc_access'] = $params['qcAccess'];
+        }
+	if(isset($params['receiptDateOption']) && $params['receiptDateOption'] != ""){
+            $data['enable_adding_test_response_date'] = $params['receiptDateOption'];
+        }
+	if(isset($params['modeOfReceiptOption']) && $params['modeOfReceiptOption'] != ""){
+            $data['enable_choosing_mode_of_receipt'] = $params['modeOfReceiptOption'];
+        }
+	if(isset($params['viewOnlyAccess']) && $params['viewOnlyAccess'] != ""){
+            $data['view_only_access'] = $params['viewOnlyAccess'];
+        }
         if(isset($params['userId']) && $params['userId'] != ""){
             $data['primary_email'] = $params['userId'];
         }
-        
         if(isset($params['password']) && $params['password'] != ""){
             $data['password'] = $params['password'];
             $data['force_password_reset'] = 1;

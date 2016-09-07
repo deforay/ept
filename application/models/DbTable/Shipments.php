@@ -187,14 +187,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type'))
-                ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array(''))
-                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array(''))
-				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type',array())
-                ->where("s.status='shipped' OR s.status='evaluated'")
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 'SHIP_YEAR' => 'year(s.shipment_date)', 'TOTALSHIPMEN' => new Zend_Db_Expr("COUNT('s.shipment_id')")))
+                ->joinLeft(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('ONTIME' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)"), 'NORESPONSE' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)"), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00')")))
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id')
+				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
+                ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
                 ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
                 ->where("pmm.dm_id=?", $this->_session->dm_id)
-                ->group('s.scheme_type');
+                ->group('s.scheme_type')
+                ->group('SHIP_YEAR');
 
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);

@@ -18,7 +18,6 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
-        
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_OVERVIEW
             $params = $this->_getAllParams();
