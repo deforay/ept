@@ -182,4 +182,9 @@ class Application_Service_Participants {
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->getShipmentNotEnrolledParticipants($params);
 	}
+	
+	public function getParticipantSchemesBySchemeId($parameters){
+		$shipmentDb = new Application_Model_DbTable_Shipments();
+		return $shipmentDb->fetchParticipantSchemesBySchemeId($parameters);
+	}
 }

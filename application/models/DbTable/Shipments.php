@@ -1627,5 +1627,157 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
         echo json_encode($output);
     }
+    
+    public function fetchParticipantSchemesBySchemeId($parameters){
+	/* Array of database columns which should be read and sent back to DataTables. Use a space where
+         * you want to insert a non-database field (for example a counter or static image)
+         */
+
+        $aColumns = array('DATE_FORMAT(shipment_date,"%d-%b-%Y")','shipment_code', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")','shipment_score');
+        $orderColumns = array('shipment_date','shipment_code', 'first_name', 'spm.shipment_test_report_date','shipment_score');
+
+        /* Indexed column (used for fast and accurate table cardinality) */
+        $sIndexColumn = $this->_primary;
+
+        $sTable = $this->_name;
+        /*
+         * Paging
+         */
+        $sLimit = "";
+        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+            $sOffset = $parameters['iDisplayStart'];
+            $sLimit = $parameters['iDisplayLength'];
+        }
+
+        /*
+         * Ordering
+         */
+
+        $sOrder = "";
+        if (isset($parameters['iSortCol_0'])) {
+            $sOrder = "";
+            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+                    if ($parameters['iSortCol_' . $i] == 1) {
+                        $sOrder .= "shipment_date " . ( $parameters['sSortDir_' . $i] ) . ", ";
+                    } else {
+                        $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+				 	" . ( $parameters['sSortDir_' . $i] ) . ", ";
+                    }
+                }
+            }
+            $sOrder = substr_replace($sOrder, "", -2);
+        }
+
+        /*
+         * Filtering
+         * NOTE this does not match the built-in DataTables filtering which does it
+         * word by word on any field. It's possible to do here, but concerned about efficiency
+         * on very large tables, and MySQL's regex functionality is very limited
+         */
+
+        $sWhere = "";
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+            $searchArray = explode(" ", $parameters['sSearch']);
+            $sWhereSub = "";
+            foreach ($searchArray as $search) {
+                if ($sWhereSub == "") {
+                    $sWhereSub .= "(";
+                } else {
+                    $sWhereSub .= " AND (";
+                }
+                $colSize = count($aColumns);
+
+                for ($i = 0; $i < $colSize; $i++) {
+                    if ($i < $colSize - 1) {
+                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search ) . "%' OR ";
+                    } else {
+                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search ) . "%' ";
+                    }
+                }
+                $sWhereSub .= ")";
+            }
+            $sWhere .= $sWhereSub;
+        }
+
+        /* Individual column filtering */
+        for ($i = 0; $i < count($aColumns); $i++) {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == "") {
+                    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                } else {
+                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                }
+            }
+        }
+
+        /*
+         * SQL queries
+         * Get data to display
+         */
+        
+         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id','s.status','s.response_switch'))
+			->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.report_generated','spm.map_id', "spm.evaluation_status","qc_date", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')",'spm.shipment_score'))
+			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
+			->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name','p.participant_id'))
+			->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+			->where("pmm.dm_id=?", $this->_session->dm_id)
+			->where("s.scheme_type=?", $parameters['scheme']);
+        //->order('s.shipment_date')
+        //->order('spm.participant_id')
+       // error_log($this->_session->dm_id);
+        //echo $sQuery;die;
+        if (isset($sWhere) && $sWhere != "") {
+            $sQuery = $sQuery->where($sWhere);
+        }
 	
+        if (isset($sOrder) && $sOrder != "") {
+            $sQuery = $sQuery->order($sOrder);
+        }
+
+        if (isset($sLimit) && isset($sOffset)) {
+            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        }
+        
+        $rResult = $this->getAdapter()->fetchAll($sQuery);
+
+        /* Data set length after filtering */
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
+        $iFilteredTotal = count($aResultFilterTotal);
+
+        /* Total data set length */
+         $tQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id','s.status','s.response_switch'))
+			->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.report_generated','spm.map_id', "spm.evaluation_status","qc_date", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')",'spm.shipment_score'))
+			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
+			->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name','p.participant_id'))
+			->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+			->where("pmm.dm_id=?", $this->_session->dm_id)
+			->where("s.scheme_type=?", $parameters['scheme']);
+        $aResultTotal = $this->getAdapter()->fetchAll($tQuery);
+        $iTotal = count($aResultTotal);
+
+        /*
+         * Output
+         */
+        $output = array(
+            "sEcho" => intval($parameters['sEcho']),
+            "iTotalRecords" => $iTotal,
+            "iTotalDisplayRecords" => $iFilteredTotal,
+            "aaData" => array()
+        );
+        $general = new Pt_Commons_General();
+        foreach ($rResult as $aRow) {
+	    $row = array();
+            $row[] = $general->humanDateFormat($aRow['shipment_date']);
+            $row[] = $aRow['shipment_code'];
+            $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
+            $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);
+            $row[] = $aRow['shipment_score'];
+            $output['aaData'][] = $row;
+        }
+
+        echo json_encode($output);
+    }
 }

@@ -14,6 +14,7 @@ class ParticipantController extends Zend_Controller_Action {
                 ->addActionContext('summary-report', 'html')
                 ->addActionContext('shipment-report', 'html')
                 ->addActionContext('add-qc', 'html')
+                ->addActionContext('scheme', 'html')
                 ->initContext();
     }
 
@@ -72,11 +73,16 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function schemeAction() {
-        $this->_helper->layout()->activeMenu = 'my-account';
-        $this->_helper->layout()->activeSubMenu = 'scheme';
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+	$authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dbUsersProfile = new Application_Service_Participants();
-        $this->view->participantSchemes = $dbUsersProfile->getParticipantSchemes($authNameSpace->dm_id);
+	 if ($this->getRequest()->isPost()) {
+            $parameters = $this->_getAllParams();
+            $dbUsersProfile->getParticipantSchemesBySchemeId($parameters);
+        }else{
+	    $this->_helper->layout()->activeMenu = 'my-account';
+	    $this->_helper->layout()->activeSubMenu = 'scheme';
+	    $this->view->participantSchemes = $dbUsersProfile->getParticipantSchemes($authNameSpace->dm_id);
+	}
     }
 
     public function passwordAction() {

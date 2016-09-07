@@ -8,7 +8,111 @@ $dtFormat=  $genderHelper->getDateFormat();
     <h1> Dashboard </h1>
 </section>
 <section class="content">
-    
+                <div class="box">
+		    <div class="box-body">
+			    <h3 class="txt text-info">Dried Tube Specimen - HIV Viral Load</h3>
+			    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsViralLoadTable">
+				    <thead>
+					<tr>
+					    <th>Shipment Date</th>
+					    <th>Shipment Code</th>
+					    <th>Participant</th>
+					    <th>Response Date</th>
+					    <th>Performance</th>
+					</tr>
+				    </thead>
+				    <tbody>
+					<tr>
+					  <td colspan="5" class="dataTables_empty">Loading data from server</td>
+					</tr>
+				    </tbody>
+			    </table>
+		    </div>
+		</div>
+		<div class="box">
+                    <div class="box-body">
+			    <h3 class="txt text-info">Dried Tube Specimen - Tuberculosis</h3>
+			    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsTuberculosisTable">
+				    <thead>
+					<tr>
+					    <th>Shipment Date</th>
+					    <th>Shipment Code</th>
+					    <th>Participant</th>
+					    <th>Response Date</th>
+					    <th>Performance</th>
+					</tr>
+				    </thead>
+				    <tbody>
+					<tr>
+					  <td colspan="5" class="dataTables_empty">Loading data from server</td>
+					</tr>
+				    </tbody>
+			    </table>
+		    </div>
+		</div>
+		<div class="box">
+                    <div class="box-body">
+			    <h3 class="txt text-info">Dried Blood Spot - Early Infant Diagnosis</h3>
+			    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="earlyInfantDiagnosisTable">
+				    <thead>
+					<tr>
+					    <th>Shipment Date</th>
+					    <th>Shipment Code</th>
+					    <th>Participant</th>
+					    <th>Response Date</th>
+					    <th>Performance</th>
+					</tr>
+				    </thead>
+				    <tbody>
+					<tr>
+					  <td colspan="5" class="dataTables_empty">Loading data from server</td>
+					</tr>
+				    </tbody>
+			    </table>
+		    </div>
+		</div>
+		<div class="box">
+                    <div class="box-body">
+			    <h3 class="txt text-info">Dried Tube Specimen - HIV Serology</h3>
+			    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsHIVSerologyTable">
+				    <thead>
+					<tr>
+					    <th>Shipment Date</th>
+					    <th>Shipment Code</th>
+					    <th>Participant</th>
+					    <th>Response Date</th>
+					    <th>Performance</th>
+					</tr>
+				    </thead>
+				    <tbody>
+					<tr>
+					  <td colspan="5" class="dataTables_empty">Loading data from server</td>
+					</tr>
+				    </tbody>
+			    </table>
+		    </div>
+		</div>
+		<div class="box">
+                    <div class="box-body">
+			    <h3 class="txt text-info">Dried Blood Spot - HIV Serology</h3>
+			    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dbsHIVSerologyTable">
+				    <thead>
+					<tr>
+					    <th>Shipment Date</th>
+					    <th>Shipment Code</th>
+					    <th>Participant</th>
+					    <th>Response Date</th>
+					    <th>Performance</th>
+					</tr>
+				    </thead>
+				    <tbody>
+					<tr>
+					  <td colspan="5" class="dataTables_empty">Loading data from server</td>
+					</tr>
+				    </tbody>
+			    </table>
+		    </div>
+		</div>
 		<div class="box">
                 <div class="box-body">
 					<h3 class="txt text-info">Schemes Overview</h3>
@@ -82,9 +186,6 @@ $dtFormat=  $genderHelper->getDateFormat();
 				</div>
 			</div>
 		
-		
-		
-		
 			
 </section>
 
@@ -106,6 +207,194 @@ $dtFormat=  $genderHelper->getDateFormat();
 </div>
 
 <script>
+        var s1Table = null;
+	var s2Table = null;
+	var s3Table = null;
+	var s4Table = null;
+	var s5Table = null;
+	function dtsViralLoadSchemes(){
+		s1Table = $('#dtsViralLoadTable').dataTable({
+			"oLanguage": {
+			    "sLengthMenu": "_MENU_ records per page"
+			},
+			"bJQueryUI": false,
+			"bAutoWidth": false,
+			"bInfo": true,
+			"bScrollCollapse": true,
+			"sPaginationType": "full_numbers",
+			"bRetrieve": true,                        
+			"aoColumns": [
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"}
+			],
+			"aaSorting": [[ 0, "desc" ]],
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
+			"fnServerData": function ( sSource, aoData, fnCallback ) {
+			    aoData.push({"name": "scheme", "value": "vl"});
+			    $.ajax({
+				"dataType": 'json',
+				"type": "POST",
+				"url": sSource,
+				"data": aoData,
+				"success": fnCallback
+			    });
+			}
+		});
+	}
+	
+	function dtsTuberculosisSchemes(){
+		s2Table = $('#dtsTuberculosisTable').dataTable({
+			"oLanguage": {
+			    "sLengthMenu": "_MENU_ records per page"
+			},
+			"bJQueryUI": false,
+			"bAutoWidth": false,
+			"bInfo": true,
+			"bScrollCollapse": true,
+			"sPaginationType": "full_numbers",
+			"bRetrieve": true,                        
+			"aoColumns": [
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"}
+			],
+			"aaSorting": [[ 0, "desc" ]],
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
+			"fnServerData": function ( sSource, aoData, fnCallback ) {
+			    aoData.push({"name": "scheme", "value": "tb"});
+			    $.ajax({
+				"dataType": 'json',
+				"type": "POST",
+				"url": sSource,
+				"data": aoData,
+				"success": fnCallback
+			    });
+			}
+		});
+	}
+	
+	function dbsEarlyInfantDiagnosisSchemes(){
+		s3Table = $('#earlyInfantDiagnosisTable').dataTable({
+			"oLanguage": {
+			    "sLengthMenu": "_MENU_ records per page"
+			},
+			"bJQueryUI": false,
+			"bAutoWidth": false,
+			"bInfo": true,
+			"bScrollCollapse": true,
+			"sPaginationType": "full_numbers",
+			"bRetrieve": true,                        
+			"aoColumns": [
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"}
+			],
+			"aaSorting": [[ 0, "desc" ]],
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
+			"fnServerData": function ( sSource, aoData, fnCallback ) {
+			    aoData.push({"name": "scheme", "value": "eid"});
+			    $.ajax({
+				"dataType": 'json',
+				"type": "POST",
+				"url": sSource,
+				"data": aoData,
+				"success": fnCallback
+			    });
+			}
+		});
+	}
+	
+	function dtsHIVSerologySchemes(){
+		s4Table = $('#dtsHIVSerologyTable').dataTable({
+			"oLanguage": {
+			    "sLengthMenu": "_MENU_ records per page"
+			},
+			"bJQueryUI": false,
+			"bAutoWidth": false,
+			"bInfo": true,
+			"bScrollCollapse": true,
+			"sPaginationType": "full_numbers",
+			"bRetrieve": true,                        
+			"aoColumns": [
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"}
+			],
+			"aaSorting": [[ 0, "desc" ]],
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
+			"fnServerData": function ( sSource, aoData, fnCallback ) {
+			    aoData.push({"name": "scheme", "value": "dts"});
+			    $.ajax({
+				"dataType": 'json',
+				"type": "POST",
+				"url": sSource,
+				"data": aoData,
+				"success": fnCallback
+			    });
+			}
+		});
+	}
+	
+	function dbsHIVSerologySchemes(){
+		s4Table = $('#dbsHIVSerologyTable').dataTable({
+			"oLanguage": {
+			    "sLengthMenu": "_MENU_ records per page"
+			},
+			"bJQueryUI": false,
+			"bAutoWidth": false,
+			"bInfo": true,
+			"bScrollCollapse": true,
+			"sPaginationType": "full_numbers",
+			"bRetrieve": true,                        
+			"aoColumns": [
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"},
+			    {"sClass":"center"}
+			],
+			"aaSorting": [[ 0, "desc" ]],
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
+			"fnServerData": function ( sSource, aoData, fnCallback ) {
+			    aoData.push({"name": "scheme", "value": "dbs"});
+			    $.ajax({
+				"dataType": 'json',
+				"type": "POST",
+				"url": sSource,
+				"data": aoData,
+				"success": fnCallback
+			    });
+			}
+		});
+	}
+	
+	$(document).ready(function(){
+	    dtsViralLoadSchemes();
+	    dtsTuberculosisSchemes();
+	    dbsEarlyInfantDiagnosisSchemes();
+	    dtsHIVSerologySchemes();
+	    dbsHIVSerologySchemes();
+	});
+	
 	var oTable = null;
 	function overviewSchemes(){
 		oTable = $('#overviewTable').dataTable({
@@ -145,8 +434,6 @@ $dtFormat=  $genderHelper->getDateFormat();
 	$(document).ready(function(){
 		overviewSchemes();
 	});
-	
-	
 	
     var schemeTable = null;
 	var selectedQc=[];
@@ -260,8 +547,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 		if (participantMapId!="" && qcDate!="") {
             $.post("<?php echo $this->url(array('module'=>'default','controller' =>'participant', 'action' => 'add-qc')); ?>", { mapId: participantMapId,qcDate:qcDate,format: "html" },
 			function(data){
-			if(data>0)
-			{
+			if(data>0){
 				schemeTable.fnDraw();
 				$("#countChecksPending").text("0");
 				selectedQc = '';
