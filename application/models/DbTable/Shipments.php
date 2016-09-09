@@ -1756,8 +1756,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 			->where("pmm.dm_id=?", $this->_session->dm_id)
 			->where("s.scheme_type=?", $parameters['scheme']);
         $aResultTotal = $this->getAdapter()->fetchAll($tQuery);
+	$shipmentArray = array();
+	foreach($aResultTotal as $total){
+	    if(!in_array($total['shipment_code'],$shipmentArray)){
+		$shipmentArray[] = $total['shipment_code'];
+	    }
+	}
         $iTotal = count($aResultTotal);
-
+        
         /*
          * Output
          */
@@ -1777,7 +1783,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $row[] = $aRow['shipment_score'];
             $output['aaData'][] = $row;
         }
-
+        $output['shipmentArray'] = $shipmentArray;
         echo json_encode($output);
     }
 }
