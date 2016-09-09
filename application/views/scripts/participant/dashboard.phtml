@@ -250,16 +250,16 @@ $dtFormat=  $genderHelper->getDateFormat();
 				    $(nRow).css("background-color","#ecf1ef");
 				}else{
 				    sOneLastShipmentRowColor = [];
-				    sOneLastShipmentRowColor.push("#fee0c6");
+				    sOneLastShipmentRowColor.push("#fffff2");
 				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fee0c6");
+				    $(nRow).css("background-color","#fffff2");
 				}
 			    }else{
 				if($.inArray("#ecf1ef", sOneLastShipmentRowColor) == -1){
 				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fee0c6");
+				    $(nRow).css("background-color","#fffff2");
 				}
-				if($.inArray("#fee0c6", sOneLastShipmentRowColor) == -1){
+				if($.inArray("#fffff2", sOneLastShipmentRowColor) == -1){
 				    $(nRow).attr("class","");
 				    $(nRow).css("background-color","#ecf1ef");
 				}
@@ -318,16 +318,16 @@ $dtFormat=  $genderHelper->getDateFormat();
 				    $(nRow).css("background-color","#ecf1ef");
 				}else{
 				    sTwoLastShipmentRowColor = [];
-				    sTwoLastShipmentRowColor.push("#fee0c6");
+				    sTwoLastShipmentRowColor.push("#fffff2");
 				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fee0c6");
+				    $(nRow).css("background-color","#fffff2");
 				}
 			    }else{
 				if($.inArray("#ecf1ef", sTwoLastShipmentRowColor) == -1){
 				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fee0c6");
+				    $(nRow).css("background-color","#fffff2");
 				}
-				if($.inArray("#fee0c6", sTwoLastShipmentRowColor) == -1){
+				if($.inArray("#fffff2", sTwoLastShipmentRowColor) == -1){
 				    $(nRow).attr("class","");
 				    $(nRow).css("background-color","#ecf1ef");
 				}
@@ -381,16 +381,16 @@ $dtFormat=  $genderHelper->getDateFormat();
 				    $(nRow).css("background-color","#ecf1ef");
 				}else{
 				    sThreeLastShipmentRowColor = [];
-				    sThreeLastShipmentRowColor.push("#fee0c6");
+				    sThreeLastShipmentRowColor.push("#fffff2");
 				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fee0c6");
+				    $(nRow).css("background-color","#fffff2");
 				}
 			    }else{
 				if($.inArray("#ecf1ef", sThreeLastShipmentRowColor) == -1){
 				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fee0c6");
+				    $(nRow).css("background-color","#fffff2");
 				}
-				if($.inArray("#fee0c6", sThreeLastShipmentRowColor) == -1){
+				if($.inArray("#fffff2", sThreeLastShipmentRowColor) == -1){
 				    $(nRow).attr("class","");
 				    $(nRow).css("background-color","#ecf1ef");
 				}
@@ -444,16 +444,16 @@ $dtFormat=  $genderHelper->getDateFormat();
 				    $(nRow).css("background-color","#ecf1ef");
 				}else{
 				    sFourLastShipmentRowColor = [];
-				    sFourLastShipmentRowColor.push("#fee0c6");
+				    sFourLastShipmentRowColor.push("#fffff2");
 				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fee0c6");
+				    $(nRow).css("background-color","#fffff2");
 				}
 			    }else{
 				if($.inArray("#ecf1ef", sFourLastShipmentRowColor) == -1){
 				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fee0c6");
+				    $(nRow).css("background-color","#fffff2");
 				}
-				if($.inArray("#fee0c6", sFourLastShipmentRowColor) == -1){
+				if($.inArray("#fffff2", sFourLastShipmentRowColor) == -1){
 				    $(nRow).attr("class","");
 				    $(nRow).css("background-color","#ecf1ef");
 				}
@@ -507,16 +507,16 @@ $dtFormat=  $genderHelper->getDateFormat();
 				    $(nRow).css("background-color","#ecf1ef");
 				}else{
 				    sFiveLastShipmentRowColor = [];
-				    sFiveLastShipmentRowColor.push("#fee0c6");
+				    sFiveLastShipmentRowColor.push("#fffff2");
 				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fee0c6");
+				    $(nRow).css("background-color","#fffff2");
 				}
 			    }else{
 				if($.inArray("#ecf1ef", sFiveLastShipmentRowColor) == -1){
 				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fee0c6");
+				    $(nRow).css("background-color","#fffff2");
 				}
-				if($.inArray("#fee0c6", sFiveLastShipmentRowColor) == -1){
+				if($.inArray("#fffff2", sFiveLastShipmentRowColor) == -1){
 				    $(nRow).attr("class","");
 				    $(nRow).css("background-color","#ecf1ef");
 				}
@@ -714,14 +714,11 @@ $dtFormat=  $genderHelper->getDateFormat();
         
     }
 	
-	function checkQcStatus() {
+    function checkQcStatus() {
         if(selectedQc.length==0){
-			alert("Please select at least one shipment to proceed with QC");
-		}else{
-			showQcForm();
-		}
+	    alert("Please select at least one shipment to proceed with QC");
+	}else{
+	    showQcForm();
+	}
     }	
-	
-	
-	
 </script>
