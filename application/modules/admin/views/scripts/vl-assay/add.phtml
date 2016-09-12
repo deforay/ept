@@ -1,0 +1,57 @@
+<div class="well">
+    <form name="addVlAssayForm" id="addVlAssayForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "vl-assay", "action" => "add"),'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+        <fieldset>
+            <legend>Add New Vl Assay</legend>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Name <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="name" name="name"
+                                             class="isRequired form-control" title="Please enter the name here"
+                                             placeholder="Please enter the name here" onblur="checkDuplicate('r_vl_assay','name','name',null, 'The name that you entered already exist. Please try something else.');"/></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Short Name <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="shortName" name="shortName"
+                                             class="isRequired form-control" title="Please enter the short name here"
+                                             placeholder="Please enter the short name here" onblur="checkDuplicate('r_vl_assay','short_name','shortName',null, 'The short name that you entered already exist. Please try something else.');"/></div>
+            </div>
+            <br>
+
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/vl-assay';"
+                       tabindex="8" value="Cancel"/>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+    var duplicated = false;
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+	objValue=document.getElementById(obj).value;
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: objValue, fnct: fnct, format: "html" },
+            function (data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+		    $("#"+obj).val("");
+		    $("#"+obj).focus();
+                }
+                else {
+                    duplicated = false;
+                }
+		return duplicated;
+            });
+    }
+
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'addVlAssayForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('addVlAssayForm').submit();
+        }
+    }
+</script>

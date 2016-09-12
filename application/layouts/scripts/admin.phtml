@@ -80,7 +80,6 @@
 		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications'),'default',true); ?>">Publications</a></li>
 		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'partners'),'default',true); ?>">Partners</a></li>
 		<li><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'contact-us'),'default',true); ?>">Contact Messages</a></li>
-                
               </ul>
             </li>
             <li  <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manageMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
@@ -115,8 +114,7 @@
 		<?php } ?>
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments'),'default',true); ?>">Shipments Report</a></li>		
                 <li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments','action'=>'vl-sample-analysis'),'default',true); ?>">Vl Sample Analysis</a></li>
-				<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments','action'=>'vl-assay-distribution'),'default',true); ?>">Vl Assay Distribution</a></li>
-                
+		<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'shipments','action'=>'vl-assay-distribution'),'default',true); ?>">Vl Assay Distribution</a></li>
               </ul>
             </li>
             

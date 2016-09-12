@@ -5,7 +5,7 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label">Content <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><textarea type="text" id="content" name="content"
+                <div class="col-lg-5"><textarea id="content" name="content"
                                              class="isRequired form-control" title="Please enter the content here"
                                              placeholder="Please enter the content here" onblur="checkDuplicate('publications', 'content','content','<?php echo "publication_id##" . $this->publication['publication_id']; ?>', 'The content that you entered already exist. Please try something else.');"><?php echo $this->publication['content']; ?></textarea></div>
             </div>
