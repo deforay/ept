@@ -714,11 +714,14 @@ $dtFormat=  $genderHelper->getDateFormat();
         
     }
 	
-    function checkQcStatus() {
+	function checkQcStatus() {
         if(selectedQc.length==0){
-	    alert("Please select at least one shipment to proceed with QC");
-	}else{
-	    showQcForm();
-	}
+			alert("Please select at least one shipment to proceed with QC");
+		}else{
+			showQcForm();
+		}
     }	
+	
+	
+	
 </script>

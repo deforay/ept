@@ -18,6 +18,14 @@ class Application_Model_DbTable_Publications extends Zend_Db_Table_Abstract
                       );
         $publicationId = $this->insert($data);
         if($publicationId >0){
+	    $sortOrder = 1;
+	    $publicationQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('p.sort_order'))
+                                     ->order("p.sort_order DESC");
+	    $publicationResult = $this->getAdapter()->fetchRow($publicationQuery);
+	    if($publicationResult){
+		$sortOrder = $publicationResult['sort_order']+1;
+	    }
+	    $this->update(array('sort_order'=>$sortOrder),"publication_id = ".$publicationId);
             if(isset($_FILES['document']['name']) && trim($_FILES['document']['name'])!= ''){
                 if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'document') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'document')) {
                     mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'document');
@@ -38,8 +46,8 @@ class Application_Model_DbTable_Publications extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('content', 'file_name', 'DATE_FORMAT(added_on,"%d-%b-%Y")','status');
-        $orderColumns = array('content', 'file_name', 'added_on','status');
+        $aColumns = array('content', 'file_name','sort_order','DATE_FORMAT(added_on,"%d-%b-%Y")','status');
+        $orderColumns = array('content', 'file_name','sort_order','added_on','status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -167,6 +175,7 @@ class Application_Model_DbTable_Publications extends Zend_Db_Table_Abstract
             $row = array();
             $row[] = $aRow['content'];
             $row[] = $file;
+	    $row[] = $aRow['sort_order'];
             $row[] = $general->humanDateFormat($addedDateTime[0]);
             $row[] = ucwords($aRow['status']);
             $row[] = '<a href="/admin/publications/edit/id/' . $aRow['publication_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
@@ -184,7 +193,7 @@ class Application_Model_DbTable_Publications extends Zend_Db_Table_Abstract
     public function updatePublicationDetails($params){
         $publicationId = 0;
         if(isset($params['publicationId']) && trim($params['publicationId'])!= '') {
-            $publicationId = $params['publicationId'];
+            $sortOrderResult = $publicationId = $params['publicationId'];
             //Remove deleted img.
             if(isset($params['removedFile']) && trim($params['removedFile'])!= ''){
                 if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'document'. DIRECTORY_SEPARATOR . $params['removedFile'])) {
@@ -198,7 +207,50 @@ class Application_Model_DbTable_Publications extends Zend_Db_Table_Abstract
                           'status' =>$params['status']
                           );
             $this->update($data,"publication_id = ".$publicationId);
-        
+            if(isset($params['sortOrder']) && trim($params['sortOrder'])!= ''){
+		$publicationOrderQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('p.publication_id','p.sort_order'))
+                                              ->order("p.sort_order ASC");
+	        $publicationOrderResult = $this->getAdapter()->fetchAll($publicationOrderQuery);
+		//Get Min/Max publication order
+		$minMaxOrderQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array(new Zend_Db_Expr('min(sort_order) as minSortOrder'),new Zend_Db_Expr('max(sort_order) as maxSortOrder')));
+	        $minMaxOrderResult = $this->getAdapter()->fetchRow($minMaxOrderQuery);
+		if($params['sortOrder'] > $minMaxOrderResult['maxSortOrder']){
+		    $sortOrderResult = -1;
+		}else{
+		    $sql = $this->select()->where("publication_id = ? ",$publicationId);
+	            $sqlResult = $this->fetchRow($sql);
+		    if($params['sortOrder'] == $sqlResult['sort_order']){
+			$sortOrderResult = 1;
+		    }elseif($params['sortOrder'] < $sqlResult['sort_order']){
+			$b = 1;
+			foreach($publicationOrderResult as $pubOrder){
+			   $bSOrder = $b+1;
+			   if($pubOrder['sort_order'] >= $params['sortOrder'] && $pubOrder['sort_order'] <= $sqlResult['sort_order']) {
+				if($pubOrder['publication_id'] == $publicationId){
+				    $sortOrderResult = $this->update(array('sort_order'=>$params['sortOrder']),'publication_id = '.$publicationId);
+				}else{
+				    $sortOrderResult = $this->update(array('sort_order'=>$bSOrder),'publication_id = '.$pubOrder['publication_id']);
+				}
+			    }
+			   $b++; 
+			}
+		    }elseif($params['sortOrder'] > $sqlResult['sort_order']){
+			$b = 1;
+			foreach($publicationOrderResult as $pubOrder){
+			   $bSOrder = $b-1;
+			   if($pubOrder['sort_order'] >= $sqlResult['sort_order'] && $pubOrder['sort_order'] <= $params['sortOrder']) {
+				if($pubOrder['publication_id'] == $publicationId){
+				    $sortOrderResult = $this->update(array('sort_order'=>$params['sortOrder']),'publication_id = '.$publicationId);
+				}else{
+				    $sortOrderResult = $this->update(array('sort_order'=>$bSOrder),'publication_id = '.$pubOrder['publication_id']);
+				}
+			    }
+			   $b++; 
+			}
+		    }
+		}
+	    }
+	    
             if(isset($_FILES['document']['name']) && trim($_FILES['document']['name'])!= ''){
                 if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'document') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'document')) {
                     mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'document');
@@ -211,11 +263,11 @@ class Application_Model_DbTable_Publications extends Zend_Db_Table_Abstract
                 }
             }
         }
-      return $publicationId;
+      return $sortOrderResult;
     }
     
     public function fetchAllActivePublications(){
-	$sql = $this->select()->where("status = ? ","active")->order("added_on DESC");
+	$sql = $this->select()->where("status = ? ","active")->order("sort_order ASC");
 	return $this->fetchAll($sql);
     }
 }

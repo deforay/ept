@@ -10,12 +10,19 @@
                                              placeholder="Please enter the partner name here" onblur="checkDuplicate('partners', 'partner_name','partnerName','<?php echo "partner_id##" . $this->partner['partner_id']; ?>', 'The name that you entered already exist. Please try something else.');"><?php echo $this->partner['partner_name']; ?></textarea></div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Link <br>ex.)https://ept.vlsmartconnect.com/</label>
+                <label class="col-lg-3 control-label">Link <br>eg: https://ept.vlsmartconnect.com/</label>
 
                 <div class="col-lg-5"><input type="text" id="link" name="link"
                                              class="form-control" title="Please enter the link here"
                                              placeholder="Please enter the link here" value="<?php echo $this->partner['link']; ?>"/>
                 </div>
+            </div>
+	    <div class="form-group">
+                <label class="col-lg-3 control-label">Sort Order <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="sortOrder" name="sortOrder"
+                                             class="isRequired isNumeric form-control" title="Please enter the sort order"
+                                             placeholder="Please enter the sort order here" value="<?php echo $this->partner['sort_order']; ?>"/></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Status <span class="mandatory">*</span></label>

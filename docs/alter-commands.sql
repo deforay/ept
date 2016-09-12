@@ -2245,3 +2245,7 @@ INSERT INTO `r_results` (`result_id`, `result_name`) VALUES ('4', 'Not Evaluated
 --Ilahir Aug 25 2016
 ALTER TABLE  `data_manager` ADD  `view_only_access` VARCHAR( 45 ) NULL DEFAULT NULL AFTER  `enable_choosing_mode_of_receipt` ;
 
+--Pal 12th-Sep-2016
+ALTER TABLE `publications` ADD `sort_order` INT(11) NULL DEFAULT NULL AFTER `file_name`;
+
+ALTER TABLE `partners` ADD `sort_order` INT(11) NULL DEFAULT NULL AFTER `link`;

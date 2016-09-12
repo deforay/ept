@@ -24,6 +24,13 @@
                 <div class="col-lg-5 choose-file" style="<?php echo $display; ?>"><input type="file" id="document" name="document"
                                              class="form-control <?php echo $isRequired; ?>" title="Please select the file"/></div>
             </div>
+	    <div class="form-group">
+                <label class="col-lg-3 control-label">Sort Order <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="sortOrder" name="sortOrder"
+                                             class="isRequired isNumeric form-control" title="Please enter the sort order"
+                                             placeholder="Please enter the sort order here" value="<?php echo $this->publication['sort_order']; ?>"/></div>
+            </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Status <span class="mandatory">*</span></label>
 
