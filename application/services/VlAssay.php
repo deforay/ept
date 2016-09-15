@@ -21,4 +21,44 @@ class Application_Service_VlAssay {
         $vlAssayDb = new Application_Model_DbTable_VlAssay();
 	return $vlAssayDb->updateVlAssayDetails($params);
     }
+    
+    public function addEidExtractionAssay($params){
+        $eidExtractionAssayDb = new Application_Model_DbTable_EidExtractionAssay();
+	return $eidExtractionAssayDb->addEidExtractionAssayDetails($params);
+    }
+    
+    public function addEidDetectionAssay($params){
+        $eidDetectionAssayDb = new Application_Model_DbTable_EidDetectionAssay();
+	return $eidDetectionAssayDb->addEidDetectionAssayDetails($params);
+    }
+    
+    public function getAllEidExtractionAssay($parameters){
+        $eidExtractionAssayDb = new Application_Model_DbTable_EidExtractionAssay();
+	return $eidExtractionAssayDb->fetchAllEidExtractionAssay($parameters);
+    }
+    
+    public function getAllEidDetectionAssay($parameters){
+        $eidDetectionAssayDb = new Application_Model_DbTable_EidDetectionAssay();
+	return $eidDetectionAssayDb->fetchAllEidDetectionAssay($parameters);
+    }
+    
+    public function getEidExtractionAssay($id){
+        $eidExtractionAssayDb = new Application_Model_DbTable_EidExtractionAssay();
+	return $eidExtractionAssayDb->fetchEidExtractionAssay($id);
+    }
+    
+    public function getEidDetectionAssay($id){
+        $eidDetectionAssayDb = new Application_Model_DbTable_EidDetectionAssay();
+	return $eidDetectionAssayDb->fetchEidDetectionAssay($id);
+    }
+    
+    public function changeEidExtractionNameStatus($params){
+        $eidExtractionAssayDb = new Application_Model_DbTable_EidExtractionAssay();
+	return $eidExtractionAssayDb->updateEidExtractionNameStatus($params);
+    }
+    
+    public function changeEidDetectionNameStatus($params){
+        $eidDetectionAssayDb = new Application_Model_DbTable_EidDetectionAssay();
+	return $eidDetectionAssayDb->updateEidDetectionNameStatus($params);
+    }
 }

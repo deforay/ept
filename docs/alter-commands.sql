@@ -2249,3 +2249,8 @@ ALTER TABLE  `data_manager` ADD  `view_only_access` VARCHAR( 45 ) NULL DEFAULT N
 ALTER TABLE `publications` ADD `sort_order` INT(11) NULL DEFAULT NULL AFTER `file_name`;
 
 ALTER TABLE `partners` ADD `sort_order` INT(11) NULL DEFAULT NULL AFTER `link`;
+
+--Pal 15th-Sep-2016
+ALTER TABLE `r_eid_detection_assay` ADD `status` VARCHAR(45) NOT NULL DEFAULT 'active' AFTER `name`;
+
+ALTER TABLE `r_eid_extraction_assay` ADD `status` VARCHAR(45) NOT NULL DEFAULT 'active' AFTER `name`;

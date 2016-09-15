@@ -1,0 +1,169 @@
+<style>
+    .tabContainer{
+        width: 100%;
+        margin: 0 auto;
+    }
+    
+    ul.tabs{
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+    ul.tabs li{
+        background: none;
+        color: #222;
+        display: inline-block;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+    
+    ul.tabs li.current{
+        background: #ededed;
+        color: #222;
+    }
+    
+    .tab-content{
+        display: none;
+        padding: 15px;
+    }
+    
+    .tab-content.current{
+        display: inherit;
+    }
+</style>
+<div class="tabContainer">
+	<ul class="tabs">
+	    <li class="tab-link <?php echo($this->source == "" || $this->source == "extraction") ? 'current':''; ?>" data-tab="tab-1">Eid Extraction Assay</li>
+	    <li class="tab-link <?php echo($this->source == "detection") ? 'current':''; ?>" data-tab="tab-2">Eid Detection Assay</li>
+	</ul>
+
+	<div id="tab-1" class="tab-content <?php echo($this->source == "" || $this->source == "extraction") ? 'current':''; ?>">
+	    <h4 style="width:100%;height:50px;border-bottom:1px solid #777;"><div style="font-size:22.5px;line-height:36px;color:#333;float:left;">List of All Eid Extraction Assay</div><div style="margin-top:10px;"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay','action' => 'add','source'=>'extraction'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-plus"></i>&nbsp;&nbsp;Add New Eid Assay</a></div></h4>
+            <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="eidExtractionAssayTable">
+                <thead>
+                <tr>
+                    <th style="width:80%;">Name</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="2" class="dataTables_empty">Loading data from server</td>
+                </tr>
+                </tbody>
+            </table>
+	</div>
+	<div id="tab-2" class="tab-content <?php echo($this->source == "detection") ? 'current':''; ?>">
+            <h4 style="width:100%;height:50px;border-bottom:1px solid #777;"><div style="font-size:22.5px;line-height:36px;color:#333;float:left;">List of All Eid Detection Assay</div><div style="margin-top:10px;"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay','action' => 'add','source'=>'detection'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-plus"></i>&nbsp;&nbsp;Add New Eid Assay</a></div></h4>
+            <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="eidDetectionAssayTable">
+                <thead>
+                <tr>
+                    <th style="width:80%;">Name</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="2" class="dataTables_empty">Loading data from server</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+</div>
+<script charset="utf-8">
+    $(document).ready(function(){
+	$('ul.tabs li').click(function(){
+	    var tab_id = $(this).attr('data-tab');
+    
+	    $('ul.tabs li').removeClass('current');
+	    $('.tab-content').removeClass('current');
+    
+	    $(this).addClass('current');
+	    $("#"+tab_id).addClass('current');
+	})
+    });
+
+  /* Table initialisation */
+    var exTable = null;
+    var dtTable = null;
+    $(document).ready(function() {
+        exTable = $('#eidExtractionAssayTable').dataTable( {
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [
+                {"sClass":"center"},
+                {"sClass":"center"}
+            ],
+            "aaSorting": [[ 0, "ASC" ]],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'index', 'format' => 'html')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                aoData.push({"name": "fromSource", "value": "extraction"});
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+        
+        dtTable = $('#eidDetectionAssayTable').dataTable( {
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [
+                {"sClass":"center"},
+                {"sClass":"center"}
+            ],
+            "aaSorting": [[ 0, "ASC" ]],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'index', 'format' => 'html')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                aoData.push({"name": "fromSource", "value": "detection"});
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+
+    } );
+    
+    function changeNameStatus(formSource,eidId,switchStatus){
+	if (window.confirm("Are you sure you wish to change this assay status to "+switchStatus+" ?")) {
+            $.blockUI();
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'change-status')); ?>", {formSource:formSource,id: eidId,switchStatus: switchStatus, format: "html"},
+            function (data) {
+               if(data == 0){
+		 alert("Status not updated..Please try again once.");
+	       }
+	       if(formSource == "extraction"){
+	          exTable.fnDraw();
+	       }else if(formSource == "detection"){
+		 dtTable.fnDraw();
+	       }
+	       $.unblockUI();
+            });
+        }
+    }
+</script>

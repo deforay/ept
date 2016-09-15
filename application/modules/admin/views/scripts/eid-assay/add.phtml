@@ -1,0 +1,77 @@
+<div class="well">
+    <form name="addEidVlAssayForm" id="addEidVlAssayForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "eid-assay", "action" => "add"),'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+        <fieldset>
+            <legend>Add New Eid Assay</legend>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Choose Category <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5">
+                    <select id="category" name="category" class="isRequired form-control" title="Please select category" onchange="getCategoryValue(this.value);">
+                        <option value=""> -- Select -- </option>
+                        <option value="extraction" <?php echo ($this->source == "extraction") ?"selected='selected'":""; ?>>Extraction</option>
+                        <option value="detection" <?php echo ($this->source == "detection") ?"selected='selected'":""; ?>>Detection</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Name <span class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="name" name="name"
+                                             class="isRequired form-control" title="Please enter the name here"
+                                             placeholder="Please enter the name here"/></div>
+            </div>
+            <br>
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/eid-assay';"
+                       tabindex="8" value="Cancel"/>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        getCategoryValue('<?php echo $this->source; ?>');
+    });
+    
+    var duplicated = false;
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+	objValue=document.getElementById(obj).value;
+	if($.trim(objValue)!= '') {
+	    $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: objValue, fnct: fnct, format: "html" },
+		function (data) {
+		    if (data > 0) {
+			alert(msg, "err");
+			duplicated = true;
+			$("#"+obj).val("");
+			$("#"+obj).focus();
+		    }
+		    else {
+			duplicated = false;
+		    }
+		    return duplicated;
+		});
+	}
+    }
+
+    function getCategoryValue(Val){
+        $("#name").val("");
+        if(Val == "extraction"){
+            $("#name").attr("onblur","checkDuplicate('r_eid_extraction_assay','name','name',null, 'The name that you entered already exist. Please try something else.')");
+        }else if(Val == "detection"){
+            $("#name").attr("onblur","checkDuplicate('r_eid_detection_assay','name','name',null, 'The name that you entered already exist. Please try something else.')");
+        }else{
+           $("#name").removeAttr("onblur");
+        }
+    }
+    
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'addEidVlAssayForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('addEidVlAssayForm').submit();
+        }
+    }
+</script>

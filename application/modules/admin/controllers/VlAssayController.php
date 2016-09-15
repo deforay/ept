@@ -1,7 +1,6 @@
 <?php
 
-class Admin_VlAssayController extends Zend_Controller_Action
-{
+class Admin_VlAssayController extends Zend_Controller_Action{
 
     public function init(){
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
