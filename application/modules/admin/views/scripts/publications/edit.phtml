@@ -64,19 +64,21 @@
     var duplicated = false;
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
 	objValue=document.getElementById(obj).value;
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: objValue, fnct: fnct, format: "html" },
-            function (data) {
-                if (data > 0) {
-                    alert(msg, "err");
-                    duplicated = true;
-                    $("#"+obj).val("");
-		    $("#"+obj).focus();
-                }
-                else {
-                    duplicated = false;
-                }
-		return duplicated;
-            });
+	if($.trim(objValue)!= '') {
+	    $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: objValue, fnct: fnct, format: "html" },
+		function (data) {
+		    if (data > 0) {
+			alert(msg, "err");
+			duplicated = true;
+			$("#"+obj).val("");
+			$("#"+obj).focus();
+		    }
+		    else {
+			duplicated = false;
+		    }
+		    return duplicated;
+		});
+	}
     }
 
     function validateNow() {
