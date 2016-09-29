@@ -394,6 +394,7 @@ class Application_Service_Schemes {
             if (!isset($sampleWise[$vlAssayId])) {
                 continue;
             }
+            
             foreach ($sampleWise[$vlAssayId] as $sample => $reportedVl) {
 
                 if ($reportedVl != "" && $reportedVl != null && count($reportedVl) > 7) {
