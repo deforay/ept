@@ -238,6 +238,7 @@ $count++;  ?>
 				<li>Viral Load should be entered in log<sub>10</sub> copies/ml</li>
 				<li>Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).</li>
 				<li>For negative or undetectable result, please enter 0.00.</li>
+				<li>For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section</li>
 			</ul>
 		</td>
 	</tr>
@@ -253,7 +254,6 @@ $count++;  ?>
 foreach($this->allSamples as $sample){ 
 $count++;
 ?>
-
 
 	<tr class="light" >
 		<td>
