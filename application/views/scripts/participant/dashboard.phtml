@@ -2,6 +2,12 @@
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $genderHelper = $this->getHelper('DateFormat');
 $dtFormat=  $genderHelper->getDateFormat();
+$activeSchemes = array();
+if(isset($this->schemes) && count($this->schemes) >0 ){
+    foreach($this->schemes as $scheme){
+	$activeSchemes[] = $scheme['scheme_id'];
+    }
+}
 ?>
 <style>
     .green{
@@ -15,6 +21,9 @@ $dtFormat=  $genderHelper->getDateFormat();
     <h1> Dashboard </h1>
 </section>
 <section class="content">
+              <?php
+	      if(count($activeSchemes) > 0 && in_array('vl',$activeSchemes)) {
+	      ?>
                 <div class="box">
 		    <div class="box-body">
 			    <h3 class="txt text-info">Dried Tube Specimen - HIV Viral Load</h3>
@@ -36,6 +45,10 @@ $dtFormat=  $genderHelper->getDateFormat();
 			    </table>
 		    </div>
 		</div>
+		<?php } ?>
+		<?php
+	        if(count($activeSchemes) > 0 && in_array('tb',$activeSchemes)) {
+	        ?>
 		<div class="box">
                     <div class="box-body">
 			    <h3 class="txt text-info">Dried Tube Specimen - Tuberculosis</h3>
@@ -57,6 +70,10 @@ $dtFormat=  $genderHelper->getDateFormat();
 			    </table>
 		    </div>
 		</div>
+		<?php } ?>
+		<?php
+	        if(count($activeSchemes) > 0 && in_array('eid',$activeSchemes)) {
+	        ?>
 		<div class="box">
                     <div class="box-body">
 			    <h3 class="txt text-info">Dried Blood Spot - Early Infant Diagnosis</h3>
@@ -78,6 +95,10 @@ $dtFormat=  $genderHelper->getDateFormat();
 			    </table>
 		    </div>
 		</div>
+		<?php } ?>
+		<?php
+	        if(count($activeSchemes) > 0 && in_array('dts',$activeSchemes)) {
+	        ?>
 		<div class="box">
                     <div class="box-body">
 			    <h3 class="txt text-info">Dried Tube Specimen - HIV Serology</h3>
@@ -99,6 +120,10 @@ $dtFormat=  $genderHelper->getDateFormat();
 			    </table>
 		    </div>
 		</div>
+		<?php } ?>
+		<?php
+	        if(count($activeSchemes) > 0 && in_array('dbs',$activeSchemes)) {
+	        ?>
 		<div class="box">
                     <div class="box-body">
 			    <h3 class="txt text-info">Dried Blood Spot - HIV Serology</h3>
@@ -120,6 +145,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 			    </table>
 		    </div>
 		</div>
+		<?php } ?>
 		<div class="box">
                 <div class="box-body">
 					<h3 class="txt text-info">Schemes Overview</h3>
@@ -221,6 +247,9 @@ $dtFormat=  $genderHelper->getDateFormat();
 	var s5Table = null;
 	sOneLastShipmentRow = [];
 	sOneLastShipmentRowColor = [];
+	<?php
+	if(count($activeSchemes) > 0 && in_array('vl',$activeSchemes)) {
+	?>
 	function dtsViralLoadSchemes(){
 		s1Table = $('#dtsViralLoadTable').dataTable({
 			"oLanguage": {
@@ -286,9 +315,12 @@ $dtFormat=  $genderHelper->getDateFormat();
 			}
 		});
 	}
-	
+	<?php } ?>
 	sTwoLastShipmentRow = [];
 	sTwoLastShipmentRowColor = [];
+	<?php
+	if(count($activeSchemes) > 0 && in_array('tb',$activeSchemes)) {
+	?>
 	function dtsTuberculosisSchemes(){
 		s2Table = $('#dtsTuberculosisTable').dataTable({
 			"oLanguage": {
@@ -349,9 +381,12 @@ $dtFormat=  $genderHelper->getDateFormat();
 			}
 		});
 	}
-	
+	<?php } ?>
 	sThreeLastShipmentRow = [];
 	sThreeLastShipmentRowColor = [];
+	<?php
+	if(count($activeSchemes) > 0 && in_array('eid',$activeSchemes)) {
+	?>
 	function dbsEarlyInfantDiagnosisSchemes(){
 		s3Table = $('#earlyInfantDiagnosisTable').dataTable({
 			"oLanguage": {
@@ -412,9 +447,12 @@ $dtFormat=  $genderHelper->getDateFormat();
 			}
 		});
 	}
-	
+	<?php } ?>
 	sFourLastShipmentRow = [];
 	sFourLastShipmentRowColor = [];
+	<?php
+	if(count($activeSchemes) > 0 && in_array('dts',$activeSchemes)) {
+	?>
 	function dtsHIVSerologySchemes(){
 		s4Table = $('#dtsHIVSerologyTable').dataTable({
 			"oLanguage": {
@@ -475,9 +513,12 @@ $dtFormat=  $genderHelper->getDateFormat();
 			}
 		});
 	}
-	
+	<?php } ?>
 	sFiveLastShipmentRow = [];
 	sFiveLastShipmentRowColor = [];
+	<?php
+	if(count($activeSchemes) > 0 && in_array('dbs',$activeSchemes)) {
+	?>
 	function dbsHIVSerologySchemes(){
 		s4Table = $('#dbsHIVSerologyTable').dataTable({
 			"oLanguage": {
@@ -538,13 +579,33 @@ $dtFormat=  $genderHelper->getDateFormat();
 			}
 		});
 	}
-	
+	<?php } ?>
 	$(document).ready(function(){
-	    dtsViralLoadSchemes();
-	    dtsTuberculosisSchemes();
-	    dbsEarlyInfantDiagnosisSchemes();
-	    dtsHIVSerologySchemes();
-	    dbsHIVSerologySchemes();
+	    <?php
+	    if(count($activeSchemes) > 0 && in_array('vl',$activeSchemes)) {
+	    ?>
+	     dtsViralLoadSchemes();
+	    <?php } ?>
+	    <?php
+	    if(count($activeSchemes) > 0 && in_array('tb',$activeSchemes)) {
+	    ?>
+	     dtsTuberculosisSchemes();
+	    <?php } ?>
+	    <?php
+	    if(count($activeSchemes) > 0 && in_array('eid',$activeSchemes)) {
+	    ?>
+	     dbsEarlyInfantDiagnosisSchemes();
+	    <?php } ?>
+	    <?php
+	    if(count($activeSchemes) > 0 && in_array('dts',$activeSchemes)) {
+	    ?>
+	     dtsHIVSerologySchemes();
+	    <?php } ?>
+	    <?php
+	    if(count($activeSchemes) > 0 && in_array('dbs',$activeSchemes)) {
+	    ?>
+	     dbsHIVSerologySchemes();
+	    <?php } ?>
 	});
 	
 	var oTable = null;

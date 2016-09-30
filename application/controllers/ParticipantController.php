@@ -32,6 +32,8 @@ class ParticipantController extends Zend_Controller_Action {
     public function dashboardAction() {
         $this->_helper->layout()->activeMenu = 'dashboard';
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
+	$scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
         $this->view->authNameSpace = $authNameSpace;
     }
 
