@@ -582,10 +582,16 @@ class Application_Service_Shipments {
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            $attributes = array("sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+            if(isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate'])!=""){
+				$params['sampleRehydrationDate']=Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
+			}
+			if(isset($params['assayExpirationDate']) && trim($params['assayExpirationDate'])!=""){
+				$params['assayExpirationDate']=Pt_Commons_General::dateFormat($params['assayExpirationDate']);
+			}
+            $attributes = array("sample_rehydration_date" => $params['sampleRehydrationDate'],
                 "vl_assay" => $params['vlAssay'],
                 "assay_lot_number" => $params['assayLotNumber'],
-                "assay_expiration_date" => Pt_Commons_General::dateFormat($params['assayExpirationDate']),
+                "assay_expiration_date" => $params['assayExpirationDate'],
                 "specimen_volume" => $params['specimenVolume'],
 				"uploaded_file" => $params['uploadedFilePath']
 				);
