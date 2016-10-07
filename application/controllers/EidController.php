@@ -56,7 +56,7 @@ class EidController extends Zend_Controller_Action
 				}
 			  }			
 			
-			Zend_Debug::dump($data);die;
+			//Zend_Debug::dump($data);die;
 			
             $shipmentService->updateEidResults($data);
 

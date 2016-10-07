@@ -232,11 +232,20 @@ class Application_Service_Shipments {
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            $attributes = array("sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+			if(isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate'])!=""){
+				$params['sampleRehydrationDate']=Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
+			}
+			if(isset($params['extractionAssayExpiryDate']) && trim($params['extractionAssayExpiryDate'])!=""){
+				$params['extractionAssayExpiryDate']=Pt_Commons_General::dateFormat($params['extractionAssayExpiryDate']);
+			}
+			if(isset($params['detectionAssayExpiryDate']) && trim($params['detectionAssayExpiryDate'])!=""){
+				$params['detectionAssayExpiryDate']=Pt_Commons_General::dateFormat($params['detectionAssayExpiryDate']);
+			}
+            $attributes = array("sample_rehydration_date" => $params['sampleRehydrationDate'],
                 "extraction_assay" => $params['extractionAssay'],
                 "detection_assay" => $params['detectionAssay'],
-                "extraction_assay_expiry_date" => Pt_Commons_General::dateFormat($params['extractionAssayExpiryDate']),
-                "detection_assay_expiry_date" => Pt_Commons_General::dateFormat($params['detectionAssayExpiryDate']),
+                "extraction_assay_expiry_date" => $params['extractionAssayExpiryDate'],
+                "detection_assay_expiry_date" => $params['detectionAssayExpiryDate'],
                 "extraction_assay_lot_no" => $params['extractionAssayLotNo'],
                 "detection_assay_lot_no" => $params['detectionAssayLotNo'],
 		"uploaded_file" => $params['uploadedFilePath']);
