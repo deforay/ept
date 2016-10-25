@@ -58,6 +58,7 @@
                 <th>Scheme</th>
                 <th>Shipment Code</th>
                 <th>Shipment Date</th>
+                <th>Participant Id</th>
                 <th>Participant</th>
                 <th>Response Date</th>
                 <th>Report</th>
@@ -65,7 +66,7 @@
         </thead>
         <tbody>
             <tr>
-                <td colspan="6" class="dataTables_empty" style="text-align: center;font-size:15px;font-weight:bold;">Please pick date range and Scheme Type to proceed</td>
+                <td colspan="7" class="dataTables_empty" style="text-align: center;font-size:15px;font-weight:bold;">Please pick date range and Scheme Type to proceed</td>
             </tr>
         </tbody>
     </table>
@@ -121,9 +122,10 @@
                             {"sClass": "center"},
                             {"sClass": "center"},
                             {"sClass": "center"},
+                            {"sClass": "center"},
                             {"sClass": "center", "bSortable": false}
                         ],
-                        "aaSorting": [[4, "desc"]],
+                        "aaSorting": [[5, "desc"]],
                         "bProcessing": true,
                         "bServerSide": true,
                         "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'report', 'format' => 'html')); ?>",
