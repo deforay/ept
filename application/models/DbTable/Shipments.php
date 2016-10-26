@@ -628,7 +628,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code','unique_identifier','first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $aColumns = array('s.shipment_id','year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code','unique_identifier','first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -847,8 +847,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 					
 			$downloadReports= " N.A. ";		
             if ($aRow['status']=='finalized') {
-                 $downloadReports = '<a href="/uploads/reports/' . $aRow['shipment_code']. '/'.$aRow['shipment_code'].'-summary.pdf" class="btn btn-primary" style="text-decoration : none;" target="_BLANK" download>Download Summary Report</a>';
-				 $downloadReports .= '<a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : none;" class="btn btn-info" target="_BLANK" download> Download Individual ' . $aRow['REPORT'] . '</a>';
+                 $downloadReports = '<a href="/uploads/reports/' . $aRow['shipment_code']. '/'.$aRow['shipment_code'].'-summary.pdf" class="btn btn-primary" style="text-decoration : none;overflow:hidden;" target="_BLANK" download><i class="icon icon-download"></i> Summary Report</a>
+				                    <a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : none;overflow:hidden;margin-top:4px;" class="btn btn-info" target="_BLANK" download> <i class="icon icon-download"></i> Individual ' . $aRow['REPORT'] . '</a>';
             }					
             $row[] = $downloadReports;
 
