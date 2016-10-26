@@ -378,12 +378,11 @@ $dtFormat=  $genderHelper->getDateFormat();
 	}
 	
     function validateNow() {
-
         flag = deforayValidator.init({
             formId: 'eidResponseForm'
         });
         if (flag) {
-            if (moment($("#receiptDate").val(), "DD-MMM-YYYY").isAfter($("#testDate").val(), "DD-MMM-YYYY")) {
+            if (moment($("#receiptDate").val(), "YYYY-MM-DD").isAfter($("#testDate").val(), "YYYY-MM-DD")) {
                 alert('Testing Date has to come after the Shipment Receipt Date');
                 return false;
             }
