@@ -355,7 +355,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 			});
 			var maxDate=new Date(Math.max.apply(null,dates));
 			$("#testDate").val(moment(maxDate).format('DD-MMM-YYYY'));
-			if(moment($("#receipt_date").val(), "DD-MMM-YYYY").isAfter($("#test_date").val(), "DD-MMM-YYYY")){
+			if(moment($("#receipt_date").val()).isAfter($("#test_date").val())){
 				alert('Testing Date has to come after the Shipment Receipt Date');
 				return false;
 			}
