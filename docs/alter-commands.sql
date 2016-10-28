@@ -2254,3 +2254,6 @@ ALTER TABLE `partners` ADD `sort_order` INT(11) NULL DEFAULT NULL AFTER `link`;
 ALTER TABLE `r_eid_detection_assay` ADD `status` VARCHAR(45) NOT NULL DEFAULT 'active' AFTER `name`;
 
 ALTER TABLE `r_eid_extraction_assay` ADD `status` VARCHAR(45) NOT NULL DEFAULT 'active' AFTER `name`;
+
+--Pal 28th-OCT-2016
+ALTER TABLE `shipment_participant_map` CHANGE `participant_supervisor` `participant_supervisor` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;

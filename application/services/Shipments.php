@@ -234,12 +234,21 @@ class Application_Service_Shipments {
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			if(isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate'])!=""){
 				$params['sampleRehydrationDate']=Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
+			}else{
+				$params['sampleRehydrationDate'] = '';
 			}
 			if(isset($params['extractionAssayExpiryDate']) && trim($params['extractionAssayExpiryDate'])!=""){
 				$params['extractionAssayExpiryDate']=Pt_Commons_General::dateFormat($params['extractionAssayExpiryDate']);
+			}else{
+				$params['extractionAssayExpiryDate'] = '';
 			}
 			if(isset($params['detectionAssayExpiryDate']) && trim($params['detectionAssayExpiryDate'])!=""){
 				$params['detectionAssayExpiryDate']=Pt_Commons_General::dateFormat($params['detectionAssayExpiryDate']);
+			}else{
+				$params['detectionAssayExpiryDate'] = '';
+			}
+			if(!isset($params['modeOfReceipt']) || trim($params['modeOfReceipt'])==""){
+				$params['modeOfReceipt']= NULL;
 			}
             $attributes = array("sample_rehydration_date" => $params['sampleRehydrationDate'],
                 "extraction_assay" => $params['extractionAssay'],
@@ -248,18 +257,18 @@ class Application_Service_Shipments {
                 "detection_assay_expiry_date" => $params['detectionAssayExpiryDate'],
                 "extraction_assay_lot_no" => $params['extractionAssayLotNo'],
                 "detection_assay_lot_no" => $params['detectionAssayLotNo'],
-		"uploaded_file" => $params['uploadedFilePath']);
+		        "uploaded_file" => $params['uploadedFilePath']);
 			
             $attributes = json_encode($attributes);
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
-		//"shipment_test_report_date" => new Zend_Db_Expr('now()'),
+		        //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "attributes" => $attributes,
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
-		"mode_id" => $params['modeOfReceipt'],
+		        "mode_id" => $params['modeOfReceipt'],
                 "updated_by_user" => $authNameSpace->dm_id,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
@@ -271,16 +280,16 @@ class Application_Service_Shipments {
 		}
 	       
 	    if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access =='yes'){
-		$data['qc_done'] = $params['qcDone'];
-		if(isset($data['qc_done']) && trim($data['qc_done'])=="yes"){
-			$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
-			$data['qc_done_by'] = trim($params['qcDoneBy']);
-			$data['qc_created_on'] = new Zend_Db_Expr('now()');
-		}else{
-			$data['qc_date']=NULL;
-			$data['qc_done_by'] = NULL;
-			$data['qc_created_on'] = NULL;
-		}
+			$data['qc_done'] = $params['qcDone'];
+			if(isset($data['qc_done']) && trim($data['qc_done'])=="yes"){
+				$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
+				$data['qc_done_by'] = trim($params['qcDoneBy']);
+				$data['qc_created_on'] = new Zend_Db_Expr('now()');
+			}else{
+				$data['qc_date']=NULL;
+				$data['qc_done_by'] = NULL;
+				$data['qc_created_on'] = NULL;
+			}
 	    }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
