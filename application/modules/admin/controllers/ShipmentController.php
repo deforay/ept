@@ -308,17 +308,17 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function exportShipmentRespondedParticipantsAction(){
         if ($this->getRequest()->isPost()) {
-            //$params = $this->_getAllParams();
+            $params = $this->_getAllParams();
             $clientsServices = new Application_Service_Participants();
-            $this->view->result=$clientsServices->exportShipmentRespondedParticipantsDetails();
+            $this->view->result=$clientsServices->exportShipmentRespondedParticipantsDetails($params);
         }
     }
     
     public function exportShipmentNotRespondedParticipantsAction(){
         if ($this->getRequest()->isPost()) {
-            //$params = $this->_getAllParams();
+            $params = $this->_getAllParams();
             $clientsServices = new Application_Service_Participants();
-            $this->view->result=$clientsServices->exportShipmentNotRespondedParticipantsDetails();
+            $this->view->result=$clientsServices->exportShipmentNotRespondedParticipantsDetails($params);
         }
     }
 }

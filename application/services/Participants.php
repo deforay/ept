@@ -190,7 +190,7 @@ class Application_Service_Participants {
 		return $shipmentDb->fetchParticipantSchemesBySchemeId($parameters);
 	}
 	
-	public function exportShipmentRespondedParticipantsDetails(){
+	public function exportShipmentRespondedParticipantsDetails($params){
 		try {
             $excel = new PHPExcel();
             $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
@@ -219,7 +219,7 @@ class Application_Service_Participants {
                     'bold' => true,
                 ),
                 'alignment' => array(
-                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
                     'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
                 )
             );
@@ -235,24 +235,33 @@ class Application_Service_Participants {
              );
             $sheet->mergeCells('A1:E1');
 			$sheet->setCellValue('A1', html_entity_decode("Responded Shipment Participant List", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->getStyle('A1')->applyFromArray($styleInboldArray);
 			
-			$sheet->setCellValue('A2', html_entity_decode("Participant Id", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('B2', html_entity_decode("Lab Name/Participant Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('C2', html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('D2', html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('E2', html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('F2', html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('G2', html_entity_decode("Email", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('H2', html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			if(isset($params['shipmentCode']) && trim($params['shipmentCode'])!=""){
+				$sheet->setCellValue('A2', html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$sheet->setCellValue('B2', html_entity_decode($params['shipmentCode'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			}
+			if(isset($params['shipmentCode']) && trim($params['shipmentCode'])!=""){
+				$sheet->setCellValue('A3', html_entity_decode("Shipment Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$sheet->setCellValue('B3', html_entity_decode($params['shipmentDate'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			}
+			$sheet->setCellValue('A4', html_entity_decode("Participant Id", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('B4', html_entity_decode("Lab Name/Participant Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('C4', html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('D4', html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('E4', html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('F4', html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('G4', html_entity_decode("Email", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('H4', html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			
-			$sheet->getStyle('A2')->applyFromArray($styleArray);
-			$sheet->getStyle('B2')->applyFromArray($styleArray);
-			$sheet->getStyle('C2')->applyFromArray($styleArray);
-			$sheet->getStyle('D2')->applyFromArray($styleArray);
-			$sheet->getStyle('E2')->applyFromArray($styleArray);
-			$sheet->getStyle('F2')->applyFromArray($styleArray);
-			$sheet->getStyle('G2')->applyFromArray($styleArray);
-			$sheet->getStyle('H2')->applyFromArray($styleArray);
+			$sheet->getStyle('A4')->applyFromArray($styleArray);
+			$sheet->getStyle('B4')->applyFromArray($styleArray);
+			$sheet->getStyle('C4')->applyFromArray($styleArray);
+			$sheet->getStyle('D4')->applyFromArray($styleArray);
+			$sheet->getStyle('E4')->applyFromArray($styleArray);
+			$sheet->getStyle('F4')->applyFromArray($styleArray);
+			$sheet->getStyle('G4')->applyFromArray($styleArray);
+			$sheet->getStyle('H4')->applyFromArray($styleArray);
 			
             $sQuerySession = new Zend_Session_Namespace('respondedParticipantsExcel');
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -280,19 +289,19 @@ class Application_Service_Participants {
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 3)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $rRowCount = $rowNo + 3;
-                    $cellName = $sheet->getCellByColumnAndRow($colNo, $rowNo + 3)->getColumn();
+                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $rRowCount = $rowNo + 5;
+                    $cellName = $sheet->getCellByColumnAndRow($colNo, $rowNo + 5)->getColumn();
                     $sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle);
                     $sheet->getDefaultRowDimension()->setRowHeight(18);
                     $sheet->getColumnDimensionByColumn($colNo)->setWidth(22);
-                    $sheet->getStyleByColumnAndRow($colNo, $rowNo + 3)->getAlignment()->setWrapText(true);
+                    $sheet->getStyleByColumnAndRow($colNo, $rowNo + 5)->getAlignment()->setWrapText(true);
                     $colNo++;
                 }
             }
             
             $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-            $filename = 'shipment-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xls';
+            $filename = $params['shipmentCode'].'-responded-participant-report-'.date('d-M-Y-H-i-s') . '.xls';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
 		}catch (Exception $exc) {
@@ -303,7 +312,7 @@ class Application_Service_Participants {
 		}
 	}
 	
-	public function exportShipmentNotRespondedParticipantsDetails(){
+	public function exportShipmentNotRespondedParticipantsDetails($params){
 		try {
             $excel = new PHPExcel();
             $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
@@ -332,7 +341,7 @@ class Application_Service_Participants {
                     'bold' => true,
                 ),
                 'alignment' => array(
-                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
                     'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
                 )
             );
@@ -348,24 +357,34 @@ class Application_Service_Participants {
              );
             $sheet->mergeCells('A1:E1');
 			$sheet->setCellValue('A1', html_entity_decode("Not Responded Shipment Participant List", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->getStyle('A1')->applyFromArray($styleInboldArray);
 			
-			$sheet->setCellValue('A2', html_entity_decode("Participant Id", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('B2', html_entity_decode("Lab Name/Participant Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('C2', html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('D2', html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('E2', html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('F2', html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('G2', html_entity_decode("Email", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('H2', html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			if(isset($params['shipmentCode']) && trim($params['shipmentCode'])!=""){
+				$sheet->setCellValue('A2', html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$sheet->setCellValue('B2', html_entity_decode($params['shipmentCode'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			}
+			if(isset($params['shipmentCode']) && trim($params['shipmentCode'])!=""){
+				$sheet->setCellValue('A3', html_entity_decode("Shipment Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$sheet->setCellValue('B3', html_entity_decode($params['shipmentDate'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			}
 			
-			$sheet->getStyle('A2')->applyFromArray($styleArray);
-			$sheet->getStyle('B2')->applyFromArray($styleArray);
-			$sheet->getStyle('C2')->applyFromArray($styleArray);
-			$sheet->getStyle('D2')->applyFromArray($styleArray);
-			$sheet->getStyle('E2')->applyFromArray($styleArray);
-			$sheet->getStyle('F2')->applyFromArray($styleArray);
-			$sheet->getStyle('G2')->applyFromArray($styleArray);
-			$sheet->getStyle('H2')->applyFromArray($styleArray);
+			$sheet->setCellValue('A4', html_entity_decode("Participant Id", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('B4', html_entity_decode("Lab Name/Participant Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('C4', html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('D4', html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('E4', html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('F4', html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('G4', html_entity_decode("Email", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('H4', html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			
+			$sheet->getStyle('A4')->applyFromArray($styleArray);
+			$sheet->getStyle('B4')->applyFromArray($styleArray);
+			$sheet->getStyle('C4')->applyFromArray($styleArray);
+			$sheet->getStyle('D4')->applyFromArray($styleArray);
+			$sheet->getStyle('E4')->applyFromArray($styleArray);
+			$sheet->getStyle('F4')->applyFromArray($styleArray);
+			$sheet->getStyle('G4')->applyFromArray($styleArray);
+			$sheet->getStyle('H4')->applyFromArray($styleArray);
 			
             $sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -393,19 +412,19 @@ class Application_Service_Participants {
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 3)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $rRowCount = $rowNo + 3;
-                    $cellName = $sheet->getCellByColumnAndRow($colNo, $rowNo + 3)->getColumn();
+                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $rRowCount = $rowNo + 5;
+                    $cellName = $sheet->getCellByColumnAndRow($colNo, $rowNo + 5)->getColumn();
                     $sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle);
                     $sheet->getDefaultRowDimension()->setRowHeight(18);
                     $sheet->getColumnDimensionByColumn($colNo)->setWidth(22);
-                    $sheet->getStyleByColumnAndRow($colNo, $rowNo + 3)->getAlignment()->setWrapText(true);
+                    $sheet->getStyleByColumnAndRow($colNo, $rowNo + 5)->getAlignment()->setWrapText(true);
                     $colNo++;
                 }
             }
             
             $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-            $filename = 'shipment-not-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xls';
+            $filename = $params['shipmentCode'].'-not-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xls';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
 		}catch (Exception $exc) {

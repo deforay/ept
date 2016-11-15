@@ -355,7 +355,7 @@
     
     function exportRespondedShipment(){
         $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-responded-participants', 'format' => 'html')); ?>",
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-responded-participants')); ?>",{shipmentCode:"<?php echo $this->shipment['shipment']['shipment_code']; ?>",shipmentDate:"<?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?>",format: "html"},
             function(data) {
             if (data == "" || data == null || data == undefined) {
                 alert('Unable to generate download');
@@ -368,7 +368,7 @@
     
     function exportNotRespondedShipment() {
         $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants', 'format' => 'html')); ?>",
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>",{shipmentCode:"<?php echo $this->shipment['shipment']['shipment_code']; ?>",shipmentDate:"<?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?>",format: "html"},
             function(data) {
             if (data == "" || data == null || data == undefined) {
                 alert('Unable to generate download');
