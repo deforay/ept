@@ -18,6 +18,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 ->addActionContext('shipment-responded-participants', 'html')
                 ->addActionContext('shipment-not-responded-participants', 'html')
                 ->addActionContext('shipment-not-enrolled-participants', 'html')
+                ->addActionContext('export-shipment-responded-participants', 'html')
+                ->addActionContext('export-shipment-not-responded-participants', 'html')
                 ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
     }
@@ -304,7 +306,21 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
     }
 
-
+    public function exportShipmentRespondedParticipantsAction(){
+        if ($this->getRequest()->isPost()) {
+            //$params = $this->_getAllParams();
+            $clientsServices = new Application_Service_Participants();
+            $this->view->result=$clientsServices->exportShipmentRespondedParticipantsDetails();
+        }
+    }
+    
+    public function exportShipmentNotRespondedParticipantsAction(){
+        if ($this->getRequest()->isPost()) {
+            //$params = $this->_getAllParams();
+            $clientsServices = new Application_Service_Participants();
+            $this->view->result=$clientsServices->exportShipmentNotRespondedParticipantsDetails();
+        }
+    }
 }
 
 

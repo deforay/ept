@@ -39,8 +39,8 @@
                                 </ul>
                                 <div id="myTabContent" class="tab-content">
                                     <div class="tab-pane fade in active" id="listOfResponded">
-                                        <div style="padding-top:20px;">
-
+                                        <div style="padding-top:10px;float:right;margin-bottom:10px;">
+                                            <button class="btn btn-info btn-xs" type="button" onclick="exportRespondedShipment();" >Export to excel</button>
                                         </div>
 
                                         <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="respondedTable">
@@ -64,7 +64,9 @@
                                         </table>
                                     </div>
                                     <div class="tab-pane fade" id="listOfNotResponded">
-                                        <div style="padding-top:20px;"></div>
+                                        <div style="padding-top:10px;float:right;margin-bottom:10px;">
+                                            <button class="btn btn-info btn-xs" type="button" onclick="exportNotRespondedShipment();" >Export to excel</button>
+                                        </div>
                                         <table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="notRespondedTable">
                                             <thead>
                                                 <tr>
@@ -350,5 +352,30 @@
         }
     }
 
-
+    
+    function exportRespondedShipment(){
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-responded-participants', 'format' => 'html')); ?>",
+            function(data) {
+            if (data == "" || data == null || data == undefined) {
+                alert('Unable to generate download');
+            } else {
+                document.location.href = '/temporary/' + data;
+            }
+            $.unblockUI();
+        });
+    }
+    
+    function exportNotRespondedShipment() {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants', 'format' => 'html')); ?>",
+            function(data) {
+            if (data == "" || data == null || data == undefined) {
+                alert('Unable to generate download');
+            } else {
+                document.location.href = '/temporary/' + data;
+            }
+            $.unblockUI();
+        });
+    }
 </script>

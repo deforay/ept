@@ -738,12 +738,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
     public function getShipmentRespondedParticipants($parameters) {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
-         */
-
+        */
         $aColumns = array('unique_identifier', 'first_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
-      //  $sIndexColumn = "participant_id";
+		//  $sIndexColumn = "participant_id";
         /*
          * Paging
          */
@@ -822,7 +821,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
                   ->where("sp.shipment_test_date IS NOT NULL ")
                   ->where("sp.shipment_id = ?", $parameters['shipmentId'])
                   ->group("sp.participant_id");
-     //  error_log($sQuery);
+		//  error_log($sQuery);
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
             $sQuery = $sQuery->where("p.status = ? ", $parameters['withStatus']);
         }
@@ -845,6 +844,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+		
+		$sQuerySession = new Zend_Session_Namespace('respondedParticipantsExcel');
+		$sQuerySession->shipmentRespondedParticipantQuery = $sQuery;
+		//error_log($sQuery);
         $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
 
@@ -994,6 +997,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+		
+		$sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
+		$sQuerySession->shipmentRespondedParticipantQuery = $sQuery;
+		
         $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
 
