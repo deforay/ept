@@ -1186,6 +1186,15 @@ class Application_Service_Evaluation {
                 $schemeService = new Application_Service_Schemes();
                 $extractionAssay = $schemeService->getEidExtractionAssay();
                 $detectionAssay = $schemeService->getEidDetectionAssay();
+				$pQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id','spm.documentation_score','participant_count' => new Zend_Db_Expr('count("participant_id")'),'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00')")))
+                        ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
+                        ->where("spm.shipment_id = ?", $shipmentId)
+                        ->group('spm.shipment_id');
+				$totParticipantsRes = $db->fetchRow($pQuery);
+				if($totParticipantsRes!=""){
+					$shipmentResult['participant_count']=$totParticipantsRes['participant_count'];
+					//Zend_Debug::dump($shipmentResult);die;
+				}
 				
 				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'))
                         //->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))

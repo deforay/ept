@@ -126,6 +126,10 @@ if ($this->result['shipment'] != "") {
 // ---------------------------------------------------------
     if ($this->result['shipment']['scheme_type'] == 'eid') {
         $pdf->AddPage('P', 'A4');
+        $participantCount='';
+        if(isset($this->result['shipment']['participant_count'])){
+            $participantCount=$this->result['shipment']['participant_count'];
+        }
         if (isset($this->result['shipment']['summaryResult']) && sizeof($this->result['shipment']['summaryResult']) > 0) {
             
             foreach ($this->result['shipment']['summaryResult'] as $result) {
@@ -147,12 +151,14 @@ if ($this->result['shipment'] != "") {
             $overAllSumRes.='<table border="1">';
             $overAllSumRes.='<tr style="background-color:#dbe4ee;">';
             $overAllSumRes.='<td style="text-align:center;">Total number of participating laboratories</td>';
+            $overAllSumRes.='<td style="text-align:center;">Total number of response laboratories</td>';
             $overAllSumRes.='<td style="text-align:center;">Total number of laboratories scoring "'.$this->result['shipment']['max_score'].'"</td>';
             $overAllSumRes.='<td style="text-align:center;">Total number of laboratories scoring below "'.$this->result['shipment']['max_score'].'"</td>';
             $overAllSumRes.='<td style="text-align:center;">Percentage of laboratories scoring "' . $this->result['shipment']['max_score'] . '"</td>';
             $overAllSumRes.='</tr>';
             
             $overAllSumRes.='<tr>';
+            $overAllSumRes.='<td style="text-align:center;">' . $participantCount . '</td>';
             $overAllSumRes.='<td style="text-align:center;">' . $partCount . '</td>';
             $overAllSumRes.='<td style="text-align:center;">' . $overAllMaxScore . '</td>';
             $overAllSumRes.='<td style="text-align:center;">' . $overAllBelowScore . '</td>';
