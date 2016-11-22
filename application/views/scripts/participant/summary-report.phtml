@@ -74,6 +74,7 @@
 <script>
                 var startDate = "";
                 var endDate = "";
+                var oTable = null;
                 $(document).ready(function () {
                     $('#dateRange').daterangepicker({
                         format: 'DD-MMM-YYYY',
@@ -90,15 +91,7 @@
                         endDate = end.format('YYYY-MM-DD');
                     });
                     
-                     
-                });
-
-                function summarySchemes() {
-                    if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-                        alert("Please pick date range and Scheme Type to proceed");
-                        return false;
-                    }
-                   oTable = $('#summaryReportTable').dataTable({
+                    oTable = $('#summaryReportTable').dataTable({
                         "oLanguage": {
                             "sLengthMenu": "_MENU_ records per page"
                         },
@@ -134,5 +127,13 @@
                             });
                         }
                     });
+                });
+
+                function summarySchemes() {
+                    if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
+                        alert("Please pick date range and Scheme Type to proceed");
+                        return false;
+                    }
+                   oTable.fnDraw();
                 }
 </script>

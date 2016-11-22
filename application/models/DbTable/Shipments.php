@@ -230,6 +230,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          */
 
         $aColumns = array('DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code','unique_identifier', 'first_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $orderColumns = array('shipment_date','scheme_name','shipment_code','unique_identifier', 'first_name', 'lastdate_response', 'spm.shipment_test_report_date');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -247,22 +248,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         /*
          * Ordering
          */
-
-        $sOrder = "";
+		
+		$sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    if ($parameters['iSortCol_' . $i] == 0) {
-                        $sOrder .= "shipment_date " . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    } else {
-                        $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    }
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . " " . ( $parameters['sSortDir_' . $i] ) . ",";
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, "", -1);
         }
+		
+        
 
         /*
          * Filtering

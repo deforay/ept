@@ -78,8 +78,9 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 
 <script>
-                var startDate = "";
-                var endDate = "";
+    var startDate = "";
+    var endDate = "";
+    var oTable = null;
                 $(document).ready(function () {
                     $('#dateRange').daterangepicker({
                         format: 'DD-MMM-YYYY',
@@ -96,19 +97,11 @@
                         endDate = end.format('YYYY-MM-DD');
                     });
                     
-                     
-                });
-
-                function individualSchemes() {
-                    if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-                        alert("Please pick date range and Scheme Type to proceed");
-                        return false;
-                    }
-                    //oTable.fnDraw();
-                   oTable = $('#individualReportTable').dataTable({
+                    oTable = $('#individualReportTable').dataTable({
                         "oLanguage": {
                             "sLengthMenu": "_MENU_ records per page"
                         },
+                        //"paging": paging,
                         "bJQueryUI": false,
                         "bAutoWidth": false,
                         "bInfo": true,
@@ -144,5 +137,14 @@
                             });
                         }
                     });
+                });
+
+                function individualSchemes() {
+                    if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
+                        alert("Please pick date range and Scheme Type to proceed");
+                        return false;
+                    }
+                    oTable.fnDraw();
+                   
                 }
 </script>
