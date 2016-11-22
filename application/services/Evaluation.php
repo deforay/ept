@@ -1326,6 +1326,8 @@ class Application_Service_Evaluation {
 				}
 				
 				$query=$db->select()->from(array('refvl' => 'reference_result_vl'),array('refvl.sample_score'))
+								
+								->where('refvl.control!=1')
 								->where('refvl.shipment_id = ? ',$shipmentId);
 				$smpleResult=$db->fetchAll($query);
 				$shipmentResult['no_of_samples']=count($smpleResult);
@@ -1346,6 +1348,7 @@ class Application_Service_Evaluation {
 							->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
 							->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
 							->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+							->where('ref.control!=1')
 							->where('sp.shipment_id = ? ', $shipmentId);
 					
 					$cResult=$db->fetchAll($cQuery);
@@ -1381,12 +1384,13 @@ class Application_Service_Evaluation {
 				foreach ($vlAssayResultSet as $vlAssayRow) {
 					$vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
 									->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
-									->where("vlCal.shipment_id=?", $shipmentId)->where("vlCal.vl_assay=?", $vlAssayRow['id']));
+									->where("vlCal.shipment_id=?", $shipmentId)->where("vlCal.vl_assay=?", $vlAssayRow['id'])->where("refVl.control!=1"));
 					
 					$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('ref.sample_id','ref.sample_label'))
 						->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
 						->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
 						->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+						->where('ref.control!=1')
 						->where('sp.shipment_id = ? ', $shipmentId);
 					
 					$cResult=$db->fetchAll($cQuery);
