@@ -41,11 +41,11 @@ $overallMean = round(getAverage($mean),4);
 <div id="container"></div>
 
 
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
+<script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/highcharts-more.js"></script>
 <script>
     $(function () {
-    $('#container').highcharts({
+    Highcharts.chart('container', {
 
         chart: {
             type: 'boxplot'

@@ -8,7 +8,7 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
     
         date_default_timezone_set('GMT');
-        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "participants-mail-eid-update.csv";
+        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "participants-mail.csv";
         if (!file_exists($filename) || !is_readable($filename))
             return FALSE;    
         $data = array();
@@ -24,8 +24,7 @@ try {
         
         $commonService = new Application_Service_Common();
         foreach ($data as $participant) {
-            if((isset($participant[0]) && trim($participant[0])!= '') && (isset($participant[1]) && trim($participant[1])!= '')
-               && (isset($participant[2]) && trim($participant[2])!= '') && (isset($participant[3]) && trim($participant[3])!= '')){
+            if((isset($participant[1]) && trim($participant[1])!= '')){
                 $to = $participant[1];
                 $cc = $participant[2];
                 $bcc = '';
@@ -34,18 +33,17 @@ try {
                 $fromMail = '';
                 $fromName = '';
                 //Subject
-                $subject.= 'PT Results Summary Report and Individual Report - EID2016-I';
+                $subject.= 'PT Results Submission - 2016';
                 //Message
                 $message.= '<table border="0" cellspacing="0" cellpadding="0" style="width:100%;background-color:#FFF;">';
                     $message.= '<tr><td align="center">';
                       $message.= '<table cellpadding="3" style="width:92%;font-family:Helvetica,Arial,sans-serif;margin:30px 0px 30px 0px;padding:2% 0% 0% 2%;background-color:#ffffff;">';
-                        //$message.= '<tr><td colspan="2">Dear <strong>'.ucwords($participant[0]).'</strong>,</td></tr>';
                         $message.= '<tr><td colspan="2">Dear Participant,</td></tr>';
-                        $message.= '<tr><td colspan="2">Please login to https://ept.vlsmartconnect.com/auth/login with the login credentials provided earlier</td></tr>';
-                        $message.= '<tr><td colspan="2">Once you login you can download your EID2016-I PT results summary report AND Individual report for '.($participant[0]).'.</td></tr>';
-                        $message.= '<tr><td colspan="2">You can find a quick help video here http://bit.ly/ept-vl2016-intro</td></tr>';
+                        $message.= '<tr><td colspan="2">Please login to https://ept.vlsmartconnect.com/auth/login with credentials provided earlier. Only results submitted online will be considered for evaluation.</td></tr>';
+                        $message.= '<tr><td colspan="2">Once you login you can submit your PT results. The participants are allowed to submit their PT results via online ePT system anytime until the results due date on November 16, 2016.</td></tr>';
+                        $message.= '<tr><td colspan="2">You can find a quick help guide here http://bit.ly/ept-pt-submission-help</td></tr>';
                         $message.= '<tr><td colspan="2">For any assistance or guidance you can reach us at pt@vlsmartconnect.com</td></tr>';
-                        $message.= '<tr><td colspan="2">We request that you complete a short Feedback form : http://bit.ly/eid2016-feedback</td></tr>';
+                        $message.= '<tr><td colspan="2">We request that you complete a short Feedback form : http://bit.ly/pt2016-feedback. Your feedback is highly valuable and will be used for improvement of the PT programs. </td></tr>';
                         $message.= '<tr><td colspan="2">Thanks</td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';

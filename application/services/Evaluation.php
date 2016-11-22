@@ -1511,7 +1511,7 @@ class Application_Service_Evaluation {
 					if (isset($vlRange[$responseAssay])) {
 						// matching reported and low/high limits
 						if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
-							if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
+							if (isset($vlRange[$responseAssay][$result['sample_id']]) && $vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
 								$totalScore += $result['sample_score'];
 								$calcResult = "pass";
 							} else {
