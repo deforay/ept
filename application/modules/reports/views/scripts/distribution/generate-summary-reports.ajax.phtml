@@ -151,10 +151,10 @@ if ($this->result['shipment'] != "") {
             $overAllSumRes.='<table border="1">';
             $overAllSumRes.='<tr style="background-color:#dbe4ee;">';
             $overAllSumRes.='<td style="text-align:center;">Total number of participating laboratories</td>';
-            $overAllSumRes.='<td style="text-align:center;">Total number of response laboratories</td>';
-            $overAllSumRes.='<td style="text-align:center;">Total number of laboratories scoring "'.$this->result['shipment']['max_score'].'"</td>';
-            $overAllSumRes.='<td style="text-align:center;">Total number of laboratories scoring below "'.$this->result['shipment']['max_score'].'"</td>';
-            $overAllSumRes.='<td style="text-align:center;">Percentage of laboratories scoring "' . $this->result['shipment']['max_score'] . '"</td>';
+            $overAllSumRes.='<td style="text-align:center;">Total number of participants responded</td>';
+            $overAllSumRes.='<td style="text-align:center;">Total number of participants scoring "'.$this->result['shipment']['max_score'].'"</td>';
+            $overAllSumRes.='<td style="text-align:center;">Total number of participants scoring below "'.$this->result['shipment']['max_score'].'"</td>';
+            $overAllSumRes.='<td style="text-align:center;">Percentage of participants scoring "' . $this->result['shipment']['max_score'] . '"</td>';
             $overAllSumRes.='</tr>';
             
             $overAllSumRes.='<tr>';
@@ -171,7 +171,7 @@ if ($this->result['shipment'] != "") {
             
             $n=count($this->result['shipment']['correctRes']);
             if($n>0){
-                $overAllCorrectRes = '<h3>Percentage of all laboratories reporting correctly*</h3>';
+                $overAllCorrectRes = '<h3>Percentage of laboratories reporting correctly*</h3>';
                 $overAllCorrectRes.='<table border="1">';
                 
                 $overAllCorrectRes.='<tr style="background-color:#dbe4ee;">';
