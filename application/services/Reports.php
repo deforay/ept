@@ -2020,7 +2020,7 @@ class Application_Service_Reports {
 			$result = $db->fetchRow($query);
 	
 			
-			$refQuery = $db->select()->from(array('refRes' => 'reference_result_vl'))->where("refRes.shipment_id = ?", $shipmentId);
+			$refQuery = $db->select()->from(array('refRes' => 'reference_result_vl'))->where("refRes.shipment_id = ?", $shipmentId)->where("refRes.control!=1");
 			$refResult = $db->fetchAll($refQuery);
 			
 			$colNamesArray = array();
@@ -2251,7 +2251,8 @@ class Application_Service_Reports {
 				//get vl_assay wise low high limit
 				$refVlCalci = $db->fetchAll($db->select()->from(array('rvc'=>'reference_vl_calculation'))
 							    ->join(array('rrv'=>'reference_result_vl'),'rrv.sample_id=rvc.sample_id AND rrv.shipment_id='.$result['shipment_id'],array('sample_label'))
-							    ->where('rvc.shipment_id='.$result['shipment_id'])->where('rvc.vl_assay='.$assayRow['id']));
+							    ->where('rvc.shipment_id='.$result['shipment_id'])->where('rvc.vl_assay='.$assayRow['id'])
+								->where('rrv.control!=1'));
 				if(count($refVlCalci)>0){
 				    //write in excel low and high limit title
 				    $newsheet->mergeCells('A1:F1');
