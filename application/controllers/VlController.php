@@ -53,7 +53,6 @@ class VlController extends Zend_Controller_Action
 				}
 			  }
 			
-           
             $shipmentService->updateVlResults($data);
     		
     		
@@ -68,14 +67,15 @@ class VlController extends Zend_Controller_Action
             $sID= $this->getRequest()->getParam('sid');
             $pID= $this->getRequest()->getParam('pid');
             $eID =$this->getRequest()->getParam('eid');
-			$this->view->comingFrom =$this->getRequest()->getParam('comingFrom');
+	    $this->view->comingFrom =$this->getRequest()->getParam('comingFrom');
 			
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);
             //Zend_Debug::dump($schemeService->getVlSamples($sID,$pID));
             $this->view->allSamples =$schemeService->getVlSamples($sID,$pID);
+            $this->view->allNotTestedReason =$schemeService->getVlNotTestedReasons();
             $shipment = $schemeService->getShipmentData($sID,$pID);
-			$shipment['attributes'] = json_decode($shipment['attributes'],true);
+	    $shipment['attributes'] = json_decode($shipment['attributes'],true);
             $this->view->shipment = $shipment;
             $this->view->shipId = $sID;
             $this->view->participantId = $pID;

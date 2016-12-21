@@ -21,10 +21,19 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                                     'created_on' => new Zend_Db_Expr('now()')
                                    ));                
             }else{
+                //Set tnd value if Yes
+                $tnd = NULL;
+                if(isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed']== 'yes'){
+                    $params['vlResult'][$key] = '';
+                }else if(isset($params['tndReference'][$key]) && $params['tndReference'][$key]== 'yes'){
+                    $tnd = 'yes';
+                    $params['vlResult'][$key] = '0.00'; 
+                }
                 $this->update(array(
                                     'shipment_map_id'=>$params['smid'],
                                     'sample_id'=>$sampleId,
                                     'reported_viral_load'=>$params['vlResult'][$key],
+                                    'is_tnd'=>$tnd,
                                     'updated_by' => $authNameSpace->UserID,
                                     'updated_on' => new Zend_Db_Expr('now()')
                                    ), "shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId );

@@ -232,7 +232,7 @@ $count++;  ?>
 <table class="table table-bordered table-striped" style="width:60%;margin:10px auto;">
 <thead>
 	<tr>
-		<td colspan="2" style="font-size:1.1em;">
+		<td colspan="3" style="font-size:1.1em;">
 			Please Note :
 			<ul style="margin:10px;">
 				<li>Viral Load should be entered in log<sub>10</sub> copies/ml</li>
@@ -245,29 +245,59 @@ $count++;  ?>
 	<tr align="center" class="" >
 		<th style="width:50%;">Control/Sample</th>
 		<th>Viral Load (log<sub>10</sub> copies/ml)</th>		
+		<th>TND(Target Not Detected)</th>		
 	</tr>
 </thead>
 <tfoot>
 	
 </tfoot>
 <?php $count =0;  
-foreach($this->allSamples as $sample){ 
+foreach($this->allSamples as $sample){
+	if(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes'){
+	   $sample['mandatory'] = 0;	
+	}
+	$vlResult = $sample['reported_viral_load'];
+	if($sample['is_tnd'] =='yes'){
+		$vlResult = 0.00;
+	}
 $count++;
 ?>
 
 	<tr class="light" >
-		<td>
-			<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+		<td style="text-align:center;">
+			<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
 		</td>
-        <td>
-			<input type="text" name="vlResult[]" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control vlResultValues"   value="<?php echo $sample['reported_viral_load']; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
+                <td style="text-align:center;">
+			<input type="text" name="vlResult[]" id="vlResult<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control checkNum vlResultValues"  value="<?php echo $vlResult; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
 		</td>
-    </tr>
+		<td style="text-align:center;">
+			<input type="hidden" name="tndReference[]" id="tndReference<?php echo $sample['sample_id']; ?>"/>
+			<input type="checkbox" name="tnd[]" id="tnd<?php echo $sample['sample_id']; ?>" class="tnd" value="<?php echo $sample['sample_id']; ?>" <?php echo($sample['is_tnd'] =='yes')?'checked="checked"':''; ?>/>
+		</td>
+        </tr>
 
 
 <?php } ?>
-
+      <tr style="background:none;">
+	<td colspan="3"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'checked="checked"':''; ?>/>&nbsp;&nbsp;PT Testing not performed </td>
+      </tr>
+      <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
+	<td colspan="3">
+		If yes,&nbsp;&nbsp;Reason 
+		<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;">
+			<option value="">--Select--</option>
+			<?php
+			foreach($this->allNotTestedReason as $reason) {
+			?>
+			  <option value="<?php echo $reason['vl_not_tested_reason_id']; ?>" <?php echo($this->shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id'])?'selected="selected"':''; ?>><?php echo ucwords($reason['vl_not_tested_reason']); ?></option>
+			<?php } ?>
+		</select>
+	</td>
+      </tr>
+      <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
+	<td colspan="3">Comments <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
+      </tr>
 </table>
 <hr>
 <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
@@ -456,4 +486,35 @@ $dtFormat=  $genderHelper->getDateFormat();
 		$("#qcDoneBy").removeClass("isRequired");
 	   }
 	}
+	
+	//TND---0.00 prepopulate
+	$('.tnd').change(function () {
+	   var selfVal = this.value;
+	   if ($(this).is(':checked')) {
+	       $('#vlResult'+selfVal).val('0.00');
+	       $('#tndReference'+selfVal).val('yes');
+	   }else{
+		$('#vlResult'+selfVal).val('');
+		$('#tndReference'+selfVal).val('');
+	   }
+        });
+	
+	//PT not performed case
+	$('#isPtTestNotPerformed').change(function () {
+	   if ($(this).is(':checked')) {
+	       $('.vlResultValues').val('');
+	       $('.tnd').attr('checked', false);
+	       $('.ptNotPerformedSection').show();
+	       $('.vlResultMandatory').css('visibility','hidden');
+	       $('.vlResultValues').removeClass('isRequired');
+	       $('#vlNotTestedReason').addClass('isRequired');
+	       $('#ptNotTestedComments').addClass('isRequired');
+	   }else{
+		$('.ptNotPerformedSection').hide();
+		$('.vlResultMandatory').css('visibility','visible');
+		$('.vlResultValues').addClass('isRequired');
+		$('#vlNotTestedReason').removeClass('isRequired');
+	        $('#ptNotTestedComments').removeClass('isRequired');
+	   }
+        });
   </script>

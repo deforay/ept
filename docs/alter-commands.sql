@@ -2257,3 +2257,24 @@ ALTER TABLE `r_eid_extraction_assay` ADD `status` VARCHAR(45) NOT NULL DEFAULT '
 
 --Pal 28th-OCT-2016
 ALTER TABLE `shipment_participant_map` CHANGE `participant_supervisor` `participant_supervisor` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
+--Pal 21th-DEC-2016
+ALTER TABLE `response_result_vl` ADD `is_tnd` VARCHAR(45) NULL DEFAULT NULL AFTER `calculated_score`;
+
+ALTER TABLE `shipment_participant_map` ADD `is_pt_test_not_performed` VARCHAR(45) NULL DEFAULT NULL AFTER `shipment_test_date`, ADD `vl_not_tested_reason`INT(11) NULL DEFAULT NULL AFTER `is_pt_test_not_performed`, ADD `pt_test_not_performed_comments` TEXT NULL DEFAULT NULL AFTER `vl_not_tested_reason`;
+
+CREATE TABLE `response_vl_not_tested_reason` (
+  `vl_not_tested_reason_id` int(11) NOT NULL,
+  `vl_not_tested_reason` varchar(500) DEFAULT NULL,
+  `status` varchar(45) NOT NULL DEFAULT 'active'
+)
+
+INSERT INTO `response_vl_not_tested_reason` (`vl_not_tested_reason_id`, `vl_not_tested_reason`, `status`) VALUES
+(1, 'invalid sample', 'active'),
+(2, 'VL machine not working', 'active');
+
+ALTER TABLE `response_vl_not_tested_reason`
+  ADD PRIMARY KEY (`vl_not_tested_reason_id`);
+  
+ALTER TABLE `response_vl_not_tested_reason`
+  MODIFY `vl_not_tested_reason_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;

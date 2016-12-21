@@ -226,16 +226,16 @@ class Application_Service_Schemes {
     }
 
     public function getVlSamples($sId, $pId) {
-
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('ref' => 'reference_result_vl'))
                 ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
                 ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-                ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'responseDate' => 'res.created_on'))
+                ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('sample_id','reported_viral_load','is_tnd', 'responseDate' => 'res.created_on'))
                 ->where('sp.shipment_id = ? ', $sId)
                 ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
     }
+    
     public function getTbSamples($sId, $pId) {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -635,5 +635,12 @@ class Application_Service_Schemes {
             $db->rollBack();
             error_log($e->getMessage());
         }
+    }
+    
+    public function getVlNotTestedReasons(){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('response_vl_not_tested_reason'))
+                 ->where('status = ? ', 'active');
+        return $db->fetchAll($sql);  
     }
 }

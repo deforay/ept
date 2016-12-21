@@ -588,8 +588,9 @@ class Application_Service_Shipments {
             error_log($e->getTraceAsString());
         }
     }
+    
     public function updateVlResults($params) {
-
+       //print_r($params);die;
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
             return false;
         }
@@ -632,10 +633,20 @@ class Application_Service_Shipments {
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 	    if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
-			$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+		$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
 	    }else{
-			$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
-		}
+		$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+	    }
+	    
+	    if(isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed']== 'yes'){
+		$data['is_pt_test_not_performed'] = 'yes';
+		$data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
+		$data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
+	    }else{
+		$data['is_pt_test_not_performed'] = NULL;
+		$data['vl_not_tested_reason'] = NULL;
+		$data['pt_test_not_performed_comments'] = NULL;
+	    }
 	    
 	    if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access =='yes'){
 		$data['qc_done'] = $params['qcDone'];
@@ -649,7 +660,7 @@ class Application_Service_Shipments {
 			$data['qc_created_on'] = NULL;
 		}
 	    }
-		
+	    
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $eidResponseDb = new Application_Model_DbTable_ResponseVl();

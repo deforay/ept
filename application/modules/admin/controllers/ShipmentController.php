@@ -238,8 +238,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
     }
 
-    public function manageEnrollAction()
-    {
+    public function manageEnrollAction(){
          if ($this->_hasParam('sid')) {
             $shipmentId = (int) base64_decode($this->_getParam('sid'));
             $schemeType = base64_decode($this->_getParam('sctype'));
