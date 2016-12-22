@@ -229,8 +229,9 @@ $count++;  ?>
 	<?php } ?>
 </table>
 <hr>
+<div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'checked="checked"':''; ?>/>&nbsp;&nbsp;PT Testing not performed</div>
 <table class="table table-bordered table-striped" style="width:60%;margin:10px auto;">
-<thead>
+<thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'display:none;':''; ?>">
 	<tr>
 		<td colspan="3" style="font-size:1.1em;">
 			Please Note :
@@ -263,7 +264,7 @@ foreach($this->allSamples as $sample){
 $count++;
 ?>
 
-	<tr class="light" >
+	<tr class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'display:none;':''; ?>">
 		<td style="text-align:center;">
 			<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
@@ -279,12 +280,9 @@ $count++;
 
 
 <?php } ?>
-      <tr style="background:none;">
-	<td colspan="3"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'checked="checked"':''; ?>/>&nbsp;&nbsp;PT Testing not performed </td>
-      </tr>
       <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
 	<td colspan="3">
-		If yes,&nbsp;&nbsp;Reason 
+		If yes,&nbsp;&nbsp;Reason <span class="mandatory">*</span>
 		<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;">
 			<option value="">--Select--</option>
 			<?php
@@ -296,7 +294,7 @@ $count++;
 	</td>
       </tr>
       <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
-	<td colspan="3">Comments <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
+	<td colspan="3">Comments <span class="mandatory">*</span><textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
       </tr>
 </table>
 <hr>
@@ -502,6 +500,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 	//PT not performed case
 	$('#isPtTestNotPerformed').change(function () {
 	   if ($(this).is(':checked')) {
+	       $('.vlResultSection').hide();	
 	       $('.vlResultValues').val('');
 	       $('.tnd').attr('checked', false);
 	       $('.ptNotPerformedSection').show();
@@ -510,6 +509,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 	       $('#vlNotTestedReason').addClass('isRequired');
 	       $('#ptNotTestedComments').addClass('isRequired');
 	   }else{
+		$('.vlResultSection').show();
 		$('.ptNotPerformedSection').hide();
 		$('.vlResultMandatory').css('visibility','visible');
 		$('.vlResultValues').addClass('isRequired');
