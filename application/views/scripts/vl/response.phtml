@@ -500,7 +500,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 	//PT not performed case
 	$('#isPtTestNotPerformed').change(function () {
 	   if ($(this).is(':checked')) {
-	       $('.vlResultSection').hide();	
+	       $('.vlResultSection').hide(400);
 	       $('.vlResultValues').val('');
 	       $('.tnd').attr('checked', false);
 	       $('.ptNotPerformedSection').show();
@@ -509,7 +509,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 	       $('#vlNotTestedReason').addClass('isRequired');
 	       $('#ptNotTestedComments').addClass('isRequired');
 	   }else{
-		$('.vlResultSection').show();
+		$('.vlResultSection').show(400);
 		$('.ptNotPerformedSection').hide();
 		$('.vlResultMandatory').css('visibility','visible');
 		$('.vlResultValues').addClass('isRequired');
