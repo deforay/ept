@@ -110,13 +110,13 @@ $count++;  ?>
 	<tr>
 		<td><label>Testing Date</label></td> 
 		<td>
-			<input type="text" id="testDate" name="testDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>"  class="isRequired datepicker form-control" readonly="readonly" />
+			<input type="text" id="testDate" name="testDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>"  class="datepicker form-control" readonly="readonly" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"> Clear</i>
 		</td>		
 
 		<td><label>Specimen Volume used for testing</label></td> 
 		<td>
-			<input type="text" name="specimenVolume" id="specimenVolume" class="form-control"  value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
+			<input type="text" name="specimenVolume" id="specimenVolume" class="form-control" value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
 		</td>
 	</tr>
 	
@@ -270,11 +270,11 @@ $count++;
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
 		</td>
                 <td style="text-align:center;">
-			<input type="text" name="vlResult[]" id="vlResult<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control checkNum vlResultValues"  value="<?php echo $vlResult; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
+			<input type="text" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control checkNum vlResultValues"  value="<?php echo $vlResult; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
 		</td>
 		<td style="text-align:center;">
-			<input type="hidden" name="tndReference[]" id="tndReference<?php echo $sample['sample_id']; ?>"/>
-			<input type="checkbox" name="tnd[]" id="tnd<?php echo $sample['sample_id']; ?>" class="tnd" value="<?php echo $sample['sample_id']; ?>" <?php echo($sample['is_tnd'] =='yes')?'checked="checked"':''; ?>/>
+			<input type="hidden" name="tndReference[]" id="tndReference<?php echo $count; ?>"/>
+			<input type="checkbox" name="tnd[]" id="tnd<?php echo $count; ?>" class="tnd" value="<?php echo $count; ?>" <?php echo($sample['is_tnd'] =='yes')?'checked="checked"':''; ?>/>
 		</td>
         </tr>
 

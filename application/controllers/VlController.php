@@ -89,8 +89,7 @@ class VlController extends Zend_Controller_Action
     	}
     }
 
-    public function downloadAction()
-    {
+    public function downloadAction(){
 		$this->_helper->layout()->disableLayout();
 		$sID= $this->getRequest()->getParam('sid');
 	    $pID= $this->getRequest()->getParam('pid');

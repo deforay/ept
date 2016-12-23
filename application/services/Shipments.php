@@ -615,10 +615,13 @@ class Application_Service_Shipments {
 				"uploaded_file" => $params['uploadedFilePath']
 				);
 			
-			if(isset($params['otherAssay']) && $params['otherAssay'] != ""){
-				$attributes['other_assay'] = $params['otherAssay'];
-			}
-			
+	    if(isset($params['otherAssay']) && $params['otherAssay'] != ""){
+		    $attributes['other_assay'] = $params['otherAssay'];
+	    }
+	    
+	    if(!isset($params['modeOfReceipt'])){
+		$params['modeOfReceipt'] = NULL;
+	    }
             $attributes = json_encode($attributes);
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
