@@ -90,24 +90,24 @@ class VlController extends Zend_Controller_Action
     }
 
     public function downloadAction(){
-		$this->_helper->layout()->disableLayout();
-		$sID= $this->getRequest()->getParam('sid');
-	    $pID= $this->getRequest()->getParam('pid');
-	    $eID =$this->getRequest()->getParam('eid');
-	    
-		$reportService = new Application_Service_Reports();
-        $this->view->header=$reportService->getReportConfigValue('report-header');
-        $this->view->logo=$reportService->getReportConfigValue('logo');
-        $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
-			
-	    $participantService = new Application_Service_Participants();
-	    $this->view->participant = $participantService->getParticipantDetails($pID);
-		$schemeService = new Application_Service_Schemes();
-		$this->view->referenceDetails = $schemeService->getVlReferenceData($sID);
-	    
-		$shipment = $schemeService->getShipmentData($sID,$pID);
-	    $shipment['attributes'] = json_decode($shipment['attributes'],true);
-	    $this->view->shipment = $shipment;
+	$this->_helper->layout()->disableLayout();
+	$sID= $this->getRequest()->getParam('sid');
+	$pID= $this->getRequest()->getParam('pid');
+	$eID =$this->getRequest()->getParam('eid');
+	
+	$reportService = new Application_Service_Reports();
+	$this->view->header=$reportService->getReportConfigValue('report-header');
+	$this->view->logo=$reportService->getReportConfigValue('logo');
+	$this->view->logoRight=$reportService->getReportConfigValue('logo-right');
+	
+	$participantService = new Application_Service_Participants();
+	$this->view->participant = $participantService->getParticipantDetails($pID);
+	$schemeService = new Application_Service_Schemes();
+	$this->view->referenceDetails = $schemeService->getVlReferenceData($sID);
+	$this->view->allNotTestedReason =$schemeService->getVlNotTestedReasons();
+	$shipment = $schemeService->getShipmentData($sID,$pID);
+	$shipment['attributes'] = json_decode($shipment['attributes'],true);
+	$this->view->shipment = $shipment;
     }
 
     public function deleteAction()
