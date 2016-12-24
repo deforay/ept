@@ -229,7 +229,7 @@ $count++;  ?>
 	<?php } ?>
 </table>
 <hr>
-<div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'checked="checked"':''; ?>/>&nbsp;&nbsp;PT Testing not performed</div>
+<div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'checked="checked"':''; ?>/>&nbsp;&nbsp;<label style="font-size:16px;">PT Testing not performed<label></div>
 <table class="table table-bordered table-striped" style="width:60%;margin:10px auto;">
 <thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'display:none;':''; ?>">
 	<tr>
@@ -238,7 +238,7 @@ $count++;  ?>
 			<ul style="margin:10px;">
 				<li>Viral Load should be entered in log<sub>10</sub> copies/ml</li>
 				<li>Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).</li>
-				<li>For negative or undetectable result, please enter 0.00.</li>
+				<li>For negative or undetectable result (TND), please enter 0.00.</li>
 				<li>For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section</li>
 			</ul>
 		</td>
@@ -266,11 +266,11 @@ $count++;
 
 	<tr class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'display:none;':''; ?>">
 		<td style="text-align:center;">
-			<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+			<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory' style='visibility:hidden;'>*</span>"; ?>
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
 		</td>
                 <td style="text-align:center;">
-			<input type="text" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control checkNum vlResultValues"  value="<?php echo $vlResult; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
+			<input type="text" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues"  value="<?php echo $vlResult; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
 		</td>
 		<td style="text-align:center;">
 			<input type="hidden" name="tndReference[]" id="tndReference<?php echo $count; ?>"/>
@@ -282,7 +282,7 @@ $count++;
 <?php } ?>
       <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
 	<td colspan="3">
-		If yes,&nbsp;&nbsp;Reason <span class="mandatory">*</span>
+		<label>If yes,&nbsp;&nbsp;Reason</label> <span class="mandatory">*</span>
 		<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;">
 			<option value="">--Select--</option>
 			<?php
@@ -294,7 +294,10 @@ $count++;
 	</td>
       </tr>
       <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
-	<td colspan="3">Comments <span class="mandatory">*</span><textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
+	<td colspan="3"><label>Comments</label> <span class="mandatory">*</span><textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
+      </tr>
+      <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
+	<td colspan="3"><label>Do you need any support from the PT Provider ?</label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
       </tr>
 </table>
 <hr>

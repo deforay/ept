@@ -645,10 +645,12 @@ class Application_Service_Shipments {
 		$data['is_pt_test_not_performed'] = 'yes';
 		$data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
 		$data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
+		$data['pt_support_comments'] = $params['ptSupportComments'];
 	    }else{
 		$data['is_pt_test_not_performed'] = NULL;
 		$data['vl_not_tested_reason'] = NULL;
 		$data['pt_test_not_performed_comments'] = NULL;
+		$data['pt_support_comments'] = NULL;
 	    }
 	    
 	    if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access =='yes'){

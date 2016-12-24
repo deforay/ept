@@ -115,13 +115,28 @@ $dtFormat=  $genderHelper->getDateFormat();
 		<td></td>
 	</tr>	
 	</table>
-	
-	<?php
-
-	
-?>
-<br/>
-
+       <br/>
+       <?php
+       if(isset($this->evaluateData['shipment']['is_pt_test_not_performed']) && $this->evaluateData['shipment']['is_pt_test_not_performed'] == 'yes'){
+       ?>
+	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+	     <caption style="text-align:left;"><legend><i class="icon-check"></i> PT Testing not performed</legend></caption>
+	     <tr>
+		 <th style="text-align:left;width:30%;">Reason</th>
+		 <td style="text-align:left;width:70%;"><?php echo ucfirst($this->evaluateData['shipment']['vlNotTestedReason']); ?></td>
+	     </tr>
+	     <tr>
+		 <th style="text-align:left;">Comments</th>
+		 <td style="text-align:left;"><?php echo ucfirst($this->evaluateData['shipment']['pt_test_not_performed_comments']); ?></td>
+	     </tr>
+	     <tr>
+		 <th style="text-align:left;">Do you need any support from the PT Provider ?</th>
+		 <td style="text-align:left;"><?php echo ucfirst($this->evaluateData['shipment']['pt_support_comments']); ?></td>
+	     </tr>
+	</table>
+	<br/>
+       <?php } ?>
+       
 	<?php
 		if(isset($this->evaluateData['controlResults']) && sizeof($this->evaluateData['controlResults'])){
 	?>
