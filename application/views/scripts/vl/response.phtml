@@ -230,8 +230,8 @@ $count++;  ?>
 </table>
 <hr>
 <div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'checked="checked"':''; ?>/>&nbsp;&nbsp;<label style="font-size:16px;">PT Testing not performed<label></div>
-<div style="width:100%;padding-left:20%;"><label style="font-size:16px;">Viral Load -> Log<sub>10</sub> copies/ml<label></div>
-<div style="width:100%;padding-left:20%;"><input type="text" class="form-control checkNum" id="vlResultToLog" name="vlResultToLog" placeholder="Enter a result value to calculate the log value" style="width:40%;"/><span class="mandatory logValFormVl" style="font-size:16px;display:none;"></span></div>
+<div class="vlResultSection" style="width:100%;padding-left:20%;"><label style="font-size:16px;">Viral Load -> Log<sub>10</sub> copies/ml<label></div>
+<div class="vlResultSection" style="width:100%;padding-left:20%;"><input type="text" class="form-control checkNum" id="vlResultToLog" name="vlResultToLog" placeholder="Enter a result value to calculate the log value" style="width:40%;"/><span class="mandatory logValFormVl" style="font-size:16px;display:none;"></span></div>
 <table class="table table-bordered table-striped" style="width:60%;margin:10px auto;">
 <thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'display:none;':''; ?>">
 	<tr>
@@ -505,7 +505,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 	//PT not performed case
 	$('#isPtTestNotPerformed').change(function () {
 	   if ($(this).is(':checked')) {
-	       $('.vlResultSection').hide(400);
+	       $('.vlResultSection').hide();
 	       $('.vlResultValues').val('');
 	       $('.tnd').attr('checked', false);
 	       $('.ptNotPerformedSection').show();
@@ -514,7 +514,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 	       $('#vlNotTestedReason').addClass('isRequired');
 	       $('#ptNotTestedComments').addClass('isRequired');
 	   }else{
-		$('.vlResultSection').show(400);
+		$('.vlResultSection').show();
 		$('.ptNotPerformedSection').hide();
 		$('.vlResultMandatory').css('visibility','visible');
 		$('.vlResultValues').addClass('isRequired');
