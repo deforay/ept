@@ -1,0 +1,114 @@
+
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<legend><h3>Annual Reports</h3></legend>
+<table  style="margin:20px 0;" class="table table-bordered">
+   
+    <tr>
+        <td style="width:20%">
+            <input type="text" id="dateRange" name="dateRange"  class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder ="Click here to pick a Date Range"/>
+        </td>		
+        <td style="width:30%">
+            <select id="scheme" name="scheme"  class="input-sm" multiple="multiple" onchange="getShipmentCodes()" style="width:90%;">
+                <option></option>
+                <?php
+                foreach ($this->schemes as $scheme) {
+                    ?>
+                    <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
+                    <?php
+                }
+                ?>
+            </select>			
+        </td>
+        <td style="width:35%">
+            <select id="shipmentId" name="shipmentId" multiple="multiple" style="width:90%;">
+                <option></option>
+            </select>			
+        </td>
+        <td class="dontPrint" style="width:15%"><button class="btn btn-success btn-sm" onclick="getAnnualReport()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button></td>
+    </tr>
+</table>
+    <br/>
+    <br/>
+    <div align="left" style="padding-top:3px;" class="col-lg-6">
+        <span id="summaryDiv" >
+            <?php
+            $dir=UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports";
+            $scanFileDir = scandir($dir);
+            foreach($scanFileDir as $file){
+                if($file!="." && $file!=".."){
+                if (file_exists(UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports". DIRECTORY_SEPARATOR.$file)) {
+                ?>
+                <a href="<?php echo $this->baseUrl("uploads/annual-reports/$file"); ?>" class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download <?php echo $file; ?></a>
+                <?php
+                }
+                }
+            }
+            ?>
+        </span>
+    </div>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript">
+    var startDate = "";
+    var endDate = "";
+    $(document).ready(function () {
+        $('#dateRange').daterangepicker({
+            format: 'DD-MMM-YYYY',
+            ranges: {
+                //'Last 60 Days': [moment().subtract('days', 59), moment()],
+                //'Last 90 Days': [moment().subtract('days', 89), moment()],
+                'Last 180 Days': [moment().subtract('days', 179), moment()],
+                'Last 12 Months': [moment().subtract('month', 12), moment()],
+                'Last 18 Months': [moment().subtract('month', 18), moment()],
+            }
+        },
+        function (start, end) {
+            startDate = start.format('YYYY-MM-DD');
+            endDate = end.format('YYYY-MM-DD');
+            getShipmentCodes();
+        });
+        
+        $("#scheme").select2({
+            placeholder: "Select one or more scheme",
+            allowClear: true
+        })
+        .on("change", function(e) {
+          //console.log("change val=" + e.val);
+          //$("#scheme").select2("val","");
+        });
+
+        $("#shipmentId").select2({
+            placeholder: "Select one or more shipment",
+            allowClear: true
+        });
+    });
+    
+    function getShipmentCodes() {
+        schemeType=$("#scheme").select2("val");
+        $('#shipmentId').select2('data',null);
+        
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {schemeType: schemeType, startDate: startDate, endDate: endDate, format: "html"},
+        function (data) {
+            $("#shipmentId").html(data);
+            $.unblockUI();
+        });
+    }
+    
+    function getAnnualReport() {
+        if (startDate == "" || endDate == "") {
+            alert('Please pick a date range to fetch shipment list');
+            return false;
+        }
+        $.blockUI();
+        scheme=$("#scheme").select2("val");
+        shipmentId=$("#shipmentId").select2("val");
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'index'), 'default', true); ?>", {startDate: startDate, endDate: endDate,scheme:scheme,shipmentId:shipmentId,format: "html"},
+        function (data) {
+            $("#summaryDiv").prepend("&nbsp;&nbsp;<a href='<?php echo $this->baseUrl("uploads/annual-reports/"); ?>"+data+"' class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download "+data+" </a>");
+            $.unblockUI();
+        });
+    }
+    
+</script>

@@ -4066,4 +4066,274 @@ class Application_Service_Reports {
 	}
 	return $totalResult;
     }
+	
+	public function getShipmentsByDate($schemeType,$startDate,$endDate) {
+        $resultArray = array();
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
+                ->where("DATE(s.shipment_date) >= ?", $startDate)
+                ->where("DATE(s.shipment_date) <= ?", $endDate)
+                ->order("s.shipment_id");
+		if(isset($schemeType) && count($schemeType)>0) {
+			$sWhere="";
+			foreach($schemeType as $val){
+				if ($sWhere!="") {
+					$sWhere .= " OR ";
+                }
+				$sWhere.="s.scheme_type='".$val."'";
+			}
+            $sQuery = $sQuery->where($sWhere);
+        }
+		
+        $resultArray = $db->fetchAll($sQuery);
+        return $resultArray;
+    }
+	
+	public function getAnnualReport($params){
+		if(isset($params['startDate']) && trim($params['startDate'])!="" && trim($params['endDate'])!=""){
+			$startDate=$params['startDate'];
+			$endDate=$params['endDate'];
+			
+			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$query = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
+								->where("DATE(s.shipment_date) >= ?", $startDate)
+								->where("DATE(s.shipment_date) <= ?", $endDate)
+								->order("s.shipment_id");
+			
+			if(isset($params['scheme']) && count($params['scheme'])>0) {
+				$sWhere="";
+				foreach($params['scheme'] as $val){
+					if ($sWhere!="") {
+						$sWhere .= " OR ";
+					}
+					$sWhere.="s.scheme_type='".$val."'";
+				}
+				$query = $query->where($sWhere);
+			}
+			$shipmentResult = $db->fetchAll($query);
+			$shipmentIDArray=array();
+			foreach($shipmentResult as $val){
+				$shipmentIdArray[]=$val['shipment_id'];
+				$impShipmentId=implode(",",$shipmentIdArray);
+			}
+			
+			$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id','spm.shipment_id','spm.participant_id','spm.shipment_score','spm.final_result'))
+									->join(array('s' => 'shipment'),'s.shipment_id=spm.shipment_id',array('shipment_code','scheme_type'))
+									->join(array('p' => 'participant'),'p.participant_id=spm.participant_id',array('unique_identifier','first_name','last_name','email','city','state','address','institute_name'))
+									->joinLeft(array('c' => 'countries'),'c.id=p.country',array('iso_name'));
+			
+			if(isset($params['shipmentId']) && count($params['shipmentId'])>0) {
+				$impShipmentId=implode(",",$params['shipmentId']);
+				$sQuery->where('spm.shipment_id IN ('.$impShipmentId.')');
+			}else{
+				//$sQuery->where('spm.shipment_id IN(?)', $impShipmentId);
+				$sQuery->where('spm.shipment_id IN ('.$impShipmentId.')');
+			}
+			//echo $sQuery;die;
+			//$shipmentParticipantResult = $db->fetchAll($sQuery);
+			return $this->generateAnnualReport($sQuery,$startDate,$endDate);
+		}
+	}
+	
+	public function generateAnnualReport($sQuery,$startDate,$endDate){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$shipmentParticipantResult=$db->fetchAll($sQuery);
+		//Zend_Debug::dump($shipmentParticipantResult);
+		$shipmentPassResult=array();
+		$shipmentFailResult=array();
+		$headings = array('Shipment Code','Participants Identifier','Participants Name','Institute Name','Address','Country','State','City');
+		//foreach($shipmentParticipantResult as $shipment){
+		//	if($shipment['final_result']==1){
+		//		$shipmentPassResult[$shipment['shipment_code']][$shipment['unique_identifier']]=array();
+		//		$shipmentPassResult[$shipment['shipment_code']][$shipment['unique_identifier']][]=$shipment['unique_identifier'];
+		//		$shipmentPassResult[$shipment['shipment_code']][$shipment['unique_identifier']][]=$shipment['first_name'];
+		//	}
+		//	if($shipment['final_result']==2){
+		//		$shipmentFailResult[$shipment['shipment_code']][$shipment['unique_identifier']]=array();
+		//		$shipmentFailResult[$shipment['shipment_code']][$shipment['unique_identifier']][]=$shipment['unique_identifier'];
+		//		$shipmentFailResult[$shipment['shipment_code']][$shipment['unique_identifier']][]=$shipment['first_name'];
+		//	}
+		//}
+		
+		$excel = new PHPExcel();
+		$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+		$cacheSettings = array('memoryCacheSize' => '80MB');
+		PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+		$output = array();
+		$secondSheetOutput = array();
+		$thirdSheetOutput = array();
+		$sheet = $excel->getActiveSheet();
+		$firstSheet = new PHPExcel_Worksheet($excel, 'Pass Result');
+		$excel->addSheet($firstSheet, 0);
+		$firstSheet->getDefaultColumnDimension()->setWidth(20);
+		$firstSheet->getDefaultRowDimension()->setRowHeight(18);
+		$firstSheet->setTitle('Pass Result');
+		$styleArray = array(
+			'font' => array(
+				'bold' => true,
+			),
+			'alignment' => array(
+				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+				'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+			),
+			'borders' => array(
+				'outline' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THICK,
+				),
+			)
+		);
+		
+		$colNo = 0;
+		$firstSheet->mergeCells('A1:I1');
+		$firstSheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Annual Report', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+		
+		$firstSheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanDateFormat($startDate)." to ".Pt_Commons_General::humanDateFormat($endDate), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+		
+		$firstSheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+		$firstSheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
+		$firstSheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
+
+		foreach ($headings as $field => $value) {
+			$firstSheet->getCellByColumnAndRow($colNo, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$firstSheet->getStyleByColumnAndRow($colNo, 5)->getFont()->setBold(true);
+			$colNo++;
+		}
+		//Zend_Debug::dump($shipmentPassResult);
+		foreach($shipmentParticipantResult as $shipment){
+			$firstSheetRow = array();
+			$secondSheetRow = array();
+			$thirdSheetRow = array();
+			if($shipment['final_result']==1){
+				$firstSheetRow[]=$shipment['shipment_code'];
+				$firstSheetRow[]=$shipment['unique_identifier'];
+				$firstSheetRow[]=$shipment['first_name']." ".$shipment['last_name'];
+				$firstSheetRow[]=$shipment['institute_name'];
+				$firstSheetRow[]=$shipment['address'];
+				$firstSheetRow[]=$shipment['iso_name'];
+				$firstSheetRow[]=$shipment['state'];
+				$firstSheetRow[]=$shipment['city'];
+				$output[] = $firstSheetRow;
+			}
+			
+			if($shipment['final_result']==4){
+				$secondSheetRow[]=$shipment['shipment_code'];
+				$secondSheetRow[]=$shipment['unique_identifier'];
+				$secondSheetRow[]=$shipment['first_name']." ".$shipment['last_name'];
+				$secondSheetRow[]=$shipment['institute_name'];
+				$secondSheetRow[]=$shipment['address'];
+				$secondSheetRow[]=$shipment['iso_name'];
+				$secondSheetRow[]=$shipment['state'];
+				$secondSheetRow[]=$shipment['city'];
+				$secondSheetOutput[] = $secondSheetRow;
+			}
+			
+			if($shipment['final_result']==2 || $shipment['final_result']==0){
+				$thirdSheetRow[]=$shipment['shipment_code'];
+				$thirdSheetRow[]=$shipment['unique_identifier'];
+				$thirdSheetRow[]=$shipment['first_name']." ".$shipment['last_name'];
+				$thirdSheetRow[]=$shipment['institute_name'];
+				$thirdSheetRow[]=$shipment['address'];
+				$thirdSheetRow[]=$shipment['iso_name'];
+				$thirdSheetRow[]=$shipment['state'];
+				$thirdSheetRow[]=$shipment['city'];
+				$thirdSheetOutput[] = $thirdSheetRow;
+			}
+		}
+		
+		//foreach($shipmentPassResult as $shipmentKey=>$shipment){
+		//	//$row[]=$shipmentKey;
+		//	
+		//	foreach($shipment as $val){
+		//		$row = array();
+		//		//echo $val[0];
+		//		$row[]=$val[0];
+		//		$row[]=$val[1];
+		//		$output[] = $row;
+		//	}
+		//}
+		
+		foreach ($output as $rowNo => $rowData) {
+			$colNo = 0;
+			foreach ($rowData as $field => $value) {
+				if (!isset($value)) {
+					$value = "";
+				}
+				$firstSheet->getCellByColumnAndRow($colNo, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				if ($colNo == (sizeof($headings) - 1)) {
+					//$firstSheet->getColumnDimensionByColumn($colNo)->setWidth(100);
+					$firstSheet->getStyleByColumnAndRow($colNo, $rowNo + 6)->getAlignment()->setWrapText(true);
+				}
+				$colNo++;
+			}
+		}
+		
+		$secondSheet = new PHPExcel_Worksheet($excel, 'Fail Result');
+		$excel->addSheet($secondSheet, 1);
+		$secondSheet->setTitle('Excluded Result');
+		$secondSheet->getDefaultColumnDimension()->setWidth(20);
+		$secondSheet->getDefaultRowDimension()->setRowHeight(18);
+		$colNo = 0;
+		foreach ($headings as $field => $value) {
+			$secondSheet->getCellByColumnAndRow($colNo, 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$secondSheet->getStyleByColumnAndRow($colNo, 2)->getFont()->setBold(true);
+			$colNo++;
+		}
+		
+		foreach ($secondSheetOutput as $rowNo => $rowData) {
+			$colNo = 0;
+			foreach ($rowData as $field => $value) {
+				if (!isset($value)) {
+					$value = "";
+				}
+				$secondSheet->getCellByColumnAndRow($colNo, $rowNo + 3)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				if ($colNo == (sizeof($headings) - 1)) {
+					//$secondSheet->getColumnDimensionByColumn($colNo)->setWidth(100);
+					$secondSheet->getStyleByColumnAndRow($colNo, $rowNo + 3)->getAlignment()->setWrapText(true);
+				}
+				$colNo++;
+			}
+		}
+		
+		$thirdSheet = new PHPExcel_Worksheet($excel, 'Fail Result');
+		$excel->addSheet($thirdSheet, 2);
+		$thirdSheet->setTitle('Fail Result');
+		$thirdSheet->getDefaultColumnDimension()->setWidth(20);
+		$thirdSheet->getDefaultRowDimension()->setRowHeight(18);
+		$colNo = 0;
+		foreach ($headings as $field => $value) {
+			$thirdSheet->getCellByColumnAndRow($colNo, 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$thirdSheet->getStyleByColumnAndRow($colNo, 2)->getFont()->setBold(true);
+			$colNo++;
+		}
+		
+		foreach ($thirdSheetOutput as $rowNo => $rowData) {
+			$colNo = 0;
+			foreach ($rowData as $field => $value) {
+				if (!isset($value)) {
+					$value = "";
+				}
+				$thirdSheet->getCellByColumnAndRow($colNo, $rowNo + 3)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				if ($colNo == (sizeof($headings) - 1)) {
+					//$thirdSheet->getColumnDimensionByColumn($colNo)->setWidth(100);
+					$thirdSheet->getStyleByColumnAndRow($colNo, $rowNo + 3)->getAlignment()->setWrapText(true);
+				}
+				$colNo++;
+			}
+		}
+		
+		if (!file_exists(UPLOAD_PATH) && !is_dir(UPLOAD_PATH)) {
+			mkdir(UPLOAD_PATH);
+		}
+		
+		if (!file_exists(UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports") && !is_dir(UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports")) {
+			mkdir(UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports");
+		}
+		$excel->setActiveSheetIndex(0);
+		$writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
+		$filename = 'Annual Report-'.date('d-M-Y H:i:s').'.xls';
+		$writer->save(UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports". DIRECTORY_SEPARATOR . $filename);
+		return $filename;
+		
+	}
 }
