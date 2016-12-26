@@ -410,7 +410,7 @@ class Application_Service_Evaluation {
 
         $participantData = $participantService->getParticipantDetails($participantId);
         $shipmentData = $schemeService->getShipmentData($shipmentId, $participantId);
-
+       
         if ($scheme == 'eid') {
             $possibleResults = $schemeService->getPossibleResults('eid');
             $evalComments = $schemeService->getSchemeEvaluationComments('eid');
@@ -471,8 +471,6 @@ class Application_Service_Evaluation {
     }
 
     public function viewEvaluation($shipmentId, $participantId, $scheme) {
-
-
         $participantService = new Application_Service_Participants();
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();

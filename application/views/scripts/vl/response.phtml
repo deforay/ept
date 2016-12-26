@@ -110,13 +110,13 @@ $count++;  ?>
 	<tr>
 		<td><label>Testing Date</label></td> 
 		<td>
-			<input type="text" id="testDate" name="testDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>"  class="isRequired datepicker form-control" readonly="readonly" />
+			<input type="text" id="testDate" name="testDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>"  class="datepicker form-control" readonly="readonly" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"> Clear</i>
 		</td>		
 
 		<td><label>Specimen Volume used for testing</label></td> 
 		<td>
-			<input type="text" name="specimenVolume" id="specimenVolume" class="form-control"  value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
+			<input type="text" name="specimenVolume" id="specimenVolume" class="form-control" value="<?php echo $this->shipment['attributes']['specimen_volume'];?>"/>
 		</td>
 	</tr>
 	
@@ -229,15 +229,18 @@ $count++;  ?>
 	<?php } ?>
 </table>
 <hr>
+<div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'checked="checked"':''; ?>/>&nbsp;&nbsp;<label style="font-size:16px;">PT Testing not performed<label></div>
+<div class="vlResultSection" style="width:100%;padding-left:20%;"><label style="font-size:16px;">Viral Load -> Log<sub>10</sub> copies/ml<label></div>
+<div class="vlResultSection" style="width:100%;padding-left:20%;"><input type="text" class="form-control checkNum" id="vlResultToLog" name="vlResultToLog" placeholder="Enter a result value to calculate the log value" style="width:40%;"/><span class="mandatory logValFormVl" style="font-size:16px;display:none;"></span></div>
 <table class="table table-bordered table-striped" style="width:60%;margin:10px auto;">
-<thead>
+<thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'display:none;':''; ?>">
 	<tr>
 		<td colspan="3" style="font-size:1.1em;">
 			Please Note :
 			<ul style="margin:10px;">
 				<li>Viral Load should be entered in log<sub>10</sub> copies/ml</li>
 				<li>Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).</li>
-				<li>For negative or undetectable result, please enter 0.00.</li>
+				<li>For negative or undetectable result (TND), please enter 0.00.</li>
 				<li>For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section</li>
 			</ul>
 		</td>
@@ -263,28 +266,25 @@ foreach($this->allSamples as $sample){
 $count++;
 ?>
 
-	<tr class="light" >
+	<tr class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'display:none;':''; ?>">
 		<td style="text-align:center;">
-			<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+			<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory' style='visibility:hidden;'>*</span>"; ?>
 			<input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id'];?>" />
 		</td>
                 <td style="text-align:center;">
-			<input type="text" name="vlResult[]" id="vlResult<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control checkNum vlResultValues"  value="<?php echo $vlResult; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
+			<input type="text" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues"  value="<?php echo $vlResult; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
 		</td>
 		<td style="text-align:center;">
-			<input type="hidden" name="tndReference[]" id="tndReference<?php echo $sample['sample_id']; ?>"/>
-			<input type="checkbox" name="tnd[]" id="tnd<?php echo $sample['sample_id']; ?>" class="tnd" value="<?php echo $sample['sample_id']; ?>" <?php echo($sample['is_tnd'] =='yes')?'checked="checked"':''; ?>/>
+			<input type="hidden" name="tndReference[]" id="tndReference<?php echo $count; ?>"/>
+			<input type="checkbox" name="tnd[]" id="tnd<?php echo $count; ?>" class="tnd" value="<?php echo $count; ?>" <?php echo($sample['is_tnd'] =='yes')?'checked="checked"':''; ?>/>
 		</td>
         </tr>
 
 
 <?php } ?>
-      <tr style="background:none;">
-	<td colspan="3"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'checked="checked"':''; ?>/>&nbsp;&nbsp;PT Testing not performed </td>
-      </tr>
       <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
 	<td colspan="3">
-		If yes,&nbsp;&nbsp;Reason 
+		<label>If yes,&nbsp;&nbsp;Reason</label> <span class="mandatory">*</span>
 		<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;">
 			<option value="">--Select--</option>
 			<?php
@@ -296,7 +296,10 @@ $count++;
 	</td>
       </tr>
       <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
-	<td colspan="3">Comments <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
+	<td colspan="3"><label>Comments</label> <span class="mandatory">*</span><textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
+      </tr>
+      <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
+	<td colspan="3"><label>Do you need any support from the PT Provider ?</label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
       </tr>
 </table>
 <hr>
@@ -502,6 +505,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 	//PT not performed case
 	$('#isPtTestNotPerformed').change(function () {
 	   if ($(this).is(':checked')) {
+	       $('.vlResultSection').hide();
 	       $('.vlResultValues').val('');
 	       $('.tnd').attr('checked', false);
 	       $('.ptNotPerformedSection').show();
@@ -510,6 +514,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 	       $('#vlNotTestedReason').addClass('isRequired');
 	       $('#ptNotTestedComments').addClass('isRequired');
 	   }else{
+		$('.vlResultSection').show();
 		$('.ptNotPerformedSection').hide();
 		$('.vlResultMandatory').css('visibility','visible');
 		$('.vlResultValues').addClass('isRequired');
@@ -517,4 +522,56 @@ $dtFormat=  $genderHelper->getDateFormat();
 	        $('#ptNotTestedComments').removeClass('isRequired');
 	   }
         });
+	
+	jQuery(".checkNum").keydown(function (e) {
+	      // Allow: backspace, delete, tab, escape, enter and .
+	      if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+		       // Allow: Ctrl+A
+		      (e.keyCode == 65 && e.ctrlKey === true) || 
+		       // Allow: home, end, left, right
+		      (e.keyCode >= 35 && e.keyCode <= 39)) {
+			       // let it happen, don't do anything
+			       return;
+	      }
+	      // Ensure that it is a number and stop the keypress
+	      if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+		      e.preventDefault();
+	      }
+       });
+	
+	jQuery(".checkVlVal").keypress(function (event) {
+		var $this = $(this);
+		if ((event.which != 46 || $this.val().indexOf('.') != -1) &&
+		   ((event.which < 48 || event.which > 57) &&
+		   (event.which != 0 && event.which != 8))) {
+		       event.preventDefault();
+		}
+	    
+		var text = $(this).val();
+		if ((event.which == 46) && (text.indexOf('.') == -1)) {
+		    setTimeout(function() {
+			if ($this.val().substring($this.val().indexOf('.')).length > 3) {
+			    $this.val($this.val().substring(0, $this.val().indexOf('.') + 3));
+			}
+		    }, 1);
+		}
+	    
+		if ((text.indexOf('.') != -1) &&
+		    (text.substring(text.indexOf('.')).length > 2) &&
+		    (event.which != 0 && event.which != 8) &&
+		    ($(this)[0].selectionStart >= text.length - 2)) {
+			event.preventDefault();
+		}      
+	});
+	
+	jQuery("#vlResultToLog").on("keypress",function (event) {
+	        var vlVal = $("#vlResultToLog").val();
+		if(vlVal != "" && vlVal != 0){
+	          $(".logValFormVl").show();		
+		  $(".logValFormVl").html(Math.round(Math.log10(vlVal) * 100) / 100);
+		}else{
+                  $(".logValFormVl").hide();		
+		  $(".logValFormVl").html("");
+		}
+	});
   </script>

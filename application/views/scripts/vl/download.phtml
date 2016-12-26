@@ -196,6 +196,38 @@ class MYPDF extends TCPDF {
 			
 		$labInfo.='</table><br/><br/>';
 		
+		$isPtTestNotPerformed = '';
+		if(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] =='yes'){
+		    $isPtTestNotPerformed = 'checked="checked"';
+		}
+		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+			$labInfo.='<tr style="background-color:#CCCCCC;">';
+				$labInfo.='<td colspan="2" style="text-align:left;font-weight:bold;"><input type="checkbox" name="isPtTestNotPerformed" value="yes" '.$isPtTestNotPerformed.'/>';
+				$labInfo.='PT Testing not performed</td>';
+			$labInfo.='</tr>';
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="text-align:left;font-weight:bold;width:25%;"> If Yes, &nbsp;&nbsp;Reason</td>';
+				$labInfo.='<td style="text-align:left;width:75%;">';
+				foreach($this->allNotTestedReason as $reason){
+			           $isCurrentCheckedReason = '';		
+				   if($this->shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']){
+					$isCurrentCheckedReason = 'checked="checked"';
+				   }
+				   $labInfo.='<input type="radio" name="vlNotTestedReason" value="01" '.$isCurrentCheckedReason.'/>';
+				   $labInfo.=ucwords($reason['vl_not_tested_reason']).'&nbsp;&nbsp;';
+				}
+				$labInfo.='</td>';
+			$labInfo.='</tr>';
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="text-align:left;font-weight:bold;"> Comments</td>';
+				$labInfo.='<td style="text-align:left;">'.ucfirst($this->shipment['pt_test_not_performed_comments']).'</td>';
+			$labInfo.='</tr>';
+			$labInfo.='<tr style="background-color:#F7F7F7;">';
+				$labInfo.='<td style="text-align:left;font-weight:bold;"> Do you need any support from the PT Provider ?</td>';
+				$labInfo.='<td style="text-align:left;">'.ucfirst($this->shipment['pt_support_comments']).'</td>';
+			$labInfo.='</tr>';
+		$labInfo.='</table><br/><br/>';
+		
 		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 			$labInfo.='<tr style="background-color:#CCCCCC;">';
 				$labInfo.='<td style="font-weight:bold;">Supervisor Review</td>';
