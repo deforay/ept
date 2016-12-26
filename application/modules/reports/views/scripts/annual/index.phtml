@@ -108,13 +108,13 @@
             return false;
         }
         if (shipmentCode){
-            //$.blockUI();
+            $.blockUI();
             scheme=$("#scheme").select2("val");
             shipmentId=$("#shipmentId").select2("val");
             $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'index'), 'default', true); ?>", {startDate: startDate, endDate: endDate,scheme:scheme,shipmentId:shipmentId,format: "html"},
             function (data) {
-                //$("#summaryDiv").prepend("&nbsp;&nbsp;<a href='<?php echo $this->baseUrl("uploads/annual-reports/"); ?>"+data+"' class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download "+data+" </a>");
-                //$.unblockUI();
+                $("#summaryDiv").prepend("&nbsp;&nbsp;<a href='<?php echo $this->baseUrl("uploads/annual-reports/"); ?>"+data+"' class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download "+data+" </a>");
+                $.unblockUI();
             });
         }else{
             alert("Shipment not available,Please select correct date and scheme");
