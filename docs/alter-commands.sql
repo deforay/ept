@@ -2267,7 +2267,7 @@ CREATE TABLE `response_vl_not_tested_reason` (
   `vl_not_tested_reason_id` int(11) NOT NULL,
   `vl_not_tested_reason` varchar(500) DEFAULT NULL,
   `status` varchar(45) NOT NULL DEFAULT 'active'
-)
+);
 
 INSERT INTO `response_vl_not_tested_reason` (`vl_not_tested_reason_id`, `vl_not_tested_reason`, `status`) VALUES
 (1, 'invalid sample', 'active'),

@@ -229,9 +229,9 @@ $count++;  ?>
 	<?php } ?>
 </table>
 <hr>
-<div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'checked="checked"':''; ?>/>&nbsp;&nbsp;<label style="font-size:16px;">PT Testing not performed<label></div>
-<div class="vlResultSection" style="width:100%;padding-left:20%;"><label style="font-size:16px;">Viral Load -> Log<sub>10</sub> copies/ml<label></div>
-<div class="vlResultSection" style="width:100%;padding-left:20%;"><input type="text" class="form-control checkNum" id="vlResultToLog" name="vlResultToLog" placeholder="Enter a result value to calculate the log value" style="width:40%;"/><span class="mandatory logValFormVl" style="font-size:16px;display:none;"></span></div>
+<div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo(isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'checked="checked"':''; ?>/>&nbsp;&nbsp;<label style="font-size:16px;">PT test not performed<label></div>
+
+
 <table class="table table-bordered table-striped" style="width:60%;margin:10px auto;">
 <thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'display:none;':''; ?>">
 	<tr>
@@ -243,6 +243,9 @@ $count++;  ?>
 				<li>For negative or undetectable result (TND), please enter 0.00.</li>
 				<li>For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section</li>
 			</ul>
+			
+			<div class="vlResultSection" style="width:100%;padding-left:20%;"><label style="font-size:16px;">Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)<label></div>
+			<div class="vlResultSection" style="width:100%;padding-left:20%;"><input type="text" class="form-control checkNum" id="vlResultToLog" name="vlResultToLog" placeholder="Enter a result value to calculate the log value" style="width:80%;"/><span class="mandatory logValFormVl" style="font-size:16px;display:none;"></span></div>
 		</td>
 	</tr>
 	<tr align="center" class="" >
@@ -284,7 +287,7 @@ $count++;
 <?php } ?>
       <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
 	<td colspan="3">
-		<label>If yes,&nbsp;&nbsp;Reason</label> <span class="mandatory">*</span>
+		<label>If yes,&nbsp;&nbsp;please state the reason</label> <span class="mandatory">*</span> : 
 		<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;">
 			<option value="">--Select--</option>
 			<?php
@@ -296,7 +299,7 @@ $count++;
 	</td>
       </tr>
       <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
-	<td colspan="3"><label>Comments</label> <span class="mandatory">*</span><textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
+	<td colspan="3"><label>Your comments</label> <span class="mandatory">*</span> : <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
       </tr>
       <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'':'display:none;'; ?>background:none;">
 	<td colspan="3"><label>Do you need any support from the PT Provider ?</label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
