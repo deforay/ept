@@ -2270,8 +2270,9 @@ CREATE TABLE `response_vl_not_tested_reason` (
 );
 
 INSERT INTO `response_vl_not_tested_reason` (`vl_not_tested_reason_id`, `vl_not_tested_reason`, `status`) VALUES
-(1, 'invalid sample', 'active'),
-(2, 'VL machine not working', 'active');
+(1, 'Issue with Sample', 'active'),
+(2, 'Viral Load Machine not working', 'active'),
+(3, 'Other', 'active');
 
 ALTER TABLE `response_vl_not_tested_reason`
   ADD PRIMARY KEY (`vl_not_tested_reason_id`);
