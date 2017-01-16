@@ -1503,6 +1503,7 @@ class Application_Service_Evaluation {
 				$attributes = json_decode($shipment['attributes'], true);
 
 				foreach ($results as $result) {
+					if($result['control'] == 1) continue;
 					$calcResult = "";
 					$responseAssay = json_decode($result['attributes'], true);
 					$responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : "";
