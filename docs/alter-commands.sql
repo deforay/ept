@@ -2282,3 +2282,9 @@ ALTER TABLE `response_vl_not_tested_reason`
   
 --Pal 24th-DEC-2016
 ALTER TABLE `shipment_participant_map` ADD `pt_support_comments` TEXT NULL DEFAULT NULL AFTER `pt_test_not_performed_comments`;
+
+
+
+--Ilahir 17-JAN-2017
+
+ALTER TABLE  `participant` ADD  `additional_email` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `email` ;
