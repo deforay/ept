@@ -4211,19 +4211,19 @@ class Application_Service_Reports {
 		);
 		
 		$colNo = 0;
-		$firstSheet->mergeCells('A1:I1');
-		$firstSheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Annual Report', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+		//$firstSheet->mergeCells('A1:I1');
+		//$firstSheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Annual Report', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		
-		$firstSheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanDateFormat($startDate)." to ".Pt_Commons_General::humanDateFormat($endDate), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+		//$firstSheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        //$firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanDateFormat($startDate)." to ".Pt_Commons_General::humanDateFormat($endDate), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 		
-		$firstSheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
-		$firstSheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
-		$firstSheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
+		//$firstSheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+		//$firstSheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
+		//$firstSheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
 
 		foreach ($headings as $field => $value) {
-			$firstSheet->getCellByColumnAndRow($colNo, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$firstSheet->getStyleByColumnAndRow($colNo, 5)->getFont()->setBold(true);
+			$firstSheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$firstSheet->getStyleByColumnAndRow($colNo, 1)->getFont()->setBold(true);
 			$colNo++;
 		}
 		
@@ -4238,7 +4238,11 @@ class Application_Service_Reports {
 				
 				foreach($scheme as $va){
 					if(isset($arrayVal[$schemeKey][$va]['score'])){
-						$firstSheetRow[]=$arrayVal[$schemeKey][$va]['score'];
+						if($arrayVal[$schemeKey][$va]['result']==4){
+							$firstSheetRow[]='Excluded';
+						}else{
+							$firstSheetRow[]=$arrayVal[$schemeKey][$va]['score'];	
+						}
 						
 						if($arrayVal[$schemeKey][$va]['result']!=1){
 							$certificate=false;
@@ -4272,10 +4276,10 @@ class Application_Service_Reports {
 				if (!isset($value)) {
 					$value = "";
 				}
-				$firstSheet->getCellByColumnAndRow($colNo, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$firstSheet->getCellByColumnAndRow($colNo, $rowNo + 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				if ($colNo == (sizeof($headings) - 1)) {
 					//$firstSheet->getColumnDimensionByColumn($colNo)->setWidth(100);
-					$firstSheet->getStyleByColumnAndRow($colNo, $rowNo + 6)->getAlignment()->setWrapText(true);
+					$firstSheet->getStyleByColumnAndRow($colNo, $rowNo + 2)->getAlignment()->setWrapText(true);
 				}
 				$colNo++;
 			}
