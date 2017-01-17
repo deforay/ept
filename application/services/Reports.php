@@ -4098,7 +4098,7 @@ class Application_Service_Reports {
 			$query = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
 								->where("DATE(s.shipment_date) >= ?", $startDate)
 								->where("DATE(s.shipment_date) <= ?", $endDate)
-								->order("s.shipment_id");
+								->order("s.scheme_type");
 			
 			if(isset($params['scheme']) && count($params['scheme'])>0) {
 				$sWhere="";
@@ -4114,46 +4114,73 @@ class Application_Service_Reports {
 			$shipmentIDArray=array();
 			foreach($shipmentResult as $val){
 				$shipmentIdArray[]=$val['shipment_id'];
+				$shipmentCodeArray[$val['scheme_type']][]=$val['shipment_code'];
 				$impShipmentId=implode(",",$shipmentIdArray);
 			}
 			
 			$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id','spm.shipment_id','spm.participant_id','spm.shipment_score','spm.final_result'))
 									->join(array('s' => 'shipment'),'s.shipment_id=spm.shipment_id',array('shipment_code','scheme_type'))
 									->join(array('p' => 'participant'),'p.participant_id=spm.participant_id',array('unique_identifier','first_name','last_name','email','city','state','address','institute_name'))
-									->joinLeft(array('c' => 'countries'),'c.id=p.country',array('iso_name'));
+									//->joinLeft(array('c' => 'countries'),'c.id=p.country',array('iso_name'))
+									->order("scheme_type ASC")
+									;
 			
 			if(isset($params['shipmentId']) && count($params['shipmentId'])>0) {
 				$impShipmentId=implode(",",$params['shipmentId']);
 				$sQuery->where('spm.shipment_id IN ('.$impShipmentId.')');
+				$shQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code','s.scheme_type'))
+								->where('s.shipment_id IN ('.$impShipmentId.')')
+								->order("s.scheme_type");
+				$shipmentResult = $db->fetchAll($shQuery);
+				$shipmentCodeArray = array();
+				foreach($shipmentResult as $val){
+					$shipmentCodeArray[$val['scheme_type']][]=$val['shipment_code'];
+				}
+				
+				
 			}else{
 				//$sQuery->where('spm.shipment_id IN(?)', $impShipmentId);
 				$sQuery->where('spm.shipment_id IN ('.$impShipmentId.')');
 			}
-			//echo $sQuery;die;
-			//$shipmentParticipantResult = $db->fetchAll($sQuery);
-			return $this->generateAnnualReport($sQuery,$startDate,$endDate);
+			//Zend_Debug::dump($shipmentCodeArray);die;
+			$shipmentParticipantResult = $db->fetchAll($sQuery);
+			$participants = array();
+			foreach($shipmentParticipantResult as $shipment){
+				//count($participants);
+				if(in_array($shipment['unique_identifier'],$participants)){
+					//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
+					$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]=$shipment['shipment_score'];
+				}else{
+					//$participants[$shipment['unique_identifier']]=$shipment['unique_identifier'];
+					$participants[$shipment['unique_identifier']]['labName']=$shipment['first_name']." ".$shipment['last_name'];
+					//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
+					$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score']=$shipment['shipment_score'];
+					$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result']=$shipment['final_result'];
+					//$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
+				}
+				
+			}
+			//Zend_Debug::dump($shipmentCodeArray);
+			//die;
+			return $this->generateAnnualReport($shipmentCodeArray,$participants,$startDate,$endDate);
 		}
 	}
 	
-	public function generateAnnualReport($sQuery,$startDate,$endDate){
+	public function generateAnnualReport($schemeArray,$participants,$startDate,$endDate){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$shipmentParticipantResult=$db->fetchAll($sQuery);
-		//Zend_Debug::dump($shipmentParticipantResult);
+		//$shipmentParticipantResult=$db->fetchAll($sQuery);
+		
 		$shipmentPassResult=array();
 		$shipmentFailResult=array();
-		$headings = array('Shipment Code','Participants Identifier','Participants Name','Institute Name','Address','Country','State','City');
-		//foreach($shipmentParticipantResult as $shipment){
-		//	if($shipment['final_result']==1){
-		//		$shipmentPassResult[$shipment['shipment_code']][$shipment['unique_identifier']]=array();
-		//		$shipmentPassResult[$shipment['shipment_code']][$shipment['unique_identifier']][]=$shipment['unique_identifier'];
-		//		$shipmentPassResult[$shipment['shipment_code']][$shipment['unique_identifier']][]=$shipment['first_name'];
-		//	}
-		//	if($shipment['final_result']==2){
-		//		$shipmentFailResult[$shipment['shipment_code']][$shipment['unique_identifier']]=array();
-		//		$shipmentFailResult[$shipment['shipment_code']][$shipment['unique_identifier']][]=$shipment['unique_identifier'];
-		//		$shipmentFailResult[$shipment['shipment_code']][$shipment['unique_identifier']][]=$shipment['first_name'];
-		//	}
-		//}
+		$headings = array('Lab ID','Lab Name');
+		foreach($schemeArray as $arrayVal){
+			//
+			foreach($arrayVal as $val){
+				$headings[]=$val;
+			}
+			$headings[]='Certificate';
+		}
+		
 		
 		$excel = new PHPExcel();
 		$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
@@ -4163,11 +4190,11 @@ class Application_Service_Reports {
 		$secondSheetOutput = array();
 		$thirdSheetOutput = array();
 		$sheet = $excel->getActiveSheet();
-		$firstSheet = new PHPExcel_Worksheet($excel, 'Pass Result');
+		$firstSheet = new PHPExcel_Worksheet($excel, '');
 		$excel->addSheet($firstSheet, 0);
 		$firstSheet->getDefaultColumnDimension()->setWidth(20);
 		$firstSheet->getDefaultRowDimension()->setRowHeight(18);
-		$firstSheet->setTitle('Pass Result');
+		//$firstSheet->setTitle('Pass Result');
 		$styleArray = array(
 			'font' => array(
 				'bold' => true,
@@ -4199,59 +4226,45 @@ class Application_Service_Reports {
 			$firstSheet->getStyleByColumnAndRow($colNo, 5)->getFont()->setBold(true);
 			$colNo++;
 		}
-		//Zend_Debug::dump($shipmentPassResult);
-		foreach($shipmentParticipantResult as $shipment){
+		
+		foreach($participants as $key=>$arrayVal){
 			$firstSheetRow = array();
-			$secondSheetRow = array();
-			$thirdSheetRow = array();
-			if($shipment['final_result']==1){
-				$firstSheetRow[]=$shipment['shipment_code'];
-				$firstSheetRow[]=$shipment['unique_identifier'];
-				$firstSheetRow[]=$shipment['first_name']." ".$shipment['last_name'];
-				$firstSheetRow[]=$shipment['institute_name'];
-				$firstSheetRow[]=$shipment['address'];
-				$firstSheetRow[]=$shipment['iso_name'];
-				$firstSheetRow[]=$shipment['state'];
-				$firstSheetRow[]=$shipment['city'];
-				$output[] = $firstSheetRow;
+			$firstSheetRow[]=$key;
+			$firstSheetRow[]=$arrayVal['labName'];
+			
+			foreach($schemeArray as $schemeKey=>$scheme){
+				$certificate=true;
+				$participated=false;
+				
+				foreach($scheme as $va){
+					if(isset($arrayVal[$schemeKey][$va]['score'])){
+						$firstSheetRow[]=$arrayVal[$schemeKey][$va]['score'];
+						
+						if($arrayVal[$schemeKey][$va]['result']!=1){
+							$certificate=false;
+						}
+						if(trim($arrayVal[$schemeKey][$va]['score'])!=""){
+							$participated=true;
+						}
+					}else{
+						$firstSheetRow[]='';
+						$certificate=false;
+					}
+				}
+				if($certificate && $participated){
+					$firstSheetRow[]='Excellence';
+				}else if($participated){
+					$firstSheetRow[]='Participation';
+				}
+				else{
+					$firstSheetRow[]='NA';
+				}
+				
 			}
 			
-			if($shipment['final_result']==4){
-				$secondSheetRow[]=$shipment['shipment_code'];
-				$secondSheetRow[]=$shipment['unique_identifier'];
-				$secondSheetRow[]=$shipment['first_name']." ".$shipment['last_name'];
-				$secondSheetRow[]=$shipment['institute_name'];
-				$secondSheetRow[]=$shipment['address'];
-				$secondSheetRow[]=$shipment['iso_name'];
-				$secondSheetRow[]=$shipment['state'];
-				$secondSheetRow[]=$shipment['city'];
-				$secondSheetOutput[] = $secondSheetRow;
-			}
-			
-			if($shipment['final_result']==2 || $shipment['final_result']==0){
-				$thirdSheetRow[]=$shipment['shipment_code'];
-				$thirdSheetRow[]=$shipment['unique_identifier'];
-				$thirdSheetRow[]=$shipment['first_name']." ".$shipment['last_name'];
-				$thirdSheetRow[]=$shipment['institute_name'];
-				$thirdSheetRow[]=$shipment['address'];
-				$thirdSheetRow[]=$shipment['iso_name'];
-				$thirdSheetRow[]=$shipment['state'];
-				$thirdSheetRow[]=$shipment['city'];
-				$thirdSheetOutput[] = $thirdSheetRow;
-			}
+			$output[] = $firstSheetRow;
 		}
 		
-		//foreach($shipmentPassResult as $shipmentKey=>$shipment){
-		//	//$row[]=$shipmentKey;
-		//	
-		//	foreach($shipment as $val){
-		//		$row = array();
-		//		//echo $val[0];
-		//		$row[]=$val[0];
-		//		$row[]=$val[1];
-		//		$output[] = $row;
-		//	}
-		//}
 		
 		foreach ($output as $rowNo => $rowData) {
 			$colNo = 0;
@@ -4268,59 +4281,7 @@ class Application_Service_Reports {
 			}
 		}
 		
-		$secondSheet = new PHPExcel_Worksheet($excel, 'Fail Result');
-		$excel->addSheet($secondSheet, 1);
-		$secondSheet->setTitle('Excluded Result');
-		$secondSheet->getDefaultColumnDimension()->setWidth(20);
-		$secondSheet->getDefaultRowDimension()->setRowHeight(18);
-		$colNo = 0;
-		foreach ($headings as $field => $value) {
-			$secondSheet->getCellByColumnAndRow($colNo, 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$secondSheet->getStyleByColumnAndRow($colNo, 2)->getFont()->setBold(true);
-			$colNo++;
-		}
 		
-		foreach ($secondSheetOutput as $rowNo => $rowData) {
-			$colNo = 0;
-			foreach ($rowData as $field => $value) {
-				if (!isset($value)) {
-					$value = "";
-				}
-				$secondSheet->getCellByColumnAndRow($colNo, $rowNo + 3)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				if ($colNo == (sizeof($headings) - 1)) {
-					//$secondSheet->getColumnDimensionByColumn($colNo)->setWidth(100);
-					$secondSheet->getStyleByColumnAndRow($colNo, $rowNo + 3)->getAlignment()->setWrapText(true);
-				}
-				$colNo++;
-			}
-		}
-		
-		$thirdSheet = new PHPExcel_Worksheet($excel, 'Fail Result');
-		$excel->addSheet($thirdSheet, 2);
-		$thirdSheet->setTitle('Fail Result');
-		$thirdSheet->getDefaultColumnDimension()->setWidth(20);
-		$thirdSheet->getDefaultRowDimension()->setRowHeight(18);
-		$colNo = 0;
-		foreach ($headings as $field => $value) {
-			$thirdSheet->getCellByColumnAndRow($colNo, 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$thirdSheet->getStyleByColumnAndRow($colNo, 2)->getFont()->setBold(true);
-			$colNo++;
-		}
-		
-		foreach ($thirdSheetOutput as $rowNo => $rowData) {
-			$colNo = 0;
-			foreach ($rowData as $field => $value) {
-				if (!isset($value)) {
-					$value = "";
-				}
-				$thirdSheet->getCellByColumnAndRow($colNo, $rowNo + 3)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				if ($colNo == (sizeof($headings) - 1)) {
-					//$thirdSheet->getColumnDimensionByColumn($colNo)->setWidth(100);
-					$thirdSheet->getStyleByColumnAndRow($colNo, $rowNo + 3)->getAlignment()->setWrapText(true);
-				}
-				$colNo++;
-			}
-		}
 		
 		if (!file_exists(UPLOAD_PATH) && !is_dir(UPLOAD_PATH)) {
 			mkdir(UPLOAD_PATH);
