@@ -16,10 +16,12 @@ class Admin_IndexController extends Zend_Controller_Action
         $distributionService = new Application_Service_Distribution();
         $shipmentService = new Application_Service_Shipments();
         $scheme = new Application_Service_Schemes();
+        $clientsServices = new Application_Service_Participants();
        
         $this->view->events=$distributionService->getAllDistributionStatus();
         $this->view->schemeCountResult=$scheme->countEnrollmentSchemes();
         $this->view->shipmentCountResult=$shipmentService->getParticipantCountBasedOnShipment();
+        $this->view->pendingParticipants=$clientsServices->getPendingParticipants();
        
         $this->view->schemes = $scheme->getAllSchemes();
     }

@@ -19,6 +19,7 @@ class ContactUsController extends Zend_Controller_Action
             $this->view->message = $common->contactForm($params);
         }else{
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $this->view->from = $this->getRequest()->getParam('frm');
             if(!isset($authNameSpace->dm_id)){
                 $this->_helper->layout()->setLayout('home');
             }

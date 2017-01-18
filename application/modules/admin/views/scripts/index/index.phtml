@@ -26,13 +26,19 @@ foreach($this->events as $events){
 }
 ?>
 <div class="row">
-          <div class="col-lg-12">
-            <ol class="breadcrumb">
-              <li class="active" style="font-size:20px;color:#555"><i class="icon icon-dashboard"></i> Dashboard</li>
-            </ol>
-          </div>
+    <div class="col-lg-12">
+      <ol class="breadcrumb" style="margin-bottom:10px;">
+        <li class="active" style="font-size:20px;color:#555"><i class="icon icon-dashboard"></i> Dashboard</li>
+      </ol>
+    </div>
 </div><!-- /.row -->
-
+<?php
+if(count($this->pendingParticipants)>0){
+?>
+<div class="row" style="margin-bottom:10px;">
+    <div class="col-lg-12"><a href="/admin/participants/pending" style="color:red;font-size:17px;"><?php echo count($this->pendingParticipants); ?> participant<?php echo(count($this->pendingParticipants) > 1)?'s':''; ?> status <?php echo(count($this->pendingParticipants) > 1)?'are':'is'; ?> pending. Click here to activate</a></div>
+</div>
+<?php } ?>
 <div class="row">
 <!--    <div class="col-lg-3">
             <div class="panel panel-primary">

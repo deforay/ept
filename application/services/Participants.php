@@ -64,6 +64,14 @@ class Application_Service_Participants {
 				  ->order("p.first_name");
 	    return $db->fetchAll($sql);
 	}
+	
+	public function getPendingParticipants(){
+	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('p'=>'participant'),array('p.participant_id'))
+		                    ->where("p.status= ?","pending");
+	    return $db->fetchAll($sql);
+	}
+	
 	public function getUnEnrolled($scheme){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('e'=>'enrollments'), 'participant_id')->where("scheme_id = ?", $scheme);
