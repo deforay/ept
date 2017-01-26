@@ -2270,9 +2270,17 @@ CREATE TABLE `response_vl_not_tested_reason` (
 );
 
 INSERT INTO `response_vl_not_tested_reason` (`vl_not_tested_reason_id`, `vl_not_tested_reason`, `status`) VALUES
-(1, 'Issue with Sample', 'active'),
-(2, 'Viral Load Machine not working', 'active'),
-(3, 'Other', 'active');
+(1, 'No reagents for testing of PT panel', 'active'),
+(2, 'No lab personal for testing of PT panel', 'active'),
+(3, ' Instrument down', 'active'),
+(4, 'Laboratory facility under renovation', 'active'),
+(5, 'Laboratory facility no longer perform testing', 'active'),
+(6, 'The results were invalid for the entire run', 'active'),
+(7, 'The PT panel testing failed during sample processing', 'active'),
+(8, 'The PT panel shipment was lost/damage', 'active'),
+(9, 'Not received PT panel shipment due to country custom clearance issue', 'active'),
+(10, 'Not received PT panel shipment due to incorrect contact info on the shipment package', 'active'),
+(11, 'Other (please explain)', 'active');
 
 ALTER TABLE `response_vl_not_tested_reason`
   ADD PRIMARY KEY (`vl_not_tested_reason_id`);
