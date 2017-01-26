@@ -2125,8 +2125,13 @@ class Application_Service_Reports {
 			foreach($resultOverAll as $rowOverAll){
 				$row++;
 				
-				$queryResponse = $db->select()->from(array('res' => 'response_result_vl'))
-								->where("res.shipment_map_id = ?", $rowOverAll['map_id']);
+				$queryResponse = $db->select()
+									->from(array('res' => 'response_result_vl'))
+									->joinLeft(array('refRes' => 'reference_result_vl'),"refRes.sample_id = res.sample_id")
+									->where("refRes.control!=1")
+									->where("refRes.shipment_id = ?", $shipmentId)
+									->where("res.shipment_map_id = ?", $rowOverAll['map_id']);
+				//echo $queryResponse;
 				$resultResponse = $db->fetchAll($queryResponse);
 				
 				$attributes = json_decode($rowOverAll['attributes'], true);
