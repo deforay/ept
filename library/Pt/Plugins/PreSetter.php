@@ -26,6 +26,18 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
                 }
             }            
             
+            if($authNameSpace->force_profile_updation == 1 || $authNameSpace->force_profile_updation == '1'){
+                if ($request->getControllerName() == 'participant' && $request->getActionName() == 'testeredit'){
+                    $sessionAlert = new Zend_Session_Namespace('alertSpace');
+                    $sessionAlert->message = "Please change your password to proceed.";
+                }else{
+                    if($request->getActionName() != 'profile-update-redirect'){
+                    $request->setModuleName('default')->setControllerName('participant')->setActionName('testeredit');
+                    $request->setParam('psid',$authNameSpace->profile_updation_pid);
+                    $request->setDispatched(false);
+                    }
+                }
+            }
         }else if (($request->getModuleName() == 'admin'  && $request->getControllerName() != 'login') || $request->getModuleName() == 'reports') {
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $layout->setLayout('admin');

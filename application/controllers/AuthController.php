@@ -16,7 +16,7 @@ class AuthController extends Zend_Controller_Action
 
     public function loginAction()
     {
-
+	$dbUsersProfile = new Application_Service_Participants();
     // action body
     	if($this->getRequest()->isPost()){
     		//die;
@@ -55,6 +55,13 @@ class AuthController extends Zend_Controller_Action
 	    		$authNameSpace->enable_adding_test_response_date = $rs->enable_adding_test_response_date;
 	    		$authNameSpace->enable_choosing_mode_of_receipt = $rs->enable_choosing_mode_of_receipt;
 	    		$authNameSpace->force_password_reset = $rs->force_password_reset;
+				
+				$profileUpdate = $dbUsersProfile->checkParticipantsProfileUpdate($rs->dm_id);
+				if(count($profileUpdate)>0){
+					$authNameSpace->force_profile_updation =1;
+					$authNameSpace->profile_updation_pid=$profileUpdate[0]['participant_id'];
+				}
+				
 	    		// PT Provider Dependent Configuration 
 	    		//$authNameSpace->UserFld1 = $rs->UserFld1;
 	    		//$authNameSpace->UserFld2 = $rs->UserFld2;

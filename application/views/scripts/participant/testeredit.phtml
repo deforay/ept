@@ -1,3 +1,6 @@
+<?php
+$authNameSpace = new Zend_Session_Namespace('datamanagers');
+?>
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <section class="content-header">
     <h1>
@@ -204,10 +207,18 @@
 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
     <p>
         <input name="submitbtn" class="btn btn-primary" type="submit"  onclick="validateNow();
-                                                return false;" tabindex="7" value="Submit"  /> 
+                                                return false;" tabindex="7" value="Submit"  />
+        <input type="hidden" name="comingFrom" id="comingFrom" value="participant"/>
+        <?php
+        if($authNameSpace->force_profile_updation==1){
+         ?>
+                &nbsp;&nbsp;&nbsp;
+                 <input name="reset" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" /> 
+         <?php
+        } else { ?>
         &nbsp;&nbsp;&nbsp;
         <input name="reset" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_testers()" /> 
-
+        <?php } ?>
     </p>
 </div>
 <?php } ?>
@@ -229,7 +240,17 @@
 <script>
 
     function goto_testers() {
+        $.post("<?php echo $this->url(array('module'=>'default','controller' =>'participant', 'action' => 'profile-update-redirect')); ?>",
+			    function (data) {
+			});
         window.history.back();
+    }
+
+    function goto_dashboard() {
+        $.post("<?php echo $this->url(array('module'=>'default','controller' =>'participant', 'action' => 'profile-update-redirect')); ?>",
+			    function (data) {
+			});
+        window.location.href='/participant/dashboard';
     }
     
     $(document).ready(function() {

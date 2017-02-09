@@ -212,6 +212,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'region' => $params['region'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
+		if(isset($params['comingFrom']) && $params['comingFrom']=='participant'){
+			$data['force_profile_updation'] = 0;
+		}
+		
 		
 		if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
 		   $data['individual']='yes';
@@ -236,6 +240,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
 
         $noOfRows = $this->update($data, "participant_id = " . $params['participantId']);
+		//echo $authNameSpace->force_profile_updation =1;
+		//Check profile update
+		if(isset($authNameSpace->force_profile_updation) && trim($authNameSpace->force_profile_updation)>0){
+			$profileUpdate=$this->checkParticipantsProfileUpdateByUserSystemId($authNameSpace->dm_id);
+			if(count($profileUpdate)>0){
+				$authNameSpace->profile_updation_pid=$profileUpdate[0]['participant_id'];
+			}else{
+				$authNameSpace->force_profile_updation =0;
+				$authNameSpace->profile_updation_pid="";
+			}
+		}
+		
 		$db = Zend_Db_Table_Abstract::getAdapter();
 		
 		if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
@@ -1194,6 +1210,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
         echo json_encode($output);
     }
-    
+	
+	public function checkParticipantsProfileUpdateByUserSystemId($userSystemId) {
+        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
+                                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+                                ->where("pmm.dm_id = ?", $userSystemId)
+								->where("p.force_profile_updation = ?",1)
+                                ->group('p.participant_id'));
+    }   
 }
 

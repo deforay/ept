@@ -2296,3 +2296,8 @@ ALTER TABLE `shipment_participant_map` ADD `pt_support_comments` TEXT NULL DEFAU
 --Ilahir 17-JAN-2017
 
 ALTER TABLE  `participant` ADD  `additional_email` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `email` ;
+
+
+--Ilahir 08-FEB-2017
+
+ALTER TABLE  `participant` ADD  `force_profile_updation` INT( 1 ) NOT NULL DEFAULT  '1' AFTER  `updated_by` ;

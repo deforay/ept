@@ -442,4 +442,9 @@ class Application_Service_Participants {
 				error_log($exc->getTraceAsString());
 		}
 	}
+	
+	public function checkParticipantsProfileUpdate($userSystemId){
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->checkParticipantsProfileUpdateByUserSystemId($userSystemId);
+	}
 }

@@ -15,6 +15,7 @@ class ParticipantController extends Zend_Controller_Action {
                 ->addActionContext('shipment-report', 'html')
                 ->addActionContext('add-qc', 'html')
                 ->addActionContext('scheme', 'html')
+                ->addActionContext('profile-update-redirect', 'html')
                 ->initContext();
     }
 
@@ -232,5 +233,11 @@ class ParticipantController extends Zend_Controller_Action {
             $shipmentService = new Application_Service_Shipments();
             $this->view->result =$shipmentService->addQcDetails($params);
         }
+    }
+    
+    public function profileUpdateRedirectAction() {
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+		$authNameSpace->force_profile_updation=0;
+		$this->view->authNameSpace = $authNameSpace;
     }
 }
