@@ -1608,4 +1608,9 @@ class Application_Service_Shipments {
             error_log($e->getTraceAsString());
         }
     }
+	
+	public function getParticipantShipments($pId){
+		$shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+		return $shipmentParticipantDb->fetchParticipantShipments($pId);
+	}
 }

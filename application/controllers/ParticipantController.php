@@ -240,4 +240,19 @@ class ParticipantController extends Zend_Controller_Action {
 		$authNameSpace->force_profile_updation=0;
 		$this->view->authNameSpace = $authNameSpace;
     }
+	
+	public function certificateAction() {
+		$this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'testers';
+        $participantService = new Application_Service_Participants();
+        $commonService = new Application_Service_Common();
+        
+		if($this->_hasParam('pid')){
+			$pId=$this->_getParam('pid');
+			$shipmentService = new Application_Service_Shipments();
+			$this->view->certificate=$shipmentService->getParticipantShipments($pId);
+			//$this->view->psId='5001';
+			//echo "came";die;
+		}
+	}
 }

@@ -185,5 +185,15 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         
         
     }
-
+    
+    public function fetchParticipantShipments($pId){
+		$query=$this->getAdapter()->select()->distinct()->from(array('sp' => 'shipment_participant_map'),array('shipment_id'))
+						->join(array('s'=>'shipment'),'s.shipment_id=sp.shipment_id',array('scheme_type','year'=>"YEAR(shipment_date)"))
+                        ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier','p.participant_id'))
+						->where("sp.participant_id = ?", $pId)
+                        ->group('year')
+                        ->group('s.scheme_type');
+        return $this->getAdapter()->fetchAll($query);
+		
+	}
 }
