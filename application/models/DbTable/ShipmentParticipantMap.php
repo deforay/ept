@@ -191,6 +191,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 						->join(array('s'=>'shipment'),'s.shipment_id=sp.shipment_id',array('scheme_type','year'=>"YEAR(shipment_date)"))
                         ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier','p.participant_id'))
 						->where("sp.participant_id = ?", $pId)
+						->where("s.scheme_type ='vl' OR s.scheme_type='eid'")
                         ->group('year')
                         ->group('s.scheme_type');
         return $this->getAdapter()->fetchAll($query);

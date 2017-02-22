@@ -23,8 +23,7 @@
 					<th>Particpant Mobile</th>
 					<th>Participant e-mail</th>
 					<!--<th>Group</th>-->
-					<th>Edit</th>
-					<th>Certificate</th>
+					<th>Action</th>
 					</tr>
 				</thead>
 				
@@ -46,13 +45,12 @@
 					<td >
 						<?php if ($tester['status'] == 'active') { ?>
 						<a style="text-decoration : underline;" href="<?php  echo $this->url(array("controller"=>"participant","action"=>"testeredit","psid"=>$tester['participant_id']),null,true,false); ?>">Edit</a>
+						<a style="text-decoration : underline;" href="<?php  echo $this->url(array("controller"=>"participant","action"=>"certificate","pid"=>$tester['participant_id']),null,true,false); ?>">Certificates</a>
 						<?php } else { 
 								echo ucfirst($tester['status'])."<br/><hr/> Contact PT Admin to activate";
 						 } ?>
 					</td>
-					<td>
-						<a style="text-decoration : underline;" href="<?php  echo $this->url(array("controller"=>"participant","action"=>"certificate","pid"=>$tester['participant_id']),null,true,false); ?>">Certificate</a>
-					</td>		
+									
 				</tr>	
 				<?php }?>								
 			</table>				

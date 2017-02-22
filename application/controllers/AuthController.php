@@ -68,10 +68,14 @@ class AuthController extends Zend_Controller_Action
 	    		//$authNameSpace->UserFld3 = $rs->UserFld3;
 	    		
 				$userService = new Application_Service_DataManagers();
-				$userService->updateLastLogin($rs->dm_id);				
+				$userService->updateLastLogin($rs->dm_id);
 				
-				
-    			$this->_redirect('/participant/dashboard');
+				if(isset($params['redirectUrl']) && $params['redirectUrl']!='/auth/login'){
+					$this->_redirect($params['redirectUrl']);
+				}else{
+					$this->_redirect('/participant/dashboard');
+				}
+    			
     		
     		}else
     		{

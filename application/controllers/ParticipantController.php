@@ -253,6 +253,8 @@ class ParticipantController extends Zend_Controller_Action {
 			$this->view->certificate=$shipmentService->getParticipantShipments($pId);
 			//$this->view->psId='5001';
 			//echo "came";die;
+		}else{
+			 $this->_redirect("/participant/dashboard");
 		}
 	}
 }

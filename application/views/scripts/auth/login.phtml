@@ -33,7 +33,7 @@
 			<label for="password" class="youpasswd" data-icon="p"> Your password </label>
 
 				<input id="password" name="password" class="isRequired form-control" title="Please enter your password" type="password" placeholder="eg. X8df!90EO" />
-				
+				<input type="hidden" name="redirectUrl" id="redirectUrl" value="<?php echo $this->userAgent()->getServerValue('request_uri'); ?>">
         </div>
 		<div class="form-group">
 			
