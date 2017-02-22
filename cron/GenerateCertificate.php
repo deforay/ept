@@ -36,6 +36,7 @@ try {
     $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id','spm.attributes','spm.shipment_id','spm.participant_id','spm.shipment_score','spm.final_result'))
 							->join(array('s' => 'shipment'),'s.shipment_id=spm.shipment_id',array('shipment_code','scheme_type'))
 							->join(array('p' => 'participant'),'p.participant_id=spm.participant_id',array('unique_identifier','first_name','last_name','email','city','state','address','institute_name'))
+							->where("spm.shipment_test_date!='0000-00-00'")
                             ->order("scheme_type ASC");
                             
     $sQuery->where('spm.shipment_id IN ('.$impShipmentId.')');
