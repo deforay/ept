@@ -1218,13 +1218,5 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 								->where("p.force_profile_updation = ?",1)
                                 ->group('p.participant_id'));
     }
-    
-    public function importParticipantsLatLong($countryId,$lat,$long){
-	$data = array(
-	     'long'=>$long,
-	     'lat'=>$lat
-	    );
-	return $this->update($data, "country = $countryId");
-    }
 }
 

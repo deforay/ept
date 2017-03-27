@@ -21,14 +21,12 @@ class IndexController extends Zend_Controller_Action
         $commonServices = new Application_Service_Common(); 
         $publicationService = new Application_Service_Publication();
         $partnerService = new Application_Service_Partner();
-        //$dbUsersProfile = new Application_Service_Participants();
         if(!isset($authNameSpace->dm_id)){
             $this->_helper->layout()->setLayout('home');
         }
         $this->view->banner = $commonServices->getHomeBanner();
         $this->view->publications = $publicationService->getAllActivePublications();
         $this->view->partners = $partnerService->getAllActivePartners();
-        //$dbUsersProfile->importParticipantsInfo();
     }
 
 
