@@ -1211,12 +1211,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         echo json_encode($output);
     }
 	
-	public function checkParticipantsProfileUpdateByUserSystemId($userSystemId) {
+    public function checkParticipantsProfileUpdateByUserSystemId($userSystemId) {
         return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
                                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
                                 ->where("pmm.dm_id = ?", $userSystemId)
 								->where("p.force_profile_updation = ?",1)
                                 ->group('p.participant_id'));
-    }   
+    }
+    
+    public function importParticipantsLatLong($countryId,$lat,$long){
+	$data = array(
+	     'long'=>$long,
+	     'lat'=>$lat
+	    );
+	return $this->update($data, "country = $countryId");
+    }
 }
 

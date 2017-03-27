@@ -447,4 +447,31 @@ class Application_Service_Participants {
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->checkParticipantsProfileUpdateByUserSystemId($userSystemId);
 	}
+	
+	public function importParticipantsInfo(){
+	    try {
+		$objPHPExcel = \PHPExcel_IOFactory::load(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "countries-eptvls.csv");
+		$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+                $count = count($sheetData);
+		for($i = 2; $i <= $count; ++$i) {
+			if(isset($sheetData[$i]['A']) && $sheetData[$i]['A'] != ''){
+				$countryId = $sheetData[$i]['A'];
+				$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+	                        $sql = $db->select()->from(array('p'=>'participant'),'participant_id')
+				  ->where("p.country= ?",$countryId);
+	                        $participantResult = $db->fetchAll($sql);
+				if(count($participantResult) >0){
+					$lat = $sheetData[$i]['F'];
+					$long = $sheetData[$i]['G'];
+					$participantDb = new Application_Model_DbTable_Participants();
+		                        $participantDb->importParticipantsLatLong($countryId,$lat,$long);
+				}
+			}
+		}
+	    }catch (Exception $exc) {
+		error_log("IMPORT-PARTICIPANT-INFO-EXCEL--" . $exc->getMessage());
+		error_log($exc->getTraceAsString());
+		return false;
+	    }
+	}
 }
