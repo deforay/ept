@@ -333,7 +333,7 @@ $count++;
 	</td>
 </tr>
 <tr>
-	<th style="width:20%;">Supervisor Review</th>
+	<th style="width:20%;">Supervisor Review  <span class="mandatory">*</span></th>
 	<td style="width:20%;">
 		<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
 			<option value="">--Select--</option>
@@ -341,7 +341,7 @@ $count++;
 			<option value="no" <?php if($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>No</option>
 		</select>
 	</td>
-	<th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
+	<th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name <span class="mandatory">*</span></label></th> 
 	<td><input name="participantSupervisor" id="participantSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>  type="text" class="form-control" value="<?php echo $this->shipment['participant_supervisor'] ; ?>"/></td>
 	
 </tr>
@@ -466,11 +466,13 @@ $dtFormat=  $genderHelper->getDateFormat();
 			$('#labSupervisor').show();
 			$('#participantSupervisor').val('');
 			$('#participantSupervisor').show();
+			$('#participantSupervisor').addClass('isRequired');
 		  }
 		else{
 			$('#labSupervisor').hide();
 			$('#participantSupervisor').val('');
 			$('#participantSupervisor').hide();
+			$('#participantSupervisor').removeClass('isRequired');
 		}
 	});
 	

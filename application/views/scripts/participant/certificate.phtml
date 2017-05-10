@@ -31,7 +31,7 @@ $folderPath=UPLOAD_PATH. DIRECTORY_SEPARATOR."certificate";
 			$filePath=$folderPath. DIRECTORY_SEPARATOR.$val['year']. DIRECTORY_SEPARATOR.$val['scheme_type']. DIRECTORY_SEPARATOR.$fileName;
 			if(file_exists($filePath)){
 			?>
-			<a href="<?php echo "/uploads/certificate".DIRECTORY_SEPARATOR.$val['year']. DIRECTORY_SEPARATOR.$val['scheme_type']. DIRECTORY_SEPARATOR.$fileName; ?>" target="_BLANK"><?php echo $fileName; ?></a>
+			<a href="<?php echo "/uploads/certificate".DIRECTORY_SEPARATOR.$val['year']. DIRECTORY_SEPARATOR.$val['scheme_type']. DIRECTORY_SEPARATOR.$fileName; ?>" target="_BLANK" download><?php echo $fileName; ?></a>
 			<?php
 			}
 			?>

@@ -311,7 +311,7 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
 	</td>
 </tr>	
 <tr>
-	<th style="width:20%;">Supervisor Review</th>
+	<th style="width:20%;">Supervisor Review <span class="mandatory">*</span></th>
 	<td style="width:20%;">
 		<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
                         <option value="">--Select--</option>
@@ -319,7 +319,7 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
                         <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>NO</option>
                     </select>
                 </td>
-                <th><label id ="labSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
+        <th><label id ="labSupervisor" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name  <span class="mandatory">*</span></label></th> 
                 <td><input name="participantSupervisor" id="participantSupervisor" type="text" class="form-control" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>  value="<?php echo $this->shipment['participant_supervisor']; ?>"/></td>
 
             </tr>
@@ -413,11 +413,13 @@ $dtFormat=  $genderHelper->getDateFormat();
             $('#labSupervisor').show();
             $('#participantSupervisor').val('');
             $('#participantSupervisor').show();
+            $('#participantSupervisor').addClass("isRequired");
         }
         else {
             $('#labSupervisor').hide();
             $('#participantSupervisor').val('');
             $('#participantSupervisor').hide();
+            $('#participantSupervisor').removeClass("isRequired");
         }
     });
 	function clearDate(id) {

@@ -23,6 +23,8 @@ try {
         
         unset($data[0]);
         
+        
+        
         $commonService = new Application_Service_Common();
         if (!file_exists('rowcounter.txt') && !is_readable('rowcounter.txt')){
            file_put_contents('rowcounter.txt', '1'); 
@@ -34,11 +36,11 @@ try {
         //$storedRowCounter = 50;
         $currentCounter = 1;
         foreach ($data as $participant) {
-            if($storedRowCounter >= $currentCounter){
+            
+            if($storedRowCounter > $currentCounter){
                 $currentCounter++;
                 continue;
             }
-            
             
             if((isset($participant[0]) && trim($participant[0])!= '')){
                 
@@ -71,8 +73,8 @@ try {
                 $cc = str_replace(" ","",$participant[7]);
                 error_log($cc);
                 error_log("======");
-                //$to = "amitdgr@gmail.com";
-                
+                //$to = $cc = "amitdgr@gmail.com";
+                //Zend_Debug::dump($participant);die;
                 if($to == "" || $to == null){
                     if($cc == "" || $cc == null){
                         continue;
@@ -91,11 +93,11 @@ try {
                 $fromMail = '';
                 $fromName = '';
                 //Subject
-                if(count($attachments) > 0){
-                    $subject.= '[UPDATED] Your PT 2016 Certificate and Enrollment link for PT 2017';
-                }else{
-                    $subject.= 'Enrollment link for PT 2017 - Please respond if not updated yet';
-                }
+                //if(count($attachments) > 0){
+                //    $subject.= '[UPDATED] Your PT 2016 Certificate and Enrollment link for PT 2017';
+                //}else{
+                    $subject.= '[IMMEDIATE ATTENTION] Enrollment link for PT 2017 - Please respond if not updated yet';
+                //}
                 
                 $subject.=' | Lab ID : '.$participant[0];
                 
@@ -110,13 +112,15 @@ try {
                     $message.= '<tr><td align="center">';
                       $message.= '<table cellpadding="3" style="width:92%;font-family:Helvetica,Arial,sans-serif;margin:10px 0px 30px 0px;padding:2% 0% 0% 2%;background-color:#ffffff;">';
                         $message.= '<tr><td colspan="2">Dear PT Participant,</td></tr>';
-                        if(count($attachments) > 0){
-                            $message.= '<tr><td colspan="2">Please find your 2016 PT certificate(s) attached with this email.</td></tr>';
-                        }
+                       // if(count($attachments) > 0){
+                       //     $message.= '<tr><td colspan="2">Please find your 2016 PT certificate(s) attached with this email.</td></tr>';
+                       // }
                         $message.= '<tr><td colspan="2"></td></tr>';
-                        $message.= '<tr><td colspan="2">The following are immediate actions required by all PT Participants : </td></tr>';
+                        $message.= '<tr><td colspan="2">We have received the Participation Confirmation and Feedback from many of the participants. Please ignore this if already filled both the PT Confirmation form and the Feedback form. </td></tr>';
+                        $message.= '<tr><td colspan="2"></td></tr>';
+                        $message.= '<tr><td colspan="2"><strong>The following are immediate actions required by all PT Participants : </strong></td></tr>';
                         $message.= '<tr><td colspan="2"><ol>';
-                        $message.= '<li>To be included in 2017 CDC EID and VL PT programs, you must CONFIRM participation by 24 February 2017 by clicking on this link (<a href="'.$googleFormLink.'">Verify and Enroll Now</a>).  We have assigned a new lab ID that begins with 5xxx to each lab.  You should see your 5xxx on your 2017 Participant Confirmation link when you confirm participation for 2017 PT programs. The PT panel shipments will be only sent to the laboratories that confirm participation by 24 February 2017.</li>';
+                        $message.= '<li>To be included in 2017 CDC EID and VL PT programs, you must CONFIRM participation by clicking on this link ('.$googleFormLink.').  We have assigned a new lab ID that begins with 5xxx to each lab.  You should see your 5xxx on your 2017 Participant Confirmation link when you confirm participation for 2017 PT programs. <br><br><strong>The PT panel shipments will be only sent to the laboratories that confirm participation.</strong><br><br><br></li>';
                         $message.= '<li>All participants should provide their feedback at the link at (<a href="http://bit.ly/pt2016-feedback">http://bit.ly/pt2016-feedback</a>). Your feedback will help with the programs improvement.</li>';
                         $message.= '</ol></td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';
@@ -155,19 +159,22 @@ try {
                 $systemMail->setBodyHtml(html_entity_decode($originalMessage, ENT_QUOTES, 'UTF-8'));
         
                 $systemMail->setFrom($fromMail, $fromName);
-                $systemMail->setReplyTo($fromMail, $fromName);
+                $systemMail->setReplyTo("pt@vlsmartconnect.com", $fromName);
         
                 if (is_array($to)) {
-                    foreach ($to as $name => $mail) {
-                        $systemMail->addTo($mail, $name);
+                    foreach ($to as $name => $ma) {
+                        if($ma=="" || $ma == null) continue;
+                        $systemMail->addTo($ma, $name);
                     }
                 } else {
                     $systemMail->addTo($to);
                 }
                 if (isset($cc) && $cc != "" && $cc != null) {
+                    $cc = explode(",",$cc);
                     if (is_array($cc)) {
-                        foreach ($cc as $name => $mail) {
-                            $systemMail->addCc($mail, $name);
+                        foreach ($cc as $name => $ma) {
+                            if($ma=="" || $ma == null) continue;
+                            $systemMail->addCc($ma, $name);
                         }
                     } else {
                         $systemMail->addCc($cc);
@@ -183,7 +190,7 @@ try {
                     }
                 }
                 
-                if(count($attachments) > 0){
+               /* if(count($attachments) > 0){
                     foreach($attachments as $att){
                         $content = file_get_contents($att); // e.g. ("attachment/abc.pdf");
                         $f = basename($att,".pdf");
@@ -195,7 +202,7 @@ try {
                         $systemMail->addAttachment($attachment); 
                     }
                 }
-                
+                */
         
                 try {
                     
