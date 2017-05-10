@@ -1,6 +1,6 @@
 <?php
 
-include("PHPExcel.php");
+include_once "PHPExcel.php";
 
 class Application_Service_Reports {
 
