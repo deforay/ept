@@ -12,6 +12,10 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
         foreach($sampleIds as $key => $sampleId){
             $res = $this->fetchRow("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId );
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if(isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed']== 'yes'){
+                $params['hivCtOd'][$key] = '';
+                $params['icQs'][$key] = '';
+            }
             if($res == null || count($res) == 0){
                 $this->insert(array(
                                     'shipment_map_id'=>$params['smid'],

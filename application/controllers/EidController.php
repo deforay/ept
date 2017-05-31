@@ -75,7 +75,7 @@ class EidController extends Zend_Controller_Action
 	    $this->view->eidPossibleResults = $schemeService->getPossibleResults('eid');
 
             $this->view->allSamples =$schemeService->getEidSamples($sID,$pID);
-
+			$this->view->allNotTestedReason =$schemeService->getVlNotTestedReasons();
             $shipment = $schemeService->getShipmentData($sID,$pID);
 	    $shipment['attributes'] = json_decode($shipment['attributes'],true);
             $this->view->shipment = $shipment;
