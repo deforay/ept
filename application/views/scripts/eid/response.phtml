@@ -246,20 +246,7 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
         ?>
 		<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 		<thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes')?'display:none;':''; ?>">
-		<tr>
-			<td colspan="4" style="font-size:1.1em;">
-				Please Note :
-				<ul style="margin:10px;">
-					<li>Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.</li>
-					<li>Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).</li>
-					<li>For negative or undetectable result (TND), please enter 0.00.</li>
-					<li>For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section</li>
-				</ul>
-				
-				<div class="vlResultSection" style="width:100%;padding-left:20%;"><label style="font-size:16px;">Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)<label></div>
-				<div class="vlResultSection" style="width:100%;padding-left:20%;"><input type="text" class="form-control checkNum" id="vlResultToLog" name="vlResultToLog" placeholder="Enter a result value to calculate the log value" style="width:80%;"/><span class="mandatory logValFormVl" style="font-size:16px;display:none;"></span></div>
-			</td>
-		</tr>
+		
 		<tr align="center" class="" >
 			<th style="width:25%;text-align: center;">Control/Sample</th>
                     <th style="width:25%;text-align: center;">Your Results</th>
@@ -420,10 +407,12 @@ $dtFormat=  $genderHelper->getDateFormat();
             formId: 'eidResponseForm'
         });
         if (flag) {
-            if (moment($("#receiptDate").val()).isAfter($("#testDate").val())) {
-                alert('Testing Date has to come after the Shipment Receipt Date');
-                return false;
-            }
+			if($("#testDate").val() != ""){
+				if (moment($("#receiptDate").val()).isAfter($("#testDate").val())) {
+					alert('Testing Date has to come after the Shipment Receipt Date');
+					return false;
+				}
+			}
             $.blockUI();
             document.getElementById('eidResponseForm').submit();
         }
@@ -488,13 +477,25 @@ $dtFormat=  $genderHelper->getDateFormat();
 	       $('.vlResultValues').removeClass('isRequired');
 	       $('#vlNotTestedReason').addClass('isRequired');
 	       $('#ptNotTestedComments').addClass('isRequired');
+		   	$('#extractionAssayLotNo').removeClass('isRequired');
+	        $('#detectionAssayLotNo').removeClass('isRequired');
+	        $('#extractionAssayExpiryDate').removeClass('isRequired');
+	        $('#detectionAssayExpiryDate').removeClass('isRequired');
+			$('#testDate').removeClass('isRequired');
 	   }else{
 		$('.vlResultSection').show();
 		$('.ptNotPerformedSection').hide();
 		$('.vlResultMandatory').css('visibility','visible');
 		$('.vlResultValues').addClass('isRequired');
 		$('#vlNotTestedReason').removeClass('isRequired');
-	        $('#ptNotTestedComments').removeClass('isRequired');
+	    $('#ptNotTestedComments').removeClass('isRequired');
+		
+		   	$('#extractionAssayLotNo').addClass('isRequired');
+	        $('#detectionAssayLotNo').addClass('isRequired');
+	        $('#extractionAssayExpiryDate').addClass('isRequired');
+	        $('#detectionAssayExpiryDate').addClass('isRequired');
+			$('#testDate').addClass('isRequired');
+		
 	   }
     });
 	jQuery("#vlResultToLog").on("keypress",function (event) {

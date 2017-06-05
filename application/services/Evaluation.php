@@ -1545,7 +1545,7 @@ class Application_Service_Evaluation {
 					
 					
 					// if we are excluding this result, then let us not give pass/fail				
-					if ($shipment['is_excluded'] == 'yes') {
+					if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
 						$finalResult = '';
 						$totalScore = 0;
 						$failureReason = array();
@@ -1690,7 +1690,7 @@ class Application_Service_Evaluation {
 					
 					
 					// if we are excluding this result, then let us not give pass/fail				
-					if ($shipment['is_excluded'] == 'yes') {
+					if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
 						$finalResult = '';
 						$totalScore = 0;
 						$shipmentResult[$counter]['shipment_score'] = $responseScore = 0;

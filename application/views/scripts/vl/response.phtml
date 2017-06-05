@@ -110,7 +110,7 @@ $count++;  ?>
 	<tr>
 		<td><label>Testing Date</label></td> 
 		<td>
-			<input type="text" id="testDate" name="testDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>"  class="datepicker form-control" readonly="readonly" />
+			<input type="text" id="testDate" name="testDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>"  class="isRequired datepicker form-control" readonly="readonly" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"> Clear</i>
 		</td>		
 
@@ -449,9 +449,12 @@ $dtFormat=  $genderHelper->getDateFormat();
 				}
 			});
 		if(flag){
-			if(moment($("#receipt_date").val()).isAfter($("#test_date").val())){
-				alert('Testing Date has to come after the Shipment Receipt Date');
-				return false;
+			
+			if($("#testDate").val() != ""){
+				if(moment($("#receipt_date").val()).isAfter($("#test_date").val())){
+					alert('Testing Date has to come after the Shipment Receipt Date');
+					return false;
+				}
 			}
 			
 			
@@ -520,13 +523,17 @@ $dtFormat=  $genderHelper->getDateFormat();
 	       $('.vlResultValues').removeClass('isRequired');
 	       $('#vlNotTestedReason').addClass('isRequired');
 	       $('#ptNotTestedComments').addClass('isRequired');
+			$('#testDate').removeClass('isRequired');		   
+			$('#assayLotNumber').removeClass('isRequired');		   
 	   }else{
 		$('.vlResultSection').show();
 		$('.ptNotPerformedSection').hide();
 		$('.vlResultMandatory').css('visibility','visible');
 		$('.vlResultValues').addClass('isRequired');
 		$('#vlNotTestedReason').removeClass('isRequired');
-	        $('#ptNotTestedComments').removeClass('isRequired');
+		$('#ptNotTestedComments').removeClass('isRequired');
+		$('#testDate').addClass('isRequired');
+		$('#assayLotNumber').addClass('isRequired');
 	   }
         });
 	
