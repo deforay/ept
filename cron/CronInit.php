@@ -6,7 +6,7 @@ defined('APPLICATION_PATH')
  
 // Define application environment
 defined('APPLICATION_ENV')
-    || define('APPLICATION_ENV', 'development');
+    || define('APPLICATION_ENV', 'production');
     
 // Define CRON PATH 
 defined('CRON_PATH')

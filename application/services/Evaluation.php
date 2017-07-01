@@ -1198,11 +1198,14 @@ class Application_Service_Evaluation {
                         //->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
                         ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
                         ->where("spm.shipment_id = ?", $shipmentId)
-                        ->where("spm.shipment_test_report_date IS NOT NULL")
-                        ->where("spm.shipment_test_report_date!=''")
+                        ->where("spm.shipment_test_date IS NOT NULL")
+                        ->where("spm.shipment_test_date!=''")
+                        ->where("spm.shipment_test_date!='0000-00-00 00:00:00'")
                         ->group('spm.map_id');
 				
                 $sQueryRes = $db->fetchAll($sQuery);
+				
+				//Zend_Debug::dump($sQueryRes);die;
 				
 				if (count($sQueryRes) > 0) {
 					$shipmentResult['summaryResult'][] = $sQueryRes;
@@ -1213,9 +1216,10 @@ class Application_Service_Evaluation {
 						->join(array('spm' => 'shipment_participant_map'),'s.shipment_id=spm.shipment_id',array('spm.map_id','spm.attributes','spm.shipment_score'))
 						->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.shipment_map_id = spm.map_id and reseid.sample_id = refeid.sample_id', array('reported_result'))
 						->where('spm.shipment_id = ? ', $shipmentId)
-						->where("spm.shipment_test_report_date IS NOT NULL")
-						->where("refeid.control = 0")
-						->where("spm.shipment_test_report_date!=''");
+						->where("spm.shipment_test_date IS NOT NULL")
+						->where("spm.shipment_test_date!=''")
+                        ->where("spm.shipment_test_date!='0000-00-00 00:00:00'")
+						->where("refeid.control = 0");
 
 				$cResult=$db->fetchAll($cQuery);
 				$correctResult = array();
@@ -1245,6 +1249,7 @@ class Application_Service_Evaluation {
 				
 				foreach($sQueryRes as $sVal){
 					$valAttributes = json_decode($sVal['attributes'], true);
+					//Zend_Debug::dump($extractionAssay);die;
 					foreach ($extractionAssay as $eKey=>$extractionAssayVal) {
 						if($eKey==$valAttributes['extraction_assay']){
 							if (array_key_exists($eKey,$extAssayResult)) {
@@ -1304,18 +1309,18 @@ class Application_Service_Evaluation {
 						}
 					}
 				}
-				
+				//ksort($extAssayResult);
 				$shipmentResult['avgAssayResult'] = $extAssayResult;
-				//Zend_Debug::dump($shipmentResult);
-				//die;
+				//Zend_Debug::dump($shipmentResult);die;
             } else if ($shipmentResult['scheme_type'] == 'vl') {
                 
 				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes','spm.is_excluded'))
                         ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
                         ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
                         ->where("spm.shipment_id = ?", $shipmentId)
-                        ->where("spm.shipment_test_report_date IS NOT NULL")
-                        ->where("spm.shipment_test_report_date!=''")
+                        ->where("spm.shipment_test_date IS NOT NULL")
+                        ->where("spm.shipment_test_date!=''")
+                        ->where("spm.shipment_test_date!='0000-00-00 00:00:00'")
                         ->group('spm.map_id');
 				
                 $sQueryRes = $db->fetchAll($sQuery);
@@ -1379,6 +1384,7 @@ class Application_Service_Evaluation {
 				}
 				//print_r($penResult);
 				//die;
+				$vlCalculation = array();
 				foreach ($vlAssayResultSet as $vlAssayRow) {
 					$vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
 									->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
@@ -1389,6 +1395,7 @@ class Application_Service_Evaluation {
 						->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
 						->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 						->where('ref.control!=1')
+						->where("sp.is_excluded!='yes' or sp.is_pt_test_not_performed !='yes'")
 						->where('sp.shipment_id = ? ', $shipmentId);
 					
 					$cResult=$db->fetchAll($cQuery);
@@ -1416,8 +1423,6 @@ class Application_Service_Evaluation {
 					}
 					
 					if (count($vlCalRes) > 0) {
-						
-						
 						$vlCalculation[$vlAssayRow['id']] = $vlCalRes;
 						$vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
 						$vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];

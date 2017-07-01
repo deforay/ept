@@ -578,11 +578,13 @@ $dtFormat=  $genderHelper->getDateFormat();
 		}      
 	});
 	
-	jQuery("#vlResultToLog").on("keypress",function (event) {
+	jQuery("#vlResultToLog").on("keyup",function (event) {
 	        var vlVal = $("#vlResultToLog").val();
 		if(vlVal != "" && vlVal != 0){
 	          $(".logValFormVl").show();		
-		  $(".logValFormVl").html(Math.round(Math.log10(vlVal) * 100) / 100);
+            //var numb = ((Math.log(vlVal) / Math.log(10)));
+            var numb = (Math.round(Math.log(vlVal) / Math.log(10) * 1e2) / 1e2);
+		  $(".logValFormVl").html(numb);
 		}else{
                   $(".logValFormVl").hide();		
 		  $(".logValFormVl").html("");

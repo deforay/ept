@@ -66,7 +66,7 @@ class Application_Service_Schemes {
     public function getEidExtractionAssay() {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $res = $db->fetchAll($db->select()->from('r_eid_extraction_assay'));
+        $res = $db->fetchAll($db->select()->from('r_eid_extraction_assay')->order('sort_order'));
         $response = array();
         foreach ($res as $row) {
             $response[$row['id']] = $row['name'];
@@ -77,7 +77,7 @@ class Application_Service_Schemes {
     public function getEidDetectionAssay() {
     
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $res = $db->fetchAll($db->select()->from('r_eid_detection_assay'));
+        $res = $db->fetchAll($db->select()->from('r_eid_detection_assay')->order('sort_order'));
         $response = array();
         foreach ($res as $row) {
             $response[$row['id']] = $row['name'];

@@ -2301,3 +2301,32 @@ ALTER TABLE  `participant` ADD  `additional_email` VARCHAR( 255 ) NULL DEFAULT N
 --Ilahir 08-FEB-2017
 
 ALTER TABLE  `participant` ADD  `force_profile_updation` INT( 1 ) NOT NULL DEFAULT  '1' AFTER  `updated_by` ;
+
+
+-- Amit 28 June 2017
+
+INSERT INTO `r_eid_detection_assay` (`id`, `name`, `sort_order`) VALUES (NULL, 'Other', '8');
+
+
+ALTER TABLE `r_eid_extraction_assay` ADD `sort_order` INT NULL DEFAULT '0' AFTER `name`;
+ALTER TABLE `r_eid_detection_assay` ADD `sort_order` INT NULL DEFAULT '0' AFTER `name`;
+
+UPDATE `r_eid_extraction_assay` SET `sort_order` = '1' WHERE `r_eid_extraction_assay`.`id` = 1;
+UPDATE `r_eid_extraction_assay` SET `sort_order` = '2' WHERE `r_eid_extraction_assay`.`id` = 2;
+UPDATE `r_eid_extraction_assay` SET `sort_order` = '4' WHERE `r_eid_extraction_assay`.`id` = 3;
+UPDATE `r_eid_extraction_assay` SET `sort_order` = '5' WHERE `r_eid_extraction_assay`.`id` = 4;
+UPDATE `r_eid_extraction_assay` SET `sort_order` = '6' WHERE `r_eid_extraction_assay`.`id` = 5;
+UPDATE `r_eid_extraction_assay` SET `sort_order` = '7' WHERE `r_eid_extraction_assay`.`id` = 6;
+UPDATE `r_eid_extraction_assay` SET `sort_order` = '3' WHERE `r_eid_extraction_assay`.`id` = 7;
+UPDATE `r_eid_extraction_assay` SET `sort_order` = '8' WHERE `r_eid_extraction_assay`.`id` = 8;
+
+UPDATE `r_eid_detection_assay` SET `sort_order` = '1' WHERE `r_eid_detection_assay`.`id` = 1;
+UPDATE `r_eid_detection_assay` SET `sort_order` = '2' WHERE `r_eid_detection_assay`.`id` = 2;
+UPDATE `r_eid_detection_assay` SET `sort_order` = '4' WHERE `r_eid_detection_assay`.`id` = 3;
+UPDATE `r_eid_detection_assay` SET `sort_order` = '5' WHERE `r_eid_detection_assay`.`id` = 4;
+UPDATE `r_eid_detection_assay` SET `sort_order` = '6' WHERE `r_eid_detection_assay`.`id` = 5;
+UPDATE `r_eid_detection_assay` SET `sort_order` = '7' WHERE `r_eid_detection_assay`.`id` = 6;
+UPDATE `r_eid_detection_assay` SET `sort_order` = '3' WHERE `r_eid_detection_assay`.`id` = 7;
+UPDATE `r_eid_detection_assay` SET `sort_order` = '8' WHERE `r_eid_detection_assay`.`id` = 8;
+
+
