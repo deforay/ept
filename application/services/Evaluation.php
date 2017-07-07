@@ -883,7 +883,10 @@ class Application_Service_Evaluation {
 					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date'))
 					->join(array('p' => 'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-					->where("is_excluded=?",'no')
+					->where("sp.is_excluded!='yes' or sp.is_pt_test_not_performed !='yes'")
+					->where("sp.shipment_test_date IS NOT NULL")
+					->where("sp.shipment_test_date!=''")
+					->where("sp.shipment_test_date!='0000-00-00 00:00:00'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 				$spmResult=$db->fetchAll($sql);
 				
@@ -921,6 +924,7 @@ class Application_Service_Evaluation {
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.*'))
 					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+					->where("sp.is_excluded!='yes' or sp.is_pt_test_not_performed !='yes'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 				
 				$cResult=$db->fetchAll($cQuery);
