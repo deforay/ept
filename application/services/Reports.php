@@ -2038,9 +2038,9 @@ class Application_Service_Reports {
 			$excel->addSheet($firstSheet, 0);
 			
 			$firstSheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			//$firstSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			//$firstSheet->getCellByColumnAndRow(2, 1)->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			//$firstSheet->getCellByColumnAndRow(3, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$firstSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$firstSheet->getCellByColumnAndRow(2, 1)->setValueExplicit(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$firstSheet->getCellByColumnAndRow(3, 1)->setValueExplicit(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			//$firstSheet->getCellByColumnAndRow(4, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			//$firstSheet->getCellByColumnAndRow(5, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			//$firstSheet->getCellByColumnAndRow(6, 1)->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2048,9 +2048,9 @@ class Application_Service_Reports {
 			//$firstSheet->getCellByColumnAndRow(8, 1)->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			
 			$firstSheet->getStyleByColumnAndRow(0, 1)->applyFromArray($borderStyle);
-			//$firstSheet->getStyleByColumnAndRow(1, 1)->applyFromArray($borderStyle);
-			//$firstSheet->getStyleByColumnAndRow(2, 1)->applyFromArray($borderStyle);
-			//$firstSheet->getStyleByColumnAndRow(3, 1)->applyFromArray($borderStyle);
+			$firstSheet->getStyleByColumnAndRow(1, 1)->applyFromArray($borderStyle);
+			$firstSheet->getStyleByColumnAndRow(2, 1)->applyFromArray($borderStyle);
+			$firstSheet->getStyleByColumnAndRow(3, 1)->applyFromArray($borderStyle);
 			//$firstSheet->getStyleByColumnAndRow(4, 1)->applyFromArray($borderStyle);
 			//$firstSheet->getStyleByColumnAndRow(5, 1)->applyFromArray($borderStyle);
 			//$firstSheet->getStyleByColumnAndRow(6, 1)->applyFromArray($borderStyle);
@@ -2059,7 +2059,7 @@ class Application_Service_Reports {
 			
 			$firstSheet->getDefaultRowDimension()->setRowHeight(15);
 			
-			$colNameCount = 1;
+			$colNameCount = 4;
 			foreach($refResult as $refRow){
 				$colNamesArray[] = $refRow['sample_label'];
 				$firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2111,8 +2111,10 @@ class Application_Service_Reports {
 						$queryOverAll = $db->select()->from(array('s'=>'shipment'))
 								->joinLeft(array('spm' => 'shipment_participant_map'),"spm.shipment_id = s.shipment_id")
 								->joinLeft(array('p' => 'participant'),"p.participant_id = spm.participant_id")
+								->joinLeft(array('c' => 'countries'),"c.id = p.country",array('country_name'=>'iso_name'))
 								->joinLeft(array('st'=>'r_site_type'),"st.r_stid=p.site_type")
 								->where("s.shipment_id = ?", $shipmentId);
+								
 			$resultOverAll = $db->fetchAll($queryOverAll);
 			
 			$row = 1; // $row 0 is already the column headings
@@ -2171,9 +2173,9 @@ class Application_Service_Reports {
 				
 				
 				$firstSheet->getCellByColumnAndRow(0, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				//$firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['first_name']. " " .$rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				//$firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(html_entity_decode($rowOverAll['department_name'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				//$firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['lab_name'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(html_entity_decode($rowOverAll['country_name'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				
 				//$firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				//$firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 				//$firstSheet->getCellByColumnAndRow(6, $row)->setValueExplicit(html_entity_decode($assayExpirationDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2181,14 +2183,21 @@ class Application_Service_Reports {
 				//$firstSheet->getCellByColumnAndRow(8, $row)->setValueExplicit(html_entity_decode($specimenVolume, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
 				
-				$col = 1;
-				foreach($resultResponse as $responseRow){
-					$firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['reported_viral_load'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-					// we are also building the data required for other Assay Sheets
-					if($attributes['vl_assay'] > 0){
-						$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['reported_viral_load'];
+				$col = 4;
+				if(count($resultResponse)>0){
+					$firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					foreach($resultResponse as $responseRow){
+						$firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['reported_viral_load'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+						// we are also building the data required for other Assay Sheets
+						if($attributes['vl_assay'] > 0){
+							$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['reported_viral_load'];
+						}
 					}
+				}else{
+					$firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$col = 4+count($refResult);
 				}
+				
 				
 				$receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_receipt_date']) : "";
 				$testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_test_date']) : "";
