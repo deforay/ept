@@ -8,7 +8,8 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
     
         date_default_timezone_set('GMT');
-        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "participants-mail-new-eid.csv";
+        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "not-responded.csv";
+
         if (!file_exists($filename) || !is_readable($filename))
             return FALSE;    
         $data = array();
@@ -24,38 +25,47 @@ try {
         
         $commonService = new Application_Service_Common();
         foreach ($data as $participant) {
-            if((isset($participant[0]) && trim($participant[0])!= '') && (isset($participant[1]) && trim($participant[1])!= '')
-               && (isset($participant[2]) && trim($participant[2])!= '') && (isset($participant[3]) && trim($participant[3])!= '')
-               && (isset($participant[4]) && trim($participant[4])!= '')){
-                $to = $participant[1];
-                $cc = $participant[2];
-                $bcc = '';
+
+            
+
+
+            if((isset($participant[7]) && trim($participant[7])!= '')){
+
+                
+
+                $to = $participant[7];
+                $cc = $participant[8];
+                $bcc = 'pt@vlsmartconnect.com';
                 $subject = '';
                 $message = '';
                 $fromMail = '';
                 $fromName = '';
                 //Subject
-                $subject.= 'PT Results Summary Report and Individual Report - EID2016-I';
+                //$subject.= "Notice for CDC 2017-2nd PT shipment for EID and VL - ". $participant[0]." | ".$participant[1] ;
+                $subject.= "Reminder 6 | Last Date Extended | CDC 2017 2nd PT shipment for EID and VL | Lab ID : ". $participant[0] . " | ". $participant[3];
                 //Message
                 $message.= '<table border="0" cellspacing="0" cellpadding="0" style="width:100%;background-color:#FFF;">';
                     $message.= '<tr><td align="center">';
-                      $message.= '<table cellpadding="3" style="width:92%;font-family:Helvetica,Arial,sans-serif;margin:30px 0px 30px 0px;padding:2% 0% 0% 2%;background-color:#ffffff;">';
-                        //$message.= '<tr><td colspan="2">Dear <strong>'.ucwords($participant[0]).'</strong>,</td></tr>';
-                        $message.= '<tr><td colspan="2">Dear Participant,</td></tr>';
-                        $message.= '<tr><td colspan="2">Please login to https://ept.vlsmartconnect.com/auth/login with the following credentials </td></tr>';
-                        $message.= '<tr><td width="12%"><strong>Login ID</strong> : </td><td>'.$participant[3].'</td></tr>';
-                        $message.= '<tr><td width="12%"><strong>Password</strong> : </td><td>'.$participant[4].'</td></tr>';
-                        $message.= '<tr><td colspan="2">This Login ID and Password is unique to your laboratory, please save this Login ID and Password for future use. You will have the option to change them when at a later date.</td></tr>';
-                        $message.= '<tr><td colspan="2">Once you login you can download your EID2016-I PT results summary report AND individual report for '.($participant[0]).'.</td></tr>';
-                        $message.= '<tr><td colspan="2">You can find a quick help video here http://bit.ly/ept-vl2016-intro</td></tr>';
-                        $message.= '<tr><td colspan="2">For any assistance or guidance you can reach us at pt@vlsmartconnect.com</td></tr>';
-                        $message.= '<tr><td colspan="2">We request that you complete a short Feedback form : http://bit.ly/eid2016-feedback</td></tr>';
-                        $message.= '<tr><td colspan="2">Thanks</td></tr>';
+                      $message.= '<table cellpadding="3" style="width:98%;font-family:Helvetica,Arial,sans-serif;margin:30px 0px 30px 0px;padding:2% 0% 0% 2%;background-color:#ffffff;text-align:justify;">';
+                        
+                        $message.= '<tr><td colspan="2">Dear PT Participant,</td></tr>';
+                        $message.= '<tr><td colspan="2">Our records indicate that you have not yet responded for the VL/EID Panel which was dispatched on September 14, 2017.</td></tr>';
+                       
+                        $message.= '<tr><td colspan="2">The results for VL2017-B PT and EID 2017-II panels are due on <strong>November 04, 2017</strong>.</td></tr>';
+
+                        $message.= '<tr><td colspan="2">Please visit https://ept.vlsmartconnect.com/auth/login to record your result</td></tr>';
+                        $message.= '<tr><td colspan="2">Login ID : '. $participant[5] . '</td></tr>';
+                        $message.= '<tr><td colspan="2">Password : '. $participant[6] . '</td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';
+                        $message.= '<tr><td colspan="2">If you have any problems please reach us at pt@vlsmartconnect.com.</td></tr>';
+
+                        $message.= '<tr><td colspan="2">Sincerely,</td></tr>';
+                        $message.= '<tr><td colspan="2">Online PT Team
+                        </td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';
                         $message.= '<tr><td colspan="2"><small>This is a system generated mail. Please do not reply to this email</small></td></tr>';
                       $message.= '</table>';
-                    $message.= '</tr></td>';
+                    $message.= '</td></tr>';
                 $message.= '</table>';
                 $commonService->insertTempMail($to, $cc,$bcc, $subject, $message, $fromMail = null, $fromName = null);
             }

@@ -2305,11 +2305,14 @@ ALTER TABLE  `participant` ADD  `force_profile_updation` INT( 1 ) NOT NULL DEFAU
 
 -- Amit 28 June 2017
 
-INSERT INTO `r_eid_detection_assay` (`id`, `name`, `sort_order`) VALUES (NULL, 'Other', '8');
+
 
 
 ALTER TABLE `r_eid_extraction_assay` ADD `sort_order` INT NULL DEFAULT '0' AFTER `name`;
 ALTER TABLE `r_eid_detection_assay` ADD `sort_order` INT NULL DEFAULT '0' AFTER `name`;
+
+INSERT INTO `r_eid_detection_assay` (`id`, `name`, `sort_order`) VALUES (NULL, 'Other', '8');
+INSERT INTO `r_eid_extraction_assay` (`id`, `name`, `sort_order`) VALUES (NULL, 'Other', '8');
 
 UPDATE `r_eid_extraction_assay` SET `sort_order` = '1' WHERE `r_eid_extraction_assay`.`id` = 1;
 UPDATE `r_eid_extraction_assay` SET `sort_order` = '2' WHERE `r_eid_extraction_assay`.`id` = 2;
