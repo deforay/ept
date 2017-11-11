@@ -884,7 +884,7 @@ class Application_Service_Evaluation {
 					->join(array('p' => 'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 					->where("sp.is_excluded!='yes' or sp.is_pt_test_not_performed !='yes'")
-					->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date!='' AND spm.shipment_test_date!='0000-00-00 00:00:00' OR spm.is_pt_test_not_performed ='yes'")
+					->where("sp.shipment_test_date IS NOT NULL AND spm.shipment_test_date!='' AND spm.shipment_test_date!='0000-00-00 00:00:00' OR spm.is_pt_test_not_performed ='yes'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 				$spmResult=$db->fetchAll($sql);
 				
