@@ -229,7 +229,10 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
   <script type="text/javascript">
     <?php if(isset($authNameSpace->announcementMsg) && trim($authNameSpace->announcementMsg)!= ''){ ?>
        bootbox.alert('<?php echo ucfirst($authNameSpace->announcementMsg); ?>');
-    <?php } ?>
+    <?php
+      $authNameSpace->announcementMsg = '';
+    }
+    ?>
 	function layoutModal(url,w,h){
 	     showdefModal('dDiv',w,h);
 	     document.getElementById('dFrame').style.height=h+'px';
