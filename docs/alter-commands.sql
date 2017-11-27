@@ -2332,4 +2332,19 @@ UPDATE `r_eid_detection_assay` SET `sort_order` = '7' WHERE `r_eid_detection_ass
 UPDATE `r_eid_detection_assay` SET `sort_order` = '3' WHERE `r_eid_detection_assay`.`id` = 7;
 UPDATE `r_eid_detection_assay` SET `sort_order` = '8' WHERE `r_eid_detection_assay`.`id` = 8;
 
+-- Pal 27 Nov 2017
+CREATE TABLE `announcements` (
+  `announcement_id` int(11) NOT NULL,
+  `announcement_msg` text,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `status` varchar(45) NOT NULL DEFAULT 'active'
+)
 
+ALTER TABLE `announcements`
+  ADD PRIMARY KEY (`announcement_id`);
+  
+ALTER TABLE `announcements`
+  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT
+  
+ALTER TABLE `shipment_participant_map` ADD `show_announcement` VARCHAR(45) NOT NULL DEFAULT 'yes' AFTER `mode_id`;

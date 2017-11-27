@@ -91,6 +91,23 @@ class Application_Service_DataManagers {
 	    }
     }
     
+    public function checkAnnouncementMessageShowing($dmId){
+	$response = '';
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('pmm' => 'participant_manager_map',array()))
+                  ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id',array())
+                  ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('show_announcement_count' => new Zend_Db_Expr("SUM(show_announcement ='yes')")))
+                  ->where("pmm.dm_id = ?", $dmId)
+                  ->group('sp.participant_id');
+        $result = $db->fetchRow($sql);
+	if(isset($result['show_announcement_count']) && $result['show_announcement_count'] >0){
+	    $announcementMsg = $db->fetchRow($db->select()->from('announcements')->where("status = 'active' AND DATE(start_date) <= DATE(NOW()) AND DATE(end_date) >= DATE(NOW())"));
+	    if(isset($announcementMsg['announcement_msg']) && trim($announcementMsg['announcement_msg'])!= ''){
+		$response = $announcementMsg['announcement_msg'];
+	    }
+	}
+      return $response;
+    }
     
 }
 

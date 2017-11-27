@@ -190,7 +190,19 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
 
       <div class="control-sidebar-bg"></div>
     </div><!-- ./wrapper -->
-
+    <!--Announcement modal-->
+    <div id="myModal" class="modal fade">
+      <div class="modal-dialog" style="margin-top:50vh !important;">
+	<div class="modal-content">
+	  <!-- dialog body -->
+	  <div class="modal-body">
+	    <button type="button" class="close" data-dismiss="modal">&times;</button>
+	  </div>
+	  <!-- dialog buttons -->
+	  <div class="modal-footer"><button type="button" class="btn btn-primary">OK</button></div>
+	</div>
+      </div>
+    </div>
     <!-- jQuery 2.1.4 -->
     
     <!-- jQuery UI 1.11.4 -->
@@ -201,19 +213,23 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
     </script>
     <!-- Bootstrap 3.3.5 -->
     <script src="<?php echo $this->baseUrl('assets/bootstrap/js/bootstrap.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/hoverIntent.js"); ?>"></script>
+    <script type="text/javascript" src="<?php echo $this->baseUrl("js/hoverIntent.js"); ?>"></script>
 
     <script src="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.min.js"); ?>"></script>
     <script src="<?php echo $this->baseUrl("assets/plugins/datatables/dataTables.bootstrap.min.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayModal.js"); ?>"></script>	
+    <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
+    <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
+    <script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
+    <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayModal.js"); ?>"></script>
+    <script type="text/javascript" src="<?php echo $this->baseUrl("js/bootbox.min.js"); ?>"></script>
 
   <!-- AdminLTE App -->
   <script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
   
   <script type="text/javascript">
+    <?php if(isset($authNameSpace->announcementMsg) && trim($authNameSpace->announcementMsg)!= ''){ ?>
+       bootbox.alert('<?php echo ucfirst($authNameSpace->announcementMsg); ?>');
+    <?php } ?>
 	function layoutModal(url,w,h){
 	     showdefModal('dDiv',w,h);
 	     document.getElementById('dFrame').style.height=h+'px';

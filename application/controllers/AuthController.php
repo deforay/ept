@@ -55,26 +55,25 @@ class AuthController extends Zend_Controller_Action
 	    		$authNameSpace->enable_adding_test_response_date = $rs->enable_adding_test_response_date;
 	    		$authNameSpace->enable_choosing_mode_of_receipt = $rs->enable_choosing_mode_of_receipt;
 	    		$authNameSpace->force_password_reset = $rs->force_password_reset;
-				
-				$profileUpdate = $dbUsersProfile->checkParticipantsProfileUpdate($rs->dm_id);
-				if(count($profileUpdate)>0){
-					$authNameSpace->force_profile_updation =1;
-					$authNameSpace->profile_updation_pid=$profileUpdate[0]['participant_id'];
-				}
+			$profileUpdate = $dbUsersProfile->checkParticipantsProfileUpdate($rs->dm_id);
+			if(count($profileUpdate)>0){
+			    $authNameSpace->force_profile_updation =1;
+			    $authNameSpace->profile_updation_pid=$profileUpdate[0]['participant_id'];
+			}
 				
 	    		// PT Provider Dependent Configuration 
 	    		//$authNameSpace->UserFld1 = $rs->UserFld1;
 	    		//$authNameSpace->UserFld2 = $rs->UserFld2;
 	    		//$authNameSpace->UserFld3 = $rs->UserFld3;
 	    		
-				$userService = new Application_Service_DataManagers();
-				$userService->updateLastLogin($rs->dm_id);
-				
-				if(isset($params['redirectUrl']) && $params['redirectUrl']!='/auth/login'){
-					$this->_redirect($params['redirectUrl']);
-				}else{
-					$this->_redirect('/participant/dashboard');
-				}
+			$userService = new Application_Service_DataManagers();
+			$userService->updateLastLogin($rs->dm_id);
+			$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($rs->dm_id);
+			if(isset($params['redirectUrl']) && $params['redirectUrl']!='/auth/login'){
+			    $this->_redirect($params['redirectUrl']);
+			}else{
+			    $this->_redirect('/participant/dashboard');
+			}
     			
     		
     		}else
