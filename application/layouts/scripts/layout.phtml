@@ -191,12 +191,13 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
       <div class="control-sidebar-bg"></div>
     </div><!-- ./wrapper -->
     <!--Announcement modal-->
-    <div id="myModal" class="modal fade">
-      <div class="modal-dialog" style="margin-top:50vh !important;">
+    <div id="announcementModal" class="modal fade">
+      <div class="modal-dialog">
 	<div class="modal-content">
 	  <!-- dialog body -->
 	  <div class="modal-body">
 	    <button type="button" class="close" data-dismiss="modal">&times;</button>
+	    <?php if(isset($authNameSpace->announcementMsg) && trim($authNameSpace->announcementMsg)!= '') { echo ucfirst($authNameSpace->announcementMsg); } ?>
 	  </div>
 	  <!-- dialog buttons -->
 	  <div class="modal-footer"><button type="button" class="btn btn-primary">OK</button></div>
@@ -228,34 +229,39 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
   
   <script type="text/javascript">
     <?php if(isset($authNameSpace->announcementMsg) && trim($authNameSpace->announcementMsg)!= ''){ ?>
-       bootbox.alert('<?php echo ucfirst($authNameSpace->announcementMsg); ?>');
+      $("#announcementModal").modal('show'); 
     <?php
       $authNameSpace->announcementMsg = '';
     }
     ?>
-	function layoutModal(url,w,h){
+    
+    $("#announcementModal .btn").on("click", function(e) {
+      $("#announcementModal").modal('hide');   // dismiss the dialog
+    });
+    
+    function layoutModal(url,w,h){
 	     showdefModal('dDiv',w,h);
 	     document.getElementById('dFrame').style.height=h+'px';
 	     document.getElementById('dFrame').style.width=w+'px';
 	     document.getElementById('dFrame').src = url;
-  }
-      
-  function closeLayoutModal(){
-      document.getElementById('dFrame').src = "";
-      //window.location.reload(true);
-      hidedefModal();
-  }
-  
-  Array.prototype.remove= function(){
-    var what, a= arguments, L= a.length, ax;
-    while(L && this.length){
-        what= a[--L];
-        while((ax= this.indexOf(what))!= -1){
-            this.splice(ax, 1);
-        }
     }
-    return this;
- }
+	
+    function closeLayoutModal(){
+	document.getElementById('dFrame').src = "";
+	//window.location.reload(true);
+	hidedefModal();
+    }
+    
+    Array.prototype.remove= function(){
+      var what, a= arguments, L= a.length, ax;
+      while(L && this.length){
+	  what= a[--L];
+	  while((ax= this.indexOf(what))!= -1){
+	      this.splice(ax, 1);
+	  }
+      }
+      return this;
+    }
   </script>
   </body>
 </html>
