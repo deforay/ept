@@ -749,9 +749,9 @@ class Application_Service_Reports {
             'positive_responses',
             'negative_responses',
             'invalid_responses',
-            new Zend_Db_Expr("SUM(sp.shipment_test_date <> '0000-00-00')"),
+            new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00' OR is_pt_test_not_performed ='yes')"),
             new Zend_Db_Expr("SUM(sp.final_result=1)"),
-            new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '0000-00-00') - SUM(is_excluded = 'yes'))"),
+            new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '0000-00-00'))"),
         );
 
         $searchColumns = array('sl.scheme_name',
@@ -3982,15 +3982,23 @@ class Application_Service_Reports {
     //vl assay particpant count pie chart
     public function getAllVlAssayParticipantCount($params)
     {
-	$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-	$shipmentId = $params['shipmentId'];
-	$vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id','vl.name','vl.short_name'));
-	$assayResult=$db->fetchAll($vlQuery);
+    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+    $shipmentId = null;
+    if(isset($params['shipmentId']) && $params['shipmentId'] !=""){
+        $shipmentId = $params['shipmentId'];
+    }
+    $vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id','vl.name','vl.short_name'));
+    $assayResult=$db->fetchAll($vlQuery);
+    
+
 	$i = 0;
 	$vlParticipantCount =array();
 	foreach ($assayResult as $assayRow) {
-	    $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'),array('sp.map_id','sp.attributes'))
-				->where("sp.shipment_id='".$shipmentId."'");
+        $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'),array('sp.map_id','sp.attributes'));
+        if($shipmentId !=null){
+            $cQuery = $cQuery->where("sp.shipment_id='".$shipmentId."'");
+        }
+
 	    $cResult=$db->fetchAll($cQuery);
 	    $k = 0;
 	    foreach($cResult as $val){
@@ -4072,9 +4080,9 @@ class Application_Service_Reports {
 	    $resultFa[] = $resultFail;
 	    $resultExe[] = $resultEx;
 	    
-	    $resultAcc['name'] = 'accept';
-	    $resultFa['name'] = 'fail';
-	    $resultExe['name'] = 'excluded';
+	    $resultAcc['name'] = 'Acceptable Result';
+	    $resultFa['name'] = 'Not Acceptable Result';
+	    $resultExe['name'] = 'Excluded from evaluation';
 	    $totalResult = array($resultAcc,$resultFa,$resultExe,'nameList'=>$totalResult);
 	}
 	return $totalResult;

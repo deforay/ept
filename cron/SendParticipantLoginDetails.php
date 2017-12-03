@@ -8,7 +8,7 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
     
         date_default_timezone_set('GMT');
-        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "not-responded.csv";
+        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "participants.csv";
 
         if (!file_exists($filename) || !is_readable($filename))
             return FALSE;    
@@ -42,20 +42,22 @@ try {
                 $fromName = '';
                 //Subject
                 //$subject.= "Notice for CDC 2017-2nd PT shipment for EID and VL - ". $participant[0]." | ".$participant[1] ;
-                $subject.= "Reminder 6 | Last Date Extended | CDC 2017 2nd PT shipment for EID and VL | Lab ID : ". $participant[0] . " | ". $participant[3];
+                $subject.= "Feedback | CDC 2017 2nd PT shipment for EID and VL | Lab ID : ". $participant[0] . " | ". $participant[3];
                 //Message
                 $message.= '<table border="0" cellspacing="0" cellpadding="0" style="width:100%;background-color:#FFF;">';
                     $message.= '<tr><td align="center">';
                       $message.= '<table cellpadding="3" style="width:98%;font-family:Helvetica,Arial,sans-serif;margin:30px 0px 30px 0px;padding:2% 0% 0% 2%;background-color:#ffffff;text-align:justify;">';
-                        
+                      
                         $message.= '<tr><td colspan="2">Dear PT Participant,</td></tr>';
-                        $message.= '<tr><td colspan="2">Our records indicate that you have not yet responded for the VL/EID Panel which was dispatched on September 14, 2017.</td></tr>';
-                       
-                        $message.= '<tr><td colspan="2">The results for VL2017-B PT and EID 2017-II panels are due on <strong>November 04, 2017</strong>.</td></tr>';
-
-                        $message.= '<tr><td colspan="2">Please visit https://ept.vlsmartconnect.com/auth/login to record your result</td></tr>';
-                        $message.= '<tr><td colspan="2">Login ID : '. $participant[5] . '</td></tr>';
-                        $message.= '<tr><td colspan="2">Password : '. $participant[6] . '</td></tr>';
+                        $message.= '<tr><td colspan="2">We are currently evaluating the PT results for 2017 2nd shipments to generate results reports.</td></tr>';
+                        
+                        $message.= '<tr><td colspan="2">In the meantime, we request for your <a href="https://goo.gl/forms/IQ022ckowJRvlfQy2" target="_blank">feedback</a> on this survey.</td></tr>';
+                        
+                        $message.= '<tr><td colspan="2">Your participation in this survey is highly valuable and will be used for improvement of the PT programs. All responses will remain confidential. Survey results will be used to assess and improve the programs, as well as address key areas for prioritization and sustainability.  Thank you for your commitment to the laboratory quality assurance program.</td></tr>';
+                        
+                        $message.= '<tr><td colspan="2">We thank you for taking 10 minutes of your time to respond to this survey.</td></tr>';
+                        
+                        $message.= '<tr><td colspan="2"><a href="https://goo.gl/forms/IQ022ckowJRvlfQy2" target="_blank">Click here to provide feedback for CDC 2nd PT 2017</a></td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';
                         $message.= '<tr><td colspan="2">If you have any problems please reach us at pt@vlsmartconnect.com.</td></tr>';
 
@@ -63,7 +65,7 @@ try {
                         $message.= '<tr><td colspan="2">Online PT Team
                         </td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';
-                        $message.= '<tr><td colspan="2"><small>This is a system generated mail. Please do not reply to this email</small></td></tr>';
+                        
                       $message.= '</table>';
                     $message.= '</td></tr>';
                 $message.= '</table>';

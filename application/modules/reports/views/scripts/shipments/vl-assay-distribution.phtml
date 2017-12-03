@@ -10,7 +10,7 @@
         }
     }
 </style>
-<legend><h3>Vl Assay Distribution</h3></legend>
+<legend><h3>VL Assay Distribution</h3></legend>
 <table  style="margin:20px 0;" class="table table-bordered">
     <tr>
         <td style="width:150px;text-align: center;font-weight:bold;">
@@ -95,8 +95,8 @@
 		    });
 	    }
             function drawTable() {
-		if ($("#dateRange").val()=="" || $("#shipmentId").val()=="") {
-			alert("Please pick date range and shipment to proceed");
+		if ($("#dateRange").val()=="") {
+			alert("Please pick date range to proceed");
 			return false;
 		}
                 //$("#shipmentTable").removeClass("hide");
