@@ -378,6 +378,11 @@ class Application_Service_Schemes {
         $vlAssayArray = $this->getVlAssay();
 
         foreach ($vlAssayArray as $vlAssayId => $vlAssayName) {
+
+            // If Assay is OTHER then dont calculate
+            if($vlAssayId == 6) continue;
+
+            
             $sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('shipment_id', 'sample_id'))
                       ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array())
                       ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('participant_id'))
@@ -468,6 +473,9 @@ class Application_Service_Schemes {
                         $data['use_range'] = $rvcRow['use_range'];
                     }
                     $db->delete('reference_vl_calculation', "vl_assay = ".$vlAssayId." and sample_id=$sample and shipment_id=$sId");
+
+
+                    
                     $db->insert('reference_vl_calculation', $data);
                 }
             }

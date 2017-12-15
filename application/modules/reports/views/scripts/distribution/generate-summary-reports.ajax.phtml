@@ -36,55 +36,55 @@ if ($this->result['shipment'] != "") {
             if (trim($this->logo) != "") {
                 if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                     $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                    $this->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 10, 14, 36, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             }
-            if (trim($this->logoRight) != "") {
-                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
-                    $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
-                    $this->Image($image_file, 180, 10, 20, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }
-            }
+            // if (trim($this->logoRight) != "") {
+            //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
+            //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
+            //         $this->Image($image_file, 180, 10, 20, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            //     }
+            // }
 
             // Set font
-            $this->SetFont('times', '', 12);
+            $this->SetFont('helvetica', '', 11);
 
             $this->header = str_replace("<div", "<span", trim($this->header));
             $this->header = str_replace("</div>", "</span><br/>", $this->header);
 
-            //error_log($this->header);
-            //$y = $this->getY();
-            $html = $this->header;
+            //$html = $this->header;
 
-            $this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
-            //$this->writeHTML($html, true, false, true, true, 'L');
+            //$this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
             
             if($this->schemeType == 'vl'){
-                $html='<p  style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral load using Dried Tube Specimen<br><strong>All participants results summary report</strong></p>';
+                $html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral Load using Dried Tube Specimen</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             }
             else if($this->schemeType == 'eid'){
-                $html='<h3 style="font-weight: bold;text-align:center;">HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot</h3>';
+                $this->SetFont('helvetica', '', 10);
+                $html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using Dried Blood Spot</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             }else{
-                $html='<h3 style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</h3>';
+                $html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             }
             
-            $this->writeHTMLCell(0, 0, 30, 30, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 42, 19, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 45, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
         }
 
         // Page footer
         public function Footer() {
             $finalizeReport="";
             if(trim($this->comingFrom)=="finalize"){
-               $finalizeReport=' -FINALIZED';
+               $finalizeReport=' | FINALIZED';
             }
             // Position at 15 mm from bottom
             $this->SetY(-15);
             // Set font
-            $this->SetFont('helvetica', 'I', 8);
+            $this->SetFont('helvetica', '', 7);
             // Page number
-            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            //$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            
+            $this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }
 
     }
@@ -126,7 +126,24 @@ if ($this->result['shipment'] != "") {
 // ---------------------------------------------------------
     if ($this->result['shipment']['scheme_type'] == 'eid') {
         $pdf->AddPage('P', 'A4');
+
+
+        $pdf->SetFont('helvetica', 'B', 11);
+        
+        $referenceRes = '<table style="text-align:center;width:100%" align="left">';
+        $referenceRes.='<tr>';
+        $referenceRes.='<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $this->result['shipment']['distribution_code'] . '</td>';
+        $referenceRes.='</tr>';
+        $referenceRes.='<tr>';
+        $referenceRes.='<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . $this->dateFormat($this->result['shipment']['shipment_date']) . '</td>';
+        $referenceRes.='</tr>';        
+        $referenceRes.='</table>';
+
+        $pdf->writeHTML($referenceRes, true, false, true, false, '');
+
+
         $participantCount='';
+
         if(isset($this->result['shipment']['participant_count'])){
             $participantCount=$this->result['shipment']['participant_count'];
         }
@@ -146,14 +163,14 @@ if ($this->result['shipment'] != "") {
             }
             $scoringPer = round(($overAllMaxScore / $partCount) * 100, 2);
             // set font
-            $pdf->SetFont('times', 'B', 12);
+            $pdf->SetFont('helvetica', 'B', 10);
             $overAllSumRes = '<h3>Summary of All Laboratory Scores*</h3>';
-            $overAllSumRes.='<table border="1">';
-            $overAllSumRes.='<tr style="background-color:#dbe4ee;">';
-            $overAllSumRes.='<td style="text-align:center;">Total number of participating laboratories</td>';
-            $overAllSumRes.='<td style="text-align:center;">Total number of laboratories submitted results</td>';
-            $overAllSumRes.='<td style="text-align:center;">Total number of laboratories scoring "'.$this->result['shipment']['max_score'].'"</td>';
-            $overAllSumRes.='<td style="text-align:center;">Total number of laboratories scoring below "'.$this->result['shipment']['max_score'].'"</td>';
+            $overAllSumRes.='<table border="1" cellpadding="3">';
+            $overAllSumRes.='<tr style="background-color:#BCD7EC;">';
+            $overAllSumRes.='<td style="text-align:center;">Total Number of participating laboratories</td>';
+            $overAllSumRes.='<td style="text-align:center;">Number of laboratories submitted results</td>';
+            $overAllSumRes.='<td style="text-align:center;">Number of laboratories scoring "'.$this->result['shipment']['max_score'].'"</td>';
+            $overAllSumRes.='<td style="text-align:center;">Number of laboratories scoring below "'.$this->result['shipment']['max_score'].'"</td>';
             $overAllSumRes.='<td style="text-align:center;">Percentage of laboratories scoring "' . $this->result['shipment']['max_score'] . '"</td>';
             $overAllSumRes.='</tr>';
             
@@ -172,15 +189,15 @@ if ($this->result['shipment'] != "") {
             $n=count($this->result['shipment']['correctRes']);
             if($n>0){
                 $overAllCorrectRes = '<h3>Percentage of laboratories reporting correctly*</h3>';
-                $overAllCorrectRes.='<table border="1">';
+                $overAllCorrectRes.='<table border="1" cellpadding="4">';
                 
-                $overAllCorrectRes.='<tr style="background-color:#dbe4ee;">';
+                $overAllCorrectRes.='<tr style="background-color:#BCD7EC;">';
                 $overAllCorrectRes.='<td  style=""></td>';
                 $overAllCorrectRes.='<td style="text-align:center;font-weight:bold;" colspan="'.($n).'">Sample ID</td>';
                 $overAllCorrectRes.='<td></td>';
                 $overAllCorrectRes.='</tr>';
                 
-                $overAllCorrectRes.='<tr style="background-color:#dbe4ee;">';
+                $overAllCorrectRes.='<tr style="background-color:#BCD7EC;">';
                 $overAllCorrectRes.='<td></td>';
                 foreach($this->result['shipment']['correctRes'] as $cKey=>$cVal){
                     $overAllCorrectRes.='<td style="text-align:center;">'.$cKey.'</td>';
@@ -188,9 +205,20 @@ if ($this->result['shipment'] != "") {
                 $overAllCorrectRes.='<td style="text-align:center;">Average</td>';
                 $overAllCorrectRes.='</tr>';
                 
-                $avg='';
+                $avg=0;
                 $overAllCorrectRes.='<tr>';
-                $overAllCorrectRes.='<td style="text-align:center;">Correctly Reported</td>';
+                $overAllCorrectRes.='<td rowspan="2"  style="text-align:center;">Correctly Reported</td>';
+
+                $tot = 0;
+                foreach($this->result['shipment']['correctRes'] as $cKey=>$cVal){
+                    $avg+=$cVal;
+                    $overAllCorrectRes.='<td style="text-align:center;">'.$cVal.'</td>';
+                }
+                $overAllCorrectRes.='<td style="text-align:center;">'.round(($avg/$n),2).'</td>';
+                $overAllCorrectRes.='</tr>';
+                $overAllCorrectRes.='<tr>';
+                
+                $avg=0;
                 foreach($this->result['shipment']['correctRes'] as $cKey=>$cVal){
                     $avg+=round(($cVal/ $partCount) * 100,2);
                     $overAllCorrectRes.='<td style="text-align:center;">'.round(($cVal/ $partCount) * 100,2).'%</td>';
@@ -211,14 +239,21 @@ if ($this->result['shipment'] != "") {
             if($k>0){
                 foreach($this->result['shipment']['avgAssayResult'] as $assayResult){
                     $avgAssay='';
-                    $avgAssay.= '<div style="border: 2px solid #000000;padding:5px;">';
-                    $avgAssay.= '<span>Summary of All Laboratories using '.$assayResult['vlAssay'].'</span><br/>';
+                    $avgAssay.= '<br><div style="border: 1px solid #000000;">';
                     
-                    $avgAssay.='<table border="1">';
-                    $avgAssay.='<tr style="background-color:#dbe4ee;">';
-                    $avgAssay.='<td style="text-align:center;">Total Number of Laboratories Performing Assay Pair</td>';
-                    $avgAssay.='<td style="text-align:center;">Total Number of Laboratories Scoring "'.$this->result['shipment']['max_score'].'"</td>';
-                    $avgAssay.='<td style="text-align:center;">Total Number of Laboratories Scoring Below "'.$this->result['shipment']['max_score'].'"</td>';
+                    
+                    $avgAssay.='<table border="1" cellpadding="4">';
+
+                    $avgAssay.='<tr style="background-color:#fff;">';
+                    $avgAssay.='<td colspan="4"><span>Summary of All Laboratories using '.$assayResult['vlAssay'].'</span></td>';
+                    $avgAssay.='</tr>';
+
+
+
+                    $avgAssay.='<tr style="background-color:#BCD7EC;">';
+                    $avgAssay.='<td style="text-align:center;">Number of Laboratories</td>';
+                    $avgAssay.='<td style="text-align:center;">Number of Laboratories Scoring "'.$this->result['shipment']['max_score'].'"</td>';
+                    $avgAssay.='<td style="text-align:center;">Number of Laboratories Scoring Below "'.$this->result['shipment']['max_score'].'"</td>';
                     $avgAssay.='<td style="text-align:center;">Percentage of Laboratories Scoring "'.$this->result['shipment']['max_score'].'"</td>';
                     $avgAssay.='</tr>';
                     
@@ -240,14 +275,14 @@ if ($this->result['shipment'] != "") {
                     
                     
                     $m=count($assayResult['specimen']);
-                    $avgAssay.='<br/><br/><table border="1" style="">';
-                    $avgAssay.='<tr style="background-color:#dbe4ee;">';
+                    $avgAssay.='<br/><br/><table border="1" cellpadding="3">';
+                    $avgAssay.='<tr style="background-color:#BCD7EC;">';
                     $avgAssay.='<td></td>';
                     $avgAssay.='<td style="text-align:center;" colspan="'.($m).'">Sample ID</td>';
                     $avgAssay.='<td></td>';
                     $avgAssay.='</tr>';
                     
-                    $avgAssay.='<tr style="background-color:#dbe4ee;">';
+                    $avgAssay.='<tr style="background-color:#BCD7EC;">';
                     $avgAssay.='<td></td>';
                     foreach($assayResult['specimen'] as $sKey=>$sample){
                         $avgAssay.='<td style="text-align:center;">'.$sKey.'</td>';
@@ -257,7 +292,7 @@ if ($this->result['shipment'] != "") {
                     $sampleAvg='';
                     $sCount=count($assayResult['specimen']);
                     $avgAssay.='<tr>';
-                    $avgAssay.='<td rowspan="2" style="text-align:center;background-color:#dbe4ee;">Correctly Reported</td>';
+                    $avgAssay.='<td rowspan="2" style="text-align:center;background-color:#BCD7EC;">Correctly Reported</td>';
                     foreach($assayResult['specimen'] as $sKey=>$sample){
                         $sampleAvg+=$sample['correctRes'];
                         $avgAssay.='<td style="text-align:center;">'.$sample['correctRes'].'</td>';
@@ -287,13 +322,15 @@ if ($this->result['shipment'] != "") {
     }
     else if ($this->result['shipment']['scheme_type'] == 'vl') {
         $pdf->AddPage('P', 'A4');
-        $pdf->SetFont('times', 'B', 12);
+        $pdf->SetFont('helvetica', 'B', 11);
         
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes.='<tr>';
-        $referenceRes.='<td style="font-weight:bold;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $this->result['shipment']['distribution_code'] . '<br>(' . $this->dateFormat($this->result['shipment']['shipment_date']) . ')</td>';
-        $referenceRes.='<td style="font-weight:bold;width:20%;">Shipment Code</td><td style="font-weight:normal;width:30%;">' . $this->result['shipment']['shipment_code'] . '</td>';
+        $referenceRes.='<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $this->result['shipment']['distribution_code'] . '</td>';
         $referenceRes.='</tr>';
+        $referenceRes.='<tr>';
+        $referenceRes.='<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . $this->dateFormat($this->result['shipment']['shipment_date']) . '</td>';
+        $referenceRes.='</tr>';        
         $referenceRes.='</table>';
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
         
@@ -322,7 +359,7 @@ if ($this->result['shipment'] != "") {
         //    }
         //   
         //    // set font
-        //    $pdf->SetFont('times', 'B', 12);
+        //    $pdf->SetFont('helvetica', 'B', 12);
         //    
         //    $overview= '<table border="1" style="font-size:13px;"><tr>';
         //    $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Responses </td>';
@@ -347,27 +384,30 @@ if ($this->result['shipment'] != "") {
 				
 			foreach($this->result['vlCalculation'] as $vlCal){
 				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results | No. of Labs : '.$vlCal['participant-count'][$vlCal[0]['sample_label']].' </h5>';
-				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
+				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
 				<tr>
-					<td style="background-color:#dbe4ee;text-align:center;">Platform </td>
-					<td style="background-color:#dbe4ee;text-align:center;">Specimen ID </td>
-					<td style="background-color:#dbe4ee;text-align:center;">Mean<br/>(log<sub>10</sub> copies/ml)</td>
-					<td style="background-color:#dbe4ee;text-align:center;">S.D.</td>
-					<td style="background-color:#dbe4ee;text-align:center;">Lowest Acceptable Limit</td>
-					<td style="background-color:#dbe4ee;text-align:center;">Highest Acceptable Limit</td>
-					<td style="background-color:#dbe4ee;text-align:center;">CV</td>
+					<td style="background-color:#8ECF64;text-align:center;"><br><br>Platform </td>
+					<td style="background-color:#8ECF64;text-align:center;"><br><br>Specimen ID </td>
+					<td style="background-color:#8ECF64;text-align:center;width:100px;"><br><br>Mean<br/>(log<sub>10</sub> copies/ml)</td>
+					<td style="background-color:#8ECF64;text-align:center;"><br><br>S.D.</td>
+					<td style="background-color:#8ECF64;text-align:center;">Lowest Acceptable Limit</td>
+					<td style="background-color:#8ECF64;text-align:center;">Highest Acceptable Limit</td>
+					<td style="background-color:#8ECF64;text-align:center;"><br><br>CV</td>
 				</tr>';
 				
-				$countCal=count($vlCal)-1;
+                $countCal=count($vlCal)-1;
+                $otherList ="";
+                
 				for($c=0;$c<$countCal;$c++){
 					if(isset($vlCal[$c]['mean'])){
 					$calRes.='<tr>';
 					if($c==0){
-                        if($vlCal[$c]['vl_assay']==6){
-                        $calRes.='<td style="text-align:center;" rowspan="'.$countCal.'">'.$vlCal['shortName'].'<br/>('.implode(",",$vlCal['otherAssayName']).')</td>';
-                        }else{
-                        $calRes.='<td style="text-align:center;" rowspan="'.$countCal.'">'.$vlCal['shortName'].'</td>';
-                        }
+                        //if($vlCal[$c]['vl_assay']==6){
+                            //$calRes.='<td style="text-align:center;" rowspan="'.$countCal.'"><br><br>'.$vlCal['shortName'].'</td>';
+                            //$otherList = implode(", ",$vlCal['otherAssayName']);
+                        //}else{
+                            $calRes.='<td style="text-align:center;" rowspan="'.$countCal.'"><br><br>'.$vlCal['shortName'].'</td>';
+                        //}
 					}
 					
 					
@@ -379,9 +419,10 @@ if ($this->result['shipment'] != "") {
 						<td>'.number_format(round($vlCal[$c]['cv'],2),2,'.','').'</td>
 					  </tr>';
 					}
-				}
+                }
+               
 				$calRes.='</table>';
-				
+
 				$pdf->writeHTML($calRes, true, false, true, false, '');
 			}
 		}
@@ -389,60 +430,23 @@ if ($this->result['shipment'] != "") {
         
         $uncalculatedAssayList = null;
         
-		if(count($this->result['pendingAssay'])>0){
-			foreach($this->result['pendingAssay'] as $vlId=>$vlCal){
-                if($pdf->getY()>=250){
-                    $pdf->AddPage();
-                }
-                
-				$calRes='<h5> Summary of '.$vlCal['vlAssay'].' Results</h5>';
-				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
-				<tr>
-					<td style="background-color:#dbe4ee;text-align:center;">Platform </td>
-					<td style="background-color:#dbe4ee;text-align:center;">No. of Labs</td>
-				</tr>';
-				$n=count($vlCal['specimen']);
-				$l=0;
-				foreach($vlCal['specimen'] as $key=>$val){
-					$calRes.='<tr>';
-					if($l==0){
-                        if($vlId==6){
-                            $calRes.='<td style="text-align:center;">'.implode(",",$vlCal['otherAssayName']).'</td>';
-                            $uncalculatedAssayList[] = "Other";
-                        }else{
-                            $calRes.='<td style="text-align:center;">'.$vlCal['shortName'].'</td>';
-                            $uncalculatedAssayList[] = $vlCal['vlAssay'];
-                        }
-					
-					}
-					$calRes.='<td>'.count($val).'</td>';
-					$calRes.='</tr>';
-                    break; // JUST ONE ROW IS ENOUGH
-					//$l++;
-				}
-                
-                
-				
-				$calRes.='</table>';
-
-				$pdf->writeHTML($calRes, true, false, true, false, '');
-                
-                
-			}
-            
-            $uncalculatedAssayList = array_unique($uncalculatedAssayList);
-            $uncalculatedAssays = implode(", ",$uncalculatedAssayList);
-            $unCalRes='<h5>'.$uncalculatedAssays.' Platforms were not analyzed or graded.</h5>';
+		if(isset($this->result['pendingAssay']) && count($this->result['pendingAssay']['count'])>0){
+	
+            if($pdf->getY()>=250){
+                $pdf->AddPage();
+            }
+            $unCalRes='<h5> Summary of Other Results | No. of Labs : '.$this->result['pendingAssay']['count'].' </h5>';
+            $unCalRes.='<table cellpadding="6" border="1" style="text-align:left;font-weight:normal;width:660px;font-size:11px;"><tr><td>'.implode(", ",$this->result['pendingAssay']['assayNames']).' platforms were not analyzed or graded due to less than 6 participating labs using the same platform.</td></tr></table>';
             
             $pdf->writeHTML($unCalRes, true, false, true, false, '');            
             
 		}
-        $footerHead='<br/><h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
+        $footerHead='<h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
         $pdf->writeHTML($footerHead, true, false, true, false, '');
     }
     else {
         $pdf->AddPage('P', 'A4');
-        $pdf->SetFont('times', 'B', 12);
+        $pdf->SetFont('helvetica', 'B', 12);
         if (count($this->result['shipment']['referenceResult']) > 0) {
 
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
@@ -517,7 +521,7 @@ if ($this->result['shipment'] != "") {
             $chart->render(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
 
             // set font
-            $pdf->SetFont('times', 'B', 12);
+            $pdf->SetFont('helvetica', 'B', 12);
 
             
             $overview= '<table border="1" style="font-size:13px;"><tr>';
@@ -573,7 +577,7 @@ if ($this->result['shipment'] != "") {
             $sampleCode.='<tr>';
             $sampAvg = '0';
             $sampPerAvg = '0';
-            $sampleCode.='<td style="background-color:#dbe4ee;text-align:center;">Correctly Reported</td>';
+            $sampleCode.='<td style="background-color:#BCD7EC;text-align:center;">Correctly Reported</td>';
 
             foreach ($result['correctCount'] as $sample) {
                 $sampAvg+=$sample["correctRes"];

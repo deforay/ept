@@ -883,7 +883,7 @@ class Application_Service_Evaluation {
 					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date'))
 					->join(array('p' => 'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-					->where("sp.is_excluded!='yes' or sp.is_pt_test_not_performed !='yes'")
+					->where("sp.is_excluded!='yes' or sp.is_pt_test_not_performed is NULL")
 					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00 00:00:00' OR sp.is_pt_test_not_performed ='yes'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 				$spmResult=$db->fetchAll($sql);
@@ -922,7 +922,7 @@ class Application_Service_Evaluation {
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.*'))
 					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-					->where("sp.is_excluded!='yes' or sp.is_pt_test_not_performed !='yes'")
+					->where("sp.is_excluded!='yes' AND sp.is_pt_test_not_performed is NULL")
 					->where('sp.shipment_id = ? ', $shipmentId);
 				
 				$cResult=$db->fetchAll($cQuery);
@@ -1200,7 +1200,8 @@ class Application_Service_Evaluation {
                         //->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
                         ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
                         ->where("spm.shipment_id = ?", $shipmentId)
-                        ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date!='' AND spm.shipment_test_date!='0000-00-00 00:00:00' OR spm.is_pt_test_not_performed ='yes'")
+						//->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date!='' AND spm.shipment_test_date!='0000-00-00 00:00:00' OR spm.is_pt_test_not_performed ='yes'")
+						->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date!='' AND spm.shipment_test_date!='0000-00-00 00:00:00'")
                         ->group('spm.map_id');
 				
                 $sQueryRes = $db->fetchAll($sQuery);
@@ -1347,56 +1348,53 @@ class Application_Service_Evaluation {
 				$smpleResult=$db->fetchAll($query);
 				$shipmentResult['no_of_samples']=count($smpleResult);
 				
-				$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
+				
 				
 				//print_r($shipmentResult);die;
 				$refVlQuery=$db->select()->from(array('ref' => 'reference_vl_calculation'),array('ref.vl_assay'))
 								->where('ref.shipment_id = ? ',$shipmentId)
 								->group('vl_assay');
+
+				$countedAssayResult =  $db->fetchAll($refVlQuery);	
 				
-				$vlQuery=$db->select()->from(array('vl' => 'r_vl_assay'),array('vl.id','vl.name','vl.short_name'))
-								->where("vl.id NOT IN ($refVlQuery)");
-				$pendingResult=$db->fetchAll($vlQuery);
+				$regexpArray = array();
+				foreach($countedAssayResult as $crow){
+					$regexpArray[] = '\'%"vl_assay":"'.$crow['vl_assay'].'"%\'';
+				}
+				// select * from shipment_participant_map where `attributes` NOT REGEXP '\"vl_assay\":\"1\" |\"vl_assay\":\"4\" |\"vl_assay\":\"2\"' and shipment_id = 11
+				$regexp = implode(' AND `attributes` NOT LIKE ',$regexpArray);
+
+				$vlQuery=$db->select()->from(array('spm' => 'shipment_participant_map'))
+							->where("`attributes` NOT LIKE  $regexp ")
+							->where("is_excluded!='yes'")
+							->where("is_pt_test_not_performed is NULL")
+							->where("spm.shipment_id = ?",$shipmentId);
+
+						//	echo($vlQuery);die;
+				$pendingResult =  $db->fetchAll($vlQuery);
+
+
+				$schemeService = new Application_Service_Schemes();
+				$vlAssayList = $schemeService->getVlAssay();
 				$penResult = array();
-				foreach ($pendingResult as $pendingRow) {
-					$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('ref.sample_id','ref.sample_label'))
-							->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.shipment_id'))
-							->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
-							->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-							->where('ref.control!=1')
-							->where('sp.shipment_id = ? ', $shipmentId);
-					
-					$cResult=$db->fetchAll($cQuery);
-					
-					foreach($cResult as $val){
-						$valAttributes = json_decode($val['attributes'], true);
-						if($pendingRow['id']==$valAttributes['vl_assay']){
-							if (array_key_exists($pendingRow['id'], $penResult)) {
-								$penResult[$pendingRow['id']]['specimen'][$val['sample_label']][]=$val['reported_viral_load'];
-								if($pendingRow['id']==6){
-									if(isset($penResult[$pendingRow['id']]['otherAssayName'])){
-										$valAttributes['other_assay'] = (isset($valAttributes['other_assay']) ? $valAttributes['other_assay'] : "");
-										if(!in_array($valAttributes['other_assay'],$penResult[$pendingRow['id']]['otherAssayName'])){
-											$penResult[$pendingRow['id']]['otherAssayName'][]=$valAttributes['other_assay'];	
-										}
-									}
-								}
-							}else{
-								$penResult[$pendingRow['id']]=array();
-								$penResult[$pendingRow['id']]['specimen'][$val['sample_label']][]=$val['reported_viral_load'];
-								$penResult[$pendingRow['id']]['vlAssay']=$pendingRow['name'];
-								$penResult[$pendingRow['id']]['shortName']=$pendingRow['short_name'];
-								if($pendingRow['id']==6){
-									$penResult[$pendingRow['id']]['otherAssayName'][]=(isset($valAttributes['other_assay']) ? $valAttributes['other_assay'] : "");
-								}
-								
-							}
+				foreach($pendingResult as $pendingRow){
+					$valAttributes = json_decode($pendingRow['attributes'], true);
+					if(isset($vlAssayList[$valAttributes['vl_assay']])){
+						if($valAttributes['vl_assay'] == 6){
+							$penResult['assayNames'][] = $valAttributes['other_assay'];
+						}else{
+							$penResult['assayNames'][] = $vlAssayList[$valAttributes['vl_assay']];	
 						}
+						
 					}
 				}
-				//print_r($penResult);
-				//die;
+				$penResult['assayNames'] = array_unique($penResult['assayNames']);
+				sort($penResult['assayNames']);
+				$penResult['count'] = count($pendingResult);
+
+				
 				$vlCalculation = array();
+				$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
 				foreach ($vlAssayResultSet as $vlAssayRow) {
 					$vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
 									->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
@@ -1407,7 +1405,7 @@ class Application_Service_Evaluation {
 						->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes'))
 						->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 						->where('ref.control!=1')
-						->where("sp.is_excluded!='yes' or sp.is_pt_test_not_performed !='yes'")
+						->where("sp.is_excluded!='yes' AND sp.is_pt_test_not_performed is NULL")
 						->where('sp.shipment_id = ? ', $shipmentId);
 					
 					$cResult=$db->fetchAll($cQuery);
