@@ -92,7 +92,15 @@ class MYPDF extends TCPDF {
 $totalPages=count($this->result['shipment']);
 $j=1;
 //$this->result['dmResult'];
+//var_dump($this->result['shipment']);die;
+
+
 foreach($this->result['shipment'] as $result){
+	
+	if( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
+		(isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')){
+			continue;
+	}
 	
 	//Zend_Debug::dump($result['responseResult'][0]);die;
 	
@@ -181,8 +189,8 @@ foreach($this->result['shipment'] as $result){
 		$responseDate=$this->dateFormat($splitDate[0]);
 	}
 	$attributes='';
-	if(isset($result['responseResult'][0]['attributes'])){
-		$attributes = json_decode($result['responseResult'][0]['attributes'], true);	
+	if(isset($result['attributes'])){
+		$attributes = json_decode($result['attributes'], true);	
 	}
 	
 	
@@ -273,7 +281,11 @@ foreach($this->result['shipment'] as $result){
 		$pdf->writeHTML($labInfo, true, false, true, false, '');
 	
 	}
-	else if($schemeType=='eid'){
+	else if($schemeType=='eid'){ 
+
+		// Samples without response need not be generated
+		if(sizeof($result['responseResult'])==0) continue;
+		
 		$labInfo='<table cellpadding="3" style="width:830px;font-size:11px;">';
 		$labInfo.='<tr>';
 		$labInfo.='	<td><strong>PT Panel Name and Date</strong> <br>'.$result['distribution_code'].'('.$result['shipment_date'].')</td>';
@@ -577,13 +589,14 @@ foreach($this->result['shipment'] as $result){
 		}
 		else{
 			//Vl report
-			$labRes='<h5>'.$result['responseResult'][0]['vl_assay'];
+			//var_dump($attributes);die;
+			$labRes='<h5>Platform : '.$result['responseResult'][0]['vl_assay'];
 			if(isset($attributes['vl_assay']) && $attributes['vl_assay']==6){
 				$labRes.=" - ".$attributes['other_assay'];
 			}
 			$labRes.='</h5>';
 			
-			if($result['responseResult'][0]['no_of_participants'] > 7) {
+			if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
 					$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
 								<tr>
 									<td style="background-color:#8ECF64;"><br><br>Specimen ID </td>
@@ -628,25 +641,29 @@ foreach($this->result['shipment'] as $result){
 				
 				$labRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
 								<tr>
-									<td style="background-color:#dbe4ee;">Specimen ID </td>
-									<td style="background-color:#dbe4ee;">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
-									<td style="background-color:#dbe4ee;"># of Labs</td>
-									<td style="background-color:#dbe4ee;">Your Grade</td>
+									<td style="background-color:#8ECF64;">Specimen ID </td>
+									<td style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/ml)</td>
+									<!-- <td style="background-color:#8ECF64;"># of Labs</td> -->
+									<td style="background-color:#8ECF64;">Your Grade</td>
 								</tr>';
 					
 						foreach($result['responseResult'] as $response){
 							$labRes.='<tr>
 										<td style="text-align:center;">'.$response['sample_label'].'</td>
 										<td>'.$response['reported_viral_load'].'</td>
-										<td>'.$response['no_of_participants'].'</td>
-										<td>Not Evaluated</td>
+										<!-- <td>'.$response['no_of_participants'].'</td> -->
+										<td>Not Graded</td>
 									  </tr>';
 							
 						}
 						
 					
 					$labRes.='</table>';				
-					$labRes.='<h5>'.$result['responseResult'][0]['vl_assay'].' Platforms were not analyzed or graded</h5>';
+					$labRes.='<h5>'.$result['responseResult'][0]['vl_assay'];
+					if(isset($attributes['vl_assay']) && $attributes['vl_assay']==6){
+						$labRes.=" - ".$attributes['other_assay'];
+					}
+					$labRes.=' platform was not analyzed or graded</h5>';
 				
 			}
 			

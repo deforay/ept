@@ -180,6 +180,7 @@ class Application_Service_Evaluation {
                 ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type',array(''))
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id',array(''))
 				->where("s.shipment_id = ?", $shipmentId)
+				->where("sp.is_excluded!='yes' AND sp.is_pt_test_not_performed is NULL")
                 ->where("s.distribution_id = ?", $distributionId)
                 ->group('s.shipment_id');
         return $db->fetchRow($sql);
@@ -860,7 +861,7 @@ class Application_Service_Evaluation {
                         ->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory')) 
                         ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
 						->where("refeid.control = 0")
-                        ->where("reseid.shipment_map_id = ?", $res['map_id'])
+						->where("reseid.shipment_map_id = ?", $res['map_id'])
 						->order(array('refeid.sample_id'));
 			
 				//$vlAssayResultSet[$responseAssay['vl_assay']]
@@ -880,12 +881,16 @@ class Application_Service_Evaluation {
 				
 				$sql = $db->select()->from(array('ref' => 'reference_result_vl'),array('sample_id','ref.sample_label'))
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('*'))
-					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date'))
+					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date','sp.is_pt_test_not_performed','sp.is_excluded'))
 					->join(array('p' => 'participant'),'p.participant_id=sp.participant_id',array('p.unique_identifier'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-					->where("sp.is_excluded!='yes' or sp.is_pt_test_not_performed is NULL")
-					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00 00:00:00' OR sp.is_pt_test_not_performed ='yes'")
+					//->where("sp.is_pt_test_not_performed is NULL")
+					//->where("sp.is_excluded ='no'")
+					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00 00:00:00'")
 					->where('sp.shipment_id = ? ', $shipmentId);
+				
+				//echo $sql;die;
+				
 				$spmResult=$db->fetchAll($sql);
 				
 				$vlGraphResult = array();
@@ -920,11 +925,14 @@ class Application_Service_Evaluation {
 				//<-- count no.of labs participans in particular sample
 				$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'),array('sample_id','ref.sample_label'))
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.*'))
-					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date'))
+					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date','sp.is_pt_test_not_performed','sp.is_excluded'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-					->where("sp.is_excluded!='yes' AND sp.is_pt_test_not_performed is NULL")
+					//->where("sp.is_pt_test_not_performed is NULL")
+					//->where("sp.is_excluded ='no'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 				
+				//echo $cQuery;die;
+
 				$cResult=$db->fetchAll($cQuery);
 				
 				$labResult = array();
@@ -960,6 +968,8 @@ class Application_Service_Evaluation {
                     $toReturn[$counter]['responseDate'] = $result['responseDate'];
                     $toReturn[$counter]['shipment_score'] = $result['shipment_score'];
                     $toReturn[$counter]['shipment_test_date'] = $result['shipment_test_date'];
+                    $toReturn[$counter]['is_excluded'] = $result['is_excluded'];
+                    $toReturn[$counter]['is_pt_test_not_performed'] = $result['is_pt_test_not_performed'];
                     $toReturn[$counter]['shipment_receipt_date'] = $result['shipment_receipt_date'];
                     $toReturn[$counter]['max_score'] = $result['max_score'];
                     $toReturn[$counter]['reported_viral_load'] = $result['reported_viral_load'];
