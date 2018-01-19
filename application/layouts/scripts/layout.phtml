@@ -142,9 +142,9 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
 				  <li class="<?php echo ($activeSubMenu == 'testers') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">PT Participant Info</a></li>
 				  <li class="<?php echo ($activeSubMenu == 'scheme') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"scheme"),null,true) ?>">Scheme Information</a></li>
 				  <li class="<?php echo ($activeSubMenu == 'change-password') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"password"),null,true) ?>">Change Password</a></li>                                
-          <li class="<?php echo ($activeSubMenu == 'file-download') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"file-download"),null,true) ?>">Download</a></li>
                 </ul>
               </li>
+			  <li class="<?php echo ($activeMenu == 'file-download') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"file-download"),null,true) ?>"><i class="icon icon-download"></i> <span>Download </span></a></li>
 			  <li class="<?php echo ($activeMenu == 'contact-us') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"contact-us"),null,true) ?>"><i class="icon icon-envelope"></i> <span>Contact Us </span></a></li>
 			  <?php } ?>				 
 

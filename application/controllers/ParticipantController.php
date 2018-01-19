@@ -260,6 +260,7 @@ class ParticipantController extends Zend_Controller_Action {
     }
     public function fileDownloadAction()
     {
+        $this->_helper->layout()->activeMenu = 'file-download';
         $participantService = new Application_Service_Participants();
         $this->view->download=$participantService->getParticipantUniqueIdentifier();
     }
