@@ -8,6 +8,7 @@ afq.komodoproject
 ^cron/certificate/(?!index.php)
 ^cron/certificate-template/(?!index.php)
 ^public/temporary/(?!index.php)
+^downloads/(?!index.php)
 error_log
 Thumbs.db
 Thumbs.db.orig

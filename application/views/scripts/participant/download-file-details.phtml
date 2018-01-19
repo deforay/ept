@@ -1,0 +1,14 @@
+<?php
+$filePath = "/var/www/".$_SERVER['SERVER_NAME']."/downloads/".$this->parameters['uniqueId']."/".$this->parameters['fileName'];
+$mm_type="application/octet-stream";
+header("Pragma: public");
+header("Expires: 0");
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+header("Cache-Control: public");
+header("Content-Description: File Transfer");
+header("Content-Type: " . $mm_type);
+header("Content-Length: " .(string)(filesize($filePath)) );
+header('Content-Disposition: attachment; filename="'.basename($filePath).'"');
+header("Content-Transfer-Encoding: binary\n");
+readfile($filePath);  //this is necessary in order to get it to actually download the file, otherwise it will be 0Kb
+exit();

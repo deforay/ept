@@ -442,9 +442,14 @@ class Application_Service_Participants {
 				error_log($exc->getTraceAsString());
 		}
 	}
-	
 	public function checkParticipantsProfileUpdate($userSystemId){
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->checkParticipantsProfileUpdateByUserSystemId($userSystemId);
+	}
+	public function getParticipantUniqueIdentifier(){
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
+		$userSystemId = $authNameSpace->dm_id;
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->getParticipantsByUserSystemId($userSystemId);
 	}
 }

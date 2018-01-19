@@ -16,6 +16,7 @@ class ParticipantController extends Zend_Controller_Action {
                 ->addActionContext('add-qc', 'html')
                 ->addActionContext('scheme', 'html')
                 ->addActionContext('profile-update-redirect', 'html')
+                //->addActionContext('download-file-details', 'html')
                 ->initContext();
     }
 
@@ -256,5 +257,18 @@ class ParticipantController extends Zend_Controller_Action {
 		}else{
 			 $this->_redirect("/participant/dashboard");
 		}
-	}
+    }
+    public function fileDownloadAction()
+    {
+        $participantService = new Application_Service_Participants();
+        $this->view->download=$participantService->getParticipantUniqueIdentifier();
+    }
+    public function downloadFileDetailsAction() {
+        if($this->_hasParam('fileName')){
+            $params = $this->_getAllParams();
+            $this->view->parameters = $params;
+        }else{
+            $this->_redirect("/participant/file-download");
+        }
+    }
 }
