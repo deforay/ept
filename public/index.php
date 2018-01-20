@@ -16,7 +16,10 @@ defined('UPLOAD_PATH')
 defined('TEMP_UPLOAD_PATH')
     || define('TEMP_UPLOAD_PATH', realpath(dirname(__FILE__) . '/temporary'));
     
+defined('DOWNLOADS_FOLDER')
+    || define('DOWNLOADS_FOLDER', realpath(dirname(__FILE__) . '/../downloads'));
     
+        
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
     realpath(APPLICATION_PATH . '/../library'),

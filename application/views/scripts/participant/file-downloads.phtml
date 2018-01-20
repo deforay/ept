@@ -3,7 +3,7 @@
 ?>
 <section class="content-header">
     <h1>
-        Download
+        File Downloads
     </h1>
 </section>
 <section class="content">
@@ -11,15 +11,15 @@
 <div class="box-body">
 <div id="view-content">
 	<table class="table table-striped table-bordered" id="myTable">	
-        <thead><tr><th>Unique Identifier</th><th>Lab Name</th><th>Download File</th><th>Date</th></tr></thead>
+        <thead><tr><th>Lab ID</th><th>Lab Name</th><th>File</th><th>Last Modified on Date</th></tr></thead>
     <tbody>
         <?php
-         $filePath = "/var/www/".$_SERVER['SERVER_NAME']."/downloads/";
+
          $arrCount = count($this->download);
-         $this->download[$arrCount]['unique_identifier'] = 'all';
+         $this->download[$arrCount]['unique_identifier'] = 'common';
          if(count($this->download)>0){
             foreach($this->download as $uniqueId){
-                $path = $filePath.$uniqueId['unique_identifier'];
+                $path = DOWNLOADS_FOLDER.DIRECTORY_SEPARATOR.$uniqueId['unique_identifier'];
                 if(is_dir($path) && count(scandir($path))>2){
                     $lab = (isset($uniqueId['lab_name']) && $uniqueId['lab_name']!='') ? $uniqueId['lab_name']:"";
                     ?>
@@ -31,13 +31,13 @@
                         }
                     }
                     if(count($files)>0){
-                    arsort($files);
+                        arsort($files);
                         foreach(array_keys($files) as $descFile){
                         ?>
                             <tr>
                                 <td><?php echo ucfirst($uniqueId['unique_identifier']);?></td>
                                 <td><?php echo ucfirst($lab);?></td>
-                                <td><a href="javascript:void(0);" onclick="getFile('<?php echo $descFile;?>','<?php echo $uniqueId['unique_identifier'];?>');"><?php echo $descFile;?></a></td>
+                                <td><a href="javascript:void(0);" onclick="getFile('<?php echo urlencode(base64_encode($descFile.'#######'.$uniqueId['unique_identifier']));?>');"><?php echo $descFile;?></a></td>
                                 <td><?php echo date("d-M-Y H:i:s", filemtime($path."/".$descFile));?></td>
                             </tr>
                         <?php
@@ -57,7 +57,7 @@
     $(document).ready(function () {
         $('#myTable').dataTable({"ordering": false});
     });
-    function getFile(fileName,uniqueId) {
-        window.location.href="download-file-details?fileName="+fileName+"&uniqueId="+uniqueId;
+    function getFile(fileName) {
+        window.location.href="download-file-details?fileName="+fileName;
     }
 </script>

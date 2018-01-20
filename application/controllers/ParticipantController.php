@@ -258,7 +258,7 @@ class ParticipantController extends Zend_Controller_Action {
 			 $this->_redirect("/participant/dashboard");
 		}
     }
-    public function fileDownloadAction()
+    public function fileDownloadsAction()
     {
         $this->_helper->layout()->activeMenu = 'file-download';
         $participantService = new Application_Service_Participants();

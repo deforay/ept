@@ -16,12 +16,11 @@ try {
     
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
-    $startDate="2016-01-01";
-    $endDate="2017-01-31";
+    
     $output = array();
     
     $query = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
-								->where("shipment_code='EID2016-I' OR shipment_code ='EID2016-II' OR shipment_code='VL2016-A' OR shipment_code='VL2016-B'")
+								->where("shipment_id IN (9,10,11,12)")
 								->order("s.scheme_type");
     
     
@@ -91,7 +90,7 @@ try {
 						if($schemeKey == 'eid'){
 							$doc = new DOCx("certificate-template/eid-e.docx");
 							$doc->setValue("LABNAME",$arrayVal['labName']);
-							$doc->setValue("DATE","24 January 2017");
+							$doc->setValue("DATE","09 January 2018");
 							//$doc->save("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '_', $participantUID).".docx");					
 							$doc->save("certificate/eid/".str_replace('/', '_', $participantUID)."-EID-2016.docx");
 						}else if($schemeKey=='vl'){
@@ -107,18 +106,22 @@ try {
 							$doc = new DOCx("certificate-template/vl-e.docx");
 							$doc->setValue("LABNAME",$arrayVal['labName']);
 							$doc->setValue("ASSAYNAME",$assay);
-							$doc->setValue("DATE","24 January 2017");
+							$doc->setValue("DATE","09 January 2018");
 							//$doc->save("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '_', $participantUID).".docx");	
 							$doc->save("certificate/vl/".str_replace('/', '_', $participantUID)."-VL-2016.docx");
 						}
 						
 					}else if($participated){
+
+						// NO NEED FOR PARTICIPATED CERTIFICATES AS ON JAN 2018
+						continue;
+
 						$attribs = $arrayVal['attribs'];
 						
 						if($schemeKey == 'eid'){
 							$doc = new DOCx("certificate-template/eid-p.docx");
 							$doc->setValue("LABNAME",$arrayVal['labName']);
-							$doc->setValue("DATE","24 January 2017");
+							$doc->setValue("DATE","09 January 2018");
 							//$doc->save("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '-', $participantUID).".docx");	
 							$doc->save("certificate/eid/".str_replace('/', '_', $participantUID)."-EID-2016.docx");
 						}else if($schemeKey=='vl'){
@@ -135,7 +138,7 @@ try {
 							$doc = new DOCx("certificate-template/vl-p.docx");
 							$doc->setValue("LABNAME",$arrayVal['labName']);
 							$doc->setValue("ASSAYNAME",$assay);
-							$doc->setValue("DATE","24 January 2017");
+							$doc->setValue("DATE","09 January 2018");
 							//$doc->save("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '-', $participantUID).".docx");
 							$doc->save("certificate/vl/".str_replace('/', '_', $participantUID)."-VL-2016.docx");
 						}

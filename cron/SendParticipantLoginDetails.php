@@ -8,7 +8,7 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
     
         date_default_timezone_set('GMT');
-        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "participants.csv";
+        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "reminder.csv";
 
         if (!file_exists($filename) || !is_readable($filename))
             return FALSE;    
@@ -49,15 +49,15 @@ try {
                       $message.= '<table cellpadding="3" style="width:98%;font-family:Helvetica,Arial,sans-serif;margin:30px 0px 30px 0px;padding:2% 0% 0% 2%;background-color:#ffffff;text-align:justify;">';
                       
                         $message.= '<tr><td colspan="2">Dear PT Participant,</td></tr>';
-                        $message.= '<tr><td colspan="2">We are currently evaluating the PT results for 2017 2nd shipments to generate results reports.</td></tr>';
+
                         
-                        $message.= '<tr><td colspan="2">In the meantime, we request for your <a href="https://goo.gl/forms/IQ022ckowJRvlfQy2" target="_blank">feedback</a> on this survey.</td></tr>';
                         
-                        $message.= '<tr><td colspan="2">Your participation in this survey is highly valuable and will be used for improvement of the PT programs. All responses will remain confidential. Survey results will be used to assess and improve the programs, as well as address key areas for prioritization and sustainability.  Thank you for your commitment to the laboratory quality assurance program.</td></tr>';
-                        
-                        $message.= '<tr><td colspan="2">We thank you for taking 10 minutes of your time to respond to this survey.</td></tr>';
+                        $message.= '<tr><td colspan="2">We request for your <a href="https://goo.gl/forms/IQ022ckowJRvlfQy2" target="_blank">feedback</a> on this survey. Your participation in this survey is highly valuable and will be used for improvement of the PT programs. All responses will remain confidential. Survey results will be used to assess and improve the programs, as well as address key areas for prioritization and sustainability.  Thank you for your commitment to the laboratory quality assurance program. We thank you for taking 10 minutes of your time to respond to this survey.</td></tr>';
+
                         
                         $message.= '<tr><td colspan="2"><a href="https://goo.gl/forms/IQ022ckowJRvlfQy2" target="_blank">Click here to provide feedback for CDC 2nd PT 2017</a></td></tr>';
+
+                        $message.= '<tr><td colspan="2">Please ignore this mail if you have already submitted your feedback.</td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';
                         $message.= '<tr><td colspan="2">If you have any problems please reach us at pt@vlsmartconnect.com.</td></tr>';
 

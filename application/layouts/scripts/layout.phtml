@@ -144,7 +144,7 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
 				  <li class="<?php echo ($activeSubMenu == 'change-password') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"password"),null,true) ?>">Change Password</a></li>                                
                 </ul>
               </li>
-			  <li class="<?php echo ($activeMenu == 'file-download') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"file-download"),null,true) ?>"><i class="icon icon-download"></i> <span>Download </span></a></li>
+			  <li class="<?php echo ($activeMenu == 'file-downloads') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"file-downloads"),null,true) ?>"><i class="icon icon-download-alt"></i> <span> Downloads </span></a></li>
 			  <li class="<?php echo ($activeMenu == 'contact-us') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller"=>"contact-us"),null,true) ?>"><i class="icon icon-envelope"></i> <span>Contact Us </span></a></li>
 			  <?php } ?>				 
 
