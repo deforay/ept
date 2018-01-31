@@ -32,13 +32,13 @@
 	<?php
 	
 	
-	$possibleResults ='';
+	$possibleResults =array();
 	foreach($this->evaluateData['possibleResults'] as $pr){
 		if($pr['scheme_sub_group'] == 'DBS_TEST'){
 			$possibleResults[$pr['id']]= $pr['response'];
 		}
 	}
-	$possibleFinalResults ='';
+	$possibleFinalResults =array();
 	foreach($this->evaluateData['possibleResults'] as $pr){
 		if($pr['scheme_sub_group'] == 'DBS_FINAL'){
 			$possibleFinalResults[$pr['id']]= $pr['response'];

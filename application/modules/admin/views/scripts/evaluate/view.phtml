@@ -262,13 +262,13 @@ if ($this->scheme == 'eid') {
     </table>
 
     <?php
-    $possibleResults = '';
+    $possibleResults = array();
     foreach ($this->evaluateData['possibleResults'] as $pr) {
         if ($pr['scheme_sub_group'] == 'DTS_TEST') {
             $possibleResults[$pr['id']] = $pr['response'];
         }
     }
-    $possibleFinalResults = '';
+    $possibleFinalResults = array();
     foreach ($this->evaluateData['possibleResults'] as $pr) {
         if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
             $possibleFinalResults[$pr['id']] = $pr['response'];
