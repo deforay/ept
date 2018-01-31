@@ -2339,12 +2339,12 @@ CREATE TABLE `announcements` (
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
   `status` varchar(45) NOT NULL DEFAULT 'active'
-)
+);
 
 ALTER TABLE `announcements`
   ADD PRIMARY KEY (`announcement_id`);
   
 ALTER TABLE `announcements`
-  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT
+  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT;
   
 ALTER TABLE `shipment_participant_map` ADD `show_announcement` VARCHAR(45) NOT NULL DEFAULT 'yes' AFTER `mode_id`;

@@ -140,7 +140,7 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
         </table>
 	<hr>
         <?php
-        $possibleFinalResults = '';
+        $possibleFinalResults = array();
         foreach ($this->possibleResults as $pr) {
             if ($pr['scheme_sub_group'] == 'DBS_FINAL') {
                 $possibleFinalResults[$pr['id']] = $pr['response'];
@@ -301,7 +301,7 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
                         </td>
                         <td>
                             <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" style="width: 150px" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" >
-    <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
+                                <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                             </select> 
                         </td>
                     </tr>
