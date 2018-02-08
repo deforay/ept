@@ -14,7 +14,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     }
 
     public function countEnrollmentSchemes(){
-        $result="";
+        $result=array();;
         $sql=$this->fetchAll($this->select()->where("status='active'"));
         
         foreach($sql as $scheme){
