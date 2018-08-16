@@ -1196,7 +1196,7 @@ class Application_Service_Evaluation {
                 $schemeService = new Application_Service_Schemes();
                 $extractionAssay = $schemeService->getEidExtractionAssay();
                 $detectionAssay = $schemeService->getEidDetectionAssay();
-				$pQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id','spm.documentation_score','participant_count' => new Zend_Db_Expr('count("participant_id")'),'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00' OR is_pt_test_not_performed ='yes')")))
+				$pQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id','spm.documentation_score','participant_count' => new Zend_Db_Expr('count("participant_id")'),'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00' OR is_pt_test_not_performed !='yes')")))
                         ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
                         ->where("spm.shipment_id = ?", $shipmentId)
                         ->group('spm.shipment_id');
@@ -1322,7 +1322,8 @@ class Application_Service_Evaluation {
 						$extAssayResult[8]['vlAssay'] .= ", ".$edata['vlAssay'];
 						$extAssayResult[8]['participantCount'] += $edata['participantCount'];
 						$extAssayResult[8]['maxScore'] += $edata['maxScore'];
-						$extAssayResult[8]['belowScore'] += $edata['belowScore'];
+						//$extAssayResult[8]['belowScore'] += isset($edata['belowScore']) ? $edata['belowScore'] : 0;
+						$extAssayResult[8]['belowScore'] = 0;
 						
 						
 						foreach($cResult as $val){
@@ -2157,6 +2158,10 @@ class Application_Service_Evaluation {
 								'correctiveAction' => $correctiveActions[2]);
 							$correctiveActionList[] = 2;
 						}
+					}else{
+
+											
+
 					}
 				}else{
 					// If there are two kit used for the participants then the control
@@ -2302,6 +2307,12 @@ class Application_Service_Evaluation {
 				$responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
 			}
 
+			if (empty($results[0]['algorithm']) || strtolower($results[0]['algorithm']) == 'not-reported') {
+				$failureReason[] = array('warning' => "Result not evaluated – Testing algorithm not reported.",
+					'correctiveAction' => $correctiveActions[2]);
+				$correctiveActionList[] = 2;
+				$shipment['is_excluded'] = 'yes';	
+			}
 
 			//Let us now calculate documentation score
 			$documentationScore = 0;

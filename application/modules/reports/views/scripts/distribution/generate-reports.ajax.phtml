@@ -953,11 +953,12 @@ foreach($this->result['dmResult'] as $key=>$dmRes){
 			$participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
 			$participantFileName = str_replace(" ", "-", $participantFileName);
 			$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$participantFileName;
-			
-			$loadpdf = Zend_Pdf::load($filePath);
-			foreach($loadpdf->pages as $page){
-				$pdfExtract = $extractor->clonePage($page);
-				$pdfNew->pages[] = $pdfExtract;
+			if(file_exists($filePath)){
+				$loadpdf = Zend_Pdf::load($filePath);
+				foreach($loadpdf->pages as $page){
+					$pdfExtract = $extractor->clonePage($page);
+					$pdfNew->pages[] = $pdfExtract;
+				}
 			}
 		}
 	}

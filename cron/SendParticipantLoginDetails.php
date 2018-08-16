@@ -8,7 +8,7 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
     
         date_default_timezone_set('GMT');
-        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "reminder.csv";
+        $filename = UPLOAD_PATH . DIRECTORY_SEPARATOR . "pt-reminder.csv";
 
         if (!file_exists($filename) || !is_readable($filename))
             return FALSE;    
@@ -42,7 +42,7 @@ try {
                 $fromName = '';
                 //Subject
                 //$subject.= "Notice for CDC 2017-2nd PT shipment for EID and VL - ". $participant[0]." | ".$participant[1] ;
-                $subject.= "Feedback | CDC 2017 2nd PT shipment for EID and VL | Lab ID : ". $participant[0] . " | ". $participant[3];
+                $subject.= "[URGENT] REMINDER 2 : 2018 1st CDC EID and VL PT | Lab ID : ". $participant[0] . " | ". $participant[1];
                 //Message
                 $message.= '<table border="0" cellspacing="0" cellpadding="0" style="width:100%;background-color:#FFF;">';
                     $message.= '<tr><td align="center">';
@@ -51,19 +51,22 @@ try {
                         $message.= '<tr><td colspan="2">Dear PT Participant,</td></tr>';
 
                         
-                        
-                        $message.= '<tr><td colspan="2">We request for your <a href="https://goo.gl/forms/IQ022ckowJRvlfQy2" target="_blank">feedback</a> on this survey. Your participation in this survey is highly valuable and will be used for improvement of the PT programs. All responses will remain confidential. Survey results will be used to assess and improve the programs, as well as address key areas for prioritization and sustainability.  Thank you for your commitment to the laboratory quality assurance program. We thank you for taking 10 minutes of your time to respond to this survey.</td></tr>';
-
-                        
-                        $message.= '<tr><td colspan="2"><a href="https://goo.gl/forms/IQ022ckowJRvlfQy2" target="_blank">Click here to provide feedback for CDC 2nd PT 2017</a></td></tr>';
-
-                        $message.= '<tr><td colspan="2">Please ignore this mail if you have already submitted your feedback.</td></tr>';
+                        $message.= '<tr><td colspan="2">This is a reminder to submit your PT results online. Only results submitted on the online platform will be considered for evaluation. </td></tr>';
                         $message.= '<tr><td colspan="2"></td></tr>';
-                        $message.= '<tr><td colspan="2">If you have any problems please reach us at pt@vlsmartconnect.com.</td></tr>';
+                        $message.= '<tr><td colspan="2">Please login to https://ept.vlsmartconnect.com/auth/login with the following credentials </td></tr>';
+                        $message.= '<tr><td width="12%"><strong>Login ID</strong> : </td><td>'.$participant[5].'</td></tr>';
+                        $message.= '<tr><td width="12%"><strong>Password</strong> : </td><td>'.$participant[6].'</td></tr>';
+                        $message.= '<tr><td colspan="2">This Login ID and Password is unique to you, please save this Login ID and Password for future use. You will have the option to change them at a later date.</td></tr>';
+                        
+                        $message.= '<tr><td colspan="2"></td></tr>';
+                        
+                        $message.= '<tr><td colspan="2">For any assistance or guidance you can reach us at pt@vlsmartconnect.com</td></tr>';
 
-                        $message.= '<tr><td colspan="2">Sincerely,</td></tr>';
-                        $message.= '<tr><td colspan="2">Online PT Team
-                        </td></tr>';
+                        $message.= '<tr><td colspan="2">Thanks</td></tr>';
+                        $message.= '<tr><td colspan="2">Online PT Team</td></tr>';
+                        $message.= '<tr><td colspan="2"></td></tr>';
+                        $message.= '<tr><td colspan="2"><small>This is a system generated mail. Please do not reply to this email</small></td></tr>';
+                        
                         $message.= '<tr><td colspan="2"></td></tr>';
                         
                       $message.= '</table>';

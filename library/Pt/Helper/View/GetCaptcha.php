@@ -25,7 +25,7 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
             'png_backgrounds' => array(UPLOAD_PATH . '/../images/captchabg/default.png',UPLOAD_PATH . '/../images/captchabg/ravenna.png'),
             'fonts' => array(UPLOAD_PATH . '/../fonts/Idolwild/idolwild.ttf'),
             //'characters' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-            'characters' => 'abcdefghijkmpsxyz23456789abcdefghijkmpsxyz23456789abcdefghijkmpsxyz23456789',
+            'characters' => 'CzobnfuVpOkH5rzt9avu51sv2S7aCUG9iyMUcUhVsY4LjO3IaTzJMv6dYJNZfchkL4HMRcSzQqnsNump3JERxY78wYMKmBSpVXH93C82kOKBiUVvGrZK9QUjizLs8rwHvbkfByPb10sX2G4TkqrkKBOIzKudmMUbXN2LNAxCDpEcMBbDl3l9lyvU8qGBhh3sr5SOj3XHHfsv8yNRfa5Qmlr9OxLOirbRlqZ444eO8hEBGD5vnzJ7L5fa22',
             'min_font_size' => 22,
             'max_font_size' => 26,
             'color' => '#111',
@@ -62,7 +62,7 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
         
         // if it is development environment, then let us keep it simple
         if(APPLICATION_ENV == "development"){
-            $captcha_config['code'] = "zaq";
+           // $captcha_config['code'] = "zaq";
         }
         
         // Generate CAPTCHA code if not set by user
@@ -72,7 +72,7 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
             while (strlen($captcha_config['code']) < $length) {
                 $captcha_config['code'] .= substr($captcha_config['characters'], rand() % (strlen($captcha_config['characters'])), 1);
             }
-            $captcha_config['code'] = str_shuffle($captcha_config['code']);
+            $captcha_config['code'] = str_shuffle(str_shuffle($captcha_config['code']));
         }
 
         // Generate image src

@@ -229,6 +229,20 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
   <script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
   
   <script type="text/javascript">
+
+    $(document).ready(function(){
+            <?php
+              $alertMsg = new Zend_Session_Namespace('alertSpace');
+              if(isset($alertMsg->message) && $alertMsg->message != ""){
+              ?>
+                alert("<?php echo $alertMsg->message;?>");
+              <?php
+                $alertMsg->message="";
+                unset($alertMsg->message);        
+              }
+              ?>
+    });
+
     <?php if(isset($authNameSpace->announcementMsg) && trim($authNameSpace->announcementMsg)!= ''){ ?>
       $("#announcementModal").modal('show'); 
     <?php

@@ -10,6 +10,8 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
 
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+
+    
     $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
     $limit = '100';

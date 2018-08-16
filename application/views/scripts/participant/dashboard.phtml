@@ -151,7 +151,9 @@ if(isset($this->schemes) && count($this->schemes) >0 ){
 		    </div>
 		</div>
 		<?php } ?>
-		<div class="box">
+
+
+		<div class="box" style="display:none;">
                 <div class="box-body">
 					<h3 class="txt text-info">Schemes Overview</h3>
 					<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="overviewTable">
@@ -173,9 +175,7 @@ if(isset($this->schemes) && count($this->schemes) >0 ){
 				</div>
 		</div>
 		
-		
-		
-<div class="box">
+		<div class="box">
                 <div class="box-body">
 					<h3 class="txt text-info">All Shipments</h3>
 
@@ -619,45 +619,45 @@ if(isset($this->schemes) && count($this->schemes) >0 ){
 	    <?php } ?>
 	});
 	
-	var oTable = null;
-	function overviewSchemes(){
-		oTable = $('#overviewTable').dataTable({
-			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
-			},
-			"bJQueryUI": false,
-			"bFilter": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center","bSortable":false},
-			    {"sClass":"center","bSortable":false},
-			    {"sClass":"center","bSortable":false}
-			],
-			"aaSorting": [[ 0, "desc" ]],
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'index', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
-			}
-		});
-	}
+	// var oTable = null;
+	// function overviewSchemes(){
+	// 	oTable = $('#overviewTable').dataTable({
+	// 		"oLanguage": {
+	// 		    "sLengthMenu": "_MENU_ records per page"
+	// 		},
+	// 		"bJQueryUI": false,
+	// 		"bFilter": false,
+	// 		"bAutoWidth": false,
+	// 		"bInfo": true,
+	// 		"bScrollCollapse": true,
+	// 		"sPaginationType": "full_numbers",
+	// 		"bRetrieve": true,                        
+	// 		"aoColumns": [
+	// 		    {"sClass":"center"},
+	// 		    {"sClass":"center"},
+	// 		    {"sClass":"center","bSortable":false},
+	// 		    {"sClass":"center","bSortable":false},
+	// 		    {"sClass":"center","bSortable":false}
+	// 		],
+	// 		"aaSorting": [[ 0, "desc" ]],
+	// 		"bProcessing": true,
+	// 		"bServerSide": true,
+	// 		"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'index', 'format' => 'html')); ?>",
+	// 		"fnServerData": function ( sSource, aoData, fnCallback ) {
+	// 		    $.ajax({
+	// 			"dataType": 'json',
+	// 			"type": "POST",
+	// 			"url": sSource,
+	// 			"data": aoData,
+	// 			"success": fnCallback
+	// 		    });
+	// 		}
+	// 	});
+	// }
 	
-	$(document).ready(function(){
-		overviewSchemes();
-	});
+	// $(document).ready(function(){
+	// 	overviewSchemes();
+	// });
 	
     var schemeTable = null;
 	var selectedQc=[];
@@ -794,7 +794,5 @@ if(isset($this->schemes) && count($this->schemes) >0 ){
 			showQcForm();
 		}
     }	
-	
-	
-	
+
 </script>

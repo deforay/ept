@@ -227,6 +227,7 @@ class Application_Service_Shipments {
         }
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $alertMsg = new Zend_Session_Namespace('alertSpace'); 
 
         $db->beginTransaction();
         try {
@@ -308,12 +309,14 @@ class Application_Service_Shipments {
             $eidResponseDb = new Application_Model_DbTable_ResponseEid();
             $eidResponseDb->updateResults($params);
             $db->commit();
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
+            $alertMsg->message = "Sorry we could not record your result. Please try again or contact the PT adminstrator";
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
         }
@@ -324,6 +327,7 @@ class Application_Service_Shipments {
             return false;
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $alertMsg = new Zend_Session_Namespace('alertSpace');    
 
         $db->beginTransaction();
         try {
@@ -333,12 +337,14 @@ class Application_Service_Shipments {
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes["algorithm"] = $params['algorithm'];
             $attributes = json_encode($attributes);
+
+                    
 			
 			
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
-		//"shipment_test_report_date" => new Zend_Db_Expr('now()'),
+		        //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "attributes" => $attributes,
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
@@ -348,43 +354,45 @@ class Application_Service_Shipments {
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 	    
-	    if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
-			$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
-	    }else{
-			$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
-		}
+            if(isset($params['testReceiptDate']) && trim($params['testReceiptDate'])!= ''){
+                $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+            }else{
+                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+            }
 	    
-	    if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access =='yes'){
-		$data['qc_done'] = $params['qcDone'];
-		if(isset($data['qc_done']) && trim($data['qc_done'])=="yes"){
-			$data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
-			$data['qc_done_by'] = trim($params['qcDoneBy']);
-			$data['qc_created_on'] = new Zend_Db_Expr('now()');
-		}else{
-			$data['qc_date']=NULL;
-			$data['qc_done_by'] = NULL;
-			$data['qc_created_on'] = NULL;
-		}
-	    }
-	    if(isset($params['customField1']) && trim($params['customField1']) != ""){
-		    $data['custom_field_1'] = $params['customField1'];
-	    }
-	    
-	    if(isset($params['customField2']) && trim($params['customField2']) != ""){
-		    $data['custom_field_2'] = $params['customField2'];
-	    }
+            if(isset($authNameSpace->qc_access) && $authNameSpace->qc_access =='yes'){
+            $data['qc_done'] = $params['qcDone'];
+            if(isset($data['qc_done']) && trim($data['qc_done'])=="yes"){
+                $data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
+                $data['qc_done_by'] = trim($params['qcDoneBy']);
+                $data['qc_created_on'] = new Zend_Db_Expr('now()');
+            }else{
+                $data['qc_date']=NULL;
+                $data['qc_done_by'] = NULL;
+                $data['qc_created_on'] = NULL;
+            }
+            }
+            if(isset($params['customField1']) && trim($params['customField1']) != ""){
+                $data['custom_field_1'] = $params['customField1'];
+            }
+            
+            if(isset($params['customField2']) && trim($params['customField2']) != ""){
+                $data['custom_field_2'] = $params['customField2'];
+            }
 
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
             $db->commit();
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
+            $alertMsg->message = "Sorry we could not record your result. Please try again or contact the PT adminstrator";
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
         }
@@ -608,6 +616,7 @@ class Application_Service_Shipments {
         }
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $alertMsg = new Zend_Session_Namespace('alertSpace'); 
 
         $db->beginTransaction();
         try {
@@ -683,12 +692,14 @@ class Application_Service_Shipments {
             $eidResponseDb = new Application_Model_DbTable_ResponseVl();
             $eidResponseDb->updateResults($params);
             $db->commit();
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
+            $alertMsg->message = "Sorry we could not record your result. Please try again or contact the PT adminstrator";
             error_log($e->getMessage());
         }
     }
