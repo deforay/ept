@@ -158,6 +158,14 @@ class MYPDF extends TCPDF {
 	
 	if($this->shipment["scheme_type"]=='dts')
 	{
+
+		$optionalTest3 = $this->dtsConfig->evaluation->dts->dtsOptionalTest3;
+
+		if($optionalTest3 == 'no'){
+			$width = '22%';
+		}else{
+			$width = '30%';
+		}		
 		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
             $labInfo.='<tr style="background-color:#F7F7F7;">';
                 $labInfo.='<td style="font-weight:bold;width:25%">Shipment Date</td>';
@@ -187,47 +195,59 @@ class MYPDF extends TCPDF {
 		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 			$labInfo.='<tr style="background-color:#CCCCCC;">';
 				$labInfo.='<td style="width:12%"></td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Test-1</td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Test-2</td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Test-3</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Test-1</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Test-2</td>';
+				if($optionalTest3 == 'no'){
+					$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Test-3</td>';
+				}
 			$labInfo.='</tr>';
 			
 			$labInfo.='<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
 				$labInfo.='<td style="font-weight:bold;">Kit Name</td>';
 				$labInfo.='<td></td>';
 				$labInfo.='<td></td>';
-				$labInfo.='<td></td>';
+				if($optionalTest3 == 'no'){
+					$labInfo.='<td></td>';
+				}
 			$labInfo.='</tr>';
 			
 			$labInfo.='<tr style="background-color:#F7F7F7;">';
 				$labInfo.='<td style="font-weight:bold;">Lot No.</td>';
 				$labInfo.='<td></td>';
 				$labInfo.='<td></td>';
-				$labInfo.='<td></td>';
+				if($optionalTest3 == 'no'){
+					$labInfo.='<td></td>';
+				}
 			$labInfo.='</tr>';
 			
 			$labInfo.='<tr style="background-color:#F7F7F7;">';
 				$labInfo.='<td style="font-weight:bold;">Exp Date</td>';
 				$labInfo.='<td></td>';
 				$labInfo.='<td></td>';
-				$labInfo.='<td></td>';
+				if($optionalTest3 == 'no'){
+					$labInfo.='<td></td>';
+				}
 			$labInfo.='</tr>';
 		$labInfo.='</table>';
 		
 		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 			$labInfo.='<tr style="background-color:#CCCCCC;">';
 				$labInfo.='<td style="width:12%"></td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-1</td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-2</td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-3</td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Final Result * </td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Result-1</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Result-2</td>';
+				if($optionalTest3 == 'no'){
+					$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-3</td>';
+				}
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Final Result * </td>';
 			$labInfo.='</tr>';
 			foreach($this->shipment["referenceResult"] as $sample){
 				$labInfo.='<tr style="background-color:#F7F7F7;">';
 					$labInfo.='<td style="font-weight:bold;">'.$sample['sample_label'].'</td>';
 					$labInfo.='<td></td>';
 					$labInfo.='<td></td>';
-					$labInfo.='<td></td>';
+					if($optionalTest3 == 'no'){
+						$labInfo.='<td></td>';
+					}
 					$labInfo.='<td></td>';
 				$labInfo.='</tr>';
 			}

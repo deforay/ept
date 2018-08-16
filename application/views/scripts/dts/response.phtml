@@ -119,7 +119,9 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
                 <td>
                     <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;">
                         <option value="">--Select--</option>	
+                    <?php if(!empty($this->config->dtsEnforceAlgorithmCheck) && $this->config->dtsEnforceAlgorithmCheck == 'yes') { ?>
                         <option value="not-reported" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'not-reported') ? "selected='selected'" : ''; ?>>Not Reported</option>	
+                    <?php } ?>
                         <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>	
                         <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>	
                     </select>

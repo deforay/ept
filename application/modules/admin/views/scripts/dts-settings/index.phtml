@@ -4,7 +4,7 @@
 <div class="well">
     <form name="dtsSettingsForm" id="dtsSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "dts-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
-            <legend>DTS Settings</legend>
+            <legend>DTS HIV Serology Settings</legend>
             
             <div class="form-group">
                 <label for="dtsPassPercentage" class="col-lg-3 control-label">DTS Pass Percentage <span class="mandatory">*</span></label>
@@ -31,9 +31,9 @@
             </div>
 			
             <div class="form-group">
-                <label for="dtsEnforceAlgorithmCheck" class="col-lg-3 control-label">Enforce Algorithm Check<span class="mandatory">*</span></label>
+                <label for="dtsEnforceAlgorithmCheck" class="col-lg-3 control-label">Algorithm required in reporting ?<span class="mandatory">*</span></label>
 				<div class="col-lg-6">
-					<input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_yes" class="isRequired" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck=="yes") ? " checked='checked' " : ""; ?> value="yes" title="Should we enforce algorithm check ?"/> Yes
+					<input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_yes" class="isRequired" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck=="yes") ? " checked='checked' " : ""; ?> value="yes" title="Is algorithm required in reporting ?"/> Yes
 					<input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_no" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
 				</div>			
             </div>
