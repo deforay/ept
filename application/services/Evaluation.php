@@ -2307,11 +2307,13 @@ class Application_Service_Evaluation {
 				$responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
 			}
 
-			if (empty($results[0]['algorithm']) || strtolower($results[0]['algorithm']) == 'not-reported') {
-				$failureReason[] = array('warning' => "Result not evaluated – Testing algorithm not reported.",
-					'correctiveAction' => $correctiveActions[2]);
-				$correctiveActionList[] = 2;
-				$shipment['is_excluded'] = 'yes';	
+			if ((isset($config->evaluation->dts->dtsEnforceAlgorithmCheck) && $config->evaluation->dts->dtsEnforceAlgorithmCheck == 'yes')) {
+				if(empty($results[0]['algorithm']) || strtolower($results[0]['algorithm']) == 'not-reported'){
+					$failureReason[] = array('warning' => "Result not evaluated – Testing algorithm not reported.",
+						'correctiveAction' => $correctiveActions[2]);
+					$correctiveActionList[] = 2;
+					$shipment['is_excluded'] = 'yes';	
+				}
 			}
 
 			//Let us now calculate documentation score

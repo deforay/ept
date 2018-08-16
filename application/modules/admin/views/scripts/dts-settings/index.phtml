@@ -29,6 +29,14 @@
 					<input type="radio" name="dtsOptionalTest3" id="dtsOptionalTest3_no" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
 				</div>			
             </div>
+			
+            <div class="form-group">
+                <label for="dtsEnforceAlgorithmCheck" class="col-lg-3 control-label">Enforce Algorithm Check<span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_yes" class="isRequired" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck=="yes") ? " checked='checked' " : ""; ?> value="yes" title="Should we enforce algorithm check ?"/> Yes
+					<input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_no" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
+				</div>			
+            </div>
 			<div class="form-group">
 				<label for="schemeId" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
 				<div class="col-lg-6">  
