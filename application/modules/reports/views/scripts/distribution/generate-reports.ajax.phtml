@@ -706,7 +706,18 @@ foreach($this->result['shipment'] as $result){
 	//}
 	
 	
+	if($schemeType == 'dts'){
+		if($score>=$this->passPercentage){
+			$wishes='<p>Congratulations! You have received a satisfactory score of '.round($shipmentScore,2).'%.</p><br/>';
+		}else{
+			$wishes='<p>You have received a score of '.round($shipmentScore,2).'%.</p><br/>';
+		}
 	
+		$pdf->SetLeftMargin(15);
+	
+		$pdf->writeHTML($wishes, true, false, true, false, '');
+	
+	}	
 	
 	
 	//if($schemeType != 'vl'){

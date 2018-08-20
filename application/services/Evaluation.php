@@ -1792,6 +1792,9 @@ class Application_Service_Evaluation {
 
 		foreach ($shipmentResult as $shipment) {
 			//Zend_Debug::dump($shipment);
+			
+			//$shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
+
 			$createdOnUser = explode(" ", $shipment['created_on_user']);
 			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 				$createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
@@ -2308,7 +2311,7 @@ class Application_Service_Evaluation {
 			}
 
 			//if ((isset($config->evaluation->dts->dtsEnforceAlgorithmCheck) && $config->evaluation->dts->dtsEnforceAlgorithmCheck == 'yes')) {
-				if(empty($results[0]['algorithm']) || strtolower($results[0]['algorithm']) == 'not-reported'){
+				if(empty($attributes['algorithm']) || strtolower($attributes['algorithm']) == 'not-reported'){
 					$failureReason[] = array('warning' => "Result not evaluated – Testing algorithm not reported.",
 						'correctiveAction' => $correctiveActions[2]);
 					$correctiveActionList[] = 2;
@@ -2387,6 +2390,7 @@ class Application_Service_Evaluation {
 			// if we are excluding this result, then let us not give pass/fail				
 			if ($shipment['is_excluded'] == 'yes') {
 				$finalResult = '';
+				$shipment['is_excluded'] == 'yes';
 				$shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
 				$shipmentResult[$counter]['documentation_score'] = 0;
 				$shipmentResult[$counter]['display_result'] = '';

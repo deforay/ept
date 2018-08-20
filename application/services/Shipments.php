@@ -410,12 +410,18 @@ class Application_Service_Shipments {
                 "participant_supervisor" =>'',
                 "user_comment" => '',
                 "final_result" => '',
-		"updated_on_user" => new Zend_Db_Expr('now()'),
+                "failure_reason" => '',
+                "evaluation_comment" => '',
+                "is_followup" => 'no',
+                "is_excluded" => '',
+                "is_pt_test_not_performed" => '',                
+                "vl_not_tested_reason" => '',                
+                "updated_on_user" => new Zend_Db_Expr('now()'),
                 "updated_by_user" => $authNameSpace->dm_id,
-		"qc_date"=>'',
-		"qc_done_by" => '',
-		"qc_created_on" => '',
-		"mode_id" => ''
+                "qc_date"=>'',
+                "qc_done_by" => '',
+                "qc_created_on" => '',
+                "mode_id" => ''
             );
              $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
             
@@ -440,12 +446,18 @@ class Application_Service_Shipments {
                 "participant_supervisor" =>'',
                 "user_comment" => '',
                 "final_result" => '',
-		"updated_on_user" => new Zend_Db_Expr('now()'),
-		"updated_by_user" => $authNameSpace->dm_id,
-		"qc_date"=>'',
-		"qc_done_by" => '',
-		"qc_created_on" => '',
-		"mode_id" => ''
+                "failure_reason" => '',
+                "is_followup" => 'no',
+                "evaluation_comment" => '',
+                "is_excluded" => '',
+                "is_pt_test_not_performed" => '',                        
+                "vl_not_tested_reason" => '',                
+                "updated_on_user" => new Zend_Db_Expr('now()'),
+                "updated_by_user" => $authNameSpace->dm_id,
+                "qc_date"=>'',
+                "qc_done_by" => '',
+                "qc_created_on" => '',
+                "mode_id" => ''
             );
              $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
             
@@ -470,12 +482,18 @@ class Application_Service_Shipments {
                 "participant_supervisor" =>'',
                 "user_comment" => '',
                 "final_result" => '',
+                "failure_reason" => '',
+                "evaluation_comment" => '',
+                "is_followup" => 'no',
+                "is_excluded" => '',
+                "is_pt_test_not_performed" => '',
+                "vl_not_tested_reason" => '',                
                 "updated_on_user" => new Zend_Db_Expr('now()'),
-		"updated_by_user" => $authNameSpace->dm_id,
-		"qc_date"=>'',
-		"qc_done_by" => '',
-		"qc_created_on" => '',
-		"mode_id" => ''
+                "updated_by_user" => $authNameSpace->dm_id,
+                "qc_date"=>'',
+                "qc_done_by" => '',
+                "qc_created_on" => '',
+                "mode_id" => ''
             );
              $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
             
