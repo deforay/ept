@@ -223,7 +223,7 @@ foreach($this->result['shipment'] as $result){
 	
 	if($schemeType != 'vl' && $schemeType!='eid'){
 		
-		$labInfo='<table cellpadding="2">';
+		$labInfo='<table cellpadding="3" style="font-size:11px;">';
 		
 		$labInfo.='<tr>';
 		$labInfo.='	<td><strong>Participant Code</strong> : '.$result['unique_identifier'].'</td>';
@@ -342,7 +342,7 @@ foreach($this->result['shipment'] as $result){
 	
 	if(sizeof($result['responseResult'])>0){
 		if($schemeType != 'vl' && $schemeType!='eid'){
-			$labRes = '<span style="font-weight: bold;font-size:11px;">Your laboratory test results : <br/></span><table border="1" style="font-size:13px;">';
+			$labRes = '<span style="font-weight: bold;font-size:12px;">Your laboratory test results : <br/></span><table border="1" style="font-size:12px;">';
 			$labRes .='<tr style="background-color:#dbe4ee;"><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
 			$labRes .='<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td><td>'.$result['responseResult'][0]['testkit1'].'</td><td>'.$result['responseResult'][0]['testkit2'].'</td><td>'.$result['responseResult'][0]['testkit3'].'</td><td colspan="4"></td></tr>';
 			$labRes .='<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td><td>'.$result['responseResult'][0]['lot_no_1'].'</td><td>'.$result['responseResult'][0]['lot_no_2'].'</td><td>'.$result['responseResult'][0]['lot_no_3'].'</td><td colspan="4"></td></tr>';
@@ -412,7 +412,7 @@ foreach($this->result['shipment'] as $result){
 							<td>'.ucfirst(strtolower($response['referenceResult'])).'</td>
 							<td>'.ucfirst(strtolower($response['labResult'])).'</td>
 							
-							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
+							<td style="text-align:center;"><img style="width:10px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$score.'</td>
 						  </tr>';
 			}
@@ -439,8 +439,8 @@ foreach($this->result['shipment'] as $result){
 			$imgPass = UPLOAD_PATH . '/../images/check.jpg';
 			$imgFail = UPLOAD_PATH . '/../images/cross.jpg';
 			
-			$docRes='<span style="font-weight:bold;font-size:13px;">Your documentation score :</span> <br/>
-					<table border="1" style="font-size:13px;width:100%;">
+			$docRes='<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>
+					<table border="1" style="font-size:12px;width:100%;">
 						<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;width:75%">Documentation Item</td>
 							<td style="text-align:center;font-weight:bold;width:25%" colspan="2">Score</td>
@@ -457,7 +457,7 @@ foreach($this->result['shipment'] as $result){
 			
 			$docRes.='<tr>
 							<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
-							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
+							<td style="text-align:center;"><img style="width:9px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
@@ -472,7 +472,7 @@ foreach($this->result['shipment'] as $result){
 			
 			$docRes.='<tr>
 							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>
-							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
+							<td style="text-align:center;"><img style="width:9px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
@@ -489,7 +489,7 @@ foreach($this->result['shipment'] as $result){
 			
 			$docRes.='<tr>
 							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>
-							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
+							<td style="text-align:center;"><img style="width:9px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
@@ -504,7 +504,7 @@ foreach($this->result['shipment'] as $result){
 						
 			$docRes.='<tr>
 							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
-							<td style="text-align:center;"><img style="width:11px;" src="'.$img.'" /></td>
+							<td style="text-align:center;"><img style="width:9px;" src="'.$img.'" /></td>
 							<td style="text-align:center;">'.$scoreDoc.'</td>
 					</tr>';
 			
@@ -537,8 +537,8 @@ foreach($this->result['shipment'] as $result){
 			$pdf->writeHTML($docRes, true, false, true, false, '');
 			
 			if(isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null){
-				$failRes = '<span style="font-weight:bold;font-size:13px;">Suggested Corrective actions for your response :</span> <br/>';
-				$failRes .= '<table border="1" style="font-size:13px;">';
+				$failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+				$failRes .= '<table border="1" style="font-size:11px;">';
 				$failRes.= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
 				$warnings = json_decode($result['responseResult'][0]['failure_reason'],true);
 				foreach($warnings as $warning){
@@ -679,205 +679,30 @@ foreach($this->result['shipment'] as $result){
 		}
 	}
 	
-	//include_once("pChart/class/pData.class.php"); 
-	//include_once("pChart/class/pDraw.class.php");
-	//include_once("pChart/class/pImage.class.php"); 
-	//include_once("pChart/class/pScatter.class.php"); 
 	
-	
-	if(trim($result['shipment_score'])!=""){
-		if($result['shipment_score'] != 0){
-			$shipmentScore=($result['shipment_score']/$result['shipment_score'])*100;
+	if($result['is_excluded'] == 'yes'){
+		$wishes='<p>Your response was not considered for evaluation</p>';
+		$pdf->SetLeftMargin(15);	
+		$pdf->writeHTML($wishes, true, false, true, false, '');		
+	}else if($schemeType == 'dts' && $result['is_excluded'] != 'yes'){
+		$totalScore = $result['shipment_score'] + $result['documentation_score'];
+		if($totalScore >= $this->passPercentage){
+			$wishes='<p style="font-size:12px;">Congratulations! You have received a satisfactory score of '.round($totalScore,2).'%.</p>';
 		}else{
-			$result['shipment_score'] = 0;
+			$wishes='<p style="font-size:12px;">You have received a score of '.round($totalScore,2).'%.</p>';
 		}
-	}
-	
-	
-	
-	//$maxDocumentationPoints = $config->evaluation->dts->documentationScore;
-	//$maxResponsePoints = 100-$maxDocumentationPoints;
-	$score=($shipmentScore/count($result['responseResult']))*100;
-	//$score=100*round($shipmentScore/$result['max_score'],2);
-	
-	
-	//if($result['is_excluded'] == 'yes'){
-	//	$wishes='<p>Your response was not considered for evaluation</p><br/>';
-	//}
-	
-	
-	if($schemeType == 'dts'){
-		if($score>=$this->passPercentage){
-			$wishes='<p>Congratulations! You have received a satisfactory score of '.round($shipmentScore,2).'%.</p><br/>';
-		}else{
-			$wishes='<p>You have received a score of '.round($shipmentScore,2).'%.</p><br/>';
-		}
-	
-		$pdf->SetLeftMargin(15);
-	
+			
+		$pdf->SetLeftMargin(15);	
+		
 		$pdf->writeHTML($wishes, true, false, true, false, '');
 	
-	}	
-	
-	
-	//if($schemeType != 'vl'){
-	//	if($score>=$this->passPercentage){
-	//		$wishes='<p>Congratulations! You have received a satisfactory score of '.round($shipmentScore,2).'%.</p><br/>';
-	//	}else{
-	//		$wishes='<p>You have received a score of '.round($shipmentScore,2).'%.</p><br/>';
-	//	}
-	//	
-	//
-	//
-	//	$pdf->SetLeftMargin(15);
-	//
-	//	$pdf->writeHTML($wishes, true, false, true, false, '');
-	//
-	//}
-	
-	
-	
-	
-	
-	//if($result['is_excluded'] != 'yes'){
-		//$wishes.="<br/><strong style='font-weight:bold;'>Score Breakup:</strong>";
-		//$wishes.="<br/>Score for Correct Responses (out of $maxResponsePoints) : $shipmentScore (You reported ".$correctSamplesCount." samples correctly out of ".$totalProperSamples. ")";
-		//$wishes.="<br/>Score for Documentation (out of $maxDocumentationPoints) : $documentationScore";
-	//}
-	
-	
-	if($schemeType=='vl'){
-		/*
-		$c=1;
-		$countG=count($this->result['vlGraphResult']);
-		foreach($this->result['vlGraphResult'] as $key=>$vlRes){
-			
-			$myData = new pData();
-			$participantCount=count($vlRes['vl']);
-			foreach($vlRes['vl'] as $val){
-				$myData->addPoints($val,"Probe 1");
-			}
-			if(isset($vlRes['NA'])){
-				foreach($vlRes['NA'] as $val){
-					$myData->addPoints($val,"Probe 5");
-				}
-			}
-			
-
-			$myData->addPoints(array($vlRes['low'],$vlRes['high']),"Probe 2");
-			$myData->addPoints(array($vlRes['pVal']),"Probe 4");
-			
-			
-			$myData->setAxisName(0,"X-Index");
-			$myData->setAxisXY(0,AXIS_X);
-			$myData->setAxisPosition(0,AXIS_POSITION_BOTTOM);
-			
-			//Create the Y axis and the binded series 
-			for ($i=0;$i<=$participantCount;$i=$i+1) { $myData->addPoints($i,"Probe 3"); }
-			$myData->setSerieOnAxis("Probe 3",1);
-			$myData->setAxisName(1,"Y-Index");
-			$myData->setAxisXY(1,AXIS_Y);
-			$myData->setAxisPosition(1,AXIS_POSITION_LEFT);
-			
-			//Create the 1st scatter chart binding 
-			$myData->setScatterSerie("Probe 1","Probe 3",0);
-			$myData->setScatterSerieDescription(0,"VL Val");
-			$myData->setScatterSerieColor(0,array("R"=>28,"G"=>87,"B"=>3));
-			
-			//Create the 2nd scatter chart binding 
-			$myData->setScatterSerie("Probe 2","Probe 3",1);
-			$myData->setScatterSerieDescription(1,"Low/High Val");
-			
-			//Create the 3rd scatter chart binding
-			$myData->setScatterSerie("Probe 4","Probe 3",2);
-			$myData->setScatterSerieDescription(2,"PT Val");
-			$myData->setScatterSerieColor(2,array("R"=>15,"G"=>50,"B"=>190));
-			
-			//Create the 4th scatter chart binding
-			$myData->setScatterSerie("Probe 5","Probe 3",3);
-			$myData->setScatterSerieDescription(3,"PT Val");
-			$myData->setScatterSerieColor(3,array("R"=>205,"G"=>8,"B"=>8));
-			
-			//Create the pChart object
-			$myPicture = new pImage(400,400,$myData);
-			
-			// Draw the background
-			$Settings = array("R"=>170, "G"=>183, "B"=>87, "Dash"=>1, "DashR"=>190, "DashG"=>203, "DashB"=>107);
-			$myPicture->drawFilledRectangle(0,0,400,400,$Settings);
-			
-			//Overlay with a gradient
-			$Settings = array("StartR"=>219, "StartG"=>231, "StartB"=>139, "EndR"=>1, "EndG"=>138, "EndB"=>68, "Alpha"=>50);
-			$myPicture->drawGradientArea(0,0,400,400,DIRECTION_VERTICAL,$Settings);
-			$myPicture->drawGradientArea(0,0,400,20,DIRECTION_VERTICAL,array("StartR"=>0,"StartG"=>0,"StartB"=>0,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>80));
-			
-			//Write the picture title
-			$myPicture->setFontProperties(array("FontName"=>UPLOAD_PATH . DIRECTORY_SEPARATOR."pchart-fonts/Silkscreen.ttf","FontSize"=>6));
-			$myPicture->drawText(10,13,$result['responseResult'][0]['vl_assay'].' - '.$key,array("R"=>255,"G"=>255,"B"=>255));
-			
-			//Add a border to the picture
-			$myPicture->drawRectangle(0,0,399,399,array("R"=>0,"G"=>0,"B"=>0));
-			
-			//Set the default font
-			$myPicture->setFontProperties(array("FontName"=>UPLOAD_PATH . DIRECTORY_SEPARATOR."pchart-fonts/pf_arma_five.ttf","FontSize"=>6));
-			
-			// Set the graph area
-			$myPicture->setGraphArea(50,60,350,360);
-			
-			//Create the Scatter chart object
-			$myScatter = new pScatter($myPicture,$myData);
-			
-			// Draw the scale
-			$myScatter->drawScatterScale();
-			
-			//Turn on shadow computing
-			$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
-	
-			// Draw a scatter plot chart
-			$myScatter->drawScatterPlotChart();
-		
-			//Draw the legend
-			$myScatter->drawScatterLegend(280,380,array("Mode"=>LEGEND_HORIZONTAL,"Style"=>LEGEND_NOBORDER));
-			
-			$graphFolderPath= UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR.$result['shipment_code']. DIRECTORY_SEPARATOR.'vl-graph';
-			if (!file_exists($graphFolderPath)) {
-				mkdir($graphFolderPath);
-			}
-			$image_file = $graphFolderPath. DIRECTORY_SEPARATOR.$key.'scatter.png';
-			//$myPicture->autoOutput("pictures/example.drawBubbleChart.png"); 
-			$myPicture->render("$image_file");
-			
-			$k=$c%2;
-			if($k!=0){
-			$vlGraphTable='<table>';
-			$vlGraphTable.='<tr>';
-			}
-			$vlGraphTable.='<td><img src="'.$image_file.'" width="300"></td>';
-			if($k==0){
-				$vlGraphTable.='</tr>';
-				$vlGraphTable.='</table>';
-				$pdf->writeHTML($vlGraphTable,true, false, true, false, '');
-			}
-			if($countG==$c){
-				$vlGraphTable.='</tr>';
-				$vlGraphTable.='</table>';
-				$pdf->writeHTML($vlGraphTable,true, false, true, false, '');
-			}
-			
-			if (file_exists($image_file)) {
-				//unlink($image_file);
-			}
-			$c++;
-		}
-		*/
-		
-		
-		
 	}
+
 	//if(trim($result['distribution_date'])!=""){
 	//	$result['distribution_date']=$this->dateFormat($result['distribution_date']);
 	//}
 	if(trim($result['shipment_comment'])!="" || trim($result['evaluationComments'])!="" || trim($result['optional_eval_comment'])!=""){
-		$comment='<br/><br/><table border="1" style="width:100%;font-size:13px;" cellpadding="3">';
+		$comment='<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
 		
 		if(trim($result['evaluationComments'])!=""){
@@ -901,6 +726,7 @@ foreach($this->result['shipment'] as $result){
 		}		
 		
 		$comment.='</table>';
+		//$pdf->SetTopMargin(13);	
 		$pdf->writeHTML($comment, true, false, true, false, '');
 	}
 	if($schemeType=='vl'){
@@ -909,7 +735,7 @@ foreach($this->result['shipment'] as $result){
 	else if($schemeType=='eid'){
 		$html='<p>Thank you for participating in HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot.</p>';
 	}else{
-		$html='<p>Thank you for participating in the '.($result['scheme_name']).' Proficiency Testing Program.</p>';
+		$html='<p style="font-size:12px;">Thank you for participating in the '.($result['scheme_name']).' Proficiency Testing Program.</p>';
 	}
 	
 	$pdf->writeHTML($html, true, false, true, false, '');
