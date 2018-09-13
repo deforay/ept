@@ -163,7 +163,7 @@ if (count($this->shipment) > 0) {
             </td>
             </tr>
         <?php
-        if ($shipment['report_generated'] == 'yes') {
+        if ($this->shipment[0]['report_generated'] == 'yes') {
                
             $buttonCount = (int)ceil($this->responseCount["reported_count"] / 50);
             $responseCnt=$this->responseCount["reported_count"];
