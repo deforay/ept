@@ -289,7 +289,7 @@ if ($this->result['shipment'] != "") {
                     }
                     $avgAssay.='<td style="text-align:center;">Average</td>';
                     $avgAssay.='</tr>';
-                    $sampleAvg='';
+                    $sampleAvg=0;
                     $sCount=count($assayResult['specimen']);
                     $avgAssay.='<tr>';
                     $avgAssay.='<td rowspan="2" style="text-align:center;background-color:#BCD7EC;">Correctly Reported</td>';
@@ -301,7 +301,7 @@ if ($this->result['shipment'] != "") {
                     $avgAssay.='<td style="text-align:center;">'.$avg.'</td>';
                     $avgAssay.='</tr>';
                     
-                    $sampleAvgInPer='';
+                    $sampleAvgInPer=0;
                     $avgAssay.='<tr>';
                     foreach($assayResult['specimen'] as $sKey=>$sample){
                         $sampleAvgInPer+=$sample['correctRes'];

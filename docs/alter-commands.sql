@@ -2288,17 +2288,17 @@ ALTER TABLE `response_vl_not_tested_reason`
 ALTER TABLE `response_vl_not_tested_reason`
   MODIFY `vl_not_tested_reason_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
   
---Pal 24th-DEC-2016
+-- Pal 24th-DEC-2016
 ALTER TABLE `shipment_participant_map` ADD `pt_support_comments` TEXT NULL DEFAULT NULL AFTER `pt_test_not_performed_comments`;
 
 
 
---Ilahir 17-JAN-2017
+-- Ilahir 17-JAN-2017
 
 ALTER TABLE  `participant` ADD  `additional_email` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `email` ;
 
 
---Ilahir 08-FEB-2017
+-- Ilahir 08-FEB-2017
 
 ALTER TABLE  `participant` ADD  `force_profile_updation` INT( 1 ) NOT NULL DEFAULT  '1' AFTER  `updated_by` ;
 
