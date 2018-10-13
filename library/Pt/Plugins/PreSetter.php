@@ -9,7 +9,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
             return;
         }
         
-        if ($request->getModuleName() == 'default'&& $request->getControllerName() != 'shipment-form'  && $request->getControllerName() != 'auth'  && $request->getControllerName() != 'error' && $request->getControllerName() != 'index' && $request->getControllerName() != 'captcha' && $request->getControllerName() != 'contact-us' && $request->getControllerName() != 'common') {
+        if ($request->getModuleName() == 'default'&& $request->getControllerName() != 'shipment-form'  && $request->getControllerName() != 'auth' && $request->getControllerName() != 'download'  && $request->getControllerName() != 'error' && $request->getControllerName() != 'index' && $request->getControllerName() != 'captcha' && $request->getControllerName() != 'contact-us' && $request->getControllerName() != 'common') {
              $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if(!isset($authNameSpace->dm_id)){
                 $request->setModuleName('default')->setControllerName('auth')->setActionName('login');

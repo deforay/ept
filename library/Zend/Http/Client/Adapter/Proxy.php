@@ -244,7 +244,7 @@ class Zend_Http_Client_Adapter_Proxy extends Zend_Http_Client_Adapter_Socket
     )
     {
         $request = "CONNECT $host:$port HTTP/$http_ver\r\n" .
-                   "Host: " . $this->config['proxy_host'] . "\r\n";
+                   "Host: " . $host . "\r\n";
 
         // Process provided headers, including important ones to CONNECT request
         foreach ($headers as $k => $v) {
@@ -300,7 +300,8 @@ class Zend_Http_Client_Adapter_Proxy extends Zend_Http_Client_Adapter_Socket
             STREAM_CRYPTO_METHOD_TLS_CLIENT,
             STREAM_CRYPTO_METHOD_SSLv3_CLIENT,
             STREAM_CRYPTO_METHOD_SSLv23_CLIENT,
-            STREAM_CRYPTO_METHOD_SSLv2_CLIENT
+            STREAM_CRYPTO_METHOD_SSLv2_CLIENT,
+            STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT
         );
 
         $success = false;

@@ -2348,3 +2348,9 @@ ALTER TABLE `announcements`
   MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT;
   
 ALTER TABLE `shipment_participant_map` ADD `show_announcement` VARCHAR(45) NOT NULL DEFAULT 'yes' AFTER `mode_id`;
+
+
+
+-- Amit 18 Sep 2018
+
+INSERT INTO `report_config` (`name`, `value`) VALUES ('report-comment', '');

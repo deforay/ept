@@ -13,8 +13,8 @@ foreach($this->possibleDtsResults as $pr){
 	$dtsResults[$pr['id']] = ucfirst(strtolower($pr['response']));
 }
 if(sizeof($this->result['shipment'])>0){
-	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
-		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
+	if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
+		mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
         }	
 class MYPDF extends TCPDF {
 	public $scheme_name = '';
@@ -77,15 +77,17 @@ class MYPDF extends TCPDF {
     public function Footer() {
 		$finalizeReport="";
 		if(trim($this->comingFrom)=="finalize"){
-			$finalizeReport=' | FINALIZED';
+			$finalizeReport='INDIVIDUAL REPORT | FINALIZED';
 		}
         // Position at 15 mm from bottom
-        $this->SetY(-15);
+        $this->SetY(-12);
         // Set font
-        $this->SetFont('helvetica', '', 8);
+        $this->SetFont('helvetica', '', 7);
         // Page number
 		//$this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
-		$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+		//$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+		$this->writeHTML("<hr>", true, false, true, false, '');
+		$this->writeHTML("Report generated on ".date("d M Y H:i:s").$finalizeReport, true, false, true, false, 'C');
 	
     }
 }
@@ -104,8 +106,8 @@ foreach($this->result['shipment'] as $result){
 	
 	//Zend_Debug::dump($result['responseResult'][0]);die;
 	
-	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
-		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
+	if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
+		mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
     }
 	//error_log($i);
 	// Extend the TCPDF class to create custom Header and Footer
@@ -734,6 +736,10 @@ foreach($this->result['shipment'] as $result){
 	}
 	else if($schemeType=='eid'){
 		$html='<p>Thank you for participating in HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot.</p>';
+		if(!empty($this->reportComment)){
+			$html.='<br>'.$this->reportComment;
+		}
+		
 	}else{
 		$html='<p style="font-size:12px;">Thank you for participating in the '.($result['scheme_name']).' Proficiency Testing Program.</p>';
 	}
@@ -746,14 +752,14 @@ foreach($this->result['shipment'] as $result){
 		$result['last_name']="_".$result['last_name'];
 	}
 	
-//	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
-//		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
+//	if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
+//		mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
 //    }
 	
 	$fileName=$result['first_name'].$result['last_name']."-".$result['map_id'].".pdf";
 	$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
 	$fileName = str_replace(" ", "-", $fileName);
-	$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$result['shipment_code']. DIRECTORY_SEPARATOR .$fileName;
+	$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$result['shipment_code']. DIRECTORY_SEPARATOR .$fileName;
 	$created=$pdf->Output($filePath, "F");
 	
 	//$pdf->Output($fileName, 'I');
@@ -774,8 +780,8 @@ foreach($this->result['shipment'] as $result){
 
 //$mergePdf = $shipmentCode."-bulk-participant-report.pdf";
 $mergePdf = $shipmentCode."-".$this->bulkfileNameVal."-bulk-participant-report.pdf";
-$mergeFilePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$mergePdf;
-$pdfNew ->save($mergeFilePath);
+$mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$mergePdf;
+$pdfNew->save($mergeFilePath);
 
 foreach($this->result['dmResult'] as $key=>$dmRes){
 	$pdfNew->pages=array();
@@ -789,7 +795,7 @@ foreach($this->result['dmResult'] as $key=>$dmRes){
 			$participantFileName=$expStrRes[2].".pdf";
 			$participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
 			$participantFileName = str_replace(" ", "-", $participantFileName);
-			$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$participantFileName;
+			$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$participantFileName;
 			if(file_exists($filePath)){
 				$loadpdf = Zend_Pdf::load($filePath);
 				foreach($loadpdf->pages as $page){
@@ -806,8 +812,8 @@ foreach($this->result['dmResult'] as $key=>$dmRes){
 	
 	
 	$mergePdf = $shipmentCode."-".$dmFileName;
-	$mergeFilePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$mergePdf;
-	$pdfNew ->save($mergeFilePath);
+	$mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$mergePdf;
+	$pdfNew->save($mergeFilePath);
 	
 }
 	

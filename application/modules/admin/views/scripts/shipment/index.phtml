@@ -87,7 +87,7 @@
                            class="isRequired form-control input-sm"
                            title="Please enter the shipment code here"
                            placeholder="Please enter the shipment code here"
-                           onkeyup="checkDuplicate('shipment', 'shipment_code', $('#shipmentCode'), null, 'This Code already exists for another Shipment. Please try something else.')"/></div>
+                           onkeyup=""/></div>
 
 
             </div>		
@@ -159,11 +159,10 @@
     });
 
     function validateNow() {
-        checkDuplicate('shipment', 'shipment_code', $('#shipmentCode'), null, 'This Code already exists for another Shipment. Please try something else.');
         flag = deforayValidator.init({
             formId: 'shipmentForm'
         });
-        if (flag && !duplicated) {
+        if (flag) {
             $.blockUI();
             document.getElementById('shipmentForm').submit();
         }

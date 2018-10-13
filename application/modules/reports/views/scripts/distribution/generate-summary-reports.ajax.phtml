@@ -10,11 +10,11 @@ if ($this->result['shipment'] != "") {
         $chart = new VerticalBarChart(700, 400);
        
     }
-    if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
-        mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
+    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
+        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
     }
-    if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code']) && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'])) {
-        mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code']);
+    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'])) {
+        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code']);
     }
 
 // Extend the TCPDF class to create custom Header and Footer
@@ -75,7 +75,7 @@ if ($this->result['shipment'] != "") {
         public function Footer() {
             $finalizeReport="";
             if(trim($this->comingFrom)=="finalize"){
-               $finalizeReport=' | FINALIZED';
+               $finalizeReport=' SUMMARY REPORT | FINALIZED';
             }
             // Position at 15 mm from bottom
             $this->SetY(-15);
@@ -518,7 +518,7 @@ if ($this->result['shipment'] != "") {
             //Bound::setUpperBound(50);
             $chart->getPlot()->setGraphCaptionRatio(0.5);
             $chart->setTitle("Comparison of test performance between participating laboratories");
-            $chart->render(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
+            $chart->render(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
 
             // set font
             $pdf->SetFont('helvetica', 'B', 12);
@@ -642,8 +642,8 @@ if ($this->result['shipment'] != "") {
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
         }
                
-            $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
-            //$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
+            $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+            //$image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
             //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
             $y = $pdf->getY() + 5;
             $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
@@ -663,7 +663,7 @@ if ($this->result['shipment'] != "") {
                 foreach ($this->result['shipment']['pieChart'] as $piechart) {
                     $dataSet->addPoint(new Point($piechart['kit_name']." (N=".$piechart['count'].")", $piechart['count']));
                 }
-                $piechart = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
+                $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
                 $chart->setDataSet($dataSet);
 
                 $chart->getPlot()->setGraphCaptionRatio(0.5);
@@ -701,7 +701,7 @@ if ($this->result['shipment'] != "") {
                 $dataSet->addPoint(new Point("EIA", $this->result['shipment']['dbsPieChart']['EIA']));
             }
 
-            $piechart = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
+            $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
             $chart->setDataSet($dataSet);
 
             $chart->setTitle("HIV Testing Algorithms used for DBS-based PT survey " . $this->result['shipment']['distribution_code']);
@@ -731,7 +731,7 @@ if ($this->result['shipment'] != "") {
         $dataSet->addPoint(new Point("Late Response (N=$late)", $late));
         $dataSet->addPoint(new Point("Excluded (N=$excluded)", $excluded));
         
-        $performancePiechart = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
+        $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
         
         $chart1->setDataSet($dataSet);
         $chart1->setTitle("Shipment Participant Result Report");
@@ -746,7 +746,7 @@ if ($this->result['shipment'] != "") {
             
 //Close and output PDF document
     $fileName = $this->result['shipment']['shipment_code']."-summary.pdf";
-    $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+    $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $this->result['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
 //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
 

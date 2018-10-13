@@ -844,7 +844,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 					
 			$downloadReports= " N.A. ";		
             if ($aRow['status']=='finalized') {
-                 $downloadReports = '<a href="/uploads/reports/' . $aRow['shipment_code']. '/'.$aRow['shipment_code'].'-summary.pdf" class="btn btn-primary" style="text-decoration : none;overflow:hidden;" target="_BLANK" download><i class="icon icon-download"></i> Summary Report</a>
+                 $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code']."-summary.pdf");
+                 $downloadReports = '<a href="/d/' . $filePath.'" class="btn btn-primary" style="text-decoration : none;overflow:hidden;" target="_BLANK" download><i class="icon icon-download"></i> Summary Report</a>
 				                    <a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : none;overflow:hidden;margin-top:4px;" class="btn btn-info" target="_BLANK" download> <i class="icon icon-download"></i> Individual ' . $aRow['REPORT'] . '</a>';
             }					
             $row[] = $downloadReports;
@@ -1324,8 +1325,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $row[] = strtoupper($aRow['scheme_type']);
             $row[] = $aRow['shipment_code'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
-            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR .$aRow['shipment_code']. "-summary.pdf") && $aRow['status']=='finalized') {
-                 $row[] = '<a href="/uploads/reports/' . $aRow['shipment_code']. '/'.$aRow['shipment_code'].'-summary.pdf"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
+            if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR .$aRow['shipment_code']. "-summary.pdf") && $aRow['status']=='finalized') {
+                $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code']."-summary.pdf");
+                 $row[] = '<a href="/d/' . $filePath.'"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
             } else {
                 $row[] = '';
             }

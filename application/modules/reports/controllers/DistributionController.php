@@ -66,6 +66,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $comingFrom = $this->_getParam('comingFrom');
             $reportService = new Application_Service_Reports();
             $this->view->header=$reportService->getReportConfigValue('report-header');
+            $this->view->reportComment=$reportService->getReportConfigValue('report-comment');
             $this->view->logo=$reportService->getReportConfigValue('logo');
             $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
             $evalService = new Application_Service_Evaluation();
