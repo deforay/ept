@@ -2477,61 +2477,101 @@ class Application_Service_Reports {
 						'style' => PHPExcel_Style_Border::BORDER_THIN,
 					),
 				)
-			);
+            );
+            $patientResponseColor = array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array('rgb' => '18bc9c')
+                )
+            );
+            $referenceColor = array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array('rgb' => 'F0E68C')
+                )
+            );
 	
 			$query = $db->select()->from('shipment')
 					->where("shipment_id = ?", $shipmentId);
 			$result = $db->fetchRow($query);
 	
 			
-			$refQuery = $db->select()->from(array('refRes' => 'reference_result_eid'))->where("refRes.shipment_id = ?", $shipmentId);
+            $refQuery = $db->select()->from(array('refRes' => 'reference_result_eid'))->where("refRes.shipment_id = ?", $shipmentId);
 			$refResult = $db->fetchAll($refQuery);
 			
 	
 			$firstSheet = new PHPExcel_Worksheet($excel, 'DBS EID PT Results');
 			$excel->addSheet($firstSheet, 0);
-			
-			$firstSheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$firstSheet->getStyleByColumnAndRow(0, 1)->applyFromArray($borderStyle);
-			
-			$firstSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$firstSheet->getStyleByColumnAndRow(1, 1)->applyFromArray($borderStyle);
-			
-			$firstSheet->getCellByColumnAndRow(2, 1)->setValueExplicit(html_entity_decode("Department", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$firstSheet->getStyleByColumnAndRow(2, 1)->applyFromArray($borderStyle);
-			
-			$firstSheet->getCellByColumnAndRow(3, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$firstSheet->getStyleByColumnAndRow(3, 1)->applyFromArray($borderStyle);
-			
-			$firstSheet->getCellByColumnAndRow(4, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$firstSheet->getStyleByColumnAndRow(4, 1)->applyFromArray($borderStyle);
-			
-			$firstSheet->getCellByColumnAndRow(5, 1)->setValueExplicit(html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$firstSheet->getStyleByColumnAndRow(5, 1)->applyFromArray($borderStyle);
-			
+            
+            $firstSheet->mergeCells('A1:A2');
+            $firstSheet->setCellValue('A1', html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle('A1:A2')->applyFromArray($borderStyle);
+
+            $firstSheet->mergeCells('B1:B2');
+            $firstSheet->setCellValue('B1', html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle('B1:B2')->applyFromArray($borderStyle);
+
+            $firstSheet->mergeCells('C1:C2');
+            $firstSheet->setCellValue('C1', html_entity_decode("Department", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle('C1:C2')->applyFromArray($borderStyle);
+
+            $firstSheet->mergeCells('D1:D2');
+            $firstSheet->setCellValue('D1', html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle('D1:D2')->applyFromArray($borderStyle);
+
+            $firstSheet->mergeCells('E1:E2');
+            $firstSheet->setCellValue('E1', html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle('E1:E2')->applyFromArray($borderStyle);
+
+			$firstSheet->mergeCells('F1:F2');
+            $firstSheet->setCellValue('F1', html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle('F1:F2')->applyFromArray($borderStyle);
+
+            $firstSheet->mergeCells('G1:G2');
+            $firstSheet->setCellValue('G1', html_entity_decode("Extraction", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle('G1:G2')->applyFromArray($borderStyle);
+
+            $firstSheet->mergeCells('H1:H2');
+            $firstSheet->setCellValue('H1', html_entity_decode("Detection", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle('H1:H2')->applyFromArray($borderStyle);
+
+            $firstSheet->mergeCells('I1:I2');
+            $firstSheet->setCellValue('I1', html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle('I1:I2')->applyFromArray($borderStyle);
+
+            $firstSheet->mergeCells('J1:J2');
+            $firstSheet->setCellValue('J1', html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle('J1:J2')->applyFromArray($borderStyle);
+
 			$firstSheet->getDefaultRowDimension()->setRowHeight(15);
 			
-			$colNameCount = 6;
+            $colNameCount = 10;
+            $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount)->getColumn();
 
-			$firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Extraction", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$firstSheet->getStyleByColumnAndRow($colNameCount++, 1)->applyFromArray($borderStyle);
-			
-			$firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Detection", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$firstSheet->getStyleByColumnAndRow($colNameCount++, 1)->applyFromArray($borderStyle);
-			
-			$firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-			$firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			
-
-			$firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-            $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            
 			foreach($refResult as $refRow){
-				$firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				$firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
+				$firstSheet->getCellByColumnAndRow($colNameCount, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$firstSheet->getStyleByColumnAndRow($colNameCount, 2)->applyFromArray($borderStyle);
+				$colNameCount++;
+            }
+
+            $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount-1)->getColumn();
+            $firstSheet->mergeCells($cellName1.'1:'.$cellName2.'1');
+            $firstSheet->setCellValue($cellName1.'1', html_entity_decode("PATIENT RESPONSE", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle($cellName1.'1:'.$cellName2.'1')->applyFromArray($borderStyle);
+            $firstSheet->getStyle($cellName1.'1:'.$cellName2.'2')->applyFromArray($patientResponseColor);
+
+            $cellName3 = $firstSheet->getCellByColumnAndRow($colNameCount)->getColumn();
+            $colNumberforReference = $colNameCount;
+            foreach($refResult as $refRow){
+				$firstSheet->getCellByColumnAndRow($colNameCount, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$firstSheet->getStyleByColumnAndRow($colNameCount, 2)->applyFromArray($borderStyle);
 				$colNameCount++;
 			}
-			            
+            $cellName4 = $firstSheet->getCellByColumnAndRow($colNameCount-1)->getColumn();
+            $firstSheet->mergeCells($cellName3.'1:'.$cellName4.'1');
+            $firstSheet->setCellValue($cellName3.'1', html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyle($cellName3.'1:'.$cellName4.'1')->applyFromArray($borderStyle);
+            $firstSheet->getStyle($cellName3.'1:'.$cellName4.'2')->applyFromArray($referenceColor);
 			
 			
 			$firstSheet->setTitle('DBS EID PT Results');
@@ -2543,7 +2583,7 @@ class Application_Service_Reports {
 								->where("s.shipment_id = ?", $shipmentId);
 			$resultOverAll = $db->fetchAll($queryOverAll);
 			
-			$row = 1; // $row 0 is already the column headings
+			$row = 2; // $row 0 is already the column headings
 			
 			$schemeService = new Application_Service_Schemes();
 			$extractionAssayList = $schemeService->getEidExtractionAssay();
@@ -2585,9 +2625,21 @@ class Application_Service_Reports {
 
 				foreach($resultResponse as $responseRow){
 					$firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				}                
-				
-			}
+				}
+            }
+            
+            $queryReference = $db->select()->from(array('res' => 'reference_result_eid'))
+								->joinLeft(array('pr'=>'r_possibleresult'),"res.reference_result=pr.id")
+                                ->where("res.shipment_id = ?", $shipmentId);
+            $referenceresult = $db->fetchAll($queryReference);
+$nRow = 3;
+        for($i=3;$i<$row;$i++){
+            $col = $colNumberforReference;
+            foreach($referenceresult as $referenceRow){
+                $firstSheet->getCellByColumnAndRow($col++, $nRow)->setValueExplicit(html_entity_decode($referenceRow['response'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            }
+            $nRow++;
+        }
 			
 			foreach(range('A','Z') as $columnID) {
 				$firstSheet->getColumnDimension($columnID)
