@@ -53,9 +53,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
     public function responseSwitch($shipmentId,$switchStatus) {
         if (isset($switchStatus) && $switchStatus != null && $switchStatus != "") {
 			$this->update(array('response_switch' => $switchStatus), "shipment_id = $shipmentId");
-			return "Shipment status updated to $switchStatus successfully";
+			return "Shipment Response Status updated to ".strtoupper($switchStatus)." successfully";
         } else {
-            return "Unable to update Shipment status updated to $switchStatus. Please try again later.";
+            return "Unable to change Shipment Response Status to ".strtoupper($switchStatus).". Please try again later.";
         }
     }
 

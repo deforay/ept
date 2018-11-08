@@ -808,7 +808,7 @@ class Application_Service_Evaluation {
             }
 
             foreach ($dmResult as $dmRes) {
-				$participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $res['first_name'] . $res['last_name'] . "-" . $res['map_id']);
+				$participantFileName = $res['shipment_code']."-".($res['map_id']);
 				$participantFileName = str_replace(" ", "-", $participantFileName);
                 if (count($mapRes) == 0) {
                     $mapRes[$dmRes['dm_id']] = $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $participantFileName;

@@ -12,6 +12,11 @@ if($this->result!=""){
 		
 	$file = DOWNLOADS_FOLDER. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$this->result['shipment_code']. DIRECTORY_SEPARATOR.$fileName;
 
+	if(!file_exists($file)){
+		// Trying old format, just in case.
+		$file = DOWNLOADS_FOLDER. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$this->result['shipment_code']. DIRECTORY_SEPARATOR.$this->result['shipment_code']."-".$this->result['map_id'].".pdf";
+	}
+
 	if (file_exists($file)) {
 	    echo "<h2 align='center' style='margin-top:100px;font-family:arial;'>Requested image will be downloaded shortly, After downloaded please close the window </h2>";
 	    header('Content-Description: File Transfer');

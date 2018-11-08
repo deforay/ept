@@ -42,7 +42,7 @@ try {
                 $fromName = '';
                 //Subject
                 //$subject.= "Notice for CDC 2017-2nd PT shipment for EID and VL - ". $participant[0]." | ".$participant[1] ;
-                $subject.= "[IMPORTANT] REMINDER - 2018 2nd CDC EID and VL PT | Lab ID : ". $participant[0] . " | ". $participant[1];
+                $subject.= "[URGENT] FINAL REMINDER - 2018 2nd CDC EID and VL PT | Lab ID : ". $participant[0] . " | ". $participant[1] . " | ". $participant[3];
                 //Message
                 $message.= '<table border="0" cellspacing="0" cellpadding="0" style="width:100%;background-color:#FFF;">';
                     $message.= '<tr><td align="center">';
@@ -52,13 +52,20 @@ try {
 
                         
 
-                        $message.= '<tr><td colspan="2">This is a friendly reminder that the results due date is <strong>19 Oct 2018</strong> for CDC 2018 2nd shipment for EID and VL PT panels. Late results will not be accepted for evaluation.</td></tr>';
+                        $message.= '<tr><td colspan="2">This is the final reminder that the results due date is <strong>19 Oct 2018</strong> for CDC 2018 2nd shipment for EID and VL PT panels. Late results will not be accepted for evaluation.</td></tr>';
                         $message.= '<tr><td colspan="2">Our record indicates that we have not received results submission from your laboratory.</td></tr>';
-                        $message.= '<tr><td colspan="2">Please submit your results via online ePT system at https://ept.vlsmartconnect.com/auth/login using your username and password.  If you do not have a username and password, please send an email request to gappt@cdc.gov and pt@vlsmartconnect.com.</td></tr>';
+                        $message.= '<tr><td colspan="2">Please submit your results via online ePT system using your username and password.</td></tr>';
+
+                        $message.= '<tr><td colspan="2">Please login to https://ept.vlsmartconnect.com/auth/login with the following credentials </td></tr>';
+                        $message.= '<tr><td width="12%"><strong>Login ID</strong> : </td><td>'.$participant[5].'</td></tr>';
+                        $message.= '<tr><td width="12%"><strong>Password</strong> : </td><td>'.$participant[6].'</td></tr>';
                         
-                        $message.= '<tr><td width="12%">If you are unable to submit your results, please provide your "reason for no results submission" via email to gappt@cdc.gov. Please disregard this email if you have submitted your results already. Laboratory that does not submit results AND do not provide a "reason for no results submission" for their 2018  2nd PT panels will be excluded from the CDC future PT shipments.</td></tr>';
+                        $message.= '<tr><td colspan="2">This Login ID and Password is unique to you, please save this Login ID and Password for future use. You will have the option to change them at a later date.</td></tr>';                        
+                        
+                        $message.= '<tr><td colspan="2" width="12%">If you are unable to submit your results, please provide your "reason for no results submission" via email to gappt@cdc.gov. Please disregard this email if you have submitted your results already. Laboratory that does not submit results AND do not provide a "reason for no results submission" for their 2018  2nd PT panels will be excluded from the CDC future PT shipments.</td></tr>';
                         
                         $message.= '<tr><td colspan="2"></td></tr>';
+
                         
                         $message.= '<tr><td colspan="2">Please contact us at gappt@cdc.gov if you have not received your PT shipment by 20 September 2018.</td></tr>';
 

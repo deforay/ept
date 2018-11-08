@@ -15,6 +15,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 ->addActionContext('new-shipment-mail', 'html')
                 ->addActionContext('unenrollments', 'html')
                 ->addActionContext('response-switch', 'html')
+                ->addActionContext('enroll-shipment-participant', 'html')
                 ->addActionContext('shipment-responded-participants', 'html')
                 ->addActionContext('shipment-not-responded-participants', 'html')
                 ->addActionContext('shipment-not-enrolled-participants', 'html')
