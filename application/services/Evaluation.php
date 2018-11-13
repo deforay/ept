@@ -811,11 +811,11 @@ class Application_Service_Evaluation {
 				$participantFileName = $res['shipment_code']."-".($res['map_id']);
 				$participantFileName = str_replace(" ", "-", $participantFileName);
                 if (count($mapRes) == 0) {
-                    $mapRes[$dmRes['dm_id']] = $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $participantFileName;
+                    $mapRes[$dmRes['dm_id']] =  $dmRes['participant_id'] . "#" . $participantFileName;
                 } else if (array_key_exists($dmRes['dm_id'], $mapRes)) {
-                    $mapRes[$dmRes['dm_id']].="," . $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $participantFileName;
+                    $mapRes[$dmRes['dm_id']].="," . $dmRes['participant_id'] . "#" . $participantFileName;
                 } else {
-                    $mapRes[$dmRes['dm_id']] = $dmRes['institute'] . "#" . $dmRes['participant_id'] . "#" . $participantFileName;
+                    $mapRes[$dmRes['dm_id']] = $dmRes['participant_id'] . "#" . $participantFileName;
                 }
             }
             if ($res['scheme_type'] == 'dbs') {

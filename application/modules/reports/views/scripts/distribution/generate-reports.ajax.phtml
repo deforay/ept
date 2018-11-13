@@ -756,7 +756,7 @@ foreach($this->result['shipment'] as $result){
 //		mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
 //    }
 	
-	$fileName=$result['first_name'].$result['last_name']."-".$result['map_id'].".pdf";
+	$fileName=$result['shipment_code']."-".$result['map_id'].".pdf";
 	$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
 	$fileName = str_replace(" ", "-", $fileName);
 	$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$result['shipment_code']. DIRECTORY_SEPARATOR .$fileName;
@@ -783,16 +783,15 @@ $mergePdf = $shipmentCode."-".$this->bulkfileNameVal."-bulk-participant-report.p
 $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$mergePdf;
 $pdfNew->save($mergeFilePath);
 
-foreach($this->result['dmResult'] as $key=>$dmRes){
+foreach($this->result['dmResult'] as $dmID=>$dmRes){
 	$pdfNew->pages=array();
-	//echo $key."key ".$dmRes."<br/>";
 	$expRes=explode(",",$dmRes);
 	$resCount=count($expRes);
 	if($resCount>0){
 		foreach($expRes as $res){
 			$expStrRes=explode("#",$res);
-			$dmFileName=$expStrRes[0].$key.".pdf";
-			$participantFileName=$expStrRes[2].".pdf";
+			$dmFileName=$dmID.".pdf";
+			$participantFileName=$expStrRes[1].".pdf";
 			$participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
 			$participantFileName = str_replace(" ", "-", $participantFileName);
 			$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$shipmentCode. DIRECTORY_SEPARATOR .$participantFileName;

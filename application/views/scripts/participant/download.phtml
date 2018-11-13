@@ -1,20 +1,13 @@
 <?php
 //Zend_Debug::dump($this->result);die;
 if($this->result!=""){
-	
-	if(isset($this->result['last_name']) && trim($this->result['last_name'])!=""){
-		$this->result['last_name']="_".$this->result['last_name'];
-	}
-	$fileName=$this->result['first_name'].$this->result['last_name']."-".$this->result['map_id'].".pdf";
-	
-	$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
-	$fileName = str_replace(" ", "-", $fileName);
-		
-	$file = DOWNLOADS_FOLDER. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$this->result['shipment_code']. DIRECTORY_SEPARATOR.$fileName;
+
+	$file = DOWNLOADS_FOLDER. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$this->result['shipment_code']. DIRECTORY_SEPARATOR.$this->result['shipment_code']."-".$this->result['map_id'].".pdf";
 
 	if(!file_exists($file)){
-		// Trying old format, just in case.
-		$file = DOWNLOADS_FOLDER. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$this->result['shipment_code']. DIRECTORY_SEPARATOR.$this->result['shipment_code']."-".$this->result['map_id'].".pdf";
+		// Search this file name using the map id
+		$files = glob(DOWNLOADS_FOLDER. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$this->result['shipment_code']. DIRECTORY_SEPARATOR . "*".$this->result['map_id'] . "*");
+		$file = ($files[0]);
 	}
 
 	if (file_exists($file)) {
