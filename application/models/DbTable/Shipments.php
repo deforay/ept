@@ -77,6 +77,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          */
 
         $aColumns = array('year(shipment_date)', 'scheme_name');
+        $orderColumns = array('shipment_date', 'scheme_name');
 
         /* Indexed column (used for fast and accurate table cardinality) */
          $sIndexColumn = $this->_primary;
@@ -97,18 +98,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    if ($parameters['iSortCol_' . $i] == 0) {
-                        $sOrder .= "shipment_date " . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    } else {
-                        $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    }
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . " " . ( $parameters['sSortDir_' . $i] ) . ",";
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, "", -1);
         }
 
         /*
@@ -425,6 +420,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          */
 
         $aColumns = array('year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'unique_identifier','first_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $orderColumns = array('shipment_date', 'shipment_date', 'scheme_name', 'shipment_code', 'unique_identifier','first_name', 'lastdate_response', 'spm.shipment_test_report_date');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -445,18 +441,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    if ($parameters['iSortCol_' . $i] == 1) {
-                        $sOrder .= "shipment_date " . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    } else {
-                        $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    }
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . " " . ( $parameters['sSortDir_' . $i] ) . ",";
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, "", -1);
         }
 
         /*
@@ -626,6 +616,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          */
 
         $aColumns = array('s.shipment_id','year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code','unique_identifier','first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $orderColumns = array('s.shipment_id','shipment_date', 'shipment_date', 'scheme_name', 'shipment_code','unique_identifier','first_name', 'spm.shipment_test_report_date');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -646,18 +637,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    if ($parameters['iSortCol_' . $i] == 1) {
-                        $sOrder .= "shipment_date " . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    } else {
-                        $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    }
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . " " . ( $parameters['sSortDir_' . $i] ) . ",";
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, "", -1);
         }
 
         /*
@@ -844,11 +829,25 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 					
 			$downloadReports= " N.A. ";		
             if ($aRow['status']=='finalized') {
-                 $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code']."-summary.pdf");
-                 $downloadReports = '<a href="/d/' . $filePath.'" class="btn btn-primary" style="text-decoration : none;overflow:hidden;" target="_BLANK" download><i class="icon icon-download"></i> Summary Report</a>
-				                    <a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : none;overflow:hidden;margin-top:4px;" class="btn btn-info" target="_BLANK" download> <i class="icon icon-download"></i> Individual ' . $aRow['REPORT'] . '</a>';
-            }					
+                $downloadReports = "";
+                $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code']."-summary.pdf");
+                if(file_exists($summaryFilePath)){
+                    $downloadReports .= '<a href="/d/' . base64_encode($summaryFilePath).'" class="btn btn-primary" style="text-decoration : none;overflow:hidden;" target="_BLANK" download><i class="icon icon-download"></i> Summary Report</a>';
+                }
+                $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code']."-".$aRow['map_id'].".pdf");
+                if(!file_exists($invididualFilePath)){
+                    // Search this file name using the map id
+                    $files = glob(DOWNLOADS_FOLDER. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$aRow['shipment_code']. DIRECTORY_SEPARATOR . "*".$aRow['map_id'] . ".pdf");
+                    $invididualFilePath = ($files[0]);
+                }
+                if(file_exists($invididualFilePath)){
+                    $downloadReports .= '<br><a href="/d/' . base64_encode($invididualFilePath).'" class="btn btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> Individual Report</a>';
+                }
+            }            
             $row[] = $downloadReports;
+
+
+
 
             $output['aaData'][] = $row;
         }
@@ -862,6 +861,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          */
 
         $aColumns = array('year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_type', 'shipment_code');
+        $orderColumns = array('shipment_date', 'shipment_date', 'scheme_type', 'shipment_code');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -882,18 +882,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    if ($parameters['iSortCol_' . $i] == 1) {
-                        $sOrder .= "shipment_date " . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    } else {
-                        $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    }
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . " " . ( $parameters['sSortDir_' . $i] ) . ",";
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, "", -1);
         }
 
         /*
@@ -1028,6 +1022,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          */
 
         $aColumns = array('scheme_type', 'shipment_code', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'unique_identifier','first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $orderColumns = array('scheme_type', 'shipment_code', 'shipment_date', 'unique_identifier','first_name', 'spm.shipment_test_report_date');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -1048,18 +1043,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    if ($parameters['iSortCol_' . $i] == 1) {
-                        $sOrder .= "shipment_date " . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    } else {
-                        $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    }
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . " " . ( $parameters['sSortDir_' . $i] ) . ",";
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, "", -1);
         }
 
         /*
@@ -1135,7 +1124,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //error_log($sQuery);
+        //echo($sQuery);die;
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */
@@ -1188,6 +1177,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          */
 
         $aColumns = array('scheme_type', 'shipment_code', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")');
+        $orderColumns = array('scheme_type', 'shipment_code', 'shipment_date');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -1208,18 +1198,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    if ($parameters['iSortCol_' . $i] == 1) {
-                        $sOrder .= "shipment_date " . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    } else {
-                        $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ( $parameters['sSortDir_' . $i] ) . ", ";
-                    }
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . " " . ( $parameters['sSortDir_' . $i] ) . ",";
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, "", -1);
         }
 
         /*

@@ -40,7 +40,8 @@ $dtFormat=  $genderHelper->getDateFormat();
 					<th style="width:100px;">Shipment<br/>Date</th>
 					<th style="width:50px;">Scheme</th>
 					<th style="width:100px;">Shipment Code</th>
-					<th>Participant</th>
+					<th>Participant ID</th>
+					<th>Participant Name</th>
 					<th style="width:100px;">Response<br/>Date</th>
 					<th style="width:100px;">Action</th>
 					<th>Report</th>
@@ -49,7 +50,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 				</thead>
 				<tbody>
 				    <tr>
-					<td colspan="8" class="dataTables_empty">Loading data from server</td>
+					<td colspan="9" class="dataTables_empty">Loading data from server</td>
 				    </tr>
 				</tbody>
 			</table>
@@ -90,6 +91,7 @@ $dtFormat=  $genderHelper->getDateFormat();
 			"bRetrieve": true,                        
 			"aoColumns": [
 				{"bSortable":false},
+			    {"sClass":"center"},
 			    {"sClass":"center"},
 			    {"sClass":"center"},
 			    {"sClass":"center"},
