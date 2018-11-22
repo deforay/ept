@@ -389,6 +389,8 @@ class Application_Service_Schemes {
                       ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
                       ->where('sp.shipment_id = ? ', $sId)
                       ->where("sp.is_excluded = 'no' ")
+                      ->where("sp.is_pt_test_not_performed = 'no' ")
+                      ->where("res.reported_viral_load != '' ")
                       ->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayId . '"%');
                       //echo $sql;die;
             $response = $db->fetchAll($sql);

@@ -153,6 +153,7 @@ if (count($this->shipment) > 0) {
     <br/>
     <br/>
     <?php
+    $m=0;
     if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] != 'finalized') {
         ?>
         <div align="right" class="col-lg-6">
@@ -453,7 +454,7 @@ if (count($this->shipment) > 0) {
         }
     function finalizeShipmentBtn() {
         countReport=getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab');
-        if (countReport>'<?php echo $m; ?>') {
+        if (countReport > '<?php echo $m; ?>') {
             //alert(countReport);
             $("#finalizeBtn").css('display','block');
         }
