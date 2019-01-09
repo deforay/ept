@@ -97,25 +97,25 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
 
 
             <tr class ="light">
-                <td><label> Test Receipt Date</label></td>
+                <td><label> Test Receipt Date <span class='mandatory'>*</span></label></td>
                 <td>
-                    <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker" readonly="readonly"   title="Please enter Test Receipt Date" />
+                    <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly"   title="Please enter Test Receipt Date" />
                     <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('receiptDate')"> Clear</i>
                 </td>
-                <td><label>Sample Rehydration Date</label></td>
+                <td><label>Sample Rehydration Date <span class='mandatory'>*</span></label></td>
                 <td>
-                    <input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class="form-control datepicker" readonly="readonly" title="Please enter Sample Rehydration Date"  />
+                    <input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class="form-control datepicker isRequired" readonly="readonly" title="Please enter Sample Rehydration Date"  />
                     <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('sampleRehydrationDate')"> Clear</i>
                 </td>
             </tr>
 
             <tr class ="dark">
-                <td><label>Testing Date</label></td> 
+                <td><label>Testing Date <span class='mandatory'>*</span></label></td> 
                 <td>
-                    <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="form-control datepicker" readonly="readonly" title="Please enter Shipment Test Date"  />
+                    <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="form-control datepicker isRequired" readonly="readonly" title="Please enter Shipment Test Date"  />
                 <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"> Clear</i>
                 </td>		
-                <td><label>Algorithm Used</label></td> 
+                <td><label>Algorithm Used <span class='mandatory'>*</span></label></td> 
                 <td>
                     <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;">
                         <option value="">--Select--</option>	

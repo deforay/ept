@@ -4199,8 +4199,7 @@ $nRow = 3;
 									->join(array('s' => 'shipment'),'s.shipment_id=spm.shipment_id',array('shipment_code','scheme_type'))
 									->join(array('p' => 'participant'),'p.participant_id=spm.participant_id',array('unique_identifier','first_name','last_name','email','city','state','address','institute_name'))
 									//->joinLeft(array('c' => 'countries'),'c.id=p.country',array('iso_name'))
-									->order("scheme_type ASC")
-									;
+									->order("scheme_type ASC");
 			
 			if(isset($params['shipmentId']) && count($params['shipmentId'])>0) {
 				$impShipmentId=implode(",",$params['shipmentId']);
@@ -4271,7 +4270,7 @@ $nRow = 3;
 		$excel->addSheet($firstSheet, 0);
 		$firstSheet->getDefaultColumnDimension()->setWidth(20);
 		$firstSheet->getDefaultRowDimension()->setRowHeight(18);
-		//$firstSheet->setTitle('Pass Result');
+		$firstSheet->setTitle('Annual Report');
 		$styleArray = array(
 			'font' => array(
 				'bold' => true,
@@ -4373,7 +4372,7 @@ $nRow = 3;
 		}
 		$excel->setActiveSheetIndex(0);
 		$writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-		$filename = 'Annual Report-'.date('d-M-Y H:i:s').'.xls';
+		$filename = 'ePT-Annual-Report-'.date('d-M-Y-H-i-s').'.xls';
 		$writer->save(UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports". DIRECTORY_SEPARATOR . $filename);
 		return $filename;
 		

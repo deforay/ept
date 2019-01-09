@@ -1458,7 +1458,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-			$row[] = '<a href="/shipment-form/download/sId/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_BLANK" download> Download Report</a>';
+			$row[] = '<a href="/shipment-form/download/sId/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_BLANK" download> Download </a>';
             $output['aaData'][] = $row;
         }
 

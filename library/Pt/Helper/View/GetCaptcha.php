@@ -25,7 +25,8 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
             'png_backgrounds' => array(UPLOAD_PATH . '/../images/captchabg/default.png',UPLOAD_PATH . '/../images/captchabg/ravenna.png'),
             'fonts' => array(UPLOAD_PATH . '/../fonts/Idolwild/idolwild.ttf'),
             //'characters' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-            'characters' => 'CzobnfuVpOkH5rzt9avu51sv2S7aCUG9iyMUcUhVsY4LjO3IaTzJMv6dYJNZfchkL4HMRcSzQqnsNump3JERxY78wYMKmBSpVXH93C82kOKBiUVvGrZK9QUjizLs8rwHvbkfByPb10sX2G4TkqrkKBOIzKudmMUbXN2LNAxCDpEcMBbDl3l9lyvU8qGBhh3sr5SOj3XHHfsv8yNRfa5Qmlr9OxLOirbRlqZ444eO8hEBGD5vnzJ7L5fa22',
+            //'characters' => 'czobnfuvpokh5rzt9avu51sv2s7acug9iymucuhvsy4ljo3iatzjmv6dyjnzfchkl4hmrcszqqnsnump3jerxy78wymkmbspvxh93c82kokbiuvvgrzk9qujizls8rwhvbkfbypb10sx2g4tkqrkkboizkudmmubxn2lnaxcdpecmbbdl3l9lyvu8qgbhh3sr5soj3xhhfsv8ynrfa5qmlr9oxloirbrlqz444eo8hebgd5vnzj7l5fa22',
+            'characters' => '232132143556788796564353432443546567687878654543324344545462212123235346578798708653532421223134567890343243243212345678902349846989283094829381293820938490282323232323234345455676878896543434434345566878989786753392018309123890128392392103892138902138',
             'min_font_size' => 22,
             'max_font_size' => 26,
             'color' => '#111',
@@ -61,9 +62,9 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
         srand(microtime() * 100);
         
         // if it is development environment, then let us keep it simple
-        if(APPLICATION_ENV == "development"){
-            $captcha_config['code'] = "zaq";
-        }
+        // if(APPLICATION_ENV == "development"){
+        //     $captcha_config['code'] = "zaq";
+        // }
         
         // Generate CAPTCHA code if not set by user
         if (empty($captcha_config['code'])) {

@@ -929,7 +929,7 @@ class Application_Service_Evaluation {
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id',array('s.*'))
 					->join(array('sp' => 'shipment_participant_map'),'s.shipment_id=sp.shipment_id',array('sp.map_id','sp.attributes','sp.shipment_receipt_date','sp.shipment_test_date','sp.is_pt_test_not_performed','sp.is_excluded'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-					//->where("sp.is_pt_test_not_performed is NULL")
+					->where("sp.is_pt_test_not_performed is NULL")
 					//->where("sp.is_excluded ='no'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 				
@@ -941,23 +941,36 @@ class Application_Service_Evaluation {
 				foreach($cResult as $val){
 					$valAttributes = json_decode($val['attributes'], true);
 					if($attributes['vl_assay']==$valAttributes['vl_assay']){
-						if (array_key_exists($val['sample_label'], $labResult)) {
-							$labResult[$val['sample_label']]+=1;
+						if($valAttributes['vl_assay'] == 6){
+							$assayName = $valAttributes['other_assay'];
 						}else{
-							$labResult[$val['sample_label']]=array();
-							$labResult[$val['sample_label']]=1;
+							$assayName = $vlAssayResultSet[$valAttributes['vl_assay']];
+						}
+
+						
+						
+						if (isset($labResult[$assayName][$val['sample_label']])) {
+							$labResult[$assayName][$val['sample_label']]+=1;
+						}else{
+							$labResult[$assayName][$val['sample_label']]=array();
+							$labResult[$assayName][$val['sample_label']]=1;
 						}
 					}
 				}
 				//-------->
 				
-				//print_r($labResult);
-				//die;
+				// Zend_Debug::dump($labResult);
+				// die;
                 $counter = 0;
                 $toReturn = array();
                 foreach ($results as $result) {
                     //$toReturn = array();
-                    $responseAssay = json_decode($result['attributes'], true);
+					$responseAssay = json_decode($result['attributes'], true);
+					if($responseAssay['vl_assay'] == 6){
+						$assayName = $responseAssay['other_assay'];
+					}else{
+						$assayName = $vlAssayResultSet[$responseAssay['vl_assay']];
+					}					
                     $toReturn[$counter]['vl_assay'] = isset($vlAssayResultSet[$responseAssay['vl_assay']]) ? $vlAssayResultSet[$responseAssay['vl_assay']] : "";
                     $responseAssay = $responseAssay['vl_assay'];
 					
@@ -975,7 +988,7 @@ class Application_Service_Evaluation {
                     $toReturn[$counter]['shipment_receipt_date'] = $result['shipment_receipt_date'];
                     $toReturn[$counter]['max_score'] = $result['max_score'];
                     $toReturn[$counter]['reported_viral_load'] = $result['reported_viral_load'];
-                    $toReturn[$counter]['no_of_participants'] = $labResult[$result['sample_label']];
+                    $toReturn[$counter]['no_of_participants'] = $labResult[$assayName][$result['sample_label']];
                     if (isset($vlRange[$responseAssay])) {
                         // matching reported and low/high limits
                         if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
@@ -1019,7 +1032,7 @@ class Application_Service_Evaluation {
                 $shipmentResult[$i]['responseResult'] = $toReturn;
 				
             }
-			
+			//Zend_Debug::dump($shipmentResult);die;
             $i++;
             $db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
             $db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);
@@ -1401,8 +1414,10 @@ class Application_Service_Evaluation {
 						
 					}
 				}
-				$penResult['assayNames'] = array_unique($penResult['assayNames']);
-				sort($penResult['assayNames']);
+				if(isset($penResult['assayNames']) && count($penResult['assayNames'])>0){
+					$penResult['assayNames'] = array_unique($penResult['assayNames']);
+					sort($penResult['assayNames']);
+				}
 				$penResult['count'] = count($pendingResult);
 
 				
@@ -1449,13 +1464,16 @@ class Application_Service_Evaluation {
 						$vlCalculation[$vlAssayRow['id']] = $vlCalRes;
 						$vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
 						$vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];
-						$vlCalculation[$vlAssayRow['id']]['participant-count'] = $labResult;
+						$vlCalculation[$vlAssayRow['id']]['participant-count'] = $labResult[$vlCalRes[0]['sample_label']];
 						if($vlAssayRow['id']==6){
 							$vlCalculation[$vlAssayRow['id']]['otherAssayName']=array_unique($otherAssayName);
 						}
 					}
 				}
-				//print_r($vlCalculation);
+
+				array_multisort(array_column($vlCalculation, 'participant-count'), SORT_DESC, $vlCalculation);
+				
+				//Zend_Debug::dump($vlCalculation);
 				//die;
 			}
             
