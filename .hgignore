@@ -1,11 +1,11 @@
 syntax: regexp
-afq.komodoproject
 ^application/cache/(?!index.php)
 ^backup/(?!index.php)
 ^public/uploads/(?!index.php)
 ^public/docs/(?!index.php)
 ^public/temporary/cache(?!index.php)
 ^cron/certificate/(?!index.php)
+^cron/certificate-template/(?!index.php)
 ^cron/certificate-template/(?!index.php)
 ^public/temporary/(?!index.php)
 ^downloads/(?!index.php)

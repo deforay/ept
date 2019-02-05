@@ -10,8 +10,44 @@ require_once('tcpdf/tcpdf.php');
             $this->logoRight = $logoRight;
         }
 
+
+
+
+
         //Page header
         public function Header() {
+            // Logo
+            //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+            if (trim($this->logo) != "") {
+                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
+                    $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
+                    $this->Image($image_file, 10, 14, 36, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                }
+            }
+            // if (trim($this->logoRight) != "") {
+            //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
+            //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
+            //         $this->Image($image_file, 180, 10, 20, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            //     }
+            // }
+
+            // Set font
+            $this->SetFont('helvetica', '', 11);
+
+            $this->header = str_replace("<div", "<span", trim($this->header));
+            $this->header = str_replace("</div>", "</span><br/>", $this->header);
+
+            $html='<h2 style="font-weight: bold;text-align:center;">Participant Performance Overview</h2><br><small  style="text-align:center;">'.$this->header.'</small>';
+            
+            $this->writeHTMLCell(0, 0, 42, 19, $html, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
+        }
+
+
+
+
+        public function Headerx() {
             // Logo
             //$image_file = K_PATH_IMAGES.'logo_example.jpg';
             if (trim($this->logo) != "") {
@@ -53,7 +89,7 @@ require_once('tcpdf/tcpdf.php');
             // Set font
             $this->SetFont('helvetica', 'I', 8);
             // Page number
-            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            //$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }
     }
 
@@ -131,7 +167,7 @@ $performanceOverview.='<td style="font-weight:bold">No. of Responses</td>';
 $performanceOverview.='<td style="font-weight:bold">No. of Valid Responses</td>';
 $performanceOverview.='<td style="font-weight:bold">No. of Passed Responses</td>';
 $performanceOverview.='<td style="font-weight:bold">Pass %</td>';
-$performanceOverview.='<td style="font-weight:bold">Average Score</td>';
+//$performanceOverview.='<td style="font-weight:bold">Average Score</td>';
 $performanceOverview.='</tr>';
 
 foreach($this->result as $res){
@@ -144,7 +180,7 @@ foreach($this->result as $res){
     $performanceOverview.='<td>'.$res['valid_responses'].'</td>';
     $performanceOverview.='<td>'.$res['total_passed'].'</td>';
     $performanceOverview.='<td>'.round($res['pass_percentage'], 2).'</td>';
-    $performanceOverview.='<td>'.round($res['average_score'], 2).'</td>';
+    //$performanceOverview.='<td>'.round($res['average_score'], 2).'</td>';
     $performanceOverview.='</tr>';
     
 }

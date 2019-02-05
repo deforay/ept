@@ -511,7 +511,7 @@ class Application_Service_Reports {
             new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '0000-00-00') - SUM(is_excluded = 'yes'))"),
             new Zend_Db_Expr("SUM(final_result = 1)"),
             new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
-            'average_score'
+            //'average_score'
         );
         $searchColumns = array(
             'sl.scheme_name',
@@ -521,7 +521,7 @@ class Application_Service_Reports {
             'valid_responses',
             'total_passed',
             'pass_percentage',
-            'average_score'
+            //'average_score'
         );
         $orderColumns = array(
             'sl.scheme_name',
@@ -532,7 +532,7 @@ class Application_Service_Reports {
             new Zend_Db_Expr("(SUM(sp.shipment_test_date <> '0000-00-00') - SUM(is_excluded = 'yes'))"),
             new Zend_Db_Expr("SUM(final_result = 1)"),
             new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
-            'average_score'
+            //'average_score'
         );
 
         /* Indexed column (used for fast and accurate table cardinality) */
@@ -2915,7 +2915,7 @@ $nRow = 3;
 
     public function exportParticipantPerformanceReport($params) {
 
-        $headings = array('Scheme', 'Shipment Date', 'Shipment Code', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %', 'Average Score');
+        $headings = array('Scheme', 'Shipment Date', 'Shipment Code', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
             $excel = new PHPExcel();
             $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
@@ -2972,7 +2972,7 @@ $nRow = 3;
                 $row[] = $aRow['valid_responses'];
                 $row[] = $aRow['total_passed'];
                 $row[] = round($aRow['pass_percentage'], 2);
-                $row[] = round($aRow['average_score'], 2);
+                //$row[] = round($aRow['average_score'], 2);
                 $output[] = $row;
             }
 
@@ -3082,8 +3082,8 @@ $nRow = 3;
             $sheet->getCellByColumnAndRow(0, 6)->setValueExplicit(html_entity_decode('Total number of valid responses :' . $validResp, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->getStyleByColumnAndRow(0, 6)->getFont()->setBold(true);
             $sheet->mergeCells('A7:B7');
-            $sheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode('Average score :' . $avgScore, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow(0, 7)->getFont()->setBold(true);
+            //$sheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode('Average score :' . $avgScore, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            //$sheet->getStyleByColumnAndRow(0, 7)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
                 $sheet->getCellByColumnAndRow($colNo, 9)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -3492,7 +3492,7 @@ $nRow = 3;
     }
 
     public function exportParticipantPerformanceRegionReport($params) {
-        $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %', 'Average Score');
+        $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
             $excel = new PHPExcel();
             $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
@@ -3550,7 +3550,7 @@ $nRow = 3;
                 $row[] = $aRow['valid_responses'];
                 $row[] = $aRow['total_passed'];
                 $row[] = round($aRow['pass_percentage'], 2);
-                $row[] = round($aRow['average_score'], 2);
+                //$row[] = round($aRow['average_score'], 2);
                 $output[] = $row;
             }
 
@@ -4195,10 +4195,10 @@ $nRow = 3;
 				$impShipmentId=implode(",",$shipmentIdArray);
 			}
 			
-			$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id','spm.shipment_id','spm.participant_id','spm.shipment_score','spm.final_result'))
+			$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id','spm.shipment_id','spm.participant_id','spm.shipment_score','spm.final_result','spm.attributes'))
 									->join(array('s' => 'shipment'),'s.shipment_id=spm.shipment_id',array('shipment_code','scheme_type'))
 									->join(array('p' => 'participant'),'p.participant_id=spm.participant_id',array('unique_identifier','first_name','last_name','email','city','state','address','institute_name'))
-									//->joinLeft(array('c' => 'countries'),'c.id=p.country',array('iso_name'))
+									->joinLeft(array('c' => 'countries'),'c.id=p.country',array('country_name' => 'iso_name'))
 									->order("scheme_type ASC");
 			
 			if(isset($params['shipmentId']) && count($params['shipmentId'])>0) {
@@ -4229,9 +4229,18 @@ $nRow = 3;
 				}else{
 					//$participants[$shipment['unique_identifier']]=$shipment['unique_identifier'];
 					$participants[$shipment['unique_identifier']]['labName']=$shipment['first_name']." ".$shipment['last_name'];
+					$participants[$shipment['unique_identifier']]['address']=$shipment['address'];
+					$participants[$shipment['unique_identifier']]['city']=$shipment['city'];
+					$participants[$shipment['unique_identifier']]['state']=$shipment['state'];
+					$participants[$shipment['unique_identifier']]['country_name']=$shipment['country_name'];
+					$participants[$shipment['unique_identifier']]['contact_name']=$shipment['contact_name'];
+					$participants[$shipment['unique_identifier']]['email']=$shipment['email'];
+					$participants[$shipment['unique_identifier']]['additional_email']=$shipment['additional_email'];
+//					$participants[$shipment['unique_identifier']]['attributes']=$shipment['attributes'];
 					//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
 					$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score']=$shipment['shipment_score'];
 					$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result']=$shipment['final_result'];
+					$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['attributes']=$shipment['attributes'];
 					//$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
 				}
 				
@@ -4244,16 +4253,22 @@ $nRow = 3;
 	
 	public function generateAnnualReport($schemeArray,$participants,$startDate,$endDate){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		//$shipmentParticipantResult=$db->fetchAll($sQuery);
+        //$shipmentParticipantResult=$db->fetchAll($sQuery);
+        
+        $schemeService = new Application_Service_Schemes();
+        $vlAssayList = $schemeService->getVlAssay();
+        $eidExtractionAssayList = $schemeService->getEidExtractionAssay();
 		
 		$shipmentPassResult=array();
 		$shipmentFailResult=array();
-		$headings = array('Lab ID','Lab Name');
+		$headings = array('Lab ID','Lab Name', 'Address', 'City', 'State', 'Country','Email','Additional Email');
 		foreach($schemeArray as $arrayVal){
 			//
 			foreach($arrayVal as $val){
-				$headings[]=$val;
+                $headings[]=$val;
+                $headings[]=$val.' Platform/Assay(if applicable)';
 			}
+			
 			$headings[]='Certificate';
 		}
 		
@@ -4301,12 +4316,19 @@ $nRow = 3;
 			$firstSheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			$firstSheet->getStyleByColumnAndRow($colNo, 1)->getFont()->setBold(true);
 			$colNo++;
-		}
+        }
+        
 		
 		foreach($participants as $key=>$arrayVal){
 			$firstSheetRow = array();
 			$firstSheetRow[]=$key;
 			$firstSheetRow[]=$arrayVal['labName'];
+			$firstSheetRow[]=$arrayVal['address'];
+			$firstSheetRow[]=$arrayVal['city'];
+			$firstSheetRow[]=$arrayVal['state'];
+			$firstSheetRow[]=$arrayVal['country_name'];
+			$firstSheetRow[]=$arrayVal['email'];
+			$firstSheetRow[]=$arrayVal['additional_email'];
 			
 			foreach($schemeArray as $schemeKey=>$scheme){
 				$certificate=true;
@@ -4329,7 +4351,25 @@ $nRow = 3;
 					}else{
 						$firstSheetRow[]='';
 						$certificate=false;
+                    }
+                    
+                    $attributes = json_decode($arrayVal[$schemeKey][$va]['attributes'],true);
+
+                    $platformName = '';
+                    if(isset($attributes['vl_assay'])){
+						if($attributes['vl_assay'] == 6){
+							$platformName = $attributes['other_assay'];
+						}else{
+							$platformName = $vlAssayList[$attributes['vl_assay']];	
+						}
+                    }
+                    
+                    if(isset($attributes['extraction_assay'])){
+						$platformName = $eidExtractionAssayList[$attributes['extraction_assay']];	
 					}
+
+                    $firstSheetRow[]=$platformName;
+
 				}
 				if($certificate && $participated){
 					$firstSheetRow[]='Excellence';
@@ -4367,13 +4407,13 @@ $nRow = 3;
 			mkdir(UPLOAD_PATH);
 		}
 		
-		if (!file_exists(UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports") && !is_dir(UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports")) {
-			mkdir(UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports");
+		if (!file_exists(TEMP_UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports") && !is_dir(TEMP_UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports")) {
+			mkdir(TEMP_UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports");
 		}
 		$excel->setActiveSheetIndex(0);
 		$writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
 		$filename = 'ePT-Annual-Report-'.date('d-M-Y-H-i-s').'.xls';
-		$writer->save(UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports". DIRECTORY_SEPARATOR . $filename);
+		$writer->save(TEMP_UPLOAD_PATH. DIRECTORY_SEPARATOR."annual-reports". DIRECTORY_SEPARATOR . $filename);
 		return $filename;
 		
 	}

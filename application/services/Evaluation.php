@@ -193,8 +193,8 @@ class Application_Service_Evaluation {
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
                 ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
                 ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
-                ->where("s.shipment_id = ?", $shipmentId)
-				->where("substring(sp.evaluation_status,4,1) != '0'");
+                ->where("s.shipment_id = ?", $shipmentId);
+				//->where("substring(sp.evaluation_status,4,1) != '0'");
 						
         $shipmentResult = $db->fetchAll($sql);
 
@@ -438,7 +438,8 @@ class Application_Service_Evaluation {
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('fullscore' => new Zend_Db_Expr("SUM(if(s.max_score = sp.shipment_score, 1, 0))")))
                 ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
                 ->where("sp.shipment_id = ?", $shipmentId)
-                ->where("substring(sp.evaluation_status,4,1) != '0'")->group('sp.map_id');
+				//->where("substring(sp.evaluation_status,4,1) != '0'")
+				->group('sp.map_id');
         $shipmentOverall = $db->fetchAll($sql);
 
         $noOfParticipants = count($shipmentOverall);
@@ -523,7 +524,7 @@ class Application_Service_Evaluation {
                 ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('fullscore' => new Zend_Db_Expr("(if((sp.shipment_score+sp.documentation_score) >= " . $config->evaluation->dts->passPercentage . ", 1, 0))")))
                 ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
                 ->where("sp.shipment_id = ?", $shipmentId)
-                ->where("substring(sp.evaluation_status,4,1) != '0'")
+                //->where("substring(sp.evaluation_status,4,1) != '0'")
                ->group('sp.map_id');
         
         $shipmentOverall = $db->fetchAll($sql);
@@ -594,7 +595,30 @@ class Application_Service_Evaluation {
             $db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
 			
             for ($i = 0; $i < $size; $i++) {
-                $db->update('response_result_eid', array('reported_result' => $params['reported'][$i], 'updated_by' => $admin, 'updated_on' => new Zend_Db_Expr('now()')), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+
+
+				$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+				$sql = $db->select()->from('response_result_eid')
+							->where("shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+				$respResult = $db->fetchRow($sql);
+
+				if(false != $respResult){
+					$resultData = array(
+						'reported_result' => $params['reported'][$i], 
+						'updated_by' => $admin, 
+						'updated_on' => new Zend_Db_Expr('now()'));
+					$db->update('response_result_eid', $resultData, "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+				}else{
+					$resultData = array(
+						'shipment_map_id' => $params['smid'],
+						'sample_id' => $params['sampleId'][$i],
+						'reported_result' => $params['reported'][$i], 
+						'hiv_ct_od' => '', 
+						'ic_qs' => '', 
+						'created_by' => $admin, 
+						'created_on' => new Zend_Db_Expr('now()'));
+					$db->insert('response_result_eid', $resultData);
+				}
             }
         } else if ($params['scheme'] == 'dts') {
 			
@@ -767,7 +791,8 @@ class Application_Service_Evaluation {
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result')
 				->where("s.shipment_id = ?", $shipmentId)
 				//->where("p.country = 220")
-                ->where("substring(sp.evaluation_status,4,1) != '0'");
+				//->where("substring(sp.evaluation_status,4,1) != '0'")
+				;
         $shipmentResult = $db->fetchAll($sql);
         return $shipmentResult;
     }
@@ -786,7 +811,8 @@ class Application_Service_Evaluation {
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
                 ->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
                 ->where("s.shipment_id = ?", $shipmentId)
-                ->where("substring(sp.evaluation_status,4,1) != '0'");
+				//->where("substring(sp.evaluation_status,4,1) != '0'")
+				;
 		 if (isset($sLimit) && isset($sOffset)) {
 		    $sql = $sql->limit($sLimit, $sOffset);
 		}
@@ -1071,7 +1097,7 @@ class Application_Service_Evaluation {
                         ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
                         ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
                         ->where("spm.shipment_id = ?", $shipmentId)
-                        ->where("substring(spm.evaluation_status,4,1) != '0'")
+                        //->where("substring(spm.evaluation_status,4,1) != '0'")
                         ->where("spm.final_result IS NOT NULL")
                         ->where("spm.final_result!=''")
                         ->group('spm.map_id');
@@ -1086,7 +1112,7 @@ class Application_Service_Evaluation {
                             ->where("spm.shipment_id = ?", $shipmentId)
                             ->where("spm.final_result IS NOT NULL")
                             ->where("spm.final_result!=''")
-                            ->where("substring(spm.evaluation_status,4,1) != '0'")
+                            //->where("substring(spm.evaluation_status,4,1) != '0'")
                             ->group(array("refdbs.sample_id"));
 
                     $shipmentResult['summaryResult'][] = $sQueryRes;
@@ -1096,7 +1122,7 @@ class Application_Service_Evaluation {
 
                     $rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id'))
                             ->join(array('resdbs' => 'response_result_dbs'), 'resdbs.shipment_map_id=spm.map_id', array('resdbs.eia_1', 'resdbs.eia_2', 'resdbs.eia_3', 'resdbs.wb'))
-                            ->where("substring(spm.evaluation_status,4,1) != '0'")
+                            //->where("substring(spm.evaluation_status,4,1) != '0'")
                             ->where("spm.final_result IS NOT NULL")
                             ->where("spm.final_result!=''")
                             ->where("spm.shipment_id = ?", $shipmentId)
@@ -1149,7 +1175,7 @@ class Application_Service_Evaluation {
                         ->where("spm.final_result IS NOT NULL")
                         ->where("spm.final_result!=''")
                         // ->where("spm.final_result = ?",'2')
-                        ->where("substring(spm.evaluation_status,4,1) != '0'")
+                        //->where("substring(spm.evaluation_status,4,1) != '0'")
                         ->group('spm.map_id');
                 $sQueryRes = $db->fetchAll($sQuery);
                 //error_log($sQuery);
@@ -1161,7 +1187,7 @@ class Application_Service_Evaluation {
                             ->where("spm.shipment_id = ?", $shipmentId)
                             ->where("spm.final_result IS NOT NULL")
                             ->where("spm.final_result!=''")
-                            ->where("substring(spm.evaluation_status,4,1) != '0'")
+                            //->where("substring(spm.evaluation_status,4,1) != '0'")
                             ->group(array("refdts.sample_id"));
 
                     $shipmentResult['summaryResult'][] = $sQueryRes;
@@ -1173,7 +1199,7 @@ class Application_Service_Evaluation {
                             ->join(array('resdts' => 'response_result_dts'), 'resdts.shipment_map_id=spm.map_id', array('resdts.test_kit_name_1', 'resdts.test_kit_name_2', 'resdts.test_kit_name_3'))
                             ->where("spm.final_result IS NOT NULL")
                             ->where("spm.final_result!=''")
-                            ->where("substring(spm.evaluation_status,4,1) != '0'")
+                            //->where("substring(spm.evaluation_status,4,1) != '0'")
                             ->where("spm.shipment_id = ?", $shipmentId)
                             ->group('spm.map_id');
                     $rQueryRes = $db->fetchAll($rQuery);

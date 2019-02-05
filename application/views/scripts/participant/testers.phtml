@@ -44,8 +44,8 @@
 					<!--<td>< ?php echo $tester['TESTGROUP']; ?></td>-->
 					<td >
 						<?php if ($tester['status'] == 'active') { ?>
-						<a style="text-decoration : underline;" href="<?php  echo $this->url(array("controller"=>"participant","action"=>"testeredit","psid"=>$tester['participant_id']),null,true,false); ?>">Edit</a>
-						<a style="text-decoration : underline;" href="<?php  echo $this->url(array("controller"=>"participant","action"=>"certificate","pid"=>$tester['participant_id']),null,true,false); ?>">Certificates</a>
+						<a class="btn btn-small" style="text-decoration : underline;" href="<?php  echo $this->url(array("controller"=>"participant","action"=>"testeredit","psid"=>$tester['participant_id']),null,true,false); ?>">Edit</a>
+						<a class="btn btn-small" style="text-decoration : underline;" href="<?php  echo $this->url(array("controller"=>"participant","action"=>"certificate","pid"=>$tester['participant_id']),null,true,false); ?>">Certificates</a>
 						<?php } else { 
 								echo ucfirst($tester['status'])."<br/><hr/> Contact PT Admin to activate";
 						 } ?>

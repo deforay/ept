@@ -526,6 +526,8 @@ class Application_Service_Schemes
             foreach ($res as $row) {
 
                 $row['vl_assay'] = $skipRow;
+                //Zend_Debug::dump($row);die;
+                $db->delete('reference_vl_calculation', "vl_assay = " . $row['vl_assay'] . " and sample_id= " . $row['sample_id'] . " and shipment_id=  " . $row['shipment_id']  );
                 $db->insert('reference_vl_calculation', $row);
 
             }
