@@ -355,9 +355,10 @@ if (count($this->shipment) > 0) {
                 
                 ).then(function() {
                     if (individual == 'success') {
+                        //document.location.reload(true);
                          $( "#"+startVal+'-'+endVal+"-bulk-participant-report").remove();
-                         <?php $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf"); ?>
-                       $( "#summaryDiv" ).append('&nbsp<a href="/../downloads/reports/<?php echo $shipment['shipment_code'] ?>/<?php echo $shipment['shipment_code'] ?>-'+startVal+'-'+endVal+'-bulk-participant-report.pdf" id="'+startVal+'-'+endVal+'-bulk-participant-report" class="btn btn-info btn-sm" target="_BLANK" style="margin-top:10px;"> <i class="icon-file-text"></i> &nbsp Download '+startVal+'-'+ endVal +' Participants Report</a>');
+                        //  <?php $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf"); ?>
+                        //     $( "#summaryDiv" ).append('&nbsp<a href="/../downloads/reports/<?php echo $shipment['shipment_code'] ?>/<?php echo $shipment['shipment_code'] ?>-'+startVal+'-'+endVal+'-bulk-participant-report.pdf" id="'+startVal+'-'+endVal+'-bulk-participant-report" class="btn btn-info btn-sm" target="_BLANK" style="margin-top:10px;"> <i class="icon-file-text"></i> &nbsp Download '+startVal+'-'+ endVal +' Participants Report</a>');
                     }
                     
                     $.unblockUI();
@@ -382,11 +383,12 @@ if (count($this->shipment) > 0) {
                 ).then(function() {
                 
                     if (summary == 'success') {
-                         $("#summaryReport").remove();
+                         //$("#summaryReport").remove();
+                         document.location.reload(true);
                          <?php
-                            $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf");
+                         //   $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf");
                          ?>
-                        $("#summaryDiv").append("&nbsp <a href=\"/d/<?php echo $filePath; ?>\" class='btn btn-success btn-sm' id='summaryReport' target='_BLANK' style='margin-top:10px;float:left;clear:both !important;'><i class='icon-file-text'></i>&nbsp Download Summary Report</a> ");
+                        // $("#summaryDiv").append("&nbsp <a href=\"/d/<?php echo $filePath; ?>\" class='btn btn-success btn-sm' id='summaryReport' target='_BLANK' style='margin-top:10px;float:left;clear:both !important;'><i class='icon-file-text'></i>&nbsp Download Summary Report</a> ");
                     }
                     
                     $.unblockUI();
