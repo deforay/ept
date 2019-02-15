@@ -168,7 +168,7 @@
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", { mid: mid, format: "html" },
 			    function (data) {
 			       if (data>0) {
-				alert("Participants removed successfully");
+				alert("Participant(s) removed successfully");
 			       }else{
 				alert("Unable to delete. Please try again later or contact system admin for help");
 			       }

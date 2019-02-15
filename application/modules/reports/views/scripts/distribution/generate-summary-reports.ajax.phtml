@@ -36,7 +36,7 @@ if ($this->result['shipment'] != "") {
             if (trim($this->logo) != "") {
                 if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                     $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                    $this->Image($image_file, 10, 14, 36, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 10, 8, 30, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             }
             // if (trim($this->logoRight) != "") {
@@ -47,26 +47,27 @@ if ($this->result['shipment'] != "") {
             // }
 
             // Set font
-            $this->SetFont('helvetica', '', 11);
+            $this->SetFont('helvetica', '', 10);
 
-            $this->header = str_replace("<div", "<span", trim($this->header));
-            $this->header = str_replace("</div>", "</span><br/>", $this->header);
-
-            //$html = $this->header;
-
-            //$this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
+            $this->header = nl2br(trim($this->header));
+            $this->header = preg_replace('/<br>$/', "", $this->header);
             
             if($this->schemeType == 'vl'){
-                $html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral Load using Dried Tube Specimen</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
+                //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral Load using Dried Tube Specimen</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
+
+                $html='<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">'.$this->header.'</span><br>Proficiency Testing Program for HIV Viral Load using '.$this->scheme_name.'</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
             else if($this->schemeType == 'eid'){
                 $this->SetFont('helvetica', '', 10);
-                $html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using Dried Blood Spot</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
+                //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using Dried Blood Spot</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
+                $html='<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">'.$this->header.'</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using '.$this->scheme_name.'</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }else{
-                $html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
+                //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
+                $this->SetFont('helvetica', '', 10);
+                $html='<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">'.$this->header.'</span><br>Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
             
-            $this->writeHTMLCell(0, 0, 42, 19, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 42, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
         }
@@ -458,8 +459,8 @@ if ($this->result['shipment'] != "") {
 
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
             $referenceRes.='<tr>';
-            $referenceRes.='<td style="font-weight:bold;width:20%;">PT Survey</td><td style="font-weight:normal;width:30%;">' . $this->result['shipment']['distribution_code'] . '<br>(' . $this->dateFormat($this->result['shipment']['shipment_date']) . ')</td>';
-            $referenceRes.='<td style="font-weight:bold;width:20%;">Shipment Code</td><td style="font-weight:normal;width:30%;">' . $this->result['shipment']['shipment_code'] . '</td>';
+            $referenceRes.='<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $this->result['shipment']['distribution_code'] . ' (' . $this->dateFormat($this->result['shipment']['shipment_date']) . ')</td>';
+            $referenceRes.='<td style="font-weight:normal;width:50%;font-size:12px;padding-left:20px;"><span style="font-weight:bold;">Shipment Code</span><br>' . $this->result['shipment']['shipment_code'] . '</td>';
             $referenceRes.='</tr>';
             $referenceRes.='</table>';
 
@@ -539,9 +540,9 @@ if ($this->result['shipment'] != "") {
             
             
             $overview.='<tr>';
-            $overview.='<td style="text-align:center;">' . $partCount . '</td>';
-            $overview.='<td style="text-align:center;">' . $maxScore .' ('.round(($maxScore/$partCount)*100,2). '%)</td>';
-            $overview.='<td style="text-align:center;">' . $belowScore .' ('.round(($belowScore/$partCount)*100,2). '%)</td>';
+            $overview.='<td style="text-align:center;font-weight:normal;">' . $partCount . '</td>';
+            $overview.='<td style="text-align:center;font-weight:normal;">' . $maxScore .' ('.round(($maxScore/$partCount)*100,2). '%)</td>';
+            $overview.='<td style="text-align:center;font-weight:normal;">' . $belowScore .' ('.round(($belowScore/$partCount)*100,2). '%)</td>';
             
             $overview.='</tr>';
 
@@ -575,7 +576,7 @@ if ($this->result['shipment'] != "") {
                 if($refRes['mandatory'] == 0){
                     $nonMandatorySamples[] = $refRes['sample_label']; 
                 }
-                $sampleCode.='<td style="text-align:center;">' . ucfirst(strtolower($refRes['referenceResult'])) . '</td>';
+                $sampleCode.='<td style="text-align:center;font-weight:normal;">' . ucfirst(strtolower($refRes['referenceResult'])) . '</td>';
 
             }
             
@@ -589,10 +590,10 @@ if ($this->result['shipment'] != "") {
             foreach ($result['correctCount'] as $sample) {
                 $sampAvg+=$sample["correctRes"];
                 $sampPerAvg+=(($sample["correctRes"] / $partCount) * 100);
-                $sampleCode.='<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] .' ('. round(($sample["correctRes"] / $partCount) * 100, 2) . '%)</td>';
+                $sampleCode.='<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] .'<br>('. round(($sample["correctRes"] / $partCount) * 100, 2) . '%)</td>';
             }
 
-            $sampleCode.='<td style="text-align:center;font-weight:normal;">' . round(($sampAvg / $sampleCount), 2).' ('.round(($sampPerAvg / $sampleCount), 2) .'%)</td>';
+            $sampleCode.='<td style="text-align:center;font-weight:normal;">' . round(($sampAvg / $sampleCount), 2).'<br>('.round(($sampPerAvg / $sampleCount), 2) .'%)</td>';
             $sampleCode.='</tr>';
 
 
@@ -616,10 +617,10 @@ if ($this->result['shipment'] != "") {
             $ppOverview.='<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
 
             $ppOverview.='<tr>';
-            $ppOverview.='<td style="text-align:center;">' . $this->participantPerformance['total_shipped'] . '</td>';
-            $ppOverview.='<td style="text-align:center;">' . $this->participantPerformance['total_responses'] . '</td>';
-            $ppOverview.='<td style="text-align:center;">' . $this->participantPerformance['valid_responses'] . '</td>';
-            $ppOverview.='<td style="text-align:center;">' . round($this->participantPerformance['average_score'], 2) . '</td>';
+            $ppOverview.='<td style="text-align:center;font-weight:normal;">' . $this->participantPerformance['total_shipped'] . '</td>';
+            $ppOverview.='<td style="text-align:center;font-weight:normal;">' . $this->participantPerformance['total_responses'] . '</td>';
+            $ppOverview.='<td style="text-align:center;font-weight:normal;">' . $this->participantPerformance['valid_responses'] . '</td>';
+            $ppOverview.='<td style="text-align:center;font-weight:normal;">' . round($this->participantPerformance['average_score'], 2) . '</td>';
             $ppOverview.='</tr>';
 
             $ppOverview.='</table><br>';
