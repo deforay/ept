@@ -715,8 +715,9 @@ if (sizeof($this->result['shipment']) > 0) {
         } else {
             $html = '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
 		}
-		
-		$html.='<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
+		if ($schemeType == 'vl') {
+            $html.='<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
+        }
 
         $pdf->writeHTML($html, true, false, true, false, '');
 
