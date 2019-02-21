@@ -2354,3 +2354,15 @@ ALTER TABLE `shipment_participant_map` ADD `show_announcement` VARCHAR(45) NOT N
 -- Amit 18 Sep 2018
 
 INSERT INTO `report_config` (`name`, `value`) VALUES ('report-comment', '');
+
+
+-- Amit 21 Feb 2019
+
+ALTER TABLE `participant` CHANGE `lab_name` `lab_name` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+ALTER TABLE `participant` CHANGE `first_name` `first_name` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+ALTER TABLE `participant` CHANGE `last_name` `last_name` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+ALTER TABLE `participant` CHANGE `institute_name` `institute_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+ALTER TABLE `participant` CHANGE `lab_name` `lab_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+
+ALTER TABLE `data_manager` CHANGE `institute` `institute` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;

@@ -40,7 +40,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('unique_identifier', 'first_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)"), 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -115,7 +115,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('p.participant_id', 'p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('p.participant_id', 'p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)")))
                 ->join(array('c' => 'countries'), 'c.id=p.country')
                 ->group("p.participant_id");
 
@@ -134,7 +134,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //error_log($sQuery);
+        //echo($sQuery);die;
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
