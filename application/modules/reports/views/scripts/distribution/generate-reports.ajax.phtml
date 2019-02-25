@@ -188,6 +188,12 @@ if (sizeof($this->result['shipment']) > 0) {
         $documentationScore = 0;
         $score = 0;
 
+        $testThreeOptionalDisplay = "";
+        if(isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes'){
+            $testThreeOptionalDisplay = ";display:none;";
+        }
+        
+
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
             $responseDate = $this->dateFormat($splitDate[0]);
@@ -332,15 +338,15 @@ if (sizeof($this->result['shipment']) > 0) {
         if (sizeof($result['responseResult']) > 0) {
             if ($schemeType != 'vl' && $schemeType != 'eid') {
                 $labRes = '<span style="font-weight: bold;font-size:12px;">Your laboratory test results : <br/></span><table border="1" style="font-size:12px;">';
-                $labRes .= '<tr style="background-color:#dbe4ee;"><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
-                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td><td>' . $result['responseResult'][0]['testkit1'] . '</td><td>' . $result['responseResult'][0]['testkit2'] . '</td><td>' . $result['responseResult'][0]['testkit3'] . '</td><td colspan="4"></td></tr>';
-                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td><td>' . $result['responseResult'][0]['lot_no_1'] . '</td><td>' . $result['responseResult'][0]['lot_no_2'] . '</td><td>' . $result['responseResult'][0]['lot_no_3'] . '</td><td colspan="4"></td></tr>';
-                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td><td>' . $this->dateFormat($result['responseResult'][0]['exp_date_1']) . '</td><td>' . $this->dateFormat($result['responseResult'][0]['exp_date_2']) . '</td><td>' . $this->dateFormat($result['responseResult'][0]['exp_date_3']) . '</td><td colspan="4"></td></tr>';
+                $labRes .= '<tr style="background-color:#dbe4ee;"><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;'.$testThreeOptionalDisplay.'">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
+                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td><td>' . $result['responseResult'][0]['testkit1'] . '</td><td>' . $result['responseResult'][0]['testkit2'] . '</td><td style="'.$testThreeOptionalDisplay.'">' . $result['responseResult'][0]['testkit3'] . '</td><td colspan="4"></td></tr>';
+                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td><td>' . $result['responseResult'][0]['lot_no_1'] . '</td><td>' . $result['responseResult'][0]['lot_no_2'] . '</td><td style="'.$testThreeOptionalDisplay.'">' . $result['responseResult'][0]['lot_no_3'] . '</td><td colspan="4"></td></tr>';
+                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td><td>' . $this->dateFormat($result['responseResult'][0]['exp_date_1']) . '</td><td>' . $this->dateFormat($result['responseResult'][0]['exp_date_2']) . '</td><td style="'.$testThreeOptionalDisplay.'">' . $this->dateFormat($result['responseResult'][0]['exp_date_3']) . '</td><td colspan="4"></td></tr>';
                 $labRes .= '<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;">Specimen Panel ID </td>
 							<td style="text-align:center;font-weight:bold;">Result-1</td>
 							<td style="text-align:center;font-weight:bold;">Result-2</td>
-							<td style="text-align:center;font-weight:bold;">Result-3</td>
+							<td style="text-align:center;font-weight:bold;'.$testThreeOptionalDisplay.'">Result-3</td>
 							<td style="text-align:center;font-weight:bold;">Expected Result</td>
 							<td style="text-align:center;font-weight:bold;">Your Result</td>
 
@@ -396,7 +402,7 @@ if (sizeof($this->result['shipment']) > 0) {
 							<td style="text-align:center;">' . $response['sample_label'] . '</td>
 							<td>' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $dtsResults[$response['test_result_1']] : "") . '</td>
 							<td>' . (isset($response['test_result_2']) && $response['test_result_2'] != "" ? $dtsResults[$response['test_result_2']] : "") . '</td>
-							<td>' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $dtsResults[$response['test_result_3']] : "") . '</td>
+							<td style="'.$testThreeOptionalDisplay.'">' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $dtsResults[$response['test_result_3']] : "") . '</td>
 							<td>' . ucfirst(strtolower($response['referenceResult'])) . '</td>
 							<td>' . ucfirst(strtolower($response['labResult'])) . '</td>
 
