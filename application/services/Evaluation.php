@@ -914,7 +914,7 @@ class Application_Service_Evaluation {
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 					//->where("sp.is_pt_test_not_performed is NULL")
 					//->where("sp.is_excluded ='no'")
-					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00 00:00:00'")
+					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00 00:00:00' AND sp.shipment_test_date!='0000-00-00'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 				
 				//echo $sql;die;
@@ -1636,6 +1636,7 @@ class Application_Service_Evaluation {
 						if ($totalScore == 'N/A') {
 							$failureReason[]['warning'] = "Could not determine score. Not enough responses found in the chosen VL Assay.";
 							$scoreResult = 'Not Evaluated';
+							$shipment['is_excluded'] = 'yes';
 						} else if ($totalScore != $maxScore) {
 							$scoreResult = 'Fail';
 							if($maxScore != 0){

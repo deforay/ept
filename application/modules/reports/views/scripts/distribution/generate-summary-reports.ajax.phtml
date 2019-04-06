@@ -386,68 +386,72 @@ if ($this->result['shipment'] != "") {
         if(count($this->result['vlCalculation'])>0){
 				
 			foreach($this->result['vlCalculation'] as $vlCal){
-                if(isset($vlCal['otherAssayName']) && count($vlCal['otherAssayName']) > 0){
-                    $calRes='<h5>Summary of '. implode(", ", $vlCal['otherAssayName']) . ' | No. of Labs : '.$vlCal['participant-count'].' </h5>';
-                }else{
-                    $calRes='<h5>Summary of '.$vlCal['vlAssay'].' Results | No. of Labs : '.$vlCal['participant-count'].' </h5>';
-                }
-				
-				$calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;height:500px;">
-				<tr>
-					<!-- <td style="background-color:#8ECF64;text-align:center;"><br><br>Platform </td> -->
-					<td style="background-color:#8ECF64;text-align:center;"><br><br>Specimen ID </td>
-					<td style="background-color:#8ECF64;text-align:center;width:100px;"><br><br>Mean<br/>(log<sub>10</sub> copies/ml)</td>
-					<td style="background-color:#8ECF64;text-align:center;"><br><br>S.D.</td>
-					<td style="background-color:#8ECF64;text-align:center;">Lowest Acceptable Limit</td>
-					<td style="background-color:#8ECF64;text-align:center;">Highest Acceptable Limit</td>
-					<td style="background-color:#8ECF64;text-align:center;"><br><br>CV</td>
-				</tr>';
-				
-                $countCal=count($vlCal)-1;
-                $otherList ="";
-                
-				for($c=0;$c<$countCal;$c++){
-					if(isset($vlCal[$c]['mean'])){
-					$calRes.='<tr>';
-					// if($c==0){
-                    //     //if($vlCal[$c]['vl_assay']==6){
-                    //         //$calRes.='<td style="text-align:center;" rowspan="'.$countCal.'"><br><br>'.implode(", ",$vlCal['otherAssayName']).'</td>';
-                    //         //////$otherList = implode(", ",$vlCal['otherAssayName']);
-                    //     //}else{
-                    //         $calRes.='<td style="text-align:center;" rowspan="'.$countCal.'"><br><br>'.$vlCal['shortName'].'</td>';
-                    //     //}
-					// }
-					
-					$calRes.='<td>'.$vlCal[$c]['sample_label'].'</td>
-						<td>'.number_format(round($vlCal[$c]['mean'],2),2,'.','').'</td>
-						<td>'.number_format(round($vlCal[$c]['sd'],2),2,'.','').'</td>
-						<td>'.number_format(round($vlCal[$c]['low_limit'],2),2,'.','').'</td>
-						<td>'.number_format(round($vlCal[$c]['high_limit'],2),2,'.','').'</td>
-						<td>'.number_format(round($vlCal[$c]['cv'],2),2,'.','').'</td>
-					  </tr>';
-					}
-                }
-               
-				$calRes.='</table>';
 
-				$pdf->writeHTML($calRes, true, false, true, false, '');
+                if(isset($vlCal['participant-count']) && $vlCal['participant-count'] > 0){
+                    if(isset($vlCal['otherAssayName']) && count($vlCal['otherAssayName']) > 0){
+                        $calRes='<h5>Summary of '. implode(", ", $vlCal['otherAssayName']) . ' | No. of Labs : '.$vlCal['participant-count'].' </h5>';
+                    }else{
+                        $calRes='<h5>Summary of '.$vlCal['vlAssay'].' Results | No. of Labs : '.$vlCal['participant-count'].' </h5>';
+                    }
+                    
+                    $calRes.='<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;height:500px;">
+                    <tr>
+                        <!-- <td style="background-color:#8ECF64;text-align:center;"><br><br>Platform </td> -->
+                        <td style="background-color:#8ECF64;text-align:center;"><br><br>Specimen ID </td>
+                        <td style="background-color:#8ECF64;text-align:center;width:100px;"><br><br>Mean<br/>(log<sub>10</sub> copies/ml)</td>
+                        <td style="background-color:#8ECF64;text-align:center;"><br><br>S.D.</td>
+                        <td style="background-color:#8ECF64;text-align:center;">Lowest Acceptable Limit</td>
+                        <td style="background-color:#8ECF64;text-align:center;">Highest Acceptable Limit</td>
+                        <td style="background-color:#8ECF64;text-align:center;"><br><br>CV</td>
+                    </tr>';
+                    
+                    $countCal=count($vlCal)-1;
+                    $otherList ="";
+                    
+                    for($c=0;$c<$countCal;$c++){
+                        if(isset($vlCal[$c]['mean'])){
+                        $calRes.='<tr>';
+                        // if($c==0){
+                        //     //if($vlCal[$c]['vl_assay']==6){
+                        //         //$calRes.='<td style="text-align:center;" rowspan="'.$countCal.'"><br><br>'.implode(", ",$vlCal['otherAssayName']).'</td>';
+                        //         //////$otherList = implode(", ",$vlCal['otherAssayName']);
+                        //     //}else{
+                        //         $calRes.='<td style="text-align:center;" rowspan="'.$countCal.'"><br><br>'.$vlCal['shortName'].'</td>';
+                        //     //}
+                        // }
+                        
+                        $calRes.='<td>'.$vlCal[$c]['sample_label'].'</td>
+                            <td>'.number_format(round($vlCal[$c]['mean'],2),2,'.','').'</td>
+                            <td>'.number_format(round($vlCal[$c]['sd'],2),2,'.','').'</td>
+                            <td>'.number_format(round($vlCal[$c]['low_limit'],2),2,'.','').'</td>
+                            <td>'.number_format(round($vlCal[$c]['high_limit'],2),2,'.','').'</td>
+                            <td>'.number_format(round($vlCal[$c]['cv'],2),2,'.','').'</td>
+                          </tr>';
+                        }
+                    }
+                   
+                    $calRes.='</table>';
+    
+                    $pdf->writeHTML($calRes, true, false, true, false, '');
+                }
+                
 			}
 		}
 		
         
         $uncalculatedAssayList = null;
         //Zend_Debug::dump($this->result['pendingAssay']);die;
-		if(isset($this->result['pendingAssay']['count']) && ($this->result['pendingAssay']['count'])>0){
+		// if(isset($this->result['pendingAssay']['count']) && ($this->result['pendingAssay']['count'])>0){
 	
-            if($pdf->getY()>=250){
-                $pdf->AddPage();
-            }
-            $unCalRes='<h5>Summary of Other Results | No. of Labs : '.$this->result['pendingAssay']['count'].' </h5>';
-            $unCalRes.='<table cellpadding="6" border="1" style="text-align:left;font-weight:normal;width:660px;font-size:11px;"><tr><td>'.implode(", ",$this->result['pendingAssay']['assayNames']).' platforms were not analyzed or graded due to less than 6 participating labs using the same platform.</td></tr></table>';
+        //     if($pdf->getY()>=250){
+        //         $pdf->AddPage();
+        //     }
+        //     $unCalRes='<h5>Summary of Other Results | No. of Labs : '.$this->result['pendingAssay']['count'].' </h5>';
+        //     $unCalRes.='<table cellpadding="6" border="1" style="text-align:left;font-weight:normal;width:660px;font-size:11px;"><tr><td>'.implode(", ",$this->result['pendingAssay']['assayNames']).' platforms were not analyzed or graded due to less than 6 participating labs using the same platform.</td></tr></table>';
             
-            $pdf->writeHTML($unCalRes, true, false, true, false, '');            
+        //     $pdf->writeHTML($unCalRes, true, false, true, false, '');            
             
-		}
+		// }
         $footerHead='<h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
         $footerHead.='<small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
         $pdf->writeHTML($footerHead, true, false, true, false, '');

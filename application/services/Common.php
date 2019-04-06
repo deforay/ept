@@ -94,8 +94,8 @@ class Application_Service_Common {
 		$data = array('first_name'=>$params['first_name'],'last_name'=>$params['last_name'],'email'=>$params['email'],'phone'=>$params['phone'],'reason'=>$params['reason'],'lab'=>$params['agency'],'additional_info'=>$params['additionalInfo'], 'contacted_on' => new Zend_Db_Expr('now()'),'ip_address'=>$_SERVER['REMOTE_ADDR']);
 		$db->addContact($data);
 		
-		$fromEmail = $params['email'];
-		$fromName  = $params['first_name']." " .$params['last_name'];
+		$fromEmail = Application_Service_Common::getConfig('admin_email');
+		$fromName  = "Online PT Team";
 		
 		$to = Application_Service_Common::getConfig('admin_email');
 		
