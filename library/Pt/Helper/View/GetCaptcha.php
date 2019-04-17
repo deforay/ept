@@ -59,7 +59,7 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
             $captcha_config['max_font_size'] = $captcha_config['min_font_size'];
 
         // Use milliseconds instead of seconds
-        srand(microtime() * 100);
+        srand((float) microtime() * 1000);
         
         // if it is development environment, then let us keep it simple
         // if(APPLICATION_ENV == "development"){
@@ -105,8 +105,7 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
 
         }
 
-
-        srand(microtime() * 100);
+        srand((float) microtime() * 1000);
 
         // Pick random background, get info, and start captcha
         $background = $captcha_config['png_backgrounds'][rand(0, count($captcha_config['png_backgrounds']) - 1)];
