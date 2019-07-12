@@ -1,0 +1,25 @@
+<?php   
+$resultOptions = '';
+
+    if(isset($this->previouslySelected) && $this->previouslySelected != null){
+        // foreach($this->previouslySelected as $participant){
+        //     $previousSelected="selected='selected'";
+        //     $resultOptions.= '<option value="'. $participant['participant_id'].'"'.$previousSelected.'>'.$participant['first_name'] . " " .$participant['last_name'].'('.$participant['unique_identifier'].')</option>';
+        // }
+   
+        foreach($this->previouslyUnSelected as $participant){
+            $resultOptions.= '<option value="'. $participant['participant_id'].'">'.$participant['first_name'] . " " .$participant['last_name'].'('.$participant['unique_identifier'].')</option>';
+        }				
+    }else{
+        // foreach($this->enrolledParticipants as $participant){
+        //     $nonPreviousSelected="selected='selected'";
+        //     $resultOptions.= '<option value="'. $participant['participant_id'].'"'.$nonPreviousSelected.'>'.$participant['first_name'] . " " .$participant['last_name'].'('.$participant['unique_identifier'].')</option>';
+        // }
+
+        foreach($this->unEnrolledParticipants as $participant){            
+            $resultOptions.= '<option value="'. $participant['participant_id'].'">'.$participant['first_name'] . " " .$participant['last_name'].'('.$participant['unique_identifier'].')</option>';
+        }				
+    }
+
+echo $resultOptions;
+?>

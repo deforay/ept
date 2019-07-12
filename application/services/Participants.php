@@ -72,10 +72,25 @@ class Application_Service_Participants {
 	    return $db->fetchAll($sql);
 	}
 	
-	public function getUnEnrolled($scheme){
+	public function getUnEnrolled($scheme,$stateId='',$cityId=''){
+		
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('e'=>'enrollments'), 'participant_id')->where("scheme_id = ?", $scheme);
-		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id NOT IN ?", $subSql)->where("p.status='active'")->order('first_name');
+		$sql = $db->select()->from(array('p'=>'participant'))
+								->where("participant_id NOT IN ?", $subSql)
+								->where("p.status='active'")
+								->order('first_name');
+		if(trim($stateId) !=''){
+			$stateId=explode(',',$stateId);
+			$sql = $sql->where("p.state IN (?)", $stateId);
+		}
+
+		if(trim($cityId) !=''){
+			$cityId=explode(',',$cityId);
+			$sql = $sql->where("p.city IN (?)", $cityId);
+		}
+
+		//echo $sql;die;
 		return $db->fetchAll($sql);
 	}
 	public function getEnrolledBySchemeCode($scheme){
@@ -106,7 +121,7 @@ class Application_Service_Participants {
 
 		return $db->fetchCol($sql);
 	}
-	public function getUnEnrolledByShipmentId($shipmentId){
+	public function getUnEnrolledByShipmentId($shipmentId,$stateId='',$cityId=''){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('p'=>'participant'),array('participant_id'))
 				       ->join(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array())
@@ -114,7 +129,17 @@ class Application_Service_Participants {
 				       ->where("s.shipment_id = ?", $shipmentId)
 				       ->where("p.status='active'");
 		$sql = $db->select()->from(array('p'=>'participant'))->where("participant_id NOT IN ?", $subSql)
-				       ->order('p.first_name');
+					   ->order('p.first_name');
+		if(trim($stateId) !=''){
+			$stateId=explode(',',$stateId);
+			$sql = $sql->where("p.state IN (?)", $stateId);
+		}
+
+		if(trim($cityId) !=''){
+			$cityId=explode(',',$cityId);
+			$sql = $sql->where("p.city IN (?)", $cityId);
+		}
+		//echo $sql;
 		return $db->fetchAll($sql);
 	}
 	
@@ -451,5 +476,15 @@ class Application_Service_Participants {
 		$userSystemId = $authNameSpace->dm_id;
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->getParticipantsByUserSystemId($userSystemId);
+	}
+
+	public function getUniqueState(){
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchUniqueState();
+	}
+
+	public function getUniqueCity(){
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchUniqueCity();
 	}
 }

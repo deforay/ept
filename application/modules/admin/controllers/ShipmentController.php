@@ -21,6 +21,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 ->addActionContext('shipment-not-enrolled-participants', 'html')
                 ->addActionContext('export-shipment-responded-participants', 'html')
                 ->addActionContext('export-shipment-not-responded-participants', 'html')
+                ->addActionContext('get-participants', 'html')
                 ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
     }
@@ -105,6 +106,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $sid = (int) base64_decode($this->_getParam('sid'));
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
+                
+                $this->view->participantCity  = $participantService->getUniqueCity();
+                $this->view->participantState  = $participantService->getUniqueState();
+
                 if ($previouslySelected == "" || $previouslySelected == null) {
                     $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
                     $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type']);
@@ -319,6 +324,34 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $params = $this->_getAllParams();
             $clientsServices = new Application_Service_Participants();
             $this->view->result=$clientsServices->exportShipmentNotRespondedParticipantsDetails($params);
+        }
+    }
+
+    public function getParticipantsAction(){
+        
+        if ($this->getRequest()->isPost()) {
+            $params = $params = $this->getRequest()->getPost();
+            
+            if ($params['sid']) {
+                $participantService = new Application_Service_Participants();
+                $shipmentService = new Application_Service_Shipments();
+                $sid = $params['sid'];
+                $stateId = $params['choosenState'];
+                $cityId = $params['choosenCity'];
+                
+                $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
+                $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
+                
+                //echo count($previouslySelected);die;
+                if (count($previouslySelected) == 0 || $previouslySelected == "" || $previouslySelected == null) {
+                    //echo"ss";die;
+                    //$this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
+                    $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type'],$stateId,$cityId);
+                } else {
+                    
+                    $this->view->previouslyUnSelected = $participantService->getUnEnrolledByShipmentId($sid,$stateId,$cityId);
+                }
+            }
         }
     }
 }
