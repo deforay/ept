@@ -60,7 +60,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $id = (int)base64_decode($this->_getParam('sId'));
             $sLimit = (int)$this->_getParam('limitVal');
             $sOffset = (int)$this->_getParam('offsetVal');
-             $startValue = (int)$this->_getParam('startVal');
+            $startValue = (int)$this->_getParam('startVal');
             $endValue = (int)$this->_getParam('endVal');
             $this->view->bulkfileNameVal =$startValue.'-'.$endValue;
             $comingFrom = $this->_getParam('comingFrom');

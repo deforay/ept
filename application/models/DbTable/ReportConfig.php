@@ -30,7 +30,8 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
             
         }
         
-        if(!file_exists($_FILES['logo_image_right']['tmp_name']) || !is_uploaded_file($_FILES['logo_image_right']['tmp_name'])){
+        if(isset($_FILES['logo_image_right']) && !file_exists($_FILES['logo_image_right']['tmp_name']) || !is_uploaded_file($_FILES['logo_image_right']['tmp_name'])){
+            
             
         }else{
             $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');

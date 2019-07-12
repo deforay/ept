@@ -2366,3 +2366,16 @@ ALTER TABLE `participant` CHANGE `lab_name` `lab_name` VARCHAR(255) CHARACTER SE
 
 
 ALTER TABLE `data_manager` CHANGE `institute` `institute` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+
+-- Amit 1 July 2019
+
+CREATE TABLE `evaluation_queue` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `shipment_id` int(11) NOT NULL,
+ `requested_by` int(11) NOT NULL,
+ `requested_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ `last_updated_on` datetime DEFAULT CURRENT_TIMESTAMP,
+ `status` varchar(255) NOT NULL DEFAULT 'pending',
+ PRIMARY KEY (`id`)
+)  ENGINE=InnoDB DEFAULT CHARSET=utf8;
