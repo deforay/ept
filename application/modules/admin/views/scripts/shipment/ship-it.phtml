@@ -45,7 +45,35 @@
 		</div>
 		<br/>
 		<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
-		
+		<?php
+			
+			if(isset($this->previouslySelected) && $this->previouslySelected != null){
+				foreach($this->previouslySelected as $participant){
+					?>
+					<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+					<?php
+				}				
+				foreach($this->previouslyUnSelected as $participant){
+					?>
+					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+					<?php
+				 }				
+			}else{
+				foreach($this->enrolledParticipants as $participant){
+					?>
+					<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+					<?php
+				}
+				foreach($this->unEnrolledParticipants as $participant){
+					?>
+					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+					<?php
+				 }				
+			}
+			
+
+
+			?>
 		</select>
 	</div>
 	
@@ -155,12 +183,18 @@ function fetchParticipants(){
 	var stateId = [$("#state").val()].join(',');
 	var cityId = [$("#city").val()].join(',');
 
-
-	$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'),'default',true); ?>", { sid: shipId, choosenState: stateId, choosenCity: cityId, format: "html" },
-	function (data) {       
-		//console.log(data);
-			   $("#participants").html(data);
-				 $('#participants').multiSelect();
-  });
+	$.blockUI();
+	if($.trim(stateId) != '' || $.trim(cityId) != ''){
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'),'default',true); ?>", { sid: shipId, choosenState: stateId, choosenCity: cityId, format: "html" },
+			function (data) {       
+				$.unblockUI();
+						$("#participants").html(data);
+						$('#participants').multiselect("refresh");
+						
+			});
+	}else{
+		alert("Please Select a state / City ")
+		$.unblockUI();
+	}
 }
 </script>
