@@ -347,7 +347,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 //echo count($previouslySelected);die;
                 if (count($previouslySelected) == 0 || $previouslySelected == "" || $previouslySelected == null) {
                     //echo"ss";die;
-                    //$this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
+                    $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
                     $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type'],$stateId,$cityId);
                 } else {
                     

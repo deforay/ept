@@ -1752,4 +1752,11 @@ class Application_Service_Shipments
         $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
         return $shipmentParticipantDb->fetchParticipantShipments($pId);
     }
+    public function getAllShipmentCode()
+    {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->fetchUniqueShipmentCode();
+    }
+
+    
 }
