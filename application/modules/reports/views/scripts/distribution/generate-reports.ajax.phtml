@@ -91,7 +91,7 @@ if (sizeof($this->result['shipment']) > 0) {
             //$this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
             //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
             $this->writeHTML("<hr>", true, false, true, false, '');
-            $this->writeHTML("Report generated on " . date("d M Y H:i:s") . $finalizeReport, true, false, true, false, 'C');
+            $this->writeHTML('Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$finalizeReport, true, false, true, false, 'C');
 
         }
     }
@@ -121,10 +121,10 @@ if (sizeof($this->result['shipment']) > 0) {
         $pdf->setSchemeName($this->header, $result['scheme_name'], $this->logo, $this->logoRight, $this->comingFrom, $schemeType);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
-        //$pdf->SetAuthor('Nicola Asuni');
+        //$pdf->SetAuthor('ePT');
         //$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
-        //$pdf->SetSubject('TCPDF Tutorial');
-        //$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+        //
+        //
 
         // set default header data
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);

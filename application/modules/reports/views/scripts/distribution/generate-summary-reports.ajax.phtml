@@ -83,9 +83,9 @@ if ($this->result['shipment'] != "") {
             // Set font
             $this->SetFont('helvetica', '', 7);
             // Page number
-            //$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
             
-            $this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }
 
     }
@@ -387,8 +387,9 @@ if ($this->result['shipment'] != "") {
 				
 			foreach($this->result['vlCalculation'] as $vlCal){
 
-                if(isset($vlCal['participant-count']) && $vlCal['participant-count'] > 0){
+                if(isset($vlCal['participant-count']) && $vlCal['participant-count'] > 6){
                     if(isset($vlCal['otherAssayName']) && count($vlCal['otherAssayName']) > 0){
+                        continue;
                         $calRes='<h5>Summary of '. implode(", ", $vlCal['otherAssayName']) . ' | No. of Labs : '.$vlCal['participant-count'].' </h5>';
                     }else{
                         $calRes='<h5>Summary of '.$vlCal['vlAssay'].' Results | No. of Labs : '.$vlCal['participant-count'].' </h5>';
@@ -453,7 +454,7 @@ if ($this->result['shipment'] != "") {
             
 		// }
         $footerHead='<h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
-        $footerHead.='<small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
+        $footerHead.='<small>Notes:<ol><li>Results from participants using Biocentric and "Other" Platforms were not used for results evaluation due to less than 6 participating labs in this PT event.</li><li>A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</li></ol></small>';
         $pdf->writeHTML($footerHead, true, false, true, false, '');
     }
     else {
