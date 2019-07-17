@@ -88,7 +88,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     public function participantManagerMapAction()
     {
        	$participantService = new Application_Service_Participants();
-	$dataManagerService = new Application_Service_DataManagers();
+	    $dataManagerService = new Application_Service_DataManagers();
          if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
            $participantService->addParticipantManagerMap($params);

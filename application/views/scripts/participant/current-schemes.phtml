@@ -93,7 +93,9 @@
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'current-schemes', 'format' => 'html')); ?>",
 			"fnServerParams": function ( aoData ) {
-				aoData.push( { "name": "currentType","name": "shipmentCode","name": "province", "value": $('input[name=currentType]').filter(':checked').val() } );
+				aoData.push( { "name": "currentType", "value": $('input[name=currentType]').filter(':checked').val() } );
+				aoData.push( { "name": "shipmentCode", "value": $("#shipmentCode").val() } );
+				aoData.push( { "name": "province", "value": $("#province").val() } );
 			},
 			"fnServerData": function ( sSource, aoData, fnCallback ) {
 			    $.ajax({
