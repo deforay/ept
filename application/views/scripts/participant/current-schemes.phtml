@@ -91,6 +91,8 @@
 			"aaSorting": [[ 5, "desc" ]],
 			"bProcessing": true,
 			"bServerSide": true,
+			"bAutoWidth": false,
+			"bStateSave": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'current-schemes', 'format' => 'html')); ?>",
 			"fnServerParams": function ( aoData ) {
 				aoData.push( { "name": "currentType", "value": $('input[name=currentType]').filter(':checked').val() } );
