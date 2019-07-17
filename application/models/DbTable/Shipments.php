@@ -342,7 +342,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
         $rResult = $this->getAdapter()->fetchAll($sQuery);
-
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
@@ -350,9 +349,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id','s.status'))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id','s.status','s.shipment_code'))
                 ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
-                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier','p.first_name', 'p.last_name'))
+                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier','p.first_name', 'p.last_name','p.state'))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
                 ->where("pmm.dm_id=?", $this->_session->dm_id)
                 ->where("s.status='shipped' OR s.status='evaluated'")
@@ -1783,7 +1782,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
     }
     public function fetchUniqueShipmentCode(){
         return $this->getAdapter()->fetchAll($this->getAdapter()
-        ->select()->from(array('s' => $this->_name),array('shipment_code' => new Zend_Db_Expr(" DISTINCT s.shipment_code ")))
-        ->where("s.shipment_code IS NOT NULL")->where("trim(s.shipment_code)!=''"));
+        ->select()->from(array('s' => $this->_name),array('shipment_code' => new Zend_Db_Expr(" DISTINCT s.shipment_code "),'shipment_id'))
+        ->where("s.shipment_code IS NOT NULL")
+        ->where("trim(s.shipment_code)!=''"));
     }
 }

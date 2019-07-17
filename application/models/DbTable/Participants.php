@@ -1220,8 +1220,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
     }
 
     public function fetchUniqueState() {
-        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name),array('state' => new Zend_Db_Expr(" DISTINCT p.state ")))
-                                
+        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name),array('state' => new Zend_Db_Expr(" DISTINCT p.state "),'participant_id'))
         ->where("p.status='active'")->where("p.state IS NOT NULL")->where("trim(p.state)!=''"));
     }
     public function fetchUniqueCity() {

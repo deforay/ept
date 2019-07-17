@@ -1,7 +1,6 @@
 <?php 
 // Zend_Debug::dump($this->province);die;
 ?>
-
 <section class="content-header">
     <h1>Report PT Data </h1>
 </section>
@@ -25,7 +24,7 @@
 								<select id="shipmentCode" name="shipmentCode" class="form-control">
 								<option value=""> -- Select Code --</option>
 								<?php foreach ($this->shipment as $shipment) {	?>
-									<option value="<?php echo $shipment['shipment_id']; ?>"><?php echo $shipment['shipment_code']; ?></option>	
+									<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>	
 								<?php }?>
 								</select>
 							</td>
@@ -33,7 +32,7 @@
 								<select id="province" name="province"  class="form-control">
 								<option value=""> -- Select State --</option>
 								<?php foreach ($this->province as $province) {	?>
-									<option value="<?php echo $province['participant_id']; ?>"><?php echo $province['state']; ?></option>	
+									<option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>	
 								<?php }?>
 								</select>
 							</td>
