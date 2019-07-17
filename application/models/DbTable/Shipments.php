@@ -305,7 +305,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id','s.status','s.response_switch'))
 				->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
                 ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id","spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
-                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier','p.first_name', 'p.last_name'))
+                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier','p.first_name', 'p.last_name','p.state'))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
                 ->where("pmm.dm_id=?", $this->_session->dm_id)
                 ->where("s.status='shipped' OR s.status='evaluated'")
@@ -321,7 +321,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 			}else if ($parameters['currentType'] == 'inactive'){
 				$sQuery = $sQuery->where("s.response_switch = 'off'");
 			}
-		}
+        }
+
+        if (isset($parameters['shipmentCode']) && $parameters['shipmentCode'] != "") {
+            $sQuery = $sQuery->where("s.shipment_code = '".$parameters['shipmentCode']."'");
+        }
+        if (isset($parameters['province']) && $parameters['province'] != "") {
+            $sQuery = $sQuery->where("p.state = '".$parameters['province']."'");
+        }
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -334,7 +341,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //echo($sQuery);die;
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */
@@ -1774,5 +1780,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
         }
         $output['shipmentArray'] = $shipmentArray;
         echo json_encode($output);
+    }
+    public function fetchUniqueShipmentCode(){
+        return $this->getAdapter()->fetchAll($this->getAdapter()
+        ->select()->from(array('s' => $this->_name),array('shipment_code' => new Zend_Db_Expr(" DISTINCT s.shipment_code ")))
+        ->where("s.shipment_code IS NOT NULL")->where("trim(s.shipment_code)!=''"));
     }
 }

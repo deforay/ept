@@ -178,7 +178,13 @@ class ParticipantController extends Zend_Controller_Action {
             $params = $this->_getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getShipmentCurrent($params);
+
         }
+        $shipment = new Application_Service_Shipments();
+        $this->view->shipment = $shipment->getAllShipmentCode();
+
+        $province = new Application_Service_Participants();
+        $this->view->province = $province->getUniqueState();
     }
 
     public function allSchemesAction() {

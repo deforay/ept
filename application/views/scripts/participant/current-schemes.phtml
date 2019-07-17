@@ -1,3 +1,6 @@
+<?php 
+// Zend_Debug::dump($this->province);die;
+?>
 
 <section class="content-header">
     <h1>Report PT Data </h1>
@@ -10,6 +13,35 @@
 					<input type="radio" name="currentType" class="currentType" id="currentType2" value="active" checked="checked" /> Active Schemes only &nbsp;&nbsp;&nbsp;
 					<input type="radio" name="currentType" class="currentType" id="currentType3" value="inactive" /> Inactive Schemes only
 					<br/><br/>
+
+					<table class="table table-striped">
+						<tr class="dark">
+							<td>Shipment Code</td>
+							<td>Province</td>
+							<!-- <td>Action</td> -->
+						</tr>
+						<tr class="light">
+							<td>
+								<select id="shipmentCode" name="shipmentCode" class="form-control">
+								<option value=""> -- Select Code --</option>
+								<?php foreach ($this->shipment as $shipment) {	?>
+									<option value="<?php echo $shipment['shipment_id']; ?>"><?php echo $shipment['shipment_code']; ?></option>	
+								<?php }?>
+								</select>
+							</td>
+							<td>
+								<select id="province" name="province"  class="form-control">
+								<option value=""> -- Select State --</option>
+								<?php foreach ($this->province as $province) {	?>
+									<option value="<?php echo $province['participant_id']; ?>"><?php echo $province['state']; ?></option>	
+								<?php }?>
+								</select>
+							</td>
+							<td><button class="btn btn-success btn-sm" onclick="ReportFilter()"><span>Filter</span></button></td>
+						</tr>
+					</table>
+    				<br><br>
+	
 					<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="currentSchemeTable">
 							<thead>
 								<tr>
@@ -62,7 +94,7 @@
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'current-schemes', 'format' => 'html')); ?>",
 			"fnServerParams": function ( aoData ) {
-				aoData.push( { "name": "currentType", "value": $('input[name=currentType]').filter(':checked').val() } );
+				aoData.push( { "name": "currentType","name": "shipmentCode","name": "province", "value": $('input[name=currentType]').filter(':checked').val() } );
 			},
 			"fnServerData": function ( sSource, aoData, fnCallback ) {
 			    $.ajax({
@@ -76,9 +108,7 @@
 		});
 	}
 	
-	
-	
-	
+	 
 	$(document).ready(function(){
 		
 		currentSchemes();
@@ -103,4 +133,12 @@
 		}		
 		
 	}
+
+				function ReportFilter() {
+                    if (  $("#shipmentCode").val() == "" || $("#shipmentCode").val() == null || $("#shipmentCode").val() == undefined ||  $("#province").val() == "" || $("#province").val() == null || $("#province").val() == undefined) {
+                        alert("Please choose code or province Detail to proceed");
+                        return false;
+                    }
+                    csTable.fnDraw();
+                }
 </script>
