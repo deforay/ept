@@ -96,8 +96,8 @@ class Application_Service_Evaluation
 
 		$sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))
 			->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"), 'not_finalized_count' => new Zend_Db_Expr("SUM(IF(s.status!='finalized',1,0))")))
-			->where("d.status='shipped'")
-			->group('d.distribution_id');
+			->where("s.status!='finalized'")
+			->group('s.distribution_id');
 
 		if (isset($sWhere) && $sWhere != "") {
 			$sQuery = $sQuery->where($sWhere);

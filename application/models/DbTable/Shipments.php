@@ -1259,7 +1259,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
          * Get data to display
          */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code','s.status'))
-                ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+        ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array())
+        ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
+        ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+        ->where("pmm.dm_id=?", $this->_session->dm_id)
+        ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
 
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
@@ -1293,7 +1297,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
 
         /* Total data set length */
         $$sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code'))
-                ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+                                                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array())
+                                                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
+                                                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                                                ->where("pmm.dm_id=?", $this->_session->dm_id)
+                                                ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
 
 
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
