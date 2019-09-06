@@ -602,14 +602,14 @@ if (sizeof($this->result['shipment']) > 0) {
 										<td>' . $response['no_of_participants'] . '</td>
 										<td>' . number_format(round($response['low'], 2), 2, '.', '') . '</td>
 										<td>' . number_format(round($response['high'], 2), 2, '.', '') . '</td>
-										<td>Manual Exclusion</td>
+										<td>Not Evaluated</td>
 									  </tr>';
                         }
                     } else {
                         foreach ($result['responseResult'] as $response) {
                             $labRes .= '<tr>
 										<td style="text-align:center;">' . $response['sample_label'] . '</td>
-										<td>' . $response['reported_viral_load'] . '</td>
+										<td>' . ((isset($response['reported_viral_load']) && !empty($response['reported_viral_load']) ? $response['reported_viral_load'] : "")) . '</td>
 										<td>' . number_format(round($response['mean'], 2), 2, '.', '') . '</td>
 										<td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
 										<td>' . $response['no_of_participants'] . '</td>

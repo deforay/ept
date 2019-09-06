@@ -1590,7 +1590,7 @@ class Application_Service_Evaluation
 			$lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
 
 			//Zend_Debug::dump($createdOn->isEarlier($lastDate));die;
-			if ($createdOn->compare($lastDate, Zend_date::DATES) <= 0) {
+			if (!empty($createdOn) && $createdOn->compare($lastDate, Zend_date::DATES) <= 0) {
 
 				$results = $schemeService->getVlSamples($shipmentId, $shipment['participant_id']);
 				$totalScore = 0;
