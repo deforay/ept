@@ -180,11 +180,11 @@ class Application_Service_Evaluation
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'), array(''))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array(''))
-			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00' OR is_pt_test_not_performed ='yes')")))
+			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('reported_count' => new Zend_Db_Expr("SUM((shipment_test_date <> '0000-00-00' AND shipment_test_date is NOT NULL AND shipment_test_date != '' ) OR is_pt_test_not_performed ='yes')")))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array(''))
 			->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array(''))
 			->where("s.shipment_id = ?", $shipmentId)
-			->where("sp.is_excluded!='yes' AND sp.is_pt_test_not_performed is NULL")
+			//->where("sp.is_excluded!='yes' AND sp.is_pt_test_not_performed is NULL")
 			->where("s.distribution_id = ?", $distributionId)
 			->group('s.shipment_id');
 		return $db->fetchRow($sql);
@@ -833,7 +833,7 @@ class Application_Service_Evaluation
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
 			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
-			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
+			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status','p.institute_name','p.state', 'p.city','p.region'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId)
@@ -1350,11 +1350,11 @@ class Application_Service_Evaluation
 					foreach ($extractionAssay as $eKey => $extractionAssayVal) {
 						if ($eKey == $valAttributes['extraction_assay']) {
 							if (array_key_exists($eKey, $extAssayResult)) {
-								$extAssayResult[$eKey]['participantCount'] = (isset($extAssayResult[$eKey]['participantCount']) ? $extAssayResult[$eKey]['participantCount'] + 1 : "1");
+								$extAssayResult[$eKey]['participantCount'] = (isset($extAssayResult[$eKey]['participantCount']) ? $extAssayResult[$eKey]['participantCount'] + 1 : 1);
 								if ($shipmentResult['max_score'] == $sVal['shipment_score']) {
-									$extAssayResult[$eKey]['maxScore'] = (isset($extAssayResult[$eKey]['maxScore']) ? $extAssayResult[$eKey]['maxScore'] + 1 : "1");
+									$extAssayResult[$eKey]['maxScore'] = (isset($extAssayResult[$eKey]['maxScore']) ? $extAssayResult[$eKey]['maxScore'] + 1 : 1);
 								} else {
-									$extAssayResult[$eKey]['belowScore'] = (isset($extAssayResult[$eKey]['belowScore']) ? $extAssayResult[$eKey]['belowScore'] + 1 : "1");
+									$extAssayResult[$eKey]['belowScore'] = (isset($extAssayResult[$eKey]['belowScore']) ? $extAssayResult[$eKey]['belowScore'] + 1 : 1);
 								}
 							} else {
 								$extAssayResult[$eKey] = array();
@@ -1369,9 +1369,9 @@ class Application_Service_Evaluation
 
 							foreach ($cResult as $val) {
 								if ($val['reported_result'] == $val['reference_result']) {
-									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] = (isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] + 1 : "1");
+									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] = (isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] + 1 : 1);
 								} else {
-									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] = (isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] : "0");
+									$extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] = (isset($extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes']) ? $extAssayResult[$eKey]['specimen'][$val['sample_label']]['correctRes'] : 0);
 								}
 							}
 						}
@@ -1389,7 +1389,7 @@ class Application_Service_Evaluation
 						$extAssayResult[8]['participantCount'] += $edata['participantCount'];
 						$extAssayResult[8]['maxScore'] += $edata['maxScore'];
 						//$extAssayResult[8]['belowScore'] += isset($edata['belowScore']) ? $edata['belowScore'] : 0;
-						$extAssayResult[8]['belowScore'] = 0;
+						$extAssayResult[8]['belowScore']  += isset($edata['belowScore']) ? $edata['belowScore'] : 0;
 
 
 						foreach ($cResult as $val) {
@@ -1540,15 +1540,16 @@ class Application_Service_Evaluation
 		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 		$sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
-			->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
-			->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code'))
-			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('others' => new Zend_Db_Expr("SUM(sp.shipment_test_date IS NULL)"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > s.lastdate_response AND sp.is_excluded != 'yes')"), 'map_id'))
-			->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
-			->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
-			->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
-			->where("s.shipment_id = ?", $shipmentId)
+			->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('others' => new Zend_Db_Expr("SUM(sp.shipment_test_date IS NULL)"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > s.lastdate_response AND sp.is_excluded != 'yes')"), array()))
+			->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code'))
+			->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
+			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
+			->join(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
+			->where("sp.shipment_id = ?", $shipmentId);
 			//->where("p.status = 'active'")
-			->group('s.shipment_id');
+			//->group('s.shipment_id');
+
+		//echo $sQuery;die;
 
 		return $dbAdapter->fetchRow($sQuery);
 	}

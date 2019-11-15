@@ -1144,11 +1144,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
                  ->where("sp.shipment_id = ?", $parameters['shipmentId'])
                   ->group("sp.participant_id");
      
-         $sQuery = $this->getAdapter()->select()->from(array('e'=>'enrollments'), array('e.participant_id'))
-                  ->joinLeft(array('p' => 'participant'), 'p.participant_id=e.participant_id',array('p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id','p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
                   ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-                  ->where("e.participant_id NOT IN ?", $subSql)->where("p.status='active'")->order('first_name')
-                  ->group("e.participant_id");
+                  ->where("p.participant_id NOT IN ?", $subSql)
+                  ->where("p.status='active'")
+                  ->order('first_name')
+                  ->group("p.participant_id");
          
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);

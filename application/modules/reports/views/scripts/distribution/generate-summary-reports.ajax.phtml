@@ -36,13 +36,13 @@ if ($this->result['shipment'] != "") {
             if (trim($this->logo) != "") {
                 if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                     $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                    $this->Image($image_file, 10, 8, 30, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             }
             // if (trim($this->logoRight) != "") {
             //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
             //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
-            //         $this->Image($image_file, 180, 10, 20, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            //         $this->Image($image_file, 180, 10, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
             //     }
             // }
 
@@ -165,31 +165,32 @@ if ($this->result['shipment'] != "") {
             $scoringPer = round(($overAllMaxScore / $partCount) * 100, 2);
             // set font
             $pdf->SetFont('helvetica', 'B', 10);
-            $overAllSumRes = '<h3>Summary of All Laboratory Scores*</h3>';
-            $overAllSumRes.='<table border="1" cellpadding="3">';
-            $overAllSumRes.='<tr style="background-color:#BCD7EC;">';
-            $overAllSumRes.='<td style="text-align:center;">Total Number of participating laboratories</td>';
-            $overAllSumRes.='<td style="text-align:center;">Number of laboratories submitted results</td>';
-            $overAllSumRes.='<td style="text-align:center;">Number of laboratories scoring "'.$this->result['shipment']['max_score'].'"</td>';
-            $overAllSumRes.='<td style="text-align:center;">Number of laboratories scoring below "'.$this->result['shipment']['max_score'].'"</td>';
-            $overAllSumRes.='<td style="text-align:center;">Percentage of laboratories scoring "' . $this->result['shipment']['max_score'] . '"</td>';
-            $overAllSumRes.='</tr>';
+            $overAllCorrectRes = '<div style="border:1px solid #333;">';
+            $overAllCorrectRes.= '<h3>&nbsp;Summary of All Participants Scores*</h3>';
+            $overAllCorrectRes.='<table border="1" cellpadding="3">';
+            $overAllCorrectRes.='<tr style="background-color:#BCD7EC;">';
+            $overAllCorrectRes.='<td style="text-align:center;">Total number of participants</td>';
+            $overAllCorrectRes.='<td style="text-align:center;">Number of participants submitted results</td>';
+            $overAllCorrectRes.='<td style="text-align:center;">Number of participants scoring "'.$this->result['shipment']['max_score'].'"</td>';
+            $overAllCorrectRes.='<td style="text-align:center;">Number of participants scoring below "'.$this->result['shipment']['max_score'].'"</td>';
+            $overAllCorrectRes.='<td style="text-align:center;">Percentage of participants scoring "' . $this->result['shipment']['max_score'] . '"</td>';
+            $overAllCorrectRes.='</tr>';
             
-            $overAllSumRes.='<tr>';
-            $overAllSumRes.='<td style="text-align:center;">' . $participantCount . '</td>';
-            $overAllSumRes.='<td style="text-align:center;">' . $partCount . '</td>';
-            $overAllSumRes.='<td style="text-align:center;">' . $overAllMaxScore . '</td>';
-            $overAllSumRes.='<td style="text-align:center;">' . $overAllBelowScore . '</td>';
-            $overAllSumRes.='<td style="text-align:center;">' . $scoringPer . '%</td>';
-            $overAllSumRes.='</tr>';
+            $overAllCorrectRes.='<tr>';
+            $overAllCorrectRes.='<td style="text-align:center;">' . $participantCount . '</td>';
+            $overAllCorrectRes.='<td style="text-align:center;">' . $partCount . '</td>';
+            $overAllCorrectRes.='<td style="text-align:center;">' . $overAllMaxScore . '</td>';
+            $overAllCorrectRes.='<td style="text-align:center;">' . $overAllBelowScore . '</td>';
+            $overAllCorrectRes.='<td style="text-align:center;">' . $scoringPer . '%</td>';
+            $overAllCorrectRes.='</tr>';
                 
-            $overAllSumRes.='</table>';
+            $overAllCorrectRes.='</table>';
             
-            $pdf->writeHTML($overAllSumRes, true, false, true, false, '');
+            //$pdf->writeHTML($overAllSumRes, true, false, true, false, '');
             
             $n=count($this->result['shipment']['correctRes']);
             if($n>0){
-                $overAllCorrectRes = '<h3>Percentage of laboratories reporting correctly*</h3>';
+                $overAllCorrectRes .= '<br><h3>&nbsp;Percentage of participants reporting correctly*</h3>';
                 $overAllCorrectRes.='<table border="1" cellpadding="4">';
                 
                 $overAllCorrectRes.='<tr style="background-color:#BCD7EC;">';
@@ -227,7 +228,8 @@ if ($this->result['shipment'] != "") {
                 $overAllCorrectRes.='<td style="text-align:center;">'.round(($avg/$n),2).'%</td>';
                 $overAllCorrectRes.='</tr>';
                 $overAllCorrectRes.='</table>';
-                $overAllCorrectRes.='* Includes In-house and Other assays<br>';
+                $overAllCorrectRes.='&nbsp;* Includes In-house and Other assays<br>';
+                $overAllCorrectRes.='<br></div>';
                 
                 $pdf->writeHTML($overAllCorrectRes, true, false, true, false, '');
             }
@@ -246,16 +248,16 @@ if ($this->result['shipment'] != "") {
                     $avgAssay.='<table border="1" cellpadding="4">';
 
                     $avgAssay.='<tr style="background-color:#fff;">';
-                    $avgAssay.='<td colspan="4"><span>Summary of All Laboratories using '.$assayResult['vlAssay'].'</span></td>';
+                    $avgAssay.='<td colspan="4"><span>Summary of All participants using '.$assayResult['vlAssay'].'</span></td>';
                     $avgAssay.='</tr>';
 
 
 
                     $avgAssay.='<tr style="background-color:#BCD7EC;">';
-                    $avgAssay.='<td style="text-align:center;">Number of Laboratories</td>';
-                    $avgAssay.='<td style="text-align:center;">Number of Laboratories Scoring "'.$this->result['shipment']['max_score'].'"</td>';
-                    $avgAssay.='<td style="text-align:center;">Number of Laboratories Scoring Below "'.$this->result['shipment']['max_score'].'"</td>';
-                    $avgAssay.='<td style="text-align:center;">Percentage of Laboratories Scoring "'.$this->result['shipment']['max_score'].'"</td>';
+                    $avgAssay.='<td style="text-align:center;">Number of Participants</td>';
+                    $avgAssay.='<td style="text-align:center;">Number of Participants Scoring "'.$this->result['shipment']['max_score'].'"</td>';
+                    $avgAssay.='<td style="text-align:center;">Number of Participants Scoring Below "'.$this->result['shipment']['max_score'].'"</td>';
+                    $avgAssay.='<td style="text-align:center;">Percentage of Participants Scoring "'.$this->result['shipment']['max_score'].'"</td>';
                     $avgAssay.='</tr>';
                     
                     $avgAssay.='<tr>';
@@ -664,7 +666,7 @@ if ($this->result['shipment'] != "") {
                 unlink($image_file);
             }
 
-            //$pdf->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            //$pdf->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
         }
         
         //$pdf->AddPage();

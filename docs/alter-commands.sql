@@ -2379,3 +2379,9 @@ CREATE TABLE `evaluation_queue` (
  `status` varchar(255) NOT NULL DEFAULT 'pending',
  PRIMARY KEY (`id`)
 )  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+-- Amit Nov 15 2019
+
+ALTER TABLE `response_result_vl` CHANGE `reported_viral_load` `reported_viral_load` DOUBLE(10,2) NULL DEFAULT NULL;

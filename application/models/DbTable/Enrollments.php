@@ -163,7 +163,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
     
     public function enrollParticipants($params){
 		
-	$this->delete("scheme_id='".$params['schemeId']."'");
+	    $this->delete("scheme_id='".$params['schemeId']."'");
 		
         foreach($params['participants'] as $participant){
             $data = array('participant_id'=>$participant,'scheme_id'=>$params['schemeId'],'status'=>'enrolled','enrolled_on'=>new Zend_Db_Expr('now()'));

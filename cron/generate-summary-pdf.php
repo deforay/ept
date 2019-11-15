@@ -458,7 +458,7 @@ if ($resultArray['shipment'] != "") {
 
 
             $overview = '<table border="1" style="font-size:13px;"><tr>';
-            $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
+            $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants </td>';
             $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $config->evaluation->dts->passPercentage . '"</td>';
             $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config->evaluation->dts->passPercentage . '" </td>';
             $overview .= '</tr>';
@@ -583,7 +583,7 @@ if ($resultArray['shipment'] != "") {
                 unlink($image_file);
             }
 
-            //$pdf->Image($image_file, 10, 10, 25, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            //$pdf->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
         }
 
         //$pdf->AddPage();

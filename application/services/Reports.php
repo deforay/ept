@@ -1332,7 +1332,7 @@ class Application_Service_Reports {
 				),
 				'borders' => array(
 					'outline' => array(
-						'style' => PHPExcel_Style_Border::BORDER_THICK,
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
 					),
 				)
 			);
@@ -1343,7 +1343,7 @@ class Application_Service_Reports {
 				),
 				'borders' => array(
 					'outline' => array(
-						'style' => PHPExcel_Style_Border::BORDER_THICK,
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
 					),
 				)
 			);
@@ -1385,7 +1385,7 @@ class Application_Service_Reports {
 				),
 				'borders' => array(
 					'outline' => array(
-						'style' => PHPExcel_Style_Border::BORDER_THICK,
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
 					),
 				)
 			);
@@ -1441,7 +1441,7 @@ class Application_Service_Reports {
 			}
 			//<------------ Participant List Details Start -----
 	
-			$headings = array('Facility Code', 'Facility Name', 'Region', 'Current Department', 'Site Type', 'Address', 'Facility Telephone', 'Email', 'Enroll Date');
+			$headings = array('Participant Code', 'Participant Name',  'Institute Name' ,'Department', 'Address','Region','City', 'Facility Telephone', 'Email');
 	
 			$sheet = new PHPExcel_Worksheet($excel, 'Participant List');
 			$excel->addSheet($sheet, 1);
@@ -1449,7 +1449,7 @@ class Application_Service_Reports {
 	
 			$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
 					->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval','sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
-					->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status'))
+					->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name','p.lab_name' , 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status'))
 					->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
 					->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
 					->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
@@ -1494,13 +1494,13 @@ class Application_Service_Reports {
 	
 					$sheet->getCellByColumnAndRow(0, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
 					$sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
+					$sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['institute_name'], PHPExcel_Cell_DataType::TYPE_STRING);
 					$sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['department_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['site_type'], PHPExcel_Cell_DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['address'], PHPExcel_Cell_DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['mobile'], PHPExcel_Cell_DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['email'], PHPExcel_Cell_DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['enrolled_on'], PHPExcel_Cell_DataType::TYPE_STRING);
+					$sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['address'], PHPExcel_Cell_DataType::TYPE_STRING);
+					$sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
+					$sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
+					$sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['mobile'], PHPExcel_Cell_DataType::TYPE_STRING);
+					$sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit(strtolower($aRow['email']), PHPExcel_Cell_DataType::TYPE_STRING);
 	
 					for ($i = 0; $i <= 8; $i++) {
 						$cellName = $sheet->getCellByColumnAndRow($i, $currentRow)->getColumn();
@@ -1514,7 +1514,7 @@ class Application_Service_Reports {
 	
 			//------------- Participant List Details End ------>
 			//<-------- Second sheet start
-			$reportHeadings = array('Facility Code', 'Facility Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Kit Lot #', 'Exp Date');
+			$reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Kit Lot #', 'Exp Date');
 	
 			if ($result['scheme_type'] == 'dts') {
 				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
@@ -1592,7 +1592,7 @@ class Application_Service_Reports {
 			$sheetThree->setTitle('Panel Score');
 			$sheetThree->getDefaultColumnDimension()->setWidth(20);
 			$sheetThree->getDefaultRowDimension()->setRowHeight(18);
-			$panelScoreHeadings = array('Facility Code', 'Facility Name');
+			$panelScoreHeadings = array('Participant Code', 'Participant Name');
 			$panelScoreHeadings = $this->addSampleNameInArray($shipmentId, $panelScoreHeadings);
 			array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
 			$sheetThreeColNo = 0;
@@ -1628,7 +1628,7 @@ class Application_Service_Reports {
 			//$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
 			$docScoreSheet->getDefaultRowDimension('G')->setRowHeight(25);
 	
-			$docScoreHeadings = array('Facility Code', 'Facility Name', 'Supervisor signature', 'Panel Receipt Date' ,'Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
+			$docScoreHeadings = array('Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date' ,'Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
 	
 			$docScoreSheetCol = 0;
 			$docScoreRow = 1;
@@ -1668,7 +1668,7 @@ class Application_Service_Reports {
 			$totalScoreSheet->setTitle('Total Score');
 			$totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
 			$totalScoreSheet->getDefaultRowDimension(1)->setRowHeight(30);
-			$totalScoreHeadings = array('Facility Code', 'Facility Name', 'No.of Panels Correct(N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance', 'Comments', 'Comments2', 'Comments3', 'Corrective Action');
+			$totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance', 'Comments', 'Comments2', 'Comments3', 'Corrective Action');
 	
 			$totScoreSheetCol = 0;
 			$totScoreRow = 1;
@@ -2459,7 +2459,7 @@ class Application_Service_Reports {
 				),
 				'borders' => array(
 					'outline' => array(
-						'style' => PHPExcel_Style_Border::BORDER_THICK,
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
 					),
 				)
 			);
@@ -2933,7 +2933,7 @@ $nRow = 3;
                 ),
                 'borders' => array(
                     'outline' => array(
-                        'style' => PHPExcel_Style_Border::BORDER_THICK,
+                        'style' => PHPExcel_Style_Border::BORDER_THIN,
                     ),
                 )
             );
@@ -3027,7 +3027,7 @@ $nRow = 3;
                 ),
                 'borders' => array(
                     'outline' => array(
-                        'style' => PHPExcel_Style_Border::BORDER_THICK,
+                        'style' => PHPExcel_Style_Border::BORDER_THIN,
                     ),
                 )
             );
@@ -3159,7 +3159,7 @@ $nRow = 3;
                 ),
                 'borders' => array(
                     'outline' => array(
-                        'style' => PHPExcel_Style_Border::BORDER_THICK,
+                        'style' => PHPExcel_Style_Border::BORDER_THIN,
                     ),
                 )
             );
@@ -3510,7 +3510,7 @@ $nRow = 3;
                 ),
                 'borders' => array(
                     'outline' => array(
-                        'style' => PHPExcel_Style_Border::BORDER_THICK,
+                        'style' => PHPExcel_Style_Border::BORDER_THIN,
                     ),
                 )
             );
@@ -4296,7 +4296,7 @@ $nRow = 3;
 			),
 			'borders' => array(
 				'outline' => array(
-					'style' => PHPExcel_Style_Border::BORDER_THICK,
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
 				),
 			)
 		);

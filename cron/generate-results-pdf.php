@@ -168,10 +168,16 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '</tr>';
 
             $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Shipment Date</strong> : ' . $result['shipment_date'] . '</td>';
-            $labInfo .= '	<td><strong>Shipment Code</strong> : ' . $result['shipment_code'] . '</td>';
-            $labInfo .= '	<td><strong>Shipment Type</strong> : ' . $result['scheme_name'] . " " . $result['last_name'] . '</td>';
+            $labInfo .= '	<td><strong>Facility Name</strong> : ' . $result['institute_name'] . '</td>';
+            $labInfo .= '	<td><strong>District</strong> : ' . $result['city'] . '</td>';
+            $labInfo .= '	<td><strong>Province</strong> : ' . $result['state'] . '</td>';
             $labInfo .= '</tr>';
+
+            // $labInfo .= '<tr>';
+            // $labInfo .= '	<td><strong>Shipment Date</strong> : ' . $result['shipment_date'] . '</td>';
+            // $labInfo .= '	<td><strong>Shipment Code</strong> : ' . $result['shipment_code'] . '</td>';
+            // $labInfo .= '	<td><strong>Shipment Type</strong> : ' . $result['scheme_name'] . " " . $result['last_name'] . '</td>';
+            // $labInfo .= '</tr>';
 
             $labInfo .= '<tr>';
             $labInfo .= '	<td><strong>Panel Receipt Date</strong> : ' . $shipmentReceiptDate . '</td>';
@@ -184,26 +190,26 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '	<td><strong>Response Date</strong> : ' . $responseDate . '</td>';
             $labInfo .= '	<td><strong>Shipment Test Date</strong> : ' . $shipmentTestDate . '</td>';
             $labInfo .= '	<td>';
-            if (isset($attributes['algorithm'])) {
-                $labInfo .= '	<strong>Algorithm</strong> : ' . ucfirst($attributes['algorithm']);
-            }
+            // if (isset($attributes['algorithm'])) {
+            //     $labInfo .= '	<strong>Algorithm</strong> : ' . ucfirst($attributes['algorithm']);
+            // }
             $labInfo .= ' </td>';
             $labInfo .= '</tr>';
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td>';
-            $labInfo .= '	<strong>Supervisor Name</strong> : ' . ($result['participant_supervisor']);
-            $labInfo .= ' </td>';
-            $labInfo .= '	<td>';
-            if (isset($haveCustom) && $haveCustom == 'yes') {
-                $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . $this->shipment['custom_field_1'];
-            }
-            $labInfo .= ' </td>';
-            $labInfo .= '	<td>';
-            if (isset($haveCustom) && $haveCustom == 'yes') {
-                $labInfo .= '	<strong>' . $customField2 . '</strong> <br>' . $this->shipment['custom_field_2'];
-            }
-            $labInfo .= ' </td>';
-            $labInfo .= '</tr>';
+            // $labInfo .= '<tr>';
+            // $labInfo .= '	<td>';
+            // $labInfo .= '	<strong>Supervisor Name</strong> : ' . ($result['participant_supervisor']);
+            // $labInfo .= ' </td>';
+            // $labInfo .= '	<td>';
+            // if (isset($haveCustom) && $haveCustom == 'yes') {
+            //     $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . $this->shipment['custom_field_1'];
+            // }
+            // $labInfo .= ' </td>';
+            // $labInfo .= '	<td>';
+            // if (isset($haveCustom) && $haveCustom == 'yes') {
+            //     $labInfo .= '	<strong>' . $customField2 . '</strong> <br>' . $this->shipment['custom_field_2'];
+            // }
+            // $labInfo .= ' </td>';
+            // $labInfo .= '</tr>';
 
             $labInfo .= '</table>';
             //shipment_test_date
@@ -264,7 +270,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         if (sizeof($result['responseResult']) > 0) {
             if ($schemeType != 'vl' && $schemeType != 'eid') {
-                $labRes = '<span style="font-weight: bold;font-size:12px;">Your laboratory test results : <br/></span><table border="1" style="font-size:12px;">';
+                $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency test results : <br/></span><table border="1" style="font-size:12px;">';
                 $labRes .= '<tr style="background-color:#dbe4ee;"><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . '">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
                 $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td><td>' . $result['responseResult'][0]['testkit1'] . '</td><td>' . $result['responseResult'][0]['testkit2'] . '</td><td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['testkit3'] . '</td><td colspan="4"></td></tr>';
                 $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td><td>' . $result['responseResult'][0]['lot_no_1'] . '</td><td>' . $result['responseResult'][0]['lot_no_2'] . '</td><td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['lot_no_3'] . '</td><td colspan="4"></td></tr>';
@@ -592,10 +598,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
             $totalScore = $result['shipment_score'] + $result['documentation_score'];
+            $wishes = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
             if ($totalScore >= $passPercentage) {
-                $wishes = '<p style="font-size:12px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
+                $wishes .= '<p style="font-size:12px;">Overall Final Result Remarks : Satisfactory</p>';
             } else {
-                $wishes = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
+                $wishes .= '<p style="font-size:12px;">Overall Final Result Remarks : Unsatisfactory</p>';
             }
 
             $pdf->SetLeftMargin(15);

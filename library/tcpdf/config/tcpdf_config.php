@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tcpdf_config.php
 // Begin       : 2004-06-11
-// Last Update : 2014-01-25
+// Last Update : 2014-12-11
 //
 // Description : Configuration file for TCPDF.
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -45,7 +45,7 @@
  * Installation path (/var/www/tcpdf/).
  * By default it is automatically calculated but you can also set it as a fixed string to improve performances.
  */
-define ('K_PATH_MAIN', realpath(dirname(__FILE__)."/../"));
+//define ('K_PATH_MAIN', '');
 
 /**
  * URL path to tcpdf installation folder (http://localhost/tcpdf/).
@@ -57,13 +57,13 @@ define ('K_PATH_MAIN', realpath(dirname(__FILE__)."/../"));
  * Path for PDF fonts.
  * By default it is automatically set but you can also set it as a fixed string to improve performances.
  */
-define ('K_PATH_FONTS', K_PATH_MAIN.DIRECTORY_SEPARATOR.'fonts/');
+//define ('K_PATH_FONTS', K_PATH_MAIN.'fonts/');
 
 /**
  * Default images directory.
  * By default it is automatically set but you can also set it as a fixed string to improve performances.
  */
-define ('K_PATH_IMAGES', K_PATH_MAIN.DIRECTORY_SEPARATOR.'images/');
+//define ('K_PATH_IMAGES', '');
 
 /**
  * Deafult image logo used be the default Header() method.
@@ -79,7 +79,7 @@ define ('K_PATH_IMAGES', K_PATH_MAIN.DIRECTORY_SEPARATOR.'images/');
 /**
  * Cache directory for temporary files (full path).
  */
-define ('K_PATH_CACHE', K_PATH_MAIN.'/cache/');
+//define ('K_PATH_CACHE', '/tmp/');
 
 /**
  * Generic name for a blank image.
@@ -210,12 +210,17 @@ define('K_THAI_TOPCHARS', true);
  * If true allows to call TCPDF methods using HTML syntax
  * IMPORTANT: For security reason, disable this feature if you are printing user HTML content.
  */
-define('K_TCPDF_CALLS_IN_HTML', true);
+define('K_TCPDF_CALLS_IN_HTML', false);
 
 /**
  * If true and PHP version is greater than 5, then the Error() method throw new exception instead of terminating the execution.
  */
 define('K_TCPDF_THROW_EXCEPTION_ERROR', false);
+
+/**
+ * Default timezone for datetime functions
+ */
+define('K_TIMEZONE', 'UTC');
 
 //============================================================+
 // END OF FILE

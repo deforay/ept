@@ -38,6 +38,7 @@ try {
 
             $result['to_email'] = str_replace(";", ",", $result['to_email']);
             $result['to_email'] = str_replace("/", ",", $result['to_email']);
+            $result['to_email'] = str_replace("?", ",", $result['to_email']);
             $result['to_email'] = str_replace(" ", "", $result['to_email']);
 
             $toArray = explode(",", $result['to_email']);
@@ -53,7 +54,7 @@ try {
                 $result['cc'] = str_replace(" ", "", $result['cc']);
                 $ccArray = explode(",", $result['cc']);
                 foreach ($ccArray as $ccId) {
-                    if ($ccId != '') {
+                    if ($ccId != '' && strtoupper($ccId) != 'NULL' && $ccId != null) {
                         $alertMail->addCc(trim($ccId));
                     }
                 }

@@ -38,13 +38,13 @@ if (sizeof($this->result['shipment']) > 0) {
             if (trim($this->logo) != "") {
                 if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                     $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                    $this->Image($image_file, 10, 8, 30, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             }
             // if (trim($this->logoRight) != "") {
             //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
             //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
-            //         $this->Image($image_file, 180, 10, 20, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            //         $this->Image($image_file, 180, 10, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
             //     }
             // }
 
@@ -632,9 +632,10 @@ if (sizeof($this->result['shipment']) > 0) {
 								</tr>';
 
                     foreach ($result['responseResult'] as $response) {
+                        
                         $labRes .= '<tr>
 										<td style="text-align:center;">' . $response['sample_label'] . '</td>
-										<td>' . $response['reported_viral_load'] . '</td>
+										<td>' . round($response['reported_viral_load'],2) . '</td>
 										<!-- <td>' . $response['no_of_participants'] . '</td> -->
 										<td>Not Graded</td>
 									  </tr>';
