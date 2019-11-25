@@ -11,7 +11,20 @@ class Admin_LoginController extends Zend_Controller_Action
     public function indexAction()
     {
         if($this->getRequest()->isPost()){
-            $params = $this->getRequest()->getPost();
+
+
+			
+
+			$params = $this->getRequest()->getPost();
+			
+			$captchaSession = new Zend_Session_Namespace('DACAPTCHA');
+			if (!isset($captchaSession->captchaStatus) || $captchaSession->captchaStatus == 'fail') {
+				$sessionAlert = new Zend_Session_Namespace('alertSpace');
+				$sessionAlert->message = "Sorry. Unable to log you in. Please check the text from image";
+				$sessionAlert->status = "failure";
+				$this->_redirect('/admin');
+			}
+
     	    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
     	    $adapter = new Zend_Auth_Adapter_DbTable($db, "system_admin", "primary_email", "password");
             

@@ -49,7 +49,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $comingFrom, $resultArray['shipment']['scheme_type']);
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type']);
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------

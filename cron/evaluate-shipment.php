@@ -15,13 +15,13 @@ class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $comingFrom, $schemeType)
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType)
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
         $this->logo = $logo;
         $this->logoRight = $logoRight;
-        $this->comingFrom = $comingFrom;
+        $this->resultStatus = $resultStatus;
         $this->schemeType = $schemeType;
     }
 
@@ -61,7 +61,7 @@ class IndividualPDF extends TCPDF
         } else {
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             $this->SetFont('helvetica', '', 10);
-            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - Rapi HIV Dried Tube Specimen </span>';
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - Rapid HIV Dried Tube Specimen </span>';
         }
 
         $this->writeHTMLCell(0, 0, 42, 10, $html, 0, 0, 0, true, 'J', true);
@@ -73,7 +73,7 @@ class IndividualPDF extends TCPDF
     public function Footer()
     {
         $finalizeReport = "";
-        if (isset($comingFrom) && trim($comingFrom) == "finalized") {
+        if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
             $finalizeReport = ' | INDIVIDUAL REPORT | FINALIZED ';
         } else {
             $finalizeReport = ' | INDIVIDUAL REPORT ';
@@ -94,13 +94,13 @@ class IndividualPDF extends TCPDF
 class SummaryPDF extends TCPDF
 {
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $comingFrom, $schemeType)
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType)
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
         $this->logo = $logo;
         $this->logoRight = $logoRight;
-        $this->comingFrom = $comingFrom;
+        $this->resultStatus = $resultStatus;
         $this->schemeType = $schemeType;
     }
 
@@ -151,7 +151,7 @@ class SummaryPDF extends TCPDF
     public function Footer()
     {
         $finalizeReport = "";
-        if (isset($comingFrom) && trim($comingFrom) == "finalized") {
+        if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
             $finalizeReport = ' | SUMMARY REPORT | FINALIZED ';
         } else {
             $finalizeReport = ' | SUMMARY REPORT ';
@@ -229,7 +229,7 @@ try {
 
             $db->update('evaluation_queue', array('status' => 'not-evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
 
-            $comingFrom = 'finalized';
+            $resultStatus = 'finalized';
 
             //$r = $evalService->getShipmentToEvaluate($evalRow['shipment_id'], true);
 
