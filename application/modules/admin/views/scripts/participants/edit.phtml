@@ -2,6 +2,7 @@
 //Zend_Debug::dump($this->participant);die;
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
     <form name="editParticipantForm" id="editParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();
             return false;">
@@ -177,12 +178,22 @@
                 <label class="col-lg-2 control-label">PT Participant Login</label>
 
                 <div class="col-lg-5">
-                    <select class="form-control" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more PT Participant Logins" data-selected-text-format="count>3">
+                    <select class="select2" style="width:100%;" name="dataManager[]" id="dataManager" multiple="multiple" title="Please choose one or more PT Participant Logins" placeholder="Please choose one or more PT Participant Logins">
                         <?php
                         $dataManagers = explode(",", $this->participant['data_manager']);
                         foreach ($this->dataManagers as $dm) {
+                            $dmName = array();
+                            if(!empty(trim($dm['first_name'] . " " . $dm['last_name']))){
+                                $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
+                            }
+                            if(!empty(trim($dm['institute']))){
+                                $dmName[] = trim($dm['institute']);
+                            }
+                            if(!empty(trim($dm['primary_email']))){
+                                $dmName[] = trim($dm['primary_email']);
+                            }                            
                             ?>
-                            <option value="<?php echo $dm['dm_id']; ?>" <?php echo (in_array($dm['dm_id'], $dataManagers)) ? "selected='selected'" : "" ?>><?php echo $dm['first_name'] . " " . $dm['last_name']; ?></option>
+                            <option value="<?php echo $dm['dm_id']; ?>" <?php echo (in_array($dm['dm_id'], $dataManagers)) ? "selected='selected'" : "" ?>><?php echo implode(", ", $dmName); ?></option>
                             <?php
                         }
                         ?>
@@ -318,11 +329,15 @@
     </form>
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
                     var duplicated = false;
 
                     $(document).ready(function() {
-                        $('#dataManager').selectpicker();
+                        //$('#dataManager').selectpicker();
+                        $(".select2").select2({
+                            allowClear: true
+                        });
                         $('#enrolledProgram').selectpicker();
                         $('#country').selectpicker();
                         $('#scheme').selectpicker();

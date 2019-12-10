@@ -20,7 +20,7 @@ try {
     $output = array();
     
     $query = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
-								->where("shipment_id IN (13,14,15,16)")
+								->where("shipment_id IN (17,18,19,20)")
 								->order("s.scheme_type");
     
     

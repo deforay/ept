@@ -29,8 +29,18 @@
                         <option value=""></option>
                         <?php
                         foreach ($this->dataManagers as $dataManagers) {
+                            $dmName = array();
+                            if(!empty(trim($dataManagers['first_name'] . " " . $dataManagers['last_name']))){
+                                $dmName[] = trim($dataManagers['first_name'] . " " . $dataManagers['last_name']);
+                            }
+                            if(!empty(trim($dataManagers['institute']))){
+                                $dmName[] = trim($dataManagers['institute']);
+                            }
+                            if(!empty(trim($dataManagers['primary_email']))){
+                                $dmName[] = trim($dataManagers['primary_email']);
+                            }
                             ?>
-                            <option value="<?php echo $dataManagers['dm_id']; ?>"><?php echo $dataManagers['first_name'] . " " . $dataManagers['last_name']; ?></option>
+                            <option value="<?php echo $dataManagers['dm_id']; ?>"><?php echo implode(", ", $dmName); ?></option>
                             <?php
                         }
                         ?>
@@ -86,7 +96,7 @@
                         // $('#allparticipant').selectpicker();
                         // $('#alldatamangers').selectpicker();
 
-                        $(".select2").select2()                        
+                        $(".select2").select2();
                     });
 
                     function getDataManager(participantId) {

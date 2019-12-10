@@ -4233,9 +4233,9 @@ $nRow = 3;
 					$participants[$shipment['unique_identifier']]['city']=$shipment['city'];
 					$participants[$shipment['unique_identifier']]['state']=$shipment['state'];
 					$participants[$shipment['unique_identifier']]['country_name']=$shipment['country_name'];
-					$participants[$shipment['unique_identifier']]['contact_name']=$shipment['contact_name'];
+					$participants[$shipment['unique_identifier']]['contact_name']=isset($shipment['contact_name']) ? $shipment['contact_name'] : '';
 					$participants[$shipment['unique_identifier']]['email']=$shipment['email'];
-					$participants[$shipment['unique_identifier']]['additional_email']=$shipment['additional_email'];
+					$participants[$shipment['unique_identifier']]['additional_email']=isset($shipment['additional_email']) ? $shipment['additional_email'] : '';
 //					$participants[$shipment['unique_identifier']]['attributes']=$shipment['attributes'];
 					//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
 					$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score']=$shipment['shipment_score'];
@@ -4353,14 +4353,19 @@ $nRow = 3;
 						$certificate=false;
                     }
                     
-                    $attributes = json_decode($arrayVal[$schemeKey][$va]['attributes'],true);
+                    if(isset($arrayVal[$schemeKey]) && isset($arrayVal[$schemeKey][$va])){
+                        $attributes = json_decode($arrayVal[$schemeKey][$va]['attributes'],true);
+                    }else{
+                        $attributes = array();
+                    }
+                    
 
                     $platformName = '';
                     if(isset($attributes['vl_assay'])){
 						if($attributes['vl_assay'] == 6){
 							$platformName = $attributes['other_assay'];
 						}else{
-							$platformName = $vlAssayList[$attributes['vl_assay']];	
+							$platformName = isset($vlAssayList[$attributes['vl_assay']]) ? $vlAssayList[$attributes['vl_assay']] : '';	
 						}
                     }
                     
