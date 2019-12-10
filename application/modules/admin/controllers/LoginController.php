@@ -18,7 +18,7 @@ class Admin_LoginController extends Zend_Controller_Action
 			$params = $this->getRequest()->getPost();
 			
 			$captchaSession = new Zend_Session_Namespace('DACAPTCHA');
-			if (!isset($captchaSession->captchaStatus) || empty($captchaSession->captchaStatus) || $captchaSession->captchaStatus == 'fail') {
+			if (!isset($captchaSession->captchaStatus) || $captchaSession->captchaStatus == 'fail') {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry. Unable to log you in. Please check the text from image";
 				$sessionAlert->status = "failure";

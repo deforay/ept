@@ -108,6 +108,11 @@ class Application_Service_DataManagers {
 	}
       return $response;
     }
+
+    public function getParticipantDatamanagerSearch($participant){
+        $userDb = new Application_Model_DbTable_DataManagers();
+        return $userDb->fetchParticipantDatamanagerSearch($participant);
+    }
     
 }
 

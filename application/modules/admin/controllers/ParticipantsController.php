@@ -9,6 +9,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
 	            ->addActionContext('view-participants', 'html')
 	            ->addActionContext('get-datamanager', 'html')
+	            ->addActionContext('get-datamanager-names', 'html')
 	            ->addActionContext('get-participant', 'html')
                 ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
@@ -38,8 +39,8 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $this->view->networks = $participantService->getNetworkTierList();
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
         $this->view->countriesList = $commonService->getcountriesList();
-	$this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
-	$this->view->siteType = $participantService->getSiteTypeList();
+        $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
+        $this->view->siteType = $participantService->getSiteTypeList();
     }
 
     public function editAction()
@@ -106,6 +107,16 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerList($participantId);
         }
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
+    }
+    
+    public function getDatamanagerNamesAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $dataManagerService = new Application_Service_DataManagers();
+        if($this->_hasParam('search')){            
+            $participant = $this->_getParam('search');
+            $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerSearch($participant);
+        }
     }
 
     public function getParticipantAction()
