@@ -3,6 +3,9 @@
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
 	protected function _initAppSetup(){
+
+        define('APP_VERSION', '5.0');
+
 		Zend_Session::start();
 		date_default_timezone_set("America/New_York");
 		$locale = new Zend_Locale('en_US');
@@ -34,12 +37,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             $session->defaultCache = serialize($cache);
             Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
         }		
-		
-		
-		
-	}
 	
-	
+	}	
 	
 }
 
