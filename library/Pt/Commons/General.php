@@ -197,6 +197,11 @@ class Pt_Commons_General {
         $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone($conf->timezone));
         return $date->format('Y-m-d H:i:s');
     }
+
+    public static function getVersion() {
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        return $conf->app->version;
+    }
     
     public static function excelDateFormat($date) {
 

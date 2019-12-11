@@ -270,9 +270,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
         }
     }
     
-    public function fetchParticipantDatamanagerSearch($participant){
+    public function fetchParticipantDatamanagerSearch($searchParams){
         $sql = $this->select();
-        $sql = $sql->where("primary_email LIKE '%".$participant."%'");
+        //$searchParams = explode(" ", $searchParams);
+        //foreach($searchParams as $s){
+            $sql =  $sql->where("primary_email LIKE '%".$searchParams."%'")
+                        ->orWhere("first_name LIKE '%".$searchParams."%'")
+                        ->orWhere("last_name LIKE '%".$searchParams."%'")
+                        ->orWhere("institute LIKE '%".$searchParams."%'");
+        //}
+        
         return $this->fetchAll($sql);
     }
 }
