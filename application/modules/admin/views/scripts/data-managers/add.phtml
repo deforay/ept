@@ -113,7 +113,34 @@
     $(document).ready(function() {
         $("#allparticipant").select2({
             placeholder: "Choose a Participants",
-            allowClear: true
+            minimumInputLength: 3,
+            width: '100%',
+            allowClear: true,
+            ajax: {
+                placeholder: "Type participant name to search",
+                url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.result,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                //cache: true
+            },
+            escapeMarkup: function(markup) {
+                return markup;
+            }
         });
     });
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {

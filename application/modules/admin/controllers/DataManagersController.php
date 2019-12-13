@@ -7,6 +7,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
     {
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
+                    ->addActionContext('get-participants-names', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -52,6 +53,16 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 $this->view->participants = $participantService->getAllActiveParticipants();
                 $this->view->participantList = $participantService->getActiveParticipantDetails($userId);
             }
+        }
+    }
+
+    public function getParticipantsNamesAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $participantService = new Application_Service_Participants();
+        if ($this->_hasParam('search')) {
+            $search = $this->_getParam('search');
+            $this->view->participants = $participantService->getParticipantSearch($search);
         }
     }
 }

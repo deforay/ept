@@ -1248,6 +1248,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->where("p.status='active'")->where("p.city IS NOT NULL")->where("trim(p.city)!=''"));
     }
     
+    public function fetchParticipantSearch($search)
+    {
+        $sql = $this->select();
+        $sql =  $sql->where("first_name LIKE '%".$search."%'")
+                    ->orWhere("last_name LIKE '%".$search."%'")
+                    ->orWhere("unique_identifier LIKE '%".$search."%'")
+                    ->orWhere("institute_name LIKE '%".$search."%'")
+                    ->orWhere("region LIKE '%".$search."%'");
+        return $this->fetchAll($sql);
+    }
+    
     public function fetchMapActiveParticipantDetails($userSystemId)
     {
         return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))

@@ -523,9 +523,16 @@ class Application_Service_Participants
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->fetchUniqueCity();
 	}
+	
 	public function getActiveParticipantDetails($userId)
 	{
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->fetchMapActiveParticipantDetails($userId);
+	}
+	
+	public function getParticipantSearch($search)
+	{
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchParticipantSearch($search);
 	}
 }
