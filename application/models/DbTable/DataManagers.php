@@ -6,8 +6,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
     protected $_primary = array('dm_id');
 
     public function addUser($params) {
-	$authNameSpace = new Zend_Session_Namespace('administrators');
-	$data = array(
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $data = array(
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
             'institute' => $params['institute'],
@@ -25,7 +25,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
 			'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()')
         );
-        return $this->insert($data);
+        $dmId = $this->insert($data);
+        if(isset($params['allparticipant']) && count($params['allparticipant'] > 0)){
+            $db = Zend_Db_Table_Abstract::getAdapter();
+            $db->delete('participant_manager_map', "dm_id = " . $dmId);
+            foreach($params['allparticipant'] as $participant){
+                $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
+            }
+        }
+        return $dmId;
     }
     
     public function getAllUsers($parameters) {
@@ -223,8 +231,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract {
         if(isset($params['status']) && $params['status'] != ""){
             $data['status'] = $params['status'];
         }
-
-        return $this->update($data, "dm_id = " . $params['userSystemId']);
+        $dmId = $params['userSystemId'];
+        $this->update($data, "dm_id = " . $params['userSystemId']);
+        if(isset($params['allparticipant']) && count($params['allparticipant'] > 0)){
+            $db = Zend_Db_Table_Abstract::getAdapter();
+            $db->delete('participant_manager_map', "dm_id = " . $dmId);
+            foreach($params['allparticipant'] as $participant){
+                $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
+            }
+        }
+        return $dmId;
     }
     
     public function resetpasswordForEmail($email){

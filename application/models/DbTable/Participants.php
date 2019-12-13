@@ -1,41 +1,46 @@
 <?php
 
-class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
+class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
+{
 
     protected $_name = 'participant';
     protected $_primary = 'participant_id';
 
-    public function getParticipantsByUserSystemId($userSystemId) {
+    public function getParticipantsByUserSystemId($userSystemId)
+    {
         return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
-                                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
-                                ->where("pmm.dm_id = ?", $userSystemId)
-                                //->where("p.status = 'active'")
-                                ->group('p.participant_id'));
+            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+            ->where("pmm.dm_id = ?", $userSystemId)
+            //->where("p.status = 'active'")
+            ->group('p.participant_id'));
     }
-	
-	public function checkParticipantAccess($participantId){
-		$authNameSpace =  new Zend_Session_Namespace('datamanagers');
-		$row = $this->getAdapter()->fetchRow($this->getAdapter()->select()
-								->from(array('pmm' => 'participant_manager_map'))
-                                ->where("pmm.participant_id = ?", $participantId)
-                                ->where("pmm.dm_id = ?", $authNameSpace->dm_id));
-		
-		if($row == false){
-			return false;
-		} else {
-			return true;
-		}
-	}
 
-    public function getParticipant($partSysId) {
+    public function checkParticipantAccess($participantId)
+    {
+        $authNameSpace =  new Zend_Session_Namespace('datamanagers');
+        $row = $this->getAdapter()->fetchRow($this->getAdapter()->select()
+            ->from(array('pmm' => 'participant_manager_map'))
+            ->where("pmm.participant_id = ?", $participantId)
+            ->where("pmm.dm_id = ?", $authNameSpace->dm_id));
+
+        if ($row == false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function getParticipant($partSysId)
+    {
         return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('p' => $this->_name))
-                                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
-                                ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array('enrolled_prog' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pe.ep_id SEPARATOR ', ')")))
-                                ->where("p.participant_id = ?", $partSysId)
-                                ->group('p.participant_id'));
+            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+            ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array('enrolled_prog' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pe.ep_id SEPARATOR ', ')")))
+            ->where("p.participant_id = ?", $partSysId)
+            ->group('p.participant_id'));
     }
 
-    public function getAllParticipants($parameters) {
+    public function getAllParticipants($parameters)
+    {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
@@ -116,8 +121,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('p.participant_id', 'p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)")))
-                ->join(array('c' => 'countries'), 'c.id=p.country')
-                ->group("p.participant_id");
+            ->join(array('c' => 'countries'), 'c.id=p.country')
+            ->group("p.participant_id");
 
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
             $sQuery = $sQuery->where("p.status = ? ", $parameters['withStatus']);
@@ -182,7 +187,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         echo json_encode($output);
     }
 
-    public function updateParticipant($params) {
+    public function updateParticipant($params)
+    {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
         $data = array(
@@ -203,7 +209,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'phone' => $params['pphone1'],
             'email' => $params['pemail'],
             'additional_email' => $params['additionalEmail'],
-			'contact_name' => $params['contactname'],
+            'contact_name' => $params['contactname'],
             'affiliation' => $params['partAff'],
             'network_tier' => $params['network'],
             'testing_volume' => $params['testingVolume'],
@@ -212,18 +218,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'region' => $params['region'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
-		if(isset($params['comingFrom']) && $params['comingFrom']=='participant'){
-			$data['force_profile_updation'] = 0;
-		}
-		
-		
-		if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
-		   $data['individual']='yes';
-		}else{
-			$data['individual']='no';
-		}
-	
-	
+        if (isset($params['comingFrom']) && $params['comingFrom'] == 'participant') {
+            $data['force_profile_updation'] = 0;
+        }
+
+
+        if (isset($params['individualParticipant']) && $params['individualParticipant'] == 'on') {
+            $data['individual'] = 'yes';
+        } else {
+            $data['individual'] = 'no';
+        }
+
+
 
         if (isset($params['status']) && $params['status'] != "" && $params['status'] != null) {
             $data['status'] = $params['status'];
@@ -240,28 +246,27 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
 
         $noOfRows = $this->update($data, "participant_id = " . $params['participantId']);
-		//echo $authNameSpace->force_profile_updation =1;
-		//Check profile update
-		if(isset($authNameSpace->force_profile_updation) && trim($authNameSpace->force_profile_updation)>0){
-			$profileUpdate=$this->checkParticipantsProfileUpdateByUserSystemId($authNameSpace->dm_id);
-			if(count($profileUpdate)>0){
-				$authNameSpace->profile_updation_pid=$profileUpdate[0]['participant_id'];
-			}else{
-				$authNameSpace->force_profile_updation =0;
-				$authNameSpace->profile_updation_pid="";
-			}
-		}
-		
-		$db = Zend_Db_Table_Abstract::getAdapter();
-		
-		if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
-				$db->delete('participant_enrolled_programs_map', "participant_id = " . $params['participantId']);
-				//var_dump($params['enrolledProgram']);die;
-				foreach ($params['enrolledProgram'] as $epId) {
-					$db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $params['participantId']));
-				}
-		}
-		
+        //echo $authNameSpace->force_profile_updation =1;
+        //Check profile update
+        if (isset($authNameSpace->force_profile_updation) && trim($authNameSpace->force_profile_updation) > 0) {
+            $profileUpdate = $this->checkParticipantsProfileUpdateByUserSystemId($authNameSpace->dm_id);
+            if (count($profileUpdate) > 0) {
+                $authNameSpace->profile_updation_pid = $profileUpdate[0]['participant_id'];
+            } else {
+                $authNameSpace->force_profile_updation = 0;
+                $authNameSpace->profile_updation_pid = "";
+            }
+        }
+
+        $db = Zend_Db_Table_Abstract::getAdapter();
+
+        if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
+            $db->delete('participant_enrolled_programs_map', "participant_id = " . $params['participantId']);
+            foreach ($params['enrolledProgram'] as $epId) {
+                $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $params['participantId']));
+            }
+        }
+
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
             $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
             foreach ($params['dataManager'] as $dataManager) {
@@ -277,10 +282,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         return $noOfRows;
     }
 
-    public function addParticipant($params) {
-	
+    public function addParticipant($params)
+    {
         $authNameSpace = new Zend_Session_Namespace('administrators');
-
         $data = array(
             'unique_identifier' => $params['pid'],
             'institute_name' => $params['instituteName'],
@@ -298,8 +302,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'mobile' => $params['pphone2'],
             'phone' => $params['pphone1'],
             'email' => $params['pemail'],
-			'additional_email' => $params['additionalEmail'],
-			'contact_name' => $params['contactname'],
+            'additional_email' => $params['additionalEmail'],
+            'contact_name' => $params['contactname'],
             'affiliation' => $params['partAff'],
             'network_tier' => $params['network'],
             'testing_volume' => $params['testingVolume'],
@@ -310,30 +314,34 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'created_by' => $authNameSpace->primary_email,
             'status' => $params['status']
         );
-		if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
-		   $data['individual']='yes';
-		}else{
-			$data['individual']='no';
-		}
+        if (isset($params['individualParticipant']) && $params['individualParticipant'] == 'on') {
+            $data['individual'] = 'yes';
+        } else {
+            $data['individual'] = 'no';
+        }
 
 
         $participantId = $this->insert($data);
 
         $db = Zend_Db_Table_Abstract::getAdapter();
 
-        foreach ($params['dataManager'] as $dataManager) {
-            $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $participantId));
+        if (isset($params['dataManager']) && $params['dataManager'] != "") {
+            $db->delete('participant_manager_map', "participant_id = " . $participantId);
+            foreach ($params['dataManager'] as $dataManager) {
+                $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $participantId));
+            }
         }
-		if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
-				foreach ($params['enrolledProgram'] as $epId) {
-					$db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));
-				}
-		}
+        if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
+            foreach ($params['enrolledProgram'] as $epId) {
+                $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));
+            }
+        }
 
         return $participantId;
     }
 
-    public function addParticipantForDataManager($params) {
+    public function addParticipantForDataManager($params)
+    {
         //Zend_Debug::dump($params);die;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
@@ -353,7 +361,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'last_name' => $params['plname'],
             'mobile' => $params['pphone2'],
             'phone' => $params['pphone1'],
-			'contact_name' => $params['contactname'],
+            'contact_name' => $params['contactname'],
             'email' => $params['pemail'],
             'affiliation' => $params['partAff'],
             'network_tier' => $params['network'],
@@ -365,27 +373,27 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->UserID,
         );
-		
-		if(isset($params['individualParticipant']) && $params['individualParticipant']=='on'){
-		   $data['individual']='yes';
-		}else{
-			$data['individual']='no';
-		}
-		
-		
-        //Zend_Debug::dump($data);die;
-        //Zend_Debug::dump($data);die;
-         $participantId = $this->insert($data);
+
+        if (isset($params['individualParticipant']) && $params['individualParticipant'] == 'on') {
+            $data['individual'] = 'yes';
+        } else {
+            $data['individual'] = 'no';
+        }
 
 
-		if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
-				$db = Zend_Db_Table_Abstract::getAdapter();
-				$db->delete('participant_enrolled_programs_map', "participant_id = " . $participantId);			
-				foreach ($params['enrolledProgram'] as $epId) {
-					$db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));
-				}
-		}
-		
+        //Zend_Debug::dump($data);die;
+        //Zend_Debug::dump($data);die;
+        $participantId = $this->insert($data);
+
+
+        if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
+            $db = Zend_Db_Table_Abstract::getAdapter();
+            $db->delete('participant_enrolled_programs_map', "participant_id = " . $participantId);
+            foreach ($params['enrolledProgram'] as $epId) {
+                $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));
+            }
+        }
+
         if (isset($params['scheme']) && $params['scheme'] != "") {
             $enrollDb = new Application_Model_DbTable_Enrollments();
             $enrollDb->enrollParticipantToSchemes($participantId, $params['scheme']);
@@ -405,17 +413,19 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         return $participantId;
     }
 
-    public function fetchAllActiveParticipants() {
+    public function fetchAllActiveParticipants()
+    {
         return $this->fetchAll($this->select()->where("status='active'")->order("first_name"));
     }
 
-    public function getSchemeWiseParticipants($schemeType) {
+    public function getSchemeWiseParticipants($schemeType)
+    {
         if ($schemeType != "all") {
             $result = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('p.address', 'p.long', 'p.lat', 'p.first_name', 'p.last_name'))
-                            ->join(array('e' => 'enrollments'), 'e.participant_id=p.participant_id')
-                            ->where("e.scheme_id = ?", $schemeType)
-                            ->where("p.status='active'")
-                            ->group('p.participant_id'));
+                ->join(array('e' => 'enrollments'), 'e.participant_id=p.participant_id')
+                ->where("e.scheme_id = ?", $schemeType)
+                ->where("p.status='active'")
+                ->group('p.participant_id'));
         } else {
             $result = $this->fetchAll($this->select()->where("status='active'"));
         }
@@ -423,7 +433,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         return $result;
     }
 
-    public function getEnrolledByShipmentDetails($parameters) {
+    public function getEnrolledByShipmentDetails($parameters)
+    {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
@@ -505,10 +516,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.map_id', 'sp.created_on_user', 'sp.attributes', 'sp.final_result','sp.shipment_test_date',"RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date!='NULL') THEN 'Responded' ELSE 'Not Responded' END")))
-                ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array('shipmentStatus' => 's.status'))
-                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
-                ->where("p.status='active'");
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.map_id', 'sp.created_on_user', 'sp.attributes', 'sp.final_result', 'sp.shipment_test_date', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date!='NULL') THEN 'Responded' ELSE 'Not Responded' END")))
+            ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array('shipmentStatus' => 's.status'))
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
+            ->where("p.status='active'");
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ? ", $parameters['shipmentId']);
@@ -539,10 +550,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         /* Total data set length */
 
         $sQuery = $this->getAdapter()->select()->from(array("p" => $this->_name), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.shipment_test_date'))
-                ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
-                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
-                ->where("p.status='active'");
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.shipment_test_date'))
+            ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
+            ->where("p.status='active'");
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ? ", $parameters['shipmentId']);
@@ -582,7 +593,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         echo json_encode($output);
     }
 
-    public function getUnEnrolledByShipments($parameters) {
+    public function getUnEnrolledByShipments($parameters)
+    {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
@@ -664,15 +676,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id'))
-              ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
-                ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
-                ->where("p.status='active'");
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
+            ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
+            ->where("p.status='active'");
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ? ", $parameters['shipmentId']);
         }
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))  ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))->where("p.status='active'")->where("p.participant_id NOT IN ?", $sQuery);
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))->where("p.status='active'")->where("p.participant_id NOT IN ?", $sQuery);
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -698,9 +710,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
 
         $sQuery = $this->getAdapter()->select()->from(array("p" => $this->_name), array('p.participant_id'))
-                ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
-                ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
-                ->where("p.status='active'");
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
+            ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
+            ->where("p.status='active'");
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ? ", $parameters['shipmentId']);
@@ -728,7 +740,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             $row[] = ucwords($aRow['iso_name']);
             $row[] = $aRow['mobile'];
             $row[] = $aRow['email'];
-           // $row[] = ucwords($aRow['status']);
+            // $row[] = ucwords($aRow['status']);
             $row[] = 'Unenrolled';
 
             $output['aaData'][] = $row;
@@ -736,31 +748,33 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
         echo json_encode($output);
     }
-    public function addParticipantManager($params){
-         $db = Zend_Db_Table_Abstract::getAdapter();
-         if(isset($params['datamanagerId']) && $params['datamanagerId'] != ""){
-                $db->delete('participant_manager_map',"dm_id = " . $params['datamanagerId']);
+    public function addParticipantManager($params)
+    {
+        $db = Zend_Db_Table_Abstract::getAdapter();
+        if (isset($params['datamanagerId']) && $params['datamanagerId'] != "") {
+            $db->delete('participant_manager_map', "dm_id = " . $params['datamanagerId']);
 
-                foreach($params['participants'] as $participants){
-                        $db->insert('participant_manager_map',array('participant_id'=>$participants,'dm_id'=>$params['datamanagerId']));
-                }
-        }else if(isset($params['participantId']) && $params['participantId'] != ""){
-                $db->delete('participant_manager_map',"participant_id = " . $params['participantId']);
+            foreach ($params['participants'] as $participants) {
+                $db->insert('participant_manager_map', array('participant_id' => $participants, 'dm_id' => $params['datamanagerId']));
+            }
+        } else if (isset($params['participantId']) && $params['participantId'] != "") {
+            $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
 
-                foreach($params['datamangers'] as $datamangers){
-                        $db->insert('participant_manager_map',array('dm_id'=>$datamangers,'participant_id'=>$params['participantId']));
-                }
+            foreach ($params['datamangers'] as $datamangers) {
+                $db->insert('participant_manager_map', array('dm_id' => $datamangers, 'participant_id' => $params['participantId']));
+            }
         }
     }
-    
-    public function getShipmentRespondedParticipants($parameters) {
+
+    public function getShipmentRespondedParticipants($parameters)
+    {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
         */
         $aColumns = array('unique_identifier', 'first_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
-		//  $sIndexColumn = "participant_id";
+        //  $sIndexColumn = "participant_id";
         /*
          * Paging
          */
@@ -832,14 +846,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
          * Get data to display
          */
 
-         $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id','sp.shipment_test_date',"RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date!='NULL') THEN 'Responded' ELSE 'Not Responded' END")))
-                  ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-                  ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-                   ->where("sp.shipment_test_date <>'0000-00-00'")
-                  ->where("sp.shipment_test_date IS NOT NULL ")
-                  ->where("sp.shipment_id = ?", $parameters['shipmentId'])
-                  ->group("sp.participant_id");
-		//  error_log($sQuery);
+        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id', 'sp.shipment_test_date', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date!='NULL') THEN 'Responded' ELSE 'Not Responded' END")))
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
+            ->where("sp.shipment_test_date <>'0000-00-00'")
+            ->where("sp.shipment_test_date IS NOT NULL ")
+            ->where("sp.shipment_id = ?", $parameters['shipmentId'])
+            ->group("sp.participant_id");
+        //  error_log($sQuery);
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
             $sQuery = $sQuery->where("p.status = ? ", $parameters['withStatus']);
         }
@@ -862,22 +876,22 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-		
-		$sQuerySession = new Zend_Session_Namespace('respondedParticipantsExcel');
-		$sQuerySession->shipmentRespondedParticipantQuery = $sQuery;
-		//error_log($sQuery);
+
+        $sQuerySession = new Zend_Session_Namespace('respondedParticipantsExcel');
+        $sQuerySession->shipmentRespondedParticipantQuery = $sQuery;
+        //error_log($sQuery);
         $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-         $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array())
-                  ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array())
-                  ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-                  ->where("sp.shipment_test_date <>'0000-00-00'")
-                  ->where("sp.shipment_test_date IS NOT NULL ")
-                  ->where("sp.shipment_id = ?", $parameters['shipmentId'])
-                  ->group("sp.participant_id");
-         
+        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array())
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array())
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
+            ->where("sp.shipment_test_date <>'0000-00-00'")
+            ->where("sp.shipment_test_date IS NOT NULL ")
+            ->where("sp.shipment_id = ?", $parameters['shipmentId'])
+            ->group("sp.participant_id");
+
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
             $sQuery = $sQuery->where("p.status = ? ", $parameters['withStatus']);
         }
@@ -911,7 +925,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
         echo json_encode($output);
     }
-    public function getShipmentNotRespondedParticipants($parameters) {
+    public function getShipmentNotRespondedParticipants($parameters)
+    {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
@@ -919,7 +934,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         $aColumns = array('unique_identifier', 'first_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
-      //  $sIndexColumn = "participant_id";
+        //  $sIndexColumn = "participant_id";
         /*
          * Paging
          */
@@ -990,13 +1005,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
          * SQL queries
          * Get data to display
          */
-         $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id','sp.map_id','sp.shipment_test_date','shipment_id',"RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date!='NULL') THEN 'Responded' ELSE 'Not Responded' END")))
-                  ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-                  ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-                  ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL)")
-                  ->where("sp.shipment_id = ?", $parameters['shipmentId'])
-                  ->group("sp.participant_id");
-         
+        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id', 'sp.map_id', 'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date!='NULL') THEN 'Responded' ELSE 'Not Responded' END")))
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
+            ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL)")
+            ->where("sp.shipment_id = ?", $parameters['shipmentId'])
+            ->group("sp.participant_id");
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -1015,21 +1030,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-		
-		$sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
-		$sQuerySession->shipmentRespondedParticipantQuery = $sQuery;
-		
+
+        $sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
+        $sQuerySession->shipmentRespondedParticipantQuery = $sQuery;
+
         $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-         $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array())
-                  ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array())
-                  ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-                  ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL)")
-                  ->where("sp.shipment_id = ?", $parameters['shipmentId'])
-                  ->group("sp.participant_id");
-         
+        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array())
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array())
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
+            ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL)")
+            ->where("sp.shipment_id = ?", $parameters['shipmentId'])
+            ->group("sp.participant_id");
+
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 
@@ -1060,16 +1075,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
         echo json_encode($output);
     }
-    
-    public function getShipmentNotEnrolledParticipants($parameters) {
+
+    public function getShipmentNotEnrolledParticipants($parameters)
+    {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name','unique_identifier', 'first_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'p.status');
+        $aColumns = array('first_name', 'unique_identifier', 'first_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'p.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
-      //  $sIndexColumn = "participant_id";
+        //  $sIndexColumn = "participant_id";
         /*
          * Paging
          */
@@ -1140,17 +1156,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
          * SQL queries
          * Get data to display
          */
-         $subSql = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id'))
-                 ->where("sp.shipment_id = ?", $parameters['shipmentId'])
-                  ->group("sp.participant_id");
-     
-         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id','p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-                  ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-                  ->where("p.participant_id NOT IN ?", $subSql)
-                  ->where("p.status='active'")
-                  ->order('first_name')
-                  ->group("p.participant_id");
-         
+        $subSql = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id'))
+            ->where("sp.shipment_id = ?", $parameters['shipmentId'])
+            ->group("sp.participant_id");
+
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
+            ->where("p.participant_id NOT IN ?", $subSql)
+            ->where("p.status='active'")
+            ->order('first_name')
+            ->group("p.participant_id");
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -1173,13 +1189,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-          $sQuery = $this->getAdapter()->select()->from(array('e'=>'enrollments'), array('e.participant_id'))
-                  ->joinLeft(array('p' => 'participant'), 'p.participant_id=e.participant_id',array('p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-                  ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-                  ->where("e.participant_id NOT IN ?", $subSql)->where("p.status='active'")->order('first_name')
-                  ->group("e.participant_id");
-         
-         
+        $sQuery = $this->getAdapter()->select()->from(array('e' => 'enrollments'), array('e.participant_id'))
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=e.participant_id', array('p.unique_identifier', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
+            ->where("e.participant_id NOT IN ?", $subSql)->where("p.status='active'")->order('first_name')
+            ->group("e.participant_id");
+
+
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 
@@ -1196,8 +1212,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
 
         foreach ($rResult as $aRow) {
             $row = array();
-          
-	    $row[]='<input type="checkbox" class="checkParticipants" id="chk' . base64_encode($aRow['participant_id']). '"  value="' . base64_encode($aRow['participant_id']) . '" onclick="toggleSelect(this);"  />';
+
+            $row[] = '<input type="checkbox" class="checkParticipants" id="chk' . base64_encode($aRow['participant_id']) . '"  value="' . base64_encode($aRow['participant_id']) . '" onclick="toggleSelect(this);"  />';
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['participantName'];
             $row[] = $aRow['iso_name'];
@@ -1205,29 +1221,37 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract {
             $row[] = $aRow['phone'];
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
-            $row[] = '<a href="javascript:void(0);" onclick="enrollParticipants(\'' .base64_encode($aRow['participant_id']). '\',\'' .  base64_encode($parameters['shipmentId']) . '\')" class="btn btn-primary btn-xs"> Enroll</a>';
+            $row[] = '<a href="javascript:void(0);" onclick="enrollParticipants(\'' . base64_encode($aRow['participant_id']) . '\',\'' .  base64_encode($parameters['shipmentId']) . '\')" class="btn btn-primary btn-xs"> Enroll</a>';
             $output['aaData'][] = $row;
         }
 
         echo json_encode($output);
     }
-	
-    public function checkParticipantsProfileUpdateByUserSystemId($userSystemId) {
+
+    public function checkParticipantsProfileUpdateByUserSystemId($userSystemId)
+    {
         return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
-                                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
-                                ->where("pmm.dm_id = ?", $userSystemId)
-								->where("p.force_profile_updation = ?",1)
-                                ->group('p.participant_id'));
+            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+            ->where("pmm.dm_id = ?", $userSystemId)
+            ->where("p.force_profile_updation = ?", 1)
+            ->group('p.participant_id'));
     }
 
-    public function fetchUniqueState() {
-        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name),array('state' => new Zend_Db_Expr(" DISTINCT p.state ")))
-        ->where("p.status='active'")->where("p.state IS NOT NULL")->where("trim(p.state)!=''"));
+    public function fetchUniqueState()
+    {
+        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('state' => new Zend_Db_Expr(" DISTINCT p.state ")))
+            ->where("p.status='active'")->where("p.state IS NOT NULL")->where("trim(p.state)!=''"));
     }
-    public function fetchUniqueCity() {
-        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name),array('city' => new Zend_Db_Expr(" DISTINCT p.city ")))
-                                
-                ->where("p.status='active'")->where("p.city IS NOT NULL")->where("trim(p.city)!=''"));
+    public function fetchUniqueCity()
+    {
+        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('city' => new Zend_Db_Expr(" DISTINCT p.city ")))
+            ->where("p.status='active'")->where("p.city IS NOT NULL")->where("trim(p.city)!=''"));
+    }
+    
+    public function fetchMapActiveParticipantDetails($userSystemId)
+    {
+        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
+        ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+        ->where("pmm.dm_id = ?", $userSystemId)->group('p.participant_id'));
     }
 }
-

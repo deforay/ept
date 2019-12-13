@@ -1,142 +1,173 @@
+<?php $participantArray = array();
+foreach ($this->participantList as $part) {
+    $participantArray[] = $part['participant_id'];
+}
+?>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
 
-<form name="editUserForm" id="editUserForm" method="post" action="<?php echo $this->url(array("module"=>"admin", "controller" => "data-managers", "action" => "edit"),'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
-   
-    <fieldset>
-                  <legend>Edit PT Participant Login</legend>
+    <form name="editUserForm" id="editUserForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "data-managers", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 
-        <div class="form-group">
-            <label class="col-lg-3 control-label">Login (Primary e-mail) <span class="mandatory">*</span></label>
-            <div class="col-lg-5">
-                <input type="text" id="userId" name="userId"  size="50" value="<?php echo $this->rsUser['primary_email']; ?>" class="isRequired isEmail form-control" title="Please enter the primary email id here" onblur="checkDuplicate('data_manager','primary_email','userId','<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>','This email already exists as a primary email for another user. Please choose another email.')"/>
-                <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
+        <fieldset>
+            <legend>Edit PT Participant Login</legend>
+
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Login (Primary e-mail) <span class="mandatory">*</span></label>
+                <div class="col-lg-5">
+                    <input type="text" id="userId" name="userId" size="50" value="<?php echo $this->rsUser['primary_email']; ?>" class="isRequired isEmail form-control" title="Please enter the primary email id here" onblur="checkDuplicate('data_manager','primary_email','userId','<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>','This email already exists as a primary email for another user. Please choose another email.')" />
+                    <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">Password <br/> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
-            <div class="col-lg-5"><input type="text" id="password" name="password" size="50" maxlength="255" value="" class="form-control"  title="" placeholder="Please enter new password here" onchange="validatePassword(this)"/></div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">Confirm Password <br/> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
-            <div class="col-lg-5"><input type="text" id="password1" name="password" size="50" maxlength="255" value="" class="confirmPassword form-control"  title="" placeholder="Please re-enter new password here"  /></div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">Institute <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="institute" name="institute" size="50" maxlength="255" class="isRequired form-control"  title="Please enter the institute name here" placeholder="Please enter the institute name here"  value="<?php echo $this->rsUser['institute']; ?>" /></div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">User First Name <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="fname" name="fname" size="50" maxlength="255" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control"  title="Please enter the first name here" placeholder="Please enter the first name here"  /></div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">User Last Name <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="lname" name="lname" size="50" maxlength="255" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter the last name here" placeholder="Please enter the last name here" class="isRequired form-control" /></div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">Secondary e-mail Address <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="semail" name="semail" size="50" maxlength="255" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">Cell Phone Number <span class="mandatory">*</span></label>
-            <div class="col-lg-5"><input type="text" id="phone1" name="phone1" size="50" maxlength="255" value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired form-control checkNum"   title="Please enter the contact number here" placeholder="Please enter the contact number here"/></div>
-        </div>
-        <div class="form-group"> 
-            <label class="col-lg-3 control-label">Phone Number</label>
-            <div class="col-lg-5"><input type="text" id="phone2" name="phone2" size="50" maxlength="255" value="<?php echo $this->rsUser['phone']; ?>" class=" form-control checkNum"/></div>
-        </div>
-		<div class="form-group"> 
-            <label class="col-lg-3 control-label">QC Access <span class="mandatory">*</span></label>
-            <div class="col-lg-5" style="margin-top:8px;">
-				  <input type="radio" class="isRequired"  name="qcAccess" value="yes" <?php echo (isset($this->rsUser['qc_access']) && $this->rsUser['qc_access']=="yes") ? " checked='checked' " : ""; ?> title="Please choose QC access"/> Yes
-				  <input type="radio" class="isRequired"  name="qcAccess" value="no" <?php echo (isset($this->rsUser['qc_access']) && $this->rsUser['qc_access']=="no") ? " checked='checked' " : ""; ?>/> No
-			</div>
-        </div>
-	<div class="form-group">
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Password <br /> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
+                <div class="col-lg-5"><input type="text" id="password" name="password" size="50" maxlength="255" value="" class="form-control" title="" placeholder="Please enter new password here" onchange="validatePassword(this)" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Confirm Password <br /> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
+                <div class="col-lg-5"><input type="text" id="password1" name="password" size="50" maxlength="255" value="" class="confirmPassword form-control" title="" placeholder="Please re-enter new password here" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Institute <span class="mandatory">*</span></label>
+                <div class="col-lg-5"><input type="text" id="institute" name="institute" size="50" maxlength="255" class="isRequired form-control" title="Please enter the institute name here" placeholder="Please enter the institute name here" value="<?php echo $this->rsUser['institute']; ?>" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">User First Name <span class="mandatory">*</span></label>
+                <div class="col-lg-5"><input type="text" id="fname" name="fname" size="50" maxlength="255" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control" title="Please enter the first name here" placeholder="Please enter the first name here" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">User Last Name <span class="mandatory">*</span></label>
+                <div class="col-lg-5"><input type="text" id="lname" name="lname" size="50" maxlength="255" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter the last name here" placeholder="Please enter the last name here" class="isRequired form-control" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Secondary e-mail Address <span class="mandatory">*</span></label>
+                <div class="col-lg-5"><input type="text" id="semail" name="semail" size="50" maxlength="255" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Cell Phone Number <span class="mandatory">*</span></label>
+                <div class="col-lg-5"><input type="text" id="phone1" name="phone1" size="50" maxlength="255" value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired form-control checkNum" title="Please enter the contact number here" placeholder="Please enter the contact number here" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Phone Number</label>
+                <div class="col-lg-5"><input type="text" id="phone2" name="phone2" size="50" maxlength="255" value="<?php echo $this->rsUser['phone']; ?>" class=" form-control checkNum" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">QC Access <span class="mandatory">*</span></label>
+                <div class="col-lg-5" style="margin-top:8px;">
+                    <input type="radio" class="isRequired" name="qcAccess" value="yes" <?php echo (isset($this->rsUser['qc_access']) && $this->rsUser['qc_access'] == "yes") ? " checked='checked' " : ""; ?> title="Please choose QC access" /> Yes
+                    <input type="radio" class="isRequired" name="qcAccess" value="no" <?php echo (isset($this->rsUser['qc_access']) && $this->rsUser['qc_access'] == "no") ? " checked='checked' " : ""; ?> /> No
+                </div>
+            </div>
+            <div class="form-group">
                 <label class="col-lg-3 control-label">Enable Adding Response Date <span class="mandatory">*</span></label>
                 <div class="col-lg-5" style="padding-top:10px;">
-                    <input type="radio" id="enableReceiptDateOption" name="receiptDateOption" value="yes" <?php echo ($this->rsUser['enable_adding_test_response_date']=="yes") ? " checked='checked' " : ""; ?>><b> Yes</b>&nbsp;&nbsp;
-                    <input type="radio" class="isRequired" id="disableReceiptDateOption" name="receiptDateOption" value="no" <?php echo (!isset($this->rsUser['enable_adding_test_response_date']) || trim($this->rsUser['enable_adding_test_response_date']) == null || trim($this->rsUser['enable_adding_test_response_date']) == ""  || trim($this->rsUser['enable_adding_test_response_date'])=="no") ? " checked='checked' " : ""; ?> title="Please choose adding response date enable option"><b> No</b>
+                    <input type="radio" id="enableReceiptDateOption" name="receiptDateOption" value="yes" <?php echo ($this->rsUser['enable_adding_test_response_date'] == "yes") ? " checked='checked' " : ""; ?>><b> Yes</b>&nbsp;&nbsp;
+                    <input type="radio" class="isRequired" id="disableReceiptDateOption" name="receiptDateOption" value="no" <?php echo (!isset($this->rsUser['enable_adding_test_response_date']) || trim($this->rsUser['enable_adding_test_response_date']) == null || trim($this->rsUser['enable_adding_test_response_date']) == ""  || trim($this->rsUser['enable_adding_test_response_date']) == "no") ? " checked='checked' " : ""; ?> title="Please choose adding response date enable option"><b> No</b>
                 </div>
             </div>
-			<div class="form-group">
+            <div class="form-group">
                 <label class="col-lg-3 control-label">Enable Choosing Mode of Receipt <span class="mandatory">*</span></label>
                 <div class="col-lg-5" style="padding-top:10px;">
-                    <input type="radio" id="enableModeOfReceiptOption" name="modeOfReceiptOption" value="yes" <?php echo ($this->rsUser['enable_choosing_mode_of_receipt']=="yes") ? " checked='checked' " : ""; ?>><b> Yes</b>&nbsp;&nbsp;
-                    <input type="radio" class="isRequired" id="disableModeOfReceiptOption" name="modeOfReceiptOption" value="no" <?php echo (!isset($this->rsUser['enable_choosing_mode_of_receipt']) || trim($this->rsUser['enable_choosing_mode_of_receipt']) == null || trim($this->rsUser['enable_choosing_mode_of_receipt']) == ""  || trim($this->rsUser['enable_choosing_mode_of_receipt'])=="no") ? " checked='checked' " : ""; ?> title="Please choose choosing mode of receipt enable option"><b> No</b>
+                    <input type="radio" id="enableModeOfReceiptOption" name="modeOfReceiptOption" value="yes" <?php echo ($this->rsUser['enable_choosing_mode_of_receipt'] == "yes") ? " checked='checked' " : ""; ?>><b> Yes</b>&nbsp;&nbsp;
+                    <input type="radio" class="isRequired" id="disableModeOfReceiptOption" name="modeOfReceiptOption" value="no" <?php echo (!isset($this->rsUser['enable_choosing_mode_of_receipt']) || trim($this->rsUser['enable_choosing_mode_of_receipt']) == null || trim($this->rsUser['enable_choosing_mode_of_receipt']) == ""  || trim($this->rsUser['enable_choosing_mode_of_receipt']) == "no") ? " checked='checked' " : ""; ?> title="Please choose choosing mode of receipt enable option"><b> No</b>
                 </div>
             </div>
-			<div class="form-group">
+            <div class="form-group">
                 <label class="col-lg-3 control-label">Enable View -Only Access<span class="mandatory">*</span></label>
                 <div class="col-lg-5" style="padding-top:10px;">
-                    <input type="radio" id="viewOnlyAccess" name="viewOnlyAccess" value="yes" <?php echo ($this->rsUser['view_only_access']=="yes") ? " checked='checked' " : ""; ?>><b> Yes</b>&nbsp;&nbsp;
-                    <input type="radio" class="isRequired" name="viewOnlyAccess" value="no" <?php echo (!isset($this->rsUser['enable_choosing_mode_of_receipt']) || trim($this->rsUser['enable_choosing_mode_of_receipt']) == null || trim($this->rsUser['enable_choosing_mode_of_receipt']) == ""  || trim($this->rsUser['view_only_access'])=="no") ? " checked='checked' " : ""; ?> title="Please choose view only access option"><b> No</b>
+                    <input type="radio" id="viewOnlyAccess" name="viewOnlyAccess" value="yes" <?php echo ($this->rsUser['view_only_access'] == "yes") ? " checked='checked' " : ""; ?>><b> Yes</b>&nbsp;&nbsp;
+                    <input type="radio" class="isRequired" name="viewOnlyAccess" value="no" <?php echo (!isset($this->rsUser['enable_choosing_mode_of_receipt']) || trim($this->rsUser['enable_choosing_mode_of_receipt']) == null || trim($this->rsUser['enable_choosing_mode_of_receipt']) == ""  || trim($this->rsUser['view_only_access']) == "no") ? " checked='checked' " : ""; ?> title="Please choose view only access option"><b> No</b>
                 </div>
             </div>
-        <div class="form-group">
-            <label class="col-lg-3 control-label">Status <span class="mandatory">*</span></label>
-            <div class="col-lg-5">
-				<select type="text" id="status" name="status" class="isRequired form-control" title="Please select user status here">
-					<option value="">--Select--</option>
-					<option value="active" <?php echo ($this->rsUser['status'] == "active") ? "selected='selected'" : ""; ?>>Active</option>
-					<option value="inactive" <?php echo ($this->rsUser['status'] == "inactive") ? "selected='selected'" : ""; ?>>Inactive</option>
-				</select>
-			</div>
-        </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Choose a Participant<span class="mandatory">*</span></label>
+                <div class="col-lg-5" style="padding-top:10px;">
+                    <select style="width:100%;" class="isRequired form-control" multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="Please choose a Participant" title="Please choose a Participant">
+                        <option value=""></option>
+                        <?php foreach ($this->participants as $participant) { ?>
+                            <option value="<?php echo $participant['participant_id']; ?>" <?php echo (in_array($participant['participant_id'], $participantArray)) ? "selected='selected'" : ""; ?>><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">Status <span class="mandatory">*</span></label>
+                <div class="col-lg-5">
+                    <select type="text" id="status" name="status" class="isRequired form-control" title="Please select user status here">
+                        <option value="">--Select--</option>
+                        <option value="active" <?php echo ($this->rsUser['status'] == "active") ? "selected='selected'" : ""; ?>>Active</option>
+                        <option value="inactive" <?php echo ($this->rsUser['status'] == "inactive") ? "selected='selected'" : ""; ?>>Inactive</option>
+                    </select>
+                </div>
+            </div>
 
-    </table>
-    <br>
-    <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-        <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update"  /> 
-        <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/data-managers';" tabindex="8" value="Cancel" /> 
-    </div>
-	</fieldset>
-</form>
+            </table>
+            <br>
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/data-managers';" tabindex="8" value="Cancel" />
+            </div>
+        </fieldset>
+    </form>
 </div>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
-	var duplicated = false;
-	var duplicateInformed = false;
-	
+    var duplicated = false;
+    var duplicateInformed = false;
+    $(document).ready(function() {
+        $("#allparticipant").select2({
+            placeholder: "Choose a Participants",
+            allowClear: true
+        });
+    });
+
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-	objValue=document.getElementById(obj).value;
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", { tableName: tableName, fieldName: fieldName, value: objValue, fnct: fnct, format: "html" },
-            function (data) {
+        objValue = document.getElementById(obj).value;
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+                tableName: tableName,
+                fieldName: fieldName,
+                value: objValue,
+                fnct: fnct,
+                format: "html"
+            },
+            function(data) {
                 if (data > 0) {
                     alert(msg, "err");
                     duplicated = true;
-		    //$("#"+obj).focus();
-                }
-                else {
+                    //$("#"+obj).focus();
+                } else {
                     duplicated = false;
                 }
-		return duplicated;
+                return duplicated;
             });
     }
-    
-    function validateNow(){
-	//checkDduplicateId=checkDuplicate('data_manager','primary_email','userId','<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>','This email already exists as a primary email for another user. Please choose another email.')
-	//if (!checkDduplicateId) {
-	    flag = deforayValidator.init({
+
+    function validateNow() {
+        //checkDduplicateId=checkDuplicate('data_manager','primary_email','userId','<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>','This email already exists as a primary email for another user. Please choose another email.')
+        //if (!checkDduplicateId) {
+        flag = deforayValidator.init({
             formId: 'editUserForm'
-	    });
-	    if(flag && !duplicated){
-		$.blockUI();
-		document.getElementById('editUserForm').submit();
-	    }
-	//}
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('editUserForm').submit();
+        }
+        //}
     }
-    
-    function cheackEmailId(){
-	primaryEmail=document.getElementById("userId").value;
-	secondaryEmail=document.getElementById("semail").value;
-	if (secondaryEmail!="") {
-	    if (primaryEmail==secondaryEmail) {
-	    alert("Please check your primary email and secondary email");
-	    document.getElementById("secondaryEmail").value="";
-	    $( "#secondaryEmail" ).focus();
-	    duplicated = true;
-	    }else{
-		duplicated = false;
-	    }
-	}
+
+    function cheackEmailId() {
+        primaryEmail = document.getElementById("userId").value;
+        secondaryEmail = document.getElementById("semail").value;
+        if (secondaryEmail != "") {
+            if (primaryEmail == secondaryEmail) {
+                alert("Please check your primary email and secondary email");
+                document.getElementById("secondaryEmail").value = "";
+                $("#secondaryEmail").focus();
+                duplicated = true;
+            } else {
+                duplicated = false;
+            }
+        }
     }
 </script>
