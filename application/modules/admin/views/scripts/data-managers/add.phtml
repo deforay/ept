@@ -1,26 +1,26 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
-    <form name="addUserForm" id="addUserForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "data-managers", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+    <form name="addUserForm" id="addUserForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "data-managers", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
         <fieldset>
             <legend>Add New PT Participant Login</legend>
 
             <div class="form-group">
                 <label class="col-lg-3 control-label">Login (Primary e-mail) <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <input type="text" id="userId" name="userId" size="50" class="isRequired isEmail form-control" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('data_manager','primary_email','userId',null,'This email already exists as a primary email for another user. Please choose another email.')" value="<?php echo (isset($this->contact['email'])) ? $this->contact['email'] : "" ?>" />
+                    <input type="text" id="dmUserId" name="dmUserId" size="50" class="isRequired isEmail form-control" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onkeyup="" value="<?php echo (isset($this->contact['email'])) ? $this->contact['email'] : "" ?>" autocomplete="off" >
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Password <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <input type="password" id="password" name="password" size="50" value="" class="isRequired form-control" title="Please enter a password" placeholder="Please enter a password" onchange="validatePassword(this)" />
+                    <input type="password" id="dmPassword" name="dmPassword" size="50" value="" class="isRequired form-control" title="Please enter a password" placeholder="Please enter a password" onkeyup="" autocomplete="off" >
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Confirm Password <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <input type="password" id="confirmPassword" name="password" size="50" value="" class="isRequired form-control confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password" />
+                    <input type="password" id="confirmPassword" name="dmPassword" size="50" value="" class="isRequired form-control confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password" />
                 </div>
             </div>
             <div class="form-group">
@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Choose a Participant<span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label">Choose Participant(s)<span class="mandatory">*</span></label>
                 <div class="col-lg-5" style="padding-top:10px;">
                     <select style="width:100%;" class="isRequired form-control" multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="Please choose a Participant" title="Please choose a Participant">
                         <option value=""></option>
@@ -112,7 +112,7 @@
     var duplicated = false;
     $(document).ready(function() {
         $("#allparticipant").select2({
-            placeholder: "Choose a Participants",
+            placeholder: "Choose one or more Participant(s)",
             minimumInputLength: 3,
             width: '100%',
             allowClear: true,
@@ -167,6 +167,8 @@
     function validateNow() {
         //checkDduplicateId=checkDuplicate('data_manager','primary_email','userId',null,'This email already exists as a primary email for another user. Please choose another email.')
         //if (!checkDduplicateId) {
+        checkDuplicate('data_manager','primary_email','dmUserId',null,'This email already exists as a primary email for another user. Please choose another email.')
+        validatePassword(this);    
         flag = deforayValidator.init({
             formId: 'addUserForm'
         });
@@ -178,7 +180,7 @@
     }
 
     function cheackEmailId() {
-        primaryEmail = document.getElementById("userId").value;
+        primaryEmail = document.getElementById("dmUserId").value;
         secondaryEmail = document.getElementById("semail").value;
         if (secondaryEmail != "") {
             if (primaryEmail == secondaryEmail) {

@@ -5,12 +5,18 @@
             <legend>Bulk Import Participant</legend>
 
             <div class="form-group col-lg-12">
-                <label class="col-lg-4 control-label">Select File to upload<span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label">Select file to upload<span class="mandatory">*</span></label>
                 <div class="col-lg-3">
                     <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="Please select participants import data file">
                 </div>
                 <div class="col-lg-5 ">
-                    <a class="text-danger" href="<?php echo $this->baseUrl('uploads/Participant_Import_Excel_Format.xls');?>" download><i class="fa fa-fw fa-download mr-1"></i> Download the format for importing the excel</a>
+                    
+                    <ul> 
+                        <li> <a class="text-danger" href="<?php echo $this->baseUrl('/docs/Participant_Bulk_Import_Excel_Format.xlsx');?>" download><i class="fa fa-fw fa-download mr-1"></i> Download the format for importing the excel</a> </li>
+                        <li> Please note that the columns marked in <span class="mandatory">red</span> are mandatory. </li>
+                        <li> The Unique Identifier field should have a unique id for the participant. </li>
+                        <li> If the Participant is a Lab/Clinic, then put the Lab/Clinic Name in the place of First Name </li>
+                    </ul>
                 </div>
             </div>
            

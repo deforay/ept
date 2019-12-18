@@ -1915,7 +1915,7 @@ $dtFormat=  $vHelper->getDateFormat();
 	});
 		
     function validateNow() {
-		checkDuplicate('shipment', 'shipment_code', $("#shipmentCode"), '<?php echo "shipment_id##" . $shipmentData['shipment']['shipment_id']; ?>', 'This Code already exists for another Shipment. Please try something else.')
+		//checkDuplicate('shipment', 'shipment_code', $("#shipmentCode"), '<?php echo "shipment_id##" . $shipmentData['shipment']['shipment_id']; ?>', 'This Code already exists for another Shipment. Please try something else.')
         flag = deforayValidator.init({
             formId: 'shipmentForm'
         });
