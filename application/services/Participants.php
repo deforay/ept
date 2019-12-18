@@ -572,7 +572,8 @@ class Application_Service_Participants
 								/* To check the dublication in participant table */
 								$psql = $db->select()->from('participant')
 								->where("mobile LIKE '%" . $sheetData[$i]['N']."%'")
-								->orWhere("email LIKE '%".$sheetData[$i]['O']."%'");
+								->orWhere("email LIKE '%".$sheetData[$i]['O']."%'")
+								->orWhere("unique_identifier LIKE '%".$sheetData[$i]['B']."%'");
 								$presult = $db->fetchRow($psql);
 								/* To check the dublication in data manager table */
 								$dmsql = $db->select()->from('data_manager')
