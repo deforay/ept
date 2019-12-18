@@ -640,7 +640,9 @@ class Application_Service_Participants
 											'email' 	=> $sheetData[$i]['P'], 
 											'mobile' 	=> $sheetData[$i]['O'],
 											'first_name'=> $sheetData[$i]['D'],
-											'last_name' => $sheetData[$i]['E']
+											'last_name' => $sheetData[$i]['E'],
+											'city' 		=> $sheetData[$i]['I'],
+											'institute' => $sheetData[$i]['F']
 										);
 									}
 								}else{
@@ -650,7 +652,9 @@ class Application_Service_Participants
 										'email' 	=> $sheetData[$i]['P'], 
 										'mobile' 	=> $sheetData[$i]['O'],
 										'first_name'=> $sheetData[$i]['D'],
-										'last_name' => $sheetData[$i]['E']
+										'last_name' => $sheetData[$i]['E'],
+										'city' 		=> $sheetData[$i]['I'],
+										'institute' => $sheetData[$i]['F']
 									);
 								}
 								if($lastInsertedId > 0 || $dmId > 0){

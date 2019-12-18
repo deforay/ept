@@ -61,6 +61,8 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             }else{
                 $this->view->response = $result;
             }
+        }else{
+            $this->_redirect("/admin/participants");
         }
     }
 
