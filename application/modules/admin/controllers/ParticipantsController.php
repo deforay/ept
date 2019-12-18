@@ -42,6 +42,27 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
         $this->view->siteType = $participantService->getSiteTypeList();
     }
+    
+    public function bulkImportAction()
+    {
+        $participantService = new Application_Service_Participants();
+        if ($this->getRequest()->isPost()) {
+            $this->view->response = $participantService->addBulkParticipant();
+        }
+    }
+    
+    public function participantUploadStatisticsAction()
+    {
+        $participantService = new Application_Service_Participants();
+        if ($this->getRequest()->isPost()) {
+            $result = $participantService->addBulkParticipant();
+            if(!$result){
+                $this->_redirect("/admin/participants");
+            }else{
+                $this->view->response = $result;
+            }
+        }
+    }
 
     public function editAction()
     {

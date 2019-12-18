@@ -120,6 +120,7 @@ class PHPExcel_Settings
      */
     public static function setZipClass($zipClass)
     {
+        $zipClass = PHPExcel_Settings::PCLZIP;
         if (($zipClass === self::PCLZIP) ||
             ($zipClass === self::ZIPARCHIVE)) {
             self::$zipClass = $zipClass;
@@ -139,6 +140,7 @@ class PHPExcel_Settings
      */
     public static function getZipClass()
     {
+        $zipClass = PHPExcel_Settings::PCLZIP;
         return self::$zipClass;
     }
 

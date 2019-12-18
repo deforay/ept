@@ -535,4 +535,140 @@ class Application_Service_Participants
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->fetchParticipantSearch($search);
 	}
+	
+	public function addBulkParticipant()
+	{
+		try{
+			$alertMsg = new Zend_Session_Namespace('alertSpace');
+			$adminSession = new Zend_Session_Namespace('administrators');
+			$participantDb = new Application_Model_DbTable_Participants();
+			$userDb = new Application_Model_DbTable_DataManagers();
+
+			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			// $rResult = $db->fetchAll();
+            $allowedExtensions = array('xls', 'xlsx', 'csv');
+            $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
+            $fileName = str_replace(" ", "-", $fileName);
+            $ranNumber = str_pad(rand(0, pow(10, 6)-1), 6, '0', STR_PAD_LEFT);
+            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+			$fileName =$ranNumber.".".$extension;
+			$response = array();
+            
+            if (in_array($extension, $allowedExtensions)) {
+           
+                if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {   
+                    
+                    if (move_uploaded_file($_FILES['fileName']['tmp_name'], TEMP_UPLOAD_PATH.DIRECTORY_SEPARATOR. $fileName)) {
+                    
+                        $objPHPExcel = \PHPExcel_IOFactory::load(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+                        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+						
+						$authNameSpace = new Zend_Session_Namespace('administrators');
+                        $count = count($sheetData);
+                        for ($i = 2; $i <= $count; ++$i) 
+                        {
+							if((isset($sheetData[$i]['O']) && trim($sheetData[$i]['O']) != "") && (isset($sheetData[$i]['N']) && trim($sheetData[$i]['N']) != "")){
+								$lastInsertedId = 0;$dmId= 0;
+								/* To check the dublication in participant table */
+								$psql = $db->select()->from('participant')
+								->where("mobile LIKE '%" . $sheetData[$i]['N']."%'")
+								->orWhere("email LIKE '%".$sheetData[$i]['O']."%'");
+								$presult = $db->fetchRow($psql);
+								/* To check the dublication in data manager table */
+								$dmsql = $db->select()->from('data_manager')
+								->where("mobile LIKE '%" . $sheetData[$i]['N']."%'")
+								->orWhere("primary_email LIKE '%".$sheetData[$i]['O']."%'");
+								$dmresult = $db->fetchRow($dmsql);
+								/* To find the country id */
+								$cmsql = $db->select()->from('countries')
+								->where("iso_name LIKE '%" . $sheetData[$i]['J']."%'")
+								->orWhere("iso2 LIKE '%".$sheetData[$i]['J']."%'")
+								->orWhere("iso3 LIKE '%".$sheetData[$i]['J']."%'");
+								$cresult = $db->fetchRow($cmsql);
+								
+								if(!$presult || !$dmresult){
+									$lastInsertedId = $db->insert('participant', array(
+										'unique_identifier' => $sheetData[$i]['B'],
+										'first_name' 		=> $sheetData[$i]['C'],
+										'last_name' 		=> $sheetData[$i]['D'],
+										'institute_name' 	=> $sheetData[$i]['E'],
+										'department_name' 	=> $sheetData[$i]['F'],
+										'address' 			=> $sheetData[$i]['G'],
+										'city' 				=> $sheetData[$i]['H'],
+										'state' 			=> $sheetData[$i]['I'],
+										'country' 			=> (isset($cresult['id']) && $cresult['id'] != "")?$cresult['id']:0,
+										'zip' 				=> $sheetData[$i]['K'],
+										'long' 				=> $sheetData[$i]['L'],
+										'lat' 				=> $sheetData[$i]['M'],
+										'mobile' 			=> $sheetData[$i]['N'],
+										'email' 			=> $sheetData[$i]['O'],
+										'additional_email' 	=> $sheetData[$i]['Q'],
+										'individual' 		=> 'no',
+										'created_by' 		=> $authNameSpace->admin_id,
+										'created_on' 		=> new Zend_Db_Expr('now()'),
+										'status'			=> 'active'
+									));
+									if($lastInsertedId > 0){
+										$dmId = $db->insert('data_manager', array(
+											'first_name' 		=> $sheetData[$i]['C'],
+											'last_name' 		=> $sheetData[$i]['D'],
+											'institute' 		=> $sheetData[$i]['E'],
+											'mobile' 			=> $sheetData[$i]['N'],
+											'secondary_email' 	=> $sheetData[$i]['Q'],
+											'primary_email' 	=> $sheetData[$i]['O'], 
+											'password' 			=> $sheetData[$i]['P'],
+											'created_by' 		=> $authNameSpace->admin_id,
+											'created_on' 		=> new Zend_Db_Expr('now()'),
+											'status'			=> 'active'
+										));
+										if($dmId > 0){
+											$dmId = $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
+										}
+										$response['data'][] = array(
+											'serialNo' 	=> $sheetData[$i]['A'],
+											'identifier'=> $sheetData[$i]['B'], 
+											'email' 	=> $sheetData[$i]['O'], 
+											'mobile' 	=> $sheetData[$i]['N'],
+											'first_name'=> $sheetData[$i]['C'],
+											'last_name' => $sheetData[$i]['D']
+										);
+									}
+								}else{
+									$response['error-data'][] = array(
+										'serialNo' 	=> $sheetData[$i]['A'],
+										'identifier'=> $sheetData[$i]['B'], 
+										'email' 	=> $sheetData[$i]['O'], 
+										'mobile' 	=> $sheetData[$i]['N'],
+										'first_name'=> $sheetData[$i]['C'],
+										'last_name' => $sheetData[$i]['D']
+									);
+								}
+								if($lastInsertedId > 0 || $dmId > 0){
+									if(file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)){
+										unlink(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+									}
+									$response['message'] = "File has expired please re import again!";
+								}
+							}
+                        }
+                    }else{
+						$alertMsg->message = 'Data imported failed';
+						return false;
+                    }
+                }
+			}else{
+				$alertMsg->message = 'File format not supported';
+				return false;
+			}
+            if($lastInsertedId > 0){
+				$alertMsg->message = 'Your file was imported successfully';
+            }
+        }
+        catch (Exception $exc) {
+            error_log("IMPORT-PARTICIPANTS-DATA-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+            return "";
+		}
+		return $response;
+	}
 }

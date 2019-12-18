@@ -1,0 +1,36 @@
+<div class="well">
+    <form name="bulkParticipantForm" id="bulkParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "participant-upload-statistics"), 'default', true) ?>" class="form-horizontal bs-example" enctype="multipart/form-data" role="form" onsubmit="validateNow();
+            return false;">
+        <fieldset>
+            <legend>Bulk Import Participant</legend>
+
+            <div class="form-group col-lg-12">
+                <label class="col-lg-4 control-label">Select File to upload<span class="mandatory">*</span></label>
+                <div class="col-lg-3">
+                    <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="Please select participants import data file">
+                </div>
+                <div class="col-lg-5 ">
+                    <a class="text-danger" href="<?php echo $this->baseUrl('uploads/Participant_Import_Excel_Format.xls');?>" download><i class="fa fa-fw fa-download mr-1"></i> Download the format for importing the excel</a>
+                </div>
+            </div>
+           
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants';" tabindex="8" value="Cancel" />
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+    function validateNow() {
+        $(".bootstrap-select").removeClass('isRequired');
+        //checkDuplicate('participant', 'unique_identifier', $("#pid"), null, 'This Participant ID already exists for another Participant. Please try something else.')
+        flag = deforayValidator.init({
+            formId: 'bulkParticipantForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('bulkParticipantForm').submit();
+        }
+    }
+</script>
