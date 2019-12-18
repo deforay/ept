@@ -567,24 +567,24 @@ class Application_Service_Participants
                         $count = count($sheetData);
                         for ($i = 2; $i <= $count; ++$i) 
                         {
-							if((isset($sheetData[$i]['O']) && trim($sheetData[$i]['O']) != "") && (isset($sheetData[$i]['N']) && trim($sheetData[$i]['N']) != "")){
+							if((isset($sheetData[$i]['O']) && trim($sheetData[$i]['O']) != "") && (isset($sheetData[$i]['P']) && trim($sheetData[$i]['P']) != "")){
 								$lastInsertedId = 0;$dmId= 0;
 								/* To check the dublication in participant table */
 								$psql = $db->select()->from('participant')
-								->where("mobile LIKE '%" . $sheetData[$i]['N']."%'")
-								->orWhere("email LIKE '%".$sheetData[$i]['O']."%'")
+								->where("mobile LIKE '%" . $sheetData[$i]['O']."%'")
+								->orWhere("email LIKE '%".$sheetData[$i]['P']."%'")
 								->orWhere("unique_identifier LIKE '%".$sheetData[$i]['B']."%'");
 								$presult = $db->fetchRow($psql);
 								/* To check the dublication in data manager table */
 								$dmsql = $db->select()->from('data_manager')
-								->where("mobile LIKE '%" . $sheetData[$i]['N']."%'")
-								->orWhere("primary_email LIKE '%".$sheetData[$i]['O']."%'");
+								->where("mobile LIKE '%" . $sheetData[$i]['O']."%'")
+								->orWhere("primary_email LIKE '%".$sheetData[$i]['P']."%'");
 								$dmresult = $db->fetchRow($dmsql);
 								/* To find the country id */
 								$cmsql = $db->select()->from('countries')
-								->where("iso_name LIKE '%" . $sheetData[$i]['J']."%'")
-								->orWhere("iso2 LIKE '%".$sheetData[$i]['J']."%'")
-								->orWhere("iso3 LIKE '%".$sheetData[$i]['J']."%'");
+								->where("iso_name LIKE '%" . $sheetData[$i]['K']."%'")
+								->orWhere("iso2 LIKE '%".$sheetData[$i]['K']."%'")
+								->orWhere("iso3 LIKE '%".$sheetData[$i]['K']."%'");
 								$cresult = $db->fetchRow($cmsql);
 								
 								if(!$presult && !$dmresult){
