@@ -571,14 +571,12 @@ class Application_Service_Participants
 								$lastInsertedId = 0;$dmId= 0;
 								/* To check the dublication in participant table */
 								$psql = $db->select()->from('participant')
-								->where("mobile LIKE '%" . $sheetData[$i]['O']."%'")
-								->orWhere("email LIKE '%".$sheetData[$i]['P']."%'")
+								->where("email LIKE '%" . $sheetData[$i]['P']."%'")
 								->orWhere("unique_identifier LIKE '%".$sheetData[$i]['B']."%'");
 								$presult = $db->fetchRow($psql);
 								/* To check the dublication in data manager table */
 								$dmsql = $db->select()->from('data_manager')
-								->where("mobile LIKE '%" . $sheetData[$i]['O']."%'")
-								->orWhere("primary_email LIKE '%".$sheetData[$i]['P']."%'");
+								->where("primary_email LIKE '%" . $sheetData[$i]['P']."%'");
 								$dmresult = $db->fetchRow($dmsql);
 								/* To find the country id */
 								$cmsql = $db->select()->from('countries')
@@ -609,6 +607,12 @@ class Application_Service_Participants
 										'created_on' 		=> new Zend_Db_Expr('now()'),
 										'status'			=> 'active'
 									));
+
+									$pasql = $db->select()->from('participant')
+									->where("email LIKE '%" . $sheetData[$i]['P']."%'")
+									->orWhere("unique_identifier LIKE '%".$sheetData[$i]['B']."%'");
+									$paresult = $db->fetchRow($pasql);
+									$lastInsertedId = $paresult['participant_id'];
 									if($lastInsertedId > 0){
 										$dmId = $db->insert('data_manager', array(
 											'first_name' 		=> $sheetData[$i]['D'],
@@ -622,8 +626,13 @@ class Application_Service_Participants
 											'created_on' 		=> new Zend_Db_Expr('now()'),
 											'status'			=> 'active'
 										));
+
+										$dmasql = $db->select()->from('data_manager')
+										->where("primary_email LIKE '%" . $sheetData[$i]['P']."%'");
+										$dmaresult = $db->fetchRow($dmasql);
+										$dmId = $dmaresult['dm_id'];
 										if($dmId > 0){
-											$dmId = $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
+											$db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
 										}
 										$response['data'][] = array(
 											'serialNo' 	=> $sheetData[$i]['A'],
@@ -670,8 +679,9 @@ class Application_Service_Participants
         }
         catch (Exception $exc) {
             error_log("IMPORT-PARTICIPANTS-DATA-EXCEL--" . $exc->getMessage());
-            error_log($exc->getTraceAsString());
-            return "";
+			error_log($exc->getTraceAsString());
+			$alertMsg->message = 'File not uploaded. Something went happened please try again later!';
+            return false;
 		}
 		return $response;
 	}
