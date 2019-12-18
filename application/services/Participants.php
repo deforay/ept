@@ -562,7 +562,7 @@ class Application_Service_Participants
                     
                         $objPHPExcel = \PHPExcel_IOFactory::load(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
                         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-						
+						// Zend_Debug::dump($sheetData);die;
 						$authNameSpace = new Zend_Session_Namespace('administrators');
                         $count = count($sheetData);
                         for ($i = 2; $i <= $count; ++$i) 
@@ -587,37 +587,37 @@ class Application_Service_Participants
 								->orWhere("iso3 LIKE '%".$sheetData[$i]['J']."%'");
 								$cresult = $db->fetchRow($cmsql);
 								
-								if(!$presult || !$dmresult){
+								if(!$presult && !$dmresult){
 									$lastInsertedId = $db->insert('participant', array(
 										'unique_identifier' => $sheetData[$i]['B'],
-										'first_name' 		=> $sheetData[$i]['C'],
-										'last_name' 		=> $sheetData[$i]['D'],
-										'institute_name' 	=> $sheetData[$i]['E'],
-										'department_name' 	=> $sheetData[$i]['F'],
-										'address' 			=> $sheetData[$i]['G'],
-										'city' 				=> $sheetData[$i]['H'],
-										'state' 			=> $sheetData[$i]['I'],
+										'individual' 		=> $sheetData[$i]['C'],
+										'first_name' 		=> $sheetData[$i]['D'],
+										'last_name' 		=> $sheetData[$i]['E'],
+										'institute_name' 	=> $sheetData[$i]['F'],
+										'department_name' 	=> $sheetData[$i]['G'],
+										'address' 			=> $sheetData[$i]['H'],
+										'city' 				=> $sheetData[$i]['I'],
+										'state' 			=> $sheetData[$i]['J'],
 										'country' 			=> (isset($cresult['id']) && $cresult['id'] != "")?$cresult['id']:0,
-										'zip' 				=> $sheetData[$i]['K'],
-										'long' 				=> $sheetData[$i]['L'],
-										'lat' 				=> $sheetData[$i]['M'],
-										'mobile' 			=> $sheetData[$i]['N'],
-										'email' 			=> $sheetData[$i]['O'],
-										'additional_email' 	=> $sheetData[$i]['Q'],
-										'individual' 		=> 'no',
+										'zip' 				=> $sheetData[$i]['L'],
+										'long' 				=> $sheetData[$i]['M'],
+										'lat' 				=> $sheetData[$i]['N'],
+										'mobile' 			=> $sheetData[$i]['O'],
+										'email' 			=> $sheetData[$i]['P'],
+										'additional_email' 	=> $sheetData[$i]['R'],
 										'created_by' 		=> $authNameSpace->admin_id,
 										'created_on' 		=> new Zend_Db_Expr('now()'),
 										'status'			=> 'active'
 									));
 									if($lastInsertedId > 0){
 										$dmId = $db->insert('data_manager', array(
-											'first_name' 		=> $sheetData[$i]['C'],
-											'last_name' 		=> $sheetData[$i]['D'],
-											'institute' 		=> $sheetData[$i]['E'],
-											'mobile' 			=> $sheetData[$i]['N'],
-											'secondary_email' 	=> $sheetData[$i]['Q'],
-											'primary_email' 	=> $sheetData[$i]['O'], 
-											'password' 			=> $sheetData[$i]['P'],
+											'first_name' 		=> $sheetData[$i]['D'],
+											'last_name' 		=> $sheetData[$i]['E'],
+											'institute' 		=> $sheetData[$i]['F'],
+											'mobile' 			=> $sheetData[$i]['O'],
+											'secondary_email' 	=> $sheetData[$i]['R'],
+											'primary_email' 	=> $sheetData[$i]['P'], 
+											'password' 			=> $sheetData[$i]['Q'],
 											'created_by' 		=> $authNameSpace->admin_id,
 											'created_on' 		=> new Zend_Db_Expr('now()'),
 											'status'			=> 'active'
@@ -628,20 +628,20 @@ class Application_Service_Participants
 										$response['data'][] = array(
 											'serialNo' 	=> $sheetData[$i]['A'],
 											'identifier'=> $sheetData[$i]['B'], 
-											'email' 	=> $sheetData[$i]['O'], 
-											'mobile' 	=> $sheetData[$i]['N'],
-											'first_name'=> $sheetData[$i]['C'],
-											'last_name' => $sheetData[$i]['D']
+											'email' 	=> $sheetData[$i]['P'], 
+											'mobile' 	=> $sheetData[$i]['O'],
+											'first_name'=> $sheetData[$i]['D'],
+											'last_name' => $sheetData[$i]['E']
 										);
 									}
 								}else{
 									$response['error-data'][] = array(
 										'serialNo' 	=> $sheetData[$i]['A'],
 										'identifier'=> $sheetData[$i]['B'], 
-										'email' 	=> $sheetData[$i]['O'], 
-										'mobile' 	=> $sheetData[$i]['N'],
-										'first_name'=> $sheetData[$i]['C'],
-										'last_name' => $sheetData[$i]['D']
+										'email' 	=> $sheetData[$i]['P'], 
+										'mobile' 	=> $sheetData[$i]['O'],
+										'first_name'=> $sheetData[$i]['D'],
+										'last_name' => $sheetData[$i]['E']
 									);
 								}
 								if($lastInsertedId > 0 || $dmId > 0){
