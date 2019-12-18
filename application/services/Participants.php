@@ -656,7 +656,10 @@ class Application_Service_Participants
 						$alertMsg->message = 'Data imported failed';
 						return false;
                     }
-                }
+                }else{
+					$alertMsg->message = 'File not uploaded. Please rename and upload it again!';
+					return false;	
+				}
 			}else{
 				$alertMsg->message = 'File format not supported';
 				return false;
