@@ -107,4 +107,23 @@ class AuthController extends Zend_Controller_Action
 			$this->_redirect('/auth/login');
 		}
 	}
+	
+	public function newPasswordAction()
+	{
+		$userService = new Application_Service_DataManagers();
+		if ($this->getRequest()->isPost()) {
+			$params = $this->getRequest()->getPost();
+			$this->_redirect($userService->newPassword($params));
+		}else{
+			if ($this->_hasParam('email')) {
+				$email = $this->_getParam('email');
+				$result = $userService->checkEmail($email);
+				if($result){
+					$this->view->email = $result;
+				}else{
+					$this->view->email = "";
+				}
+			}
+		}
+	}
 }

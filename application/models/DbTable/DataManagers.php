@@ -309,4 +309,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         return $this->fetchAll($sql);
     }
+
+    public function saveNewPassword($params){
+        // Zend_Debug::dump($params);die;
+        $noOfRows = $this->update(array('password' => $params['password']), "primary_email = '" . $params['registeredEmail'] ."'");
+        if ($noOfRows != null && count($noOfRows) == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public function fetchEmailById($email){
+        return $this->fetchRow("primary_email = '" . base64_decode($email) . "'");
+    }
 }

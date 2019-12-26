@@ -12,6 +12,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                               ->where("name='".$name."'"));
         return $res[0];
     }
+    
     public function getGlobalConfig() {
         $configValues = $this->fetchAll()->toArray();
         
