@@ -2388,3 +2388,6 @@ ALTER TABLE `response_result_vl` CHANGE `reported_viral_load` `reported_viral_lo
 
 
 -- Version 5.0 Dec 11 2019
+
+-- Thanaseelan 23-Dec-2019
+ALTER TABLE `system_admin` ADD `privileges` VARCHAR(255) NULL DEFAULT NULL AFTER `status`;

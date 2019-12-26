@@ -113,7 +113,7 @@ class Application_Service_Evaluation
 
 		$sQuery = $dbAdapter->select()->from(array('temp' => $sQuery))->where("not_finalized_count>0");
 
-		//die($sQuery);
+		// die($sQuery);
 
 		$rResult = $dbAdapter->fetchAll($sQuery);
 

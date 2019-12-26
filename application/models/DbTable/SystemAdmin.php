@@ -6,7 +6,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     protected $_name = 'system_admin';
     protected $_primary = 'admin_id';
 
-    
+
     public function getAllAdmin($parameters)
     {
 
@@ -93,7 +93,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name));
-	
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -146,46 +146,49 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
 
         echo json_encode($output);
     }
-    
-    public function addSystemAdmin($params){
-	$authNameSpace = new Zend_Session_Namespace('administrators');
+
+    public function addSystemAdmin($params)
+    {
+        $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
-                      'first_name'=>$params['firstName'],
-                      'last_name'=>$params['lastName'],
-                      'primary_email'=>$params['primaryEmail'],
-                      'secondary_email'=>$params['secondaryEmail'],
-                      'password'=>$params['password'],
-                      'phone'=>$params['phone'],
-                      'status'=>$params['status'],
-                      'force_password_reset'=>1,
-		      'created_by' => $authNameSpace->admin_id,
-                      'created_on' => new Zend_Db_Expr('now()')
-                      );
+            'first_name' => $params['firstName'],
+            'last_name' => $params['lastName'],
+            'primary_email' => $params['primaryEmail'],
+            'secondary_email' => $params['secondaryEmail'],
+            'password' => $params['password'],
+            'phone' => $params['phone'],
+            'status' => $params['status'],
+            'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0)?implode(',',$params['privileges']):'',
+            'force_password_reset' => 1,
+            'created_by' => $authNameSpace->admin_id,
+            'created_on' => new Zend_Db_Expr('now()')
+        );
         return $this->insert($data);
     }
-    
-    public function getSystemAdminDetails($adminId){
-        return $this->fetchRow($this->select()->where("admin_id = ? ",$adminId));
+
+    public function getSystemAdminDetails($adminId)
+    {
+        return $this->fetchRow($this->select()->where("admin_id = ? ", $adminId));
     }
-    
-    public function updateSystemAdmin($params){
-	$authNameSpace = new Zend_Session_Namespace('administrators');
+
+    public function updateSystemAdmin($params)
+    {
+        $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
-                      'first_name'=>$params['firstName'],
-                      'last_name'=>$params['lastName'],
-                      'primary_email'=>$params['primaryEmail'],
-                      'secondary_email'=>$params['secondaryEmail'],
-                      'phone'=>$params['phone'],
-                      'status'=>$params['status'],
-		      'updated_by' => $authNameSpace->admin_id,
-                      'updated_on' => new Zend_Db_Expr('now()')
-                      );
-        if(isset($params['password']) && $params['password'] !=""){
-            $data['password']= $params['password'];
-            $data['force_password_reset']= 1;
+            'first_name' => $params['firstName'],
+            'last_name' => $params['lastName'],
+            'primary_email' => $params['primaryEmail'],
+            'secondary_email' => $params['secondaryEmail'],
+            'phone' => $params['phone'],
+            'status' => $params['status'],
+            'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0)?implode(',',$params['privileges']):'',
+            'updated_by' => $authNameSpace->admin_id,
+            'updated_on' => new Zend_Db_Expr('now()')
+        );
+        if (isset($params['password']) && $params['password'] != "") {
+            $data['password'] = $params['password'];
+            $data['force_password_reset'] = 1;
         }
-        return $this->update($data,"admin_id=".$params['adminId']);
+        return $this->update($data, "admin_id=" . $params['adminId']);
     }
-
 }
-
