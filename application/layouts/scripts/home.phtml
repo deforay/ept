@@ -1,5 +1,11 @@
 <?php
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
+$url= explode('/',$_SERVER['REQUEST_URI']);
+if(in_array('pt-request-enrollment',$url)){
+  $titleStatus = false;
+}else{
+  $titleStatus = true;
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -105,9 +111,11 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                   </a>
                 </li>
               <?php } else { ?>
+                <?php if($titleStatus){?>
                 <li>
-                  <a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for PT Enrollment</span></a>
+                    <a href="<?php echo $this->url(array("controller" => "pt-request-enrollment", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for PT Enrollment</span></a>
                 </li>
+                <?php }?>
                 <li>
                   <a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span>Participant Login</span></a>
                 </li>
