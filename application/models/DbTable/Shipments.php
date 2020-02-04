@@ -844,7 +844,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract {
                 if(!file_exists($invididualFilePath)){
                     // Search this file name using the map id
                     $files = glob(DOWNLOADS_FOLDER. DIRECTORY_SEPARATOR."reports". DIRECTORY_SEPARATOR.$aRow['shipment_code']. DIRECTORY_SEPARATOR . "*".$aRow['map_id'] . ".pdf");
-                    $invididualFilePath = ($files[0]);
+                    $invididualFilePath = isset($files[0]) ? $files[0] : '';
                 }
                 if(file_exists($invididualFilePath)){
                     $downloadReports .= '<br><a href="/d/' . base64_encode($invididualFilePath).'" class="btn btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> Individual Report</a>';

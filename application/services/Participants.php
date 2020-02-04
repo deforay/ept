@@ -555,9 +555,10 @@ class Application_Service_Participants
             $allowedExtensions = array('xls', 'xlsx', 'csv');
             $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
             $fileName = str_replace(" ", "-", $fileName);
-            $ranNumber = str_pad(rand(0, pow(10, 6)-1), 6, '0', STR_PAD_LEFT);
+            $ranNumber1 = str_pad(rand(0, pow(10, 6)-1), 6, '0', STR_PAD_LEFT);
+            $ranNumber2 = str_pad(rand(0, pow(10, 6)-1), 6, '0', STR_PAD_LEFT);
             $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-			$fileName =$ranNumber.".".$extension;
+			$fileName =$ranNumber1.$ranNumber2.".".$extension;
 			$response = array();
             
             if (in_array($extension, $allowedExtensions)) {
@@ -573,17 +574,18 @@ class Application_Service_Participants
                         $count = count($sheetData);
                         for ($i = 2; $i <= $count; ++$i) 
                         {
-							if((isset($sheetData[$i]['O']) && trim($sheetData[$i]['O']) != "") && (isset($sheetData[$i]['P']) && trim($sheetData[$i]['P']) != "")){
+							if((isset($sheetData[$i]['P']) && trim($sheetData[$i]['P']) != "") && (isset($sheetData[$i]['Q']) && trim($sheetData[$i]['Q']) != "")){
 								$lastInsertedId = 0;$dmId= 0;
 								/* To check the dublication in participant table */
 								$psql = $db->select()->from('participant')
-								->where("email LIKE '%" . $sheetData[$i]['P']."%'")
-								->orWhere("unique_identifier LIKE '%".$sheetData[$i]['B']."%'");
+								->where("email LIKE '" . $sheetData[$i]['P']."'")
+								->orWhere("unique_identifier LIKE '".$sheetData[$i]['B']."'");
 								$presult = $db->fetchRow($psql);
 								/* To check the dublication in data manager table */
 								$dmsql = $db->select()->from('data_manager')
-								->where("primary_email LIKE '%" . $sheetData[$i]['P']."%'");
+								->where("primary_email LIKE '" . $sheetData[$i]['P']."'");
 								$dmresult = $db->fetchRow($dmsql);
+
 								/* To find the country id */
 								$cmsql = $db->select()->from('countries')
 								->where("iso_name LIKE '%" . $sheetData[$i]['K']."%'")
@@ -615,8 +617,8 @@ class Application_Service_Participants
 									));
 
 									$pasql = $db->select()->from('participant')
-									->where("email LIKE '%" . $sheetData[$i]['P']."%'")
-									->orWhere("unique_identifier LIKE '%".$sheetData[$i]['B']."%'");
+									->where("email LIKE '" . $sheetData[$i]['P']."'")
+									->orWhere("unique_identifier LIKE '".$sheetData[$i]['B']."'");
 									$paresult = $db->fetchRow($pasql);
 									$lastInsertedId = $paresult['participant_id'];
 									if($lastInsertedId > 0){
@@ -634,7 +636,7 @@ class Application_Service_Participants
 										));
 
 										$dmasql = $db->select()->from('data_manager')
-										->where("primary_email LIKE '%" . $sheetData[$i]['P']."%'");
+										->where("primary_email LIKE '" . $sheetData[$i]['P']."'");
 										$dmaresult = $db->fetchRow($dmasql);
 										$dmId = $dmaresult['dm_id'];
 										if($dmId > 0){
@@ -667,7 +669,7 @@ class Application_Service_Participants
 									if(file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)){
 										unlink(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
 									}
-									$response['message'] = "File has expired please re import again!";
+									$response['message'] = "File has expired please re-import again!";
 								}
 							}
                         }
@@ -688,9 +690,9 @@ class Application_Service_Participants
             }
         }
         catch (Exception $exc) {
-            error_log("IMPORT-PARTICIPANTS-DATA-EXCEL--" . $exc->getMessage());
+            error_log("IMPORT-PARTICIPANTS-DATA-EXCEL--" . $exc->getMessage());die;
 			error_log($exc->getTraceAsString());
-			$alertMsg->message = 'File not uploaded. Something went happened please try again later!';
+			$alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
             return false;
 		}
 		return $response;

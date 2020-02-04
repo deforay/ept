@@ -2392,4 +2392,4 @@ ALTER TABLE `response_result_vl` CHANGE `reported_viral_load` `reported_viral_lo
 -- Thanaseelan 23-Dec-2019
 ALTER TABLE `system_admin` ADD `privileges` VARCHAR(255) NULL DEFAULT NULL AFTER `status`;
 -- Reference
-UPDATE system_admin SET privileges = 'config-ept,manage-shipments,analyze-generate-reports,edit-participant-response,access-reports' WHERE privileges=NULL
+UPDATE system_admin SET privileges = 'config-ept,manage-shipments,analyze-generate-reports,edit-participant-response,access-reports';
