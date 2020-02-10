@@ -149,4 +149,9 @@ class Application_Service_DataManagers
         $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->fetchEmailById($email);
     }
+
+    public function loginDatamanagerAPI($params){
+		$userDb = new Application_Model_DbTable_DataManagers();
+		return $userDb->loginDatamanagerByAPI($params);
+	}
 }

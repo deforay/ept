@@ -26,7 +26,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
                 }
             }            
             
-            else if($authNameSpace->force_profile_updation == 1 || $authNameSpace->force_profile_updation == '1'){
+            /* else if($authNameSpace->force_profile_updation == 1 || $authNameSpace->force_profile_updation == '1'){
                 if ($request->getControllerName() == 'participant' && $request->getActionName() == 'testeredit'){
                     $sessionAlert = new Zend_Session_Namespace('alertSpace');
                     $sessionAlert->message = "Please update participant information.";
@@ -37,7 +37,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
                     $request->setDispatched(false);
                     }
                 }
-            }
+            } */
         }else if (($request->getModuleName() == 'admin'  && $request->getControllerName() != 'login') || $request->getModuleName() == 'reports') {
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $layout->setLayout('admin');
@@ -48,10 +48,6 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract {
             }
             
         }
-        
-        
-
-        
     }
 
 }

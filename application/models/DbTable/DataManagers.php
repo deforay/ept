@@ -323,4 +323,33 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchEmailById($email){
         return $this->fetchRow("primary_email = '" . base64_decode($email) . "'");
     }
+
+    public function loginDatamanagerByAPI($params){
+        $response = array();$resultData = array();
+        if (isset($params['userId']) && $params['userId'] != "" && isset($params['key']) && $params['key'] != "") {
+            $result = $this->fetchRow("primary_email='".$params['userId']."' AND password='".$params['key']."'");
+            if(isset($result['dm_id']) && $result['dm_id'] != ""){
+                if(isset($result['status']) && $result['status'] == "active"){
+                    $this->update(array('last_login' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
+                    $resultData = array(
+                        'id' => $result['dm_id'], 
+                        'name' => $result['first_name'].' '. $result['last_name'], 
+                        'phone' => $result['phone']
+                    );
+                    $response['status'] = "success";
+                    $response['data'] = $resultData;
+                }else{
+                    $response['status'] = "fail";
+                    $response['message'] = "You are not activated!";
+                }
+            }else{
+                $response['status'] = "fail";
+                $response['message'] = "Use id or password not correct!";
+            }
+        }else{
+            $response['status'] = "fail";
+            $response['message'] = "Use id or password not found!";
+        }
+        return $response;
+    }
 }

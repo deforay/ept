@@ -1757,6 +1757,12 @@ class Application_Service_Shipments
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->fetchUniqueShipmentCode();
     }
+   
+    public function getShipmentDetailsByDmIdInAPI($dmId)
+    {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->fetchShipmentDetailsByDmIdInAPI($dmId);
+    }
 
     
 }
