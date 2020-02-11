@@ -154,21 +154,9 @@ class Application_Service_DataManagers
 		$userDb = new Application_Model_DbTable_DataManagers();
 		return $userDb->loginDatamanagerByAPI($params);
     }
-    public static function getAuthToken($params)
+    public static function getAuthToken($authToken)
     {
-        $authToken = $params;
         $db = new Application_Model_DbTable_DataManagers();
-        $sQuery = $db->getAdapter()->select()->from(array('dm' => 'data_manager'), array('dm.dm_id','view_only_access','qc_access','enable_adding_test_response_date','enable_choosing_mode_of_receipt'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
-            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
-            ->where("dm.auth_token=?", $authToken);
-        $aResult = $db->getAdapter()->fetchRow($sQuery);
-        $dmId = $aResult['dm_id'];
-        if (isset($dmId) && trim($dmId) != "") {
-            $response = $aResult;
-        } else {
-            $response = '0';
-        }
-        return $response;
+        return $db->fetchAuthToken($authToken);
     }
 }

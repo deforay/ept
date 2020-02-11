@@ -371,5 +371,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $response;
     }
 
-
+    public function fetchAuthToken($authToken){
+        $db = Zend_Db_Table_Abstract::getAdapter();
+        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id','view_only_access','qc_access','enable_adding_test_response_date','enable_choosing_mode_of_receipt'))
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
+            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
+            ->where("dm.auth_token=?", $authToken);
+        $aResult = $db->fetchRow($sQuery);
+        if (isset($aResult['dm_id']) && trim($aResult['dm_id']) != "") {
+            $response = $aResult;
+        } else {
+            $response = false;
+        }
+        return $response;
+    }
 }

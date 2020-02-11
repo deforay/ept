@@ -1819,14 +1819,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $data = array();
         if (isset($authToken) && trim($authToken) != "") {
             $aResult = Application_Service_DataManagers::getAuthToken($authToken);
-            $dmId = $aResult['dm_id'];
-            if (isset($dmId) && trim($dmId) != '0') {
+            if ($aResult) {
                 $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch'))
                     ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
                     ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
                     ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
                     ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-                    ->where("pmm.dm_id=?", $dmId)
+                    ->where("pmm.dm_id=?", $aResult['dm_id'])
                     ->where("s.status='shipped' OR s.status='evaluated'");
                 $rResult = $this->getAdapter()->fetchAll($sQuery);
                 if (isset($rResult) && count($rResult) > 0) {
