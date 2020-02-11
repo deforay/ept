@@ -207,7 +207,7 @@ class Application_Service_Shipments
 
             //           if ($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated' && $aRow['status'] != 'closed' && $aRow['status'] != 'finalized') {
             //                $row[] = '<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>'
-            //                        . $edit 
+            //                        . $edit
             //                        . '&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
             //            } else if ($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] == 'shipped' && $aRow['status'] != 'closed') {
             //                $row[] = $edit;
@@ -1757,12 +1757,12 @@ class Application_Service_Shipments
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->fetchUniqueShipmentCode();
     }
-   
-    public function getShipmentDetailsByDmIdInAPI($dmId)
+
+    public function getShipmentDetailsByDmIdInAPI($authToken)
     {
         $shipmentDb = new Application_Model_DbTable_Shipments();
-        return $shipmentDb->fetchShipmentDetailsByDmIdInAPI($dmId);
+        return $shipmentDb->fetchShipmentDetailsByDmIdInAPI($authToken);
     }
 
-    
+
 }

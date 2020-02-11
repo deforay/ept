@@ -55,7 +55,7 @@ class Application_Service_DataManagers
         $newPassword = $userDb->resetPasswordForEmail($email);
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        
+
         if ($newPassword != false) {
             $common = new Application_Service_Common();
             $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email ".$email.". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $conf->domain . "auth/new-password/email/" . base64_encode($email) . "'>" . $conf->domain . "auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
@@ -153,5 +153,22 @@ class Application_Service_DataManagers
     public function loginDatamanagerAPI($params){
 		$userDb = new Application_Model_DbTable_DataManagers();
 		return $userDb->loginDatamanagerByAPI($params);
-	}
+    }
+    public static function getAuthToken($params)
+    {
+        $authToken = $params;
+        $db = new Application_Model_DbTable_DataManagers();
+        $sQuery = $db->getAdapter()->select()->from(array('dm' => 'data_manager'), array('dm.dm_id','view_only_access','qc_access','enable_adding_test_response_date','enable_choosing_mode_of_receipt'))
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
+            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
+            ->where("dm.auth_token=?", $authToken);
+        $aResult = $db->getAdapter()->fetchRow($sQuery);
+        $dmId = $aResult['dm_id'];
+        if (isset($dmId) && trim($dmId) != "") {
+            $response = $aResult;
+        } else {
+            $response = '0';
+        }
+        return $response;
+    }
 }

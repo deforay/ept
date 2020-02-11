@@ -9,9 +9,9 @@ class Api_ShipmentsController extends Zend_Controller_Action
 
     public function getAction()
     {
-        $dmId = $this->_getParam('dmId');
+        $authToken = $this->_getParam('authToken');
         $clientsServices = new Application_Service_Shipments();
-        $result = $clientsServices->getShipmentDetailsByDmIdInAPI($dmId);
+        $result = $clientsServices->getShipmentDetailsByDmIdInAPI($authToken);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
     }
 }

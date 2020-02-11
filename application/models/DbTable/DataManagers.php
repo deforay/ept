@@ -319,37 +319,57 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return false;
         }
     }
-    
+
     public function fetchEmailById($email){
         return $this->fetchRow("primary_email = '" . base64_decode($email) . "'");
     }
 
-    public function loginDatamanagerByAPI($params){
-        $response = array();$resultData = array();
+    public function loginDatamanagerByAPI($params)
+    {
+        $response = array();
+        $resultData = array();
         if (isset($params['userId']) && $params['userId'] != "" && isset($params['key']) && $params['key'] != "") {
-            $result = $this->fetchRow("primary_email='".$params['userId']."' AND password='".$params['key']."'");
-            if(isset($result['dm_id']) && $result['dm_id'] != ""){
-                if(isset($result['status']) && $result['status'] == "active"){
-                    $this->update(array('last_login' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
-                    $resultData = array(
-                        'id' => $result['dm_id'], 
-                        'name' => $result['first_name'].' '. $result['last_name'], 
-                        'phone' => $result['phone']
-                    );
-                    $response['status'] = "success";
-                    $response['data'] = $resultData;
-                }else{
+            $result = $this->fetchRow("primary_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
+            if (isset($result['dm_id']) && $result['dm_id'] != "") {
+                if (isset($result['status']) && $result['status'] == "active") {
+                    $authToken = Application_Service_Common::getRandomString(6);
+                    $this->update(array('auth_token' => $authToken, 'last_login' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
+                    $aResult = Application_Service_DataManagers::getAuthToken($authToken);
+                    $viewOnlyAccess = (isset($aResult['view_only_access']) && $aResult['view_only_access'] != "") ? $aResult['view_only_access'] : 'no';
+                    $qcAccess = (isset($aResult['qc_access']) && $aResult['qc_access'] != "") ? $aResult['qc_access'] : 'no';
+                    $enableAddingTestResponseDate = (isset($aResult['enable_adding_test_response_date']) && $aResult['enable_adding_test_response_date'] != "") ? $aResult['enable_adding_test_response_date'] : 'no';
+                    $enableChoosingModeOfReceipt = (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] != "") ? $aResult['enable_choosing_mode_of_receipt'] : 'no';
+                    if (isset($aResult['dm_id']) && trim($aResult['dm_id']) != '0') {
+                        $resultData = array(
+                            'id' => $result['dm_id'],
+                            'authToken' => $authToken,
+                            'viewOnlyAccess' => $viewOnlyAccess,
+                            'qcAccess' => $qcAccess,
+                            'enableAddingTestResponseDate' => $enableAddingTestResponseDate,
+                            'enableChoosingModeOfReceipt' => $enableChoosingModeOfReceipt,
+                            'name' => $result['first_name'] . ' ' . $result['last_name'],
+                            'phone' => $result['phone']
+                        );
+                        $response['status'] = "success";
+                        $response['data'] = $resultData;
+                    } else {
+                        $response['status'] = "fail";
+                        $response['message'] = "Participant not found!";
+                    }
+                } else {
                     $response['status'] = "fail";
                     $response['message'] = "You are not activated!";
                 }
-            }else{
+            } else {
                 $response['status'] = "fail";
                 $response['message'] = "Use id or password not correct!";
             }
-        }else{
+        } else {
             $response['status'] = "fail";
             $response['message'] = "Use id or password not found!";
         }
         return $response;
     }
+
+
 }
