@@ -341,14 +341,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $enableChoosingModeOfReceipt = (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] != "") ? $aResult['enable_choosing_mode_of_receipt'] : 'no';
                     if (isset($aResult['dm_id']) && trim($aResult['dm_id']) != '0') {
                         $resultData = array(
-                            'id' => $result['dm_id'],
-                            'authToken' => $authToken,
-                            'viewOnlyAccess' => $viewOnlyAccess,
-                            'qcAccess' => $qcAccess,
-                            'enableAddingTestResponseDate' => $enableAddingTestResponseDate,
-                            'enableChoosingModeOfReceipt' => $enableChoosingModeOfReceipt,
-                            'name' => $result['first_name'] . ' ' . $result['last_name'],
-                            'phone' => $result['phone']
+                            'id'                            => $result['dm_id'],
+                            'authToken'                     => $authToken,
+                            'viewOnlyAccess'                => $viewOnlyAccess,
+                            'qcAccess'                      => $qcAccess,
+                            'enableAddingTestResponseDate'  => $enableAddingTestResponseDate,
+                            'enableChoosingModeOfReceipt'   => $enableChoosingModeOfReceipt,
+                            'name'                          => $result['first_name'] . ' ' . $result['last_name'],
+                            'phone'                         => $result['phone'],
+                            'appVersion'                    => '0.1'
                         );
                         $response['status'] = "success";
                         $response['data'] = $resultData;

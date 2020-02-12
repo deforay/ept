@@ -15,13 +15,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->group('p.participant_id'));
     }
 
-    public function checkParticipantAccess($participantId)
+    public function checkParticipantAccess($participantId,$dmId='',$comingFrom='')
     {
-        $authNameSpace =  new Zend_Session_Namespace('datamanagers');
+        if($comingFrom != 'API'){
+            $authNameSpace =  new Zend_Session_Namespace('datamanagers');
+            $dmId = $authNameSpace->dm_id;
+        }
+
         $row = $this->getAdapter()->fetchRow($this->getAdapter()->select()
             ->from(array('pmm' => 'participant_manager_map'))
             ->where("pmm.participant_id = ?", $participantId)
-            ->where("pmm.dm_id = ?", $authNameSpace->dm_id));
+            ->where("pmm.dm_id = ?", $dmId));
 
         if ($row == false) {
             return false;

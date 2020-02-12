@@ -1758,11 +1758,10 @@ class Application_Service_Shipments
         return $shipmentDb->fetchUniqueShipmentCode();
     }
 
-    public function getShipmentDetailsByDmIdInAPI($authToken)
+    public function getShipmentDetailsInAPI($authToken,$type = "")
     {
         $shipmentDb = new Application_Model_DbTable_Shipments();
-        return $shipmentDb->fetchShipmentDetailsByDmIdInAPI($authToken);
+        return $shipmentDb->fetchShipmentDetailsInAPI($authToken,$type);
     }
-
 
 }

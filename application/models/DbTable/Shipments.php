@@ -1813,10 +1813,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("trim(s.shipment_code)!=''"));
     }
 
-    public function fetchShipmentDetailsByDmIdInAPI($authToken)
+    public function fetchShipmentDetailsInAPI($authToken,$type)
     {
-        $response = array();
-        $data = array();
+        $response = array();$data = array();$formData = array();$checkFormSatatus = false;$getParticipantId = array();
         if (isset($authToken) && trim($authToken) != "") {
             $aResult = Application_Service_DataManagers::getAuthToken($authToken);
             if ($aResult) {
@@ -1829,25 +1828,52 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     ->where("s.status='shipped' OR s.status='evaluated'");
                 $rResult = $this->getAdapter()->fetchAll($sQuery);
                 if (isset($rResult) && count($rResult) > 0) {
-                    foreach ($rResult as $aResult) {
+                    foreach ($rResult as $key=>$row) {
                         $data[] = array(
-                            'schemeType'       => $aResult['scheme_type'],
-                            'shipmentDate'     => $aResult['shipment_date'],
-                            'shipmentCode'     => $aResult['shipment_code'],
-                            'lastdateResponse' => $aResult['lastdate_response'],
-                            'shipmentId'       => $aResult['shipment_id'],
-                            'status'           => $aResult['status'],
-                            'responseSwitch'   => $aResult['response_switch'],
-                            'schemeName'       => $aResult['scheme_name'],
-                            'mapId'            => $aResult['map_id'],
-                            'evaluationStatus' => $aResult['evaluation_status'],
-                            'participantId'    => $aResult['participant_id'],
-                            'uniqueIdentifier' => $aResult['unique_identifier'],
-                            'firstName'        => $aResult['first_name'],
-                            'lastName'         => $aResult['last_name'],
-                            'state'            => $aResult['state'],
-                            'dmId'             => $aResult['dm_id']
+                            'schemeType'       => $row['scheme_type'],
+                            'shipmentId'       => $row['shipment_id'],
+                            'participantId'    => $row['participant_id'],
+                            'evaluationStatus' => $row['evaluation_status'],
+
+                            'shipmentDate'     => $row['shipment_date'],
+                            'shipmentCode'     => $row['shipment_code'],
+                            'resultDueDate'    => $row['lastdate_response'],
+                            'responseDate'     => $row['RESPONSEDATE'],
+                            'status'           => $row['status'],
+                            'responseSwitch'   => $row['response_switch'],
+                            'schemeName'       => $row['scheme_name'],
+                            'mapId'            => $row['map_id'],
+                            'uniqueIdentifier' => $row['unique_identifier'],
+                            'participantName'  => $row['first_name'].' '.$row['last_name'],
+                            'state'            => $row['state'],
+                            'dmId'             => $row['dm_id']
                         );
+                        if($type == 'form'){
+                            $formData[$key]['schemeType']       = $row['scheme_type'];
+                            $formData[$key]['shipmentId']       = $row['shipment_id'];
+                            $formData[$key]['participantId']    = $row['participant_id'];
+                            $formData[$key]['evaluationStatus'] = $row['evaluation_status'];
+
+                            $formData[$key][$row['scheme_type'].'Data'] = $this->fetchShipmentFormDetails($row,$aResult);
+                            if(isset($formData[$key][$row['scheme_type'].'Data']) && count($formData[$key][$row['scheme_type'].'Data']) > 0){
+                                $checkFormSatatus = true;
+                                $getParticipantId[$key]['schemeType']       = $row['scheme_type'];
+                                $getParticipantId[$key]['shipmentId']       = $row['shipment_id'];
+                                $getParticipantId[$key]['participantId']    = $row['participant_id'];
+                                $getParticipantId[$key]['evaluationStatus'] = $row['evaluation_status'];
+                            }
+                        }
+                    }
+                    if($type == 'form'){
+                        if($checkFormSatatus){
+                            $response["status"] = "success";
+                            $response["data"] = $formData;
+                        }else{
+                            $response["status"]     = "fail";
+                            $response["message"]    = "The following participant doesn't have the shipment!";
+                            $response["data"]       = $getParticipantId;
+                        }
+                        return $response;
                     }
                     $response["status"] = "success";
                     $response["data"] = $data;
@@ -1864,5 +1890,208 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $response["message"] = "Authentication error! Contact admin";
         }
         return $response;
+    }
+
+    public function fetchShipmentFormDetails($params,$dm){
+        if($params['scheme_type'] == 'dts'){
+            $dts = array();
+            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+            if(isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes'){
+                $testThreeOptional = true;
+            }
+            $participantDb = new Application_Model_DbTable_Participants();
+            $schemeService = new Application_Service_Schemes();
+            $commonService = new Application_Service_Common();
+
+			$modeOfReceipt=$commonService->getAllModeOfReceipt();
+			$globalQcAccess=$commonService->getConfig('qc_access');
+            // Check the data manager having for access to the form
+            $access = $participantDb->checkParticipantAccess($params['participant_id'],$params['dm_id'],'API');
+            if($access == false){
+                return 'Participant does not having the shipments';
+            }
+            
+            // Heading 1 start // First participant details start
+            $participant = $participantDb->getParticipant($params['participant_id']);
+            if(isset($participant) && count($participant) > 0){
+                $dts['Heading1']['status'] = true;
+                $dts['Heading1']['data']= array(
+                    'participantName'   => $participant['first_name'].' '.$participant['last_name'],
+                    'participantCode'   => $participant['unique_identifier'],
+                    'affiliation'       => $participant['affiliation'],
+                    'phone'             => $participant['phone'],
+                    'mobile'            => $participant['mobile']
+                );
+            }else{
+                $dts['Heading1']['status'] = false;
+            }
+            // First participant details end // Heading 1 end // Heading 2 start // Shipement Result start
+            $shipment = $schemeService->getShipmentData($params['shipment_id'],$params['participant_id']);
+            $shipment['attributes'] = json_decode($shipment['attributes'],true);
+
+            $modeOfReceiptSelect = array();
+            foreach ($modeOfReceipt as $receipt){
+                $modeOfReceiptSelect[]= array(
+                    'value'   =>  $receipt['mode_id'],
+                    'show' =>  $receipt['mode_name']
+                );
+            }
+            // Shipement Result end // For algorithmUsed start
+            $algorithmUsedSelect = array();
+            if(!empty($config->evaluation->dts->dtsEnforceAlgorithmCheck) && $config->dtsEnforceAlgorithmCheck == 'yes') {
+                $algorithmUsedSelectOptions = array('not-reported','serial','parallel');
+            }else{
+                $algorithmUsedSelectOptions = array('serial','parallel');
+            }
+            foreach($algorithmUsedSelectOptions as $row){
+                $algorithmUsedSelect[] = array('value' => $row,'show' => ucwords($row));
+            }
+            if(isset($participant) && count($participant) > 0){
+                $dts['Heading2']['status'] = true;
+                // For algorithmUsed end
+                $dts['Heading2']['data']= array(
+                    'shipmentDate'              => $shipment['shipment_date'],
+                    'resultDueDate'             => $shipment['lastdate_response'],
+                    'shipmentReceiptDate'       => $shipment['shipment_receipt_date'],
+                    'sampleRehydrationDate'     => $shipment['attributes']["sample_rehydration_date"],
+                    'testingDate'               => $shipment['shipment_test_date'],
+                    'algorithmUsedSelect'       => $algorithmUsedSelect,
+                );
+                if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
+                    if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes'){
+                        $dts['Heading2']['responseDate'] = $shipment['shipment_test_report_date'];
+                    }
+                    if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
+                        $dts['Heading2']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+                    }
+                }
+            }else{
+                $dts['Heading2']['status'] = false;
+            }
+            // Heading 2 end // Heading 3 start
+            $qcArray = array('yes','no');$ac = array();
+            foreach($qcArray as $row){
+                if($globalQcAccess == 'yes' && isset($dm['qc_access']) && $dm['qc_access'] == 'yes'){
+                    $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row));
+                }else{
+                    $qcResponseArr[] = array('value' =>'','show' =>'');
+                }
+            }
+            if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
+                $qc['qcRadio'] = $qcResponseArr;$qc['qcDate']   = $params['qc_date'];$qc['qcDoneBy'] = $params['qc_done_by'];
+                $dts['Heading3']['status'] = false;
+                $dts['Heading3']['data'] = $qc;
+            }else{
+                $dts['Heading3']['status'] = true;
+            }
+            
+            // Heading 3 end // Heading 4 Start
+            $testKitArray = array();$testKitKey = 0;
+            $allTestKits = $schemeService->getAllDtsTestKitList(true);
+            foreach ($allTestKits as $testKitKey => $testkit) {
+                if($testkit['testkit_1'] == '1'){
+                    $testKitArray['kitName']['testKit_1']['status'] = true;
+                    $testKitArray['kitName']['testKit_1'][] = array(
+                        'value' => $testkit['TESTKITNAMEID'],
+                        'show'  => $testkit['TESTKITNAME']
+                    );
+                }
+                if($testkit['testkit_2'] == '1'){
+                    $testKitArray['kitName']['testKit_2']['status'] = true;
+                    $testKitArray['kitName']['testKit_2'][] = array(
+                        'value' => $testkit['TESTKITNAMEID'],
+                        'show'  => $testkit['TESTKITNAME']
+                    );
+                }
+                if($testThreeOptional && $testkit['testkit_3'] == '1'){
+                    $testKitArray['kitName']['testKit_3']['status'] = true;
+                    $testKitArray['kitName']['testKit_3'][] = array(
+                        'value' => $testkit['TESTKITNAMEID'],
+                        'show'  => $testkit['TESTKITNAME']
+                    );
+                }else{
+                    $testKitArray['kitName']['testKit_3']['status'] = false;
+                }
+            }
+            $allSamples =$schemeService->getDtsSamples($params['shipment_id'],$params['participant_id']);
+            if(isset($allSamples) && count($allSamples) > 0){
+                $dts['Heading4']['status'] = true;
+                $testKitArray['lotNo']['lot1']['status'] = true;
+                $testKitArray['lotNo']['lot1']  = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "")?$allSamples[0]["lot_no_1"]:'';
+                $testKitArray['lotNo']['lot2']['status'] = true;
+                $testKitArray['lotNo']['lot2']  = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "")?$allSamples[0]["lot_no_2"]:'';
+                if($testThreeOptional){
+                    $testKitArray['lotNo']['lot3']['status'] = true;
+                    $testKitArray['lotNo']['lot3']  = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "")?$allSamples[0]["lot_no_3"]:'';
+                }else{
+                    $testKitArray['lotNo']['lot3']['status'] = false;
+                }
+                $testKitArray['expDae']['exp1']['status'] = true;
+                $testKitArray['expDae']['exp1'] = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "")?$allSamples[0]["exp_date_1"]:'';
+                $testKitArray['expDae']['exp2']['status'] = true;
+                $testKitArray['expDae']['exp2'] = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "")?$allSamples[0]["exp_date_2"]:'';
+                if($testThreeOptional){
+                    $testKitArray['expDae']['exp3']['status'] = true;
+                    $testKitArray['expDae']['exp3'] = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "")?$allSamples[0]["exp_date_3"]:'';
+                }else{
+                    $testKitArray['lotNo']['lot3']['status'] = false;
+                }
+                $dts['Heading4']['data'] = $testKitArray;
+            }else{
+                $dts['Heading4']['status'] = false;
+            }
+            // Heading 4 End // Heading 5 Start
+            $dtsPossibleResults = $schemeService->getPossibleResults('dts');
+            $possibleResults = array();$possibleFinalResults = array();$allSamplesResult = array();
+            foreach ($dtsPossibleResults as $pr) {
+                if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+                    $possibleResults[] = array('value'=>$pr['id'],'show'=>$pr['response']);
+                }
+            }
+            foreach ($dtsPossibleResults as $pr) {
+                if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
+                    $possibleFinalResults[] = array('value'=>$pr['id'],'show'=>$pr['response']);
+                }
+            }
+            foreach ($allSamples as $sample) {
+                $allSamplesResult['samples'][] = $sample['sample_label'];
+                foreach(range(1,3) as $row){
+                    if($testThreeOptional && $row == 3){
+                        $allSamplesResult[$sample['sample_label']]['result_'.$row]['status'] = true;
+                        $allSamplesResult[$sample['sample_label']]['result_'.$row] = $possibleResults;
+                    }else{
+                        if($row = 3){
+                            $allSamplesResult[$sample['sample_label']]['result_'.$row]['status'] = false;
+                        }else{
+                            $allSamplesResult[$sample['sample_label']]['result_'.$row]['status'] = true;
+                            $allSamplesResult[$sample['sample_label']]['result_'.$row] = $possibleResults;
+                        }
+                    }
+                }
+                $allSamplesResult[$sample['sample_label']]['finalResult'] = $possibleFinalResults;
+            }
+            if((isset($allSamples) && count($allSamples) > 0) && (isset($dtsPossibleResults) && count($dtsPossibleResults) > 0)){
+                $dts['Heading5']['status'] = false;
+                $dts['Heading5']['data'] = $allSamplesResult;
+            }else{
+                $dts['Heading5']['status'] = false;
+            }
+            // Heading 5 End // Heading 6 Start
+            $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
+            foreach($commentArray as $row){
+                $revieArr[] = array('value' =>$row,'show' =>ucwords($row));
+            }
+            $reviewArray['Supervisor Review'] = $revieArr;
+            $reviewArray['approvalLabel'] = (isset($params['supervisor_approval']) && $params['supervisor_approval'] == 'yes')?'Supervisor Name':'';
+            $reviewArray['approvalInputText'] = (isset($params['supervisor_approval']) && $params['supervisor_approval'] == 'yes')?$params['participant_supervisor']:'';
+            $reviewArray['Comments'] = (isset($params['user_comment']) && $params['user_comment'] != '')?$params['user_comment']:'';
+            $dts['Heading6']['status'] = true;
+            $dts['Heading6']['data'] = $reviewArray;
+            // Heading 6 End
+            return $dts;
+        }else if($params['scheme_type'] == 'vl'){
+
+        }
     }
 }
