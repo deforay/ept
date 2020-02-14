@@ -1764,4 +1764,9 @@ class Application_Service_Shipments
         return $shipmentDb->fetchShipmentDetailsInAPI($authToken,$type);
     }
 
+    public function getIndividualReportAPI($authToken)
+    {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->fetchIndividualReportAPI($authToken);
+    }
 }
