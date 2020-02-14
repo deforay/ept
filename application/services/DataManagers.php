@@ -159,4 +159,8 @@ class Application_Service_DataManagers
         $db = new Application_Model_DbTable_DataManagers();
         return $db->fetchAuthToken($authToken);
     }
+    public function changePasswordDatamanagerAPI($params){
+		$userDb = new Application_Model_DbTable_DataManagers();
+		return $userDb->changePasswordDatamanagerByAPI($params);
+    }
 }
