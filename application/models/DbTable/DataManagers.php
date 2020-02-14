@@ -386,4 +386,22 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         return $response;
     }
+    public function changePasswordDatamanagerByAPI($params)
+    {
+        $password = $params['password'];
+        $authToken = $params['authToken'];
+        $db = Zend_Db_Table_Abstract::getAdapter();
+        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id'))
+            ->where("dm.auth_token=?", $authToken);
+        $aResult = $db->fetchRow($sQuery);
+        if (isset($aResult) && $aResult['dm_id'] != "") {
+            $this->update(array('password' => $password), array('dm_id = ?' => $aResult['dm_id']));
+            $response['status'] = "success";
+            $response['message'] = "Password Updated Successfully!";
+        } else {
+            $response['status'] = "fail";
+            $response['message'] = "Password Could not be Updated!";
+        }
+        return $response;
+    }
 }
