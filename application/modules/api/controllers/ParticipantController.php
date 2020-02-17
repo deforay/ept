@@ -14,4 +14,11 @@ class Api_ParticipantController extends Zend_Controller_Action
         $result = $shipmentService->getIndividualReportAPI($params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
     }
+    public function getSummaryAction()
+    {
+        $params = $this->_getAllParams();
+        $shipmentService = new Application_Service_Shipments();
+        $result = $shipmentService->getSummaryReportAPI($params);
+        $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
+    }
 }

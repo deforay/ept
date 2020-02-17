@@ -1769,4 +1769,9 @@ class Application_Service_Shipments
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->fetchIndividualReportAPI($params);
     }
+    public function getSummaryReportAPI($params)
+    {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->fetchSummaryReportAPI($params);
+    }
 }

@@ -2380,4 +2380,63 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         return $response;
     }
+
+    public function fetchSummaryReportAPI($params)
+    {
+        $version = $params['appVersion'];
+        $authToken = $params['authToken'];
+        $general = new Pt_Commons_General();
+        $response = array();
+        $resultData = array();
+        if (isset($version) && $version != "") {
+            if (isset($authToken) && trim($authToken) != "") {
+                $Result = Application_Service_DataManagers::getAuthToken($authToken, $version);
+                if ($Result != 'app-version-failed') {
+                    // \Zend_Debug::dump($Result);die;
+                    foreach ($Result as $aResult) {
+                        if ($aResult) {
+                            $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
+                            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
+                            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
+                            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                            ->where("pmm.dm_id=?", $aResult['dm_id'])
+                            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+                            $resultData = $this->getAdapter()->fetchAll($sQuery);
+                            if (isset($resultData) && count($resultData) > 0) {
+                                $data = array();
+                                foreach ($resultData as $aRow) {
+                                    $data[] = array(
+                                        'schemeType' => strtoupper($aRow['scheme_type']),
+                                        'shipmentCode' => $aRow['shipment_code'],
+                                        'shipmentDate' => $general->humanDateFormat($aRow['shipment_date']),
+                                        'downloadLink'     => '/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . ''
+                                    );
+                                }
+                                if (isset($data) && count($data) > 0) {
+                                    $response['status'] = 'success';
+                                    $response['data'] = $data;
+                                } else {
+                                    $response["status"] = "fail";
+                                    $response["message"] = "Report not found!";
+                                }
+                            }
+                        } else {
+                            $response["status"] = "fail";
+                            $response["message"] = "Participant not found!";
+                        }
+                    }
+                } else {
+                    $response['status'] = "version-fail";
+                    $response['message'] = "Please Update to latest version from Play Store!";
+                }
+            } else {
+                $response["status"] = "fail";
+                $response["message"] = "Authentication error! Please relogin";
+            }
+        } else {
+            $response['status'] = "fail";
+            $response['message'] = "There is an Error in App Version. Kindly Contact Admin.!";
+        }
+        return $response;
+    }
 }
