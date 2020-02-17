@@ -1758,15 +1758,15 @@ class Application_Service_Shipments
         return $shipmentDb->fetchUniqueShipmentCode();
     }
 
-    public function getShipmentDetailsInAPI($authToken,$type = "")
+    public function getShipmentDetailsInAPI($params,$type = "")
     {
         $shipmentDb = new Application_Model_DbTable_Shipments();
-        return $shipmentDb->fetchShipmentDetailsInAPI($authToken,$type);
+        return $shipmentDb->fetchShipmentDetailsInAPI($params,$type);
     }
 
-    public function getIndividualReportAPI($authToken)
+    public function getIndividualReportAPI($params)
     {
         $shipmentDb = new Application_Model_DbTable_Shipments();
-        return $shipmentDb->fetchIndividualReportAPI($authToken);
+        return $shipmentDb->fetchIndividualReportAPI($params);
     }
 }

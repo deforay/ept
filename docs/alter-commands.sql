@@ -2396,3 +2396,14 @@ UPDATE system_admin SET privileges = 'config-ept,manage-shipments,analyze-genera
 
 -- Sriram 11-Feb-2020
 ALTER TABLE `data_manager` ADD `auth_token` VARCHAR(255) NULL DEFAULT NULL AFTER `last_login`;
+
+--Sriram 17Feb2020
+CREATE TABLE `system_config` (
+  `system_id` int(1) NOT NULL AUTO_INCREMENT,
+  `display_name` varchar(255) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+ PRIMARY KEY (`system_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+INSERT INTO `system_config` (`system_id`, `display_name`, `name`, `value`) VALUES (NULL, 'App-Verion', 'app_version', '0.0.1');

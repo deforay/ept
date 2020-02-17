@@ -326,36 +326,49 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function loginDatamanagerByAPI($params)
     {
+        $version = $params['appVersion'];
         $response = array();
         $resultData = array();
         if (isset($params['userId']) && $params['userId'] != "" && isset($params['key']) && $params['key'] != "") {
             $result = $this->fetchRow("primary_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
             if (isset($result['dm_id']) && $result['dm_id'] != "") {
                 if (isset($result['status']) && $result['status'] == "active") {
-                    $authToken = Application_Service_Common::getRandomString(6);
-                    $this->update(array('auth_token' => $authToken, 'last_login' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
-                    $aResult = Application_Service_DataManagers::getAuthToken($authToken);
-                    $viewOnlyAccess = (isset($aResult['view_only_access']) && $aResult['view_only_access'] != "") ? $aResult['view_only_access'] : 'no';
-                    $qcAccess = (isset($aResult['qc_access']) && $aResult['qc_access'] != "") ? $aResult['qc_access'] : 'no';
-                    $enableAddingTestResponseDate = (isset($aResult['enable_adding_test_response_date']) && $aResult['enable_adding_test_response_date'] != "") ? $aResult['enable_adding_test_response_date'] : 'no';
-                    $enableChoosingModeOfReceipt = (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] != "") ? $aResult['enable_choosing_mode_of_receipt'] : 'no';
-                    if (isset($aResult['dm_id']) && trim($aResult['dm_id']) != '0') {
-                        $resultData = array(
-                            'id'                            => $result['dm_id'],
-                            'authToken'                     => $authToken,
-                            'viewOnlyAccess'                => $viewOnlyAccess,
-                            'qcAccess'                      => $qcAccess,
-                            'enableAddingTestResponseDate'  => $enableAddingTestResponseDate,
-                            'enableChoosingModeOfReceipt'   => $enableChoosingModeOfReceipt,
-                            'name'                          => $result['first_name'] . ' ' . $result['last_name'],
-                            'phone'                         => $result['phone'],
-                            'appVersion'                    => '0.1'
-                        );
-                        $response['status'] = "success";
-                        $response['data'] = $resultData;
+                    if (isset($version) && $version != "") {
+                        $authToken = Application_Service_Common::getRandomString(6);
+                        $this->update(array('auth_token' => $authToken, 'last_login' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
+                        $Result = Application_Service_DataManagers::getAuthToken($authToken,$version);
+                        if ($Result != 'app-version-failed') {
+                            foreach ($Result as $aResult) {
+                                $viewOnlyAccess = (isset($aResult['view_only_access']) && $aResult['view_only_access'] != "") ? $aResult['view_only_access'] : 'no';
+                                $qcAccess = (isset($aResult['qc_access']) && $aResult['qc_access'] != "") ? $aResult['qc_access'] : 'no';
+                                $enableAddingTestResponseDate = (isset($aResult['enable_adding_test_response_date']) && $aResult['enable_adding_test_response_date'] != "") ? $aResult['enable_adding_test_response_date'] : 'no';
+                                $enableChoosingModeOfReceipt = (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] != "") ? $aResult['enable_choosing_mode_of_receipt'] : 'no';
+                                if (isset($aResult['dm_id']) && trim($aResult['dm_id']) != '0') {
+                                    $resultData = array(
+                                        'id'                            => $result['dm_id'],
+                                        'authToken'                     => $authToken,
+                                        'viewOnlyAccess'                => $viewOnlyAccess,
+                                        'qcAccess'                      => $qcAccess,
+                                        'enableAddingTestResponseDate'  => $enableAddingTestResponseDate,
+                                        'enableChoosingModeOfReceipt'   => $enableChoosingModeOfReceipt,
+                                        'name'                          => $result['first_name'] . ' ' . $result['last_name'],
+                                        'phone'                         => $result['phone'],
+                                        'appVersion'                    => $aResult['app_version']
+                                    );
+                                    $response['status'] = "success";
+                                    $response['data'] = $resultData;
+                                } else {
+                                    $response['status'] = "fail";
+                                    $response['message'] = "Participant not found!";
+                                }
+                            }
+                        } else {
+                            $response['status'] = "version-fail";
+                            $response['message'] = "Please Update to latest version from Play Store!";
+                        }
                     } else {
                         $response['status'] = "fail";
-                        $response['message'] = "Participant not found!";
+                        $response['message'] = "There is an Error in App Version. Kindly Contact Admin.!";
                     }
                 } else {
                     $response['status'] = "fail";
@@ -372,17 +385,37 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $response;
     }
 
-    public function fetchAuthToken($authToken){
+    public function fetchAuthToken($authToken, $version = "")
+    {
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id','view_only_access','qc_access','enable_adding_test_response_date','enable_choosing_mode_of_receipt'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
-            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
-            ->where("dm.auth_token=?", $authToken);
-        $aResult = $db->fetchRow($sQuery);
-        if (isset($aResult['dm_id']) && trim($aResult['dm_id']) != "") {
-            $response = $aResult;
+        $configDb = new Application_Model_DbTable_SystemConfig();
+        $appVersion = $configDb->getValue($version);
+        if (isset($appVersion) && trim($appVersion['value']) != "") {
+            $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt'))
+                ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
+                ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
+                ->where("dm.auth_token=?", $authToken);
+            $aResult = $db->fetchRow($sQuery);
+            if (isset($aResult['dm_id']) && trim($aResult['dm_id']) != "") {
+                $data[] = array(
+                    'dm_id' => $aResult['dm_id'],
+                    'view_only_access' => $aResult['view_only_access'],
+                    'qc_access' => $aResult['qc_access'],
+                    'enable_adding_test_response_date' => $aResult['enable_adding_test_response_date'],
+                    'enable_choosing_mode_of_receipt' => $aResult['enable_choosing_mode_of_receipt'],
+                    'participant_id' => $aResult['participant_id'],
+                    'unique_identifier' => $aResult['unique_identifier'],
+                    'first_name' => $aResult['first_name'],
+                    'last_name' => $aResult['last_name'],
+                    'state' => $aResult['state'],
+                    'app_version' => $appVersion['value'],
+                );
+                $response = $data;
+            } else {
+                $response = false;
+            }
         } else {
-            $response = false;
+            $response = 'app-version-failed';
         }
         return $response;
     }
@@ -390,18 +423,28 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $password = $params['password'];
         $authToken = $params['authToken'];
-        $db = Zend_Db_Table_Abstract::getAdapter();
-        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id'))
-            ->where("dm.auth_token=?", $authToken);
-        $aResult = $db->fetchRow($sQuery);
-        if (isset($aResult) && $aResult['dm_id'] != "") {
-            $this->update(array('password' => $password), array('dm_id = ?' => $aResult['dm_id']));
-            $response['status'] = "success";
-            $response['message'] = "Password Updated Successfully!";
+        $version = $params['appVersion'];
+        if (isset($version) && $version != "") {
+        $Result = Application_Service_DataManagers::getAuthToken($authToken, $version);
+        if ($Result != 'app-version-failed') {
+            foreach ($Result as $aResult) {
+                if (isset($aResult) && $aResult['dm_id'] != "") {
+                    $this->update(array('password' => $password), array('dm_id = ?' => $aResult['dm_id']));
+                    $response['status'] = "success";
+                    $response['message'] = "Password Updated Successfully!";
+                } else {
+                    $response['status'] = "fail";
+                    $response['message'] = "Password Could not be Updated!";
+                }
+            }
         } else {
-            $response['status'] = "fail";
-            $response['message'] = "Password Could not be Updated!";
+            $response['status'] = "version-fail";
+            $response['message'] = "Please Update to latest version from Play Store!";
         }
+    }else{
+        $response['status'] = "fail";
+        $response['message'] = "There is an Error in App Version. Kindly Contact Admin.!";
+    }
         return $response;
     }
 }
