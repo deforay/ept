@@ -1815,95 +1815,84 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function fetchShipmentDetailsInAPI($params, $type)
     {
-        $response = array();
-        $data = array();
-        $formData = array();
-        $checkFormSatatus = false;
-        $getParticipantId = array();
-        if (isset($params['appVersion']) && $params['appVersion'] != "") {
-            if (isset($params['authToken']) && trim($params['authToken']) != "") {
-                $aResult = Application_Service_DataManagers::getAuthToken($params['authToken'], $params['appVersion']);
-                if ($aResult != 'app-version-failed') {
-                        if ($aResult) {
-                            $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch'))
-                                ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
-                                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
-                                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
-                                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-                                ->where("pmm.dm_id=?", $aResult['dm_id'])
-                                ->where("s.status='shipped' OR s.status='evaluated'");
-                            $rResult = $this->getAdapter()->fetchAll($sQuery);
-                            if (isset($rResult) && count($rResult) > 0) {
-                                foreach ($rResult as $key => $row) {
-                                    $data[] = array(
-                                        'schemeType'       => $row['scheme_type'],
-                                        'shipmentId'       => $row['shipment_id'],
-                                        'participantId'    => $row['participant_id'],
-                                        'evaluationStatus' => $row['evaluation_status'],
-
-                                        'shipmentDate'     => $row['shipment_date'],
-                                        'shipmentCode'     => $row['shipment_code'],
-                                        'resultDueDate'    => $row['lastdate_response'],
-                                        'responseDate'     => $row['RESPONSEDATE'],
-                                        'status'           => $row['status'],
-                                        'responseSwitch'   => $row['response_switch'],
-                                        'schemeName'       => $row['scheme_name'],
-                                        'mapId'            => $row['map_id'],
-                                        'uniqueIdentifier' => $row['unique_identifier'],
-                                        'participantName'  => $row['first_name'] . ' ' . $row['last_name'],
-                                        'state'            => $row['state'],
-                                        'dmId'             => $row['dm_id']
-                                    );
-                                    if ($type == 'form') {
-                                        $formData[$key]['schemeType']       = $row['scheme_type'];
-                                        $formData[$key]['shipmentId']       = $row['shipment_id'];
-                                        $formData[$key]['participantId']    = $row['participant_id'];
-                                        $formData[$key]['evaluationStatus'] = $row['evaluation_status'];
-
-                                        $formData[$key][$row['scheme_type'] . 'Data'] = $this->fetchShipmentFormDetails($row, $aResult);
-                                        if (isset($formData[$key][$row['scheme_type'] . 'Data']) && count($formData[$key][$row['scheme_type'] . 'Data']) > 0) {
-                                            $checkFormSatatus = true;
-                                            $getParticipantId[$key]['schemeType']       = $row['scheme_type'];
-                                            $getParticipantId[$key]['shipmentId']       = $row['shipment_id'];
-                                            $getParticipantId[$key]['participantId']    = $row['participant_id'];
-                                            $getParticipantId[$key]['evaluationStatus'] = $row['evaluation_status'];
-                                        }
-                                    }
-                                }
-                                if ($type == 'form') {
-                                    if ($checkFormSatatus) {
-                                        $response["status"] = "success";
-                                        $response["data"] = $formData;
-                                    } else {
-                                        $response["status"]     = "fail";
-                                        $response["message"]    = "The following participant doesn't have the shipment!";
-                                        $response["data"]       = $getParticipantId;
-                                    }
-                                    return $response;
-                                }
-                                $response["status"] = "success";
-                                $response["data"] = $data;
-                            } else {
-                                $response["status"] = "fail";
-                                $response["message"] = "Shipment Details not available";
-                            }
-                        } else {
-                            $response["status"] = "fail";
-                            $response["message"] = "Participant not found!";
-                        }
-                } else {
-                    $response['status'] = "version-fail";
-                    $response['message'] = "Please Update to latest version from Play Store!";
-                }
-            } else {
-                $response["status"] = "fail";
-                $response["message"] = "Authentication error! Contact admin";
-            }
-        } else {
-            $response['status'] = "fail";
-            $response['message'] = "There is an Error in App Version. Kindly Contact Admin.!";
+        /* Check the app versions & parameters */
+        if (!isset($params['appVersion'])) {
+            return array('status' =>'fail','message'=>'There is an error in APP version. Please update to latest version APP');
         }
-        return $response;
+        if (!isset($params['appVersion'])) {
+            return array('status' =>'fail','message'=>'Authentication error');
+        }
+        $dmDb = new Application_Model_DbTable_DataManagers();
+        $aResult = $dmDb->fetchAuthToken($params);
+        /* App version check */
+        if ($aResult == 'app-version-failed') {
+            return array('status' =>'fail','message'=>'Please update to latest version APP');
+        }
+        /* Validate new auth token and app-version */
+        if(!$aResult){
+            return array('status' =>'fail','message'=>'Participant authentication error');
+        }
+        /* To check the shipment details for the data managers mapped participants */
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch'))
+        ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
+        ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
+        ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
+        ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+        ->where("pmm.dm_id=?", $aResult['dm_id'])
+        ->where("s.status='shipped' OR s.status='evaluated'");
+        $rResult = $this->getAdapter()->fetchAll($sQuery);
+        if (!isset($rResult) && count($rResult) == 0) {
+            return array('status' =>'fail','message'=>'Shipment Details not available');
+        }
+        /* Start the API services */
+        $data = array();$formData = array();$getParticipantDetails = array();
+        $checkFormSatatus = false;
+        foreach ($rResult as $key => $row) {
+            $data[] = array(
+                'schemeType'       => $row['scheme_type'],
+                'shipmentId'       => $row['shipment_id'],
+                'participantId'    => $row['participant_id'],
+                'evaluationStatus' => $row['evaluation_status'],
+
+                'shipmentDate'     => $row['shipment_date'],
+                'shipmentCode'     => $row['shipment_code'],
+                'resultDueDate'    => $row['lastdate_response'],
+                'responseDate'     => $row['RESPONSEDATE'],
+                'status'           => $row['status'],
+                'responseSwitch'   => $row['response_switch'],
+                'schemeName'       => $row['scheme_name'],
+                'mapId'            => $row['map_id'],
+                'uniqueIdentifier' => $row['unique_identifier'],
+                'participantName'  => $row['first_name'] . ' ' . $row['last_name'],
+                'state'            => $row['state'],
+                'dmId'             => $row['dm_id']
+            );
+            /* This API to get the shipments form using type form */
+            if ($type == 'form') {
+                $formData[$key]['schemeType']       = $row['scheme_type'];
+                $formData[$key]['shipmentId']       = $row['shipment_id'];
+                $formData[$key]['participantId']    = $row['participant_id'];
+                $formData[$key]['evaluationStatus'] = $row['evaluation_status'];
+
+                $formData[$key][$row['scheme_type'] . 'Data'] = $this->fetchShipmentFormDetails($row, $aResult);
+                if (isset($formData[$key][$row['scheme_type'] . 'Data']) && count($formData[$key][$row['scheme_type'] . 'Data']) > 0) {
+                    $checkFormSatatus = true;
+                    $getParticipantDetails[$key]['schemeType']       = $row['scheme_type'];
+                    $getParticipantDetails[$key]['shipmentId']       = $row['shipment_id'];
+                    $getParticipantDetails[$key]['participantId']    = $row['participant_id'];
+                    $getParticipantDetails[$key]['evaluationStatus'] = $row['evaluation_status'];
+                }
+            }
+        }
+        /* This API to get the shipments form using type form and returning the response*/
+        if ($type == 'form') {
+            if ($checkFormSatatus) {
+                return array('status'=>'success','data'=>$formData);
+            } else {
+                return array('status' =>'fail','message'=>"The following shipments doesn't have the shipment forms",'data'=>$getParticipantDetails);
+            }
+        }
+        return array('status'=>'success','data'=>$data);
     }
 
     public function fetchShipmentFormDetails($params,$dm){
@@ -2132,8 +2121,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $allSamplesResult[$sample['sample_label']]['Result-'.$row]['data'] = $possibleResults;
                     }
                 }
-                $allSamplesResult['resultsText'] = array('Result-1','Result-2','Result-3','Final Result');
-                $allSamplesResult[$sample['sample_label']]['Final Result'] = $possibleFinalResults;
+                $allSamplesResult['resultsText'] = array('Result-1','Result-2','Result-3','Final-Result');
+                $allSamplesResult[$sample['sample_label']]['Final-Result'] = $possibleFinalResults;
             }
             if((isset($allSamples) && count($allSamples) > 0) && (isset($dtsPossibleResults) && count($dtsPossibleResults) > 0)){
                 $dts['Heading4']['status'] = true;
@@ -2206,7 +2195,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $modeOfReceiptSelect[]= array(
                         'value'     =>  $receipt['mode_id'],
                         'show'      =>  $receipt['mode_name'],
-                        'slected'   => ($shipment["mode_id"] == $receipt['mode_id'])?'selected':''
+                        'selected'   => ($shipment["mode_id"] == $receipt['mode_id'])?'selected':''
                     );
                 }
                 $heading2['status']    = true;
@@ -2254,14 +2243,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $heading3['status'] = true;
             if((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')){
                 $heading3['data']['isPtTestNotPerformedRadio'] = 'no';
-                $heading3['data']['note']['row_1'] = htmlentities("Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.");
-                $heading3['data']['note']['row_2'] = htmlentities("Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).");
-                $heading3['data']['note']['row_3'] = htmlentities("For negative or undetectable result (TND), please enter 0.00.");
-                $heading3['data']['note']['row_4'] = htmlentities("For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section.");
+                $heading3['data']['note'][] = htmlentities("Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.");
+                $heading3['data']['note'][] = htmlentities("Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).");
+                $heading3['data']['note'][] = htmlentities("For negative or undetectable result (TND), please enter 0.00.");
+                $heading3['data']['note'][] = htmlentities("For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section.");
                 $heading3['data']['vlResultSectionLabel'] = htmlentities("Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)");
-                $heading3['data']['tableTxtTh1'] = 'Control/Sample';
-                $heading3['data']['tableTxtTh2'] = htmlentities('Viral Load (log<sub>10</sub> copies/ml)');
-                $heading3['data']['tableTxtTh3'] = htmlentities('TND(Target Not Detected)');
+                $heading3['data']['tableHeading'][] = 'Control/Sample';
+                $heading3['data']['tableHeading'][] = htmlentities('Viral Load (log<sub>10</sub> copies/ml)');
+                $heading3['data']['tableHeading'][] = htmlentities('TND(Target Not Detected)');
                 // return $allSamples;
                 foreach ($allSamples as $key=>$sample) {
                     if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
@@ -2276,10 +2265,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     foreach($vlArray as $row){
                         $vlResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>($sample['is_tnd'] == $row || ($sample['is_tnd'] == '' && $row == 'no'))?'selected':'');
                     }
-                    $heading3['data']['tableRow_'.($key+1)]['tableRowTxt']['label'] = $sample['sample_label'];
-                    $heading3['data']['tableRow_'.($key+1)]['tableRowTxt']['mandatory'] = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
-                    $heading3['data']['tableRow_'.($key+1)]['vlResult'] = $vlResult;
-                    $heading3['data']['tableRow_'.($key+1)]['tndReferenceRadio'] = $vlResponseArr;
+                    $heading3['data']['tableRowTxt']['label'][] = $sample['sample_label'];
+                    $heading3['data']['tableRowTxt']['mandatory'][] = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
+                    $heading3['data']['vlResult'][] = $vlResult;
+                    $heading3['data']['tndReferenceRadio'][] = $vlResponseArr;
                 }
             }else{
                 $allNotTestedReason = $schemeService->getVlNotTestedReasons();
@@ -2318,112 +2307,102 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function fetchIndividualReportAPI($params)
     {
-        $general = new Pt_Commons_General();
-        $response = array();
-        $resultData = array();
-        if (isset($params['appVersion']) && $params['appVersion'] != "") {
-            if (isset($params['authToken']) && trim($params['authToken']) != "") {
-                $aResult = Application_Service_DataManagers::getAuthToken($params['authToken'], $params['appVersion']);
-                if ($aResult != 'app-version-failed') {
-                        if ($aResult) {
-                            $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id'))
-                                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
-                                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
-                                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-                                ->where("pmm.dm_id=?", $aResult['dm_id'])
-                                ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
-                            $resultData = $this->getAdapter()->fetchAll($sQuery);
-                            if (isset($resultData) && count($resultData) > 0) {
-                                $data = array();
-                                foreach ($resultData as $aRow) {
-                                    $data[] = array(
-                                        'schemeType' => strtoupper($aRow['scheme_type']),
-                                        'shipmentCode' => $aRow['shipment_code'],
-                                        'shipmentDate' => $general->humanDateFormat($aRow['shipment_date']),
-                                        'uniqueIdentifier' => $aRow['unique_identifier'],
-                                        'name'             => $aRow['first_name'] . " " . $aRow['last_name'],
-                                        'responseDate'     => $general->humanDateFormat($aRow['RESPONSEDATE']),
-                                        'downloadLink'     => '/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . ''
-                                    );
-                                }
-                                if (isset($data) && count($data) > 0) {
-                                    $response['status'] = 'success';
-                                    $response['data'] = $data;
-                                } else {
-                                    $response["status"] = "fail";
-                                    $response["message"] = "Report not found!";
-                                }
-                            }
-                        } else {
-                            $response["status"] = "fail";
-                            $response["message"] = "Participant not found!";
-                        }
-                } else {
-                    $response['status'] = "version-fail";
-                    $response['message'] = "Please Update to latest version from Play Store!";
-                }
-            } else {
-                $response["status"] = "fail";
-                $response["message"] = "Authentication error! Please relogin";
-            }
-        } else {
-            $response['status'] = "fail";
-            $response['message'] = "There is an Error in App Version. Kindly Contact Admin.!";
+        /* Check the app versions & parameters */
+        if (!isset($params['appVersion'])) {
+            return array('status' =>'fail','message'=>'There is an error in APP version. Please update to latest version APP.');
         }
-        return $response;
+        if (!isset($params['authToken'])) {
+            return array('status' =>'fail','message'=>'Authentication error.');
+        }
+        
+        /* Validate new auth token and app-version */
+        $dmDb = new Application_Model_DbTable_DataManagers();
+        $aResult = $dmDb->fetchAuthToken($params);
+        if ($aResult == 'app-version-failed') {
+            return array('status' =>'fail','message'=>'Please update to latest version APP.');
+        }
+        if(!$aResult){
+            return array('status' =>'fail','message'=>'Participant authentication error.');
+        }
+
+        /* Get individual reports using data manager */
+        $resultData = array();
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
+            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("pmm.dm_id=?", $aResult['dm_id'])
+            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+        $resultData = $this->getAdapter()->fetchAll($sQuery);
+        if (!isset($resultData) && count($resultData) == 0) {
+            return array('status' =>'fail','message'=>'Report not ready.');
+        }
+        /* Started the API service for individual report */
+        $data = array();$general = new Pt_Commons_General();
+        foreach ($resultData as $aRow) {
+            $data[] = array(
+                'schemeType'        => strtoupper($aRow['scheme_type']),
+                'shipmentCode'      => $aRow['shipment_code'],
+                'shipmentDate'      => $general->humanDateFormat($aRow['shipment_date']),
+                'uniqueIdentifier'  => $aRow['unique_identifier'],
+                'name'              => $aRow['first_name'] . " " . $aRow['last_name'],
+                'responseDate'      => $general->humanDateFormat($aRow['RESPONSEDATE']),
+                'downloadLink'      => '/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . ''
+            );
+        }
+        if (isset($data) && count($data) > 0) {
+            return array('status'=>'success','data'=>$data);
+        } else {
+            return array('status'=>'fail','message'=>'Report not ready');
+        }
     }
 
     public function fetchSummaryReportAPI($params)
     {
-        $general = new Pt_Commons_General();
-        $response = array();
-        $resultData = array();
-        if (isset($params['appVersion']) && $params['appVersion'] != "") {
-            if (isset($params['authToken']) && trim($params['authToken']) != "") {
-                $aResult = Application_Service_DataManagers::getAuthToken($params['authToken'], $params['appVersion']);
-                if ($aResult != 'app-version-failed') {
-                        if ($aResult) {
-                            $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
-                            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
-                            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
-                            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                            ->where("pmm.dm_id=?", $aResult['dm_id'])
-                            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
-                            $resultData = $this->getAdapter()->fetchAll($sQuery);
-                            if (isset($resultData) && count($resultData) > 0) {
-                                $data = array();
-                                foreach ($resultData as $aRow) {
-                                    $data[] = array(
-                                        'schemeType' => strtoupper($aRow['scheme_type']),
-                                        'shipmentCode' => $aRow['shipment_code'],
-                                        'shipmentDate' => $general->humanDateFormat($aRow['shipment_date']),
-                                        'downloadLink'     => '/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . ''
-                                    );
-                                }
-                                if (isset($data) && count($data) > 0) {
-                                    $response['status'] = 'success';
-                                    $response['data'] = $data;
-                                } else {
-                                    $response["status"] = "fail";
-                                    $response["message"] = "Report not found!";
-                                }
-                            }
-                        } else {
-                            $response["status"] = "fail";
-                            $response["message"] = "Participant not found!";
-                        }
-                } else {
-                    $response['status'] = "version-fail";
-                    $response['message'] = "Please Update to latest version from Play Store!";
-                }
-            } else {
-                $response["status"] = "fail";
-                $response["message"] = "Authentication error! Please relogin";
-            }
-        } else {
-            $response['status'] = "fail";
-            $response['message'] = "There is an Error in App Version. Kindly Contact Admin.!";
+        /* Check the app versions & parameters */
+        if (!isset($params['appVersion'])) {
+            return array('status' =>'fail','message'=>'There is an error in APP version. Please update to latest version APP.');
         }
-        return $response;
+        if (!isset($params['authToken'])) {
+            return array('status' =>'fail','message'=>'Authentication error.');
+        }
+        
+        /* Validate new auth token and app-version */
+        $dmDb = new Application_Model_DbTable_DataManagers();
+        $aResult = $dmDb->fetchAuthToken($params);
+        if ($aResult == 'app-version-failed') {
+            return array('status' =>'fail','message'=>'Please update to latest version APP.');
+        }
+        if(!$aResult){
+            return array('status' =>'fail','message'=>'Participant authentication error.');
+        }
+        /* Get summary reports using data manager */
+        $resultData = array();
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
+        ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
+        ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
+        ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+        ->where("pmm.dm_id=?", $aResult['dm_id'])
+        ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+        $resultData = $this->getAdapter()->fetchAll($sQuery);
+        if (!isset($resultData) && count($resultData) == 0) {
+            return array('status' =>'fail','message'=>'Report not ready.');
+        }
+        /* Started the API service for summary report */
+        $general = new Pt_Commons_General();
+        $data = array();
+        foreach ($resultData as $aRow) {
+            $data[] = array(
+                'schemeType'    => strtoupper($aRow['scheme_type']),
+                'shipmentCode'  => $aRow['shipment_code'],
+                'shipmentDate'  => $general->humanDateFormat($aRow['shipment_date']),
+                'downloadLink'  => '/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . ''
+            );
+        }
+        if (isset($data) && count($data) > 0) {
+            return array('status'=>'success','data'=>$data);
+        } else {
+            return array('status'=>'fail','message'=>'Report not ready');
+        }
     }
 }
