@@ -326,19 +326,17 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function loginDatamanagerByAPI($params)
     {
-        $version = $params['appVersion'];
         $response = array();
         $resultData = array();
         if (isset($params['userId']) && $params['userId'] != "" && isset($params['key']) && $params['key'] != "") {
             $result = $this->fetchRow("primary_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
             if (isset($result['dm_id']) && $result['dm_id'] != "") {
                 if (isset($result['status']) && $result['status'] == "active") {
-                    if (isset($version) && $version != "") {
+                    if (isset($params['appVersion']) && $params['appVersion'] != "") {
                         $authToken = Application_Service_Common::getRandomString(6);
                         $this->update(array('auth_token' => $authToken, 'last_login' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
-                        $Result = Application_Service_DataManagers::getAuthToken($authToken,$version);
-                        if ($Result != 'app-version-failed') {
-                            foreach ($Result as $aResult) {
+                        $aResult = Application_Service_DataManagers::getAuthToken($authToken,$params['appVersion']);
+                        if ($aResult != 'app-version-failed') {
                                 $viewOnlyAccess = (isset($aResult['view_only_access']) && $aResult['view_only_access'] != "") ? $aResult['view_only_access'] : 'no';
                                 $qcAccess = (isset($aResult['qc_access']) && $aResult['qc_access'] != "") ? $aResult['qc_access'] : 'no';
                                 $enableAddingTestResponseDate = (isset($aResult['enable_adding_test_response_date']) && $aResult['enable_adding_test_response_date'] != "") ? $aResult['enable_adding_test_response_date'] : 'no';
@@ -361,7 +359,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                                     $response['status'] = "fail";
                                     $response['message'] = "Participant not found!";
                                 }
-                            }
                         } else {
                             $response['status'] = "version-fail";
                             $response['message'] = "Please Update to latest version from Play Store!";
@@ -397,7 +394,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ->where("dm.auth_token=?", $authToken);
             $aResult = $db->fetchRow($sQuery);
             if (isset($aResult['dm_id']) && trim($aResult['dm_id']) != "") {
-                $data[] = array(
+                $data = array(
                     'dm_id' => $aResult['dm_id'],
                     'view_only_access' => $aResult['view_only_access'],
                     'qc_access' => $aResult['qc_access'],
@@ -421,22 +418,17 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     }
     public function changePasswordDatamanagerByAPI($params)
     {
-        $password = $params['password'];
-        $authToken = $params['authToken'];
-        $version = $params['appVersion'];
-        if (isset($version) && $version != "") {
-        $Result = Application_Service_DataManagers::getAuthToken($authToken, $version);
-        if ($Result != 'app-version-failed') {
-            foreach ($Result as $aResult) {
+        if (isset($params['appVersion']) && $params['appVersion'] != "") {
+        $aResult = Application_Service_DataManagers::getAuthToken($params['authToken'], $params['appVersion']);
+        if ($aResult != 'app-version-failed') {
                 if (isset($aResult) && $aResult['dm_id'] != "") {
-                    $this->update(array('password' => $password), array('dm_id = ?' => $aResult['dm_id']));
+                    $this->update(array('password' => $params['password']), array('dm_id = ?' => $aResult['dm_id']));
                     $response['status'] = "success";
                     $response['message'] = "Password Updated Successfully!";
                 } else {
                     $response['status'] = "fail";
                     $response['message'] = "Password Could not be Updated!";
                 }
-            }
         } else {
             $response['status'] = "version-fail";
             $response['message'] = "Please Update to latest version from Play Store!";

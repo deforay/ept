@@ -1815,18 +1815,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function fetchShipmentDetailsInAPI($params, $type)
     {
-        $version = $params['appVersion'];
-        $authToken = $params['authToken'];
         $response = array();
         $data = array();
         $formData = array();
         $checkFormSatatus = false;
         $getParticipantId = array();
-        if (isset($version) && $version != "") {
-            if (isset($authToken) && trim($authToken) != "") {
-                $Result = Application_Service_DataManagers::getAuthToken($authToken, $version);
-                if ($Result != 'app-version-failed') {
-                    foreach ($Result as $aResult) {
+        if (isset($params['appVersion']) && $params['appVersion'] != "") {
+            if (isset($params['authToken']) && trim($params['authToken']) != "") {
+                $aResult = Application_Service_DataManagers::getAuthToken($params['authToken'], $params['appVersion']);
+                if ($aResult != 'app-version-failed') {
                         if ($aResult) {
                             $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch'))
                                 ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
@@ -1894,7 +1891,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             $response["status"] = "fail";
                             $response["message"] = "Participant not found!";
                         }
-                    }
                 } else {
                     $response['status'] = "version-fail";
                     $response['message'] = "Please Update to latest version from Play Store!";
@@ -2322,16 +2318,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function fetchIndividualReportAPI($params)
     {
-        $version = $params['appVersion'];
-        $authToken = $params['authToken'];
         $general = new Pt_Commons_General();
         $response = array();
         $resultData = array();
-        if (isset($version) && $version != "") {
-            if (isset($authToken) && trim($authToken) != "") {
-                $Result = Application_Service_DataManagers::getAuthToken($authToken, $version);
-                if ($Result != 'app-version-failed') {
-                    foreach ($Result as $aResult) {
+        if (isset($params['appVersion']) && $params['appVersion'] != "") {
+            if (isset($params['authToken']) && trim($params['authToken']) != "") {
+                $aResult = Application_Service_DataManagers::getAuthToken($params['authToken'], $params['appVersion']);
+                if ($aResult != 'app-version-failed') {
                         if ($aResult) {
                             $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id'))
                                 ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
@@ -2365,7 +2358,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             $response["status"] = "fail";
                             $response["message"] = "Participant not found!";
                         }
-                    }
                 } else {
                     $response['status'] = "version-fail";
                     $response['message'] = "Please Update to latest version from Play Store!";
@@ -2383,17 +2375,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function fetchSummaryReportAPI($params)
     {
-        $version = $params['appVersion'];
-        $authToken = $params['authToken'];
         $general = new Pt_Commons_General();
         $response = array();
         $resultData = array();
-        if (isset($version) && $version != "") {
-            if (isset($authToken) && trim($authToken) != "") {
-                $Result = Application_Service_DataManagers::getAuthToken($authToken, $version);
-                if ($Result != 'app-version-failed') {
-                    // \Zend_Debug::dump($Result);die;
-                    foreach ($Result as $aResult) {
+        if (isset($params['appVersion']) && $params['appVersion'] != "") {
+            if (isset($params['authToken']) && trim($params['authToken']) != "") {
+                $aResult = Application_Service_DataManagers::getAuthToken($params['authToken'], $params['appVersion']);
+                if ($aResult != 'app-version-failed') {
                         if ($aResult) {
                             $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
                             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
@@ -2424,7 +2412,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             $response["status"] = "fail";
                             $response["message"] = "Participant not found!";
                         }
-                    }
                 } else {
                     $response['status'] = "version-fail";
                     $response['message'] = "Please Update to latest version from Play Store!";
