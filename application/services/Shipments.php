@@ -1774,4 +1774,9 @@ class Application_Service_Shipments
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->fetchSummaryReportAPI($params);
     }
+
+    public function saveShipmentsFormByAPI($params){
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->saveShipmentsFormDetailsByAPI($params);
+    }
 }

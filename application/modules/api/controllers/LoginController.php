@@ -10,7 +10,6 @@ class Api_LoginController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            // $params = $this->getRequest()->getPost();
             $params = json_decode(file_get_contents('php://input'));
             $clientsServices = new Application_Service_DataManagers();
             $result = $clientsServices->loginDatamanagerAPI((array)$params);
@@ -20,9 +19,7 @@ class Api_LoginController extends Zend_Controller_Action
     public function changePasswordAction()
     {
         if ($this->getRequest()->isPost()) {
-            // $params = $this->getRequest()->getPost();
             $params = json_decode(file_get_contents('php://input'));
-            // Zend_Debug::dump($params);die;
             $clientsServices = new Application_Service_DataManagers();
             $result = $clientsServices->changePasswordDatamanagerAPI((array)$params);
             $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));

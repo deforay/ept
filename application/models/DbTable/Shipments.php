@@ -1873,6 +1873,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $formData[$key]['shipmentId']       = $row['shipment_id'];
                 $formData[$key]['participantId']    = $row['participant_id'];
                 $formData[$key]['evaluationStatus'] = $row['evaluation_status'];
+                $formData[$key]['mapId']            = $row['map_id'];
 
                 $formData[$key][$row['scheme_type'] . 'Data'] = $this->fetchShipmentFormDetails($row, $aResult);
                 if (isset($formData[$key][$row['scheme_type'] . 'Data']) && count($formData[$key][$row['scheme_type'] . 'Data']) > 0) {
@@ -2201,7 +2202,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2['status']    = true;
                 $heading2['data']['shipmentDate'] = $general->humanDateFormat($shipment['shipment_date']);
                 $heading2['data']['resultDueDate'] = date('d-M-Y',strtotime($shipment['lastdate_response']));
-                $heading2['data']['receiptDate'] = date('d-M-Y',strtotime($shipment['shipment_test_report_date']));
+                $heading2['data']['receiptDate'] = date('d-M-Y',strtotime($shipment['shipment_receipt_date']));
                 $heading2['data']['sampleRehydrationDate'] = $general->humanDateFormat($shipment['attributes']["sample_rehydration_date"]);
                 $heading2['data']['testDate'] = $general->humanDateFormat($shipment["shipment_test_date"]);
                 $heading2['data']['specimenVolume'] = $shipment['attributes']['specimen_volume'];
@@ -2403,6 +2404,117 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return array('status'=>'success','data'=>$data);
         } else {
             return array('status'=>'fail','message'=>'Report not ready');
+        }
+    }
+
+    public function saveShipmentsFormDetailsByAPI($params){
+        Zend_Debug::dump($params);die;
+
+        /* Check the app versions & parameters */
+        if (!isset($params['appVersion'])) {
+            return array('status' =>'fail','message'=>'There is an error in APP version. Please update to latest version APP.');
+        }
+        if (!isset($params['authToken'])) {
+            return array('status' =>'fail','message'=>'Authentication error.');
+        }
+        
+        /* Validate new auth token and app-version */
+        $dmDb = new Application_Model_DbTable_DataManagers();
+        $aResult = $dmDb->fetchAuthToken($params);
+        if ($aResult == 'app-version-failed') {
+            return array('status' =>'fail','message'=>'Please update to latest version APP.');
+        }
+        if(!$aResult){
+            return array('status' =>'fail','message'=>'Participant authentication error.');
+        }
+
+        /* Save shipments form details */
+        $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
+        $isEditable = $spMap->isShipmentEditable($params['shipment_id'],$params['participant_id']);
+
+        if(!$isEditable && $aResult['view_only_access'] == 'yes'){
+            return array('status' =>'fail','message'=>'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.');
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $db->beginTransaction();
+        try {
+            $ptGeneral = new Pt_Commons_General();
+            $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($params['Heading2']['sampleRhdDate']) && trim($params['Heading2']['sampleRhdDate']) != "") {
+                $params['Heading2']['sampleRhdDate'] = $ptGeneral->dateFormat($params['Heading2']['sampleRhdDate']);
+            }
+            if (isset($params['Heading2']['assayExpDate']) && trim($params['Heading2']['assayExpDate']) != "") {
+                $params['Heading2']['assayExpDate'] = $ptGeneral->dateFormat($params['Heading2']['assayExpDate']);
+            }
+            $attributes = array(
+                "sample_rehydration_date" => $params['Heading2']['sampleRhdDate'],
+                "vl_assay" => $params['Heading2']['vlassay'],
+                "assay_lot_number" => $params['Heading2']['assayLotNo'],
+                "assay_expiration_date" => $params['Heading2']['assayExpDate'],
+                "specimen_volume" => $params['Heading2']['specVolTest'],
+                // "uploaded_file" => $params['uploadedFilePath']
+            );
+
+            if (isset($params["Heading2"]['othervlassay']) && $params["Heading2"]['othervlassay'] != "") {
+                $attributes['other_assay'] = $params["Heading2"]['othervlassay'];
+            }
+
+            $attributes = json_encode($attributes);
+            $data = array(
+                "shipment_receipt_date" => $ptGeneral->dateFormat($params["Heading2"]['shipmentDate']),
+                "shipment_test_date" => $ptGeneral->dateFormat($params["Heading2"]['testReceiptDate']),
+                "attributes" => $attributes,
+                "shipment_test_report_date" => (isset($params["Heading2"]['responseDate']) && trim($params["Heading2"]['responseDate']) != '')?$ptGeneral->dateFormat($params["Heading2"]['responseDate']):new Zend_Db_Expr('now()'),
+                "supervisor_approval" => $params["Heading4"]['supReview'],
+                "participant_supervisor" => $params["Heading4"]['supervisorName'],
+                "user_comment" => $params["Heading4"]['comments'],
+                "updated_by_user" => $aResult['dm_id'],
+                "mode_id" => (isset($params["Heading2"]['receiptmode']) && $params["Heading2"]['receiptmode'] != "")?$params["Heading2"]['receiptmode']:null,
+                "updated_on_user" => new Zend_Db_Expr('now()')
+            );
+
+            if (isset($params["Heading3"]['ptPanelTest']) && $params["Heading3"]['ptPanelTest'] == 'yes') {
+                $data['is_pt_test_not_performed'] = 'yes';
+                $data['vl_not_tested_reason'] = $params["Heading3"]['vlNotTestedReason'];
+                $data['pt_test_not_performed_comments'] = $params["Heading3"]['ptNotTestedComments'];
+                $data['pt_support_comments'] = $params["Heading3"]['ptSupportComments'];
+            } else {
+                $data['is_pt_test_not_performed'] = NULL;
+                $data['vl_not_tested_reason'] = NULL;
+                $data['pt_test_not_performed_comments'] = NULL;
+                $data['pt_support_comments'] = NULL;
+            }
+
+            if (isset($aResult['qc_access']) && $aResult['qc_access'] == 'yes') {
+                $data['qc_done'] = $params["Heading2"]['qcDone'];
+                if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
+                    $data['qc_date'] = $ptGeneral->dateFormat($params["Heading2"]['qcDate']);
+                    $data['qc_done_by'] = trim($params["Heading2"]['qcDoneBy']);
+                    $data['qc_created_on'] = new Zend_Db_Expr('now()');
+                } else {
+                    $data['qc_date'] = NULL;
+                    $data['qc_done_by'] = NULL;
+                    $data['qc_created_on'] = NULL;
+                }
+            }
+
+            $shipmentParticipantDb->updateShipment($data, $params['mapId'], $params["Heading2"]['resultDueDate']);
+
+            $eidResponseDb = new Application_Model_DbTable_ResponseVl();
+            $eidResponseDb->updateResults($params);
+            $db->commit();
+            $message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            $db->rollBack();
+            $message = "Sorry we could not record your result. Please try again or contact the PT adminstrator";
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
         }
     }
 }
