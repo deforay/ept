@@ -1992,7 +1992,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2 = array(
                     'shipmentDate'              => $general->humanDateFormat($shipment['shipment_date']),
                     'resultDueDate'             => date('d-M-Y',strtotime($shipment['lastdate_response'])),
-                    'shipmentReceiptDate'       => date('d-M-Y',strtotime($shipment['shipment_receipt_date'])),
+                    'testReceiptDate'       => date('d-M-Y',strtotime($shipment['shipment_receipt_date'])),
                     'sampleRehydrationDate'     => $general->humanDateFormat($shipment['attributes']["sample_rehydration_date"]),
                     'testingDate'               => $general->humanDateFormat($shipment['shipment_test_date']),
                     'algorithmUsedSelect'       => $algorithmUsedSelect,
@@ -2202,7 +2202,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2['status']    = true;
                 $heading2['data']['shipmentDate'] = $general->humanDateFormat($shipment['shipment_date']);
                 $heading2['data']['resultDueDate'] = date('d-M-Y',strtotime($shipment['lastdate_response']));
-                $heading2['data']['receiptDate'] = date('d-M-Y',strtotime($shipment['shipment_receipt_date']));
+                $heading2['data']['testReceiptDate'] = date('d-M-Y',strtotime($shipment['shipment_receipt_date']));
                 $heading2['data']['sampleRehydrationDate'] = $general->humanDateFormat($shipment['attributes']["sample_rehydration_date"]);
                 $heading2['data']['testDate'] = $general->humanDateFormat($shipment["shipment_test_date"]);
                 $heading2['data']['specimenVolume'] = $shipment['attributes']['specimen_volume'];
@@ -2463,8 +2463,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $attributes = json_encode($attributes);
             $data = array(
-                "shipment_receipt_date" => $ptGeneral->dateFormat($params["Heading2"]['shipmentDate']),
-                "shipment_test_date" => $ptGeneral->dateFormat($params["Heading2"]['testReceiptDate']),
+                "shipment_receipt_date" => $ptGeneral->dateFormat($params["Heading2"]['testReceiptDate']),
+                "shipment_test_date" => $ptGeneral->dateFormat($params["Heading2"]['testingDate']),
                 "attributes" => $attributes,
                 "shipment_test_report_date" => (isset($params["Heading2"]['responseDate']) && trim($params["Heading2"]['responseDate']) != '')?$ptGeneral->dateFormat($params["Heading2"]['responseDate']):new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params["Heading4"]['supReview'],
