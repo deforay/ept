@@ -1906,11 +1906,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $date = new Zend_Date();
 
         // Initialte the global functions
-        $participant    = $participantDb->getParticipant($params['participant_id']);
+        $participant    =   $participantDb->getParticipant($params['participant_id']);
         if($params['scheme_type'] == 'dts'){
-            $allSamples     = $schemeService->getDtsSamples($params['shipment_id'],$params['participant_id']);
-        } else if($params['scheme_type'] == 'vl'){
-            $allSamples     = $schemeService->getVlSamples($params['shipment_id'],$params['participant_id']);
+            $allSamples =   $schemeService->getDtsSamples($params['shipment_id'],$params['participant_id']);
+        } if($params['scheme_type'] == 'vl'){
+            $allSamples =   $schemeService->getVlSamples($params['shipment_id'],$params['participant_id']);
+        } if($params['scheme_type'] == 'eid'){
+            $allSamples =   $schemeService->getEidSamples($params['shipment_id'],$params['participant_id']);
         }
         $shipment = $schemeService->getShipmentData($params['shipment_id'],$params['participant_id']);
         $shipment['attributes'] = json_decode($shipment['attributes'],true);
@@ -2038,6 +2040,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'  => $testkit['TESTKITNAME'],
                         'selected' => (isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"])?'selected':''
                     );
+                    if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
+                        $testKitArray['kitSelected'][] = array(
+                            'kitName' =>'Test-1',
+                            'kitValue' =>$testkit['TESTKITNAMEID']
+                        );
+                    }
                 }
                 if($testkit['testkit_2'] == '1'){
                     $testKitArray['kitName']['Test-2']['status'] = true;
@@ -2046,6 +2054,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'  => $testkit['TESTKITNAME'],
                         'selected' => (isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"])?'selected':''
                     );
+                    if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
+                        $testKitArray['kitSelected'][] = array(
+                            'kitName' =>'Test-2',
+                            'kitValue' =>$testkit['TESTKITNAMEID']
+                        );
+                    }
                 }
                 if(!$testThreeOptional && $testkit['testkit_3'] == '1'){
                     $testKitArray['kitName']['Test-3']['status'] = true;
@@ -2054,6 +2068,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'  => $testkit['TESTKITNAME'],
                         'selected' => (isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"])?'selected':''
                     );
+                    if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
+                        $testKitArray['kitSelected'][] = array(
+                            'kitName' =>'Test-3',
+                            'kitValue' =>$testkit['TESTKITNAMEID']
+                        );
+                    }
                 }else{
                     $testKitArray['kitName']['Test-3']['status'] = false;
                 }
@@ -2089,41 +2109,60 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $dtsPossibleResults = $schemeService->getPossibleResults('dts');
             $allSamplesResult = array();
             foreach ($allSamples as $sample) {
-                $possibleFinalResults = array();
-                foreach ($dtsPossibleResults as $pr) {
-                    if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
-                        $possibleFinalResults[] = array('value'=>$pr['id'],'show'=>$pr['response'],'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
-                    }
-                }
-                $allSamplesResult['samples'][] = $sample['sample_label'];
+                $sample1Select = $sample2Select = $sample3Select = $sampleFinalSelect ="";
+                $allSamplesResult['samples']['label'][] = $sample['sample_label'];
+                $allSamplesResult['samples']['id'][] = $sample['sample_id'];
                 foreach(range(1,3) as $row){
                     $possibleResults = array();
                     if($row == 3){
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
                                 $possibleResults[] = array('value'=>$pr['id'],'show'=>$pr['response'],'selected'=>($sample['test_result_3'] == $pr['id'])?'selected':'');
+                                if($sample['test_result_3'] == $pr['id']){
+                                    $allSamplesResult['sampleName'][$sample['sample_label']][] = array('resultName'=>'Result-3','resultValue'=>$sample['test_result_3']);
+                                    $sample3Select = $sample['test_result_3'];
+                                }
                             }
                         }
                         if(!$testThreeOptional){
                             $allSamplesResult[$sample['sample_label']]['Result-'.$row]['status'] = true;
-                            $allSamplesResult[$sample['sample_label']]['Result-'.$row]['data'] = $possibleResults;
                         }else{
-                            
-                            $allSamplesResult[$sample['sample_label']]['Result-'.$row]['data'] = $possibleResults;
                             $allSamplesResult[$sample['sample_label']]['Result-'.$row]['status'] = false;
                         }
+                        $allSamplesResult[$sample['sample_label']]['Result-'.$row]['data'] = $possibleResults;
                     }else{
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
                                 $possibleResults[] = array('value'=>$pr['id'],'show'=>$pr['response'],'selected'=>(($sample['test_result_1'] == $pr['id'] && $row == 1) || ($sample['test_result_2'] == $pr['id'] && $row == 2))?'selected':'');
+                                if($sample['test_result_1'] == $pr['id'] && $row == 1){
+                                    $allSamplesResult['sampleName'][$sample['sample_label']][] = array('resultName'=>'Result-1','resultValue'=>$sample['test_result_1']);
+                                    $sample1Select = $sample['test_result_1'];
+                                }else if($sample['test_result_2'] == $pr['id'] && $row == 2){
+                                    $allSamplesResult['sampleName'][$sample['sample_label']][] = array('resultName'=>'Result-2','resultValue'=>$sample['test_result_2']);
+                                    $sample2Select = $sample['test_result_2'];
+                                }
                             }
                         }
                         $allSamplesResult[$sample['sample_label']]['Result-'.$row]['status'] = true;
                         $allSamplesResult[$sample['sample_label']]['Result-'.$row]['data'] = $possibleResults;
                     }
                 }
+                $possibleFinalResults = array();
+                foreach ($dtsPossibleResults as $pr) {
+                    if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
+                        $possibleFinalResults[] = array('value'=>$pr['id'],'show'=>$pr['response'],'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
+                        if($sample['reported_result'] == $pr['id']){
+                            $allSamplesResult['sampleName'][$sample['sample_label']][] = array('resultName'=>'Final-Result','resultValue'=>$sample['reported_result']);
+                            $sampleFinalSelect = $sample['reported_result'];
+                        }
+                    }
+                    
+                }
+
+                $allSamplesResult['sampleSelect'][$sample['sample_label']][]=array($sample1Select,$sample2Select,$sample3Select,$sampleFinalSelect);
                 $allSamplesResult['resultsText'] = array('Result-1','Result-2','Result-3','Final-Result');
-                $allSamplesResult[$sample['sample_label']]['Final-Result'] = $possibleFinalResults;
+                $allSamplesResult[$sample['sample_label']]['Final-Result']['status'] = true;
+                $allSamplesResult[$sample['sample_label']]['Final-Result']['data'] = $possibleFinalResults;
             }
             if((isset($allSamples) && count($allSamples) > 0) && (isset($dtsPossibleResults) && count($dtsPossibleResults) > 0)){
                 $dts['Heading4']['status'] = true;
@@ -2145,7 +2184,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $dts['Heading5']['data'] = $reviewArray;
             // Heading 5 End
             return $dts;
-        }else if($params['scheme_type'] == 'vl'){
+        }
+        if($params['scheme_type'] == 'vl'){
             $reportAccess = array();$vl = array();
             if($isEditable && $dm['view_only_access'] != 'yes'){
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
@@ -2242,52 +2282,53 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // Heading 2 end // Heading 3 start
             $heading3 = array();
             $heading3['status'] = true;
+            $allNotTestedReason = $schemeService->getVlNotTestedReasons();
             if((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')){
                 $heading3['data']['isPtTestNotPerformedRadio'] = 'no';
-                $heading3['data']['note'][] = htmlentities("Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.");
-                $heading3['data']['note'][] = htmlentities("Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).");
-                $heading3['data']['note'][] = htmlentities("For negative or undetectable result (TND), please enter 0.00.");
-                $heading3['data']['note'][] = htmlentities("For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section.");
-                $heading3['data']['vlResultSectionLabel'] = htmlentities("Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)");
-                $heading3['data']['tableHeading'][] = 'Control/Sample';
-                $heading3['data']['tableHeading'][] = htmlentities('Viral Load (log<sub>10</sub> copies/ml)');
-                $heading3['data']['tableHeading'][] = htmlentities('TND(Target Not Detected)');
-                // return $allSamples;
-                foreach ($allSamples as $key=>$sample) {
-                    if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
-                        $sample['mandatory'] = 0;
-                    }
-                    $vlArray = array('yes','no');
-                    $vlResult = $sample['reported_viral_load'];
-                    if ($sample['is_tnd'] == 'yes') {
-                        $vlResult = 0.00;
-                    }
-                    $vlResponseArr = array();
-                    foreach($vlArray as $row){
-                        $vlResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>($sample['is_tnd'] == $row || ($sample['is_tnd'] == '' && $row == 'no'))?'selected':'');
-                    }
-                    $heading3['data']['tableRowTxt']['label'][] = $sample['sample_label'];
-                    $heading3['data']['tableRowTxt']['mandatory'][] = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
-                    $heading3['data']['vlResult'][] = $vlResult;
-                    $heading3['data']['tndReferenceRadio'][] = $vlResponseArr;
-                }
+                
             }else{
-                $allNotTestedReason = $schemeService->getVlNotTestedReasons();
                 $heading3['data']['isPtTestNotPerformedRadio'] = 'yes';
-                $allNotTestedArray = array();
-                foreach ($allNotTestedReason as $reason) {
-                    $allNotTestedArray[] = array(
-                        'value'     => $reason['vl_not_tested_reason_id'],
-                        'show'      => ucwords($reason['vl_not_tested_reason']),
-                        'selected'  => ($shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id'])?'selected':''
-                    );
+            }
+            $heading3['data']['no']['note'][] = htmlentities("Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.");
+            $heading3['data']['no']['note'][] = htmlentities("Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).");
+            $heading3['data']['no']['note'][] = htmlentities("For negative or undetectable result (TND), please enter 0.00.");
+            $heading3['data']['no']['note'][] = htmlentities("For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section.");
+            $heading3['data']['no']['vlResultSectionLabel'] = htmlentities("Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)");
+            $heading3['data']['no']['tableHeading'][] = 'Control/Sample';
+            $heading3['data']['no']['tableHeading'][] = htmlentities('Viral Load (log<sub>10</sub> copies/ml)');
+            $heading3['data']['no']['tableHeading'][] = htmlentities('TND(Target Not Detected)');
+            $allNotTestedArray = array();
+            foreach ($allNotTestedReason as $reason) {
+                $allNotTestedArray[] = array(
+                    'value'     => $reason['vl_not_tested_reason_id'],
+                    'show'      => ucwords($reason['vl_not_tested_reason']),
+                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id'])?'selected':''
+                );
+            }
+            $heading3['data']['yes']['vlNotTestedReasonText'] = 'Reason for not testing the PT Panel';
+            $heading3['data']['yes']['vlNotTestedReasonSelect'] = $allNotTestedArray;
+            $heading3['data']['yes']['commentsText'] = 'Your comments';
+            $heading3['data']['yes']['commentsTextArea'] = $shipment['pt_test_not_performed_comments'];
+            $heading3['data']['yes']['supportText'] = 'Do you need any support from the PT Provider ?';
+            $heading3['data']['yes']['supportTextArea'] = $shipment['pt_support_comments'];
+            // return $allSamples;
+            foreach ($allSamples as $key=>$sample) {
+                if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
+                    $sample['mandatory'] = 0;
                 }
-                $heading3['data']['vlNotTestedReasonText'] = 'Reason for not testing the PT Panel';
-                $heading3['data']['vlNotTestedReasonSelect'] = $allNotTestedArray;
-                $heading3['data']['commentsText'] = 'Your comments';
-                $heading3['data']['commentsTextArea'] = $shipment['pt_test_not_performed_comments'];
-                $heading3['data']['supportText'] = 'Do you need any support from the PT Provider ?';
-                $heading3['data']['supportTextArea'] = $shipment['pt_support_comments'];
+                $vlArray = array('yes','no');
+                $vlResult = $sample['reported_viral_load'];
+                if ($sample['is_tnd'] == 'yes') {
+                    $vlResult = 0.00;
+                }
+                $vlResponseArr = array();
+                foreach($vlArray as $row){
+                    $vlResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>($sample['is_tnd'] == $row || ($sample['is_tnd'] == '' && $row == 'no'))?'selected':'');
+                }
+                $heading3['data']['no']['tableRowTxt']['label'][] = $sample['sample_label'];
+                $heading3['data']['no']['tableRowTxt']['mandatory'][] = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
+                $heading3['data']['no']['vlResult'][] = $vlResult;
+                $heading3['data']['no']['tndReferenceRadio'][] = $vlResponseArr;
             }
             $vl['Heading3'] = $heading3;
             // Heading 3 end // Heading 4 Start
@@ -2303,6 +2344,181 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $vl['Heading4']['data'] = $reviewArray;
             // Heading 4 End
             return $vl;
+        }
+        if($params['scheme_type'] == 'eid'){
+            $eid = array();
+            $extractionAssay = $schemeService->getEidExtractionAssay();
+            $detectionAssay = $schemeService->getEidDetectionAssay();
+            $participant = $participantDb->getParticipant($params['participant_id']);
+            $eidPossibleResults = $schemeService->getPossibleResults('eid');
+            // return $eidPossibleResults;
+            $reportAccess = array();$vl = array();
+            if($isEditable && $dm['view_only_access'] != 'yes'){
+                if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
+                    $reportAccess['status'] = 'Fail';
+                    $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } else if($responseAccess == 1){
+                    $reportAccess['status'] = 'Fail';
+                    $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } else if($shipment['status'] == 'finalized'){
+                    $reportAccess['status'] = 'Fail';
+                    $reportAccess['message'] = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
+                } else{
+                    $reportAccess['status'] = 'success';
+                }
+            }else{
+                $reportAccess['status'] = 'Fail';
+                $reportAccess['message'] = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications';
+            }
+            $eid['access'] = $reportAccess;
+            // Heading 1 start
+            $heading1= array(
+                'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '')?$participant['first_name']:'').((isset($participant['last_name']) && $participant['last_name'] != '')?' '.$participant['last_name']:''),
+                'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '')?$participant['unique_identifier']:'',
+                'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '')?$participant['affiliation']:'',
+                'phone'             => (isset($participant['phone']) && $participant['phone'] != '')?$participant['phone']:'',
+                'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '')?$participant['mobile']:''
+            );
+            if(isset($participant) && count($participant) > 0){
+                $eid['Heading1']['status'] = true;
+                $eid['Heading1']['data'] = $heading1;
+            }else{
+                $eid['Heading1']['status'] = false;
+                $eid['Heading1']['data'] = $heading1;
+            }
+            // Heading1 end // Heading2 start
+            $heading2 = array();
+            if(isset($shipment) && count($shipment) > 0){
+                $modeOfReceiptSelect = array();
+                foreach ($modeOfReceipt as $receipt){
+                    $modeOfReceiptSelect[]= array(
+                        'value'     =>  $receipt['mode_id'],
+                        'show'      =>  $receipt['mode_name'],
+                        'selected'   => ($shipment["mode_id"] == $receipt['mode_id'])?'selected':''
+                    );
+                }
+                $extractionAssaySelect = array();
+                foreach ($extractionAssay as $eAssayId => $eAssayName){
+                    $extractionAssaySelect[]= array(
+                        'value'     =>  $eAssayId,
+                        'show'      =>  $eAssayName,
+                        'selected'   => ($shipment['attributes']['extraction_assay'] == $eAssayId)?'selected':''
+                    );
+                }
+                $detectionAssaySelect = array();
+                foreach ($detectionAssay as $dAssayId => $dAssayName){
+                    $detectionAssaySelect[]= array(
+                        'value'     =>  $dAssayId,
+                        'show'      =>  $dAssayName,
+                        'selected'   => ($shipment['attributes']['detection_assay'] == $dAssayId)?'selected':''
+                    );
+                }
+                
+                $heading2['status']    = true;
+                $heading2['data']['shipmentDate'] = $general->humanDateFormat($shipment['shipment_date']);
+                $heading2['data']['resultDueDate'] = date('d-M-Y',strtotime($shipment['lastdate_response']));
+                $heading2['data']['testReceiptDate'] = date('d-M-Y',strtotime($shipment['shipment_receipt_date']));
+                $heading2['data']['sampleRehydrationDate'] = $general->humanDateFormat($shipment['attributes']["sample_rehydration_date"]);
+                $heading2['data']['testDate'] = $general->humanDateFormat($shipment["shipment_test_date"]);
+                $heading2['data']['extractionAssaySelect'] = $extractionAssaySelect;
+                $heading2['data']['detectionAssaySelect'] = $detectionAssaySelect;
+                $heading2['data']['extractionLotNumber'] = $shipment['attributes']['extraction_assay_lot_no'];
+                $heading2['data']['detectionLotNumber'] = $shipment['attributes']['detection_assay_lot_no'];
+                $heading2['data']['extractionExpirationDate'] = $general->humanDateFormat($shipment['attributes']['extraction_assay_expiry_date']);
+                $heading2['data']['detectionExpirationDate'] = $general->humanDateFormat($shipment['attributes']['detection_assay_expiry_date']);
+                
+                if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
+                    if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes'){
+                        $heading2['data']['responseDate'] = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                    }
+                    if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
+                        $heading2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+                    }
+                }
+            }
+
+            $qcArray = array('yes','no');$qc = array();
+            foreach($qcArray as $row){
+                if($globalQcAccess == 'yes' && isset($dm['qc_access']) && $dm['qc_access'] == 'yes' && $dm['qc_access'] != null && $dm['qc_access'] != ""){
+                    $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>($shipment['qc_done'] == $row)?'selected':'');
+                }else{
+                    $qcResponseArr[] = array('value' =>'','show' =>'','selected'=>'');
+                }
+            }
+            $qc['qcRadio'] = $qcResponseArr;
+            $qc['qcDate']   = (isset($shipment['qc_date'])&&$shipment['qc_date']!='')?$general->humanDateFormat($shipment['qc_date']):'';
+            $qc['qcDoneBy'] = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
+            if($globalQcAccess != 'yes' && $dm['qc_access'] != 'yes'){
+                $qc['status'] = false;
+            }else{
+                $qc['status'] = true;
+            }
+            $heading2['data']['qcData'] = $qc;
+
+            $eid['Heading2'] = $heading2;
+            // Heading 2 end // Heading 3 start
+            $allNotTestedReason = $schemeService->getVlNotTestedReasons();
+            
+            $allSamplesResult = array();
+            foreach ($allSamples as $sample) {
+                if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
+                    $sample['mandatory'] = 0;
+                }
+                $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
+                $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
+                $allSamplesResult['samples']['mandatory'][]     = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
+                $possibleEIDResults = array();
+                foreach ($eidPossibleResults as $pr) {
+                    if ($pr['scheme_sub_group'] == 'EID_FINAL') {
+                        $possibleEIDResults[] = array('value'=>$pr['id'],'show'=>$pr['response'],'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
+                    }
+                }
+
+                $allSamplesResult['resultsText'] = array('Control/Sample','Your-Results','HIV-CT/OD','IC/QS-Values');
+                $allSamplesResult[$sample['sample_label']]['Your-Results']      = $possibleEIDResults;
+                $allSamplesResult[$sample['sample_label']]['HIV-CT/OD']         = $sample['hiv_ct_od'];
+                $allSamplesResult[$sample['sample_label']]['IC/QS-Values']      = $sample['ic_qs'];
+            }
+            // return $eidPossibleResults;
+            $allNotTestedArray = array();
+            foreach ($allNotTestedReason as $reason) {
+                $allNotTestedArray[] = array(
+                    'value'     => $reason['vl_not_tested_reason_id'],
+                    'show'      => ucwords($reason['vl_not_tested_reason']),
+                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id'])?'selected':''
+                );
+            }
+            
+            if((isset($allSamples) && count($allSamples) > 0) && (isset($eidPossibleResults) && count($eidPossibleResults) > 0)){
+                $eid['Heading3']['status'] = true;
+            }else{
+                $eid['Heading3']['status'] = false;
+            }
+            $eid['Heading3']['data'] = $allSamplesResult;
+            if((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')){
+                $eid['Heading3']['data']['isPtTestNotPerformedRadio'] = 'no';
+                
+            }else{
+                $eid['Heading3']['data']['isPtTestNotPerformedRadio'] = 'yes';
+            }
+            $eid['Heading3']['data']['vlNotTestedReasonText']   = 'Reason for not testing the PT Panel:';
+            $eid['Heading3']['data']['vlNotTestedReason']       = $allNotTestedArray;
+            $eid['Heading3']['data']['ptNotTestedCommentsText'] = 'Your comments:';
+            $eid['Heading3']['data']['ptNotTestedComments']     = $shipment['pt_test_not_performed_comments'];
+            $eid['Heading3']['data']['ptSupportCommentsText']   = 'Do you need any support from the PT Provider ?';
+            $eid['Heading3']['data']['ptSupportComments']       = $shipment['pt_support_comments'];
+            // Heading 3 End // Heading 4 Start
+            $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
+            foreach($commentArray as $row){
+                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row)?'selected':'');
+            }
+            $reviewArray['supervisorReview'] = $revieArr;
+            $reviewArray['approvalLabel'] = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'Supervisor Name':'';
+            $reviewArray['approvalInputText'] = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?$shipment['participant_supervisor']:'';
+            $reviewArray['comments'] = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
+            $eid['Heading4']['status'] = true;
+            $eid['Heading4']['data'] = $reviewArray;
+            return $eid;
         }
     }
 
@@ -2408,7 +2624,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     }
 
     public function saveShipmentsFormDetailsByAPI($params){
-        Zend_Debug::dump($params);die;
 
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
@@ -2420,99 +2635,110 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         
         /* Validate new auth token and app-version */
         $dmDb = new Application_Model_DbTable_DataManagers();
-        $aResult = $dmDb->fetchAuthToken($params);
-        if ($aResult == 'app-version-failed') {
+        $dm = $dmDb->fetchAuthToken($params);
+        if ($dm == 'app-version-failed') {
             return array('status' =>'fail','message'=>'Please update to latest version APP.');
         }
-        if(!$aResult){
+        if(!$dm){
             return array('status' =>'fail','message'=>'Participant authentication error.');
         }
 
         /* Save shipments form details */
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
-        $isEditable = $spMap->isShipmentEditable($params['shipment_id'],$params['participant_id']);
+        $isEditable = $spMap->isShipmentEditable($params['shipmentId'],$params['participantId']);
 
-        if(!$isEditable && $aResult['view_only_access'] == 'yes'){
+        if(!$isEditable && $dm['view_only_access'] == 'yes'){
             return array('status' =>'fail','message'=>'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.');
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
         $db->beginTransaction();
         try {
+            $eidResponseStatus = 0;$updateShipmentParticipantStatus = 0;
             $ptGeneral = new Pt_Commons_General();
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (isset($params['Heading2']['sampleRhdDate']) && trim($params['Heading2']['sampleRhdDate']) != "") {
-                $params['Heading2']['sampleRhdDate'] = $ptGeneral->dateFormat($params['Heading2']['sampleRhdDate']);
-            }
-            if (isset($params['Heading2']['assayExpDate']) && trim($params['Heading2']['assayExpDate']) != "") {
-                $params['Heading2']['assayExpDate'] = $ptGeneral->dateFormat($params['Heading2']['assayExpDate']);
-            }
-            $attributes = array(
-                "sample_rehydration_date" => $params['Heading2']['sampleRhdDate'],
-                "vl_assay" => $params['Heading2']['vlassay'],
-                "assay_lot_number" => $params['Heading2']['assayLotNo'],
-                "assay_expiration_date" => $params['Heading2']['assayExpDate'],
-                "specimen_volume" => $params['Heading2']['specVolTest'],
-                // "uploaded_file" => $params['uploadedFilePath']
-            );
-
-            if (isset($params["Heading2"]['othervlassay']) && $params["Heading2"]['othervlassay'] != "") {
-                $attributes['other_assay'] = $params["Heading2"]['othervlassay'];
-            }
-
-            $attributes = json_encode($attributes);
-            $data = array(
-                "shipment_receipt_date" => $ptGeneral->dateFormat($params["Heading2"]['testReceiptDate']),
-                "shipment_test_date" => $ptGeneral->dateFormat($params["Heading2"]['testingDate']),
-                "attributes" => $attributes,
-                "shipment_test_report_date" => (isset($params["Heading2"]['responseDate']) && trim($params["Heading2"]['responseDate']) != '')?$ptGeneral->dateFormat($params["Heading2"]['responseDate']):new Zend_Db_Expr('now()'),
-                "supervisor_approval" => $params["Heading4"]['supReview'],
-                "participant_supervisor" => $params["Heading4"]['supervisorName'],
-                "user_comment" => $params["Heading4"]['comments'],
-                "updated_by_user" => $aResult['dm_id'],
-                "mode_id" => (isset($params["Heading2"]['receiptmode']) && $params["Heading2"]['receiptmode'] != "")?$params["Heading2"]['receiptmode']:null,
-                "updated_on_user" => new Zend_Db_Expr('now()')
-            );
-
-            if (isset($params["Heading3"]['ptPanelTest']) && $params["Heading3"]['ptPanelTest'] == 'yes') {
-                $data['is_pt_test_not_performed'] = 'yes';
-                $data['vl_not_tested_reason'] = $params["Heading3"]['vlNotTestedReason'];
-                $data['pt_test_not_performed_comments'] = $params["Heading3"]['ptNotTestedComments'];
-                $data['pt_support_comments'] = $params["Heading3"]['ptSupportComments'];
-            } else {
-                $data['is_pt_test_not_performed'] = NULL;
-                $data['vl_not_tested_reason'] = NULL;
-                $data['pt_test_not_performed_comments'] = NULL;
-                $data['pt_support_comments'] = NULL;
-            }
-
-            if (isset($aResult['qc_access']) && $aResult['qc_access'] == 'yes') {
-                $data['qc_done'] = $params["Heading2"]['qcDone'];
-                if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                    $data['qc_date'] = $ptGeneral->dateFormat($params["Heading2"]['qcDate']);
-                    $data['qc_done_by'] = trim($params["Heading2"]['qcDoneBy']);
-                    $data['qc_created_on'] = new Zend_Db_Expr('now()');
+            if($params['schemeType'] == 'vl'){
+                // Zend_Debug::dump($params["vlData"]->Heading2->sampleRhdDate);die;
+                if (isset($params["vlData"]->Heading2->sampleRhdDate) && trim($params["vlData"]->Heading2->sampleRhdDate) != "") {
+                    $params["vlData"]->Heading2->sampleRhdDate = $ptGeneral->dateFormat($params["vlData"]->Heading2->sampleRhdDate);
+                }
+                if (isset($params["vlData"]->Heading2->assayExpDate) && trim($params["vlData"]->Heading2->assayExpDate) != "") {
+                    $params["vlData"]->Heading2->assayExpDate = $ptGeneral->dateFormat($params["vlData"]->Heading2->assayExpDate);
+                }
+                $attributes = array(
+                    "sample_rehydration_date" => $params["vlData"]->Heading2->sampleRhdDate,
+                    "vl_assay" => $params["vlData"]->Heading2->vlassay,
+                    "assay_lot_number" => $params["vlData"]->Heading2->assayLotNo,
+                    "assay_expiration_date" => $params["vlData"]->Heading2->assayExpDate,
+                    "specimen_volume" => $params["vlData"]->Heading2->specVolTest,
+                    // "uploaded_file" => $params['uploadedFilePath']
+                );
+    
+                if (isset($params["vlData"]->Heading2->othervlassay) && $params["vlData"]->Heading2->othervlassay != "") {
+                    $attributes['other_assay'] = $params["vlData"]->Heading2->othervlassay;
+                }
+    
+                $attributes = json_encode($attributes);
+                $data = array(
+                    "shipment_receipt_date"         =>  $ptGeneral->dateFormat($params["vlData"]->Heading2->testReceiptDate),
+                    "shipment_test_date"            =>  $ptGeneral->dateFormat($params["vlData"]->Heading2->testingDate),
+                    "attributes"                    =>  $attributes,
+                    "shipment_test_report_date"     =>  (isset($params["vlData"]->Heading2->responseDate) && trim($params["vlData"]->Heading2->responseDate) != '')?$ptGeneral->dateFormat($params["vlData"]->Heading2->responseDate):new Zend_Db_Expr('now()'),
+                    "supervisor_approval"           =>  $params["vlData"]->Heading4->supReview,
+                    "participant_supervisor"        =>  $params["vlData"]->Heading4->supervisorName,
+                    "user_comment"                  =>  $params["vlData"]->Heading4->comments,
+                    "updated_by_user"               =>  $dm['dm_id'],
+                    "mode_id"                       =>  (isset($params["vlData"]->Heading2->receiptmode) && $params["vlData"]->Heading2->receiptmode != "")?$params["vlData"]->Heading2->receiptmode:null,
+                    "updated_on_user"               =>  ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')
+                );
+    
+                if (isset($params["vlData"]->Heading3->ptPanelTest) && $params["vlData"]->Heading3->ptPanelTest == 'yes') {
+                    $data['is_pt_test_not_performed'] = 'yes';
+                    $data['vl_not_tested_reason'] = $params["vlData"]->Heading3->vlNotTestedReason;
+                    $data['pt_test_not_performed_comments'] = $params["vlData"]->Heading3->ptNotTestedComments;
+                    $data['pt_support_comments'] = $params["vlData"]->Heading3->ptSupportComments;
                 } else {
-                    $data['qc_date'] = NULL;
-                    $data['qc_done_by'] = NULL;
-                    $data['qc_created_on'] = NULL;
+                    $data['is_pt_test_not_performed'] = 'no';
+                    $data['vl_not_tested_reason'] = $params["vlData"]->Heading3->ptSupportComments;
+                    $data['pt_test_not_performed_comments'] = $params["vlData"]->Heading3->ptSupportComments;
+                    $data['pt_support_comments'] = $params["vlData"]->Heading3->ptSupportComments;
+                }
+    
+                if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
+                    $data['qc_done'] = $params["vlData"]->Heading2->qcDone;
+                    if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
+                        $data['qc_date'] = $ptGeneral->dateFormat($params["vlData"]->Heading2->qcDate);
+                        $data['qc_done_by'] = trim($params["vlData"]->Heading2->qcDoneBy);
+                        $data['qc_created_on'] = ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()');
+                    } else {
+                        $data['qc_date'] = $ptGeneral->dateFormat($params["vlData"]->Heading2->qcDate);
+                        $data['qc_done_by'] = trim($params["vlData"]->Heading2->qcDoneBy);
+                        $data['qc_created_on'] = ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()');
+                    }
+                }
+                // Zend_Debug::dump($data);die;
+                $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data, $params['mapId'], $params["vlData"]->Heading2->resultDueDate);
+    
+                $eidResponseDb = new Application_Model_DbTable_ResponseVl();
+                $eidResponseStatus = $eidResponseDb->updateResultsByAPI($params,$dm);
+                if($eidResponseStatus > 0 || $updateShipmentParticipantStatus > 0){
+                    $db->commit();
+                    return array('status'=>'success','message'=>'VL Data updated to server.');
+                }else{
+                    $db->rollBack();
+                    return array('status'=>'fail','message'=>'VL Data failed to update.');
                 }
             }
-
-            $shipmentParticipantDb->updateShipment($data, $params['mapId'], $params["Heading2"]['resultDueDate']);
-
-            $eidResponseDb = new Application_Model_DbTable_ResponseVl();
-            $eidResponseDb->updateResults($params);
-            $db->commit();
-            $message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
+            if($params['schemeType'] == 'dts'){
+                Zend_Debug::dump($params);die;
+            }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            $message = "Sorry we could not record your result. Please try again or contact the PT adminstrator";
+            // return array('status'=>'fail','message'=>'Sorry we could not record your result. Please try again or contact the PT adminstrator.');
+            return $e->getMessage();
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
         }

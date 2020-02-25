@@ -196,5 +196,36 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                         ->group('s.scheme_type');
         return $this->getAdapter()->fetchAll($query);
 		
-	}
+    }
+    
+    public function updateShipmentByAPI($params, $shipmentMapId, $lastDate) {
+        
+        $row = $this->fetchRow("map_id = " . $shipmentMapId);
+        // Zend_Debug::dump($row['evaluation_status']);die;
+        if ($row != "") {
+            if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
+                $this->update(array('created_on_user' => ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')), "map_id = " . $shipmentMapId);
+            }
+        }
+
+        $params['evaluation_status'] = $row['evaluation_status'];
+
+        // changing evaluation status 3rd character to 1 = responded
+        $params['evaluation_status'][2] = 1;
+
+        // changing evaluation status 5th character to 1 = via web user
+        $params['evaluation_status'][4] = 1;
+
+        // changing evaluation status 4th character to 1 = timely response or 2 = delayed response
+        $date = new Zend_Date();
+        $lastDate = new Zend_Date($lastDate, Zend_Date::ISO_8601);
+
+        // only if current date is LATER than last date we make status = 2
+        if ($date->compare($lastDate) == 1) {
+            $params['evaluation_status'][3] = 2;
+        } else {
+            $params['evaluation_status'][3] = 1;
+        }
+        return $this->update($params, "map_id = " . $shipmentMapId);
+    }
 }
