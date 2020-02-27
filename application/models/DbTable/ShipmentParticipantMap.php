@@ -197,24 +197,37 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         return $this->getAdapter()->fetchAll($query);
 		
     }
-    
-    public function updateShipmentByAPI($params, $shipmentMapId, $lastDate) {
-        
-        $row = $this->fetchRow("map_id = " . $shipmentMapId);
-        // Zend_Debug::dump($row['evaluation_status']);die;
+
+    public function updateShipmentByAPI($data,$dm,$params,$type) {
+        $row = $this->fetchRow("map_id = " . $params['mapId']);
         if ($row != "") {
             if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
                 $this->update(array('created_on_user' => ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')), "map_id = " . $shipmentMapId);
             }
         }
-
-        $params['evaluation_status'] = $row['evaluation_status'];
+        $data['shipment_id']        = $params['shipmentId'];
+        $data['participant_id']     = $params['participantId'];
+        $data['evaluation_status']  = $params['evaluationStatus'];
+        $data['evaluation_status']  = $row['evaluation_status'];
+        $data['updated_by_user']    = $dm['dm_id'];
+        if($type == 'dts'){
+            $data['custom_field_1'] = $params['dtsData']->customFields->customField1;
+            $data['custom_field_2'] = $params['dtsData']->customFields->customField2;
+            $lastDate               = $params["dtsData"]->Heading2->resultDueDate;
+        }
+        if($type == 'vl'){
+            $data['is_pt_test_not_performed']       = $params['vlData']->Heading3->ptPanelTest;
+            $data['vl_not_tested_reason']           = $params['vlData']->Heading3->vlNotTestedReason;
+            $data['pt_test_not_performed_comments'] = $params['vlData']->Heading3->ptNotTestedComments;
+            $data['pt_support_comments']            = $params['vlData']->Heading3->ptSupportComments;
+            $lastDate                               = $params["vlData"]->Heading2->resultDueDate;
+        }
 
         // changing evaluation status 3rd character to 1 = responded
-        $params['evaluation_status'][2] = 1;
+        $data['evaluation_status'][2] = 1;
 
         // changing evaluation status 5th character to 1 = via web user
-        $params['evaluation_status'][4] = 1;
+        $data['evaluation_status'][4] = 1;
 
         // changing evaluation status 4th character to 1 = timely response or 2 = delayed response
         $date = new Zend_Date();
@@ -222,10 +235,11 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
         // only if current date is LATER than last date we make status = 2
         if ($date->compare($lastDate) == 1) {
-            $params['evaluation_status'][3] = 2;
+            $data['evaluation_status'][3] = 2;
         } else {
-            $params['evaluation_status'][3] = 1;
+            $data['evaluation_status'][3] = 1;
         }
-        return $this->update($params, "map_id = " . $shipmentMapId);
+        // Zend_Debug::dump($data);die;
+        return $this->update($data, "map_id = " . $params['mapId']);
     }
 }
