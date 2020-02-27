@@ -97,7 +97,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
     }
     
     public function updateResultsByAPI($params,$dm,$allSamples){
-        
+        $res = array();
         $sampleIds = $params['dtsData']->Heading4->sampleDetailArray->samples;
         foreach($sampleIds as $sampleId => $sampleArray){
             //die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);

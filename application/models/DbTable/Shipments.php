@@ -1998,6 +1998,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'sampleRehydrationDate'     => $general->humanDateFormat($shipment['attributes']["sample_rehydration_date"]),
                     'testingDate'               => $general->humanDateFormat($shipment['shipment_test_date']),
                     'algorithmUsedSelect'       => $algorithmUsedSelect,
+                    'algorithmUsedSelected'     => (isset($shipment['attributes']["algorithm"]) && $shipment['attributes']["algorithm"] != '')?$shipment['attributes']["algorithm"]:'',
                 );
                 $dts['Heading2']['data'] = $heading2;
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
@@ -2011,15 +2012,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $dts['Heading2']['data']['responseDate']            = '';
                     $dts['Heading2']['data']['modeOfReceiptSelect']     = $modeOfReceiptSelect;
                 }
+                $dts['Heading2']['data']['modeOfReceiptSelected']     = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "")?$shipment["mode_id"]:'';
                 $qcArray = array('yes','no');$qc = array();
                 foreach($qcArray as $row){
-                    if($globalQcAccess == 'yes' && isset($dm['qc_access']) && $dm['qc_access'] == 'yes'){
-                        $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>($shipment['qc_done'] == "yes")?'selected':'');
-                    }else{
-                        $qcResponseArr[] = array('value' =>'','show' =>'','selected'=>'');
-                    }
+                    $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no'))?'selected':'');
                 }
-                $qc['qcRadio']  = $qcResponseArr;
+                $qc['qcRadio']          = $qcResponseArr;
+                $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
                 $qc['qcDate']   = (isset($shipment['qc_date'])&&$shipment['qc_date']!='')?$general->humanDateFormat($shipment['qc_date']):'';
                 $qc['qcDoneBy'] = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
                 if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
@@ -2177,14 +2176,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // Heading 4 End // Heading 5 Start
             $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
             foreach($commentArray as $row){
-                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>($shipment['supervisor_approval'] == $row)?'selected':'');
+                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
             }
-            $reviewArray['supervisorReview']    = $revieArr;
-            $reviewArray['approvalLabel']       = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'Supervisor Name':'';
-            $reviewArray['approvalInputText']   = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?$shipment['participant_supervisor']:'';
-            $reviewArray['comments']            = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
-            $dts['Heading5']['status']          = true;
-            $dts['Heading5']['data']            = $reviewArray;
+            $reviewArray['supervisorReview']        = $revieArr;
+            $reviewArray['supervisorReviewSelected']= (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'yes':'no';
+            $reviewArray['approvalLabel']           = 'Supervisor Name';
+            $reviewArray['approvalInputText']       = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '')?$shipment['participant_supervisor']:'';
+            $reviewArray['comments']                = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
+            $dts['Heading5']['status']              = true;
+            $dts['Heading5']['data']                = $reviewArray;
             // Heading 5 End
             $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
             $customField1 = $globalConfigDb->getValue('custom_field_1');$customField2 = $globalConfigDb->getValue('custom_field_2');
@@ -2288,14 +2288,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $qcArray = array('yes','no');$qc = array();
             foreach($qcArray as $row){
-                if($globalQcAccess == 'yes' && isset($dm['qc_access']) && $dm['qc_access'] == 'yes' && $dm['qc_access'] != null && $dm['qc_access'] != ""){
-                    $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>($shipment['qc_done'] == $row)?'selected':'');
-                }else{
-                    $qcResponseArr[] = array('value' =>'','show' =>'','selected'=>'');
-                }
+                $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no'))?'selected':'');
             }
             $qc['qcRadio']          = $qcResponseArr;
-            $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] != "")?$shipment['qc_done']:'no';
+            $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
             $qc['qcDate']           = (isset($shipment['qc_date'])&&$shipment['qc_date']!='')?$general->humanDateFormat($shipment['qc_date']):'';
             $qc['qcDoneBy']         = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
             if($globalQcAccess != 'yes' && $dm['qc_access'] != 'yes'){
@@ -2364,12 +2360,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // Heading 3 end // Heading 4 Start
             $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
             foreach($commentArray as $row){
-                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row)?'selected':'');
+                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
             }
             $reviewArray['supervisorReview']            = $revieArr;
-            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '')?$shipment['supervisor_approval']:"no";
-            $reviewArray['approvalLabel']               = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'Supervisor Name':'';
-            $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?$shipment['participant_supervisor']:'';
+            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'yes':"no";
+            $reviewArray['approvalLabel']               = 'Supervisor Name';
+            $reviewArray['approvalInputText']           = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
             $vl['Heading4']['status']                   = true;
             $vl['Heading4']['data']                     = $reviewArray;
@@ -2473,14 +2469,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $qcArray = array('yes','no');$qc = array();
             foreach($qcArray as $row){
-                if($globalQcAccess == 'yes' && isset($dm['qc_access']) && $dm['qc_access'] == 'yes' && $dm['qc_access'] != null && $dm['qc_access'] != ""){
-                    $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>($shipment['qc_done'] == $row)?'selected':'');
-                }else{
-                    $qcResponseArr[] = array('value' =>'','show' =>'','selected'=>'');
-                }
+                $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no'))?'selected':'');
             }
             $qc['qcRadio']          = $qcResponseArr;
-            $qc['qcRadioSelected']  = (isset($shipment["qc_done"]) && $shipment["qc_done"] != "")?$shipment["qc_done"]:'';
+            $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
             $qc['qcDate']           = (isset($shipment['qc_date'])&&$shipment['qc_date']!='')?$general->humanDateFormat($shipment['qc_date']):'';
             $qc['qcDoneBy']         = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
             if($globalQcAccess != 'yes' && $dm['qc_access'] != 'yes'){
@@ -2549,11 +2541,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // Heading 3 End // Heading 4 Start
             $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
             foreach($commentArray as $row){
-                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row)?'selected':'');
+                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
             }
             $reviewArray['supervisorReview']            = $revieArr;
-            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != "")?$shipment['supervisor_approval']:"no";
-            $reviewArray['approvalLabel']               = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'Supervisor Name':'';
+            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == "yes")?"yes":"no";
+            $reviewArray['approvalLabel']               = 'Supervisor Name';
             $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
             $eid['Heading4']['status']                  = true;
