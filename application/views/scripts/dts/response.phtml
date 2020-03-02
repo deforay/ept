@@ -422,7 +422,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             <?php if (isset($this->customField2) && $this->customField2 != "") { ?>
                                 <tr>
                                     <th style="width:250px;padding:5px;"><?php echo $this->customField2; ?> </th>
-                                    <td style="padding:5px;"><input name="customField2" id="customField2" type="text" value="<?php echo $this->shipment['custom_field_2']; ?>" /></td>
+                                    <td style="padding:5px;"><input name="customField2" id="customField2" type="text" class="form-control" value="<?php echo $this->shipment['custom_field_2']; ?>" /></td>
                                 </tr>
                             <?php } ?>
                         </table>

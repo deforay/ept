@@ -198,7 +198,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 		
     }
 
-    public function updateShipmentByAPI($data,$dm,$params,$type) {
+    public function updateShipmentByAPI($data,$dm,$params) {
         $row = $this->fetchRow("map_id = " . $params['mapId']);
         if ($row != "") {
             if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
@@ -210,17 +210,24 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $data['evaluation_status']  = $params['evaluationStatus'];
         $data['evaluation_status']  = $row['evaluation_status'];
         $data['updated_by_user']    = $dm['dm_id'];
-        if($type == 'dts'){
-            $data['custom_field_1'] = $params['dtsData']->customFields->customField1;
-            $data['custom_field_2'] = $params['dtsData']->customFields->customField2;
-            $lastDate               = $params["dtsData"]->Heading2->resultDueDate;
+        if($params['schemeType'] == 'dts'){
+            $data['custom_field_1'] = $params['dtsData']->customFields->data->customField1;
+            $data['custom_field_2'] = $params['dtsData']->customFields->data->customField2;
+            $lastDate               = $params['dtsData']->Heading2->data->resultDueDate;
         }
-        if($type == 'vl'){
-            $data['is_pt_test_not_performed']       = $params['vlData']->Heading3->ptPanelTest;
-            $data['vl_not_tested_reason']           = $params['vlData']->Heading3->vlNotTestedReason;
-            $data['pt_test_not_performed_comments'] = $params['vlData']->Heading3->ptNotTestedComments;
-            $data['pt_support_comments']            = $params['vlData']->Heading3->ptSupportComments;
-            $lastDate                               = $params["vlData"]->Heading2->resultDueDate;
+        if($params['schemeType'] == 'vl'){
+            $data['is_pt_test_not_performed']       = $params['vlData']->Heading3->data->ptPanelTest;
+            $data['vl_not_tested_reason']           = $params['vlData']->Heading3->data->vlNotTestedReason;
+            $data['pt_test_not_performed_comments'] = $params['vlData']->Heading3->data->ptNotTestedComments;
+            $data['pt_support_comments']            = $params['vlData']->Heading3->data->ptSupportComments;
+            $lastDate                               = $params['vlData']->Heading2->data->resultDueDate;
+        }
+        if($params['schemeType'] == 'eid'){
+            $data['is_pt_test_not_performed']       = $params['eidData']->Heading3->data->ptPanelTest;
+            $data['vl_not_tested_reason']           = $params['eidData']->Heading3->data->vlNotTestedReason;
+            $data['pt_test_not_performed_comments'] = $params['eidData']->Heading3->data->ptNotTestedComments;
+            $data['pt_support_comments']            = $params['eidData']->Heading3->data->ptSupportComments;
+            $lastDate                               = $params['eidData']->Heading2->data->resultDueDate;
         }
 
         // changing evaluation status 3rd character to 1 = responded
