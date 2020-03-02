@@ -216,11 +216,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $lastDate               = $params['dtsData']->Heading2->data->resultDueDate;
         }
         if($params['schemeType'] == 'vl'){
-            $data['is_pt_test_not_performed']       = $params['vlData']->Heading3->data->ptPanelTest;
-            $data['vl_not_tested_reason']           = $params['vlData']->Heading3->data->vlNotTestedReason;
-            $data['pt_test_not_performed_comments'] = $params['vlData']->Heading3->data->ptNotTestedComments;
-            $data['pt_support_comments']            = $params['vlData']->Heading3->data->ptSupportComments;
-            $lastDate                               = $params['vlData']->Heading2->data->resultDueDate;
+            $lastDate   = $params['vlData']->Heading2->data->resultDueDate;
         }
         if($params['schemeType'] == 'eid'){
             $data['is_pt_test_not_performed']       = $params['eidData']->Heading3->data->ptPanelTest;
