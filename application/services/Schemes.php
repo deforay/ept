@@ -14,7 +14,6 @@ class Application_Service_Schemes
 
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getActiveTestKitsNamesForScheme('dts', $countryAdapted);
-
     }
     public function getAllDtsTestKitList($countryAdapted = false)
     {
@@ -29,7 +28,7 @@ class Application_Service_Schemes
 
         $stmt = $db->fetchAll($sql);
 
-//        foreach ($stmt as $kitName) {
+        //        foreach ($stmt as $kitName) {
         //            $retval[$kitName['TESTKITNAMEID']] = $kitName['TESTKITNAME'];
         //        }
         return $stmt;
@@ -60,7 +59,8 @@ class Application_Service_Schemes
         $sql = $db->delete('dts_recommended_testkits');
         foreach ($recommended as $testNo => $kits) {
             foreach ($kits as $kit) {
-                $data = array('test_no' => $testNo,
+                $data = array(
+                    'test_no' => $testNo,
                     'testkit' => $kit,
                 );
                 $db->insert('dts_recommended_testkits', $data);
@@ -90,7 +90,6 @@ class Application_Service_Schemes
             $response[$row['id']] = $row['name'];
         }
         return $response;
-
     }
 
     public function getVlAssay()
@@ -144,7 +143,8 @@ class Application_Service_Schemes
         $sql = $db->select()->from(array('ref' => 'reference_result_dts'))
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_dts'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('test_kit_name_1',
+            ->joinLeft(array('res' => 'response_result_dts'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array(
+                'test_kit_name_1',
                 'lot_no_1',
                 'exp_date_1',
                 'test_result_1',
@@ -194,7 +194,8 @@ class Application_Service_Schemes
         $sql = $db->select()->from(array('ref' => 'reference_result_dbs'))
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_dbs'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('eia_1',
+            ->joinLeft(array('res' => 'response_result_dbs'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array(
+                'eia_1',
                 'lot_no_1',
                 'exp_date_1',
                 'od_1',
@@ -411,8 +412,8 @@ class Application_Service_Schemes
                 ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
                 ->where('sp.shipment_id = ? ', $sId)
                 ->where("sp.is_excluded = 'no' ")
-            //->where("sp.is_pt_test_not_performed != 'yes' ")
-                ->where("res.reported_viral_load != '' ")
+                //->where("sp.is_pt_test_not_performed != 'yes' ")
+                //->where("res.reported_viral_load != '' ")
                 ->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayId . '"%');
             //echo $sql;die;
             $response = $db->fetchAll($sql);
@@ -435,7 +436,8 @@ class Application_Service_Schemes
 
                 if ($reportedVl != "" && $reportedVl != null && count($reportedVl) > 7) {
 
-                    $rvcRow = $db->fetchRow($db->select()->from('reference_vl_calculation')
+                    $rvcRow = $db->fetchRow(
+                        $db->select()->from('reference_vl_calculation')
                             ->where('shipment_id = ?', $sId)
                             ->where('sample_id = ?', $sample)
                             ->where('vl_assay = ?', $vlAssayId)
@@ -474,7 +476,8 @@ class Application_Service_Schemes
                     $finalLow = $avg - (3 * $sd);
                     $finalHigh = $avg + (3 * $sd);
 
-                    $data = array('shipment_id' => $sId,
+                    $data = array(
+                        'shipment_id' => $sId,
                         'vl_assay' => $vlAssayId,
                         'sample_id' => $sample,
                         'q1' => $q1,
@@ -527,13 +530,10 @@ class Application_Service_Schemes
 
                 $row['vl_assay'] = $skipRow;
                 //Zend_Debug::dump($row);die;
-                $db->delete('reference_vl_calculation', "vl_assay = " . $row['vl_assay'] . " and sample_id= " . $row['sample_id'] . " and shipment_id=  " . $row['shipment_id']  );
+                $db->delete('reference_vl_calculation', "vl_assay = " . $row['vl_assay'] . " and sample_id= " . $row['sample_id'] . " and shipment_id=  " . $row['shipment_id']);
                 $db->insert('reference_vl_calculation', $row);
-
             }
         }
-
-
     }
 
     public function getQuartile($inputArray, $quartile)
