@@ -14,6 +14,15 @@ class PtRequestEnrollmentController extends Zend_Controller_Action
         $commonService = new Application_Service_Common();
         $dataManagerService = new Application_Service_DataManagers();
         if ($this->getRequest()->isPost()) {
+
+            $captchaSession = new Zend_Session_Namespace('DACAPTCHA');
+			if (!isset($captchaSession->captchaStatus) || empty($captchaSession->captchaStatus) || $captchaSession->captchaStatus == 'fail') {
+				$sessionAlert = new Zend_Session_Namespace('alertSpace');
+				$sessionAlert->message = "Sorry. Unable to log you in. Please check the text from image";
+				$sessionAlert->status = "failure";
+				$this->_redirect("/pt-request-enrollment");
+            }
+                        
             $params = $this->getRequest()->getPost();
             $participantService->requestParticipant($params);
             $this->_redirect("/pt-request-enrollment");

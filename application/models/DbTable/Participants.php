@@ -348,6 +348,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     {
         $common = new Application_Service_Common();
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $db = Zend_Db_Table_Abstract::getAdapter();
+
+        
         $data = array(
             'unique_identifier' => $common->getRandomString(4),
             'institute_name' => $params['instituteName'],
@@ -383,7 +386,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $data['individual'] = 'no';
         }
         $participantId = $this->insert($data);
-        $db = Zend_Db_Table_Abstract::getAdapter();
+        
 
         if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
             foreach ($params['enrolledProgram'] as $epId) {
