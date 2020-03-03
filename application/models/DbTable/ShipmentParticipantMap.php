@@ -242,6 +242,8 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         } else {
             $data['evaluation_status'][3] = 1;
         }
+        $data['syned'] = 'yes';
+        $data['syned_on'] = new Zend_Db_Expr('now()');
         // Zend_Debug::dump($data);die;
         return $this->update($data, "map_id = " . $params['mapId']);
     }

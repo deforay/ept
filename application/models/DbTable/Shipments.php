@@ -1839,7 +1839,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
         ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
         ->where("pmm.dm_id=?", $aResult['dm_id'])
-        ->where("s.status='shipped' OR s.status='evaluated'");
+        // ->where("spm.syned=?", 'no')
+        ->where("(s.status='shipped' OR s.status='evaluated')");
         $rResult = $this->getAdapter()->fetchAll($sQuery);
         if (!isset($rResult) && count($rResult) == 0) {
             return array('status' =>'fail','message'=>'Shipment Details not available');
@@ -2681,7 +2682,44 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if(!$dm){
             return array('status' =>'fail','message'=>'Participant authentication error.');
         }
+        /* To check the form have group of array or single array */
+        $returnResposne = array();
+        if(isset($params['syncType']) && $params['syncType'] == 'group'){
+            foreach($params['data'] as $key=>$row){
+                $status  = $this->saveShipmentByType((array)$row,$dm);
+                if(!$status){
+                    $returnResposne[$key]['schemeType']       = $row['scheme_type'];
+                    $returnResposne[$key]['schemeType']       = $row['scheme_type'];
+                    $returnResposne[$key]['shipmentId']       = $row['shipment_id'];
+                    $returnResposne[$key]['participantId']    = $row['participant_id'];
+                    $returnResposne[$key]['evaluationStatus'] = $row['evaluation_status'];
+                }
+            }
+            if(isset($returnResposne) && count($returnResposne) > 0){
+                return array(
+                    'status'    => 'fail',
+                    'message'   => 'The following shipment not send',
+                    'data'      => $returnResposne
+                );
+            }else{
+                return array('status'=>'success','message'=>'All shipment details successfully send.');
+            }
+        }
+        if(isset($params['syncType']) && $params['syncType'] == 'single'){
+            $status = $this->saveShipmentByType((array)$params['data'],$dm);
+            if($status){
+                return array('status'=>'success','message'=>'Shipment details successfully send.');
+            }else{
+                return array('status'=>'fail','message'=>'Please check your network connection and try again.');
+            }
+        }
+        /* throw the expection if post data type not came */
+        if((isset($params['syncType']) || !isset($params['syncType'])) && (($params['syncType'] == 'single' && $params['syncType'] == 'group') || $params['syncType'] == '')){
+            return array('status'=>'fail','message'=>'Please check your network connection and try again.');
+        }
+    }
 
+    public function saveShipmentByType($params,$dm){
         /* Save shipments form details */
         $schemeService  = new Application_Service_Schemes();
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
@@ -2756,10 +2794,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $eidResponseStatus = $eidResponseDb->updateResultsByAPI($params,$dm);
                 if($eidResponseStatus > 0 || $updateShipmentParticipantStatus > 0){
                     $db->commit();
-                    return array('status'=>'success','message'=>'HIV Viral load test sent successfully.');
+                    return true;
                 }else{
                     $db->rollBack();
-                    return array('status'=>'fail','message'=>'please check your network connection and try again.');
+                    return false;
                 }
             }
             if($params['schemeType'] == 'dts'){
@@ -2814,10 +2852,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $eidResponseStatus = $dtsResponseDb->updateResultsByAPI($params,$dm,$allSamples);
                 if($eidResponseStatus > 0 || $updateShipmentParticipantStatus > 0){
                     $db->commit();
-                    return array('status'=>'success','message'=>'HIV DTS test sent successfully.');
+                    return true;
                 }else{
                     $db->rollBack();
-                    return array('status'=>'fail','message'=>'please check your network connection and try again.');
+                    return false;
                 }
             }
             if($params['schemeType'] == 'eid'){
@@ -2867,10 +2905,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $eidResponseStatus = $eidResponseDb->updateResultsByAPI($params,$dm);
                 if($eidResponseStatus > 0 || $updateShipmentParticipantStatus > 0){
                     $db->commit();
-                    return array('status'=>'success','message'=>'HIV EID test sent successfully.');
+                    return true;
                 }else{
                     $db->rollBack();
-                    return array('status'=>'fail','message'=>'please check your network connection and try again.');
+                    return false;
                 }
             }
         } catch (Exception $e) {
