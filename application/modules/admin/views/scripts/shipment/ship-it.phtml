@@ -3,198 +3,196 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 
 <fieldset>
-<legend><?php echo strtoupper($this->shipment->scheme_type); ?> Shipment : <?php echo $this->shipment->shipment_code . "(".$this->dateFormat($this->shipment->shipment_date).") "; ?></legend>
-<form method="post" action="" id="shipForm">
-<div class="row">
-<div class="col-lg-5">
-<div class="form-group">
-		<label class="col-lg-2 control-label">State</label>
-		<div class="col-lg-10">
-				<select style="width:100%" name="state[]" id="state" multiple="multiple" title="Select one or more State" data-selected-text-format="count>3">
-				<?php foreach($this->participantState as $partState){ ?>
-					<option value="<?php echo $partState['state'];?>"><?php echo $partState['state'];?> </option>
-				<?php } ?>
-				</select>
-		</div>
-</div>
-</div>
-<div class="col-lg-5">
-<div class="form-group">
-		<label class="col-lg-2 control-label">City</label>
-		<div class="col-lg-10">
-				<select style="width:100%"name="city[]" id="city" multiple="multiple" title="Select one or more City" data-selected-text-format="count>3">
-				<?php foreach($this->participantCity as $partCity){ ?>
-					<option value="<?php echo $partCity['city'];?>"><?php echo $partCity['city'];?> </option>
-				<?php } ?>
-				</select>
-		</div>
-</div>
-</div>
-<div class="col-lg-2">
-<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants()"
-		   value="Filter"/>
-</div>
-</div>
-
-
-	<div class="form-group">
-		<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections<br/><br/>
-			<div style="width:500px;margin:0 auto;clear:both;">
-			<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>  <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+	<legend><?php echo strtoupper($this->shipment->scheme_type); ?> Shipment : <?php echo $this->shipment->shipment_code . "(" . $this->dateFormat($this->shipment->shipment_date) . ") "; ?></legend>
+	<form method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "ship-it"), 'default', true); ?>" id="shipForm" role="form" onsubmit="validateNow();return false;" autocomplete="off" enctype="multipart/form-data">
+		<div class="row">
+			<div class="col-lg-5">
+				<div class="form-group">
+					<label class="col-lg-2 control-label">State</label>
+					<div class="col-lg-10">
+						<select style="width:100%" name="state[]" id="state" multiple="multiple" title="Select one or more State" data-selected-text-format="count>3">
+							<?php foreach ($this->participantState as $partState) { ?>
+								<option value="<?php echo $partState['state']; ?>"><?php echo $partState['state']; ?> </option>
+							<?php } ?>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-5">
+				<div class="form-group">
+					<label class="col-lg-2 control-label">City</label>
+					<div class="col-lg-10">
+						<select style="width:100%" name="city[]" id="city" multiple="multiple" title="Select one or more City" data-selected-text-format="count>3">
+							<?php foreach ($this->participantCity as $partCity) { ?>
+								<option value="<?php echo $partCity['city']; ?>"><?php echo $partCity['city']; ?> </option>
+							<?php } ?>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-2">
+				<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants()" value="Filter" />
 			</div>
 		</div>
-		<br/>
-		<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
-		<?php
-			
-			if(isset($this->previouslySelected) && $this->previouslySelected != null){
-				foreach($this->previouslySelected as $participant){
-					?>
-					<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+
+		<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />
+
+		<div class="form-group">
+			<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections<br /><br />
+				<div style="width:500px;margin:0 auto;clear:both;">
+					<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+				</div>
+			</div>
+			<br />
+			<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
+				<?php
+
+				if (isset($this->previouslySelected) && $this->previouslySelected != null) {
+					foreach ($this->previouslySelected as $participant) {
+				?>
+						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
-				}				
-				foreach($this->previouslyUnSelected as $participant){
+					}
+					foreach ($this->previouslyUnSelected as $participant) {
 					?>
-					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+						<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
-				 }				
-			}else{
-				foreach($this->enrolledParticipants as $participant){
+					}
+				} else {
+					foreach ($this->enrolledParticipants as $participant) {
 					?>
-					<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
+					}
+					foreach ($this->unEnrolledParticipants as $participant) {
+					?>
+						<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+				<?php
+					}
 				}
-				foreach($this->unEnrolledParticipants as $participant){
-					?>
-					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-					<?php
-				 }				
-			}
-			
 
 
-			?>
-		</select>
-	</div>
-	
-	<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />	
-	
-	<div class="form-group" style="margin-left:230px;display:none;">
-	    <label class="col-lg-4 control-label">Optional Enrollment Identifier</label>
 
-	    <div class="col-lg-4"><input type="text" id="enrollmentName" name="enrollmentName" size="50" maxlength="45"
-					 class="form-control input-sm"
-					 title="Enter an optional name for this enrollment"
-					 placeholder="Enter an optional name for this enrollment"/></div>
-			    
-			    
-	</div>	
-	<div style="clear:both;margin: 90px auto 30px auto; text-align: center;" align="center">
-	    <input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();return false;"
-		   tabindex="7" value="Enroll"/>
-	    <input class="btn btn-danger btn-sm" type="button" onclick="window.history.go(-1);"
-		   tabindex="8" value="Cancel"/>
-	</div>
-</form>
-</fieldset>		
+				?>
+			</select>
+		</div>
+
+		<div class="form-group" style="margin-left:230px;display:none;">
+			<label class="col-lg-4 control-label">Optional Enrollment Identifier</label>
+
+			<div class="col-lg-4"><input type="text" id="enrollmentName" name="enrollmentName" size="50" maxlength="45" class="form-control input-sm" title="Enter an optional name for this enrollment" placeholder="Enter an optional name for this enrollment" /></div>
+
+
+		</div>
+		<div style="clear:both;margin: 90px auto 30px auto; text-align: center;" align="center">
+			<input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();return false;" tabindex="7" value="Enroll" />
+			<input class="btn btn-danger btn-sm" type="button" onclick="window.history.go(-1);" tabindex="8" value="Cancel" />
+		</div>
+	</form>
+</fieldset>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>	
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
-	$(document).ready(function(){
-		
-	
+	$(document).ready(function() {
+
+
 		$("#city").select2({
-                    placeholder: "Select one or more city",
-                    allowClear: true
-                });
+			placeholder: "Select one or more city",
+			allowClear: true
+		});
 		//$('#city').selectpicker();
 		//$('#state').selectpicker();
 		$("#state").select2({
-                    placeholder: "Select one or more state",
-                    allowClear: true
-                });
-		
-$('#participants').multiSelect({
-	selectableFooter: "<div class='custom-header'>Participants not yet enrolled for this scheme (<span id='msUnselectedCountHolder'></span>)</div>",
-	selectionFooter: "<div class='custom-header'>Enrolled/Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
-	selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-	selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-	afterInit: function(ms){
-	  var that = this,
-		  $selectableSearch = that.$selectableUl.prev(),
-		  $selectionSearch = that.$selectionUl.prev(),
-		  selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
-		  selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
-  
-	  that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-	  .on('keydown', function(e){
-		if (e.which === 40){
-		  that.$selectableUl.focus();
-		  return false;
-		}
-    });
-
-    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-    .on('keydown', function(e){
-      if (e.which == 40){
-        that.$selectionUl.focus();
-        return false;
-      }
-    });
-  },
-  afterSelect: function(){
-    this.qs1.cache();
-    this.qs2.cache();
-  },
-  afterDeselect: function(){
-    this.qs1.cache();
-    this.qs2.cache();
-  }
-});
-
-
-	$('#select-all').click(function(){
-		$('#participants').multiSelect('select_all');
-		return false;
-	});
-	$('#deselect-all').click(function(){
-		$('#participants').multiSelect('deselect_all');
-		return false;
-	});
-});
-	
-	
-	
-function validateNow(){
-		flag = deforayValidator.init({
-				formId: 'shipForm'
+			placeholder: "Select one or more state",
+			allowClear: true
 		});
-		if(flag){
-				$.blockUI();
-				document.getElementById('shipForm').submit();
+
+		$('#participants').multiSelect({
+			selectableFooter: "<div class='custom-header'>Participants not yet enrolled for this scheme (<span id='msUnselectedCountHolder'></span>)</div>",
+			selectionFooter: "<div class='custom-header'>Enrolled/Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
+			selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+			selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+			afterInit: function(ms) {
+				var that = this,
+					$selectableSearch = that.$selectableUl.prev(),
+					$selectionSearch = that.$selectionUl.prev(),
+					selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
+					selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+
+				that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+					.on('keydown', function(e) {
+						if (e.which === 40) {
+							that.$selectableUl.focus();
+							return false;
+						}
+					});
+
+				that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+					.on('keydown', function(e) {
+						if (e.which == 40) {
+							that.$selectionUl.focus();
+							return false;
+						}
+					});
+			},
+			afterSelect: function() {
+				this.qs1.cache();
+				this.qs2.cache();
+			},
+			afterDeselect: function() {
+				this.qs1.cache();
+				this.qs2.cache();
+			}
+		});
+
+
+		$('#select-all').click(function() {
+			$('#participants').multiSelect('select_all');
+			return false;
+		});
+		$('#deselect-all').click(function() {
+			$('#participants').multiSelect('deselect_all');
+			return false;
+		});
+	});
+
+
+
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'shipForm'
+		});
+		if (flag) {
+			$.blockUI();
+			document.getElementById('shipForm').submit();
 		}
-}	 
-
-function fetchParticipants(){
-	
-	var shipId = $("#shipmentId").val();
-	var stateId = [$("#state").val()].join(',');
-	var cityId = [$("#city").val()].join(',');
-
-	$.blockUI();
-	if($.trim(stateId) != '' || $.trim(cityId) != ''){
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'),'default',true); ?>", { sid: shipId, choosenState: stateId, choosenCity: cityId, format: "html" },
-			function (data) {       
-				$.unblockUI();
-						$("#participants").html(data);
-						$('#participants').multiselect("refresh");
-						
-			});
-	}else{
-		alert("Please Select a state / City ")
-		$.unblockUI();
 	}
-}
+
+	function fetchParticipants() {
+
+		var shipId = $("#shipmentId").val();
+		var stateId = [$("#state").val()].join(',');
+		var cityId = [$("#city").val()].join(',');
+
+		$.blockUI();
+		if ($.trim(stateId) != '' || $.trim(cityId) != '') {
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
+					sid: shipId,
+					choosenState: stateId,
+					choosenCity: cityId,
+					format: "html"
+				},
+				function(data) {
+					$.unblockUI();
+					$("#participants").html(data);
+					$('#participants').multiselect("refresh");
+
+				});
+		} else {
+			alert("Please Select a state / City ")
+			$.unblockUI();
+		}
+	}
 </script>

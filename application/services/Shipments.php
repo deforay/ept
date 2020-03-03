@@ -207,7 +207,7 @@ class Application_Service_Shipments
 
             //           if ($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated' && $aRow['status'] != 'closed' && $aRow['status'] != 'finalized') {
             //                $row[] = '<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>'
-            //                        . $edit 
+            //                        . $edit
             //                        . '&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
             //            } else if ($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] == 'shipped' && $aRow['status'] != 'closed') {
             //                $row[] = $edit;
@@ -337,15 +337,11 @@ class Application_Service_Shipments
 
         $db->beginTransaction();
         try {
-
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes["algorithm"] = $params['algorithm'];
             $attributes = json_encode($attributes);
-
-
-
 
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
@@ -1758,5 +1754,25 @@ class Application_Service_Shipments
         return $shipmentDb->fetchUniqueShipmentCode();
     }
 
-    
+    public function getShipmentDetailsInAPI($params,$type = "")
+    {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->fetchShipmentDetailsInAPI($params,$type);
+    }
+
+    public function getIndividualReportAPI($params)
+    {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->fetchIndividualReportAPI($params);
+    }
+    public function getSummaryReportAPI($params)
+    {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->fetchSummaryReportAPI($params);
+    }
+
+    public function saveShipmentsFormByAPI($params){
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->saveShipmentsFormDetailsByAPI($params);
+    }
 }

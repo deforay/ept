@@ -96,7 +96,71 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
        return $this->update($data, "shipment_map_id = " . $mapId);
     }
     
-    
+    public function updateResultsByAPI($params,$dm,$allSamples){
+        $sampleIds = $params['dtsData']->Heading4->data->sampleDetailArray->samples;
+        foreach($sampleIds as $sampleId => $sampleArray){
+            $res = $this->fetchRow("shipment_map_id = ".$params['mapId'] . " and sample_id = ".$sampleId );
 
+            $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+            if(isset($params['dtsData']->Heading3->data->kitValue[0]) && trim($params['dtsData']->Heading3->data->kitValue[0])=='other'){
+                $otherTestkitId1=$testkitsDb->addTestkitInParticipant($allSamples[0]["test_kit_name_1"],$params['dtsData']->Heading3->data->kitOther[0],'dts');
+                $params['test_kit_name_1'] = $otherTestkitId1;
+            }else{
+                $params['test_kit_name_1'] = $params['dtsData']->Heading3->data->kitValue[0];
+            }
+            if(isset($params['dtsData']->Heading3->data->kitValue[1]) && trim($params['dtsData']->Heading3->data->kitValue[1])=='other'){
+                $otherTestkitId1=$testkitsDb->addTestkitInParticipant($allSamples[0]["test_kit_name_2"],$params['dtsData']->Heading3->data->kitOther[1],'dts');
+                $params['test_kit_name_2'] = $otherTestkitId1;
+            }else{
+                $params['test_kit_name_2'] = $params['dtsData']->Heading3->data->kitValue[1];
+            }
+            if(isset($params['dtsData']->Heading3->data->kitValue[2]) && trim($params['dtsData']->Heading3->data->kitValue[2])=='other'){
+                $otherTestkitId1=$testkitsDb->addTestkitInParticipant($allSamples[0]["test_kit_name_3"],$params['dtsData']->Heading3->data->kitOther[2],'dts');
+                $params['test_kit_name_3'] = $otherTestkitId1;
+            }else{
+                $params['test_kit_name_3'] = $params['dtsData']->Heading3->data->kitValue[2];
+            }
+            if($res == null || count($res) == 0){
+                $this->insert(array(
+                    'shipment_map_id'   => $params['mapId'],
+                    'sample_id'         => $sampleId,
+                    'test_kit_name_1'   => $params['test_kit_name_1'],
+                    'lot_no_1'          => $params['dtsData']->Heading3->data->lot[0],
+                    'exp_date_1'        => date('Y-m-d',strtotime($params['dtsData']->Heading3->data->expDate[0])),
+                    'test_result_1'     => $sampleArray->result_1,
+                    'test_kit_name_2'   => $params['test_kit_name_2'],
+                    'lot_no_2'          => $params['dtsData']->Heading3->data->lot[1],
+                    'exp_date_2'        => date('Y-m-d',strtotime($params['dtsData']->Heading3->data->expDate[1])),
+                    'test_result_2'     => $sampleArray->result_2,
+                    'test_kit_name_3'   => $params['test_kit_name_3'],
+                    'lot_no_3'          => $params['dtsData']->Heading3->data->lot[2],
+                    'exp_date_3'        => date('Y-m-d',strtotime($params['dtsData']->Heading3->data->expDate[2])),
+                    'test_result_3'     => $sampleArray->result_3,
+                    'reported_result'   => $sampleArray->final_result,
+                    'created_by'        => $dm['dm_id'],
+                    'created_on'        => ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')
+                ));
+            }else{
+                $this->update(array(
+                    'test_kit_name_1'   => $params['test_kit_name_1'],
+                    'lot_no_1'          => $params['dtsData']->Heading3->data->lot[0],
+                    'exp_date_1'        => date('Y-m-d',strtotime($params['dtsData']->Heading3->data->expDate[0])),
+                    'test_result_1'     => $sampleArray->result_1,
+                    'test_kit_name_2'   => $params['test_kit_name_2'],
+                    'lot_no_2'          => $params['dtsData']->Heading3->data->lot[1],
+                    'exp_date_2'        => date('Y-m-d',strtotime($params['dtsData']->Heading3->data->expDate[1])),
+                    'test_result_2'     => $sampleArray->result_2,
+                    'test_kit_name_3'   => $params['test_kit_name_3'],
+                    'lot_no_3'          => $params['dtsData']->Heading3->data->lot[2],
+                    'exp_date_3'        => date('Y-m-d',strtotime($params['dtsData']->Heading3->data->expDate[2])),
+                    'test_result_3'     => $sampleArray->result_3,
+                    'reported_result'   => $sampleArray->final_result,
+                    'updated_by'        => $dm['dm_id'],
+                    'updated_on'        => ($params['updatedOn'] != "")?date('Y-m-d H:i:s',strtotime($params['updatedOn'])):new Zend_Db_Expr('now()')
+                ), "shipment_map_id = ".$params['mapId'] . " and sample_id = ".$sampleId );
+            }
+        }
+        return true;
+    }
 }
 

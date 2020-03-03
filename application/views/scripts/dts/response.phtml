@@ -6,496 +6,510 @@
 //Zend_Debug::dump($this->config->evaluation->dts->dtsOptionalTest3);die;
 
 $testThreeOptional = false;
-if(isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes'){
+if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
     $testThreeOptional = true;
 }
 
 
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
-if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["shipment_test_report_date"])!=""){
-	$expTestReceiptDate=explode(" ",$this->shipment["shipment_test_report_date"]);
-	$testReceiptDate=$this->dateFormat($expTestReceiptDate[0]);
-}else{
-	$testReceiptDate=date('d-M-Y');
+if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["shipment_test_report_date"]) != "") {
+    $expTestReceiptDate = explode(" ", $this->shipment["shipment_test_report_date"]);
+    $testReceiptDate = $this->dateFormat($expTestReceiptDate[0]);
+} else {
+    $testReceiptDate = date('d-M-Y');
 }
 
 ?>
 
 <style>
-    th{
+    th {
         text-align: center;
     }
-	table,th,td{
-		border-color:#ccc !important;
-	}
-	.hideOtherAssay{
-		display:none;
-	}
+
+    table,
+    th,
+    td {
+        border-color: #ccc !important;
+    }
+
+    .hideOtherAssay {
+        display: none;
+    }
 </style>
 <section class="content-header">
-    <h1><?php echo $this->shipment['scheme_name'];?></h1>
+    <h1><?php echo $this->shipment['scheme_name']; ?></h1>
 </section>
 <section class="content">
-<div class="box">
-<form name="dtsResponseForm" id="dtsResponseForm" method="post"   action="<?php echo $this->url(array("controller" => "dts", "action" => "response"), null, true) ?>">
-                <div class="box-body">
+    <div class="box">
+        <form name="dtsResponseForm" id="dtsResponseForm" method="post" action="<?php echo $this->url(array("controller" => "dts", "action" => "response"), null, true) ?>">
+            <div class="box-body">
 
-    <input type="hidden" id ="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response']; ?>" />
-    <input type="hidden" id ="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
-    <input type="hidden" id ="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
-    <input type="hidden" id ="evId" name="evId" value="<?php echo $this->eID; ?>" />
-    <input type="hidden" id ="smid" name="smid" value="<?php echo $this->shipment['map_id']; ?>" />
-    <input type="hidden" id ="comingFrom" name="comingFrom" value="<?php echo $this->comingFrom; ?>" />
+                <input type="hidden" id="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response']; ?>" />
+                <input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
+                <input type="hidden" id="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
+                <input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
+                <input type="hidden" id="smid" name="smid" value="<?php echo $this->shipment['map_id']; ?>" />
+                <input type="hidden" id="comingFrom" name="comingFrom" value="<?php echo $this->comingFrom; ?>" />
 
-    <input type="hidden" id ="test_kit_other_name_update_1" name="test_kit_other_name_update_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" />
-    <input type="hidden" id ="test_kit_other_name_update_2" name="test_kit_other_name_update_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" />
-    <input type="hidden" id ="test_kit_other_name_update_3" name="test_kit_other_name_update_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" />
-
-
-    <?php
-    $date = new Zend_Date();
-    $lastDate = new Zend_Date($this->shipment['lastdate_response'], Zend_Date::ISO_8601);
-    $response=$date->compare($lastDate,Zend_Date::DATES)
-    ?>
-    <div>
-        
-        <?php
-		if ($this->isEditable) {
-			if ($response == 1 && $this->shipment['status'] == 'finalized') {
-				?>
-				<h4 align="CENTER" style="color:red">Your response is late and this shipment has been finalized. Your result will not be evaluated </h4>
-				<?php
-			} else if ($response == 1) {
-				?>
-				<h4 align="CENTER" style="color:red">Your response is late.</h4>
-				<?php
-			} else if ($this->shipment['status'] == 'finalized') {
-				?>
-				<h4 align="CENTER" style="color:red">This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications. </h4>
-				<?php
-			}
-		}else{
-			?>
-				<h4 align="CENTER" style="color:red">Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.</h4>
-				<?php
-		}
-        ?>
-        <br>
-        <div id=error></div>
-        <span class="pull-right">Fields marked <span class='mandatory'>*</span> are mandatory</span>
-        <table class="table table-bordered table-striped">
-            <tr>
-                <td style="width:20%;"><h4 class="text-info"> Participant Name </h4> <?php echo ( $this->participant['first_name'] . ' ' . $this->participant['last_name'] ); ?></td>
-                <td style="width:20%;"><h4 class="text-info"> Participant Code </h4> <?php echo $this->participant['unique_identifier'] ?></td>
-                <td style="width:20%;"><h4 class="text-info"> Affiliation </h4> <?php echo ( $this->participant['affiliation'] ); ?> </td>
-                <td style="width:20%;"><h4 class="text-info"> Phone No </h4> <?php echo ( $this->participant['phone'] ); ?></td>
-                <td style="width:20%;"><h4 class="text-info"> Mobile No </h4> <?php echo ( $this->participant['mobile'] ); ?></td>
-            </tr>
-        </table>
-
-<hr>
-<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
-            <tr class="dark">
-                <td style="width:20%;"><label>Shipment Date</label></td>
-                <td style="width:30%;"><?php echo $this->dateFormat($this->shipment['shipment_date']); ?></td>
-                <td style="width:20%;"><label>Result Due Date</label></td>
-                <td><?php echo $this->dateFormat($this->shipment['lastdate_response']); ?> </td>
-            </tr>
+                <input type="hidden" id="test_kit_other_name_update_1" name="test_kit_other_name_update_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" />
+                <input type="hidden" id="test_kit_other_name_update_2" name="test_kit_other_name_update_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" />
+                <input type="hidden" id="test_kit_other_name_update_3" name="test_kit_other_name_update_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" />
 
 
+                <?php
+                $date = new Zend_Date();
+                $lastDate = new Zend_Date($this->shipment['lastdate_response'], Zend_Date::ISO_8601);
+                $response = $date->compare($lastDate, Zend_Date::DATES)
+                ?>
+                <div>
 
-            <tr class ="light">
-                <td><label> Test Receipt Date <span class='mandatory'>*</span></label></td>
-                <td>
-                    <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly"   title="Please enter Test Receipt Date" />
-                    <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('receiptDate')"> Clear</i>
-                </td>
-                <td><label>Sample Rehydration Date <span class='mandatory'>*</span></label></td>
-                <td>
-                    <input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"  class="form-control datepicker isRequired" readonly="readonly" title="Please enter Sample Rehydration Date"  />
-                    <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('sampleRehydrationDate')"> Clear</i>
-                </td>
-            </tr>
-
-            <tr class ="dark">
-                <td><label>Testing Date <span class='mandatory'>*</span></label></td> 
-                <td>
-                    <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"   class="form-control datepicker isRequired" readonly="readonly" title="Please enter Shipment Test Date"  />
-                <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"> Clear</i>
-                </td>		
-                <td><label>Algorithm Used <span class='mandatory'>*</span></label></td> 
-                <td>
-                    <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;">
-                        <option value="">--Select--</option>	
-                    <?php if(!empty($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->dtsEnforceAlgorithmCheck == 'yes') { ?>
-                        <option value="not-reported" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'not-reported') ? "selected='selected'" : ''; ?>>Not Reported</option>	
-                    <?php } ?>
-                        <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>	
-                        <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>	
-                    </select>
-                </td>
-            </tr>
-	    <?php
-	    if((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes')) {
-	    ?>
-		<tr class="light">
-			<?php
-		         if(isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date!= null && $authNameSpace->enable_adding_test_response_date!= '' && $authNameSpace->enable_adding_test_response_date=='yes'){
-			?>
-				<td><label> Response Date </label></td>
-				<td>
-				    <input type="text" id="testReceiptDate" name="testReceiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $testReceiptDate; ?>" class="form-control datepicker" readonly="readonly"   title="Please enter Shipment Test Response Date " />
-				    <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testReceiptDate')"> Clear</i>
-				</td>
-			<?php } ?>
-			
-			<?php
-		        if(isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt!= null && $authNameSpace->enable_choosing_mode_of_receipt!= '' && $authNameSpace->enable_choosing_mode_of_receipt=='yes'){
-		         ?>
-			  <td><label>Mode of Receipt</label></td>
-			  <td>
-				<select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
-					<?php
-					foreach ($this->modeOfReceipt as $receipt){
-					?>
-					<option value="<?php echo $receipt['mode_id']; ?>"  <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
-					<?php
-					}
-					?>
-				</select>
-			  </td>
-			<?php } ?>
-			
-			<?php
-			if(!isset($authNameSpace->enable_adding_test_response_date) || $authNameSpace->enable_adding_test_response_date== null || $authNameSpace->enable_adding_test_response_date== '' || $authNameSpace->enable_adding_test_response_date=='no'){ ?>
-			 <td colspan="2"></td>
-			<?php } ?>
-			
-			<?php
-			if(!isset($authNameSpace->enable_choosing_mode_of_receipt) || $authNameSpace->enable_choosing_mode_of_receipt== null || $authNameSpace->enable_choosing_mode_of_receipt== '' || $authNameSpace->enable_choosing_mode_of_receipt=='no'){ ?>
-			 <td colspan="2"></td>
-			<?php } ?>
-		</tr>
-		<?php } ?>
-		
-		<?php
-			if($this->globalQcAccess=='yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access=='yes')){
-		?>
-		<tr>
-			<td><label>QC Done</label></td>
-			<td><input type="radio" id="qcDoneYes" name="qcDone" value="yes" <?php echo ($this->shipment['qc_done']=="yes") ? " checked='checked' " : ""; ?> onclick="checkQcStatus();"/> <strong>Yes</strong>&nbsp;&nbsp;<input type="radio" class="isRequired" id="qcDoneNo" name="qcDone" title="Please select QC done status" <?php echo ($this->shipment['qc_done']== null || $this->shipment['qc_done']=="" || $this->shipment['qc_done']=="no") ? " checked='checked' " : ""; ?> value="no" onclick="checkQcStatus();"/> <strong>No</strong> </td>
-			<td colspan="2"></td>
-		</tr>
-		
-		<?php
-		$display = "display:none";
-		$isRquired = "";
-		if(isset($this->shipment['qc_done']) && $this->shipment['qc_done'] == "yes"){
-		   $display = "";
-		   $isRquired = "isRequired";
-		}
-		?>
-		<tr id="qcSection" style="<?php echo $display; ?>">
-			<td><label>QC Date</label></td>
-			<td>
-			    <input type="text" id="qcDate" name="qcDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["qc_date"]); ?>"   class="form-control datepicker <?php echo $isRquired; ?>" readonly="readonly" title="Please enter QC Date"  />
-				<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('qcDate')"> Clear</i>
-			</td>
-			<td>
-				<label>QC Done By</label>
-			</td>
-			<td>
-				<input type="text" id="qcDoneBy" name="qcDoneBy" class="form-control <?php echo $isRquired; ?>" title="Please enter QC done by name"  value="<?php echo $this->shipment['qc_done_by']; ?>"/>
-			</td>
-		</tr>
-		<?php
-			}
-		?>
-        </table>
-        <?php
-        $possibleResults = array();
-        foreach ($this->dtsPossibleResults as $pr) {
-            if ($pr['scheme_sub_group'] == 'DTS_TEST') {
-                $possibleResults[$pr['id']] = $pr['response'];
-            }
-            
-        }
-        $possibleFinalResults = array();
-        foreach ($this->dtsPossibleResults as $pr) {
-            if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
-                $possibleFinalResults[$pr['id']] = $pr['response'];
-            }
-        }
-
-        //echo $this->allSamples[0]["test_kit_name_1"];
-        ?>
-
-
-
-<hr>
-<table class="table table-bordered table-striped" style="width:100%;max-width:1000px;margin:10px auto;">
-            <thead>
-                <tr align="CENTER" class="dark" >
-                    <th style="width:12%;"></th>
-                    <th >Test-1</th>
-                    <th >Test-2</th>
-                    <?php if(!$testThreeOptional){ ?>
-                    <th >Test-3</th>
-                    <?php } ?>
-                    <th></th>
-                </tr>
-            </thead>
-            <tr align="CENTER" class="light" >
-                <th> Kit Name</th>
-                <td  class="dark" width="20%" >
-                    <select name="test_kit_name_1" id="test_kit_name_1"  style="width: 200px" class="form-control"  title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
-                        <option value="">   ---Select Kit---</option>
+                    <?php
+                    if ($this->isEditable) {
+                        if ($response == 1 && $this->shipment['status'] == 'finalized') {
+                    ?>
+                            <h4 align="CENTER" style="color:red">Your response is late and this shipment has been finalized. Your result will not be evaluated </h4>
                         <?php
-                        foreach ($this->allTestKits as $key => $testkit) {
-                            if ($testkit['testkit_1'] == '1') {
-                                ?>
-                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                <?php
-                            }
-                        }
+                        } else if ($response == 1) {
                         ?>
-                        <option value="other">Other</option>
-                    </select>
-                    <input type="text" class="form-control"  maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
-                </td>
-                <td width="20%" >
-                    <select name="test_kit_name_2" id="test_kit_name_2"   style="width: 200px" class="form-control"  title="Please Choose Test Kit 2" onchange="selectTestKitName(this)">
-                        <option value="">   ---Select Kit---</option>
+                            <h4 align="CENTER" style="color:red">Your response is late.</h4>
                         <?php
-                        foreach ($this->allTestKits as $key => $testkit) {
-                            if ($testkit['testkit_2'] == '1') {
-                                ?>
-                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                <?php
-                            }
-                        }
+                        } else if ($this->shipment['status'] == 'finalized') {
                         ?>
-                        <option value="other">Other</option>
-                    </select>
-                    <input type="text" class="form-control"  maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
-                </td>
-                <?php if(!$testThreeOptional){ ?>
-                    <td width="20%" >
-                        <select name="test_kit_name_3" id="test_kit_name_3" style="width: 200px" class="form-control"  title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
-                            <option value="">   ---Select Kit---</option>
+                            <h4 align="CENTER" style="color:red">This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications. </h4>
+                        <?php
+                        }
+                    } else {
+                        ?>
+                        <h4 align="CENTER" style="color:red">Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.</h4>
+                    <?php
+                    }
+                    ?>
+                    <br>
+                    <div id=error></div>
+                    <span class="pull-right">Fields marked <span class='mandatory'>*</span> are mandatory</span>
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <td style="width:20%;">
+                                <h4 class="text-info"> Participant Name </h4> <?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>
+                            </td>
+                            <td style="width:20%;">
+                                <h4 class="text-info"> Participant Code </h4> <?php echo $this->participant['unique_identifier'] ?>
+                            </td>
+                            <td style="width:20%;">
+                                <h4 class="text-info"> Affiliation </h4> <?php echo ($this->participant['affiliation']); ?>
+                            </td>
+                            <td style="width:20%;">
+                                <h4 class="text-info"> Phone No </h4> <?php echo ($this->participant['phone']); ?>
+                            </td>
+                            <td style="width:20%;">
+                                <h4 class="text-info"> Mobile No </h4> <?php echo ($this->participant['mobile']); ?>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <hr>
+                    <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+                        <tr class="dark">
+                            <td style="width:20%;"><label>Shipment Date</label></td>
+                            <td style="width:30%;"><?php echo $this->dateFormat($this->shipment['shipment_date']); ?></td>
+                            <td style="width:20%;"><label>Result Due Date</label></td>
+                            <td><?php echo $this->dateFormat($this->shipment['lastdate_response']); ?> </td>
+                        </tr>
+
+
+
+                        <tr class="light">
+                            <td><label> Test Receipt Date <span class='mandatory'>*</span></label></td>
+                            <td>
+                                <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Test Receipt Date" />
+                                <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('receiptDate')"> Clear</i>
+                            </td>
+                            <td><label>Sample Rehydration Date <span class='mandatory'>*</span></label></td>
+                            <td>
+                                <input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Sample Rehydration Date" />
+                                <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('sampleRehydrationDate')"> Clear</i>
+                            </td>
+                        </tr>
+
+                        <tr class="dark">
+                            <td><label>Testing Date <span class='mandatory'>*</span></label></td>
+                            <td>
+                                <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Shipment Test Date" />
+                                <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> Clear</i>
+                            </td>
+                            <td><label>Algorithm Used <span class='mandatory'>*</span></label></td>
+                            <td>
+                                <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;">
+                                    <option value="">--Select--</option>
+                                    <?php if (!empty($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->dtsEnforceAlgorithmCheck == 'yes') { ?>
+                                        <option value="not-reported" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'not-reported') ? "selected='selected'" : ''; ?>>Not Reported</option>
+                                    <?php } ?>
+                                    <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>
+                                    <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <?php
+                        if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes')) {
+                        ?>
+                            <tr class="light">
+                                <?php
+                                if (isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') {
+                                ?>
+                                    <td><label> Response Date </label></td>
+                                    <td>
+                                        <input type="text" id="testReceiptDate" name="testReceiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $testReceiptDate; ?>" class="form-control datepicker" readonly="readonly" title="Please enter Shipment Test Response Date " />
+                                        <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testReceiptDate')"> Clear</i>
+                                    </td>
+                                <?php } ?>
+
+                                <?php
+                                if (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt != null && $authNameSpace->enable_choosing_mode_of_receipt != '' && $authNameSpace->enable_choosing_mode_of_receipt == 'yes') {
+                                ?>
+                                    <td><label>Mode of Receipt</label></td>
+                                    <td>
+                                        <select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
+                                            <?php
+                                            foreach ($this->modeOfReceipt as $receipt) {
+                                            ?>
+                                                <option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
+                                            <?php
+                                            }
+                                            ?>
+                                        </select>
+                                    </td>
+                                <?php } ?>
+
+                                <?php
+                                if (!isset($authNameSpace->enable_adding_test_response_date) || $authNameSpace->enable_adding_test_response_date == null || $authNameSpace->enable_adding_test_response_date == '' || $authNameSpace->enable_adding_test_response_date == 'no') { ?>
+                                    <td colspan="2"></td>
+                                <?php } ?>
+
+                                <?php
+                                if (!isset($authNameSpace->enable_choosing_mode_of_receipt) || $authNameSpace->enable_choosing_mode_of_receipt == null || $authNameSpace->enable_choosing_mode_of_receipt == '' || $authNameSpace->enable_choosing_mode_of_receipt == 'no') { ?>
+                                    <td colspan="2"></td>
+                                <?php } ?>
+                            </tr>
+                        <?php } ?>
+
+                        <?php
+                        if ($this->globalQcAccess == 'yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes')) {
+                        ?>
+                            <tr>
+                                <td><label>QC Done</label></td>
+                                <td><input type="radio" id="qcDoneYes" name="qcDone" value="yes" <?php echo ($this->shipment['qc_done'] == "yes") ? " checked='checked' " : ""; ?> onclick="checkQcStatus();" /> <strong>Yes</strong>&nbsp;&nbsp;<input type="radio" class="isRequired" id="qcDoneNo" name="qcDone" title="Please select QC done status" <?php echo ($this->shipment['qc_done'] == null || $this->shipment['qc_done'] == "" || $this->shipment['qc_done'] == "no") ? " checked='checked' " : ""; ?> value="no" onclick="checkQcStatus();" /> <strong>No</strong> </td>
+                                <td colspan="2"></td>
+                            </tr>
+
                             <?php
-                            foreach ($this->allTestKits as $key => $testkit) {
-                                if ($testkit['testkit_3'] == '1') {
-                                    ?>
-                                    <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                    <?php
-                                }
+                            $display = "display:none";
+                            $isRquired = "";
+                            if (isset($this->shipment['qc_done']) && $this->shipment['qc_done'] == "yes") {
+                                $display = "";
+                                $isRquired = "isRequired";
                             }
                             ?>
-                            <option value="other">Other</option>
-                        </select>
-                        <input type="text" class="form-control"  maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name"/>
-                    </td>
-                <?php } ?>
-                <td rowspan="3"></td>
+                            <tr id="qcSection" style="<?php echo $display; ?>">
+                                <td><label>QC Date</label></td>
+                                <td>
+                                    <input type="text" id="qcDate" name="qcDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["qc_date"]); ?>" class="form-control datepicker <?php echo $isRquired; ?>" readonly="readonly" title="Please enter QC Date" />
+                                    <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('qcDate')"> Clear</i>
+                                </td>
+                                <td>
+                                    <label>QC Done By</label>
+                                </td>
+                                <td>
+                                    <input type="text" id="qcDoneBy" name="qcDoneBy" class="form-control <?php echo $isRquired; ?>" title="Please enter QC done by name" value="<?php echo $this->shipment['qc_done_by']; ?>" />
+                                </td>
+                            </tr>
+                        <?php
+                        }
+                        ?>
+                    </table>
+                    <?php
+                    $possibleResults = array();
+                    foreach ($this->dtsPossibleResults as $pr) {
+                        if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+                            $possibleResults[$pr['id']] = $pr['response'];
+                        }
+                    }
+                    $possibleFinalResults = array();
+                    foreach ($this->dtsPossibleResults as $pr) {
+                        if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
+                            $possibleFinalResults[$pr['id']] = $pr['response'];
+                        }
+                    }
+
+                    //echo $this->allSamples[0]["test_kit_name_1"];
+                    ?>
 
 
-            </tr>
-            <?php
-            $lotNo1 = "";
-            $lotNo2 = "";
-            $lotNo3 = "";
-            if (isset($this->allSamples[0]["lot_no_1"]) && trim($this->allSamples[0]["lot_no_1"]) != "") {
-                $lotNo1 = $this->allSamples[0]["lot_no_1"];
-            }
-            if (isset($this->allSamples[0]["lot_no_2"]) && trim($this->allSamples[0]["lot_no_2"]) != "") {
-                $lotNo2 = $this->allSamples[0]["lot_no_2"];
-            }
-            if (isset($this->allSamples[0]["lot_no_3"]) && trim($this->allSamples[0]["lot_no_3"]) != "") {
-                $lotNo3 = $this->allSamples[0]["lot_no_3"];
-            }
-            ?>
-            <tr align="CENTER" class="dark" >
-                <th>Lot No.</th>
-                <td><input type="text" class="form-control"  maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo( $lotNo1); ?>" style="width: 200px" class="" title="Please enter Lot No. 1"/></td>
-                <td><input type="text" class="form-control"  maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo( $lotNo2); ?>" style="width: 200px" class="" title="Please enter Lot No. 2"/></td>
-                <?php if(!$testThreeOptional){ ?>
-                <td><input type="text" class="form-control"  maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo( $lotNo3); ?>" style="width: 200px" class="" title="Please enter Lot No. 3"/></td>
-                <?php } ?>
+
+                    <hr>
+                    <table class="table table-bordered table-striped" style="width:100%;max-width:1000px;margin:10px auto;">
+                        <thead>
+                            <tr align="CENTER" class="dark">
+                                <th style="width:12%;"></th>
+                                <th>Test-1</th>
+                                <th>Test-2</th>
+                                <?php if (!$testThreeOptional) { ?>
+                                    <th>Test-3</th>
+                                <?php } ?>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tr align="CENTER" class="light">
+                            <th> Kit Name</th>
+                            <td class="dark" width="20%">
+                                <select name="test_kit_name_1" id="test_kit_name_1" style="width: 200px" class="form-control" title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
+                                    <option value=""> ---Select Kit---</option>
+                                    <?php
+                                    foreach ($this->allTestKits as $key => $testkit) {
+                                        if ($testkit['testkit_1'] == '1') {
+                                    ?>
+                                            <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+                                    <option value="other">Other</option>
+                                </select>
+                                <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name" />
+                            </td>
+                            <td width="20%">
+                                <select name="test_kit_name_2" id="test_kit_name_2" style="width: 200px" class="form-control" title="Please Choose Test Kit 2" onchange="selectTestKitName(this)">
+                                    <option value=""> ---Select Kit---</option>
+                                    <?php
+                                    foreach ($this->allTestKits as $key => $testkit) {
+                                        if ($testkit['testkit_2'] == '1') {
+                                    ?>
+                                            <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+                                    <option value="other">Other</option>
+                                </select>
+                                <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name" />
+                            </td>
+                            <?php if (!$testThreeOptional) { ?>
+                                <td width="20%">
+                                    <select name="test_kit_name_3" id="test_kit_name_3" style="width: 200px" class="form-control" title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
+                                        <option value=""> ---Select Kit---</option>
+                                        <?php
+                                        foreach ($this->allTestKits as $key => $testkit) {
+                                            if ($testkit['testkit_3'] == '1') {
+                                        ?>
+                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                        <?php
+                                            }
+                                        }
+                                        ?>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name" />
+                                </td>
+                            <?php } ?>
+                            <td rowspan="3"></td>
+
+
+                        </tr>
+                        <?php
+                        $lotNo1 = "";
+                        $lotNo2 = "";
+                        $lotNo3 = "";
+                        if (isset($this->allSamples[0]["lot_no_1"]) && trim($this->allSamples[0]["lot_no_1"]) != "") {
+                            $lotNo1 = $this->allSamples[0]["lot_no_1"];
+                        }
+                        if (isset($this->allSamples[0]["lot_no_2"]) && trim($this->allSamples[0]["lot_no_2"]) != "") {
+                            $lotNo2 = $this->allSamples[0]["lot_no_2"];
+                        }
+                        if (isset($this->allSamples[0]["lot_no_3"]) && trim($this->allSamples[0]["lot_no_3"]) != "") {
+                            $lotNo3 = $this->allSamples[0]["lot_no_3"];
+                        }
+                        ?>
+                        <tr align="CENTER" class="dark">
+                            <th>Lot No.</th>
+                            <td><input type="text" class="form-control" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" style="width: 200px" class="" title="Please enter Lot No. 1" /></td>
+                            <td><input type="text" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" style="width: 200px" class="" title="Please enter Lot No. 2" /></td>
+                            <?php if (!$testThreeOptional) { ?>
+                                <td><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" style="width: 200px" class="" title="Please enter Lot No. 3" /></td>
+                            <?php } ?>
 
 
 
-            </tr>
-            <?php
-            $expDate1 = "";
-            $expDate2 = "";
-            $expDate3 = "";
-            if (isset($this->allSamples[0]["exp_date_1"]) && trim($this->allSamples[0]["exp_date_1"]) != "") {
-                $expDate1 = $this->dateFormat($this->allSamples[0]["exp_date_1"]);
-            }
-            if (isset($this->allSamples[0]["exp_date_2"]) && trim($this->allSamples[0]["exp_date_2"]) != "") {
-                $expDate2 = $this->dateFormat($this->allSamples[0]["exp_date_2"]);
-            }
-            if (isset($this->allSamples[0]["exp_date_3"]) && trim($this->allSamples[0]["exp_date_3"]) != "") {
-                $expDate3 = $this->dateFormat($this->allSamples[0]["exp_date_3"]);
-            }
-            ?>
-            <tr align="CENTER" class="light">
-                <th>Exp Date</th>
-                <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="width:140px;float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date1')"> Clear</i></td>
-                <td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="width:140px;float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date2')"> Clear</i></td>
-                <?php if(!$testThreeOptional){ ?>
-                    <td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="width:140px;float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('exp_date3')"> Clear</i></td>
-                <?php } ?>
+                        </tr>
+                        <?php
+                        $expDate1 = "";
+                        $expDate2 = "";
+                        $expDate3 = "";
+                        if (isset($this->allSamples[0]["exp_date_1"]) && trim($this->allSamples[0]["exp_date_1"]) != "") {
+                            $expDate1 = $this->dateFormat($this->allSamples[0]["exp_date_1"]);
+                        }
+                        if (isset($this->allSamples[0]["exp_date_2"]) && trim($this->allSamples[0]["exp_date_2"]) != "") {
+                            $expDate2 = $this->dateFormat($this->allSamples[0]["exp_date_2"]);
+                        }
+                        if (isset($this->allSamples[0]["exp_date_3"]) && trim($this->allSamples[0]["exp_date_3"]) != "") {
+                            $expDate3 = $this->dateFormat($this->allSamples[0]["exp_date_3"]);
+                        }
+                        ?>
+                        <tr align="CENTER" class="light">
+                            <th>Exp Date</th>
+                            <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="width:140px;float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> Clear</i></td>
+                            <td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="width:140px;float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> Clear</i></td>
+                            <?php if (!$testThreeOptional) { ?>
+                                <td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="width:140px;float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> Clear</i></td>
+                            <?php } ?>
 
-            </tr>
-            <thead> 
-                <tr align="CENTER" class="dark" >
-                    <th></th>
-                    <th>Result-1</th>
-                    <th>Result-2</th>
-                    <?php if(!$testThreeOptional){ ?>
-                        <th>Result-3</th>
+                        </tr>
+                        <thead>
+                            <tr align="CENTER" class="dark">
+                                <th></th>
+                                <th>Result-1</th>
+                                <th>Result-2</th>
+                                <?php if (!$testThreeOptional) { ?>
+                                    <th>Result-3</th>
+                                <?php } ?>
+                                <th>Final Result</th>
+                            </tr>
+                        </thead>
+                        <?php
+                        $count = 0;
+                        foreach ($this->allSamples as $sample) {
+                            $count++;
+                        ?>
+
+                            <tr align="CENTER" class="light">
+
+                                <th style="white-space: nowrap;">
+                                    <?php echo ($sample['sample_label']); ?>
+                                    <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                                </th>
+
+                                <td width="20%">
+                                    <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class="form-control">
+                                        <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
+                                    </select>
+                                </td>
+                                <td width="20%">
+                                    <select name="test_result_2[]" id="<?php echo "testresult2_" . $count; ?>" class="form-control">
+                                        <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
+                                    </select>
+                                </td>
+                                <?php if (!$testThreeOptional) { ?>
+                                    <td width="20%">
+                                        <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" class="form-control">
+                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
+                                        </select>
+                                    </td>
+                                <?php } ?>
+
+                                <td width="20%">
+                                    <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" class="form-control" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" style="float: left;width:150px;">
+                                        <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
+                                    </select> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+                    <?php if (isset($this->haveCustom) && $this->haveCustom == 'yes') { ?>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th style="width:250px;padding:5px;"><?php echo $this->customField1; ?> </th>
+                                <td style="padding:5px;"><input name="customField1" id="customField1" type="text" size="80" maxlength="40" value="<?php echo $this->shipment['custom_field_1']; ?>" class="form-control" /></td>
+                            </tr>
+                            <?php if (isset($this->customField2) && $this->customField2 != "") { ?>
+                                <tr>
+                                    <th style="width:250px;padding:5px;"><?php echo $this->customField2; ?> </th>
+                                    <td style="padding:5px;"><input name="customField2" id="customField2" type="text" class="form-control" value="<?php echo $this->shipment['custom_field_2']; ?>" /></td>
+                                </tr>
+                            <?php } ?>
+                        </table>
                     <?php } ?>
-                    <th>Final Result</th>
-                </tr>
-            </thead>
-            <?php
-            $count = 0;
-            foreach ($this->allSamples as $sample) {
-                $count++;
+                    <hr>
+                    <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+                        <tr>
+                            <th style="width:20%;">Supervisor Review</th>
+                            <td style="width:20%;"><select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control" title="Please select if Supervisor Approval was conducted or not">
+                                    <option value=""> -- Select -- </option>
+                                    <option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>YES</option>
+                                    <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>NO</option>
+                                </select></td>
+                            <th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>Supervisor Name</label></th>
+                            <td>
+                                <input name="participantSupervisor" id="participantSupervisor" type="text" class="form-control" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> value="<?php echo $this->shipment['participant_supervisor']; ?>" />
+                            </td>
+
+                        </tr>
+                        <tr>
+
+                            <th>Comments </th>
+                            <td colspan="3">
+                                <input name="userComments" id="userComments" type="text" size="120" maxlength="40" class="form-control" value="<?php echo $this->shipment['user_comment']; ?>" />
+
+                            </td>
+                        </tr>
+
+                    </table>
+
+                    <?php if ($this->isEditable) { ?>
+                        <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+                            <p>
+                                <input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow();
+                                                    return false;" tabindex="7" value="Submit" />
+                                &nbsp;&nbsp;&nbsp;
+                                <input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" />
+
+                            </p>
+                        </div>
+                    <?php } ?>
+                </div>
+
+                <?php
+                $vHelper = $this->getHelper('DateFormat');
+                $dtFormat = $vHelper->getDateFormat();
                 ?>
-
-                <tr align="CENTER" class="light" >
-
-                    <th style="white-space: nowrap;">
-                        <?php echo ($sample['sample_label']); ?>
-                        <input type="hidden" id ="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
-                    </th>
-
-                    <td   width="20%" >
-                        <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class="form-control"    >
-                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
-                        </select> 
-                    </td>
-                    <td  width="20%" >
-                        <select name="test_result_2[]" id="<?php echo "testresult2_" . $count; ?>" class="form-control"    >
-                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
-                        </select> 
-                    </td>
-                    <?php if(!$testThreeOptional){ ?>
-                    <td   width="20%" >
-                        <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" class="form-control"    >
-                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
-                        </select> 
-                    </td>
-                    <?php } ?>
-
-                    <td   width="20%" >
-                        <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" class="form-control"   <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" style="float: left;width:150px;">
-                            <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
-                        </select> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                    </td>
-                </tr>
-            <?php } ?>
-
-        </table>
-         <?php if(isset($this->haveCustom) && $this->haveCustom == 'yes') { ?>
-        <table class="table table-bordered">
-            <tr>
-                <th style="width:250px;padding:5px;"><?php echo $this->customField1; ?> </th>
-                <td style="padding:5px;"><input name="customField1" id="customField1" type="text" size="80" maxlength="40" value="<?php echo $this->shipment['custom_field_1']; ?>" class="form-control"/></td>
-            </tr>
-            <?php if(isset($this->customField2) && $this->customField2 != ""){ ?>
-            <tr>
-                <th style="width:250px;padding:5px;"><?php echo $this->customField2; ?> </th>
-                <td style="padding:5px;"><input name="customField2" id="customField2" type="text" value="<?php echo $this->shipment['custom_field_2']; ?>"/></td>
-            </tr>
-            <?php } ?>
-        </table>
-        <?php } ?>
-<hr>
-<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
-            <tr>
-                <th style="width:20%;">Supervisor Review</th>
-                <td style="width:20%;"><select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control"  title="Please select if Supervisor Approval was conducted or not"><option value=""> -- Select -- </option>
-                        <option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>YES</option>
-                        <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>NO</option></select></td>
-                <th><label id ="labSupervisor"  <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> >Supervisor Name</label></th> 
-                <td>
-                    <input name="participantSupervisor" id="participantSupervisor" type="text" class="form-control" <?php echo(isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> value="<?php echo $this->shipment['participant_supervisor']; ?>"/>
-                </td>
-
-            </tr>
-            <tr>
-
-                <th>Comments </th> <td colspan="3">
-                    <input name="userComments" id="userComments" type="text" size="120" maxlength="40" class="form-control" value="<?php echo $this->shipment['user_comment']; ?>"/>
-
-                </td>
-            </tr>
-			
-        </table>
-       
-        <?php if ($this->isEditable) { ?>
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-                <p>
-                    <input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow();
-                                                    return false;" tabindex="7" value="Submit"  /> 
-                    &nbsp;&nbsp;&nbsp;
-                    <input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" /> 
-
-                </p>
             </div>
-        <?php } ?>
-    </div>
+        </form>
 
-    <?php
-    $vHelper = $this->getHelper('DateFormat');
-    $dtFormat = $vHelper->getDateFormat();
-    ?>
-    </div>
-</form>
+        <?php if (!$this->isEditable) {
+        ?>
+            <div id="respond" style="margin: 0 auto; text-align: center;padding:10px;">
+                <!--<input name="cancel" class="btn btn-info" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />-->
+                <a href="javascript:void(0)" id="reset" tabindex="8" class="btn btn-info" onclick="javascript:goto_dashboard()">Back</a>
+            </div>
+        <?php
+        }
+        ?>
 
-<?php if (!$this->isEditable) {
-    ?>
-    <div id="respond" style="margin: 0 auto; text-align: center;padding:10px;">
-        <!--<input name="cancel" class="btn btn-info" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />-->
-		<a href="javascript:void(0)" id="reset" tabindex="8" class="btn btn-info" onclick="javascript:goto_dashboard()" >Back</a>
     </div>
-    <?php
-}
-?>
-
-</div>
 </section>
 <script>
-
     function goto_dashboard() {
         window.history.back();
     }
 
-    $(function () {
+    $(function() {
         //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
-        $(".datepicker,.expDatepicker").datepicker({dateFormat: '<?php echo $dtFormat; ?>'});
-<?php if (!$this->isEditable) {
-    ?>
+        $(".datepicker,.expDatepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+        <?php if (!$this->isEditable) {
+        ?>
             $("#dtsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
             $(".icon-remove-sign").remove();
-    <?php
-}
-?>
+        <?php
+        }
+        ?>
 
-        $('#supervisorApproval').change(function () {
+        $('#supervisorApproval').change(function() {
 
-            if ($('#supervisorApproval').val() == 'yes')
-            {
+            if ($('#supervisorApproval').val() == 'yes') {
                 $('#labSupervisor').show();
                 $('#participantSupervisor').val('');
                 $('#participantSupervisor').show();
-            }
-            else {
+            } else {
                 $('#labSupervisor').hide();
                 $('#participantSupervisor').val('');
                 $('#participantSupervisor').hide();
@@ -550,22 +564,23 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
             $("#test_kit_other_name_" + res[3]).val('');
         }
     }
+
     function clearDate(id) {
-      $("#" + id).val('');
+        $("#" + id).val('');
     }
-    
-    function checkQcStatus(){
-	var radioValue = $("input[name='qcDone']:checked"). val();
-	if(radioValue == "yes"){
-	     $("#qcSection").show();
-	     $("#qcDate").addClass("isRequired");
-	     $("#qcDoneBy").addClass("isRequired");
-	}else{
-	     $("#qcSection").hide();
-	     $("#qcDate").val("");
-	     $("#qcDoneBy").val("");
-	     $("#qcDate").removeClass("isRequired");
-	     $("#qcDoneBy").removeClass("isRequired");
-	}
+
+    function checkQcStatus() {
+        var radioValue = $("input[name='qcDone']:checked").val();
+        if (radioValue == "yes") {
+            $("#qcSection").show();
+            $("#qcDate").addClass("isRequired");
+            $("#qcDoneBy").addClass("isRequired");
+        } else {
+            $("#qcSection").hide();
+            $("#qcDate").val("");
+            $("#qcDoneBy").val("");
+            $("#qcDate").removeClass("isRequired");
+            $("#qcDoneBy").removeClass("isRequired");
+        }
     }
 </script>
