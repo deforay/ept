@@ -1941,19 +1941,22 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $reportAccess = array();
             if($isEditable && $dm['view_only_access'] != 'yes'){
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
-                    $reportAccess['status'] = 'Fail';
+                    $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } else if($responseAccess == 1 && $params['response_switch'] == 'on'){
+                    $reportAccess['status'] = 'success';
+                    $reportAccess['message'] = 'Your response is late';
                 } else if($responseAccess == 1){
-                    $reportAccess['status'] = 'Fail';
-                    $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late';
                 } else if($shipment['status'] == 'finalized'){
-                    $reportAccess['status'] = 'Fail';
+                    $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
                 } else{
                     $reportAccess['status'] = 'success';
                 }
             }else{
-                $reportAccess['status']     = 'Fail';
+                $reportAccess['status']     = 'fail';
                 $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications';
             }
             $dts['access'] = $reportAccess;
@@ -1980,7 +1983,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $modeOfReceiptSelect = array();
             foreach ($modeOfReceipt as $receipt){
                 $modeOfReceiptSelect[]= array(
-                    'value'     =>  $receipt['mode_id'],
+                    'value'     =>  (string)$receipt['mode_id'],
                     'show'      =>  $receipt['mode_name'],
                     'selected'  => ($shipment["mode_id"] == $receipt['mode_id'])?'selected':''
                 );
@@ -2002,9 +2005,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2 = array(
                     'shipmentDate'              => date('d-M-Y',strtotime($shipment['shipment_date'])),
                     'resultDueDate'             => date('d-M-Y',strtotime($shipment['lastdate_response'])),
-                    'testReceiptDate'           => date('d-M-Y',strtotime($shipment['shipment_receipt_date'])),
-                    'sampleRehydrationDate'     => date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])),
-                    'testingDate'               => date('d-M-Y',strtotime($shipment['shipment_test_date'])),
+                    'testReceiptDate'           => (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'',
+                    'sampleRehydrationDate'     => (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'',
+                    'testingDate'               => (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_test_date'])):'',
                     'algorithmUsedSelect'       => $algorithmUsedSelect,
                     'algorithmUsedSelected'     => (isset($shipment['attributes']["algorithm"]) && $shipment['attributes']["algorithm"] != '')?$shipment['attributes']["algorithm"]:'',
                 );
@@ -2046,42 +2049,42 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if($testkit['testkit_1'] == '1'){
                     $testKitArray['kitName']['Test-1']['status'] = true;
                     $testKitArray['kitName']['Test-1']['data'][] = array(
-                        'value'         => $testkit['TESTKITNAMEID'],
+                        'value'         => (string)$testkit['TESTKITNAMEID'],
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"])?'selected':''
                     );
                     if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
                         $testKitArray['kitSelected'][] = array(
                             'kitName'   => $testkit['TESTKITNAME'],
-                            'kitValue'  => $testkit['TESTKITNAMEID']
+                            'kitValue'  => (string)$testkit['TESTKITNAMEID']
                         );
                     }
                 }
                 if($testkit['testkit_2'] == '1'){
                     $testKitArray['kitName']['Test-2']['status'] = true;
                     $testKitArray['kitName']['Test-2']['data'][] = array(
-                        'value'         => $testkit['TESTKITNAMEID'],
+                        'value'         => (string)$testkit['TESTKITNAMEID'],
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"])?'selected':''
                     );
                     if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
                         $testKitArray['kitSelected'][] = array(
                             'kitName'   => $testkit['TESTKITNAME'],
-                            'kitValue'  => $testkit['TESTKITNAMEID']
+                            'kitValue'  => (string)$testkit['TESTKITNAMEID']
                         );
                     }
                 }
                 if(!$testThreeOptional && $testkit['testkit_3'] == '1'){
                     $testKitArray['kitName']['Test-3']['status'] = true;
                     $testKitArray['kitName']['Test-3']['data'][] = array(
-                        'value'         => $testkit['TESTKITNAMEID'],
+                        'value'         => (string)$testkit['TESTKITNAMEID'],
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"])?'selected':''
                     );
                     if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
                         $testKitArray['kitSelected'][] = array(
                             'kitName'   => $testkit['TESTKITNAME'],
-                            'kitValue'  => $testkit['TESTKITNAMEID']
+                            'kitValue'  => (string)$testkit['TESTKITNAMEID']
                         );
                     }
                 }else{
@@ -2127,9 +2130,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     if($row == 3){
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
-                                $possibleResults[] = array('value'=>$pr['id'],'show'=>$pr['response'],'selected'=>($sample['test_result_3'] == $pr['id'])?'selected':'');
+                                $possibleResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'],'selected'=>($sample['test_result_3'] == $pr['id'])?'selected':'');
                                 if($sample['test_result_3'] == $pr['id']){
-                                    $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-3','resultValue'=>$sample['test_result_3']);
+                                    $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-3','resultValue'=>(string)$sample['test_result_3']);
                                     $sample3Select                                              = $sample['test_result_3'];
                                 }
                             }
@@ -2143,12 +2146,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }else{
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
-                                $possibleResults[] = array('value'=>$pr['id'],'show'=>$pr['response'],'selected'=>(($sample['test_result_1'] == $pr['id'] && $row == 1) || ($sample['test_result_2'] == $pr['id'] && $row == 2))?'selected':'');
+                                $possibleResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'],'selected'=>(($sample['test_result_1'] == $pr['id'] && $row == 1) || ($sample['test_result_2'] == $pr['id'] && $row == 2))?'selected':'');
                                 if($sample['test_result_1'] == $pr['id'] && $row == 1){
                                     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-1','resultValue'=>$sample['test_result_1']);
                                     $sample1Select                                              = $sample['test_result_1'];
                                 }else if($sample['test_result_2'] == $pr['id'] && $row == 2){
-                                    $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-2','resultValue'=>$sample['test_result_2']);
+                                    $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-2','resultValue'=>(string)$sample['test_result_2']);
                                     $sample2Select                                              = $sample['test_result_2'];
                                 }
                             }
@@ -2160,9 +2163,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $possibleFinalResults = array();
                 foreach ($dtsPossibleResults as $pr) {
                     if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
-                        $possibleFinalResults[] = array('value'=>$pr['id'],'show'=>$pr['response'],'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
+                        $possibleFinalResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'],'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
                         if($sample['reported_result'] == $pr['id']){
-                            $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Final-Result','resultValue'=>$sample['reported_result']);
+                            $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Final-Result','resultValue'=>(string)$sample['reported_result']);
                             $sampleFinalSelect                                          = $sample['reported_result'];
                         }
                     }
@@ -2182,12 +2185,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $dts['Heading4']['data']    = $allSamplesResult;
             }
             // Heading 4 End // Heading 5 Start
-            $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
+            $reviewArray = array();$commentArray = array('','yes','no');$revieArr = array();
             foreach($commentArray as $row){
                 $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
             }
             $reviewArray['supervisorReview']        = $revieArr;
-            $reviewArray['supervisorReviewSelected']= (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'yes':'no';
+            $reviewArray['supervisorReviewSelected']= (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'yes':'';
             $reviewArray['approvalLabel']           = 'Supervisor Name';
             $reviewArray['approvalInputText']       = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
@@ -2217,19 +2220,22 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $reportAccess = array();$vl = array();
             if($isEditable && $dm['view_only_access'] != 'yes'){
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
-                    $reportAccess['status'] = 'Fail';
+                    $reportAccess['status'] = 'fail';
                     $reportAccess['message']= 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } else if($responseAccess == 1 && $params['response_switch'] == 'on'){
+                    $reportAccess['status'] = 'success';
+                    $reportAccess['message'] = 'Your response is late';
                 } else if($responseAccess == 1){
-                    $reportAccess['status'] = 'Fail';
-                    $reportAccess['message']= 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late';
                 } else if($shipment['status'] == 'finalized'){
-                    $reportAccess['status'] = 'Fail';
+                    $reportAccess['status'] = 'fail';
                     $reportAccess['message']= 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
                 } else{
                     $reportAccess['status'] = 'success';
                 }
             }else{
-                $reportAccess['status']     = 'Fail';
+                $reportAccess['status']     = 'fail';
                 $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications';
             }
             $vl['access'] = $reportAccess;
@@ -2254,7 +2260,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if(isset($shipment) && count($shipment) > 0){
                 foreach($vlAssay as $id=>$name){
                     $vlAssayArr[] = array(
-                        'value'     => $id,
+                        'value'     => (string)$id,
                         'show'      => $name,
                         'selected'  => ($shipment['attributes']['vl_assay'] == $id)?'selected':''
                     );
@@ -2262,7 +2268,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $modeOfReceiptSelect = array();
                 foreach ($modeOfReceipt as $receipt){
                     $modeOfReceiptSelect[]= array(
-                        'value'     =>  $receipt['mode_id'],
+                        'value'     =>  (string)$receipt['mode_id'],
                         'show'      =>  $receipt['mode_name'],
                         'selected'  => ($shipment["mode_id"] == $receipt['mode_id'])?'selected':''
                     );
@@ -2270,14 +2276,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2['status']                         = true;
                 $heading2['data']['shipmentDate']           = date('d-M-Y',strtotime($shipment['shipment_date']));
                 $heading2['data']['resultDueDate']          = date('d-M-Y',strtotime($shipment['lastdate_response']));
-                $heading2['data']['testReceiptDate']        = date('d-M-Y',strtotime($shipment['shipment_receipt_date']));
-                $heading2['data']['sampleRehydrationDate']  = date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"]));
-                $heading2['data']['testDate']               = date('d-M-Y',strtotime($shipment["shipment_test_date"]));
+                $heading2['data']['testReceiptDate']        = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
+                $heading2['data']['sampleRehydrationDate']  = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
+                $heading2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
                 $heading2['data']['specimenVolume']         = $shipment['attributes']['specimen_volume'];
                 $heading2['data']['vlAssaySelect']          = $vlAssayArr;
-                $heading2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "")?$shipment['attributes']['vl_assay']:'';
+                $heading2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "")?(int)$shipment['attributes']['vl_assay']:'';
                 $heading2['data']['otherAssay']             = (isset($shipment['attributes']['other_assay']) && $shipment['attributes']['other_assay'] != '')?$shipment['attributes']['other_assay']:'';
-                $heading2['data']['assayExpirationDate']    = date('d-M-Y',strtotime($shipment['attributes']['assay_expiration_date']));
+                $heading2['data']['assayExpirationDate']    = (isset($shipment['attributes']['assay_expiration_date']) && $shipment['attributes']['assay_expiration_date'] != '')?date('d-M-Y',strtotime($shipment['attributes']['assay_expiration_date'])):'';
                 $heading2['data']['assayLotNumber']         = $shipment['attributes']['assay_lot_number'];
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
                     if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes'){
@@ -2296,7 +2302,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $qcArray = array('yes','no');$qc = array();
             foreach($qcArray as $row){
-                $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no'))?'selected':'');
+                $qcResponseArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no'))?'selected':'');
             }
             $qc['qcRadio']          = $qcResponseArr;
             $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
@@ -2320,18 +2326,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }else{
                 $heading3['data']['isPtTestNotPerformedRadio'] = 'yes';
             }
-            $heading3['data']['no']['note'][]               = htmlentities("Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.");
-            $heading3['data']['no']['note'][]               = htmlentities("Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).");
-            $heading3['data']['no']['note'][]               = htmlentities("For negative or undetectable result (TND), please enter 0.00.");
-            $heading3['data']['no']['note'][]               = htmlentities("For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section.");
-            $heading3['data']['no']['vlResultSectionLabel'] = htmlentities("Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)");
+            $heading3['data']['no']['note'][]               = "Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.";
+            $heading3['data']['no']['note'][]               = "Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).";
+            $heading3['data']['no']['note'][]               = "For negative or undetectable result (TND), please enter 0.00.";
+            $heading3['data']['no']['note'][]               = "For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section.";
+            $heading3['data']['no']['vlResultSectionLabel'] = "VL Calc (Convert copies/ml to Log<sub>10</sub>)";
             $heading3['data']['no']['tableHeading'][]       = 'Control/Sample';
-            $heading3['data']['no']['tableHeading'][]       = htmlentities('Viral Load (log<sub>10</sub> copies/ml)');
-            $heading3['data']['no']['tableHeading'][]       = htmlentities('TND(Target Not Detected)');
+            $heading3['data']['no']['tableHeading'][]       = 'Viral Load (log<sub>10</sub> copies/ml)';
+            $heading3['data']['no']['tableHeading'][]       = 'TND(Target Not Detected)';
             $allNotTestedArray = array();
             foreach ($allNotTestedReason as $reason) {
                 $allNotTestedArray[] = array(
-                    'value'     => $reason['vl_not_tested_reason_id'],
+                    'value'     => (string)$reason['vl_not_tested_reason_id'],
                     'show'      => ucwords($reason['vl_not_tested_reason']),
                     'selected'  => ($shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id'])?'selected':''
                 );
@@ -2355,7 +2361,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $vlResponseArr = array();
                 foreach($vlArray as $row){
-                    $vlResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>($sample['is_tnd'] == $row || ($sample['is_tnd'] == '' && $row == 'no'))?'selected':'');
+                    $vlResponseArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>($sample['is_tnd'] == $row || ($sample['is_tnd'] == '' && $row == 'no'))?'selected':'');
                 }
                 $heading3['data']['no']['tableRowTxt']['label'][]       = $sample['sample_label'];
                 $heading3['data']['no']['tableRowTxt']['id'][]          = $sample['sample_id'];
@@ -2366,12 +2372,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $vl['Heading3'] = $heading3;
             // Heading 3 end // Heading 4 Start
-            $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
+            $reviewArray = array();$commentArray = array('','yes','no');$revieArr = array();
             foreach($commentArray as $row){
-                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
+                $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
             }
             $reviewArray['supervisorReview']            = $revieArr;
-            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'yes':"no";
+            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'yes':"";
             $reviewArray['approvalLabel']               = 'Supervisor Name';
             $reviewArray['approvalInputText']           = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
@@ -2390,19 +2396,22 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $reportAccess = array();$vl = array();
             if($isEditable && $dm['view_only_access'] != 'yes'){
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
-                    $reportAccess['status']         = 'Fail';
+                    $reportAccess['status']         = 'fail';
                     $reportAccess['message']        = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } else if($responseAccess == 1 && $params['response_switch'] == 'on'){
+                    $reportAccess['status'] = 'success';
+                    $reportAccess['message'] = 'Your response is late';
                 } else if($responseAccess == 1){
-                    $reportAccess['status']         = 'Fail';
-                    $reportAccess['message']        = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late';
                 } else if($shipment['status'] == 'finalized'){
-                    $reportAccess['status']         = 'Fail';
+                    $reportAccess['status']         = 'fail';
                     $reportAccess['message']        = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
                 } else{
                     $reportAccess['status']         = 'success';
                 }
             }else{
-                $reportAccess['status'] = 'Fail';
+                $reportAccess['status'] = 'fail';
                 $reportAccess['message'] = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications';
             }
             $eid['access'] = $reportAccess;
@@ -2427,7 +2436,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $modeOfReceiptSelect = array();
                 foreach ($modeOfReceipt as $receipt){
                     $modeOfReceiptSelect[]= array(
-                        'value'     =>  $receipt['mode_id'],
+                        'value'     =>  (string)$receipt['mode_id'],
                         'show'      =>  $receipt['mode_name'],
                         'selected'   => ($shipment["mode_id"] == $receipt['mode_id'])?'selected':''
                     );
@@ -2435,7 +2444,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $extractionAssaySelect = array();
                 foreach ($extractionAssay as $eAssayId => $eAssayName){
                     $extractionAssaySelect[]= array(
-                        'value'     =>  $eAssayId,
+                        'value'     =>  (string)$eAssayId,
                         'show'      =>  $eAssayName,
                         'selected'   => ($shipment['attributes']['extraction_assay'] == $eAssayId)?'selected':''
                     );
@@ -2452,13 +2461,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2['status']    = true;
                 $heading2['data']['shipmentDate']               = date('d-M-Y',strtotime($shipment['shipment_date']));
                 $heading2['data']['resultDueDate']              = date('d-M-Y',strtotime($shipment['lastdate_response']));
-                $heading2['data']['testReceiptDate']            = date('d-M-Y',strtotime($shipment['shipment_receipt_date']));
-                $heading2['data']['sampleRehydrationDate']      = date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"]));
-                $heading2['data']['testDate']                   = date('d-M-Y',strtotime($shipment["shipment_test_date"]));
+                $heading2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
+                $heading2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
+                $heading2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
                 $heading2['data']['extractionAssaySelect']      = $extractionAssaySelect;
-                $heading2['data']['extractionAssaySelected']    = (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] != "")?$shipment['attributes']['extraction_assay']:'';
+                $heading2['data']['extractionAssaySelected']    = (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] != "")?(int)$shipment['attributes']['extraction_assay']:'';
                 $heading2['data']['detectionAssaySelect']       = $detectionAssaySelect;
-                $heading2['data']['detectionAssaySelected']     = (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] != "")?$shipment['attributes']['extraction_assay']:'';
+                $heading2['data']['detectionAssaySelected']     = (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] != "")?(int)$shipment['attributes']['extraction_assay']:'';
                 $heading2['data']['extractionLotNumber']        = (isset($shipment['attributes']['extraction_assay_lot_no']) && $shipment['attributes']['extraction_assay_lot_no'] !="")?$shipment['attributes']['extraction_assay_lot_no']:'';
                 $heading2['data']['detectionLotNumber']         = (isset($shipment['attributes']['detection_assay_lot_no']) && $shipment['attributes']['detection_assay_lot_no'] !="")?$shipment['attributes']['detection_assay_lot_no']:'';
                 $heading2['data']['extractionExpirationDate']   = date('d-M-Y',strtotime($shipment['attributes']['extraction_assay_expiry_date']));
@@ -2477,7 +2486,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $qcArray = array('yes','no');$qc = array();
             foreach($qcArray as $row){
-                $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no'))?'selected':'');
+                $qcResponseArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no'))?'selected':'');
             }
             $qc['qcRadio']          = $qcResponseArr;
             $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
@@ -2505,7 +2514,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $possibleEIDResults = array();
                 foreach ($eidPossibleResults as $pr) {
                     if ($pr['scheme_sub_group'] == 'EID_FINAL') {
-                        $possibleEIDResults[] = array('value'=>$pr['id'],'show'=>$pr['response'],'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
+                        $possibleEIDResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'],'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
                     }
                 }
 
@@ -2521,7 +2530,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $allNotTestedArray = array();
             foreach ($allNotTestedReason as $reason) {
                 $allNotTestedArray[] = array(
-                    'value'     => $reason['vl_not_tested_reason_id'],
+                    'value'     => (string)$reason['vl_not_tested_reason_id'],
                     'show'      => ucwords($reason['vl_not_tested_reason']),
                     'selected'  => ($shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id'])?'selected':''
                 );
@@ -2547,12 +2556,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $eid['Heading3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
             $eid['Heading3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '')?$shipment['pt_support_comments']:'';
             // Heading 3 End // Heading 4 Start
-            $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
+            $reviewArray = array();$commentArray = array('','yes','no');$revieArr = array();
             foreach($commentArray as $row){
-                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
+                $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
             }
             $reviewArray['supervisorReview']            = $revieArr;
-            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == "yes")?"yes":"no";
+            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == "yes")?"yes":"";
             $reviewArray['approvalLabel']               = 'Supervisor Name';
             $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
@@ -2684,26 +2693,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         /* To check the form have group of array or single array */
         $returnResposne = array();
+        // Zend_Debug::dump($params);die;
         if(isset($params['syncType']) && $params['syncType'] == 'group'){
             foreach($params['data'] as $key=>$row){
                 $status  = $this->saveShipmentByType((array)$row,$dm);
-                if(!$status){
-                    $returnResposne[$key]['schemeType']       = $row['scheme_type'];
-                    $returnResposne[$key]['schemeType']       = $row['scheme_type'];
-                    $returnResposne[$key]['shipmentId']       = $row['shipment_id'];
-                    $returnResposne[$key]['participantId']    = $row['participant_id'];
-                    $returnResposne[$key]['evaluationStatus'] = $row['evaluation_status'];
+                if(!$status || $row->mapId == '4136' || $row->mapId == '4829'){
+                    $returnResposne[$key]['status']    = 'fail';
+                }else{
+                    $returnResposne[$key]['status']    = 'success';
                 }
+                $returnResposne[$key]['data']['mapId'] = $row->mapId;
             }
-            if(isset($returnResposne) && count($returnResposne) > 0){
-                return array(
-                    'status'    => 'fail',
-                    'message'   => 'The following shipment not send',
-                    'data'      => $returnResposne
-                );
-            }else{
-                return array('status'=>'success','message'=>'All shipment details successfully send.');
-            }
+            return $returnResposne;
         }
         if(isset($params['syncType']) && $params['syncType'] == 'single'){
             $status = $this->saveShipmentByType((array)$params['data'],$dm);
@@ -2749,10 +2750,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $params["vlData"]->Heading2->data->assayExpDate = date('Y-m-d',strtotime($params["vlData"]->Heading2->data->assayExpDate));
                 }
                 $attributes = array(
-                    "sample_rehydration_date"   => $params["vlData"]->Heading2->data->sampleRehydrationDate,
+                    "sample_rehydration_date"   => date('Y-m-d',strtotime($params["vlData"]->Heading2->data->sampleRehydrationDate)),
                     "vl_assay"                  => $params["vlData"]->Heading2->data->vlAssaySelected,
                     "assay_lot_number"          => $params["vlData"]->Heading2->data->assayLotNumber,
-                    "assay_expiration_date"     => $params["vlData"]->Heading2->data->assayExpirationDate,
+                    "assay_expiration_date"     => date('Y-m-d',strtotime($params["vlData"]->Heading2->data->assayExpirationDate)),
                     "specimen_volume"           => $params["vlData"]->Heading2->data->specimenVolume,
                     // "uploaded_file" => $params['uploadedFilePath']
                 );
