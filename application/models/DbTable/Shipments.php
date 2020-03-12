@@ -2013,8 +2013,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 );
                 $dts['Heading2']['data'] = $heading2;
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
-                    if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes'){
-                        $dts['Heading2']['data']['responseDate']        = date('d-M-Y',strtotime($shipment['shipment_test_report_date']));
+                    if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != ''){
+                        $dts['Heading2']['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                    }else{
+                        $dts['Heading2']['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
                         $dts['Heading2']['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
@@ -2185,9 +2187,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $dts['Heading4']['data']    = $allSamplesResult;
             }
             // Heading 4 End // Heading 5 Start
-            $reviewArray = array();$commentArray = array('','yes','no');$revieArr = array();
+            $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
             foreach($commentArray as $row){
-                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
+                $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
             }
             $reviewArray['supervisorReview']        = $revieArr;
             $reviewArray['supervisorReviewSelected']= (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'yes':'';
@@ -2276,18 +2278,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2['status']                         = true;
                 $heading2['data']['shipmentDate']           = date('d-M-Y',strtotime($shipment['shipment_date']));
                 $heading2['data']['resultDueDate']          = date('d-M-Y',strtotime($shipment['lastdate_response']));
-                $heading2['data']['testReceiptDate']        = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
-                $heading2['data']['sampleRehydrationDate']  = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
+                $heading2['data']['testReceiptDate']        = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
+                $heading2['data']['sampleRehydrationDate']  = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
                 $heading2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
                 $heading2['data']['specimenVolume']         = $shipment['attributes']['specimen_volume'];
                 $heading2['data']['vlAssaySelect']          = $vlAssayArr;
                 $heading2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "")?(int)$shipment['attributes']['vl_assay']:'';
                 $heading2['data']['otherAssay']             = (isset($shipment['attributes']['other_assay']) && $shipment['attributes']['other_assay'] != '')?$shipment['attributes']['other_assay']:'';
-                $heading2['data']['assayExpirationDate']    = (isset($shipment['attributes']['assay_expiration_date']) && $shipment['attributes']['assay_expiration_date'] != '')?date('d-M-Y',strtotime($shipment['attributes']['assay_expiration_date'])):'';
+                $heading2['data']['assayExpirationDate']    = (isset($shipment['attributes']['assay_expiration_date']) && $shipment['attributes']['assay_expiration_date'] != '' && $shipment['attributes']['assay_expiration_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['attributes']['assay_expiration_date'])):'';
                 $heading2['data']['assayLotNumber']         = $shipment['attributes']['assay_lot_number'];
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
-                    if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes'){
-                        $heading2['data']['responseDate']           = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                    if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != ''){
+                        $heading2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                    }else{
+                        $heading2['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
                         $heading2['data']['modeOfReceiptSelect']    = $modeOfReceiptSelect;
@@ -2296,7 +2300,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }else{
                     $heading2['data']['responseDate']               = "";
                     $heading2['data']['modeOfReceiptSelect']        = "";
-                        $heading2['data']['modeOfReceiptSelected']  = "";
+                    $heading2['data']['modeOfReceiptSelected']  = "";
                 }
             }
 
@@ -2372,9 +2376,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $vl['Heading3'] = $heading3;
             // Heading 3 end // Heading 4 Start
-            $reviewArray = array();$commentArray = array('','yes','no');$revieArr = array();
+            $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
             foreach($commentArray as $row){
-                $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
+                $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
             }
             $reviewArray['supervisorReview']            = $revieArr;
             $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'yes':"";
@@ -2474,8 +2478,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2['data']['detectionExpirationDate']    = date('d-M-Y',strtotime($shipment['attributes']['detection_assay_expiry_date']));
                 
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
-                    if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes'){
-                        $heading2['data']['responseDate'] = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                    if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != ''){
+                        $heading2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                    }else{
+                        $heading2['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
                         $heading2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
@@ -2556,9 +2562,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $eid['Heading3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
             $eid['Heading3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '')?$shipment['pt_support_comments']:'';
             // Heading 3 End // Heading 4 Start
-            $reviewArray = array();$commentArray = array('','yes','no');$revieArr = array();
+            $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
             foreach($commentArray as $row){
-                $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] == null || $shipment['supervisor_approval'] == '') && $row == 'no'))?'selected':'');
+                $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
             }
             $reviewArray['supervisorReview']            = $revieArr;
             $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == "yes")?"yes":"";
