@@ -1840,7 +1840,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
         ->where("pmm.dm_id=?", $aResult['dm_id'])
         // ->where("spm.syned=?", 'no')
-        ->where("(s.status='shipped' OR s.status='evaluated')");
+        ->where("(s.status='shipped' OR s.status='evaluated')")
+        ->order('spm.created_on_admin DESC')
+        ->order('spm.created_on_user DESC');
+        // echo $sQuery;die;
         $rResult = $this->getAdapter()->fetchAll($sQuery);
         if (!isset($rResult) && count($rResult) == 0) {
             return array('status' =>'fail','message'=>'Shipment Details not available');
@@ -2283,7 +2286,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
                 $heading2['data']['specimenVolume']         = $shipment['attributes']['specimen_volume'];
                 $heading2['data']['vlAssaySelect']          = $vlAssayArr;
-                $heading2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "")?(int)$shipment['attributes']['vl_assay']:'';
+                $heading2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "")?(string)$shipment['attributes']['vl_assay']:'';
                 $heading2['data']['otherAssay']             = (isset($shipment['attributes']['other_assay']) && $shipment['attributes']['other_assay'] != '')?$shipment['attributes']['other_assay']:'';
                 $heading2['data']['assayExpirationDate']    = (isset($shipment['attributes']['assay_expiration_date']) && $shipment['attributes']['assay_expiration_date'] != '' && $shipment['attributes']['assay_expiration_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['attributes']['assay_expiration_date'])):'';
                 $heading2['data']['assayLotNumber']         = $shipment['attributes']['assay_lot_number'];
@@ -2359,7 +2362,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $sample['mandatory'] = 0;
                 }
                 $vlArray = array('yes','no');
-                $vlResult = $sample['reported_viral_load'];
+                $vlResult = (isset($sample['reported_viral_load']) && $sample['reported_viral_load'] != "")?$sample['reported_viral_load']:'';
                 if ($sample['is_tnd'] == 'yes') {
                     $vlResult = 0.00;
                 }
@@ -2703,7 +2706,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if(isset($params['syncType']) && $params['syncType'] == 'group'){
             foreach($params['data'] as $key=>$row){
                 $status  = $this->saveShipmentByType((array)$row,$dm);
-                if(!$status || $row->mapId == '4136' || $row->mapId == '4829'){
+                if(!$status){
                     $returnResposne[$key]['status']    = 'fail';
                 }else{
                     $returnResposne[$key]['status']    = 'success';
@@ -2757,7 +2760,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $attributes = array(
                     "sample_rehydration_date"   => date('Y-m-d',strtotime($params["vlData"]->Heading2->data->sampleRehydrationDate)),
-                    "vl_assay"                  => $params["vlData"]->Heading2->data->vlAssaySelected,
+                    "vl_assay"                  => (string)$params["vlData"]->Heading2->data->vlAssaySelected,
                     "assay_lot_number"          => $params["vlData"]->Heading2->data->assayLotNumber,
                     "assay_expiration_date"     => date('Y-m-d',strtotime($params["vlData"]->Heading2->data->assayExpirationDate)),
                     "specimen_volume"           => $params["vlData"]->Heading2->data->specimenVolume,
