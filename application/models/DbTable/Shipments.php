@@ -2148,6 +2148,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             $allSamplesResult[$sample['sample_label']]['Result-'.$row]['status']= false;
                         }
                         $allSamplesResult[$sample['sample_label']]['Result-'.$row]['data']      = $possibleResults;
+
+                        if(isset($sample['test_result_3']) && $sample['test_result_3'] != ""){
+                            $allSamplesResult[$sample['sample_label']]['Result-'.$row]['value'] = $sample['test_result_3'];
+                        }else{
+                            $allSamplesResult[$sample['sample_label']]['Result-'.$row]['value'] = "";
+                        }
                     }else{
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
@@ -2163,6 +2169,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         }
                         $allSamplesResult[$sample['sample_label']]['Result-'.$row]['status']    = true;
                         $allSamplesResult[$sample['sample_label']]['Result-'.$row]['data']      = $possibleResults;
+                        if(isset($sample['test_result_1']) && $sample['test_result_1'] != "" && $row == 1){
+                            $allSamplesResult[$sample['sample_label']]['Result-'.$row]['value'] = $sample['test_result_1'];
+                        }else if(isset($sample['test_result_2']) && $sample['test_result_2'] != "" && $row == 2){
+                            $allSamplesResult[$sample['sample_label']]['Result-'.$row]['value'] = $sample['test_result_2'];
+                        }else{
+                            $allSamplesResult[$sample['sample_label']]['Result-'.$row]['value'] = "";
+                        }
                     }
                 }
                 $possibleFinalResults = array();
@@ -2181,6 +2194,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['resultsText'] = array('Result-1','Result-2','Result-3','Final-Result');
                 $allSamplesResult[$sample['sample_label']]['Final-Result']['status']    = true;
                 $allSamplesResult[$sample['sample_label']]['Final-Result']['data']      = $possibleFinalResults;
+                $allSamplesResult[$sample['sample_label']]['Final-Result']['value']     = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
             }
             if((isset($allSamples) && count($allSamples) > 0) && (isset($dtsPossibleResults) && count($dtsPossibleResults) > 0)){
                 $dts['Heading4']['status']  = true;
