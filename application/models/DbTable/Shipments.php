@@ -1817,20 +1817,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'fail','message'=>'There is an error in APP version. Please update to latest version APP');
+            return array('status' =>'version-fail','message'=>'App Version Failed.');
         }
         if (!isset($params['appVersion'])) {
-            return array('status' =>'fail','message'=>'Authentication error');
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
         }
         $dmDb = new Application_Model_DbTable_DataManagers();
         $aResult = $dmDb->fetchAuthToken($params);
         /* App version check */
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'fail','message'=>'Please update to latest version APP');
+            return array('status' =>'version-fail','message'=>'App Version Failed.');
         }
         /* Validate new auth token and app-version */
         if(!$aResult){
-            return array('status' =>'fail','message'=>'Participant authentication error');
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
         }
         /* To check the shipment details for the data managers mapped participants */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch'))
@@ -2650,20 +2650,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'fail','message'=>'There is an error in APP version. Please update to latest version APP.');
+            return array('status' =>'version-fail','message'=>'App Version Failed.');
         }
         if (!isset($params['authToken'])) {
-            return array('status' =>'fail','message'=>'Authentication error.');
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
         }
         
         /* Validate new auth token and app-version */
         $dmDb = new Application_Model_DbTable_DataManagers();
         $aResult = $dmDb->fetchAuthToken($params);
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'fail','message'=>'Please update to latest version APP.');
+            return array('status' =>'version-fail','message'=>'App Version Failed.');
         }
         if(!$aResult){
-            return array('status' =>'fail','message'=>'Participant authentication error.');
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
         }
         /* Get summary reports using data manager */
         $resultData = array();
@@ -2699,24 +2699,24 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'fail','message'=>'There is an error in APP version. Please update to latest version APP.');
+            return array('status' =>'version-fail','message'=>'App Version Failed.');
         }
         if (!isset($params['authToken'])) {
-            return array('status' =>'fail','message'=>'Authentication error.');
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
         }
         
         /* Validate new auth token and app-version */
         $dmDb = new Application_Model_DbTable_DataManagers();
         $dm = $dmDb->fetchAuthToken($params);
         if ($dm == 'app-version-failed') {
-            return array('status' =>'fail','message'=>'Please update to latest version APP.');
+            return array('status' =>'version-fail','message'=>'App Version Failed.');
         }
         if(!$dm){
-            return array('status' =>'fail','message'=>'Participant authentication error.');
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
         }
         /* To check the form have group of array or single array */
         $returnResposne = array();
-        // Zend_Debug::dump($params);die;
+        Zend_Debug::dump($params);die;
         if(isset($params['syncType']) && $params['syncType'] == 'group'){
             foreach($params['data'] as $key=>$row){
                 $status  = $this->saveShipmentByType((array)$row,$dm);
