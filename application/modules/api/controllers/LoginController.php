@@ -16,6 +16,7 @@ class Api_LoginController extends Zend_Controller_Action
             $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
         }
     }
+
     public function changePasswordAction()
     {
         if ($this->getRequest()->isPost()) {
@@ -24,5 +25,13 @@ class Api_LoginController extends Zend_Controller_Action
             $result = $clientsServices->changePasswordDatamanagerAPI((array)$params);
             $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
         }
+    }
+
+    public function loginDetailsAction()
+    {
+        $params = $this->_getAllParams();
+        $clientsServices = new Application_Service_DataManagers();
+        $result = $clientsServices->getLoggedInDetails((array)$params);
+        $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
     }
 }

@@ -159,4 +159,9 @@ class Application_Service_DataManagers
 		$userDb = new Application_Model_DbTable_DataManagers();
 		return $userDb->changePasswordDatamanagerByAPI($params);
     }
+    
+    public function getLoggedInDetails($params){
+		$userDb = new Application_Model_DbTable_DataManagers();
+		return $userDb->fetchLoggedInDetails($params);
+    }
 }

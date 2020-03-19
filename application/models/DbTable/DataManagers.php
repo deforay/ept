@@ -376,6 +376,48 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
     }
 
+    public function fetchLoggedInDetails($params)
+    {
+        /* Check the app versions */
+        if (!isset($params['appVersion'])) {
+            return array('status' =>'version-fail','message'=>'App Version Failed.');
+        }
+        if (!isset($params['authToken'])) {
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        }
+        /* Check the login credential */
+        $result = $this->fetchRow("auth_token='" . $params['authToken'] . "'");
+
+        $aResult = $this->fetchAuthToken($params);
+        /* App version check */
+        if ($aResult == 'app-version-failed') {
+            return array('status' =>'version-fail','message'=>'App Version Failed.');
+        }
+        /* Validate new auth token and app-version */
+        if(!$aResult){
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        }
+
+        /* Create a new response to the API service */
+        $resultData = array(
+            'id'                            => $result['dm_id'],
+            'authToken'                     => $params['authToken'],
+            'viewOnlyAccess'                => (isset($aResult['view_only_access']) && $aResult['view_only_access'] != "") ? $aResult['view_only_access'] : 'no',
+            'qcAccess'                      => (isset($aResult['qc_access']) && $aResult['qc_access'] != "") ? $aResult['qc_access'] : 'no',
+            'enableAddingTestResponseDate'  => (isset($aResult['enable_adding_test_response_date']) && $aResult['enable_adding_test_response_date'] != "") ? $aResult['enable_adding_test_response_date'] : 'no',
+            'enableChoosingModeOfReceipt'   => (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] != "") ? $aResult['enable_choosing_mode_of_receipt'] : 'no',
+            'name'                          => $result['first_name'] . ' ' . $result['last_name'],
+            'phone'                         => $result['phone'],
+            'appVersion'                    => $aResult['app_version']
+        );
+        /* Finalizing the response data and return */
+        if(!isset($resultData) && trim($resultData['authToken']) == ''){
+            return array('status' =>'fail','message'=>'Something went wrong please try again later');
+        }else{
+            return array('status' =>'success','data'=>$resultData);
+        }
+    }
+
     public function fetchAuthToken($params)
     {
         /* Check the app versions */

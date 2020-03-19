@@ -1960,7 +1960,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }else{
                 $reportAccess['status']     = 'fail';
-                $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications';
+                $reportAccess['message']    = 'You are allowed to only view this form.';
             }
             $dts['access'] = $reportAccess;
             // Check the data manager having for access to the form
@@ -2255,7 +2255,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }else{
                 $reportAccess['status']     = 'fail';
-                $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications';
+                $reportAccess['message']    = 'You are allowed to only view this form.';
             }
             $vl['access'] = $reportAccess;
             // Heading 1 start
@@ -2433,7 +2433,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }else{
                 $reportAccess['status'] = 'fail';
-                $reportAccess['message'] = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications';
+                $reportAccess['message'] = 'You are allowed to only view this form.';
             }
             $eid['access'] = $reportAccess;
             // Heading 1 start
@@ -2473,7 +2473,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $detectionAssaySelect = array();
                 foreach ($detectionAssay as $dAssayId => $dAssayName){
                     $detectionAssaySelect[]= array(
-                        'value'     =>  $dAssayId,
+                        'value'     =>  (string)$dAssayId,
                         'show'      =>  $dAssayName,
                         'selected'   => ($shipment['attributes']['detection_assay'] == $dAssayId)?'selected':''
                     );
@@ -2756,7 +2756,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $allSamples =   $schemeService->getEidSamples($params['shipmentId'],$params['participantId']);
         }
         if(!$isEditable && $dm['view_only_access'] == 'yes'){
-            return array('status' =>'fail','message'=>'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.');
+            return array('status' =>'fail','message'=>'You are allowed to only view this form..');
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
