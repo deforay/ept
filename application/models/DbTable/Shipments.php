@@ -2486,13 +2486,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
                 $heading2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
                 $heading2['data']['extractionAssaySelect']      = $extractionAssaySelect;
-                $heading2['data']['extractionAssaySelected']    = (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] != "")?(int)$shipment['attributes']['extraction_assay']:'';
+                $heading2['data']['extractionAssaySelected']    = (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] != "")?(string)$shipment['attributes']['extraction_assay']:'';
                 $heading2['data']['detectionAssaySelect']       = $detectionAssaySelect;
-                $heading2['data']['detectionAssaySelected']     = (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] != "")?(int)$shipment['attributes']['extraction_assay']:'';
+                $heading2['data']['detectionAssaySelected']     = (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] != "")?(string)$shipment['attributes']['extraction_assay']:'';
                 $heading2['data']['extractionLotNumber']        = (isset($shipment['attributes']['extraction_assay_lot_no']) && $shipment['attributes']['extraction_assay_lot_no'] !="")?$shipment['attributes']['extraction_assay_lot_no']:'';
                 $heading2['data']['detectionLotNumber']         = (isset($shipment['attributes']['detection_assay_lot_no']) && $shipment['attributes']['detection_assay_lot_no'] !="")?$shipment['attributes']['detection_assay_lot_no']:'';
-                $heading2['data']['extractionExpirationDate']   = date('d-M-Y',strtotime($shipment['attributes']['extraction_assay_expiry_date']));
-                $heading2['data']['detectionExpirationDate']    = date('d-M-Y',strtotime($shipment['attributes']['detection_assay_expiry_date']));
+                $heading2['data']['extractionExpirationDate']   = (isset($shipment['attributes']['extraction_assay_expiry_date']) && $shipment['attributes']['extraction_assay_expiry_date'] != "")?date('d-M-Y',strtotime($shipment['attributes']['extraction_assay_expiry_date'])):'';
+                $heading2['data']['detectionExpirationDate']    = (isset($shipment['attributes']['detection_assay_expiry_date']) && $shipment['attributes']['detection_assay_expiry_date'] !='')?date('d-M-Y',strtotime($shipment['attributes']['detection_assay_expiry_date'])):'';
                 
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
                     if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != ''){
