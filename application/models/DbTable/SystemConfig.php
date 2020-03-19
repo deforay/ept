@@ -10,7 +10,7 @@ class Application_Model_DbTable_SystemConfig extends Zend_Db_Table_Abstract
     {
         return $this->getAdapter()->fetchRow($this->select()
             ->from($this->_name, array('value'))
-            ->where("value='" . $version . "'"));       
+            ->where("value='" . $version . "' AND name='app_version'"));    
     }
 }
 

@@ -41,7 +41,7 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
     }
 
     public function updateResultsByAPI($params,$dm){
-        $sampleIds = $params['eidData']->Heading3->data->sampleId;
+        $sampleIds = $params['eidData']->Heading3->data->samples->id;
         foreach($sampleIds as $key => $sampleId){
             $res = $this->fetchRow("shipment_map_id = ".$params['mapId'] . " and sample_id = ".$sampleId );
 
@@ -49,17 +49,17 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
                 $this->insert(array(
                     'shipment_map_id'   => $params['mapId'],
                     'sample_id'         => $sampleId,
-                    'reported_result'   => $params['eidData']->Heading3->data->yourResults[$key],
-                    'hiv_ct_od'         => $params['eidData']->Heading3->data->hivCtOd[$key],
-                    'ic_qs'             => $params['eidData']->Heading3->data->IcQsValues[$key],
+                    'reported_result'   => $params['eidData']->Heading3->data->samples->yourResults[$key],
+                    'hiv_ct_od'         => $params['eidData']->Heading3->data->samples->hivCtOd[$key],
+                    'ic_qs'             => $params['eidData']->Heading3->data->samples->IcQsValues[$key],
                     'created_by'        => $dm['dm_id'],
                     'created_on'        => ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')
                 ));
             }else{
                 $this->update(array(
-                    'reported_result'   => $params['eidData']->Heading3->data->yourResults[$key],
-                    'hiv_ct_od'         => $params['eidData']->Heading3->data->hivCtOd[$key],
-                    'ic_qs'             => $params['eidData']->Heading3->data->IcQsValues[$key],
+                    'reported_result'   => $params['eidData']->Heading3->data->samples->yourResults[$key],
+                    'hiv_ct_od'         => $params['eidData']->Heading3->data->samples->hivCtOd[$key],
+                    'ic_qs'             => $params['eidData']->Heading3->data->samples->IcQsValues[$key],
                     'updated_by'        => $dm['dm_id'],
                     'updated_on'        => ($params['updatedOn'] != "")?date('Y-m-d H:i:s',strtotime($params['updatedOn'])):new Zend_Db_Expr('now()')
                 ), "shipment_map_id = ".$params['mapId'] . " and sample_id = ".$sampleId );
