@@ -211,8 +211,6 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $data['evaluation_status']  = $row['evaluation_status'];
         $data['updated_by_user']    = $dm['dm_id'];
         if($params['schemeType'] == 'dts'){
-            $data['custom_field_1'] = $params['dtsData']->customFields->data->customField1;
-            $data['custom_field_2'] = $params['dtsData']->customFields->data->customField2;
             $lastDate               = $params['dtsData']->Heading2->data->resultDueDate;
         }
         if($params['schemeType'] == 'vl'){

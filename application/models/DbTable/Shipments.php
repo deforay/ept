@@ -2010,7 +2010,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'resultDueDate'             => date('d-M-Y',strtotime($shipment['lastdate_response'])),
                     'testReceiptDate'           => (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'',
                     'sampleRehydrationDate'     => (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'',
-                    'testingDate'               => (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_test_date'])):'',
+                    'testingDate'               => (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_date'])):'',
                     'algorithmUsedSelect'       => $algorithmUsedSelect,
                     'algorithmUsedSelected'     => (isset($shipment['attributes']["algorithm"]) && $shipment['attributes']["algorithm"] != '')?$shipment['attributes']["algorithm"]:'',
                 );
@@ -2058,8 +2058,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"])?'selected':''
                     );
-                    if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
-                        $testKitArray['kitSelected'][] = array(
+                    if(isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"]){
+                        $testKitArray['kitSelected']['Test-1'] = array(
                             'kitName'   => $testkit['TESTKITNAME'],
                             'kitValue'  => (string)$testkit['TESTKITNAMEID']
                         );
@@ -2073,7 +2073,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"])?'selected':''
                     );
                     if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
-                        $testKitArray['kitSelected'][] = array(
+                        $testKitArray['kitSelected']['Test-2'] = array(
                             'kitName'   => $testkit['TESTKITNAME'],
                             'kitValue'  => (string)$testkit['TESTKITNAMEID']
                         );
@@ -2086,8 +2086,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"])?'selected':''
                     );
-                    if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
-                        $testKitArray['kitSelected'][] = array(
+                    if(isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]){
+                        $testKitArray['kitSelected']['Test-3'] = array(
                             'kitName'   => $testkit['TESTKITNAME'],
                             'kitValue'  => (string)$testkit['TESTKITNAMEID']
                         );
@@ -2095,6 +2095,24 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }else{
                     $testKitArray['kitName']['Test-3']['status']= false;
                 }
+            }
+            if($allSamples[0]["test_kit_name_1"] == ''){
+                $testKitArray['kitSelected']['Test-1'] = array(
+                    'kitName'   => '',
+                    'kitValue'  => ''
+                );
+            }
+            if($allSamples[0]["test_kit_name_2"] == ''){
+                $testKitArray['kitSelected']['Test-2'] = array(
+                    'kitName'   => '',
+                    'kitValue'  => ''
+                );
+            }
+            if($allSamples[0]["test_kit_name_3"] == ''){
+                $testKitArray['kitSelected']['Test-3'] = array(
+                    'kitName'   => '',
+                    'kitValue'  => ''
+                );
             }
             $testKitArray['kitText'] = array('Test-1','Test-2','Test-3');
             if(isset($allSamples) && count($allSamples) > 0){
@@ -2119,6 +2137,23 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }else{
                     $testKitArray['lotNo']['lot3']['status']    = false;
                 }
+                $testKitArray['kitName']['Test-1']['data'][] = array(
+                    'value'         => 'others',
+                    'show'          => 'Others',
+                    'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && 'others' == $allSamples[0]["test_kit_name_1"])?'selected':''
+                );
+                $testKitArray['kitName']['Test-2']['data'][] = array(
+                    'value'         => 'others',
+                    'show'          => 'Others',
+                    'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && 'others' == $allSamples[0]["test_kit_name_2"])?'selected':''
+                );
+                if(!$testThreeOptional){
+                    $testKitArray['kitName']['Test-3']['data'][] = array(
+                        'value'         => 'others',
+                        'show'          => 'Others',
+                        'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && 'others' == $allSamples[0]["test_kit_name_3"])?'selected':''
+                    );
+                }
                 $dts['Heading3']['data']    = $testKitArray;
             }else{
                 $dts['Heading3']['status']  = false;
@@ -2128,8 +2163,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $allSamplesResult = array();
             foreach ($allSamples as $sample) {
                 $sample1Select = $sample2Select = $sample3Select = $sampleFinalSelect ="";
-                $allSamplesResult['samples']['label'][] = $sample['sample_label'];
-                $allSamplesResult['samples']['id'][]    = $sample['sample_id'];
+                $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
+                $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
+                $allSamplesResult['samples']['result1'][]       = (isset($sample['test_result_1']) && $sample['test_result_1'] != '')?$sample['test_result_1']:'';
+                $allSamplesResult['samples']['result2'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '')?$sample['test_result_2']:'';
+                $allSamplesResult['samples']['result3'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '')?$sample['test_result_3']:'';
+                $allSamplesResult['samples']['finalResult'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
                 foreach(range(1,3) as $row){
                     $possibleResults = array();
                     if($row == 3){
@@ -2209,7 +2248,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
             }
             $reviewArray['supervisorReview']        = $revieArr;
-            $reviewArray['supervisorReviewSelected']= (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'yes':'';
+            $reviewArray['supervisorReviewSelected']= (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '')?$shipment['supervisor_approval']:'';
             $reviewArray['approvalLabel']           = 'Supervisor Name';
             $reviewArray['approvalInputText']       = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
@@ -2398,13 +2437,30 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
             }
             $reviewArray['supervisorReview']            = $revieArr;
-            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?'yes':"";
+            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '')?$shipment['supervisor_approval']:'';
             $reviewArray['approvalLabel']               = 'Supervisor Name';
             $reviewArray['approvalInputText']           = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
             $vl['Heading4']['status']                   = true;
             $vl['Heading4']['data']                     = $reviewArray;
             // Heading 4 End
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+            $customField1 = $globalConfigDb->getValue('custom_field_1');$customField2 = $globalConfigDb->getValue('custom_field_2');
+            $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+            if(isset($haveCustom) && $haveCustom != 'no'){
+                $vl['customFields']['status'] = true;
+                if (isset($customField1) && trim($customField1) != "") {
+                    $vl['customFields']['data']['customField1Text']= $customField1;
+                    $vl['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "")?$shipment['custom_field_1']:'';
+                }
+
+                if (isset($customField2) && trim($customField2) != "") {
+                    $vl['customFields']['data']['customField2Text']= $customField2;
+                    $vl['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "")?$shipment['custom_field_2']:'';
+                }
+            }else{
+                $vl['customFields']['status'] = false;
+            }
             return $vl;
         }
         if($params['scheme_type'] == 'eid'){
@@ -2534,6 +2590,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
                 $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
                 $allSamplesResult['samples']['mandatory'][]     = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
+                $allSamplesResult['samples']['yourResults'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != "")?$sample['reported_result']:'';
+                $allSamplesResult['samples']['hivCtOd'][]       = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '')?$sample['hiv_ct_od']:'';
+                $allSamplesResult['samples']['IcQsValues'][]    = (isset($sample['ic_qs']) && $sample['ic_qs'] != '')?$sample['ic_qs']:'';
                 $possibleEIDResults = array();
                 foreach ($eidPossibleResults as $pr) {
                     if ($pr['scheme_sub_group'] == 'EID_FINAL') {
@@ -2542,9 +2601,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
 
                 $allSamplesResult['resultsText'] = array('Control/Sample','Your-Results','HIV-CT/OD','IC/QS-Values');
-                $allSamplesResult['sampleSelected'][$sample['sample_label']]['Your-Results']    = (isset($sample['reported_result']) && $sample['reported_result'] != "")?$sample['reported_result']:'';
-                $allSamplesResult['sampleSelected'][$sample['sample_label']]['HIV-CT/OD']       = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '')?$sample['hiv_ct_od']:'';
-                $allSamplesResult['sampleSelected'][$sample['sample_label']]['IC/QS-Values']    = (isset($sample['ic_qs']) && $sample['ic_qs'] != '')?$sample['ic_qs']:'';
+                $allSamplesResult['sampleSelected'][$sample['sample_label']]['Your-Results']   = (isset($sample['reported_result']) && $sample['reported_result'] != "")?$sample['reported_result']:'';
+                $allSamplesResult['sampleSelected'][$sample['sample_label']]['HIV-CT/OD']      = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '')?$sample['hiv_ct_od']:'';
+                $allSamplesResult['sampleSelected'][$sample['sample_label']]['IC/QS-Values']   = (isset($sample['ic_qs']) && $sample['ic_qs'] != '')?$sample['ic_qs']:'';
                 $allSamplesResult['samplesList'][$sample['sample_label']]['Your-Results']      = $possibleEIDResults;
                 $allSamplesResult['samplesList'][$sample['sample_label']]['HIV-CT/OD']         = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '')?$sample['hiv_ct_od']:'';
                 $allSamplesResult['samplesList'][$sample['sample_label']]['IC/QS-Values']      = (isset($sample['ic_qs']) && $sample['ic_qs'] != '')?$sample['ic_qs']:'';
@@ -2584,12 +2643,30 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
             }
             $reviewArray['supervisorReview']            = $revieArr;
-            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == "yes")?"yes":"";
+            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '')?$shipment['supervisor_approval']:'';
             $reviewArray['approvalLabel']               = 'Supervisor Name';
             $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
             $eid['Heading4']['status']                  = true;
             $eid['Heading4']['data']                    = $reviewArray;
+            // Heading 4 end
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+            $customField1 = $globalConfigDb->getValue('custom_field_1');$customField2 = $globalConfigDb->getValue('custom_field_2');
+            $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+            if(isset($haveCustom) && $haveCustom != 'no'){
+                $eid['customFields']['status'] = true;
+                if (isset($customField1) && trim($customField1) != "") {
+                    $eid['customFields']['data']['customField1Text']= $customField1;
+                    $eid['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "")?$shipment['custom_field_1']:'';
+                }
+
+                if (isset($customField2) && trim($customField2) != "") {
+                    $eid['customFields']['data']['customField2Text']= $customField2;
+                    $eid['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "")?$shipment['custom_field_2']:'';
+                }
+            }else{
+                $eid['customFields']['status'] = false;
+            }
             return $eid;
         }
     }
@@ -2812,6 +2889,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $data['qc_created_on']  = ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()');
                 }
                 // Zend_Debug::dump($data);die;
+
+                $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+                $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+                // $haveCustom;
+                if(isset($haveCustom) && $haveCustom != 'no'){
+                    if (isset($params['vlData']->customFields->data->customFields->data->customField1Val) && trim($params['dtsData']->customFields->data->customFields->data->customField1Val) != "") {
+                        $data['custom_field_1'] = $params['vlData']->customFields->data->customField1Val;
+                    }
+    
+                    if (isset($params['vlData']->customFields->data->customFields->data->customField2Val) && trim($params['vlData']->customFields->data->customFields->data->customField2Val) != "") {
+                        $data['custom_field_2'] = $params['vlData']->customFields->data->customFields->data->customField2Val;
+                    }
+                }
+
                 $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data,$dm,$params);
     
                 $eidResponseDb = new Application_Model_DbTable_ResponseVl();
@@ -2825,48 +2916,49 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
             if($params['schemeType'] == 'dts'){
+                // Zend_Debug::dump($params);die;
                 $attributes["sample_rehydration_date"] = date('Y-m-d',strtotime($params['dtsData']->Heading2->data->sampleRehydrationDate));
-                $attributes["algorithm"] = $params['dtsData']->Heading2->data->algorithmused;
+                $attributes["algorithm"] = $params['dtsData']->Heading2->data->algorithmUsedSelected;
                 $attributes = json_encode($attributes);
 
                 $data = array(
-                    "shipment_receipt_date"     => date('Y-m-d',strtotime($params['dtsData']->Heading2->data->testReceiptDate)),
+                    "shipment_receipt_date"     => date('Y-m-d',strtotime($params['dtsData']->Heading2->data->shipmentDate)),
                     "shipment_test_date"        => date('Y-m-d',strtotime($params['dtsData']->Heading2->data->testingDate)),
                     "shipment_test_report_date" => (isset($params['dtsData']->Heading2->data->testReceiptDate) && trim($params['dtsData']->Heading2->data->testReceiptDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Heading2->data->testReceiptDate)):date('Y-m-d'),
                     // "lastdate_response"         => (isset($params['dtsData']->Heading2->data->respDate) && trim($params['dtsData']->Heading2->data->respDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Heading2->data->respDate)):date('Y-m-d'),
                     "attributes"                => $attributes,
-                    "supervisor_approval"       => $params['dtsData']->Heading5->data->supReview,
-                    "participant_supervisor"    => $params['dtsData']->Heading5->data->supervisorName,
+                    "supervisor_approval"       => $params['dtsData']->Heading5->data->supervisorReviewSelected,
+                    "participant_supervisor"    => $params['dtsData']->Heading5->data->approvalInputText,
                     "user_comment"              => $params['dtsData']->Heading5->data->comments,
                     "updated_by_user"           => $dm['dm_id'],
-                    "mode_id"                   => $params['dtsData']->Heading2->data->receiptmode,
+                    "mode_id"                   => $params['dtsData']->Heading2->data->modeOfReceiptSelected,
                     "updated_on_user"           => ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')
                 );
 
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
-                    $data['qc_done'] = $params['dtsData']->Heading2->data->qcDone;
+                    $data['qc_done'] = $params['dtsData']->Heading2->data->qcData->qcRadioSelected;
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                        $data['qc_date'] = date('Y-m-d',strtotime($params['dtsData']->Heading2->data->qcDate));
-                        $data['qc_done_by'] = trim($params['dtsData']->Heading2->data->qcDoneBy);
+                        $data['qc_date'] = date('Y-m-d',strtotime($params['dtsData']->Heading2->data->qcData->qcDate));
+                        $data['qc_done_by'] = trim($params['dtsData']->Heading2->data->qcData->qcDoneBy);
                         $data['qc_created_on'] = ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()');
                     } else {
-                        $data['qc_date'] = date('Y-m-d',strtotime($params['dtsData']->Heading2->data->qcDate));
-                        $data['qc_done_by'] = trim($params['dtsData']->Heading2->data->qcDoneBy);
-                        $data['qc_created_on'] = ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()');
+                        $data['qc_date'] = '';
+                        $data['qc_done_by'] = '';
+                        $data['qc_created_on'] = '';
                     }
                 }
                 // Zend_Debug::dump($data);die;
 
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
-                // return $haveCustom;
+                // $haveCustom;
                 if(isset($haveCustom) && $haveCustom != 'no'){
-                    if (isset($params['dtsData']->customFields->data->customField1) && trim($params['dtsData']->customFields->data->customField1) != "") {
-                        $data['custom_field_1'] = $params['dtsData']->customFields->data->customField1;
+                    if (isset($params['dtsData']->customFields->data->customFields->data->customField1Val) && trim($params['dtsData']->customFields->data->customFields->data->customField1Val) != "") {
+                        $data['custom_field_1'] = $params['dtsData']->customFields->data->customField1Val;
                     }
     
-                    if (isset($params['dtsData']->customFields->data->customField2) && trim($params['dtsData']->customFields->data->customField2) != "") {
-                        $data['custom_field_2'] = $params['dtsData']->customFields->data->customField2;
+                    if (isset($params['dtsData']->customFields->data->customFields->data->customField2Val) && trim($params['dtsData']->customFields->data->customFields->data->customField2Val) != "") {
+                        $data['custom_field_2'] = $params['dtsData']->customFields->data->customFields->data->customField2Val;
                     }
                 }
 
@@ -2922,6 +3014,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 }
                 // Zend_Debug::dump($data);die;
+                $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+                $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+                // $haveCustom;
+                if(isset($haveCustom) && $haveCustom != 'no'){
+                    if (isset($params['eidData']->customFields->data->customFields->data->customField1Val) && trim($params['eidData']->customFields->data->customFields->data->customField1Val) != "") {
+                        $data['custom_field_1'] = $params['eidData']->customFields->data->customField1Val;
+                    }
+    
+                    if (isset($params['eidData']->customFields->data->customFields->data->customField2Val) && trim($params['eidData']->customFields->data->customFields->data->customField2Val) != "") {
+                        $data['custom_field_2'] = $params['eidData']->customFields->data->customFields->data->customField2Val;
+                    }
+                }
 
                 $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data,$dm,$params);
 
