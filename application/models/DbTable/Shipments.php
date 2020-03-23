@@ -2894,12 +2894,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
                 // $haveCustom;
                 if(isset($haveCustom) && $haveCustom != 'no'){
-                    if (isset($params['vlData']->customFields->data->customFields->data->customField1Val) && trim($params['dtsData']->customFields->data->customFields->data->customField1Val) != "") {
+                    if (isset($params['vlData']->customFields->data->customField1Val) && trim($params['vlData']->customFields->data->customField1Val) != "") {
                         $data['custom_field_1'] = $params['vlData']->customFields->data->customField1Val;
                     }
     
-                    if (isset($params['vlData']->customFields->data->customFields->data->customField2Val) && trim($params['vlData']->customFields->data->customFields->data->customField2Val) != "") {
-                        $data['custom_field_2'] = $params['vlData']->customFields->data->customFields->data->customField2Val;
+                    if (isset($params['vlData']->customFields->data->customField2Val) && trim($params['vlData']->customFields->data->customField2Val) != "") {
+                        $data['custom_field_2'] = $params['vlData']->customFields->data->customField2Val;
                     }
                 }
 
@@ -2953,12 +2953,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
                 // $haveCustom;
                 if(isset($haveCustom) && $haveCustom != 'no'){
-                    if (isset($params['dtsData']->customFields->data->customFields->data->customField1Val) && trim($params['dtsData']->customFields->data->customFields->data->customField1Val) != "") {
+                    if (isset($params['dtsData']->customFields->data->customField1Val) && trim($params['dtsData']->customFields->data->customField1Val) != "") {
                         $data['custom_field_1'] = $params['dtsData']->customFields->data->customField1Val;
                     }
     
-                    if (isset($params['dtsData']->customFields->data->customFields->data->customField2Val) && trim($params['dtsData']->customFields->data->customFields->data->customField2Val) != "") {
-                        $data['custom_field_2'] = $params['dtsData']->customFields->data->customFields->data->customField2Val;
+                    if (isset($params['dtsData']->customFields->data->customField2Val) && trim($params['dtsData']->customFields->data->customField2Val) != "") {
+                        $data['custom_field_2'] = $params['dtsData']->customFields->data->customField2Val;
                     }
                 }
 
@@ -3018,12 +3018,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
                 // $haveCustom;
                 if(isset($haveCustom) && $haveCustom != 'no'){
-                    if (isset($params['eidData']->customFields->data->customFields->data->customField1Val) && trim($params['eidData']->customFields->data->customFields->data->customField1Val) != "") {
+                    if (isset($params['eidData']->customFields->data->customField1Val) && trim($params['eidData']->customFields->data->customField1Val) != "") {
                         $data['custom_field_1'] = $params['eidData']->customFields->data->customField1Val;
                     }
     
-                    if (isset($params['eidData']->customFields->data->customFields->data->customField2Val) && trim($params['eidData']->customFields->data->customFields->data->customField2Val) != "") {
-                        $data['custom_field_2'] = $params['eidData']->customFields->data->customFields->data->customField2Val;
+                    if (isset($params['eidData']->customFields->data->customField2Val) && trim($params['eidData']->customFields->data->customField2Val) != "") {
+                        $data['custom_field_2'] = $params['eidData']->customFields->data->customField2Val;
                     }
                 }
 
