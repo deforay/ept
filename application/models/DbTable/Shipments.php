@@ -2167,8 +2167,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
                 $allSamplesResult['samples']['result1'][]       = (isset($sample['test_result_1']) && $sample['test_result_1'] != '')?$sample['test_result_1']:'';
                 $allSamplesResult['samples']['result2'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '')?$sample['test_result_2']:'';
-                $allSamplesResult['samples']['result3'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '')?$sample['test_result_3']:'';
+                if(!$testThreeOptional){
+                    $allSamplesResult['samples']['result3'][]   = (isset($sample['test_result_3']) && $sample['test_result_3'] != '')?$sample['test_result_3']:'';
+                }
                 $allSamplesResult['samples']['finalResult'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
+                $allSamplesResult['samples']['mandatory'][]     = (string)(isset($sample['mandatory']) && $sample['mandatory'] == 1)?'true':'false';
                 foreach(range(1,3) as $row){
                     $possibleResults = array();
                     if($row == 3){
@@ -2183,15 +2186,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         }
                         if(!$testThreeOptional){
                             $allSamplesResult[$sample['sample_label']]['Result-'.$row]['status']= true;
+                            $allSamplesResult[$sample['sample_label']]['Result-'.$row]['data']      = $possibleResults;
+                            if(isset($sample['test_result_3']) && $sample['test_result_3'] != ""){
+                                $allSamplesResult[$sample['sample_label']]['Result-'.$row]['value'] = $sample['test_result_3'];
+                            }else{
+                                $allSamplesResult[$sample['sample_label']]['Result-'.$row]['value'] = "";
+                            }
                         }else{
                             $allSamplesResult[$sample['sample_label']]['Result-'.$row]['status']= false;
-                        }
-                        $allSamplesResult[$sample['sample_label']]['Result-'.$row]['data']      = $possibleResults;
-
-                        if(isset($sample['test_result_3']) && $sample['test_result_3'] != ""){
-                            $allSamplesResult[$sample['sample_label']]['Result-'.$row]['value'] = $sample['test_result_3'];
-                        }else{
-                            $allSamplesResult[$sample['sample_label']]['Result-'.$row]['value'] = "";
                         }
                     }else{
                         foreach ($dtsPossibleResults as $pr) {
@@ -2226,11 +2228,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             $sampleFinalSelect                                          = $sample['reported_result'];
                         }
                     }
-                    
                 }
-
                 $allSamplesResult['sampleSelect'][$sample['sample_label']][]=array($sample1Select,$sample2Select,$sample3Select,$sampleFinalSelect);
-                $allSamplesResult['resultsText'] = array('Result-1','Result-2','Result-3','Final-Result');
+                if(!$testThreeOptional){
+                    $allSamplesResult['resultsText'] = array('Result-1','Result-2','Result-3','Final-Result');
+                }else{
+                    $allSamplesResult['resultsText'] = array('Result-1','Result-2','Final-Result');
+                }
                 $allSamplesResult[$sample['sample_label']]['Final-Result']['status']    = true;
                 $allSamplesResult[$sample['sample_label']]['Final-Result']['data']      = $possibleFinalResults;
                 $allSamplesResult[$sample['sample_label']]['Final-Result']['value']     = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
