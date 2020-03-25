@@ -2093,6 +2093,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         );
                     }
                 }else{
+                    if(isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]){
+                        $testKitArray['kitSelected']['Test-3'] = array(
+                            'kitName'   => $testkit['TESTKITNAME'],
+                            'kitValue'  => (string)$testkit['TESTKITNAMEID']
+                        );
+                    } 
                     $testKitArray['kitName']['Test-3']['status']= false;
                 }
             }
@@ -2117,41 +2123,27 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $testKitArray['kitText'] = array('Test-1','Test-2','Test-3');
             if(isset($allSamples) && count($allSamples) > 0){
                 $dts['Heading3']['status'] = true;
-                $testKitArray['lotNo']['lot1']['status']        = true;
                 $testKitArray['lotNo']['lot1']                  = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "")?$allSamples[0]["lot_no_1"]:'';
-                $testKitArray['lotNo']['lot2']['status']        = true;
                 $testKitArray['lotNo']['lot2']                  = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "")?$allSamples[0]["lot_no_2"]:'';
-                if(!$testThreeOptional){
-                    $testKitArray['lotNo']['lot3']['status']    = true;
-                    $testKitArray['lotNo']['lot3']              = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "")?$allSamples[0]["lot_no_3"]:'';
-                }else{
-                    $testKitArray['lotNo']['lot3']['status']    = false;
-                }
-                $testKitArray['expDate']['exp1']['status']      = true;
-                $testKitArray['expDate']['exp1']                = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "")?date('d-M-Y',strtotime($allSamples[0]["exp_date_1"])):'';
-                $testKitArray['expDate']['exp2']['status']      = true;
-                $testKitArray['expDate']['exp2']                = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "")?date('d-M-Y',strtotime($allSamples[0]["exp_date_2"])):'';
-                if(!$testThreeOptional){
-                    $testKitArray['expDate']['exp3']['status']  = true;
-                    $testKitArray['expDate']['exp3']            = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "")?date('d-M-Y',strtotime($allSamples[0]["exp_date_3"])):'';
-                }else{
-                    $testKitArray['lotNo']['lot3']['status']    = false;
-                }
+                $testKitArray['lotNo']['lot3']              = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "")?$allSamples[0]["lot_no_3"]:'';
+                $testKitArray['expDate']['exp1']                = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_1"])):'';
+                $testKitArray['expDate']['exp2']                = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_2"])):'';
+                $testKitArray['expDate']['exp3']            = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_3"])):'';
                 $testKitArray['kitName']['Test-1']['data'][] = array(
-                    'value'         => 'others',
-                    'show'          => 'Others',
-                    'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && 'others' == $allSamples[0]["test_kit_name_1"])?'selected':''
+                    'value'         => 'other',
+                    'show'          => 'Other',
+                    'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && 'other' == $allSamples[0]["test_kit_name_1"])?'selected':''
                 );
                 $testKitArray['kitName']['Test-2']['data'][] = array(
-                    'value'         => 'others',
-                    'show'          => 'Others',
-                    'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && 'others' == $allSamples[0]["test_kit_name_2"])?'selected':''
+                    'value'         => 'other',
+                    'show'          => 'Other',
+                    'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && 'other' == $allSamples[0]["test_kit_name_2"])?'selected':''
                 );
                 if(!$testThreeOptional){
                     $testKitArray['kitName']['Test-3']['data'][] = array(
-                        'value'         => 'others',
-                        'show'          => 'Others',
-                        'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && 'others' == $allSamples[0]["test_kit_name_3"])?'selected':''
+                        'value'         => 'other',
+                        'show'          => 'Other',
+                        'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && 'other' == $allSamples[0]["test_kit_name_3"])?'selected':''
                     );
                 }
                 $dts['Heading3']['data']    = $testKitArray;
@@ -2171,7 +2163,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $allSamplesResult['samples']['result3'][]   = (isset($sample['test_result_3']) && $sample['test_result_3'] != '')?$sample['test_result_3']:'';
                 }
                 $allSamplesResult['samples']['finalResult'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
-                $allSamplesResult['samples']['mandatory'][]     = (string)(isset($sample['mandatory']) && $sample['mandatory'] == 1)?'true':'false';
+                $allSamplesResult['samples']['mandatory'][]     = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
                 foreach(range(1,3) as $row){
                     $possibleResults = array();
                     if($row == 3){
@@ -2697,7 +2689,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         /* Get individual reports using data manager */
         $resultData = array();
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id'))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id','s.status'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
@@ -2709,7 +2701,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         /* Started the API service for individual report */
         $data = array();$general = new Pt_Commons_General();
+        $token = $dmDb->fetchAuthTokenByToken($params);
         foreach ($resultData as $aRow) {
+            $downloadReports = '';
+            if ($aRow['status'] == 'finalized') {
+                $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-" . $aRow['map_id'] . ".pdf");
+                if (!file_exists($invididualFilePath)) {
+                    // Search this file name using the map id
+                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $aRow['map_id'] . ".pdf");
+                    $invididualFilePath = isset($files[0]) ? $files[0] : '';
+                }
+                if (file_exists($invididualFilePath) && trim($token['download_link']) != '') {
+                    $downloadReports .= '/api/participant/download/' .$token['download_link'].'/'. base64_encode($aRow['map_id']);
+                }
+            }
             $data[] = array(
                 'schemeType'        => strtoupper($aRow['scheme_type']),
                 'shipmentCode'      => $aRow['shipment_code'],
@@ -2717,7 +2722,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'uniqueIdentifier'  => $aRow['unique_identifier'],
                 'name'              => $aRow['first_name'] . " " . $aRow['last_name'],
                 'responseDate'      => $general->humanDateFormat($aRow['RESPONSEDATE']),
-                'downloadLink'      => '/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . ''
+                // 'mapId'             => $aRow['map_id'],
+                'downloadLink'      => $downloadReports
             );
         }
         if (isset($data) && count($data) > 0) {
@@ -2749,24 +2755,32 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* Get summary reports using data manager */
         $resultData = array();
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
-        ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
-        ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
-        ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-        ->where("pmm.dm_id=?", $aResult['dm_id'])
-        ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
+            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+            ->where("pmm.dm_id=?", $aResult['dm_id'])
+            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
         $resultData = $this->getAdapter()->fetchAll($sQuery);
         if (!isset($resultData) && count($resultData) == 0) {
             return array('status' =>'fail','message'=>'Report not ready.');
         }
         /* Started the API service for summary report */
-        $general = new Pt_Commons_General();
-        $data = array();
+        $data = array();$general = new Pt_Commons_General();
+        $token = $dmDb->fetchAuthTokenByToken($params);
         foreach ($resultData as $aRow) {
+            $downloadReports = '';
+            if ($aRow['status'] == 'finalized') {
+                $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
+                if (file_exists($summaryFilePath) && trim($token['download_link']) != '') {
+                    $downloadReports .= '/api/participant/download-summary/' .$token['download_link'].'/'. base64_encode($aRow['map_id']);
+                }
+            }
             $data[] = array(
                 'schemeType'    => strtoupper($aRow['scheme_type']),
                 'shipmentCode'  => $aRow['shipment_code'],
                 'shipmentDate'  => $general->humanDateFormat($aRow['shipment_date']),
-                'downloadLink'  => '/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . ''
+                // 'mapId'             => $aRow['map_id'],
+                'downloadLink'  => $downloadReports
             );
         }
         if (isset($data) && count($data) > 0) {
