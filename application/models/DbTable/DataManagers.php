@@ -470,6 +470,24 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         return array('status' =>'success','message'=>'Password Updated Successfully');
     }
+    
+    public function setForgetPasswordDatamanagerAPI($params){
+        /* Check the app versions */
+        if (!isset($params['appVersion'])) {
+            return array('status' =>'version-fail','message'=>'App Version Failed.');
+        }
+        /* App version check */
+        $aResult = $this->fetchRow("primary_email='" . $params['email'] . "'");
+        if(!$aResult){
+            return array('status' =>'fail','message'=>'You have entered email not found');
+        }
+        /* Update the new password to the server */
+        $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => $aResult['dm_id']));
+        if(!$update){
+            return array('status' =>'fail','message'=>'You have entered old password');
+        }
+        return array('status' =>'success','message'=>'Password Updated Successfully');
+    }
 
     public function fetchAuthTokenByToken($params){
         return $this->fetchRow("auth_token='" . $params['authToken'] . "'");

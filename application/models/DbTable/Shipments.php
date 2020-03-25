@@ -2008,8 +2008,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2 = array(
                     'shipmentDate'              => date('d-M-Y',strtotime($shipment['shipment_date'])),
                     'resultDueDate'             => date('d-M-Y',strtotime($shipment['lastdate_response'])),
-                    'testReceiptDate'           => (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'',
-                    'sampleRehydrationDate'     => (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'',
+                    'testReceiptDate'           => (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'',
+                    'sampleRehydrationDate'     => (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'',
                     'testingDate'               => (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_date'])):'',
                     'algorithmUsedSelect'       => $algorithmUsedSelect,
                     'algorithmUsedSelected'     => (isset($shipment['attributes']["algorithm"]) && $shipment['attributes']["algorithm"] != '')?$shipment['attributes']["algorithm"]:'',
@@ -2035,7 +2035,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $qc['qcRadio']          = $qcResponseArr;
                 $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
-                $qc['qcDate']   = (isset($shipment['qc_date'])&&$shipment['qc_date']!='')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
+                $qc['qcDate']   = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
                 $qc['qcDoneBy'] = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
                 if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
                     $qc['status']                       = false;
@@ -2125,11 +2125,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $dts['Heading3']['status'] = true;
                 $testKitArray['lotNo']['lot1']                  = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "")?$allSamples[0]["lot_no_1"]:'';
                 $testKitArray['lotNo']['lot2']                  = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "")?$allSamples[0]["lot_no_2"]:'';
-                $testKitArray['lotNo']['lot3']              = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "")?$allSamples[0]["lot_no_3"]:'';
+                $testKitArray['lotNo']['lot3']                  = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "")?$allSamples[0]["lot_no_3"]:'';
                 $testKitArray['expDate']['exp1']                = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_1"])):'';
                 $testKitArray['expDate']['exp2']                = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_2"])):'';
-                $testKitArray['expDate']['exp3']            = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_3"])):'';
-                $testKitArray['kitName']['Test-1']['data'][] = array(
+                $testKitArray['expDate']['exp3']                = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_3"])):'';
+                $testKitArray['kitName']['Test-1']['data'][]    = array(
                     'value'         => 'other',
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && 'other' == $allSamples[0]["test_kit_name_1"])?'selected':''
@@ -2352,7 +2352,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }else{
                     $heading2['data']['responseDate']               = "";
                     $heading2['data']['modeOfReceiptSelect']        = "";
-                    $heading2['data']['modeOfReceiptSelected']  = "";
+                    $heading2['data']['modeOfReceiptSelected']      = "";
                 }
             }
 
@@ -2362,7 +2362,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $qc['qcRadio']          = $qcResponseArr;
             $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
-            $qc['qcDate']           = (isset($shipment['qc_date'])&&$shipment['qc_date']!='')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
+            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date']!='' && $shipment['qc_date'] !='0000:00:00')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
             $qc['qcDoneBy']         = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
             if($globalQcAccess != 'yes' && $dm['qc_access'] != 'yes'){
                 $qc['status'] = false;
@@ -2424,7 +2424,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading3['data']['no']['tableRowTxt']['mandatory'][]   = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
                 $heading3['data']['no']['vlResult'][]                   = $vlResult;
                 $heading3['data']['no']['tndReferenceRadio'][]          = $vlResponseArr;
-                $heading3['data']['no']['tndReferenceRadioSelected'][]  = (isset($sample['is_tnd']) && ($sample['is_tnd'] == '' && $row == 'no'))?'yes':'no';
+                $heading3['data']['no']['tndReferenceRadioSelected'][]  = (isset($sample['is_tnd']) && ($sample['is_tnd'] != '' && $sample['is_tnd'] == 'yes'))?'yes':'no';
             }
             $vl['Heading3'] = $heading3;
             // Heading 3 end // Heading 4 Start
@@ -2534,8 +2534,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2['status']    = true;
                 $heading2['data']['shipmentDate']               = date('d-M-Y',strtotime($shipment['shipment_date']));
                 $heading2['data']['resultDueDate']              = date('d-M-Y',strtotime($shipment['lastdate_response']));
-                $heading2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
-                $heading2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
+                $heading2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] !='0000:00:00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
+                $heading2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
                 $heading2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
                 $heading2['data']['extractionAssaySelect']      = $extractionAssaySelect;
                 $heading2['data']['extractionAssaySelected']    = (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] != "")?(string)$shipment['attributes']['extraction_assay']:'';
@@ -2543,8 +2543,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $heading2['data']['detectionAssaySelected']     = (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] != "")?(string)$shipment['attributes']['extraction_assay']:'';
                 $heading2['data']['extractionLotNumber']        = (isset($shipment['attributes']['extraction_assay_lot_no']) && $shipment['attributes']['extraction_assay_lot_no'] !="")?$shipment['attributes']['extraction_assay_lot_no']:'';
                 $heading2['data']['detectionLotNumber']         = (isset($shipment['attributes']['detection_assay_lot_no']) && $shipment['attributes']['detection_assay_lot_no'] !="")?$shipment['attributes']['detection_assay_lot_no']:'';
-                $heading2['data']['extractionExpirationDate']   = (isset($shipment['attributes']['extraction_assay_expiry_date']) && $shipment['attributes']['extraction_assay_expiry_date'] != "")?date('d-M-Y',strtotime($shipment['attributes']['extraction_assay_expiry_date'])):'';
-                $heading2['data']['detectionExpirationDate']    = (isset($shipment['attributes']['detection_assay_expiry_date']) && $shipment['attributes']['detection_assay_expiry_date'] !='')?date('d-M-Y',strtotime($shipment['attributes']['detection_assay_expiry_date'])):'';
+                $heading2['data']['extractionExpirationDate']   = (isset($shipment['attributes']['extraction_assay_expiry_date']) && $shipment['attributes']['extraction_assay_expiry_date'] != "" && $shipment['attributes']['extraction_assay_expiry_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']['extraction_assay_expiry_date'])):'';
+                $heading2['data']['detectionExpirationDate']    = (isset($shipment['attributes']['detection_assay_expiry_date']) && $shipment['attributes']['detection_assay_expiry_date'] !='' && $shipment['attributes']['detection_assay_expiry_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']['detection_assay_expiry_date'])):'';
                 
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
                     if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != ''){
@@ -2565,7 +2565,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $qc['qcRadio']          = $qcResponseArr;
             $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
-            $qc['qcDate']           = (isset($shipment['qc_date'])&&$shipment['qc_date']!='')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
+            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
             $qc['qcDoneBy']         = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
             if($globalQcAccess != 'yes' && $dm['qc_access'] != 'yes'){
                 $qc['status'] = false;

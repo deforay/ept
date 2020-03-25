@@ -34,4 +34,14 @@ class Api_LoginController extends Zend_Controller_Action
         $result = $clientsServices->getLoggedInDetails((array)$params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
     }
+
+    public function forgetPasswordAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = json_decode(file_get_contents('php://input'));
+            $clientsServices = new Application_Service_DataManagers();
+            $result = $clientsServices->forgetPasswordDatamanagerAPI((array)$params);
+            $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
+        }
+    }
 }
