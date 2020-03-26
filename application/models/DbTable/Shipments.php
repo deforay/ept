@@ -2690,6 +2690,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* Get individual reports using data manager */
         $resultData = array();
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id','s.status'))
+            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
@@ -2723,6 +2724,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'name'              => $aRow['first_name'] . " " . $aRow['last_name'],
                 'responseDate'      => $general->humanDateFormat($aRow['RESPONSEDATE']),
                 // 'mapId'             => $aRow['map_id'],
+                'schemeName'        => $aRow['scheme_name'],
                 'downloadLink'      => $downloadReports
             );
         }
@@ -2755,6 +2757,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* Get summary reports using data manager */
         $resultData = array();
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
+            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
@@ -2780,6 +2783,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'shipmentCode'  => $aRow['shipment_code'],
                 'shipmentDate'  => $general->humanDateFormat($aRow['shipment_date']),
                 // 'mapId'             => $aRow['map_id'],
+                'schemeName'    => $aRow['scheme_name'],
                 'downloadLink'  => $downloadReports
             );
         }

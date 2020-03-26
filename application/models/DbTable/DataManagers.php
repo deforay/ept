@@ -336,7 +336,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* Check the login credential */
         $result = $this->fetchRow("primary_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
         if (!isset($result['dm_id']) && $result['dm_id'] == "") {
-            return array('status' =>'fail','message'=>'You have entered credentials wrong');
+            return array('status' =>'fail','message'=>'Your username or password is incorrect');
         }
         /* Check the status for data manager */
         if (isset($result['status']) && $result['status'] != "active") {
@@ -463,11 +463,20 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if ($aResult == 'app-version-failed') {
             return array('status' =>'version-fail','message'=>'App Version Failed.');
         }
+        if(!$aResult){
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        }
+
+        $oldPassResult = $this->fetchRow("password='" . $params['oldPassword'] . "' AND auth_token = '".$params['authToken']."'");
+        if(!$oldPassResult){
+            return array('status' =>'fail','message'=>'Your old password is incorrect');
+        }
         /* Update the new password to the server */
-        $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => $aResult['dm_id']));
-        if(!$update){
+        $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => (int)$aResult['dm_id']));
+        if($update < 1){
             return array('status' =>'fail','message'=>'You have entered old password');
         }
+        $this->update(array('updated_on'=>new Zend_Db_Expr('now()')), array('dm_id = ?' => $aResult['dm_id']));
         return array('status' =>'success','message'=>'Password Updated Successfully');
     }
     
@@ -483,9 +492,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Update the new password to the server */
         $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => $aResult['dm_id']));
-        if(!$update){
+        if($update < 1){
             return array('status' =>'fail','message'=>'You have entered old password');
         }
+        $this->update(array('updated_on'=>new Zend_Db_Expr('now()')), array('dm_id = ?' => $aResult['dm_id']));
         return array('status' =>'success','message'=>'Password Updated Successfully');
     }
 
