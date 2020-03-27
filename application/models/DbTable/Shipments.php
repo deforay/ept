@@ -2723,10 +2723,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'uniqueIdentifier'  => $aRow['unique_identifier'],
                 'name'              => $aRow['first_name'] . " " . $aRow['last_name'],
                 'responseDate'      => $general->humanDateFormat($aRow['RESPONSEDATE']),
-                // 'mapId'             => $aRow['map_id'],
+                'fileName'          => (file_exists($invididualFilePath))?basename($invididualFilePath):'',
                 'schemeName'        => $aRow['scheme_name'],
                 'downloadLink'      => $downloadReports
             );
+
         }
         if (isset($data) && count($data) > 0) {
             return array('status'=>'success','data'=>$data);
@@ -2782,7 +2783,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'schemeType'    => strtoupper($aRow['scheme_type']),
                 'shipmentCode'  => $aRow['shipment_code'],
                 'shipmentDate'  => $general->humanDateFormat($aRow['shipment_date']),
-                // 'mapId'             => $aRow['map_id'],
+                'fileName'      => (file_exists($summaryFilePath))?basename($summaryFilePath):'',
                 'schemeName'    => $aRow['scheme_name'],
                 'downloadLink'  => $downloadReports
             );
