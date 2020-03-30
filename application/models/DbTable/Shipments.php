@@ -2058,21 +2058,21 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"])?'selected':''
                     );
-                    if(isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"]){
+                    /* if(isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"]){
                         $testKitArray['Test-1']['data'][] = array(
                             'kitNameDropdown'   => $testkit['TESTKITNAME'],
                             'kitValue'  => (string)$testkit['TESTKITNAMEID']
                         );
-                    }
+                    } */
                 }
                 if($testkit['testkit_1'] == '1' && isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"]){
-                    $testKitArray['kitName'][]= $testkit['TESTKITNAME'];
+                    $testKitArray['kitName'][0]= $testkit['TESTKITNAME'];
                 }
                 if($testkit['testkit_2'] == '1' && isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
-                    $testKitArray['kitName'][]= $testkit['TESTKITNAME'];
+                    $testKitArray['kitName'][1]= $testkit['TESTKITNAME'];
                 }
                 if($testkit['testkit_3'] == '1' && isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]){
-                    $testKitArray['kitName'][]= $testkit['TESTKITNAME'];
+                    $testKitArray['kitName'][2]= $testkit['TESTKITNAME'];
                 }
 
                 if($testkit['testkit_2'] == '1'){
@@ -2082,12 +2082,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"])?'selected':''
                     );
-                    if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
+                    /* if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
                         $testKitArray['Test-2']['data'][] = array(
                             'kitNameDropdown'   => $testkit['TESTKITNAME'],
                             'kitValue'  => (string)$testkit['TESTKITNAMEID']
                         );
-                    }
+                    } */
                 }
                 if(!$testThreeOptional && $testkit['testkit_3'] == '1'){
                     $testKitArray['kitNameDropdown']['Test-3']['status'] = true;
@@ -2127,24 +2127,24 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $testKitArray['kitText'] = array('Test-1','Test-2','Test-3');
             if(isset($allSamples) && count($allSamples) > 0){
                 $dts['Heading3']['status'] = true;
-                $testKitArray['expDate'][]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_1"])):'';
-                $testKitArray['expDate'][]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_2"])):'';
-                $testKitArray['expDate'][]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_3"])):'';
-                $testKitArray['kitValue'][] = (isset($allSamples[0]["test_kit_name_1"]) && trim($allSamples[0]["test_kit_name_1"]) != "")?$allSamples[0]["test_kit_name_1"]:'';
-                $testKitArray['kitValue'][] = (isset($allSamples[0]["test_kit_name_2"]) && trim($allSamples[0]["test_kit_name_2"]) != "")?$allSamples[0]["test_kit_name_2"]:'';
-                $testKitArray['kitValue'][] = (isset($allSamples[0]["test_kit_name_3"]) && trim($allSamples[0]["test_kit_name_3"]) != "")?$allSamples[0]["test_kit_name_3"]:'';
-                $testKitArray['lot'][]      = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "")?$allSamples[0]["lot_no_1"]:'';
-                $testKitArray['lot'][]      = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "")?$allSamples[0]["lot_no_2"]:'';
-                $testKitArray['lot'][]      = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "")?$allSamples[0]["lot_no_3"]:'';
+                $testKitArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_1"])):'';
+                $testKitArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_2"])):'';
+                $testKitArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_3"])):'';
+                $testKitArray['kitValue'][0] = (isset($allSamples[0]["test_kit_name_1"]) && trim($allSamples[0]["test_kit_name_1"]) != "")?$allSamples[0]["test_kit_name_1"]:'';
+                $testKitArray['kitValue'][1] = (isset($allSamples[0]["test_kit_name_2"]) && trim($allSamples[0]["test_kit_name_2"]) != "")?$allSamples[0]["test_kit_name_2"]:'';
+                $testKitArray['kitValue'][2] = (isset($allSamples[0]["test_kit_name_3"]) && trim($allSamples[0]["test_kit_name_3"]) != "")?$allSamples[0]["test_kit_name_3"]:'';
+                $testKitArray['lot'][0]      = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "")?$allSamples[0]["lot_no_1"]:'';
+                $testKitArray['lot'][1]      = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "")?$allSamples[0]["lot_no_2"]:'';
+                $testKitArray['lot'][2]      = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "")?$allSamples[0]["lot_no_3"]:'';
                 $testKitArray['kitOther']   = array('','','');
                 if($allSamples[0]["test_kit_name_1"] == ''){
-                    $testKitArray['kitName'][] = ''; 
+                    $testKitArray['kitName'][0] = ''; 
                 }
                 if($allSamples[0]["test_kit_name_2"] == ''){
-                    $testKitArray['kitName'][] = ''; 
+                    $testKitArray['kitName'][1] = ''; 
                 }
                 if($allSamples[0]["test_kit_name_3"] == ''){
-                    $testKitArray['kitName'][] = ''; 
+                    $testKitArray['kitName'][2] = ''; 
                 }
                 // $testKitArray['testKitTextArray'] = array('Test-1','Test-2','Test-3');
                 
@@ -2180,6 +2180,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['samples']['result2'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '')?$sample['test_result_2']:'';
                 if(!$testThreeOptional){
                     $allSamplesResult['samples']['result3'][]   = (isset($sample['test_result_3']) && $sample['test_result_3'] != '')?$sample['test_result_3']:'';
+                }else{
+                    $allSamplesResult['samples']['result3'][]   = '';
                 }
                 $allSamplesResult['samples']['finalResult'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
                 $allSamplesResult['samples']['mandatory'][]     = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
