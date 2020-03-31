@@ -2243,10 +2243,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 }
                 // $allSamplesResult['sampleSelect'][$sample['sample_label']][]=array($sample1Select,$sample2Select,$sample3Select,$sampleFinalSelect);
+                $allSamplesResult['resultsText'] = array('Result-1','Result-2','Result-3','Final-Result');
                 if(!$testThreeOptional){
-                    $allSamplesResult['resultsText'] = array('Result-1','Result-2','Result-3','Final-Result');
+                    $allSamplesResult['resultStatus'] = array(true,true,true,true);
                 }else{
-                    $allSamplesResult['resultsText'] = array('Result-1','Result-2','Final-Result');
+                    $allSamplesResult['resultStatus'] = array(true,true,false,true);
                 }
                 $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['status']    = true;
                 $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['data']      = $possibleFinalResults;
@@ -2617,6 +2618,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
 
                 $allSamplesResult['resultsText'] = array('Control/Sample','Your-Results','HIV-CT/OD','IC/QS-Values');
+                $allSamplesResult['resultStatus'] = array(true,true,true,true);
                 $allSamplesResult['sampleSelected'][$sample['sample_label']]['Your-Results']   = (isset($sample['reported_result']) && $sample['reported_result'] != "")?$sample['reported_result']:'';
                 $allSamplesResult['sampleSelected'][$sample['sample_label']]['HIV-CT/OD']      = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '')?$sample['hiv_ct_od']:'';
                 $allSamplesResult['sampleSelected'][$sample['sample_label']]['IC/QS-Values']   = (isset($sample['ic_qs']) && $sample['ic_qs'] != '')?$sample['ic_qs']:'';
