@@ -84,9 +84,9 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
                 <td style="width:30%;"><?php echo $this->dateFormat($this->shipment['lastdate_response']); ?> </td>
             </tr>
             <tr class ="light">
-                <td><label>Shipment Receipt Date</label></td>
+                <td><label>Shipment Receipt Date <span class='mandatory'>*</span></label></td>
                 <td>
-                    <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker" readonly="readonly"   title="Please enter Test Receipt Date" />
+                    <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="isRequired form-control datepicker" readonly="readonly"   title="Please enter Test Receipt Date" />
                     <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('receiptDate')"> Clear</i>
                 </td>
 
@@ -99,7 +99,7 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
 			<tr>
 				<td><label>Shipment Testing Date</label></td> 
 				<td>
-					<input type="text" id="testDate" name="testDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>"  class="isRequired datepicker form-control" readonly="readonly" />
+					<input type="text" id="testDate" name="testDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>"  class="datepicker form-control" readonly="readonly" />
 					<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('testDate')"> Clear</i>
 				</td>
 				<td colspan="2"></td>
@@ -134,11 +134,11 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
                 </td>
             </tr>
             <tr>
-                <td><label>Extraction Assay Lot No.</label></td> 
+                <td><label>Extraction Assay Lot No. <span class='mandatory'>*</span></label></td> 
                 <td>
 					<input type="text" id="extractionAssayLotNo" name="extractionAssayLotNo"  style=""  maxlength="11" value="<?php  echo ($this->shipment['attributes']['extraction_assay_lot_no']); ?>"  class="isRequired form-control" />
 				</td>
-                <td><label>Detection Assay Lot No.</label></td> 
+                <td><label>Detection Assay Lot No. <span class='mandatory'>*</span></label></td> 
                 <td>
 					<input type="text" id="detectionAssayLotNo" name="detectionAssayLotNo"  style=""  maxlength="11" value="<?php  echo ($this->shipment['attributes']['detection_assay_lot_no']); ?>"  class="isRequired form-control" />
 				</td>
@@ -149,7 +149,7 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
 					<input type="text" id="extractionAssayExpiryDate" name="extractionAssayExpiryDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment['attributes']['extraction_assay_expiry_date']); ?>"  class="datepicker form-control" readonly="readonly" />
 					<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('extractionAssayExpiryDate')"> Clear</i>					
 				</td>
-                <td><label>Detection Assay Expiry Date</label></td> 
+                <td><label>Detection Assay Expiry Date<span class='mandatory'>*</span></label></td> 
                 <td>
 					<input type="text" id="detectionAssayExpiryDate" name="detectionAssayExpiryDate"  style="width:180px;float:left;"  maxlength="11" value="<?php  echo  $this->dateFormat($this->shipment['attributes']['detection_assay_expiry_date']); ?>"  class="isRequired datepicker form-control" readonly="readonly" />
 					<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date"  onclick="clearDate('detectionAssayExpiryDate')"> Clear</i>					
@@ -203,7 +203,7 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
 		if($this->globalQcAccess=='yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access=='yes')){
 		?>
 	    <tr>
-			<td><label>QC Done</label></td>
+			<td><label>QC Done <span class='mandatory'>*</span></label></td>
 			<td><input type="radio" id="qcDoneYes" name="qcDone" value="yes" <?php echo ($this->shipment['qc_done']=="yes") ? " checked='checked' " : ""; ?> onclick="checkQcStatus();"/> <strong>Yes</strong>&nbsp;&nbsp;<input type="radio" class="isRequired" id="qcDoneNo" name="qcDone" title="Please select QC done status" <?php echo ($this->shipment['qc_done']== null || $this->shipment['qc_done']=="" || $this->shipment['qc_done']=="no") ? " checked='checked' " : ""; ?> value="no" onclick="checkQcStatus();"/> <strong>No</strong> </td>
 			<td colspan="2"></td>
 		</tr>

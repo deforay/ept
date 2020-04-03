@@ -115,14 +115,14 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 $params['test_kit_name_1'] = (isset($params['dtsData']->Heading3->data->kitValue[0]) && $params['dtsData']->Heading3->data->kitValue[0] != '')?$params['dtsData']->Heading3->data->kitValue[0]:'';
             }
             if(isset($params['dtsData']->Heading3->data->kitValue[1]) && trim($params['dtsData']->Heading3->data->kitValue[1])=='other'){
-                $otherTestkitId1=$testkitsDb->addTestkitInParticipant($allSamples[0]["test_kit_name_2"],$params['dtsData']->Heading3->data->kitOther[1],'dts');
-                $params['test_kit_name_2'] = $otherTestkitId1;
+                $otherTestkitId2=$testkitsDb->addTestkitInParticipant($allSamples[0]["test_kit_name_2"],$params['dtsData']->Heading3->data->kitOther[1],'dts');
+                $params['test_kit_name_2'] = $otherTestkitId2;
             }else{
                 $params['test_kit_name_2'] = (isset($params['dtsData']->Heading3->data->kitValue[1]) && $params['dtsData']->Heading3->data->kitValue[1] != '')?$params['dtsData']->Heading3->data->kitValue[1]:'';
             }
             if(isset($params['dtsData']->Heading3->data->kitValue[2]) && trim($params['dtsData']->Heading3->data->kitValue[2])=='other'){
-                $otherTestkitId1=$testkitsDb->addTestkitInParticipant($allSamples[0]["test_kit_name_3"],$params['dtsData']->Heading3->data->kitOther[2],'dts');
-                $params['test_kit_name_3'] = $otherTestkitId1;
+                $otherTestkitId3=$testkitsDb->addTestkitInParticipant($allSamples[0]["test_kit_name_3"],$params['dtsData']->Heading3->data->kitOther[2],'dts');
+                $params['test_kit_name_3'] = $otherTestkitId3;
             }else{
                 $params['test_kit_name_3'] = (isset($params['dtsData']->Heading3->data->kitValue[2]) && $params['dtsData']->Heading3->data->kitValue[2] != '')?$params['dtsData']->Heading3->data->kitValue[2]:'';
             }
@@ -131,6 +131,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 $params['test_kit_name_3'] = '';
                 $result3 = '';
             }
+            // Zend_Debug::dump($params);die;
             if($res == null || count($res) == 0){
                 $this->insert(array(
                     'shipment_map_id'   => $params['mapId'],

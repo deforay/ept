@@ -245,6 +245,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
     }
 
     public function addTestkitInParticipant($oldName, $testkitName,$scheme) {
+
         if (trim($testkitName) != "") {
             $commonService = new Application_Service_Common();
             $randomStr = $commonService->getRandomString(13);
@@ -254,12 +255,14 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
 
             if ($result == "" && trim($oldName) == "") {
                 $data = array(
-                    'TestKitName_ID' => $tkId,
-                    'TestKit_Name' => trim($testkitName),
-                    'Approval' => '0',
-                    'Created_On' => new Zend_Db_Expr('now()')
+                    'TestKitName_ID'=> $tkId,
+                    'scheme_type'   => $scheme,
+                    'TestKit_Name'  => trim($testkitName),
+                    'Approval'      => '0',
+                    'Created_On'    => new Zend_Db_Expr('now()')
                 );
-                $this->insert($data);
+                $saveId = $this->insert($data);
+                Zend_Debug::dump($saveId);die;
                 return $tkId;
             } else {
                 $result = $this->fetchRow($this->select()->where("TestKit_Name=?", $oldName));
@@ -267,7 +270,8 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
                     $data = array(
                         'TestKit_Name' => trim($testkitName)
                     );
-                    $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");
+                    Zend_Debug::dump($data);die;
+                    $saveId = $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");
                     return $result['TestKitName_ID'];
                 }
             }

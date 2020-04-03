@@ -2184,7 +2184,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $allSamplesResult['samples']['result3'][]   = '';
                 }
                 $allSamplesResult['samples']['finalResult'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
-                $allSamplesResult['samples']['mandatory'][]     = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
+                $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1)?true:false;
                 foreach(range(1,3) as $row){
                     $possibleResults = array();
                     if($row == 3){
@@ -2427,10 +2427,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $heading3['data']['yes']['supportText']                 = 'Do you need any support from the PT Provider ?';
             $heading3['data']['yes']['supportTextArea']             = $shipment['pt_support_comments'];
             // return $allSamples;
+            // Zend_Debug::dump($allSamples);die;
             foreach ($allSamples as $key=>$sample) {
-                if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
+                /* if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
-                }
+                } */
                 $vlArray = array('yes','no');
                 $vlResult = (isset($sample['reported_viral_load']) && $sample['reported_viral_load'] != "")?$sample['reported_viral_load']:'';
                 if ($sample['is_tnd'] == 'yes') {
@@ -2442,7 +2443,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $heading3['data']['no']['tableRowTxt']['label'][]       = $sample['sample_label'];
                 $heading3['data']['no']['tableRowTxt']['id'][]          = $sample['sample_id'];
-                $heading3['data']['no']['tableRowTxt']['mandatory'][]   = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
+                $heading3['data']['no']['tableRowTxt']['mandatory'][]   = ($sample['mandatory'] == 1)?true:false;
                 $heading3['data']['no']['vlResult'][]                   = $vlResult;
                 $heading3['data']['no']['tndReferenceRadio'][]          = $vlResponseArr;
                 $heading3['data']['no']['tndReferenceRadioSelected'][]  = (isset($sample['is_tnd']) && ($sample['is_tnd'] != '' && $sample['is_tnd'] == 'yes'))?'yes':'no';
@@ -2606,7 +2607,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
                 $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
-                $allSamplesResult['samples']['mandatory'][]     = (isset($sample['mandatory']) && $sample['mandatory'] == 1)?true:false;
+                $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1)?true:false;
                 $allSamplesResult['samples']['yourResults'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != "")?$sample['reported_result']:'';
                 $allSamplesResult['samples']['hivCtOd'][]       = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '')?$sample['hiv_ct_od']:'';
                 $allSamplesResult['samples']['IcQsValues'][]    = (isset($sample['ic_qs']) && $sample['ic_qs'] != '')?$sample['ic_qs']:'';
