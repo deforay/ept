@@ -202,7 +202,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $row = $this->fetchRow("map_id = " . $params['mapId']);
         if ($row != "") {
             if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
-                $this->update(array('created_on_user' => ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')), "map_id = " . $params['mapId']);
+                $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $params['mapId']);
             }
         }
         $data['shipment_id']        = $params['shipmentId'];

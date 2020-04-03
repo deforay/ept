@@ -63,7 +63,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                     'reported_viral_load'   =>  $params["vlData"]->Heading3->data->no->vlResult[$key],
                     'is_tnd'                =>  $tnd,
                     'created_by'            =>  $dm['dm_id'],
-                    'created_on'            =>  ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')
+                    'created_on'            =>  new Zend_Db_Expr('now()')
                 ));
             }else{
                 $this->update(array(
@@ -72,7 +72,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                     'reported_viral_load'   =>  $params["vlData"]->Heading3->data->no->vlResult[$key],
                     'is_tnd'                =>  $tnd,
                     'updated_by'            =>  $dm['dm_id'],
-                    'updated_on'            =>  ($params['updatedOn'] != "")?date('Y-m-d H:i:s',strtotime($params['updatedOn'])):new Zend_Db_Expr('now()')
+                    'updated_on'            =>  new Zend_Db_Expr('now()')
                 ), "shipment_map_id = ".$params['mapId'] . " and sample_id = ".$sampleId );
                 
             }

@@ -251,7 +251,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
             $randomStr = $commonService->getRandomString(13);
             $testkitId = "tk" . $randomStr;
             $tkId = $this->checkTestkitId($testkitId,$scheme);
-            $result = $this->fetchRow($this->select()->where("TestKit_Name=?", $testkitName));
+            $result = $this->fetchRow($this->select()->where("TestKit_Name='".$testkitName."'"));
 
             if ($result == "" && trim($oldName) == "") {
                 $data = array(
@@ -262,15 +262,56 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
                     'Created_On'    => new Zend_Db_Expr('now()')
                 );
                 $saveId = $this->insert($data);
-                Zend_Debug::dump($saveId);die;
                 return $tkId;
             } else {
-                $result = $this->fetchRow($this->select()->where("TestKit_Name=?", $oldName));
+                $result = $this->fetchRow($this->select()->where("TestKit_Name='".$oldName."'"));
                 if ($result != "") {
                     $data = array(
                         'TestKit_Name' => trim($testkitName)
                     );
-                    Zend_Debug::dump($data);die;
+                    $saveId = $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");
+                    return $result['TestKitName_ID'];
+                }
+            }
+        }
+    }
+
+    public function addTestkitInParticipantByAPI($oldName, $testkitName,$scheme,$kit=0) {
+
+        if (trim($testkitName) != "") {
+            $commonService = new Application_Service_Common();
+            $randomStr = $commonService->getRandomString(13);
+            $testkitId = "tk" . $randomStr;
+            $tkId = $this->checkTestkitId($testkitId,$scheme);
+            $result = $this->fetchRow($this->select()->where("TestKit_Name='".$testkitName."'"));
+
+            if ($result == "" && trim($oldName) == "") {
+                $data = array(
+                    'TestKitName_ID'=> $tkId,
+                    'scheme_type'   => $scheme,
+                    'TestKit_Name'  => trim($testkitName),
+                    'Approval'      => '0',
+                    'COUNTRYADAPTED'=> '1',
+                    'testkit_1'     => ($kit==1)?'1':'0',
+                    'testkit_2'     => ($kit==2)?'1':'0',
+                    'testkit_3'     => ($kit==3)?'1':'0',
+                    'Created_On'    => new Zend_Db_Expr('now()')
+                );
+                // Zend_Debug::dump($data);die;
+                $saveId = $this->insert($data);
+                return $tkId;
+            } else {
+                $result = $this->fetchRow($this->select()->where("TestKit_Name='".$oldName."'"));
+                if ($result != "") {
+                    $data = array(
+                        'TestKit_Name' => trim($testkitName),
+                        'scheme_type'   => $scheme,
+                        'TestKit_Name'  => trim($testkitName),
+                        'COUNTRYADAPTED'=> '1',
+                        'testkit_1'     => ($kit==1)?'1':'0',
+                        'testkit_2'     => ($kit==2)?'1':'0',
+                        'testkit_3'     => ($kit==3)?'1':'0'
+                    );
                     $saveId = $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");
                     return $result['TestKitName_ID'];
                 }

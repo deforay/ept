@@ -2106,6 +2106,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     );
                 } */
             }
+            if(!isset($testKitArray['kitName'][0])){
+                $testKitArray['kitName'][0] = '';
+            }
+            if(!isset($testKitArray['kitName'][1])){
+                $testKitArray['kitName'][1] = '';
+            }
+            if(!isset($testKitArray['kitName'][2])){
+                $testKitArray['kitName'][2] = '';
+            }
             // if($allSamples[0]["test_kit_name_1"] == ''){
             //     $testKitArray['kitNameDropdown']['Test-1'] = array(
             //         'kitNameDropdown'   => '',
@@ -2854,6 +2863,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         if(isset($params['syncType']) && $params['syncType'] == 'single'){
             $status = $this->saveShipmentByType((array)$params['data'],$dm);
+            // die($status);
             if($status){
                 return array('status'=>'success','message'=>'Shipment details successfully send.');
             }else{
@@ -2920,7 +2930,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "user_comment"                  =>  $params["vlData"]->Heading4->data->comments,
                     "updated_by_user"               =>  $dm['dm_id'],
                     "mode_id"                       =>  (isset($params["vlData"]->Heading2->data->modeOfReceiptSelected) && $params["vlData"]->Heading2->data->modeOfReceiptSelected != "")?$params["vlData"]->Heading2->data->modeOfReceiptSelected:null,
-                    "updated_on_user"               =>  ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')
+                    "updated_on_user"               =>  new Zend_Db_Expr('now()')
                 );
     
                 $data['is_pt_test_not_performed']       = (isset($params["vlData"]->Heading3->data->isPtTestNotPerformedRadio) && $params["vlData"]->Heading3->data->isPtTestNotPerformedRadio == 'yes')?'yes':'no';
@@ -2932,7 +2942,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $data['qc_done'] = $params["vlData"]->Heading2->data->qcData->qcRadioSelected;
                     $data['qc_date']        = date('Y-m-d',strtotime($params["vlData"]->Heading2->data->qcData->qcDate));
                     $data['qc_done_by']     = trim($params["vlData"]->Heading2->data->qcData->qcDoneBy);
-                    $data['qc_created_on']  = ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()');
+                    $data['qc_created_on']  = new Zend_Db_Expr('now()');
                 }
                 // Zend_Debug::dump($data);die;
 
@@ -2978,7 +2988,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "user_comment"              => (isset($params['dtsData']->Heading5->data->comments) && $params['dtsData']->Heading5->data->comments != '')?$params['dtsData']->Heading5->data->comments:'',
                     "updated_by_user"           => $dm['dm_id'],
                     "mode_id"                   => (isset($params['dtsData']->Heading2->data->modeOfReceiptSelected) && $params['dtsData']->Heading2->data->modeOfReceiptSelected != '')?$params['dtsData']->Heading2->data->modeOfReceiptSelected:'',
-                    "updated_on_user"           => ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')
+                    "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
 
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
@@ -2986,7 +2996,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
                         $data['qc_date'] = (isset($params['dtsData']->Heading2->data->qcData->qcDate) && $params['dtsData']->Heading2->data->qcData->qcDate != '')?date('Y-m-d',strtotime($params['dtsData']->Heading2->data->qcData->qcDate)):'';
                         $data['qc_done_by'] = (isset($params['dtsData']->Heading2->data->qcData->qcDoneBy) && $params['dtsData']->Heading2->data->qcData->qcDoneBy != '')?$params['dtsData']->Heading2->data->qcData->qcDoneBy:'';
-                        $data['qc_created_on'] = ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()');
+                        $data['qc_created_on'] = new Zend_Db_Expr('now()');
                     } else {
                         $data['qc_date'] = '';
                         $data['qc_done_by'] = '';
@@ -3044,7 +3054,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "user_comment"              => $params['eidData']->Heading4->data->comments,
                     "updated_by_user"           => $dm['dm_id'],
                     "mode_id"                   => $params['eidData']->Heading2->data->modeOfReceiptSelected,
-                    "updated_on_user"           => ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()')
+                    "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
 
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
@@ -3052,7 +3062,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
                         $data['qc_date'] = date('Y-m-d',strtotime($params['eidData']->Heading2->data->qcData->qcDate));
                         $data['qc_done_by'] = trim($params['eidData']->Heading2->data->qcData->qcDoneBy);
-                        $data['qc_created_on'] = ($params['createdOn'] != "")?date('Y-m-d H:i:s',strtotime($params['createdOn'])):new Zend_Db_Expr('now()');
+                        $data['qc_created_on'] = new Zend_Db_Expr('now()');
                     } else {
                         $data['qc_date'] = '';
                         $data['qc_done_by'] = '';
