@@ -488,15 +488,32 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* App version check */
         $aResult = $this->fetchRow("primary_email='" . $params['email'] . "'");
         if(!$aResult){
-            return array('status' =>'fail','message'=>'You have entered email not found');
+            return array('status' =>'fail','message'=>'You have entered primary email not found');
         }
         /* Update the new password to the server */
-        $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => $aResult['dm_id']));
+        /* $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => $aResult['dm_id']));
         if($update < 1){
             return array('status' =>'fail','message'=>'You have entered old password');
         }
         $this->update(array('updated_on'=>new Zend_Db_Expr('now()')), array('dm_id = ?' => $aResult['dm_id']));
-        return array('status' =>'success','message'=>'Password Updated Successfully');
+        return array('status' =>'success','message'=>'Password Updated Successfully'); */
+        $email = $params['email'];
+        $newPassword = $this->resetPasswordForEmail($email);
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+
+        if ($newPassword != false) {
+            $common = new Application_Service_Common();
+            $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email ".$email.". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $conf->domain . "auth/new-password/email/" . base64_encode($email) . "'>" . $conf->domain . "auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
+            $fromMail = Application_Service_Common::getConfig('admin_email');
+            $fromName = Application_Service_Common::getConfig('admin-name');
+            $check = $common->sendMail($email, null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
+            if(!$check){
+                return array('status' =>'fail','message'=>'Something went wrong please try again later.');
+            }
+            return array('status' =>'success','message'=>'Your password has been reset. Please check your registered mail id for the instructions.');
+        } else{
+            return array('status' =>'fail','message'=>'You have entered primary email not found');
+        }
     }
 
     public function fetchAuthTokenByToken($params){
