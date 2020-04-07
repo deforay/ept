@@ -211,17 +211,13 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $data['evaluation_status']  = $row['evaluation_status'];
         $data['updated_by_user']    = $dm['dm_id'];
         if($params['schemeType'] == 'dts'){
-            $lastDate               = $params['dtsData']->Heading2->data->resultDueDate;
+            $lastDate   = $params['dtsData']->Heading2->data->resultDueDate;
         }
         if($params['schemeType'] == 'vl'){
             $lastDate   = $params['vlData']->Heading2->data->resultDueDate;
         }
         if($params['schemeType'] == 'eid'){
-            $data['is_pt_test_not_performed']       = $params['eidData']->Heading3->data->isPtTestNotPerformedRadio;
-            $data['vl_not_tested_reason']           = $params['eidData']->Heading3->data->vlNotTestedReasonSelected;
-            $data['pt_test_not_performed_comments'] = $params['eidData']->Heading3->data->ptNotTestedComments;
-            $data['pt_support_comments']            = $params['eidData']->Heading3->data->ptSupportComments;
-            $lastDate                               = $params['eidData']->Heading2->data->resultDueDate;
+            $lastDate   = $params['eidData']->Heading2->data->resultDueDate;
         }
 
         // changing evaluation status 3rd character to 1 = responded

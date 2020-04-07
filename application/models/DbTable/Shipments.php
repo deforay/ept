@@ -2660,7 +2660,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $eid['Heading3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel:';
             $eid['Heading3']['data']['vlNotTestedReason']           = $allNotTestedArray;
-            $eid['Heading3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] == 1)?$shipment['vl_not_tested_reason']:"";
+            $eid['Heading3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "")?$shipment['vl_not_tested_reason']:"";
             $eid['Heading3']['data']['ptNotTestedCommentsText']     = 'Your comments:';
             $eid['Heading3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '')?$shipment['pt_test_not_performed_comments']:'';
             $eid['Heading3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
@@ -2934,9 +2934,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 );
     
                 $data['is_pt_test_not_performed']       = (isset($params["vlData"]->Heading3->data->isPtTestNotPerformedRadio) && $params["vlData"]->Heading3->data->isPtTestNotPerformedRadio == 'yes')?'yes':'no';
-                $data['vl_not_tested_reason']           = $params["vlData"]->Heading3->data->yes->vlNotTestedReasonSelected;
-                $data['pt_test_not_performed_comments'] = $params["vlData"]->Heading3->data->yes->commentsTextArea;
-                $data['pt_support_comments']            = $params["vlData"]->Heading3->data->yes->supportTextArea;
+                if($data['is_pt_test_not_performed'] == 'yes'){
+                    $data['vl_not_tested_reason']           = '';
+                    $data['pt_test_not_performed_comments'] = '';
+                    $data['pt_support_comments']            = '';
+                }else{
+                    $data['vl_not_tested_reason']           = $params["vlData"]->Heading3->data->yes->vlNotTestedReasonSelected;
+                    $data['pt_test_not_performed_comments'] = $params["vlData"]->Heading3->data->yes->commentsTextArea;
+                    $data['pt_support_comments']            = $params["vlData"]->Heading3->data->yes->supportTextArea;
+                }
     
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
                     $data['qc_done'] = $params["vlData"]->Heading2->data->qcData->qcRadioSelected;
@@ -3069,7 +3075,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $data['qc_created_on'] = '';
                     }
                 }
-                // Zend_Debug::dump($data);die;
+                
+                $data['is_pt_test_not_performed']       = $params['eidData']->Heading3->data->isPtTestNotPerformedRadio;
+                if($data['is_pt_test_not_performed'] == 'yes'){
+                    $data['vl_not_tested_reason']           = $params['eidData']->Heading3->data->vlNotTestedReasonSelected;
+                    $data['pt_test_not_performed_comments'] = $params['eidData']->Heading3->data->ptNotTestedComments;
+                    $data['pt_support_comments']            = $params['eidData']->Heading3->data->ptSupportComments;
+                }else{
+                    $data['vl_not_tested_reason']           = '';
+                    $data['pt_test_not_performed_comments'] = '';
+                    $data['pt_support_comments']            = '';
+                }
+                
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
                 // $haveCustom;
