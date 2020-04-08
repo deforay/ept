@@ -18,7 +18,8 @@ class CommonController extends Zend_Controller_Action
 
     public function sendMailAction()
     {
-        
+        $commonServices = new Application_Service_Common();
+        $this->view->data = $commonServices->sendTempMail();
     }
 
     public function checkDuplicateAction()

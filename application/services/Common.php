@@ -236,13 +236,92 @@ class Application_Service_Common {
     }
     
     public function getHomeBannerDetails(){
-	$db= new Application_Model_DbTable_HomeBanner();
-	return $db->fetchHomeBannerDetails();
+	    $db= new Application_Model_DbTable_HomeBanner();
+	    return $db->fetchHomeBannerDetails();
     }
     
     public function getHomeBanner(){
-	$db= new Application_Model_DbTable_HomeBanner();
-	return $db->fetchHomeBanner();
+	    $db= new Application_Model_DbTable_HomeBanner();
+	    return $db->fetchHomeBanner();
+    }
+
+    public function sendTempMail() {
+        $tempMailDb = new Application_Model_DbTable_TempMail();
+        $configResult = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $dbAdapter = $this->sm->get('Zend\Db\Adapter\Adapter');
+        $sql = new Sql($dbAdapter);
+
+        // Setup SMTP transport using LOGIN authentication
+        $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
+
+        $limit = '10';
+        $sQuery = $this->getAdapter()->select()->from(array('tm' => 'temp_mail'))
+        ->where("status='pending'")->limit($limit);
+        $rResult = $this->getAdapter()->fetchAll($sQuery);
+        if (count($mailResult) > 0) {
+            foreach ($mailResult as $result) {
+                $id = $result['temp_id'];
+                $tempMailDb->updateTempMailStatus($id);
+
+                $fromEmail = $result['from_mail'];
+                $fromFullName = $result['from_full_name'];
+                $subject = $result['subject'];
+                
+                $originalMessage=html_entity_decode($result['message'],ENT_QUOTES,'UTF-8');
+                $systemMail = new Zend_Mail();
+                
+                $originalMessage= str_replace("&nbsp;","",strval($originalMessage));
+                $originalMessage= str_replace("&amp;nbsp;","",strval($originalMessage));
+                
+                $systemMail->setSubject($subject);
+                $systemMail->setBodyHtml(html_entity_decode($originalMessage, ENT_QUOTES, 'UTF-8'));
+
+                $systemMail->setFrom($fromEmail, $fromFullName);
+                $systemMail->setReplyTo($fromEmail, $fromFullName);
+
+                $to = explode(",",$result['to_email']);
+                
+                if (isset($result['cc']) && trim($result['cc']) != "") {
+                    if (is_array($cc)) {
+                        foreach ($cc as $name => $mail) {
+                            $systemMail->addCc($mail, $name);
+                        }
+                    } else {
+                        $systemMail->addCc($cc);
+                    }
+                }
+
+                if (isset($result['bcc']) && trim($result['bcc']) != "") {
+                    if (is_array($cc)) {
+                        foreach ($cc as $name => $mail) {
+                            $systemMail->addBcc($mail, $name);
+                        }
+                    } else {
+                        $systemMail->addBcc($cc);
+                    }
+                }
+
+                if (is_array($to)) {
+                    foreach ($to as $name => $mail) {
+                        $systemMail->addTo($mail, $name);
+                    }
+                } else {
+                    $systemMail->addTo($to);
+                }
+        
+                try {
+                    $systemMail->send($smtpTransportObj);
+                    return true;
+                    $tempMailDb->deleteTempMail($id);
+                } catch (Exception $exc) {
+                    error_log("===== MAIL SENDING FAILED - START =====");
+                    error_log($exc->getMessage());
+                    error_log($exc->getTraceAsString());
+                    error_log("===== MAIL SENDING FAILED - END =====");
+                    return false;
+                }
+            }
+        }
     }
 }
 

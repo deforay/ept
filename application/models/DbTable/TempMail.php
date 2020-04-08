@@ -21,5 +21,13 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         
         return $result;
     }
+
+    public function updateTempMailStatus($id){
+        $this->update(array('status'=>'not-send'), "dm_id = " . (int)$id);
+    }
+
+    public function deleteTempMail($id){
+        $this->delete("dm_id = " . (int)$id);
+    }
 }
 
