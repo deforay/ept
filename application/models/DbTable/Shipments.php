@@ -2849,19 +2849,23 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* To check the form have group of array or single array */
         $returnResposne = array();
         // Zend_Debug::dump($params);die;
+        $responseStatus = false;
         if(isset($params['syncType']) && $params['syncType'] == 'group'){
             foreach($params['data'] as $key=>$row){
                 $status  = $this->saveShipmentByType((array)$row,$dm);
                 if(!$status){
+                    $responseStatus = true;
                     $returnResposne[$key]['status']    = 'fail';
-                    $returnResposne[$key]['data']['mapId']  = $row->mapId;
                 }else{
-                    $returnResposne[$key]['status']         = 'success';
-                    $returnResposne[$key]['data']['mapId']  = $row->mapId;
+                    $returnResposne[$key]['status']    = 'success';
                 }
                 $returnResposne[$key]['data']['mapId'] = $row->mapId;
             }
-            return $returnResposne;
+            if($responseStatus){
+                return array('status'=>'failure','data'=>$returnResposne);
+            }else{
+                return array('status'=>'success','data'=>$returnResposne);
+            }
         }
         if(isset($params['syncType']) && $params['syncType'] == 'single'){
             $status = $this->saveShipmentByType((array)$params['data'],$dm);
