@@ -2854,8 +2854,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $status  = $this->saveShipmentByType((array)$row,$dm);
                 if(!$status){
                     $returnResposne[$key]['status']    = 'fail';
+                    $returnResposne[$key]['data']['mapId']  = $row->mapId;
                 }else{
-                    $returnResposne[$key]['status']    = 'success';
+                    $returnResposne[$key]['status']         = 'success';
+                    $returnResposne[$key]['data']['mapId']  = $row->mapId;
                 }
                 $returnResposne[$key]['data']['mapId'] = $row->mapId;
             }
