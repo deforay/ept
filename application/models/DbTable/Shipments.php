@@ -1817,7 +1817,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         if (!isset($params['appVersion'])) {
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
@@ -1826,7 +1826,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $aResult = $dmDb->fetchAuthToken($params);
         /* App version check */
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         /* Validate new auth token and app-version */
         if(!$aResult){
@@ -2703,7 +2703,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         if (!isset($params['authToken'])) {
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
@@ -2713,7 +2713,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $dmDb = new Application_Model_DbTable_DataManagers();
         $aResult = $dmDb->fetchAuthToken($params);
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         if(!$aResult){
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
@@ -2772,7 +2772,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         if (!isset($params['authToken'])) {
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
@@ -2782,7 +2782,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $dmDb = new Application_Model_DbTable_DataManagers();
         $aResult = $dmDb->fetchAuthToken($params);
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         if(!$aResult){
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
@@ -2831,7 +2831,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         if (!isset($params['authToken'])) {
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
@@ -2841,7 +2841,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $dmDb = new Application_Model_DbTable_DataManagers();
         $dm = $dmDb->fetchAuthToken($params);
         if ($dm == 'app-version-failed') {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         if(!$dm){
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');

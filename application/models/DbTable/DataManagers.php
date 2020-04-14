@@ -328,7 +328,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         /* Check the app versions */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         if (!isset($params['userId']) && !isset($params['key'])) {
             return array('status' =>'fail','message'=>'Please enter the login credentials');
@@ -350,7 +350,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $aResult = $this->fetchAuthToken($params);
         /* App version check */
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         /* Validate new auth token and app-version */
         if(!$aResult){
@@ -381,7 +381,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         /* Check the app versions */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         if (!isset($params['authToken'])) {
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
@@ -392,7 +392,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $aResult = $this->fetchAuthToken($params);
         /* App version check */
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         /* Validate new auth token and app-version */
         if(!$aResult){
@@ -456,12 +456,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function changePasswordDatamanagerByAPI($params){
         /* Check the app versions */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         /* App version check */
         $aResult = $this->fetchAuthToken($params);
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         if(!$aResult){
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
@@ -483,7 +483,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function setForgetPasswordDatamanagerAPI($params){
         /* Check the app versions */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-fail','message'=>'App Version Failed.');
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
         }
         /* App version check */
         $aResult = $this->fetchRow("primary_email='" . $params['email'] . "'");
