@@ -2941,13 +2941,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     
                 $data['is_pt_test_not_performed']       = (isset($params["vlData"]->Heading3->data->isPtTestNotPerformedRadio) && $params["vlData"]->Heading3->data->isPtTestNotPerformedRadio == 'yes')?'yes':'no';
                 if($data['is_pt_test_not_performed'] == 'yes'){
-                    $data['vl_not_tested_reason']           = '';
-                    $data['pt_test_not_performed_comments'] = '';
-                    $data['pt_support_comments']            = '';
-                }else{
                     $data['vl_not_tested_reason']           = $params["vlData"]->Heading3->data->yes->vlNotTestedReasonSelected;
                     $data['pt_test_not_performed_comments'] = $params["vlData"]->Heading3->data->yes->commentsTextArea;
                     $data['pt_support_comments']            = $params["vlData"]->Heading3->data->yes->supportTextArea;
+                }else{
+                    $data['vl_not_tested_reason']           = '';
+                    $data['pt_test_not_performed_comments'] = '';
+                    $data['pt_support_comments']            = '';
                 }
     
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
