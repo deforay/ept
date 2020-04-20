@@ -2023,10 +2023,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
                         $dts['Heading2']['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+                    }else{
+                        $dts['Heading2']['data']['modeOfReceiptSelect']     = '';
                     }
                 }else{
                     $dts['Heading2']['data']['responseDate']            = '';
-                    $dts['Heading2']['data']['modeOfReceiptSelect']     = $modeOfReceiptSelect;
+                    $dts['Heading2']['data']['modeOfReceiptSelect']     = '';
                 }
                 $dts['Heading2']['data']['modeOfReceiptSelected']     = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "")?$shipment["mode_id"]:'';
                 $qcArray = array('yes','no');$qc = array();
@@ -2035,7 +2037,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $qc['qcRadio']          = $qcResponseArr;
                 $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
-                $qc['qcDate']   = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
+                $qc['qcDate']   = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00' && $shipment['qc_date'] != null)?date('d-M-Y',strtotime($shipment['qc_date'])):'';
                 $qc['qcDoneBy'] = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
                 if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
                     $qc['status']                       = false;
@@ -2378,6 +2380,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
                         $heading2['data']['modeOfReceiptSelect']    = $modeOfReceiptSelect;
                         $heading2['data']['modeOfReceiptSelected']  = (isset($shipment['mode_id']) && $shipment['mode_id'] != "")?$shipment['mode_id']:'';
+                    }else{
+                        $heading2['data']['modeOfReceiptSelect']        = "";
+                        $heading2['data']['modeOfReceiptSelected']      = "";
                     }
                 }else{
                     $heading2['data']['responseDate']               = "";
@@ -2392,9 +2397,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $qc['qcRadio']          = $qcResponseArr;
             $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
-            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date']!='' && $shipment['qc_date'] !='0000:00:00')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
+            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date']!='' && $shipment['qc_date'] !='0000:00:00' && $shipment['qc_date'] != null)?date('d-M-Y',strtotime($shipment['qc_date'])):'';
             $qc['qcDoneBy']         = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
-            if($globalQcAccess != 'yes' && $dm['qc_access'] != 'yes'){
+            if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
                 $qc['status'] = false;
             }else{
                 $qc['status'] = true;
@@ -2586,7 +2591,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
                         $heading2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
                         $heading2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "")?$shipment["mode_id"]:'';
+                    }else{
+                        $heading2['data']['modeOfReceiptSelect'] = '';
+                        $heading2['data']['modeOfReceiptSelected'] = ''; 
                     }
+                }else{
+                    $heading2['data']['responseDate'] = '';
+                    $heading2['data']['modeOfReceiptSelect'] = '';
+                    $heading2['data']['modeOfReceiptSelected'] = ''; 
                 }
             }
 
@@ -2596,9 +2608,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $qc['qcRadio']          = $qcResponseArr;
             $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
-            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
+            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000-00-00' && $shipment['qc_date'] != null)?date('d-M-Y',strtotime($shipment['qc_date'])):'';
             $qc['qcDoneBy']         = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
-            if($globalQcAccess != 'yes' && $dm['qc_access'] != 'yes'){
+            if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
                 $qc['status'] = false;
             }else{
                 $qc['status'] = true;

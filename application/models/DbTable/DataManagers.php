@@ -488,7 +488,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* App version check */
         $aResult = $this->fetchRow("primary_email='" . $params['email'] . "'");
         if(!$aResult){
-            return array('status' =>'fail','message'=>'You have entered primary email not found');
+            return array('status' =>'fail','message'=>'Your email id is not registered. Please check again.');
         }
         /* Update the new password to the server */
         /* $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => $aResult['dm_id']));
