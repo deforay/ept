@@ -2022,7 +2022,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $dts['Heading2']['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
-                        $dts['Heading2']['data']['modeOfReceiptSelected']     = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "")?$shipment["mode_id"]:'';
+                        $dts['Heading2']['data']['modeOfReceiptSelected']     = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0)?$shipment["mode_id"]:'';
                     }else{
                         $dts['Heading2']['data']['modeOfReceiptSelected']     = '';
                     }
@@ -2378,7 +2378,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $heading2['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
-                        $heading2['data']['modeOfReceiptSelected']  = (isset($shipment['mode_id']) && $shipment['mode_id'] != "")?$shipment['mode_id']:'';
+                        $heading2['data']['modeOfReceiptSelected']  = (isset($shipment['mode_id']) && $shipment['mode_id'] != "" && $shipment['mode_id'] != 0)?$shipment['mode_id']:'';
                     }else{
                         $heading2['data']['modeOfReceiptSelected']      = "";
                     }
@@ -2587,7 +2587,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $heading2['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
-                        $heading2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "")?$shipment["mode_id"]:'';
+                        $heading2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0)?$shipment["mode_id"]:'';
                     }else{
                         $heading2['data']['modeOfReceiptSelected'] = ''; 
                     }
@@ -2943,7 +2943,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "participant_supervisor"        =>  $params["vlData"]->Heading4->data->approvalInputText,
                     "user_comment"                  =>  $params["vlData"]->Heading4->data->comments,
                     "updated_by_user"               =>  $dm['dm_id'],
-                    "mode_id"                       =>  (isset($params["vlData"]->Heading2->data->modeOfReceiptSelected) && $params["vlData"]->Heading2->data->modeOfReceiptSelected != "")?$params["vlData"]->Heading2->data->modeOfReceiptSelected:null,
+                    "mode_id"                       =>  (isset($params["vlData"]->Heading2->data->modeOfReceiptSelected) && $params["vlData"]->Heading2->data->modeOfReceiptSelected != "" && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')?$params["vlData"]->Heading2->data->modeOfReceiptSelected:null,
                     "updated_on_user"               =>  new Zend_Db_Expr('now()')
                 );
     
@@ -3007,7 +3007,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "participant_supervisor"    => (isset($params['dtsData']->Heading5->data->approvalInputText) && $params['dtsData']->Heading5->data->approvalInputText !='')?$params['dtsData']->Heading5->data->approvalInputText:'',
                     "user_comment"              => (isset($params['dtsData']->Heading5->data->comments) && $params['dtsData']->Heading5->data->comments != '')?$params['dtsData']->Heading5->data->comments:'',
                     "updated_by_user"           => $dm['dm_id'],
-                    "mode_id"                   => (isset($params['dtsData']->Heading2->data->modeOfReceiptSelected) && $params['dtsData']->Heading2->data->modeOfReceiptSelected != '')?$params['dtsData']->Heading2->data->modeOfReceiptSelected:'',
+                    "mode_id"                   => (isset($params['dtsData']->Heading2->data->modeOfReceiptSelected) && $params['dtsData']->Heading2->data->modeOfReceiptSelected != '' && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')?$params['dtsData']->Heading2->data->modeOfReceiptSelected:'',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
 
@@ -3073,7 +3073,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "participant_supervisor"    => $params['eidData']->Heading4->data->approvalInputText,
                     "user_comment"              => $params['eidData']->Heading4->data->comments,
                     "updated_by_user"           => $dm['dm_id'],
-                    "mode_id"                   => $params['eidData']->Heading2->data->modeOfReceiptSelected,
+                    "mode_id"                   => (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')?$params['eidData']->Heading2->data->modeOfReceiptSelected:'',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
 
