@@ -2022,15 +2022,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $dts['Heading2']['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
-                        $dts['Heading2']['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+                        $dts['Heading2']['data']['modeOfReceiptSelected']     = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "")?$shipment["mode_id"]:'';
                     }else{
-                        $dts['Heading2']['data']['modeOfReceiptSelect']     = '';
+                        $dts['Heading2']['data']['modeOfReceiptSelected']     = '';
                     }
                 }else{
                     $dts['Heading2']['data']['responseDate']            = '';
-                    $dts['Heading2']['data']['modeOfReceiptSelect']     = '';
+                    $dts['Heading2']['data']['modeOfReceiptSelected']     = '';
                 }
-                $dts['Heading2']['data']['modeOfReceiptSelected']     = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "")?$shipment["mode_id"]:'';
+                $dts['Heading2']['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
                 $qcArray = array('yes','no');$qc = array();
                 foreach($qcArray as $row){
                     $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no'))?'selected':'');
@@ -2378,17 +2378,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $heading2['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
-                        $heading2['data']['modeOfReceiptSelect']    = $modeOfReceiptSelect;
                         $heading2['data']['modeOfReceiptSelected']  = (isset($shipment['mode_id']) && $shipment['mode_id'] != "")?$shipment['mode_id']:'';
                     }else{
-                        $heading2['data']['modeOfReceiptSelect']        = "";
                         $heading2['data']['modeOfReceiptSelected']      = "";
                     }
                 }else{
                     $heading2['data']['responseDate']               = "";
-                    $heading2['data']['modeOfReceiptSelect']        = "";
                     $heading2['data']['modeOfReceiptSelected']      = "";
                 }
+                $heading2['data']['modeOfReceiptSelect']    = $modeOfReceiptSelect;
             }
 
             $qcArray = array('yes','no');$qc = array();
@@ -2589,17 +2587,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $heading2['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
-                        $heading2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
                         $heading2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "")?$shipment["mode_id"]:'';
                     }else{
-                        $heading2['data']['modeOfReceiptSelect'] = '';
                         $heading2['data']['modeOfReceiptSelected'] = ''; 
                     }
                 }else{
                     $heading2['data']['responseDate'] = '';
-                    $heading2['data']['modeOfReceiptSelect'] = '';
                     $heading2['data']['modeOfReceiptSelected'] = ''; 
                 }
+                $heading2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
             }
 
             $qcArray = array('yes','no');$qc = array();
