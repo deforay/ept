@@ -2037,7 +2037,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $qc['qcRadio']          = $qcResponseArr;
                 $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
-                $qc['qcDate']   = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00' && $shipment['qc_date'] != null)?date('d-M-Y',strtotime($shipment['qc_date'])):'';
+                $qc['qcDate']   = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
                 $qc['qcDoneBy'] = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
                 if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
                     $qc['status']                       = false;
@@ -2138,9 +2138,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $testKitArray['kitText'] = array('Test-1','Test-2','Test-3');
             if(isset($allSamples) && count($allSamples) > 0){
                 $dts['Heading3']['status'] = true;
-                $testKitArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_1"])):'';
-                $testKitArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_2"])):'';
-                $testKitArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] !="0000-00-00")?date('d-M-Y',strtotime($allSamples[0]["exp_date_3"])):'';
+                $testKitArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] !="0000-00-00" && $allSamples[0]["exp_date_1"] != '1969-12-31')?date('d-M-Y',strtotime($allSamples[0]["exp_date_1"])):'';
+                $testKitArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] !="0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31')?date('d-M-Y',strtotime($allSamples[0]["exp_date_2"])):'';
+                $testKitArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] !="0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31')?date('d-M-Y',strtotime($allSamples[0]["exp_date_3"])):'';
                 $testKitArray['kitValue'][0] = (isset($allSamples[0]["test_kit_name_1"]) && trim($allSamples[0]["test_kit_name_1"]) != "")?$allSamples[0]["test_kit_name_1"]:'';
                 $testKitArray['kitValue'][1] = (isset($allSamples[0]["test_kit_name_2"]) && trim($allSamples[0]["test_kit_name_2"]) != "")?$allSamples[0]["test_kit_name_2"]:'';
                 $testKitArray['kitValue'][2] = (isset($allSamples[0]["test_kit_name_3"]) && trim($allSamples[0]["test_kit_name_3"]) != "")?$allSamples[0]["test_kit_name_3"]:'';
@@ -2395,7 +2395,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $qc['qcRadio']          = $qcResponseArr;
             $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
-            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date']!='' && $shipment['qc_date'] !='0000:00:00' && $shipment['qc_date'] != null)?date('d-M-Y',strtotime($shipment['qc_date'])):'';
+            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date']!='' && $shipment['qc_date'] !='0000:00:00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
             $qc['qcDoneBy']         = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
             if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
                 $qc['status'] = false;
@@ -2604,7 +2604,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $qc['qcRadio']          = $qcResponseArr;
             $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
-            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000-00-00' && $shipment['qc_date'] != null)?date('d-M-Y',strtotime($shipment['qc_date'])):'';
+            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000-00-00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
             $qc['qcDoneBy']         = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
             if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
                 $qc['status'] = false;
@@ -2959,10 +2959,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
     
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
-                    $data['qc_done'] = $params["vlData"]->Heading2->data->qcData->qcRadioSelected;
-                    $data['qc_date']        = date('Y-m-d',strtotime($params["vlData"]->Heading2->data->qcData->qcDate));
-                    $data['qc_done_by']     = trim($params["vlData"]->Heading2->data->qcData->qcDoneBy);
-                    $data['qc_created_on']  = new Zend_Db_Expr('now()');
+                    $data['qc_done'] = $params['dtsData']->Heading2->data->qcData->qcRadioSelected;
+                    if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
+                        $data['qc_date'] = (isset($params['dtsData']->Heading2->data->qcData->qcDate) && $params['dtsData']->Heading2->data->qcData->qcDate != '')?date('Y-m-d',strtotime($params['dtsData']->Heading2->data->qcData->qcDate)):'';
+                        $data['qc_done_by'] = (isset($params['dtsData']->Heading2->data->qcData->qcDoneBy) && $params['dtsData']->Heading2->data->qcData->qcDoneBy != '')?$params['dtsData']->Heading2->data->qcData->qcDoneBy:'';
+                        $data['qc_created_on'] = new Zend_Db_Expr('now()');
+                    } else {
+                        $data['qc_date'] = '';
+                        $data['qc_done_by'] = '';
+                        $data['qc_created_on'] = '';
+                    }
                 }
                 // Zend_Debug::dump($data);die;
 
@@ -3023,7 +3029,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $data['qc_created_on'] = '';
                     }
                 }
-                // Zend_Debug::dump($data);die;
 
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
