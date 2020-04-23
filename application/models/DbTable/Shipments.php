@@ -2959,10 +2959,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
     
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
-                    $data['qc_done'] = $params['dtsData']->Heading2->data->qcData->qcRadioSelected;
+                    $data['qc_done'] = $params['vlData']->Heading2->data->qcData->qcRadioSelected;
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                        $data['qc_date'] = (isset($params['dtsData']->Heading2->data->qcData->qcDate) && $params['dtsData']->Heading2->data->qcData->qcDate != '')?date('Y-m-d',strtotime($params['dtsData']->Heading2->data->qcData->qcDate)):'';
-                        $data['qc_done_by'] = (isset($params['dtsData']->Heading2->data->qcData->qcDoneBy) && $params['dtsData']->Heading2->data->qcData->qcDoneBy != '')?$params['dtsData']->Heading2->data->qcData->qcDoneBy:'';
+                        $data['qc_date'] = (isset($params['vlData']->Heading2->data->qcData->qcDate) && $params['vlData']->Heading2->data->qcData->qcDate != '')?date('Y-m-d',strtotime($params['vlData']->Heading2->data->qcData->qcDate)):'';
+                        $data['qc_done_by'] = (isset($params['vlData']->Heading2->data->qcData->qcDoneBy) && $params['vlData']->Heading2->data->qcData->qcDoneBy != '')?$params['vlData']->Heading2->data->qcData->qcDoneBy:'';
                         $data['qc_created_on'] = new Zend_Db_Expr('now()');
                     } else {
                         $data['qc_date'] = '';
@@ -2976,13 +2976,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
                 // $haveCustom;
                 if(isset($haveCustom) && $haveCustom != 'no'){
-                    if (isset($params['vlData']->customFields->data->customField1Val) && trim($params['vlData']->customFields->data->customField1Val) != "") {
+                    // if (isset($params['vlData']->customFields->data->customField1Val) && trim($params['vlData']->customFields->data->customField1Val) != "") {
                         $data['custom_field_1'] = $params['vlData']->customFields->data->customField1Val;
-                    }
+                    // }
     
-                    if (isset($params['vlData']->customFields->data->customField2Val) && trim($params['vlData']->customFields->data->customField2Val) != "") {
+                    // if (isset($params['vlData']->customFields->data->customField2Val) && trim($params['vlData']->customFields->data->customField2Val) != "") {
                         $data['custom_field_2'] = $params['vlData']->customFields->data->customField2Val;
-                    }
+                    // }
                 }
 
                 $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data,$dm,$params);
@@ -3034,13 +3034,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
                 // $haveCustom;
                 if(isset($haveCustom) && $haveCustom != 'no'){
-                    if (isset($params['dtsData']->customFields->data->customField1Val) && trim($params['dtsData']->customFields->data->customField1Val) != "") {
+                    // if (isset($params['dtsData']->customFields->data->customField1Val) && trim($params['dtsData']->customFields->data->customField1Val) != "") {
                         $data['custom_field_1'] = $params['dtsData']->customFields->data->customField1Val;
-                    }
+                    // }
     
-                    if (isset($params['dtsData']->customFields->data->customField2Val) && trim($params['dtsData']->customFields->data->customField2Val) != "") {
+                    // if (isset($params['dtsData']->customFields->data->customField2Val) && trim($params['dtsData']->customFields->data->customField2Val) != "") {
                         $data['custom_field_2'] = $params['dtsData']->customFields->data->customField2Val;
-                    }
+                    // }
                 }
 
                 $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data,$dm,$params);
@@ -3110,13 +3110,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
                 // $haveCustom;
                 if(isset($haveCustom) && $haveCustom != 'no'){
-                    if (isset($params['eidData']->customFields->data->customField1Val) && trim($params['eidData']->customFields->data->customField1Val) != "") {
+                    // if (isset($params['eidData']->customFields->data->customField1Val) && trim($params['eidData']->customFields->data->customField1Val) != "") {
                         $data['custom_field_1'] = $params['eidData']->customFields->data->customField1Val;
-                    }
+                    // }
     
-                    if (isset($params['eidData']->customFields->data->customField2Val) && trim($params['eidData']->customFields->data->customField2Val) != "") {
+                    // if (isset($params['eidData']->customFields->data->customField2Val) && trim($params['eidData']->customFields->data->customField2Val) != "") {
                         $data['custom_field_2'] = $params['eidData']->customFields->data->customField2Val;
-                    }
+                    // }
                 }
 
                 $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data,$dm,$params);
