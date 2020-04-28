@@ -18,15 +18,23 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             $testKits[1] =$this->getRequest()->getPost('testkit1');
             $testKits[2] =$this->getRequest()->getPost('testkit2');
             $testKits[3] =$this->getRequest()->getPost('testkit3');
+            
             $schemeService->setRecommededDtsTestkit($testKits);
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
+
+
+            $allowedAlgorithms = $this->getRequest()->getPost('allowedAlgorithms');
+            $allowedAlgorithms = implode(",",$allowedAlgorithms);
+
+            
 
             $config->$sec->evaluation->dts->passPercentage = $this->getRequest()->getPost('dtsPassPercentage');
             $config->$sec->evaluation->dts->documentationScore = $this->getRequest()->getPost('dtsDocumentationScore');
             $config->$sec->evaluation->dts->dtsOptionalTest3 = $this->getRequest()->getPost('dtsOptionalTest3');
             $config->$sec->evaluation->dts->dtsEnforceAlgorithmCheck = $this->getRequest()->getPost('dtsEnforceAlgorithmCheck');
             $config->$sec->evaluation->dts->sampleRehydrateDays = $this->getRequest()->getPost('sampleRehydrateDays');
+            $config->$sec->evaluation->dts->allowedAlgorithms = !empty($allowedAlgorithms) ? $allowedAlgorithms : '';
 
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)

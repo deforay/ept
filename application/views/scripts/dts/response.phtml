@@ -141,13 +141,14 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             </td>
                             <td><label>Algorithm Used <span class='mandatory'>*</span></label></td>
                             <td>
-                                <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;">
+                                <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;" onchange="showHideTest3();">
                                     <option value="">--Select--</option>
                                     <?php if (!empty($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->dtsEnforceAlgorithmCheck == 'yes') { ?>
-                                        <option value="not-reported" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'not-reported') ? "selected='selected'" : ''; ?>>Not Reported</option>
+                                        <!-- <option value="not-reported" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'not-reported') ? "selected='selected'" : ''; ?>>Not Reported</option> -->
                                     <?php } ?>
                                     <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>
                                     <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
+                                    <option value="threeTestsDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'threeTestsDtsAlgo') ? "selected='selected'" : ''; ?>>Three Tests Algorithm</option>
                                 </select>
                             </td>
                         </tr>
@@ -254,9 +255,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <th style="width:12%;"></th>
                                 <th>Test-1</th>
                                 <th>Test-2</th>
-                                <?php if (!$testThreeOptional) { ?>
-                                    <th>Test-3</th>
-                                <?php } ?>
+
+                                <th class='testThree'>Test-3</th>
+
                                 <th></th>
                             </tr>
                         </thead>
@@ -294,24 +295,23 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 </select>
                                 <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name" />
                             </td>
-                            <?php if (!$testThreeOptional) { ?>
-                                <td width="20%">
-                                    <select name="test_kit_name_3" id="test_kit_name_3" style="width: 200px" class="form-control" title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
-                                        <option value=""> ---Select Kit---</option>
-                                        <?php
-                                        foreach ($this->allTestKits as $key => $testkit) {
-                                            if ($testkit['testkit_3'] == '1') {
-                                        ?>
-                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                        <?php
-                                            }
+
+                            <td width="20%" class='testThree'>
+                                <select name="test_kit_name_3" id="test_kit_name_3" style="width: 200px" class="form-control" title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
+                                    <option value=""> ---Select Kit---</option>
+                                    <?php
+                                    foreach ($this->allTestKits as $key => $testkit) {
+                                        if ($testkit['testkit_3'] == '1') {
+                                    ?>
+                                            <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                    <?php
                                         }
-                                        ?>
-                                        <option value="other">Other</option>
-                                    </select>
-                                    <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name" />
-                                </td>
-                            <?php } ?>
+                                    }
+                                    ?>
+                                    <option value="other">Other</option>
+                                </select>
+                                <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="width: 200px;display: none;" placeholder="Enter Kit Name" />
+                            </td>
                             <td rowspan="3"></td>
 
 
@@ -334,9 +334,8 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             <th>Lot No.</th>
                             <td><input type="text" class="form-control" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" style="width: 200px" class="" title="Please enter Lot No. 1" /></td>
                             <td><input type="text" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" style="width: 200px" class="" title="Please enter Lot No. 2" /></td>
-                            <?php if (!$testThreeOptional) { ?>
-                                <td><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" style="width: 200px" class="" title="Please enter Lot No. 3" /></td>
-                            <?php } ?>
+                            <td class='testThree'><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" style="width: 200px" class="" title="Please enter Lot No. 3" /></td>
+
 
 
 
@@ -359,9 +358,8 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             <th>Exp Date</th>
                             <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="width:140px;float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> Clear</i></td>
                             <td><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="width:140px;float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> Clear</i></td>
-                            <?php if (!$testThreeOptional) { ?>
-                                <td><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="width:140px;float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> Clear</i></td>
-                            <?php } ?>
+                            <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="width:140px;float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> Clear</i></td>
+
 
                         </tr>
                         <thead>
@@ -369,9 +367,8 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <th></th>
                                 <th>Result-1</th>
                                 <th>Result-2</th>
-                                <?php if (!$testThreeOptional) { ?>
-                                    <th>Result-3</th>
-                                <?php } ?>
+                                <th class='testThree'>Result-3</th>
+
                                 <th>Final Result</th>
                             </tr>
                         </thead>
@@ -398,13 +395,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                         <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
                                     </select>
                                 </td>
-                                <?php if (!$testThreeOptional) { ?>
-                                    <td width="20%">
-                                        <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" class="form-control">
-                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
-                                        </select>
-                                    </td>
-                                <?php } ?>
+                                <td width="20%" class='testThree'>
+                                    <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" class="form-control">
+                                        <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
+                                    </select>
+                                </td>
 
                                 <td width="20%">
                                     <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" class="form-control" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" style="float: left;width:150px;">
@@ -487,11 +482,24 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     </div>
 </section>
 <script>
+    function showHideTest3() {
+
+        var test3Optional = "<?php echo $testThreeOptional ? 'yes' : 'no'; ?>";
+
+        if (test3Optional == 'yes' && $("#algorithm").val() != 'threeTestsDtsAlgo') {
+            $('.testThree').hide();
+        } else {
+            $('.testThree').show();
+        }
+
+    }
+
     function goto_dashboard() {
         window.history.back();
     }
 
     $(function() {
+        showHideTest3();
         //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
         $(".datepicker,.expDatepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
