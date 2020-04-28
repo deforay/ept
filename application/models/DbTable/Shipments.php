@@ -1992,21 +1992,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 );
             }
             // Shipement Result end // For algorithmUsed start
-            $algorithmUsedSelect = array();
-            if(!empty($config->evaluation->dts->dtsEnforceAlgorithmCheck) && $config->evaluation->dts->dtsEnforceAlgorithmCheck == 'yes') {
-                if($testThreeOptional){
-                    $algorithmUsedSelectOptions = array('not-reported','serial','parallel','threeTestsDtsAlgo');
-                }else{
-                    $algorithmUsedSelectOptions = array('not-reported','serial','parallel');
-                }
-            }else{
-                if($testThreeOptional){
-                    $algorithmUsedSelectOptions = array('serial','parallel','threeTestsDtsAlgo');
-                }else{
-                    $algorithmUsedSelectOptions = array('serial','parallel');
+            $allowedAlgorithms = isset($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : array();
+            $algorithmUsedSelect = array();$algorithmUsedSelectOptions = array();
+            
+            if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) {
+                array_push($algorithmUsedSelectOptions,'serial');
+            }
+            if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) {
+                array_push($algorithmUsedSelectOptions,'parallel');
+            }
+            if($testThreeOptional){
+                if (!empty($allowedAlgorithms) && in_array('threeTestsDtsAlgo', $allowedAlgorithms)) {
+                    array_push($algorithmUsedSelectOptions,'threeTestsDtsAlgo');
                 }
             }
-            
             foreach($algorithmUsedSelectOptions as $row){
                 $algorithmUsedSelect[]      = array('value' => $row,'show' => ($row!='threeTestsDtsAlgo')?ucwords($row):'Three Tests Algorithm','selected'=>(isset($shipment['attributes']["algorithm"]) && ($shipment['attributes']["algorithm"] == $row)?'selected':''));
             }
