@@ -7,6 +7,9 @@
 // Zend_Debug::dump($this->allSamples);die;
 
 $testThreeOptional = false;
+
+$allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
+
 if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
     $testThreeOptional = true;
 }
@@ -146,9 +149,18 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                     <?php if (!empty($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->dtsEnforceAlgorithmCheck == 'yes') { ?>
                                         <!-- <option value="not-reported" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'not-reported') ? "selected='selected'" : ''; ?>>Not Reported</option> -->
                                     <?php } ?>
-                                    <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>
-                                    <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
-                                    <option value="threeTestsDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'threeTestsDtsAlgo') ? "selected='selected'" : ''; ?>>Three Tests Algorithm</option>
+                                    <?php if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
+                                        <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>
+                                    <?php } ?>
+                                    <?php if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
+                                        <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
+                                    <?php } ?>
+                                    <?php if (!empty($allowedAlgorithms) && in_array('threeTestsDtsAlgo', $allowedAlgorithms)) { ?>
+                                        <option value="threeTestsDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'threeTestsDtsAlgo') ? "selected='selected'" : ''; ?>>Three Tests Algorithm</option>
+                                    <?php } ?>
+
+
+
                                 </select>
                             </td>
                         </tr>
