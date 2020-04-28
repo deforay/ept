@@ -825,15 +825,15 @@ class Application_Service_Evaluation
 		$mapRes = array();
 		$penResult = array();
 		$shipmentResult = array();
-		$vlGraphResult = array();	
-			
+		$vlGraphResult = array();
+
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$schemeService = new Application_Service_Schemes();
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
 			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
-			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status','p.institute_name','p.state', 'p.city','p.region'))
+			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.region'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId)
@@ -1546,8 +1546,8 @@ class Application_Service_Evaluation
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
 			->join(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
 			->where("sp.shipment_id = ?", $shipmentId);
-			//->where("p.status = 'active'")
-			//->group('s.shipment_id');
+		//->where("p.status = 'active'")
+		//->group('s.shipment_id');
 
 		//echo $sQuery;die;
 
@@ -1582,7 +1582,7 @@ class Application_Service_Evaluation
 
 				$createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
 			} else {
-				$datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
+				//$datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
 				$createdOn = null;
 				// $datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
 				// $createdOn = new Zend_Date($datearray);
@@ -1907,6 +1907,9 @@ class Application_Service_Evaluation
 			//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
 			//$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
 
+			// 3 tests algo added for Myanmar initally, might be used in other places eventually
+			//$threeTestCorrectResponses = array('PXX','PPP');  
+
 			$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 
 			// Getting the Test Date string to show in Corrective Actions and other sentences
@@ -2194,7 +2197,7 @@ class Application_Service_Evaluation
 						}
 					}
 
-					$algoString = "Wrongly reported in the pattern : <strong>" . $r1 . "</strong> <strong>" . $r2 . "</strong> <strong>" . $r3 . "</strong>";
+					//$algoString = "Wrongly reported in the pattern : <strong>" . $r1 . "</strong> <strong>" . $r2 . "</strong> <strong>" . $r3 . "</strong>";
 
 					if ($attributes['algorithm'] == 'serial') {
 						if ($r1 == 'NR') {
@@ -2274,7 +2277,25 @@ class Application_Service_Evaluation
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else { }
+					} else if ($attributes['algorithm'] == 'threeTestsDtsAlgo') {
+						if ($r1 == 'R' && $r2 == 'R' && $r3 == 'R') {
+							$algoResult = 'Pass';
+						} else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'NR') {
+							$algoResult = 'Pass';
+						} else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'R') {
+							$algoResult = 'Pass';
+						} else if ($r1 == 'R' && $r2 == 'R' && $r3 == 'NR') {
+							$algoResult = 'Pass';
+						} else {
+							$algoResult = 'Fail';
+							$failureReason[] = array(
+								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+								'correctiveAction' => $correctiveActions[2]
+							);
+							$correctiveActionList[] = 2;
+						}
+					} else {
+					}
 				} else {
 					// If there are two kit used for the participants then the control
 					// needs to be tested with at least both kit.

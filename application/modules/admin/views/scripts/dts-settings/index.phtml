@@ -1,127 +1,147 @@
 <?php
 // Zend_Debug::dump($this->allSchemes);die;
+
+$allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : null;
+
+
 ?>
 <div class="well">
     <form name="dtsSettingsForm" id="dtsSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "dts-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
             <legend>DTS HIV Serology Settings</legend>
-            
+
             <div class="form-group">
                 <label for="dtsPassPercentage" class="col-lg-3 control-label">DTS Pass Percentage <span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
-					<input type="text" id="dtsPassPercentage" name="dtsPassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo $this->config->evaluation->dts->passPercentage; ?>"/>
-					<span class="input-group-addon">%</span>
-				</div>				
+                    <input type="text" id="dtsPassPercentage" name="dtsPassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo $this->config->evaluation->dts->passPercentage; ?>" />
+                    <span class="input-group-addon">%</span>
+                </div>
             </div>
-			
+
             <div class="form-group">
                 <label for="dtsPassPercentage" class="col-lg-3 control-label">DTS Documentation Score (Percentage)<span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
-					<input type="text" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Documentation Score Percentage" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>"/>
-					<span class="input-group-addon">%</span>
-				</div>				
+                    <input type="text" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Documentation Score Percentage" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>" />
+                    <span class="input-group-addon">%</span>
+                </div>
             </div>
-			
-            <div class="form-group">
-                <label for="dtsOptionalTest3" class="col-lg-3 control-label">DTS Test 3 is Optional<span class="mandatory">*</span></label>
-				<div class="col-lg-6">
-					<input type="radio" name="dtsOptionalTest3" id="dtsOptionalTest3_yes" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3=="yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether 3rd Test Is optional or not"/> Yes
-					<input type="radio" name="dtsOptionalTest3" id="dtsOptionalTest3_no" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
-				</div>			
+
+            <div class="form-group dtsOptionalTest3Div">
+                <label for="dtsOptionalTest3" class="col-lg-3 control-label">DTS Test 3 is Optional <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <select class="form-control isRequired" id="dtsOptionalTest3" name="dtsOptionalTest3" title="Please select if test 3 is optional">
+                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
+                        <option value="no" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == "no") ? " selected='selected' " : ""; ?>>No</option>
+                    </select>
+                    <small class="mandatory">Note: Optional Test 3 functionality is applicable only for Serial and Parallel algorithms</small>
+                </div>
             </div>
-			
-            <div class="form-group">
+
+            <!-- <div class="form-group">
                 <label for="dtsEnforceAlgorithmCheck" class="col-lg-3 control-label">Algorithm required in reporting ?<span class="mandatory">*</span></label>
-				<div class="col-lg-6">
-					<input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_yes" class="isRequired" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck=="yes") ? " checked='checked' " : ""; ?> value="yes" title="Is algorithm required in reporting ?"/> Yes
-					<input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_no" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
-				</div>			
+                <div class="col-lg-6">
+                    <input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_yes" class="isRequired" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Is algorithm required in reporting ?" /> Yes
+                    <input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_no" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck == "no") ? " checked='checked' " : ""; ?> value="no" /> No
+                </div>
+            </div> -->
+            <div class="form-group">
+                <label for="sampleRehydrateDays" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
+                        <option value="1" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1</option>
+                        <option value="2" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2</option>
+                    </select>
+                </div>
             </div>
-			<div class="form-group">
-				<label for="schemeId" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
-				<div class="col-lg-6">  
-					<select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
-						<option value="1" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays=="1") ? " selected='selected' " : ""; ?>>1</option>
-						<option value="2" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays=="2") ? " selected='selected' " : ""; ?>>2</option>
-					</select>
-				</div>
-			 </div>
-			<p class="mandatory">Note : <br/>
-			<ul>
-				<li>If a response does not contain the following recommended Testkits, participants will not pass for the respective samples.</li>
-				<li>If you don't want to enforce the testkit check, please leave the following 3 options blank</li>
-				<li>Please set the <a href="/admin/testkit/standard-kit">DTS Standard Testkits</a> before you do the below</li>
-			</ul>
-			
-			</p>
-			<div class="form-group">
-				<label for="testkit1" class="col-lg-3 control-label">Recommended Testkit 1</label>
-				<div class="col-lg-6">  
-					<select name="testkit1[]" id="testkit1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+
+            <div class="form-group">
+                <label for="allowedAlgorithms" class="col-lg-3 control-label">Allowed Algorithms <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="allowedAlgorithms[]" multiple="multiple" title="Please select allowed algorithms">
+                        <option value="serial" <?php echo (!empty($allowedAlgorithms) && in_array("serial", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Serial</option>
+                        <option value="parallel" <?php echo (!empty($allowedAlgorithms) && in_array("parallel", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Parallel</option>
+                        <option value="threeTestsDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("threeTestsDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Three Tests Algorithm</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <br>
+            <p class="mandatory">Note : <br />
+                <ul>
+                    <li>If a response does not contain the following recommended Testkits, participants will not pass for the respective samples.</li>
+                    <li>If you don't want to enforce the testkit check, please leave the following 3 options blank</li>
+                    <li>Please set the <a href="/admin/testkit/standard-kit">DTS Standard Testkits</a> before you do the below</li>
+                </ul>
+
+            </p>
+            <div class="form-group">
+                <label for="testkit1" class="col-lg-3 control-label">Recommended Testkit 1</label>
+                <div class="col-lg-6">
+                    <select name="testkit1[]" id="testkit1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
                         <?php
                         foreach ($this->allTestKits as $key => $testkit) {
                             if ($testkit['testkit_1'] == '1') {
-                                ?>
-                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'],$this->recommendedTestkits[1])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                <?php
+                        ?>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->recommendedTestkits[1])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                        <?php
                             }
                         }
                         ?>
                     </select>
-				</div>
-			 </div>
-			
-			<div class="form-group">
-				<label for="testkit2" class="col-lg-3 control-label">Recommended Testkit 2</label>
-				<div class="col-lg-6">  
-					<select name="testkit2[]" id="testkit2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="testkit2" class="col-lg-3 control-label">Recommended Testkit 2</label>
+                <div class="col-lg-6">
+                    <select name="testkit2[]" id="testkit2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
                         <?php
                         foreach ($this->allTestKits as $key => $testkit) {
                             if ($testkit['testkit_2'] == '1') {
-                                ?>
-                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'],$this->recommendedTestkits[2])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                <?php
+                        ?>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->recommendedTestkits[2])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                        <?php
                             }
                         }
                         ?>
                     </select>
-				</div>
-			 </div>
-			
-			
-			<div class="form-group">
-				<label for="testkit3" class="col-lg-3 control-label">Recommended Testkit 3</label>
-				<div class="col-lg-6">  
-					<select name="testkit3[]" id="testkit3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="testkit3" class="col-lg-3 control-label">Recommended Testkit 3</label>
+                <div class="col-lg-6">
+                    <select name="testkit3[]" id="testkit3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
                         <?php
                         foreach ($this->allTestKits as $key => $testkit) {
                             if ($testkit['testkit_3'] == '1') {
-                                ?>
-                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'],$this->recommendedTestkits[3])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                <?php
+                        ?>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->recommendedTestkits[3])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                        <?php
                             }
                         }
                         ?>
                     </select>
-				</div>
-			 </div>
-			
+                </div>
+            </div>
+
 
             </table>
             <br>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update"/>
-                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back"/>
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
             </div>
         </fieldset>
     </form>
 </div>
 
 <script type="text/javascript">
-	function validateNow() {
+    function validateNow() {
 
-	//checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Survey. Please try something else.')
+        //checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Survey. Please try something else.')
         flag = deforayValidator.init({
             formId: 'dtsSettingsForm'
         });
@@ -129,10 +149,28 @@
             $.blockUI();
             document.getElementById('dtsSettingsForm').submit();
         }
-	}
-          $(document).ready(function() {
-				$('.multipleSelect').multiselect({
-					includeSelectAllOption: true
-				});
-			});
+    }
+    $(document).ready(function() {
+        $('.multipleSelect').multiselect({
+            includeSelectAllOption: true
+        });
+        checkIfTest3IsMandatory();
+    });
+
+
+    // function checkIfTest3IsMandatory() {
+    //     var allowedAlgorithms = $("#allowedAlgorithms").val();
+    //     console.log(allowedAlgorithms);
+    //     if (allowedAlgorithms) {
+    //         if ($.inArray('threeTestsDtsAlgo', allowedAlgorithms)) {
+    //             $("#dtsOptionalTest3").val('no');
+    //             $("#dtsOptionalTest3").removeClass('isRequired');
+    //             $(".dtsOptionalTest3Div").hide();
+    //         }else{
+    //             $("#dtsOptionalTest3").val('');
+    //             $("#dtsOptionalTest3").addClass('isRequired');
+    //             $(".dtsOptionalTest3Div").show();
+    //         }
+    //     }
+    // }
 </script>
