@@ -101,7 +101,11 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
         $testThreeOptional = false;
         if(isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes'){
-            $testThreeOptional = true;
+            if(isset($params['dtsData']->Heading2->data->algorithmUsedSelected) && $params['dtsData']->Heading2->data->algorithmUsedSelected == 'threeTestsDtsAlgo'){
+                $testThreeOptional = false;
+            }else{
+                $testThreeOptional = true;
+            }
         }
         $sampleIds = $params['dtsData']->Heading4->data->samples->id;
         foreach($sampleIds as $key => $sampleId){
