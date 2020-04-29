@@ -238,7 +238,7 @@ try {
                 array('spm' => 'shipment_participant_map'),
                 array(
                     'participant_count' => new Zend_Db_Expr('count("participant_id")'),
-                    'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00' OR is_pt_test_not_performed !='yes')")
+                    'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")
                 )
             )
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array())
@@ -253,6 +253,10 @@ try {
             $logoRight = $reportService->getReportConfigValue('logo-right');
             $possibleDtsResults = $schemeService->getPossibleResults('dts');
             $passPercentage = $commonService->getConfig('pass_percentage');
+            $comingFrom = 'generateReport';
+            $customField1 = $commonService->getConfig('custom_field_1');
+            $customField2 = $commonService->getConfig('custom_field_2');
+            $haveCustom = $commonService->getConfig('custom_field_needed');
 
             $startValue = 1;
             for ($startValue = 1; $startValue <= $totParticipantsRes['reported_count']; $startValue = $startValue + 50) {
@@ -269,14 +273,14 @@ try {
 
             // SUMMARY REPORT
 
-            $resultArray = $evalService->getSummaryReportsInPdf($evalRow['shipment_id']);
+            /* $resultArray = $evalService->getSummaryReportsInPdf($evalRow['shipment_id']);
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
             $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
 
             if (count($resultArray) > 0) {
                 include('generate-summary-pdf.php');
-            }
+            } */
 
 
             $db->update('shipment', array('status' => 'evaluated', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);

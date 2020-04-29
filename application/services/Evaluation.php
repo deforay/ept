@@ -167,7 +167,7 @@ class Application_Service_Evaluation
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
-			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('map_id', 'responseDate' => 'shipment_test_report_date', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00' OR is_pt_test_not_performed ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)"), 'last_not_participated_mailed_on', 'last_not_participated_mail_count', 'shipment_status' => 's.status'))
+			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('map_id', 'responseDate' => 'shipment_test_report_date', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)"), 'last_not_participated_mailed_on', 'last_not_participated_mail_count', 'shipment_status' => 's.status'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
 			->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
 			->where("s.distribution_id = ?", $distributionId)
@@ -180,7 +180,7 @@ class Application_Service_Evaluation
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'), array(''))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array(''))
-			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('reported_count' => new Zend_Db_Expr("SUM((shipment_test_date <> '0000-00-00' AND shipment_test_date is NOT NULL AND shipment_test_date != '' ) OR is_pt_test_not_performed ='yes')")))
+			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('reported_count' => new Zend_Db_Expr("SUM((shipment_test_date not like  '0000-00-00' AND shipment_test_date is NOT NULL AND shipment_test_date not like '' ) OR is_pt_test_not_performed ='yes')")))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array(''))
 			->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array(''))
 			->where("s.shipment_id = ?", $shipmentId)
@@ -938,7 +938,7 @@ class Application_Service_Evaluation
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 					//->where("sp.is_pt_test_not_performed is NULL")
 					//->where("sp.is_excluded ='no'")
-					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00 00:00:00' AND sp.shipment_test_date!='0000-00-00'")
+					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00 00:00:00' AND sp.shipment_test_date not like '0000-00-00'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 
 				//echo $sql;die;
@@ -1262,7 +1262,7 @@ class Application_Service_Evaluation
 				$schemeService = new Application_Service_Schemes();
 				$extractionAssay = $schemeService->getEidExtractionAssay();
 				$detectionAssay = $schemeService->getEidDetectionAssay();
-				$pQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.documentation_score', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date <> '0000-00-00' OR is_pt_test_not_performed !='yes')")))
+				$pQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.documentation_score', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")))
 					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
 					->where("spm.shipment_id = ?", $shipmentId)
 					->group('spm.shipment_id');
@@ -1409,7 +1409,7 @@ class Application_Service_Evaluation
 					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
 					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
 					->where("spm.shipment_id = ?", $shipmentId)
-					->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date!='' AND spm.shipment_test_date!='0000-00-00 00:00:00' OR spm.is_pt_test_not_performed ='yes'")
+					->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00 00:00:00' OR spm.is_pt_test_not_performed ='yes'")
 					->group('spm.map_id');
 
 				$sQueryRes = $db->fetchAll($sQuery);
@@ -1433,12 +1433,16 @@ class Application_Service_Evaluation
 
 				$countedAssayResult =  $db->fetchAll($refVlQuery);
 
-				$regexpArray = array();
+				$regexpArray = array();$regexp= '';
 				foreach ($countedAssayResult as $crow) {
 					$regexpArray[] = '\'%"vl_assay":"' . $crow['vl_assay'] . '"%\'';
 				}
 				// select * from shipment_participant_map where `attributes` NOT REGEXP '\"vl_assay\":\"1\" |\"vl_assay\":\"4\" |\"vl_assay\":\"2\"' and shipment_id = 11
-				$regexp = implode(' AND `attributes` NOT LIKE ', $regexpArray);
+				if(count($regexpArray) > 0){
+					$regexp = implode(' AND `attributes` NOT LIKE ', $regexpArray);
+				}else{
+					$regexp= '""';
+				}
 
 				$vlQuery = $db->select()->from(array('spm' => 'shipment_participant_map'))
 					->where("`attributes` NOT LIKE  $regexp ")
@@ -1446,7 +1450,7 @@ class Application_Service_Evaluation
 					->where("is_pt_test_not_performed is NULL")
 					->where("spm.shipment_id = ?", $shipmentId);
 
-				//	echo($vlQuery);die;
+					// echo($vlQuery);die;
 				$pendingResult =  $db->fetchAll($vlQuery);
 
 
@@ -2613,5 +2617,36 @@ class Application_Service_Evaluation
 			'status'	=>	'pending'
 		);
 		$db->insert('evaluation_queue', $data);
+	}
+
+	public function getBulkGenerateReports($shipmentId){
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		if(!$db->fetchRow($db->select()->from('evaluation_queue')->where("shipment_id = ?", $shipmentId))){
+			$authNameSpace 	= new Zend_Session_Namespace('administrators');
+			$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
+				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
+				->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
+				->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
+				->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('first_name', 'last_name', 'lab_name', 'unique_identifier', 'country'))
+				->join(array('c' => 'countries'), 'p.country=c.id', array('country_name' => 'iso_name'))
+				->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result')
+				->where("s.shipment_id = ?", $shipmentId);
+			$shipmentResult = $db->fetchAll($sql);
+			if(isset($shipmentResult) && count($shipmentResult) > 0){
+				$data = array(
+					'shipment_id' 		=> $shipmentId,
+					'requested_by' 		=> $authNameSpace->admin_id,
+					'requested_on' 		=> new Zend_Db_Expr('now()'),
+					'last_updated_on'	=> new Zend_Db_Expr('now()'),
+					'status'			=>	'pending'
+				);
+				$saved = $db->insert('evaluation_queue', $data);
+				if($saved > 0){
+					return $db->update('shipment', array('report_in_queue' => 'yes'), "shipment_id = " . $shipmentId);				
+				}
+			}
+		}else{
+			return false;
+		}
 	}
 }

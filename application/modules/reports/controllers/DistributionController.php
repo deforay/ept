@@ -118,4 +118,16 @@ class Reports_DistributionController extends Zend_Controller_Action
             $this->_redirect("/reports/finalize/");
         }
     }
+
+    public function bulkGenerateReportAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->_hasParam('sid')) {
+            $id = (int) base64_decode($this->_getParam('sid'));
+            $evalService = new Application_Service_Evaluation();
+            $this->view->result = $evalService->getBulkGenerateReports($id);
+        } else {
+            return false;
+        }
+    }
 }
