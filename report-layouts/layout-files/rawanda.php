@@ -17,82 +17,6 @@ if (sizeof($resultArray['shipment']) > 0) {
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
     }
-    /* class MYPDF extends TCPDF
-    {
-        public $scheme_name = '';
-
-        public function setSchemeName($header, $schemeName, $logo, $logoRight, $comingFrom, $schemeType)
-        {
-            $this->scheme_name = $schemeName;
-            $this->header = $header;
-            $this->logo = $logo;
-            $this->logoRight = $logoRight;
-            $this->comingFrom = $comingFrom;
-            $this->schemeType = $schemeType;
-        }
-
-        //Page header
-        public function Header()
-        {
-            // Logo
-            //$image_file = K_PATH_IMAGES.'logo_example.jpg';
-            if (trim($this->logo) != "") {
-                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
-                    $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                    $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }
-            }
-            // if (trim($this->logoRight) != "") {
-            //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
-            //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
-            //         $this->Image($image_file, 180, 10, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-            //     }
-            // }
-
-            // Set font
-
-            $this->SetFont('helvetica', '', 10);
-
-            $this->header = nl2br(trim($this->header));
-            $this->header = preg_replace('/<br>$/', "", $this->header);
-
-            if ($this->schemeType == 'vl') {
-                //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral Load using Dried Tube Specimen</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
-
-                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
-            } else if ($this->schemeType == 'eid') {
-                $this->SetFont('helvetica', '', 10);
-                //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using Dried Blood Spot</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
-                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
-            } else {
-                //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
-                $this->SetFont('helvetica', '', 10);
-                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
-            }
-
-            $this->writeHTMLCell(0, 0, 42, 10, $html, 0, 0, 0, true, 'J', true);
-            $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
-        }
-
-        // Page footer
-        public function Footer()
-        {
-            $finalizeReport = "";
-            if (trim($this->comingFrom) == "finalize") {
-                $finalizeReport = ' | INDIVIDUAL REPORT | FINALIZED ';
-            }
-            // Position at 15 mm from bottom
-            $this->SetY(-12);
-            // Set font
-            $this->SetFont('helvetica', '', 7);
-            // Page number
-            //$this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
-            //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
-            $this->writeHTML("<hr>", true, false, true, false, '');
-            $this->writeHTML('Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages() . " - Report generated at :" . date("d-M-Y H:i:s") . $finalizeReport, true, false, true, false, 'C');
-        }
-    } */
     $totalPages = count($resultArray['shipment']);
     $j = 1;
     //$resultArray['dmResult'];
@@ -115,7 +39,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $comingFrom, $schemeType);
+        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $comingFrom, $schemeType,$layout);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');

@@ -21,7 +21,7 @@ class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType)
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType,$layout)
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -29,6 +29,7 @@ class IndividualPDF extends TCPDF
         $this->logoRight = $logoRight;
         $this->resultStatus = $resultStatus;
         $this->schemeType = $schemeType;
+        $this->layout = $layout;
     }
 
     //Page header
@@ -65,7 +66,6 @@ class IndividualPDF extends TCPDF
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using Dried Blood Spot</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
         } else {
-            //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - Rapid HIV Dried Tube Specimen </span>';
         }
@@ -84,6 +84,7 @@ class IndividualPDF extends TCPDF
         } else {
             $finalizeReport = ' | INDIVIDUAL REPORT ';
         }
+        
         // Position at 15 mm from bottom
         $this->SetY(-12);
         // Set font
@@ -93,6 +94,9 @@ class IndividualPDF extends TCPDF
         //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         $this->writeHTML("<hr>", true, false, true, false, '');
         $this->writeHTML("Report generated on " . date("d M Y H:i:s") . $finalizeReport, true, false, true, false, 'C');
+        if(isset($this->layout) && $this->layout == 'zimbabwe'){
+            $this->Cell(0, 05,  strtoupper($this->header), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        }
     }
 }
 
@@ -233,7 +237,7 @@ try {
 
             ini_set('memory_limit', '-1');
 
-            // $db->update('evaluation_queue', array('status' => 'not-evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            $db->update('evaluation_queue', array('status' => 'not-evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
 
             $resultStatus = 'finalized';
 
@@ -257,7 +261,7 @@ try {
             $reportComment = $reportService->getReportConfigValue('report-comment');
             $logo = $reportService->getReportConfigValue('logo');
             $logoRight = $reportService->getReportConfigValue('logo-right');
-            $layoutModel = $reportService->getReportConfigValue('report-layout');
+            $layout = $reportService->getReportConfigValue('report-layout');
             $possibleDtsResults = $schemeService->getPossibleResults('dts');
             $passPercentage = $commonService->getConfig('pass_percentage');
             $comingFrom = 'generateReport';
@@ -274,9 +278,10 @@ try {
                 }
                 $bulkfileNameVal = $startValue . '-' . $endValue;
                 if (count($resultArray) > 0) {
-                    if(isset($layoutModel) && $layoutModel != ''){
-                        $layoutModel = REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'layout-files' . DIRECTORY_SEPARATOR . $layoutModel;
-                        include($layoutModel.'.php');
+                    if(isset($layout) && $layout != ''){
+                        $layout = REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'layout-files' . DIRECTORY_SEPARATOR . $layout;
+                        // die($layoutModel);
+                        include($layout.'.php');
                     }else{
                         include('generate-individual-reports.php');
                     }
@@ -296,7 +301,7 @@ try {
 
 
             $db->update('shipment', array('status' => 'evaluated', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
-            // $db->update('evaluation_queue', array('status' => 'evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            $db->update('evaluation_queue', array('status' => 'evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
         }
     }
 } catch (Exception $e) {

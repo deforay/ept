@@ -2637,7 +2637,6 @@ class Application_Service_Evaluation
 					'shipment_id' 		=> $shipmentId,
 					'requested_by' 		=> $authNameSpace->admin_id,
 					'requested_on' 		=> new Zend_Db_Expr('now()'),
-					'last_updated_on'	=> new Zend_Db_Expr('now()'),
 					'status'			=>	'pending'
 				);
 				$saved = $db->insert('evaluation_queue', $data);
@@ -2646,6 +2645,11 @@ class Application_Service_Evaluation
 				}
 			}
 		}else{
+			$data = array(
+				'last_updated_on'	=> new Zend_Db_Expr('now()'),
+				'status'			=>	'pending'
+			);
+			$saved = $db->update('evaluation_queue', $data, "shipment_id = " . $shipmentId);
 			return false;
 		}
 	}
