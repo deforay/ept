@@ -3,7 +3,37 @@ if (count($this->shipment) > 0) {
     if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] == 'finalized') {
         header('Location: /reports/distribution');
     }
-    ?>
+?>
+<style>
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  /* background-color: #ecf0f1; */
+  padding-bottom: 60px;
+  font-size: 20px;
+}
+/* width */
+::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+</style>
     <div class="well" style="clear: both;">
         <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
         <div id="allShipmentList">
@@ -28,7 +58,7 @@ if (count($this->shipment) > 0) {
                 if (count($this->shipmentsUnderDistro) > 0) {
                     foreach ($this->shipmentsUnderDistro as $shipment) {
                         $reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
-                        ?>
+                ?>
                         <tr>
                             <td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
                             <td style="text-align: center;"><?php echo $shipment['scheme_name'] ?></td>
@@ -132,7 +162,7 @@ if (count($this->shipment) > 0) {
                 }
                 $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
                 $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
-                ?>
+            ?>
                 <tr>
                     <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
                     <td style="vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name'] . "(" . $shipment['unique_identifier'] . ")" ?></td>
@@ -151,104 +181,98 @@ if (count($this->shipment) > 0) {
 
         </tbody>
     </table>
-    <br />
-    <br />
-    <br />
-    <br />
-    <div align="right" class="col-lg-6">
-        <?php $disable = 'btn-danger';
-        $showAction = 'onclick="generateBulkReport(\''.base64_encode($this->shipment[0]['shipment_id']).'\')"';
-        if($this->shipment[0]['report_in_queue'] == 'yes'){
-            $disable = 'btn-primary disabled';
-            $showAction='';
-        } ?>
-        <a href="javascript:void(0)" class="btn btn-sm  btn-warning" style="margin-top:10px;clear:both !important;" onclick="generateSummaryReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate Summary Report for this Shipment</a>
-        <a href="javascript:void(0)" class="btn btn-sm  <?php echo $disable;?>" style="margin-top:10px;clear:both !important;" <?php echo $showAction;?>><i class="icon-ok"></i>&nbsp&nbsp Generate Bulk Report for this Shipment</a>
-        <?php
-        $buttonCount = (int) ceil($this->responseCount["reported_count"] / 50);
-        $responseCnt = $this->responseCount["reported_count"];
-        $start = 1;
-        if ($this->responseCount["reported_count"] >= 50) {
-            $lastEnd = 50;
-        } else {
-            $lastEnd = $this->responseCount["reported_count"];
-        }
-        for ($i = 1; $i <= $buttonCount; $i++) {
+    <div>
+        <div align="right" class="col-lg-6">
+            <?php $disable = 'btn-danger';
+            $showAction = 'onclick="generateBulkReport(\'' . base64_encode($this->shipment[0]['shipment_id']) . '\')"';
+            if ($this->shipment[0]['report_in_queue'] == 'yes') {
+                $disable = 'btn-primary disabled';
+                $showAction = '';
+            } ?>
+                <a href="javascript:void(0)" class="btn btn-sm  btn-warning" style="margin-top:10px;clear:both !important;" onclick="generateSummaryReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate Summary Report for this Shipment</a>
+                <a href="javascript:void(0)" class="btn btn-sm  <?php echo $disable; ?>" style="margin-top:10px;clear:both !important;" <?php echo $showAction; ?>><i class="icon-ok"></i>&nbsp&nbsp Generate Bulk Report for this Shipment</a>
+            <?php
+            $buttonCount = (int) ceil($this->responseCount["reported_count"] / 50);
+            $responseCnt = $this->responseCount["reported_count"];
+            $start = 1;
             if ($this->responseCount["reported_count"] >= 50) {
-                $end = $i * 50;
+                $lastEnd = 50;
             } else {
-                $end = $this->responseCount["reported_count"];
+                $lastEnd = $this->responseCount["reported_count"];
             }
-            if ($end > $this->responseCount["reported_count"]) {
-                $sub = $this->responseCount["reported_count"] - $lastEnd;
-                $start = $lastEnd + 1;
-                $end = $lastEnd + $sub;
-            } else {
-                if ($i != 1) {
-                    $start = $lastEnd + 1;
-                    $lastEnd = $end;
+            for ($i = 1; $i <= $buttonCount; $i++) {
+                if ($this->responseCount["reported_count"] >= 50) {
+                    $end = $i * 50;
+                } else {
+                    $end = $this->responseCount["reported_count"];
                 }
-            }
-            ?>
-            <a href="javascript:void(0)" class="btn btn-sm  btn-danger" style="margin-top:10px;" onclick="generateReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>','50','<?php echo ($start - 1); ?>','<?php echo $start; ?>','<?php echo $end; ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate <?php echo $start; ?> to <?php echo $end; ?> Reports for this Shipment</a>
-        <?php
-        }
-        ?>
-    </div>
-    <div align="left" class="col-lg-6">
-        <span id="summaryDiv">
+                if ($end > $this->responseCount["reported_count"]) {
+                    $sub = $this->responseCount["reported_count"] - $lastEnd;
+                    $start = $lastEnd + 1;
+                    $end = $lastEnd + $sub;
+                } else {
+                    if ($i != 1) {
+                        $start = $lastEnd + 1;
+                        $lastEnd = $end;
+                    }
+                }
+            } ?>
+            <!-- <a href="javascript:void(0)" class="btn btn-sm  btn-danger" style="margin-top:10px;" onclick="generateReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>','50','<?php echo ($start - 1); ?>','<?php echo $start; ?>','<?php echo $end; ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate <?php echo $start; ?> to <?php echo $end; ?> Reports for this Shipment</a> -->
+        </div>
+        <div align="left" class="col-lg-6">
+            <span id="summaryDiv">
 
-        </span>
+            </span>
+        </div>
     </div>
-
     <script type="text/javascript" charset="utf-8">
         var oTable = null;
         var nTr = null;
-        checkReportDate = false; 
+        checkReportDate = false;
         <?php
         $currentDate = date('Y-m-d');
-        if ($this-> shipment[0]['distribution_date'] < $currentDate) {
-            ?>
-            checkReportDate = true; 
+        if ($this->shipment[0]['distribution_date'] < $currentDate) {
+        ?>
+            checkReportDate = true;
             <?php
         }
 
-        if ($this-> shipment[0]['report_generated'] == 'yes') {
-            if (file_exists(DOWNLOADS_FOLDER.DIRECTORY_SEPARATOR.
-                    "reports".DIRECTORY_SEPARATOR.$shipment['shipment_code'].DIRECTORY_SEPARATOR.$shipment['shipment_code'].
-                    "-summary.pdf")) {
+        if ($this->shipment[0]['report_generated'] == 'yes') {
+            if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .
+                "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] .
+                "-summary.pdf")) {
 
-                $filePath = base64_encode(DOWNLOADS_FOLDER.DIRECTORY_SEPARATOR.
-                    "reports".DIRECTORY_SEPARATOR.$shipment['shipment_code'].DIRECTORY_SEPARATOR.$shipment['shipment_code'].
+                $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .
+                    "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] .
                     "-summary.pdf");
 
-                ?>
+            ?>
 
-                document.getElementById("summaryDiv").innerHTML = "<a href=\"/d/<?php echo $filePath; ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_blank' style='margin-top:10px;clear:both;float:left;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>"; 
-                <?php
+                document.getElementById("summaryDiv").innerHTML = "<a href=\"/d/<?php echo $filePath; ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_blank' style='margin-top:10px;clear:both;float:left;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
+        <?php
             }
         } ?>
         $(document).ready(function() {
 
             <?php
-            if ($this-> shipment[0]['report_generated'] == 'yes') {
+            if ($this->shipment[0]['report_generated'] == 'yes') {
 
-                $buttonCount = (int) ceil($this-> responseCount["reported_count"] / 50);
-                $responseCnt = $this-> responseCount["reported_count"];
+                $buttonCount = (int) ceil($this->responseCount["reported_count"] / 50);
+                $responseCnt = $this->responseCount["reported_count"];
                 $start = 1;
-                if ($this-> responseCount["reported_count"] >= 50) {
+                if ($this->responseCount["reported_count"] >= 50) {
                     $lastEnd = 50;
                 } else {
-                    $lastEnd = $this-> responseCount["reported_count"];
+                    $lastEnd = $this->responseCount["reported_count"];
                 }
                 for ($i = 1; $i <= $buttonCount; $i++) {
-                    if ($this-> responseCount["reported_count"] >= 50) {
+                    if ($this->responseCount["reported_count"] >= 50) {
                         $end = $i * 50;
                     } else {
-                        $end = $this-> responseCount["reported_count"];
+                        $end = $this->responseCount["reported_count"];
                     }
-                    if ($end > $this-> responseCount["reported_count"]) {
-                        $sub = $this-> responseCount["reported_count"] - $lastEnd;
+                    if ($end > $this->responseCount["reported_count"]) {
+                        $sub = $this->responseCount["reported_count"] - $lastEnd;
                         $start = $lastEnd + 1;
                         $end = $lastEnd + $sub;
                     } else {
@@ -257,19 +281,19 @@ if (count($this->shipment) > 0) {
                             $lastEnd = $end;
                         }
                     }
-                    if (file_exists(DOWNLOADS_FOLDER.DIRECTORY_SEPARATOR.
-                            "reports".DIRECTORY_SEPARATOR.$shipment['shipment_code'].DIRECTORY_SEPARATOR.$shipment['shipment_code'].
-                            "-".$start.
-                            "-".$end.
-                            "-bulk-participant-report.pdf")) {
-                        $filePath = base64_encode(DOWNLOADS_FOLDER.DIRECTORY_SEPARATOR.
-                            "reports".DIRECTORY_SEPARATOR.$shipment['shipment_code'].DIRECTORY_SEPARATOR.$shipment['shipment_code'].
-                            "-".$start.
-                            "-".$end.
-                            "-bulk-participant-report.pdf"); 
-                            ?>
-                        $("#summaryDiv").append("&nbsp;&nbsp;<a href=\"/d/<?php echo $filePath; ?>\" class='btn btn-info btn-sm' target='_BLANK' id=\"<?php echo $start . " - " . $end . " - bulk - participant - report "; ?>\" style='margin-top:10px;clear:both;float:left;'><i class='icon-file-text'></i> Download <?php echo $start; ?> - <?php echo $end; ?> Participants Report</a> "); 
-                        <?php
+                    if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .
+                        "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] .
+                        "-" . $start .
+                        "-" . $end .
+                        "-bulk-participant-report.pdf")) {
+                        $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .
+                            "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] .
+                            "-" . $start .
+                            "-" . $end .
+                            "-bulk-participant-report.pdf");
+            ?>
+                        $("#summaryDiv").append("&nbsp;&nbsp;<a href=\"/d/<?php echo $filePath; ?>\" class='btn btn-info btn-sm' target='_BLANK' id=\"<?php echo $start . " - " . $end . " - bulk - participant - report "; ?>\" style='margin-top:10px;clear:both;float:left;'><i class='icon-file-text'></i> Download <?php echo $start; ?> - <?php echo $end; ?> Participants Report</a> ");
+            <?php
                     }
                 }
             } ?>
@@ -413,15 +437,17 @@ if (count($this->shipment) > 0) {
             }
         }
 
-        function generateBulkReport(sId){
+        function generateBulkReport(sId) {
             if (checkReportDate) {
                 $.blockUI();
                 var individual = null;
                 $.when(
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'bulk-generate-report'), 'default', true); ?>", {sid: sId},
-                    function(data) {
-                        individual = data;
-                    })
+                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'bulk-generate-report'), 'default', true); ?>", {
+                            sid: sId
+                        },
+                        function(data) {
+                            individual = data;
+                        })
                 ).then(function() {
                     if (individual) {
                         document.location.reload(true);
@@ -433,6 +459,7 @@ if (count($this->shipment) > 0) {
                 alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
             }
         }
+
         function generateSummaryReport(sId) {
             if (checkReportDate) {
                 $.blockUI();
