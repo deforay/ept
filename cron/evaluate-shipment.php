@@ -4,6 +4,12 @@ include_once 'CronInit.php';
 
 require_once 'tcpdf/tcpdf.php';
 
+defined('REPORT_LAYOUT')
+    || define('REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../report-layouts'));
+
+defined('CRON_FOLDER')
+    || define('CRON_FOLDER', realpath(dirname(__FILE__) . '/../cron'));
+
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
 error_reporting(E_ALL);
@@ -227,7 +233,7 @@ try {
 
             ini_set('memory_limit', '-1');
 
-            $db->update('evaluation_queue', array('status' => 'not-evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            // $db->update('evaluation_queue', array('status' => 'not-evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
 
             $resultStatus = 'finalized';
 
@@ -251,6 +257,7 @@ try {
             $reportComment = $reportService->getReportConfigValue('report-comment');
             $logo = $reportService->getReportConfigValue('logo');
             $logoRight = $reportService->getReportConfigValue('logo-right');
+            $layoutModel = $reportService->getReportConfigValue('report-layout');
             $possibleDtsResults = $schemeService->getPossibleResults('dts');
             $passPercentage = $commonService->getConfig('pass_percentage');
             $comingFrom = 'generateReport';
@@ -267,7 +274,12 @@ try {
                 }
                 $bulkfileNameVal = $startValue . '-' . $endValue;
                 if (count($resultArray) > 0) {
-                    include('generate-results-pdf.php');
+                    if(isset($layoutModel) && $layoutModel != ''){
+                        $layoutModel = REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'layout-files' . DIRECTORY_SEPARATOR . $layoutModel;
+                        include($layoutModel.'.php');
+                    }else{
+                        include('generate-individual-reports.php');
+                    }
                 }
             }
 
@@ -284,7 +296,7 @@ try {
 
 
             $db->update('shipment', array('status' => 'evaluated', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
-            $db->update('evaluation_queue', array('status' => 'evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            // $db->update('evaluation_queue', array('status' => 'evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
         }
     }
 } catch (Exception $e) {

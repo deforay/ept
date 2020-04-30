@@ -2415,3 +2415,5 @@ ALTER TABLE `data_manager` ADD `download_link` VARCHAR(255) NULL DEFAULT NULL AF
 -- Thanaseelan 29 Apr, 2020
 ALTER TABLE `shipment` ADD `report_in_queue` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `status`;
 ALTER TABLE `evaluation_queue` ADD FOREIGN KEY (`shipment_id`) REFERENCES `shipment`(`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+-- Thanaseelan 30 Apr, 2020
+INSERT INTO `report_config` (`name`, `value`) VALUES ('report-layout', 'rwanda.php');

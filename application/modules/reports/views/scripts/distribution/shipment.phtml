@@ -183,14 +183,8 @@ if (count($this->shipment) > 0) {
     </table>
     <div>
         <div align="right" class="col-lg-6">
-            <?php $disable = 'btn-danger';
-            $showAction = 'onclick="generateBulkReport(\'' . base64_encode($this->shipment[0]['shipment_id']) . '\')"';
-            if ($this->shipment[0]['report_in_queue'] == 'yes') {
-                $disable = 'btn-primary disabled';
-                $showAction = '';
-            } ?>
-                <a href="javascript:void(0)" class="btn btn-sm  btn-warning" style="margin-top:10px;clear:both !important;" onclick="generateSummaryReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate Summary Report for this Shipment</a>
-                <a href="javascript:void(0)" class="btn btn-sm  <?php echo $disable; ?>" style="margin-top:10px;clear:both !important;" <?php echo $showAction; ?>><i class="icon-ok"></i>&nbsp&nbsp Generate Bulk Report for this Shipment</a>
+            <a href="javascript:void(0)" class="btn btn-sm  btn-warning" style="margin-top:10px;clear:both !important;" onclick="generateSummaryReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate Summary Report for this Shipment</a>
+            <a href="javascript:void(0)" class="btn btn-sm  btn-danger" style="margin-top:10px;clear:both !important;" onclick="generateBulkReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate Bulk Report for this Shipment</a>
             <?php
             $buttonCount = (int) ceil($this->responseCount["reported_count"] / 50);
             $responseCnt = $this->responseCount["reported_count"];

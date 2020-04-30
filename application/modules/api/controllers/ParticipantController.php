@@ -15,6 +15,7 @@ class Api_ParticipantController extends Zend_Controller_Action
         $result = $shipmentService->getIndividualReportAPI($params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
     }
+    
     public function summaryAction()
     {
         $this->_helper->viewRenderer->setNoRender(true);

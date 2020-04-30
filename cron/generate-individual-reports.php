@@ -1,7 +1,9 @@
 <?php
 require_once 'tcpdf/tcpdf.php';
-$schemeType = $result['shipment'][0]['scheme_type'];
-//var_dump($result['shipment'][0]['responseResult'][0]['testkit1']);die;
+require_once 'General.php';
+$general = new General();
+$schemeType = $resultArray['shipment'][0]['scheme_type'];
+
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
@@ -11,11 +13,11 @@ $dtsResults = array();
 foreach ($possibleDtsResults as $pr) {
     $dtsResults[$pr['id']] = ucfirst(strtolower($pr['response']));
 }
-if (sizeof($result['shipment']) > 0) {
+if (sizeof($resultArray['shipment']) > 0) {
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
     }
-    class MYPDF extends TCPDF
+    /* class MYPDF extends TCPDF
     {
         public $scheme_name = '';
 
@@ -90,13 +92,11 @@ if (sizeof($result['shipment']) > 0) {
             $this->writeHTML("<hr>", true, false, true, false, '');
             $this->writeHTML('Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages() . " - Report generated at :" . date("d-M-Y H:i:s") . $finalizeReport, true, false, true, false, 'C');
         }
-    }
-    $totalPages = count($result['shipment']);
+    } */
+    $totalPages = count($resultArray['shipment']);
     $j = 1;
-    //$result['dmResult'];
-    //var_dump($result['shipment']);die;
-
-    foreach ($result['shipment'] as $result) {
+    //$resultArray['dmResult'];
+    foreach ($resultArray['shipment'] as $result) {
 
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
@@ -113,7 +113,7 @@ if (sizeof($result['shipment']) > 0) {
         // Extend the TCPDF class to create custom Header and Footer
 
         // create new PDF document
-        $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $comingFrom, $schemeType);
         // set document information
@@ -159,23 +159,13 @@ if (sizeof($result['shipment']) > 0) {
         // add a page
         $pdf->AddPage();
 
-        // set some text to print
-        //$txt = <<<EOD
-        //International Laboratory Branch
-        //
-        //Custom page header and footer are defined by extending the TCPDF class and overriding the Header() and Footer() methods.
-        //EOD;
-        //
-        //// print a block of text using Write()
-        //$pdf->Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
-
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = $this->dateFormat($result['shipment_date']);
+            $result['shipment_date'] = (isset($result['shipment_date']) && $result['shipment_date'] != null && $result['shipment_date'] != '0000:00:00')?$general->humanDateFormat($result['shipment_date']):'';
         }
         if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = $this->dateFormat($result['lastdate_response']);
+            $result['lastdate_response'] = $general->humanDateFormat($result['lastdate_response']);
         }
 
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -193,7 +183,7 @@ if (sizeof($result['shipment']) > 0) {
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = $this->dateFormat($splitDate[0]);
+            $responseDate = $general->humanDateFormat($splitDate[0]);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -202,15 +192,15 @@ if (sizeof($result['shipment']) > 0) {
 
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
-            $sampleRehydrationDate = $this->dateFormat($attributes['sample_rehydration_date']);
+            $sampleRehydrationDate = $general->humanDateFormat($attributes['sample_rehydration_date']);
         }
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
-            $shipmentReceiptDate = $this->dateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = $general->humanDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
-            $shipmentTestDate = $this->dateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         //if($result['result_name']=='Fail'){
@@ -266,13 +256,13 @@ if (sizeof($result['shipment']) > 0) {
             $labInfo .= '	<strong>Supervisor Name</strong> : ' . ($result['participant_supervisor']);
             $labInfo .= ' </td>';
             $labInfo .= '	<td>';
-            if (isset($this->haveCustom) && $this->haveCustom == 'yes') {
-                $labInfo .= '	<strong>' . $this->customField1 . '</strong> <br>' . $this->shipment['custom_field_1'];
+            if (isset($haveCustom) && $haveCustom == 'yes') {
+                $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . $totParticipantsRes['custom_field_1'];
             }
             $labInfo .= ' </td>';
             $labInfo .= '	<td>';
-            if (isset($this->haveCustom) && $this->haveCustom == 'yes') {
-                $labInfo .= '	<strong>' . $this->customField2 . '</strong> <br>' . $this->shipment['custom_field_2'];
+            if (isset($haveCustom) && $haveCustom == 'yes') {
+                $labInfo .= '	<strong>' . $customField2 . '</strong> <br>' . $totParticipantsRes['custom_field_2'];
             }
             $labInfo .= ' </td>';
             $labInfo .= '</tr>';
@@ -337,7 +327,7 @@ if (sizeof($result['shipment']) > 0) {
                 $labRes .= '<tr style="background-color:#dbe4ee;"><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . '">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
                 $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td><td>' . $result['responseResult'][0]['testkit1'] . '</td><td>' . $result['responseResult'][0]['testkit2'] . '</td><td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['testkit3'] . '</td><td colspan="4"></td></tr>';
                 $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td><td>' . $result['responseResult'][0]['lot_no_1'] . '</td><td>' . $result['responseResult'][0]['lot_no_2'] . '</td><td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['lot_no_3'] . '</td><td colspan="4"></td></tr>';
-                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td><td>' . $this->dateFormat($result['responseResult'][0]['exp_date_1']) . '</td><td>' . $this->dateFormat($result['responseResult'][0]['exp_date_2']) . '</td><td style="' . $testThreeOptionalDisplay . '">' . $this->dateFormat($result['responseResult'][0]['exp_date_3']) . '</td><td colspan="4"></td></tr>';
+                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td><td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_1']) . '</td><td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_2']) . '</td><td style="' . $testThreeOptionalDisplay . '">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_3']) . '</td><td colspan="4"></td></tr>';
                 $labRes .= '<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;">Specimen Panel ID </td>
 							<td style="text-align:center;font-weight:bold;">Result-1</td>
@@ -662,7 +652,7 @@ if (sizeof($result['shipment']) > 0) {
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
             $totalScore = $result['shipment_score'] + $result['documentation_score'];
-            if ($totalScore >= $this->passPercentage) {
+            if ($totalScore >= $passPercentage) {
                 $wishes = '<p style="font-size:12px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
             } else {
                 $wishes = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
@@ -674,7 +664,7 @@ if (sizeof($result['shipment']) > 0) {
         }
 
         //if(trim($result['distribution_date'])!=""){
-        //    $result['distribution_date']=$this->dateFormat($result['distribution_date']);
+        //    $result['distribution_date']=$general->humanDateFormat($result['distribution_date']);
         //}
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
@@ -707,8 +697,8 @@ if (sizeof($result['shipment']) > 0) {
             $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
         } else if ($schemeType == 'eid') {
             $html = '<p>Thank you for participating in HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot.</p>';
-            if (!empty($this->reportComment)) {
-                $html .= '<br>' . $this->reportComment;
+            if (!empty($reportComment)) {
+                $html .= '<br>' . $reportComment;
             }
         } else {
             $html = '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
@@ -752,41 +742,41 @@ if (sizeof($result['shipment']) > 0) {
     }
 
     //$mergePdf = $shipmentCode."-bulk-participant-report.pdf";
-    $mergePdf = $shipmentCode . "-" . $this->bulkfileNameVal . "-bulk-participant-report.pdf";
+    $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
     $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
     $pdfNew->save($mergeFilePath);
-
-    foreach ($result['dmResult'] as $dmID => $dmRes) {
-        $pdfNew->pages = array();
-        $expRes = explode(",", $dmRes);
-        $resCount = count($expRes);
-        if ($resCount > 0) {
-            foreach ($expRes as $res) {
-                $expStrRes = explode("#", $res);
-                $dmFileName = $dmID . ".pdf";
-                $participantFileName = $expStrRes[1] . ".pdf";
-                $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
-                $participantFileName = str_replace(" ", "-", $participantFileName);
-                $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
-                if (file_exists($filePath)) {
-                    $loadpdf = Zend_Pdf::load($filePath);
-                    foreach ($loadpdf->pages as $page) {
-                        $pdfExtract = $extractor->clonePage($page);
-                        $pdfNew->pages[] = $pdfExtract;
+    if(isset($resultArray['dmResult']) && count($resultArray['dmResult']) > 0){
+        foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
+            $pdfNew->pages = array();
+            $expRes = explode(",", $dmRes);
+            $resCount = count($expRes);
+            if ($resCount > 0) {
+                foreach ($expRes as $res) {
+                    $expStrRes = explode("#", $res);
+                    $dmFileName = $dmID . ".pdf";
+                    $participantFileName = $expStrRes[1] . ".pdf";
+                    $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
+                    $participantFileName = str_replace(" ", "-", $participantFileName);
+                    $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
+                    if (file_exists($filePath)) {
+                        $loadpdf = Zend_Pdf::load($filePath);
+                        foreach ($loadpdf->pages as $page) {
+                            $pdfExtract = $extractor->clonePage($page);
+                            $pdfNew->pages[] = $pdfExtract;
+                        }
                     }
                 }
             }
+    
+            $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
+            $dmFileName = str_replace(" ", "-", $dmFileName);
+    
+            $mergePdf = $shipmentCode . "-" . $dmFileName;
+            $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
+            $pdfNew->save($mergeFilePath);
         }
-
-        $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
-        $dmFileName = str_replace(" ", "-", $dmFileName);
-
-        $mergePdf = $shipmentCode . "-" . $dmFileName;
-        $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-        $pdfNew->save($mergeFilePath);
     }
     //============================================================+
     // END OF FILE
     //============================================================+
-    exit;
 }

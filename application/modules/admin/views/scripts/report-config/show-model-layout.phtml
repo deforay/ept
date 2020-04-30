@@ -1,0 +1,28 @@
+<?php
+if($this->filename!=""){
+    $file = REPORT_LAYOUT_MODEL . DIRECTORY_SEPARATOR . $this->filename.'.pdf';
+	if(!file_exists($file)){
+        // Search this file name using the map id
+		$files = glob(REPORT_LAYOUT_MODEL . DIRECTORY_SEPARATOR . $this->filename.'.pdf');
+		$file = (isset($files[0]) && trim($files[0]) != '')?$files[0]:'';
+    }
+    // Zend_Debug::dump($file);die;
+    
+	if (file_exists($file)) {
+		header('Content-Description: File Transfer');
+		header('Content-type: application/pdf');
+		header('Content-Disposition: inline; filename="' . basename($file) . '"');
+		header('Content-Transfer-Encoding: binary');
+		header('Content-Length: ' . filesize($file));
+	    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+	    header('Pragma: public');
+		header('Accept-Ranges: bytes');
+		ob_clean();
+	    flush();
+		@readfile($file);
+	    exit;
+	}else{
+	    echo "<h2 align='center' style='margin-top:100px;font-family:arial;'>Requested file does not exist</h2>";
+	}
+}
+?>
