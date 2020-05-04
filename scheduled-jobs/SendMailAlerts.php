@@ -82,6 +82,6 @@ try {
     error_log($e->getMessage());
     echo($e->getMessage()). PHP_EOL;
     error_log($e->getTraceAsString());
-    echo('whoops! Something went wrong in cron/SendMailAlerts.php  - ' . $result['to_email']);
-    error_log('whoops! Something went wrong in cron/SendMailAlerts.php  - ' . $result['to_email']);
+    echo('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
+    error_log('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
 }

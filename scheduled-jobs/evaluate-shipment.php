@@ -5,10 +5,10 @@ include_once 'CronInit.php';
 require_once 'tcpdf/tcpdf.php';
 
 defined('REPORT_LAYOUT')
-    || define('REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../report-layouts'));
+    || define('REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts'));
 
 defined('CRON_FOLDER')
-    || define('CRON_FOLDER', realpath(dirname(__FILE__) . '/../cron'));
+    || define('CRON_FOLDER', realpath(dirname(__FILE__) . '/../scheduled-jobs'));
 
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
@@ -93,9 +93,10 @@ class IndividualPDF extends TCPDF
         //$this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         $this->writeHTML("<hr>", true, false, true, false, '');
-        $this->writeHTML("Report generated on " . date("d M Y H:i:s") . $finalizeReport, true, false, true, false, 'C');
         if(isset($this->layout) && $this->layout == 'zimbabwe'){
             $this->Cell(0, 05,  strtoupper($this->header), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        }else{
+            $this->writeHTML("Report generated on " . date("d M Y H:i:s") . $finalizeReport, true, false, true, false, 'C');
         }
     }
 }
@@ -234,10 +235,16 @@ try {
 
             //var_dump($evalRow);die;
             //$alertMail = new Zend_Mail();
-
             ini_set('memory_limit', '-1');
 
-            $db->update('evaluation_queue', array('status' => 'not-evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            $reportTypeStatus = 'not-evaluated';
+            if($evalRow['report_type'] == 'generateReport'){
+                $reportTypeStatus = 'not-evaluated';
+            }else if($evalRow['report_type'] == 'finalized'){
+                $reportTypeStatus = 'not-finalized';
+            }
+            $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
 
             $resultStatus = 'finalized';
 
@@ -264,7 +271,7 @@ try {
             $layout = $reportService->getReportConfigValue('report-layout');
             $possibleDtsResults = $schemeService->getPossibleResults('dts');
             $passPercentage = $commonService->getConfig('pass_percentage');
-            $comingFrom = 'generateReport';
+            $comingFrom = $evalRow['report_type'];
             $customField1 = $commonService->getConfig('custom_field_1');
             $customField2 = $commonService->getConfig('custom_field_2');
             $haveCustom = $commonService->getConfig('custom_field_needed');
@@ -279,9 +286,9 @@ try {
                 $bulkfileNameVal = $startValue . '-' . $endValue;
                 if (count($resultArray) > 0) {
                     if(isset($layout) && $layout != ''){
-                        $layout = REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'layout-files' . DIRECTORY_SEPARATOR . $layout;
+                        $layoutFile = REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'layout-files' . DIRECTORY_SEPARATOR . $layout;
                         // die($layoutModel);
-                        include($layout.'.php');
+                        include($layoutFile.'.phtml');
                     }else{
                         include('generate-individual-reports.php');
                     }
@@ -299,15 +306,20 @@ try {
                 include('generate-summary-pdf.php');
             } */
 
-
-            $db->update('shipment', array('status' => 'evaluated', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
-            $db->update('evaluation_queue', array('status' => 'evaluated', 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            $reportCompletedStatus = 'evaluated';
+            if($evalRow['report_type'] == 'generateReport'){
+                $reportCompletedStatus = 'evaluated';
+            }else if($evalRow['report_type'] == 'finalized'){
+                $reportCompletedStatus = 'finalized';
+            }
+            $db->update('shipment', array('status' => $reportCompletedStatus, 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+            $db->update('evaluation_queue', array('status' => $reportCompletedStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
         }
     }
 } catch (Exception $e) {
     error_log($e->getMessage());
     echo ($e->getMessage()) . PHP_EOL;
     error_log($e->getTraceAsString());
-    echo ('whoops! Something went wrong in cron/evaluate-shipment.php  - ' . $evalRow['shipment_id']);
-    error_log('whoops! Something went wrong in cron/evaluate-shipment.php  - ' . $evalRow['shipment_id']);
+    echo ('whoops! Something went wrong in scheduled-jobs/evaluate-shipment.php  - ' . $evalRow['shipment_id']);
+    error_log('whoops! Something went wrong in crscheduled-jobson/evaluate-shipment.php  - ' . $evalRow['shipment_id']);
 }

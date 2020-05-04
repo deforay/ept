@@ -4,9 +4,9 @@ syntax: regexp
 ^public/uploads/(?!index.php)
 ^public/docs/(?!index.php)
 ^public/temporary/cache(?!index.php)
-^cron/certificate/(?!index.php)
-^cron/certificate-template/(?!index.php)
-^cron/certificate-template/(?!index.php)
+^crscheduled-jobson/certificate/(?!index.php)
+^scheduled-jobs/certificate-template/(?!index.php)
+^scheduled-jobs/certificate-template/(?!index.php)
 ^public/temporary/(?!index.php)
 ^downloads/(?!index.php)
 error_log

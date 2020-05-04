@@ -2417,3 +2417,5 @@ ALTER TABLE `shipment` ADD `report_in_queue` VARCHAR(50) NOT NULL DEFAULT 'no' A
 ALTER TABLE `evaluation_queue` ADD FOREIGN KEY (`shipment_id`) REFERENCES `shipment`(`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 -- Thanaseelan 30 Apr, 2020
 INSERT INTO `report_config` (`name`, `value`) VALUES ('report-layout', 'rwanda.php');
+-- Thanaseelan 04 May, 2020
+ALTER TABLE `evaluation_queue` ADD `report_type` VARCHAR(50) NULL DEFAULT NULL AFTER `shipment_id`;

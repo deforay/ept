@@ -2619,9 +2619,11 @@ class Application_Service_Evaluation
 		$db->insert('evaluation_queue', $data);
 	}
 
-	public function getBulkGenerateReports($shipmentId){
+	public function getBulkGenerateReports($params){
+		$shipmentId = base64_decode($params['sid']);
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		if(!$db->fetchRow($db->select()->from('evaluation_queue')->where("shipment_id = ?", $shipmentId))){
+		$existData = $db->fetchRow($db->select()->from('evaluation_queue')->where("shipment_id = ?", $shipmentId)->where("report_type = ?", $params['type']));
+		if(!$existData){
 			$authNameSpace 	= new Zend_Session_Namespace('administrators');
 			$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
 				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
@@ -2635,9 +2637,10 @@ class Application_Service_Evaluation
 			if(isset($shipmentResult) && count($shipmentResult) > 0){
 				$data = array(
 					'shipment_id' 		=> $shipmentId,
+					'report_type' 		=> $params['type'],
 					'requested_by' 		=> $authNameSpace->admin_id,
 					'requested_on' 		=> new Zend_Db_Expr('now()'),
-					'status'			=>	'pending'
+					'status'			=> 'pending'
 				);
 				$saved = $db->insert('evaluation_queue', $data);
 				if($saved > 0){
@@ -2646,11 +2649,13 @@ class Application_Service_Evaluation
 			}
 		}else{
 			$data = array(
+				'shipment_id' 		=> $shipmentId,
+				'report_type' 		=> $params['type'],
 				'last_updated_on'	=> new Zend_Db_Expr('now()'),
-				'status'			=>	'pending'
+				'status'			=> 'pending'
 			);
-			$saved = $db->update('evaluation_queue', $data, "shipment_id = " . $shipmentId);
-			return false;
+			// Zend_Debug::dump($data);die;
+			return $db->update('evaluation_queue', $data, "id = " . $existData['id']);
 		}
 	}
 }

@@ -36,11 +36,8 @@ defined('TEMP_UPLOAD_PATH')
 defined('DOWNLOADS_FOLDER')
     || define('DOWNLOADS_FOLDER', realpath(dirname(__FILE__) . '/../downloads'));
 
-defined('REPORT_LAYOUT_FOLDER')
-    || define('REPORT_LAYOUT_FOLDER', realpath(dirname(__FILE__) . '/../report-layouts'));
-
 defined('REPORT_LAYOUT')
-    || define('REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../report-layouts'));
+    || define('REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts'));
 
         
 // Ensure library/ is on include_path

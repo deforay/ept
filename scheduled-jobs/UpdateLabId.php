@@ -443,5 +443,5 @@ try {
 } catch (Exception $e) {
     error_log($e->getMessage());
     error_log($e->getTraceAsString());
-    error_log('whoops! Something went wrong in cron/SendMailAlerts.php');
+    error_log('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php');
 }

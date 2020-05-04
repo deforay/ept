@@ -123,9 +123,9 @@ class Reports_DistributionController extends Zend_Controller_Action
     {
         $this->_helper->layout()->disableLayout();
         if ($this->_hasParam('sid')) {
-            $id = (int) base64_decode($this->_getParam('sid'));
+            $params = $this->getAllParams();
             $evalService = new Application_Service_Evaluation();
-            $this->view->result = $evalService->getBulkGenerateReports($id);
+            $this->view->result = $evalService->getBulkGenerateReports($params);
         } else {
             return false;
         }

@@ -65,16 +65,12 @@
 				<?php if(isset($this->reportLayouts) && count($this->reportLayouts) > 0){
 					foreach($this->reportLayouts as $folder){
 						if($folder != '.' && $folder != '..'){
-							$selected = (isset($this->reportLayoutsResult) && $this->reportLayoutsResult == str_replace('.php','',$folder))?'selected="selected"':"";
-							echo '<option value='.str_replace('.php','',$folder).' '.$selected.'>'.ucwords(str_replace('.php','',$folder)).'</option>';
+							$selected = (isset($this->reportLayoutsResult) && $this->reportLayoutsResult == str_replace('.phtml','',$folder))?'selected="selected"':"";
+							echo '<option value='.str_replace('.phtml','',$folder).' '.$selected.'>'.ucwords(str_replace('.phtml','',$folder)).'</option>';
 						}
 					}
 				}?>
 			</select>
-		</div>
-		<?php $display = 'display:none;';?>
-		<div class="col-md-6" style=" top: 35px;<?php echo (isset($this->reportLayoutsResult) && $this->reportLayoutsResult != '')?'':$display;?> ">
-			<a class="btn btn-sm btn-primary" target="_blank" href="<?php echo $this->url(array('module' => 'admin',"controller"=>"report-config","action"=>"show-model-layout" ,"id"=>(isset($this->reportLayoutsResult) && $this->reportLayoutsResult != '')?$this->reportLayoutsResult:''),null,true) ?>"><i class="fa fa-external-link" aria-hidden="true"></i><span class="selected-id">View Layout</span></a>
 		</div>
 	</div>
 	<hr>

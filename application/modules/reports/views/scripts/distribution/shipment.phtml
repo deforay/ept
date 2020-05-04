@@ -1,39 +1,41 @@
 <?php
+// Zend_Debug::dump($this->shipment);die;
 if (count($this->shipment) > 0) {
     if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] == 'finalized') {
         header('Location: /reports/distribution');
     }
 ?>
-<style>
-.sticky {
-  position: -webkit-sticky;
-  position: sticky;
-  bottom: 0;
-  /* background-color: #ecf0f1; */
-  padding-bottom: 60px;
-  font-size: 20px;
-}
-/* width */
-::-webkit-scrollbar {
-  width: 5px !important;
-  height: 5px !important;
-}
+    <style>
+        .sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            bottom: 0;
+            /* background-color: #ecf0f1; */
+            padding-bottom: 60px;
+            font-size: 20px;
+        }
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1; 
-}
- 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888; 
-}
+        /* width */
+        ::-webkit-scrollbar {
+            width: 5px !important;
+            height: 5px !important;
+        }
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555; 
-}
-</style>
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
     <div class="well" style="clear: both;">
         <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
         <div id="allShipmentList">
@@ -128,6 +130,7 @@ if (count($this->shipment) > 0) {
                 <th>Response Score</th>
                 <th>Documentation Score</th>
                 <th>Result</th>
+                <th>Report</th>
                 <th>Comments (if any)</th>
 
             </tr>
@@ -162,23 +165,32 @@ if (count($this->shipment) > 0) {
                 }
                 $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
                 $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
-            ?>
+                $indiualReports = "";
+                if ($shipment['status'] == 'evaluated') {
+                    $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $shipment['map_id'] . ".pdf");
+                    if (!file_exists($invididualFilePath)) {
+                        // Search this file name using the map id
+                        $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $shipment['map_id'] . ".pdf");
+                        $invididualFilePath = isset($files[0]) ? $files[0] : '';
+                    }
+                    if (file_exists($invididualFilePath)) {
+                        $indiualReports .= '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_BLANK" download><i class="icon icon-download"></i> Download Report</a>';
+                    }
+                } ?>
                 <tr>
-                    <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
+                    <td class="center"><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
                     <td style="vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name'] . "(" . $shipment['unique_identifier'] . ")" ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
+                    <td style="text-align:left;vertical-align:middle;"><?php echo $indiualReports; ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
-
                 </tr>
-            <?php
-            }
-            $evSession = new Zend_Session_Namespace('evalShipmentList');
-            $evSession->editUrlList = $editList;
-            $evSession->viewUrlList = $viewList;
+            <?php }
+                $evSession = new Zend_Session_Namespace('evalShipmentList');
+                $evSession->editUrlList = $editList;
+                $evSession->viewUrlList = $viewList;
             ?>
-
         </tbody>
     </table>
     <div>
@@ -296,9 +308,10 @@ if (count($this->shipment) > 0) {
 
             $('#shipmentEvaluation').on('click', ".clicker", function() {
                 nTr = $(this).parents('tr')[0];
+                // console.log(nTr);
                 aData = oTable.fnGetData(nTr);
                 if (oTable.fnIsOpen(nTr)) {
-                    //console.log(aData[5]);
+                    //console.log(aData[6]);
                     /* This row is already open - close it */
                     $(this).find('i').addClass("icon-plus");
                     $(this).find('i').removeClass("icon-minus");
@@ -306,7 +319,7 @@ if (count($this->shipment) > 0) {
 
                     if (aData[4] == "Fail") {
                         $(this).addClass('btn-danger');
-                    } else if (aData[5] == "") {
+                    } else if (aData[6] == "") {
                         $(this).addClass('btn-success');
                     } else {
                         $(this).addClass('btn-warning');
@@ -335,7 +348,8 @@ if (count($this->shipment) > 0) {
                 "bScrollCollapse": true,
                 "sPaginationType": "bootstrap",
                 "bRetrieve": true,
-                "aoColumns": [{
+                "aoColumns": [
+                    {
                         "bSortable": false,
                         "aTargets": [0]
                     },
@@ -353,22 +367,26 @@ if (count($this->shipment) > 0) {
                     },
                     {
                         "bSearchable": false,
+                        "bSortable":false
+                    },
+                    {
+                        "bSearchable": false,
                         "bVisible": false
                     }
                 ],
                 "aaSorting": [
                     [1, "asc"]
                 ],
-                "bProcessing": true,
+                "bProcessing": true
             });
         });
 
         function fnFormatDetails(oTable, nTr) {
             var aData = oTable.fnGetData(nTr);
             var sOut = "";
-            if (aData[5] != "" && aData[5] != null && aData[5] != undefined) {
+            if (aData[6] != "" && aData[6] != null && aData[6] != undefined) {
                 sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
-                sOut += '<tr><td>' + aData[5] + '</td></tr>';
+                sOut += '<tr><td>' + aData[6] + '</td></tr>';
                 sOut += '</table>';
             } else {
                 sOut = 'No comments to show';
@@ -437,7 +455,8 @@ if (count($this->shipment) > 0) {
                 var individual = null;
                 $.when(
                     $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'bulk-generate-report'), 'default', true); ?>", {
-                            sid: sId
+                            sid: sId,
+                            type: 'generateReport'
                         },
                         function(data) {
                             individual = data;
