@@ -58,7 +58,14 @@ class CommonController extends Zend_Controller_Action
         }
     }
 
-
+    public function notifyStatusAction(){
+        $this->_helper->layout()->disableLayout();
+        if ($this->getRequest()->isPost()) {
+            $id = (int)$this->_getParam('nid');
+            $commonService = new Application_Service_Common();
+            $this->view->result = $commonService->saveNotifyStatus($id);
+        }
+    }
 }
 
 

@@ -2644,7 +2644,7 @@ class Application_Service_Evaluation
 				);
 				$saved = $db->insert('evaluation_queue', $data);
 				if($saved > 0){
-					return $db->update('shipment', array('report_in_queue' => 'yes'), "shipment_id = " . $shipmentId);				
+					return $db->update('shipment', array('report_in_queue' => 'yes'), "shipment_id = " . $shipmentId);
 				}
 			}
 		}else{

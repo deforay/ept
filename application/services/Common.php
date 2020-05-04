@@ -341,4 +341,14 @@ class Application_Service_Common
             }
         }
     }
+
+    public function fetchNotify(){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchAll($db->select()->from('notify')->order('created_on DESC'));
+    }
+    
+    public function saveNotifyStatus($id){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->update('notify',array("status" =>'readed'), "id = " . $id);
+    }
 }
