@@ -6,34 +6,8 @@ if (count($this->shipment) > 0) {
     }
 ?>
     <style>
-        .sticky {
-            position: -webkit-sticky;
-            position: sticky;
-            bottom: 0;
-            /* background-color: #ecf0f1; */
-            padding-bottom: 60px;
-            font-size: 20px;
-        }
-
-        /* width */
-        ::-webkit-scrollbar {
-            width: 5px !important;
-            height: 5px !important;
-        }
-
-        /* Track */
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-        }
-
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+        .generate-btn:hover {
+            box-shadow: 0px 3px 5px grey !important;
         }
     </style>
     <div class="well" style="clear: both;">
@@ -120,7 +94,11 @@ if (count($this->shipment) > 0) {
 
         </tr>
     </table>
-
+    <?php $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'disabled' : '';
+    $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'Generating Participant Reports ...' : 'Generate Participant Reports'; ?>
+    <div class="row" align="center">
+        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateBulkReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
+    </div>
     <br /><br />
     <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
         <thead>
@@ -187,18 +165,15 @@ if (count($this->shipment) > 0) {
                     <td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
                 </tr>
             <?php }
-                $evSession = new Zend_Session_Namespace('evalShipmentList');
-                $evSession->editUrlList = $editList;
-                $evSession->viewUrlList = $viewList;
-                $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending')?'disabled':'';
-                $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending')?'Generating Participant Reports...':'Generate Participant Reports';
+            $evSession = new Zend_Session_Namespace('evalShipmentList');
+            $evSession->editUrlList = $editList;
+            $evSession->viewUrlList = $viewList;
             ?>
         </tbody>
     </table>
     <div>
-        <div align="right" class="col-lg-6">
+        <!-- <div align="right" class="col-lg-6">
             <a href="javascript:void(0)" class="btn btn-sm  btn-warning" style="margin-top:10px;clear:both !important;" onclick="generateSummaryReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate Summary Report for this Shipment</a>
-            <a href="javascript:void(0)" class="btn btn-sm  btn-danger <?php echo $reportQueue;?>" style="margin-top:10px;clear:both !important;" onclick="generateBulkReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle;?></a>
             <?php
             $buttonCount = (int) ceil($this->responseCount["reported_count"] / 50);
             $responseCnt = $this->responseCount["reported_count"];
@@ -225,12 +200,11 @@ if (count($this->shipment) > 0) {
                     }
                 }
             } ?>
-            <!-- <a href="javascript:void(0)" class="btn btn-sm  btn-danger" style="margin-top:10px;" onclick="generateReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>','50','<?php echo ($start - 1); ?>','<?php echo $start; ?>','<?php echo $end; ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate <?php echo $start; ?> to <?php echo $end; ?> Reports for this Shipment</a> -->
-        </div>
-        <div align="left" class="col-lg-6">
-            <span id="summaryDiv">
+        </div> -->
+        <div class="row">
+            <div id="summaryDiv" class="col-md-12">
 
-            </span>
+            </div>
         </div>
     </div>
     <script type="text/javascript" charset="utf-8">
@@ -256,7 +230,7 @@ if (count($this->shipment) > 0) {
 
             ?>
 
-                document.getElementById("summaryDiv").innerHTML = "<a href=\"/d/<?php echo $filePath; ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_blank' style='margin-top:10px;clear:both;float:left;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
+                document.getElementById("summaryDiv").innerHTML = "<a href=\"/d/<?php echo $filePath; ?>\" id='summaryReport' class='btn btn-success btn-sm col-md-3' target='_blank' style='margin:10px 10px;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
         <?php
             }
         } ?>
@@ -300,7 +274,7 @@ if (count($this->shipment) > 0) {
                             "-" . $end .
                             "-bulk-participant-report.pdf");
             ?>
-                        $("#summaryDiv").append("&nbsp;&nbsp;<a href=\"/d/<?php echo $filePath; ?>\" class='btn btn-info btn-sm' target='_BLANK' id=\"<?php echo $start . " - " . $end . " - bulk - participant - report "; ?>\" style='margin-top:10px;clear:both;float:left;'><i class='icon-file-text'></i> Download <?php echo $start; ?> - <?php echo $end; ?> Participants Report</a> ");
+                        $("#summaryDiv").append("<a href=\"/d/<?php echo $filePath; ?>\" class='btn btn-info btn-sm col-md-3' target='_BLANK' id=\"<?php echo $start . " - " . $end . " - bulk - participant - report "; ?>\" style='margin:10px 10px;'><i class='icon-file-text'></i> Download <?php echo $start; ?> - <?php echo $end; ?> Participants Report</a> ");
             <?php
                     }
                 }
@@ -350,8 +324,7 @@ if (count($this->shipment) > 0) {
                 "bScrollCollapse": true,
                 "sPaginationType": "bootstrap",
                 "bRetrieve": true,
-                "aoColumns": [
-                    {
+                "aoColumns": [{
                         "bSortable": false,
                         "aTargets": [0]
                     },
@@ -369,7 +342,7 @@ if (count($this->shipment) > 0) {
                     },
                     {
                         "bSearchable": false,
-                        "bSortable":false
+                        "bSortable": false
                     },
                     {
                         "bSearchable": false,
