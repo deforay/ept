@@ -20,7 +20,7 @@ class Admin_ReportConfigController extends Zend_Controller_Action
             $this->view->logo=$reportService->getReportConfigValue('logo');
             $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
             $this->view->result=$reportService->getReportConfigValue('report-header');
-            $this->view->reportLayouts = scandir(REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'layout-files');
+            $this->view->reportLayouts = scandir(PARTICIPANT_REPORT_LAYOUT,true);
             $this->view->reportLayoutsResult = $reportService->getReportConfigValue('report-layout');
         }
     }

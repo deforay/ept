@@ -944,7 +944,7 @@ class Application_Service_Evaluation
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 					//->where("sp.is_pt_test_not_performed is NULL")
 					//->where("sp.is_excluded ='no'")
-					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00 00:00:00' AND sp.shipment_test_date not like '0000-00-00'")
+					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like '0000-00-00'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 
 				//echo $sql;die;
@@ -1282,8 +1282,8 @@ class Application_Service_Evaluation
 					//->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
 					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
 					->where("spm.shipment_id = ?", $shipmentId)
-					//->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date!='' AND spm.shipment_test_date!='0000-00-00 00:00:00' OR spm.is_pt_test_not_performed ='yes'")
-					->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date!='' AND spm.shipment_test_date!='0000-00-00 00:00:00'")
+					//->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR spm.is_pt_test_not_performed ='yes'")
+					->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00'")
 					->group('spm.map_id');
 
 				$sQueryRes = $db->fetchAll($sQuery);
@@ -1299,7 +1299,7 @@ class Application_Service_Evaluation
 					->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id', 'spm.attributes', 'spm.shipment_score'))
 					->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.shipment_map_id = spm.map_id and reseid.sample_id = refeid.sample_id', array('reported_result'))
 					->where('spm.shipment_id = ? ', $shipmentId)
-					->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date!='' AND spm.shipment_test_date!='0000-00-00 00:00:00' OR spm.is_pt_test_not_performed ='yes'")
+					->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR spm.is_pt_test_not_performed ='yes'")
 					->where("spm.is_excluded!='yes'")
 					->where("refeid.control = 0");
 
@@ -1415,7 +1415,7 @@ class Application_Service_Evaluation
 					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
 					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
 					->where("spm.shipment_id = ?", $shipmentId)
-					->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00 00:00:00' OR spm.is_pt_test_not_performed ='yes'")
+					->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR spm.is_pt_test_not_performed ='yes'")
 					->group('spm.map_id');
 
 				$sQueryRes = $db->fetchAll($sQuery);

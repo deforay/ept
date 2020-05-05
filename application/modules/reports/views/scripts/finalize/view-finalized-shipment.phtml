@@ -224,15 +224,14 @@ if (count($this->shipment) > 0) {
                 nTr = $(this).parents('tr')[0];
                 aData = oTable.fnGetData(nTr);
                 if (oTable.fnIsOpen(nTr)) {
-                    //console.log(aData[5]);
                     /* This row is already open - close it */
                     $(this).find('i').addClass("icon-plus");
                     $(this).find('i').removeClass("icon-minus");
                     //$(this).removeClass('btn-danger');
 
-                    if (aData[4] == "Fail") {
+                    if (aData[5] == "Fail") {
                         $(this).addClass('btn-danger');
-                    } else if (aData[5] == "") {
+                    } else if (aData[6] == "") {
                         $(this).addClass('btn-success');
                     } else {
                         $(this).addClass('btn-warning');
@@ -280,9 +279,9 @@ if (count($this->shipment) > 0) {
         {
             var aData = oTable.fnGetData(nTr);
             var sOut = "";
-            if (aData[5] != "" && aData[5] != null && aData[5] != undefined) {
+            if (aData[6] != "" && aData[6] != null && aData[6] != undefined) {
                 sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
-                sOut += '<tr><td>' + aData[5] + '</td></tr>';
+                sOut += '<tr><td>' + aData[6] + '</td></tr>';
                 sOut += '</table>';
             } else {
                 sOut = 'No comments to show';

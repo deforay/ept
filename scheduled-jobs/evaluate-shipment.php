@@ -4,8 +4,10 @@ include_once 'CronInit.php';
 
 require_once 'tcpdf/tcpdf.php';
 
-defined('REPORT_LAYOUT')
-    || define('REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts'));
+defined('PARTICIPANT_REPORT_LAYOUT')
+    || define('PARTICIPANT_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));
+defined('SUMMARY_REPORT_LAYOUT')
+    || define('SUMMARY_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/summary-layouts'));
 
 defined('CRON_FOLDER')
     || define('CRON_FOLDER', realpath(dirname(__FILE__) . '/../scheduled-jobs'));
@@ -244,10 +246,6 @@ try {
                 $reportTypeStatus = 'not-finalized';
             }
             $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
-            $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
-
-            $resultStatus = 'finalized';
-
             //$r = $evalService->getShipmentToEvaluate($evalRow['shipment_id'], true);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -255,7 +253,7 @@ try {
                 array('spm' => 'shipment_participant_map'),
                 array(
                     'participant_count' => new Zend_Db_Expr('count("participant_id")'),
-                    'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")
+                    'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed not like 'yes')")
                 )
             )
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array())
@@ -271,7 +269,7 @@ try {
             $layout = $reportService->getReportConfigValue('report-layout');
             $possibleDtsResults = $schemeService->getPossibleResults('dts');
             $passPercentage = $commonService->getConfig('pass_percentage');
-            $comingFrom = $evalRow['report_type'];
+            $resultStatus = $evalRow['report_type'];
             $customField1 = $commonService->getConfig('custom_field_1');
             $customField2 = $commonService->getConfig('custom_field_2');
             $haveCustom = $commonService->getConfig('custom_field_needed');
@@ -286,25 +284,28 @@ try {
                 $bulkfileNameVal = $startValue . '-' . $endValue;
                 if (count($resultArray) > 0) {
                     if(isset($layout) && $layout != ''){
-                        $layoutFile = REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'layout-files' . DIRECTORY_SEPARATOR . $layout;
-                        // die($layoutModel);
+                        $layoutFile = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout;
                         include($layoutFile.'.phtml');
                     }else{
-                        include('generate-individual-reports.php');
+                        include('default.php');
                     }
                 }
             }
 
             // SUMMARY REPORT
-
-            /* $resultArray = $evalService->getSummaryReportsInPdf($evalRow['shipment_id']);
+            $resultArray = $evalService->getSummaryReportsInPdf($evalRow['shipment_id']);
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
             $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
 
             if (count($resultArray) > 0) {
-                include('generate-summary-pdf.php');
-            } */
+                if(isset($layout) && $layout != ''){
+                    $layoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout;
+                    include($layoutFile.'.phtml');
+                }else{
+                    include('default-summary.php');
+                }
+            }
 
             $reportCompletedStatus = 'evaluated';
             if($evalRow['report_type'] == 'generateReport'){
