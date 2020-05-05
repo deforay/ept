@@ -6,15 +6,21 @@ $actionName = Zend_Controller_Front::getInstance()->getRequest()->getActionName(
 $notifyData = $this->getNotification();
 // Zend_Debug::dump($notifyData);die;
 $notifyCount = (count($notifyData) > 0)?count($notifyData):0;
+$scrollHeight = '';
+if($notifyCount >= 5){
+	$scrollHeight = 'height: 300px;';
+}
 if(isset($notifyData) && $notifyCount > 0){
 	$count = 0;$nCount = 0;
-	$notify = '
-	<ul class="dropdown-menu" style="overflow: auto;height: 300px;">';
 	foreach($notifyData as $notifyRow){
 		if($notifyRow['status'] == 'read'){
 			$nCount +=1; 
 		}
-		if($count <= 10){
+	}
+	$notify = '
+	<ul class="dropdown-menu" style="overflow: auto;'.$scrollHeight.'">';
+	foreach($notifyData as $notifyRow){
+		if($count < 10){
 			$count++;
 			$notifyRead = ($notifyRow['status'] == 'read')?'style=" background: #80808024; "':'';
 			$notifyLink = (isset($notifyRow['link']) && $notifyRow['link'] != '')?$notifyRow['link']:'javascript:void(0);';
