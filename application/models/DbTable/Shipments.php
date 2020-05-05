@@ -1839,7 +1839,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
         ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
         ->where("pmm.dm_id=?", $aResult['dm_id'])
-        // ->where("spm.syned=?", 'no')
+        // ->where("spm.synced=?", 'no')
         ->where("(s.status='shipped' OR s.status='evaluated')")
         ->order('spm.created_on_admin DESC')
         ->order('spm.created_on_user DESC');

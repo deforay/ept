@@ -2408,8 +2408,8 @@ CREATE TABLE `system_config` (
 
 INSERT INTO `system_config` (`system_id`, `display_name`, `name`, `value`) VALUES (NULL, 'App-Verion', 'app_version', '0.0.1');
 -- Thanaseelan 03 Feb, 2020
-ALTER TABLE `shipment_participant_map` ADD `syned` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `show_announcement`;
-ALTER TABLE `shipment_participant_map` ADD `syned_on` DATETIME NULL DEFAULT NULL AFTER `syned`;
+ALTER TABLE `shipment_participant_map` ADD `synced` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `show_announcement`;
+ALTER TABLE `shipment_participant_map` ADD `synced_on` DATETIME NULL DEFAULT NULL AFTER `synced`;
 -- Thanaseelan 25 Mar, 2020
 ALTER TABLE `data_manager` ADD `download_link` VARCHAR(255) NULL DEFAULT NULL AFTER `auth_token`;
 -- Thanaseelan 29 Apr, 2020
