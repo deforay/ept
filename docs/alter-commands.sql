@@ -2419,3 +2419,13 @@ ALTER TABLE `evaluation_queue` ADD FOREIGN KEY (`shipment_id`) REFERENCES `shipm
 INSERT INTO `report_config` (`name`, `value`) VALUES ('report-layout', 'rwanda.php');
 -- Thanaseelan 04 May, 2020
 ALTER TABLE `evaluation_queue` ADD `report_type` VARCHAR(50) NULL DEFAULT NULL AFTER `shipment_id`;
+
+CREATE TABLE `notify` (
+ `id` int NOT NULL AUTO_INCREMENT COMMENT 'auto id',
+ `title` varchar(255) DEFAULT NULL COMMENT 'notify title',
+ `description` text COMMENT 'notify description',
+ `link` varchar(255) DEFAULT NULL COMMENT 'link for corresponding page',
+ `status` varchar(50) NOT NULL DEFAULT 'read' COMMENT 'read, readed for notify status',
+ `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'current insertion date time',
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
