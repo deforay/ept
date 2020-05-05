@@ -39,7 +39,6 @@ defined('DOWNLOADS_FOLDER')
 defined('REPORT_LAYOUT')
     || define('REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts'));
 
-        
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
     realpath(APPLICATION_PATH . '/../library'),

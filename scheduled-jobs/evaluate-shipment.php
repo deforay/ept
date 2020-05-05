@@ -314,7 +314,7 @@ try {
                 $reportCompletedStatus = 'finalized';
                 $link = '/reports/finalize';
             }
-            $db->update('shipment', array('status' => $reportCompletedStatus, 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+            $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue'=>'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
             $db->update('evaluation_queue', array('status' => $reportCompletedStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
             $db->insert('notify',array('title'=>'Reports Generated','description'=>'Reports for Shipment '.$evalRow['shipment_code'].' are ready for download','link'=>$link));
         }
