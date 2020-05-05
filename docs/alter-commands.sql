@@ -2416,7 +2416,7 @@ ALTER TABLE `data_manager` ADD `download_link` VARCHAR(255) NULL DEFAULT NULL AF
 ALTER TABLE `shipment` ADD `report_in_queue` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `status`;
 ALTER TABLE `evaluation_queue` ADD FOREIGN KEY (`shipment_id`) REFERENCES `shipment`(`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 -- Thanaseelan 30 Apr, 2020
-INSERT INTO `report_config` (`name`, `value`) VALUES ('report-layout', 'rwanda');
+INSERT INTO `report_config` (`name`, `value`) VALUES ('report-layout', 'default');
 -- Thanaseelan 04 May, 2020
 ALTER TABLE `evaluation_queue` ADD `report_type` VARCHAR(50) NULL DEFAULT NULL AFTER `shipment_id`;
 

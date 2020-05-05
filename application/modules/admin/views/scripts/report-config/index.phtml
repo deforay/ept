@@ -61,7 +61,6 @@
 		<div class="col-md-6 form-group">
 			<label class="">Report Layout</label>
 			<select class="form-control" name="reportLayout" id="reportLayout" title="Please select the report layout">
-				<option value="">--Select--</option>
 				<?php if(isset($this->reportLayouts) && count($this->reportLayouts) > 0){
 					foreach($this->reportLayouts as $folder){
 						if($folder != '.' && $folder != '..'){
