@@ -549,7 +549,7 @@ class Application_Service_Participants
 			$adminSession = new Zend_Session_Namespace('administrators');
 			$participantDb = new Application_Model_DbTable_Participants();
 			$userDb = new Application_Model_DbTable_DataManagers();
-
+			$common = new Application_Service_Common();
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			// $rResult = $db->fetchAll();
             $allowedExtensions = array('xls', 'xlsx', 'csv');
@@ -629,7 +629,7 @@ class Application_Service_Participants
 											'mobile' 			=> $sheetData[$i]['O'],
 											'secondary_email' 	=> $sheetData[$i]['R'],
 											'primary_email' 	=> $sheetData[$i]['P'], 
-											'password' 			=> $sheetData[$i]['Q'],
+											'password' 			=> (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q']))?$common->getRandomString(8):$sheetData[$i]['Q'],
 											'created_by' 		=> $authNameSpace->admin_id,
 											'created_on' 		=> new Zend_Db_Expr('now()'),
 											'status'			=> 'active'
