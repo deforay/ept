@@ -190,8 +190,8 @@ if (count($this->shipment) > 0) {
                 $evSession = new Zend_Session_Namespace('evalShipmentList');
                 $evSession->editUrlList = $editList;
                 $evSession->viewUrlList = $viewList;
-                $reportQueue = (isset($this->shipment[0]['report_in_queue']) && $this->shipment[0]['report_in_queue'] == 'yes')?'disabled':'';
-                $reportTitle = (isset($this->shipment[0]['report_in_queue']) && $this->shipment[0]['report_in_queue'] == 'yes')?'Generating Participant Reports...':'Generate Participant Reports';
+                $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending')?'disabled':'';
+                $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending')?'Generating Participant Reports...':'Generate Participant Reports';
             ?>
         </tbody>
     </table>

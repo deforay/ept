@@ -815,6 +815,12 @@ class Application_Service_Evaluation
 		$shipmentResult = $db->fetchAll($sql);
 		return $shipmentResult;
 	}
+	
+	public function getReportStatus($shipmentId,$type='')
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		return $db->fetchRow($db->select()->from('evaluation_queue')->where('shipment_id = ?', $shipmentId)->where('report_type = ?', $type));
+	}
 
 	public function getEvaluateReportsInPdf($shipmentId, $sLimit = null, $sOffset = null)
 	{

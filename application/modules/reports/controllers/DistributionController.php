@@ -42,6 +42,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $reEvaluate = false;
             $evalService = new Application_Service_Evaluation();
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id, $reEvaluate);
+            $this->view->shipmentStatus = $evalService->getReportStatus($id,'generateReport');
             $this->view->responseCount = $evalService->getResponseCount($id, $shipment[0]['distribution_id']);
 
 
@@ -112,6 +113,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $reEvaluate = false;
             $evalService = new Application_Service_Evaluation();
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id, $reEvaluate);
+            $this->view->shipmentStatus = $evalService->getReportStatus($id,'finalized');
             $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
             $this->view->responseCount = $evalService->getResponseCount($id, $shipment[0]['distribution_id']);
         } else {

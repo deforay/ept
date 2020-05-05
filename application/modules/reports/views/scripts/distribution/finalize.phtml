@@ -168,8 +168,8 @@ if (count($this->shipment) > 0) {
     <br />
     <?php
     $m = 0;
-    $reportQueue = (isset($this->shipment[0]['report_in_queue']) && $this->shipment[0]['report_in_queue'] == 'yes')?'disabled':'';
-    $reportTitle = (isset($this->shipment[0]['report_in_queue']) && $this->shipment[0]['report_in_queue'] == 'yes')?'Generating Participant Reports...':'Generate Participant Reports';
+    $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending')?'disabled':'';
+    $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending')?'Generating Participant Reports...':'Generate Participant Reports';
     if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] != 'finalized') {
     ?>
         <div align="right" class="col-lg-6">
