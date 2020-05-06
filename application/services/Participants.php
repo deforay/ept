@@ -303,17 +303,23 @@ class Application_Service_Participants
 					),
 				)
 			);
-			$sheet->mergeCells('A1:E1');
-			$sheet->setCellValue('A1', html_entity_decode("Responded Shipment Participant List", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->getStyle('A1')->applyFromArray($styleInboldArray);
+			if($params['type'] == 'from-participant'){
+				$sheet->mergeCells('A1:E1');
+				$sheet->setCellValue('A1', html_entity_decode("Shipment Participant List", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$sheet->getStyle('A1')->applyFromArray($styleInboldArray);
+			}else{
+				$sheet->mergeCells('A1:E1');
+				$sheet->setCellValue('A1', html_entity_decode("Responded Shipment Participant List", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				$sheet->getStyle('A1')->applyFromArray($styleInboldArray);
+				if (isset($params['shipmentCode']) && trim($params['shipmentCode']) != "") {
+					$sheet->setCellValue('A2', html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$sheet->setCellValue('B2', html_entity_decode($params['shipmentCode'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				}
+				if (isset($params['shipmentCode']) && trim($params['shipmentCode']) != "") {
+					$sheet->setCellValue('A3', html_entity_decode("Shipment Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+					$sheet->setCellValue('B3', html_entity_decode($params['shipmentDate'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+				}
 
-			if (isset($params['shipmentCode']) && trim($params['shipmentCode']) != "") {
-				$sheet->setCellValue('A2', html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				$sheet->setCellValue('B2', html_entity_decode($params['shipmentCode'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			}
-			if (isset($params['shipmentCode']) && trim($params['shipmentCode']) != "") {
-				$sheet->setCellValue('A3', html_entity_decode("Shipment Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-				$sheet->setCellValue('B3', html_entity_decode($params['shipmentDate'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			}
 			$sheet->setCellValue('A4', html_entity_decode("Participant Id", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			$sheet->setCellValue('B4', html_entity_decode("Lab Name/Participant Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -335,8 +341,12 @@ class Application_Service_Participants
 
 			$sQuerySession = new Zend_Session_Namespace('respondedParticipantsExcel');
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-			$rResult = $db->fetchAll($sQuerySession->shipmentRespondedParticipantQuery);
-			//  Zend_Debug::dump($rResult);die;
+			$sQuery = $sQuerySession->shipmentRespondedParticipantQuery;
+			if($params['type'] == 'from-participant'){
+				// $sQuery = $sQuery->where("p.status = ? ", 'active');
+			}
+			$rResult = $db->fetchAll($sQuery);
+			// Zend_Debug::dump($rResult);die;
 
 			foreach ($rResult as $aRow) {
 				$row = array();
@@ -347,7 +357,11 @@ class Application_Service_Participants
 				$row[] = $aRow['phone'];
 				$row[] = $aRow['affiliation'];
 				$row[] = $aRow['email'];
-				$row[] = ucwords($aRow['RESPONSE']);
+				if($params['type'] == 'from-participant'){
+					$row[] = ucwords($aRow['status']);
+				}else{
+					$row[] = ucwords($aRow['RESPONSE']);
+				}
 
 				$output[] = $row;
 			}
@@ -371,12 +385,16 @@ class Application_Service_Participants
 			}
 
 			$writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-			$filename = $params['shipmentCode'] . '-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xls';
+			if($params['type'] == 'from-participant'){
+				$filename = 'Shipment-participant-report-(' . date('d-M-Y-H-i-s') . ').xls';
+			}else{
+				$filename = $params['shipmentCode'] . '-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xls';
+			}
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			return $filename;
 		} catch (Exception $exc) {
 			return "";
-			$sQuerySession->correctiveActionsQuery = '';
+			$sQuerySession->shipmentRespondedParticipantQuery = '';
 			error_log("GENERATE-SHIPMENT-RESPONDED-PARTICIPANT-REPORT-EXCEL--" . $exc->getMessage());
 			error_log($exc->getTraceAsString());
 		}

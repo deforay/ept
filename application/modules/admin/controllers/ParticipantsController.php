@@ -151,4 +151,16 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         }
         $this->view->participants = $participantService->getAllActiveParticipants();
     }
+
+    public function exportParticipantsDetailsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->getRequest()->isPost()) {
+            $params['type'] = 'from-participant';
+            $participantService = new Application_Service_Participants();
+            $this->view->result = $participantService->exportShipmentRespondedParticipantsDetails($params);
+        } else {
+            return false;
+        }
+    }
 }
