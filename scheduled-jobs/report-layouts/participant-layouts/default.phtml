@@ -1,9 +1,10 @@
 <?php
+
 require_once 'tcpdf/tcpdf.php';
-require_once CRON_FOLDER.'/General.php';
+require_once(CRON_FOLDER.'/General.php');;
 $general = new General();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
-
+//var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
@@ -19,12 +20,13 @@ if (sizeof($resultArray['shipment']) > 0) {
     }
     $totalPages = count($resultArray['shipment']);
     $j = 1;
-    //$resultArray['dmResult'];
+//$resultArray['dmResult'];
+    //var_dump($resultArray['shipment']);die;
+
     foreach ($resultArray['shipment'] as $result) {
 
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
-            (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
-        ) {
+            (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')) {
             continue;
         }
 
@@ -83,10 +85,20 @@ if (sizeof($resultArray['shipment']) > 0) {
         // add a page
         $pdf->AddPage();
 
+        // set some text to print
+        //$txt = <<<EOD
+        //International Laboratory Branch
+        //
+        //Custom page header and footer are defined by extending the TCPDF class and overriding the Header() and Footer() methods.
+        //EOD;
+        //
+        //// print a block of text using Write()
+        //$pdf->Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
+
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = (isset($result['shipment_date']) && $result['shipment_date'] != null && $result['shipment_date'] != '0000:00:00')?$general->humanDateFormat($result['shipment_date']):'';
+            $result['shipment_date'] = $general->humanDateFormat($result['shipment_date']);
         }
         if (trim($result['lastdate_response']) != "") {
             $result['lastdate_response'] = $general->humanDateFormat($result['lastdate_response']);
@@ -100,10 +112,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         $score = 0;
 
         $testThreeOptionalDisplay = "";
-        if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+        if(isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes'){
             $testThreeOptionalDisplay = ";display:none;";
         }
-
+        
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
@@ -194,6 +206,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '</table>';
             //shipment_test_date
             $pdf->writeHTML($labInfo, true, false, true, false, '');
+
         } else if ($schemeType == 'eid') {
 
             // Samples without response need not be generated
@@ -248,15 +261,15 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (sizeof($result['responseResult']) > 0) {
             if ($schemeType != 'vl' && $schemeType != 'eid') {
                 $labRes = '<span style="font-weight: bold;font-size:12px;">Your laboratory test results : <br/></span><table border="1" style="font-size:12px;">';
-                $labRes .= '<tr style="background-color:#dbe4ee;"><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . '">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
-                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td><td>' . $result['responseResult'][0]['testkit1'] . '</td><td>' . $result['responseResult'][0]['testkit2'] . '</td><td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['testkit3'] . '</td><td colspan="4"></td></tr>';
-                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td><td>' . $result['responseResult'][0]['lot_no_1'] . '</td><td>' . $result['responseResult'][0]['lot_no_2'] . '</td><td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['lot_no_3'] . '</td><td colspan="4"></td></tr>';
-                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td><td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_1']) . '</td><td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_2']) . '</td><td style="' . $testThreeOptionalDisplay . '">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_3']) . '</td><td colspan="4"></td></tr>';
+                $labRes .= '<tr style="background-color:#dbe4ee;"><td></td><td style="text-align:center;font-weight:bold;">Test-1</td><td style="text-align:center;font-weight:bold;">Test-2</td><td style="text-align:center;font-weight:bold;'.$testThreeOptionalDisplay.'">Test-3</td><td colspan="4" style="border:none;"></td></tr>';
+                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td><td>' . $result['responseResult'][0]['testkit1'] . '</td><td>' . $result['responseResult'][0]['testkit2'] . '</td><td style="'.$testThreeOptionalDisplay.'">' . $result['responseResult'][0]['testkit3'] . '</td><td colspan="4"></td></tr>';
+                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td><td>' . $result['responseResult'][0]['lot_no_1'] . '</td><td>' . $result['responseResult'][0]['lot_no_2'] . '</td><td style="'.$testThreeOptionalDisplay.'">' . $result['responseResult'][0]['lot_no_3'] . '</td><td colspan="4"></td></tr>';
+                $labRes .= '<tr><td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td><td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_1']) . '</td><td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_2']) . '</td><td style="'.$testThreeOptionalDisplay.'">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_3']) . '</td><td colspan="4"></td></tr>';
                 $labRes .= '<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;">Specimen Panel ID </td>
 							<td style="text-align:center;font-weight:bold;">Result-1</td>
 							<td style="text-align:center;font-weight:bold;">Result-2</td>
-							<td style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . '">Result-3</td>
+							<td style="text-align:center;font-weight:bold;'.$testThreeOptionalDisplay.'">Result-3</td>
 							<td style="text-align:center;font-weight:bold;">Expected Result</td>
 							<td style="text-align:center;font-weight:bold;">Your Result</td>
 
@@ -312,7 +325,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 							<td style="text-align:center;">' . $response['sample_label'] . '</td>
 							<td>' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $dtsResults[$response['test_result_1']] : "") . '</td>
 							<td>' . (isset($response['test_result_2']) && $response['test_result_2'] != "" ? $dtsResults[$response['test_result_2']] : "") . '</td>
-							<td style="' . $testThreeOptionalDisplay . '">' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $dtsResults[$response['test_result_3']] : "") . '</td>
+							<td style="'.$testThreeOptionalDisplay.'">' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $dtsResults[$response['test_result_3']] : "") . '</td>
 							<td>' . ucfirst(strtolower($response['referenceResult'])) . '</td>
 							<td>' . ucfirst(strtolower($response['labResult'])) . '</td>
 
@@ -530,6 +543,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                         }
                     }
                     $labRes .= '</table>';
+
                 } else {
 
                     $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
@@ -541,13 +555,14 @@ if (sizeof($resultArray['shipment']) > 0) {
 								</tr>';
 
                     foreach ($result['responseResult'] as $response) {
-
+                        
                         $labRes .= '<tr>
 										<td style="text-align:center;">' . $response['sample_label'] . '</td>
-										<td>' . round($response['reported_viral_load'], 2) . '</td>
+										<td>' . round($response['reported_viral_load'],2) . '</td>
 										<!-- <td>' . $response['no_of_participants'] . '</td> -->
 										<td>Not Graded</td>
 									  </tr>';
+
                     }
 
                     $labRes .= '</table>';
@@ -556,6 +571,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                         $labRes .= " - " . $attributes['other_assay'];
                     }
                     $labRes .= ' platform was not analyzed or graded</h5>';
+
                 }
 
                 //if(isset($attributes['vl_assay']) && $attributes['vl_assay']==6){
@@ -585,6 +601,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->SetLeftMargin(15);
 
             $pdf->writeHTML($wishes, true, false, true, false, '');
+
         }
 
         //if(trim($result['distribution_date'])!=""){
@@ -624,11 +641,12 @@ if (sizeof($resultArray['shipment']) > 0) {
             if (!empty($reportComment)) {
                 $html .= '<br>' . $reportComment;
             }
+
         } else {
             $html = '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
-        }
-        if ($schemeType == 'vl') {
-            $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
+		}
+		if ($schemeType == 'vl') {
+            $html.='<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
         }
 
         $pdf->writeHTML($html, true, false, true, false, '');
@@ -642,7 +660,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['last_name'] = "_" . $result['last_name'];
         }
 
-        //    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
+//    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
         //        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
         //    }
 
@@ -660,45 +678,45 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdfExtract = $extractor->clonePage($page);
             //$pdfExtract->setFont($font, 8) ->drawText('Page '.$j.' / '.$totalPages, 280, 50);
             $pdfNew->pages[] = $pdfExtract;
+
         }
         $shipmentCode = $result['shipment_code'];
         $j++;
     }
 
-    //$mergePdf = $shipmentCode."-bulk-participant-report.pdf";
     $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
     $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
     $pdfNew->save($mergeFilePath);
-    if(isset($resultArray['dmResult']) && count($resultArray['dmResult']) > 0){
-        foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
-            $pdfNew->pages = array();
-            $expRes = explode(",", $dmRes);
-            $resCount = count($expRes);
-            if ($resCount > 0) {
-                foreach ($expRes as $res) {
-                    $expStrRes = explode("#", $res);
-                    $dmFileName = $dmID . ".pdf";
-                    $participantFileName = $expStrRes[1] . ".pdf";
-                    $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
-                    $participantFileName = str_replace(" ", "-", $participantFileName);
-                    $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
-                    if (file_exists($filePath)) {
-                        $loadpdf = Zend_Pdf::load($filePath);
-                        foreach ($loadpdf->pages as $page) {
-                            $pdfExtract = $extractor->clonePage($page);
-                            $pdfNew->pages[] = $pdfExtract;
-                        }
+
+    foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
+        $pdfNew->pages = array();
+        $expRes = explode(",", $dmRes);
+        $resCount = count($expRes);
+        if ($resCount > 0) {
+            foreach ($expRes as $res) {
+                $expStrRes = explode("#", $res);
+                $dmFileName = $dmID . ".pdf";
+                $participantFileName = $expStrRes[1] . ".pdf";
+                $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
+                $participantFileName = str_replace(" ", "-", $participantFileName);
+                $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
+                if (file_exists($filePath)) {
+                    $loadpdf = Zend_Pdf::load($filePath);
+                    foreach ($loadpdf->pages as $page) {
+                        $pdfExtract = $extractor->clonePage($page);
+                        $pdfNew->pages[] = $pdfExtract;
                     }
                 }
             }
-    
-            $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
-            $dmFileName = str_replace(" ", "-", $dmFileName);
-    
-            $mergePdf = $shipmentCode . "-" . $dmFileName;
-            $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-            $pdfNew->save($mergeFilePath);
         }
+
+        $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
+        $dmFileName = str_replace(" ", "-", $dmFileName);
+
+        $mergePdf = $shipmentCode . "-" . $dmFileName;
+        $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
+        $pdfNew->save($mergeFilePath);
+
     }
     //============================================================+
     // END OF FILE

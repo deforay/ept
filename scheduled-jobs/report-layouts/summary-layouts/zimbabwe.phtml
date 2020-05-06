@@ -1,7 +1,7 @@
 <?php
-//Zend_Debug::dump($resultArray);
-//die;
 require_once('tcpdf/tcpdf.php');
+require_once(CRON_FOLDER.'/General.php');;
+$general = new General();
 //require_once('libchart/classes/libchart.php');
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
@@ -64,7 +64,7 @@ if ($resultArray['shipment'] != "") {
         $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . dateFormat($resultArray['shipment']['shipment_date']) . '</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . $general->humanDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
 
@@ -257,7 +257,7 @@ if ($resultArray['shipment'] != "") {
         $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . dateFormat($resultArray['shipment']['shipment_date']) . '</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . $general->humanDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
@@ -388,7 +388,7 @@ if ($resultArray['shipment'] != "") {
 
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
             $referenceRes .= '<tr>';
-            $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . dateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
+            $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . $general->humanDateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
             $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;padding-left:20px;"><span style="font-weight:bold;">Shipment Code</span><br>' . $resultArray['shipment']['shipment_code'] . '</td>';
             $referenceRes .= '</tr>';
             $referenceRes .= '</table>';

@@ -1,6 +1,6 @@
 <?php
 require_once 'tcpdf/tcpdf.php';
-require_once 'General.php';
+require_once(CRON_FOLDER.'/General.php');;
 $general = new General();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 
