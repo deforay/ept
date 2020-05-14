@@ -2002,12 +2002,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 array_push($algorithmUsedSelectOptions,'parallel');
             }
             if($testThreeOptional){
-                if (!empty($allowedAlgorithms) && in_array('threeTestsDtsAlgo', $allowedAlgorithms)) {
-                    array_push($algorithmUsedSelectOptions,'threeTestsDtsAlgo');
+                if (!empty($allowedAlgorithms) && in_array('myanmarNationalAlgo', $allowedAlgorithms)) {
+                    array_push($algorithmUsedSelectOptions,'myanmarNationalAlgo');
                 }
             }
             foreach($algorithmUsedSelectOptions as $row){
-                $algorithmUsedSelect[]      = array('value' => $row,'show' => ($row!='threeTestsDtsAlgo')?ucwords($row):'Three Tests Algorithm','selected'=>(isset($shipment['attributes']["algorithm"]) && ($shipment['attributes']["algorithm"] == $row)?'selected':''));
+                $algorithmUsedSelect[]      = array('value' => $row,'show' => ($row!='myanmarNationalAlgo')?ucwords($row):'Myanmar National Algorithm','selected'=>(isset($shipment['attributes']["algorithm"]) && ($shipment['attributes']["algorithm"] == $row)?'selected':''));
             }
             
             if(isset($participant) && count($participant) > 0){

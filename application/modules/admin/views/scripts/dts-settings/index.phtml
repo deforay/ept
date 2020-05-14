@@ -60,7 +60,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                     <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="allowedAlgorithms[]" multiple="multiple" title="Please select allowed algorithms">
                         <option value="serial" <?php echo (!empty($allowedAlgorithms) && in_array("serial", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Serial</option>
                         <option value="parallel" <?php echo (!empty($allowedAlgorithms) && in_array("parallel", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Parallel</option>
-                        <option value="threeTestsDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("threeTestsDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Three Tests Algorithm</option>
+                        <option value="myanmarNationalAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("myanmarNationalAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Myanmar National Algorithm</option>
                     </select>
                 </div>
             </div>
@@ -162,7 +162,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
     //     var allowedAlgorithms = $("#allowedAlgorithms").val();
     //     console.log(allowedAlgorithms);
     //     if (allowedAlgorithms) {
-    //         if ($.inArray('threeTestsDtsAlgo', allowedAlgorithms)) {
+    //         if ($.inArray('myanmarNationalAlgo', allowedAlgorithms)) {
     //             $("#dtsOptionalTest3").val('no');
     //             $("#dtsOptionalTest3").removeClass('isRequired');
     //             $(".dtsOptionalTest3Div").hide();

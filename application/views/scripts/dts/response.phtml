@@ -155,8 +155,8 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                     <?php if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
                                         <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
                                     <?php } ?>
-                                    <?php if (!empty($allowedAlgorithms) && in_array('threeTestsDtsAlgo', $allowedAlgorithms)) { ?>
-                                        <option value="threeTestsDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'threeTestsDtsAlgo') ? "selected='selected'" : ''; ?>>Three Tests Algorithm</option>
+                                    <?php if (!empty($allowedAlgorithms) && in_array('myanmarNationalAlgo', $allowedAlgorithms)) { ?>
+                                        <option value="myanmarNationalAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'myanmarNationalAlgo') ? "selected='selected'" : ''; ?>>Myanmar National Algorithm</option>
                                     <?php } ?>
 
 
@@ -498,7 +498,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 
         var test3Optional = "<?php echo $testThreeOptional ? 'yes' : 'no'; ?>";
 
-        if (test3Optional == 'yes' && $("#algorithm").val() != 'threeTestsDtsAlgo') {
+        if (test3Optional == 'yes' && $("#algorithm").val() != 'myanmarNationalAlgo') {
             $('.testThree').hide();
         } else {
             $('.testThree').show();
