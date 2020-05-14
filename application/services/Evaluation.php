@@ -2287,7 +2287,7 @@ class Application_Service_Evaluation
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else if ($attributes['algorithm'] == 'myanmarNationalAlgo') {
+					} else if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
 						if ($r1 == 'R' && $r2 == 'R' && $r3 == 'R') {
 							$algoResult = 'Pass';
 						} else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'NR') {
