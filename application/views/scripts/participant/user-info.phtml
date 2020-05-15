@@ -1,3 +1,4 @@
+<?php $authNameSpace = new Zend_Session_Namespace('datamanagers');?>
 <section class="content-header">
     <h1>
         My Login Information
@@ -15,7 +16,12 @@
                     <tr align="left"  class="dark">
                         <td>Primary e-mail address (used for login)</td>
                         <td>
-                            <?php echo $this->rsUser['primary_email']; ?>
+                            <?php 
+                            if($authNameSpace->force_profile_check_primary == 'yes'){
+                                echo '<input id="pemail" type="text" name="pemail" size="50" maxlength="45" value="'.$this->rsUser['primary_email'].'" class="isRequired form-control" title="Please enter a primary email id here" placeholder="Please enter a primary email id here"/>';
+                            }else{
+                                echo $this->rsUser['primary_email'];
+                            } ?>
                             <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
                         </td>
                     </tr>

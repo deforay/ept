@@ -2429,3 +2429,5 @@ CREATE TABLE `notify` (
  `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'current insertion date time',
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+-- Thanaseelan 15 May, 2020
+ALTER TABLE `data_manager` ADD `force_profile_check` VARCHAR(20) NULL DEFAULT 'no' AFTER `force_password_reset`;

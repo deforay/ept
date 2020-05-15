@@ -14,6 +14,37 @@ class AuthController extends Zend_Controller_Action
 		$this->_redirect('/auth/login');
 	}
 
+	public function verifyAction()
+	{
+		$userService = new Application_Service_DataManagers();
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
+		$authNameSpace->force_profile_check_primary = 'no';
+		if ($this->_hasParam('email')) {
+			$email = $this->_getParam('email');
+			$result = $userService->checkEmail($email);
+			if($result){
+				$response = $userService->updateForceProfileCheck($email);
+				$sessionAlert = new Zend_Session_Namespace('alertSpace');
+				if($response){
+					$sessionAlert->message = "Your email has been verified.";
+					$sessionAlert->status = "success";
+				}else{
+					$sessionAlert->message = "Your email already verified.";
+					$sessionAlert->status = "success";
+				}
+			}else{
+				$sessionAlert = new Zend_Session_Namespace('alertSpace');
+				$sessionAlert->message = "Your email verification expired.";
+            	$sessionAlert->status = "failure";
+			}
+		}else{
+			$sessionAlert = new Zend_Session_Namespace('alertSpace');
+			$sessionAlert->message = "Your email verification expired.";
+			$sessionAlert->status = "failure";
+		}
+		$this->_redirect('/auth/login');
+	}
+
 	public function loginAction()
 	{
 		$dbUsersProfile = new Application_Service_Participants();
@@ -64,6 +95,8 @@ class AuthController extends Zend_Controller_Action
 				$authNameSpace->enable_adding_test_response_date = $rs->enable_adding_test_response_date;
 				$authNameSpace->enable_choosing_mode_of_receipt = $rs->enable_choosing_mode_of_receipt;
 				$authNameSpace->force_password_reset = $rs->force_password_reset;
+				$authNameSpace->force_profile_check = $rs->force_profile_check;
+				$lastLogin = $rs->last_login;
 				$profileUpdate = $dbUsersProfile->checkParticipantsProfileUpdate($rs->dm_id);
 				if (count($profileUpdate) > 0) {
 					$authNameSpace->force_profile_updation = 1;
@@ -74,10 +107,27 @@ class AuthController extends Zend_Controller_Action
 				//$authNameSpace->UserFld1 = $rs->UserFld1;
 				//$authNameSpace->UserFld2 = $rs->UserFld2;
 				//$authNameSpace->UserFld3 = $rs->UserFld3;
+				/* For force_profile_check start*/
+				$lastLogin = date('Ymd',strtotime($lastLogin));
+				$current = date("Ymd", strtotime(" -6 months"));
 
-				$userService = new Application_Service_DataManagers();
-				$userService->updateLastLogin($rs->dm_id);
-				$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($rs->dm_id);
+				if($authNameSpace->force_profile_check =='yes' || ($current > $lastLogin)){
+					$authNameSpace->force_profile_check_primary = 'yes';
+					$sessionAlert = new Zend_Session_Namespace('alertSpace');
+					$sessionAlert->message = "Please review your profile and primary email.";
+					$sessionAlert->status = "failure";
+					$userService = new Application_Service_DataManagers();
+					$userService->updateLastLogin($rs->dm_id);
+					$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($rs->dm_id);
+					$this->_redirect('participant/user-info');
+				}else {
+					$userService = new Application_Service_DataManagers();
+					$userService->updateLastLogin($rs->dm_id);
+					$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($rs->dm_id);
+					$authNameSpace->force_profile_check_primary = 'no';
+				}
+				/* For force_profile_check end */
+
 				if (isset($params['redirectUrl']) && $params['redirectUrl'] != '/auth/login') {
 					$this->_redirect($params['redirectUrl']);
 				} else {

@@ -12,6 +12,17 @@ class Application_Service_DataManagers
     public function updateUser($params)
     {
         $userDb = new Application_Model_DbTable_DataManagers();
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+
+        if ($authNameSpace->force_profile_check_primary == 'yes') {
+            // $authNameSpace->force_profile_check_primary = 'no';
+            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $common = new Application_Service_Common();
+            $message = "Dear Participant,<br/><br/> kindly verify your email address ".$params['pemail'].". <br/><br/> Please click on the following link <a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['pemail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['pemail']) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for review the profile, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
+            $fromMail = Application_Service_Common::getConfig('admin_email');
+            $fromName = Application_Service_Common::getConfig('admin-name');
+            $common->insertTempMail($params['pemail'], $conf, null, "Profile Review - e-PT", $message, $fromMail, $fromName);
+        }
         return $userDb->updateUser($params);
     }
 
@@ -148,6 +159,11 @@ class Application_Service_DataManagers
     public function checkEmail($email){
         $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->fetchEmailById($email);
+    }
+    
+    public function updateForceProfileCheck($email){
+        $userDb = new Application_Model_DbTable_DataManagers();
+        return $userDb->updateForceProfileCheckByEmail($email);
     }
 
     public function loginDatamanagerAPI($params){

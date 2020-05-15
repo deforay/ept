@@ -8,7 +8,6 @@ class Api_ParticipantController extends Zend_Controller_Action
     
     public function getAction()
     {
-        die("hi");
         $this->_helper->viewRenderer->setNoRender(true);
         $params = $this->_getAllParams();
         $shipmentService = new Application_Service_Shipments();

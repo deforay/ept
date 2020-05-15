@@ -191,17 +191,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function getUserDetails($userId)
     {
-        return $this->fetchRow("primary_email = '" . $userId . "'")->toArray();
+        return $this->fetchRow("primary_email = '" . $userId . "'");
     }
 
     public function getUserDetailsBySystemId($userSystemId)
     {
-        return $this->fetchRow("dm_id = '" . $userSystemId . "'")->toArray();
+        return $this->fetchRow("dm_id = '" . $userSystemId . "'");
     }
 
     public function updateUser($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $dmNameSpace = new Zend_Session_Namespace('datamanagers');
         $data = array(
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
@@ -212,6 +213,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'updated_on' => new Zend_Db_Expr('now()')
         );
 
+        if ($dmNameSpace->force_profile_check_primary == 'yes') {
+            $data['primary_email'] = $params['pemail'];
+        }
         if (isset($params['institute']) && $params['institute'] != "") {
             $data['institute'] = $params['institute'];
         }
@@ -247,6 +251,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             }
         }
         return $dmId;
+    }
+
+    public function updateForceProfileCheckByEmail($email)
+    {
+        return $this->update(array('force_profile_check' => 'no'), "primary_email = '" . base64_decode($email) ."'");
     }
 
     public function resetpasswordForEmail($email)

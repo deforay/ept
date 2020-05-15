@@ -34,7 +34,7 @@ class ParticipantController extends Zend_Controller_Action {
     public function dashboardAction() {
         $this->_helper->layout()->activeMenu = 'dashboard';
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-	$scheme = new Application_Service_Schemes();
+	    $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
         $this->view->authNameSpace = $authNameSpace;
     }
@@ -52,12 +52,19 @@ class ParticipantController extends Zend_Controller_Action {
     }
 
     public function userInfoAction() {
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'user-info';
         $userService = new Application_Service_DataManagers();
         if ($this->_request->isPost()) {
             $params = $this->_request->getPost();
             $userService->updateUser($params);
+            if ($authNameSpace->force_profile_check_primary == 'yes') {
+                $sessionAlert = new Zend_Session_Namespace('alertSpace');
+                $sessionAlert->message = "Your profile has been reviwed. Please check your mail for the instructions.";
+                $sessionAlert->status = "success";
+                $this->_redirect('/auth/login');
+            }
         }
         // whether it is a GET or POST request, we always show the user info
         $this->view->rsUser = $userService->getUserInfo();
