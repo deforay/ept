@@ -15,6 +15,15 @@ class Api_ParticipantController extends Zend_Controller_Action
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
     }
     
+    public function getFilterAction()
+    {
+        $this->_helper->viewRenderer->setNoRender(true);
+        $params = $this->_getAllParams();
+        $participantService = new Application_Service_Participants();
+        $result = $participantService->getFilterDetailsAPI($params);
+        $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
+    }
+    
     public function summaryAction()
     {
         $this->_helper->viewRenderer->setNoRender(true);

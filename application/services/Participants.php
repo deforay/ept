@@ -715,4 +715,10 @@ class Application_Service_Participants
 		}
 		return $response;
 	}
+
+	public function getFilterDetailsAPI($params)
+	{
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchFilterDetailsAPI($params);
+	}
 }

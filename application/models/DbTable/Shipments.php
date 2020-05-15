@@ -1840,7 +1840,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
         ->where("pmm.dm_id=?", $aResult['dm_id'])
         // ->where("spm.synced=?", 'no')
-        ->where("(s.status='shipped' OR s.status='evaluated')")
+        ->where("(s.status='shipped' OR s.status='evaluated' OR s.status='finalized')")
         ->order('spm.created_on_admin DESC')
         ->order('spm.created_on_user DESC');
         // echo $sQuery;die;

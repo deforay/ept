@@ -1323,4 +1323,69 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
         ->where("pmm.dm_id = ?", $userSystemId)->group('p.participant_id'));
     }
+
+    public function fetchFilterDetailsAPI($params)
+    {
+        /* Check the app versions & parameters */
+        if (!isset($params['appVersion'])) {
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
+        }
+        if (!isset($params['authToken'])) {
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        }
+        
+        /* Validate new auth token and app-version */
+        $dmDb = new Application_Model_DbTable_DataManagers();
+        $aResult = $dmDb->fetchAuthToken($params);
+        if ($aResult == 'app-version-failed') {
+            return array('status' =>'version-failed','message'=>'App Version Failed.');
+        }
+        if(!$aResult){
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        }
+        
+        $result = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
+            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+            ->where("pmm.dm_id = ?", $aResult['dm_id'])
+            //->where("p.status = 'active'")
+            ->group('p.participant_id'));
+        if(count($result) > 0){
+            $response['status'] = 'success';
+            foreach($result as $row){
+                $response['data']['participants'][] = array(
+                    'participant_id'    => $row['participant_id'],
+                    'unique_identifier' => $row['unique_identifier'],
+                    'first_name'        => $row['first_name'],
+                    'last_name'         => $row['last_name'],
+                    'mobile'            => $row['mobile'],
+                    'email'             => $row['email'],
+                    'status'            => $row['status'],
+                    'individual'        => $row['individual'],
+                    'lab_name'          => $row['lab_name'],
+                    'institute_name'    => $row['institute_name'],
+                    'department_name'   => $row['department_name'],
+                    'region'            => $row['region'],
+                    'department_name'   => $row['department_name'],
+                    'department_name'   => $row['department_name']
+                );
+            }
+            $schemeDb = new Application_Model_DbTable_SchemeList();
+            $schemeList =  $schemeDb->getFullSchemeList();
+            // Zend_Debug::dump($schemeList);die;
+            if(count($schemeList) > 0) {
+                foreach($schemeList as $scheme){
+                    if($scheme['status'] == 'active'){
+                        $response['data']['shipments'][] = array(
+                            'scheme_id'     => $scheme['scheme_id'],
+                            'scheme_name'   => $scheme['scheme_name']
+                        );
+                    }
+                }
+            }
+        }else{
+            $response['status'] = 'fail';
+            $response['message'] = 'There is no participant found.';
+        }
+        return $response;
+    }
 }

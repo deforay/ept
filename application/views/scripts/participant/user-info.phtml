@@ -22,6 +22,7 @@
                             }else{
                                 echo $this->rsUser['primary_email'];
                             } ?>
+                            <input type="hidden" id="oldpemail" name="oldpemail" value="<?php echo $this->rsUser['primary_email']; ?>" />
                             <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
                         </td>
                     </tr>
