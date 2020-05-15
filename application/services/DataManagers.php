@@ -27,7 +27,7 @@ class Application_Service_DataManagers
                 $sessionAlert->status = "success";
             }else{
                 $sessionAlert->status = "failure";
-                $userDb->updateForceProfileCheckByEmail($params['oldpemail']);
+                $userDb->updateForceProfileCheckByEmail(base64_encode($params['oldpemail']));
             }
         }else{
             $sessionAlert->status = "failure";

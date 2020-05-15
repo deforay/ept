@@ -86,6 +86,16 @@
                         }
                     }
                 }
+            }else{
+                flag = deforayValidator.init({
+                    formId: 'userInfoForm'
+                });
+                if(flag){
+                    if(!duplicated){
+                        $.blockUI();
+                        document.getElementById('userInfoForm').submit();
+                    }
+                } 
             }
         <?php }else {?>
             flag = deforayValidator.init({
