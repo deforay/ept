@@ -17,9 +17,9 @@
                         <td>Primary e-mail address (used for login)</td>
                         <td>
                             <?php 
-                            if($authNameSpace->force_profile_check_primary == 'yes'){
-                                echo '<input id="pemail" type="text" name="pemail" size="50" maxlength="45" value="'.$this->rsUser['primary_email'].'" class="isRequired form-control" title="Please enter a primary email id here" placeholder="Please enter a primary email id here"/>';
-                            }else{
+                            if($authNameSpace->force_profile_check_primary == 'yes'){ ?>
+                                <input id="pemail" type="text" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsUser['primary_email'];?>" class="isRequired form-control" title="Please enter a primary email id here" placeholder="Please enter a primary email id here" onblur="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "dm_id##" .$this->rsUser['dm_id']; ?>', 'Entered email already exist. Please enter another email id.')"/>
+                            <?php }else{
                                 echo $this->rsUser['primary_email'];
                             } ?>
                             <input type="hidden" id="oldpemail" name="oldpemail" value="<?php echo $this->rsUser['primary_email']; ?>" />
@@ -71,13 +71,53 @@
     </div>
 </section>
 <script type="text/javascript">
+    duplicated = false;
     function validateNow(){
-        flag = deforayValidator.init({
-            formId: 'userInfoForm'
+        <?php  if($authNameSpace->force_profile_check_primary == 'yes'){ ?>
+            if($('#pemail').val() != $('#oldpemail').val()){
+                if(confirm('Are you sure you want to change your email from '+$('#oldpemail').val()+' to '+$('#pemail').val()+' ?')){
+                    flag = deforayValidator.init({
+                        formId: 'userInfoForm'
+                    });
+                    if(flag){
+                        if(!duplicated){
+                            $.blockUI();
+                            document.getElementById('userInfoForm').submit();
+                        }
+                    }
+                }
+            }
+        <?php }else {?>
+            flag = deforayValidator.init({
+                formId: 'userInfoForm'
+            });
+            if(flag){
+                if(!duplicated){
+                    $.blockUI();
+                    document.getElementById('userInfoForm').submit();
+                }
+            }
+        <?php } ?>        
+    }
+
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+        objValue = $(obj).val();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+            tableName: tableName,
+            fieldName: fieldName,
+            value: objValue,
+            fnct: fnct,
+            format: "html"
+        },
+        function(data) {
+            if (data > 0) {
+                alert(msg, "err");
+                duplicated = true;
+                $(obj).focus();$(obj).val('');
+            } else {
+                duplicated = false;
+            }
+            return duplicated;
         });
-        if(flag){
-            $.blockUI();
-            document.getElementById('userInfoForm').submit();
-        }
     }	    
 </script>

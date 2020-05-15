@@ -53,16 +53,15 @@ class ParticipantController extends Zend_Controller_Action {
 
     public function userInfoAction() {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $sessionAlert = new Zend_Session_Namespace('alertSpace');
+
         $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'user-info';
         $userService = new Application_Service_DataManagers();
         if ($this->_request->isPost()) {
             $params = $this->_request->getPost();
             $userService->updateUser($params);
-            if ($authNameSpace->force_profile_check_primary == 'yes') {
-                $sessionAlert = new Zend_Session_Namespace('alertSpace');
-                $sessionAlert->message = "Your profile has been reviwed. Please check your mail for the instructions.";
-                $sessionAlert->status = "success";
+            if ($authNameSpace->force_profile_check_primary == 'yes' && $sessionAlert->status == 'success') {
                 $this->_redirect('/auth/login');
             }
         }

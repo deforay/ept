@@ -13,15 +13,24 @@ class Application_Service_DataManagers
     {
         $userDb = new Application_Model_DbTable_DataManagers();
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $sessionAlert = new Zend_Session_Namespace('alertSpace');
 
         if ($authNameSpace->force_profile_check_primary == 'yes') {
-            // $authNameSpace->force_profile_check_primary = 'no';
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-            $common = new Application_Service_Common();
-            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldpemail']." to ".$params['pemail'].". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['pemail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['pemail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
-            $fromMail = Application_Service_Common::getConfig('admin_email');
-            $fromName = Application_Service_Common::getConfig('admin-name');
-            $common->insertTempMail($params['pemail'], $conf, null, "Profile Review - e-PT", $message, $fromMail, $fromName);
+            if($params['oldpemail'] != $params['pemail']){
+                $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+                $common = new Application_Service_Common();
+                $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldpemail']." to ".$params['pemail'].". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['pemail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['pemail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
+                $fromMail = Application_Service_Common::getConfig('admin_email');
+                $fromName = Application_Service_Common::getConfig('admin-name');
+                $common->insertTempMail($params['pemail'], $conf, null, "Profile Review - e-PT", $message, $fromMail, $fromName);
+                $sessionAlert->message = "Your profile has been reviwed. Please check your mail for the instructions.";
+                $sessionAlert->status = "success";
+            }else{
+                $sessionAlert->status = "failure";
+                $userDb->updateForceProfileCheckByEmail($params['oldpemail']);
+            }
+        }else{
+            $sessionAlert->status = "failure";
         }
         return $userDb->updateUser($params);
     }
