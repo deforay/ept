@@ -23,15 +23,11 @@ class AuthController extends Zend_Controller_Action
 			$email = $this->_getParam('email');
 			$result = $userService->checkEmail($email);
 			if($result){
-				$response = $userService->updateForceProfileCheck($email);
+				$userService->updateForceProfileCheck($email);
+				$userService->setStatusByEmailDM('active',base64_decode($email));
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
-				if($response){
-					$sessionAlert->message = "Your email has been verified.";
-					$sessionAlert->status = "success";
-				}else{
-					$sessionAlert->message = "Your email already verified.";
-					$sessionAlert->status = "success";
-				}
+				$sessionAlert->message = "Your email has been verified.";
+				$sessionAlert->status = "success";
 			}else{
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Your email verification expired.";

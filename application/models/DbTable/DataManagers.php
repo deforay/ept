@@ -349,7 +349,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Check the status for data manager */
         if (isset($result['status']) && $result['status'] != "active") {
-            return array('status' =>'fail','message'=>'You are not activated. Kindly contact admin');
+            return array('status' =>'fail','message'=>'You are not activated or email verification pending. Kindly contact admin');
         }
         /* Update the new auth token */
         $common = new Application_Service_Common();
@@ -572,7 +572,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 'mobile'            => $result['mobile'],
                 'phone'             => $result['phone']
             );
-            
+            $this->update(array('force_profile_check' => 'no'),'dm_id = '.$result['dm_id']);
         }else{
             $response['status'] = 'fail';
             $response['message'] = 'No participant found.';
@@ -610,11 +610,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
             $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$fetchOldMail['primary_email']." to ".$params['primaryEmail'].". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['primaryEmail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['primaryEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
-            $fromMail = Application_Service_Common::getConfig('admin_email');
-            $fromName = Application_Service_Common::getConfig('admin-name');
-            $common->insertTempMail($params['primaryEmail'], $conf, null, "Profile Review - e-PT", $message, $fromMail, $fromName);
+            $fromMail = $common->getConfig('admin_email');
+            $fromName = $common->getConfig('admin-name');
+            $common->insertTempMail($params['primaryEmail'], null, null, "Profile Review - e-PT", $message, $fromMail, $fromName);
             $response['status'] = 'force-login';
             $forceLogin = true;
+            $this->setStatusByEmail('inactive',$fetchOldMail['primary_email']);
         }else{
             $response['status'] = 'success';
         }
@@ -639,5 +640,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
 
         return $response;
+    }
+
+    public function setStatusByEmail($status,$email)
+    {
+        return $this->update(array('status' => $status),'primary_email = "'. $email .'"');
     }
 }

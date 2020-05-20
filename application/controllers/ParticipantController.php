@@ -66,7 +66,10 @@ class ParticipantController extends Zend_Controller_Action {
             }
         }
         // whether it is a GET or POST request, we always show the user info
-        $this->view->rsUser = $userService->getUserInfo();
+        $this->view->rsUser = $userInfo = $userService->getUserInfo();
+        if ($authNameSpace->force_profile_check_primary == 'yes'){
+            $userService->updateForceProfileCheck(base64_encode($userInfo['primary_email']));
+        }
     }
 
     public function testersAction() {

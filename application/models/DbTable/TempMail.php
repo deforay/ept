@@ -10,13 +10,13 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         
         $result = $this->insert(array(
             //'message' => strip_tags(html_entity_decode(stripslashes($message),ENT_QUOTES,'UTF-8')),
-            'message' => $message,
-            'from_mail' => $fromMail,
-            'to_email' => trim($to),
-            'subject' => $subject,
-            'from_full_name' => $fromName,
-            'cc' => (isset($cc) && $cc != '')?trim($cc):'',
-            'bcc' => (isset($bcc) && $bcc != '')?trim($bcc):''
+            'message'       => $message,
+            'from_mail'     => $fromMail,
+            'to_email'      => trim($to),
+            'subject'       => $subject,
+            'from_full_name'=> $fromName,
+            'cc'            => (isset($cc) && !empty($cc))?trim($cc):'',
+            'bcc'           => (isset($bcc) && !empty($bcc))?trim($bcc):''
         ));
         
         return $result;
