@@ -23,6 +23,24 @@ class Api_ParticipantController extends Zend_Controller_Action
         $result = $participantService->getFilterDetailsAPI($params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
     }
+
+    public function getProfileCheckAction()
+    {
+        $this->_helper->viewRenderer->setNoRender(true);
+        $params = $this->_getAllParams();
+        $participantService = new Application_Service_Participants();
+        $result = $participantService->getProfileCheckDetailsAPI($params);
+        $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
+    }
+
+    public function updateProfileAction()
+    {
+        $this->_helper->viewRenderer->setNoRender(true);
+        $params = json_decode(file_get_contents('php://input'));
+        $participantService = new Application_Service_Participants();
+        $result = $participantService->saveProfileByAPI((array)$params);
+        $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
+    }
     
     public function summaryAction()
     {

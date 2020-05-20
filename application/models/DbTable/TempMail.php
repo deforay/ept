@@ -15,8 +15,8 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             'to_email' => trim($to),
             'subject' => $subject,
             'from_full_name' => $fromName,
-            'cc' => trim($cc),
-            'bcc' => trim($bcc)
+            'cc' => (isset($cc) && $cc != '')?trim($cc):'',
+            'bcc' => (isset($bcc) && $bcc != '')?trim($bcc):''
         ));
         
         return $result;

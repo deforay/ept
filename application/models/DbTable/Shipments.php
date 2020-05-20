@@ -1833,7 +1833,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
         }
         /* To check the shipment details for the data managers mapped participants */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch'))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch','s.updated_on_admin'))
         ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
         ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'created_on_admin', 'created_on_user', 'updated_on_user'))
         ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
@@ -1864,6 +1864,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'resultDueDate'    => $row['lastdate_response'],
                 'responseDate'     => $row['RESPONSEDATE'],
                 'status'           => $row['status'],
+                'statusUpdatedOn'  => $row['updated_on_admin'],
                 'responseSwitch'   => $row['response_switch'],
                 'schemeName'       => $row['scheme_name'],
                 'mapId'            => $row['map_id'],

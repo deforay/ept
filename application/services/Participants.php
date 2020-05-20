@@ -721,4 +721,16 @@ class Application_Service_Participants
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->fetchFilterDetailsAPI($params);
 	}
+	
+	public function getProfileCheckDetailsAPI($params)
+	{
+		$dmDb = new Application_Model_DbTable_DataManagers();
+		return $dmDb->fetchProfileCheckDetailsAPI($params);
+	}
+	
+	public function saveProfileByAPI($params)
+	{
+		$dmDb = new Application_Model_DbTable_DataManagers();
+		return $dmDb->saveProfileDetailsByAPI($params);
+	}
 }
