@@ -1895,8 +1895,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'updatedStatus'    => (isset($row['updated_on_user']) && $row['updated_on_user'] != '')?true:false,
                 'updatedOn'        => (isset($row['updated_on_user']) && $row['updated_on_user'] != '')?$row['updated_on_user']:'',
                 'mapId'            => $row['map_id'],
-                'invididual-report'=> $downloadInReports,
-                'summary-report'   => $downloadSummaryReports
+                'invididualReport'=> $downloadInReports,
+                'invididualFileName'=> (file_exists($invididualFilePath))?basename($invididualFilePath):'',
+                'summaryReport'   => $downloadSummaryReports,
+                'summaryFileName'  => (file_exists($summaryFilePath))?basename($summaryFilePath):'',
             );
             /* This API to get the shipments form using type form */
             if ($type == 'form') {
