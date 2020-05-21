@@ -1849,9 +1849,28 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return array('status' =>'fail','message'=>'Shipment Details not available');
         }
         /* Start the API services */
+        $token = $dmDb->fetchAuthTokenByToken($params);
         $data = array();$formData = array();$getParticipantDetails = array();
         $checkFormSatatus = false;
         foreach ($rResult as $key => $row) {
+            $downloadInReports = '';$downloadSummaryReports = '';
+            if ($row['status'] == 'finalized') {
+                $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $row['shipment_code'] . DIRECTORY_SEPARATOR . $row['shipment_code'] . "-" . $row['map_id'] . ".pdf");
+                if (!file_exists($invididualFilePath)) {
+                    // Search this file name using the map id
+                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $row['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $row['map_id'] . ".pdf");
+                    $invididualFilePath = isset($files[0]) ? $files[0] : '';
+                }
+                if (file_exists($invididualFilePath) && trim($token['download_link']) != '') {
+                    $downloadInReports .= '/api/participant/download/' .$token['download_link'].'/'. base64_encode($row['map_id']);
+                }
+
+                $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $row['shipment_code'] . DIRECTORY_SEPARATOR . $row['shipment_code'] . "-summary.pdf");
+                if (file_exists($summaryFilePath) && trim($token['download_link']) != '') {
+                    $downloadSummaryReports .= '/api/participant/download-summary/' .$token['download_link'].'/'. base64_encode($row['map_id']);
+                }
+            }
+
             $data[] = array(
                 'isSynced'         => '',
                 'schemeType'       => $row['scheme_type'],
@@ -1875,7 +1894,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'createdOn'        => (isset($row['created_on_user']) && $row['created_on_user'] != '')?$row['created_on_user']:(isset($row['created_on_admin']) && $row['created_on_admin'] != '')?$row['created_on_admin']:'',
                 'updatedStatus'    => (isset($row['updated_on_user']) && $row['updated_on_user'] != '')?true:false,
                 'updatedOn'        => (isset($row['updated_on_user']) && $row['updated_on_user'] != '')?$row['updated_on_user']:'',
-                'mapId'            => $row['map_id']
+                'mapId'            => $row['map_id'],
+                'invididual-report'=> $downloadInReports,
+                'summary-report'   => $downloadSummaryReports
             );
             /* This API to get the shipments form using type form */
             if ($type == 'form') {
