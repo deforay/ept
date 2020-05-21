@@ -89,10 +89,14 @@ if (count($this->shipment) > 0) {
         </tr>
     </table>
     <?php $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'disabled' : '';
-    $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'Generating Reports and Finalizing Shipment ...' : 'Generate Reports and Finalize Shipment'; ?>
+    $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'Generating Reports and Finalizing Shipment ...' : 'Generate Reports and Finalize Shipment';
+    if($this->shipment[0]['report_generated'] == 'yes'){
+        $reportTitle = 'Generate Reports';
+    }?>
     <div class="row" align="center">
         <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateBulkReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
     </div>
+    <div class="summaryDivTop row" align="center"></div>
     <br /><br />
     <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
         <thead>
@@ -237,6 +241,7 @@ if (count($this->shipment) > 0) {
                         $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
                 ?>
                         document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("/d/" . $filePath); ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_blank' style='margin:10px 10px;'><i class='icon-file-text'></i> &nbsp; Download Summary Report</a></a>";
+                        $(".summaryDivTop").html("<a href=\"<?php echo $this->baseUrl("/d/" . $filePath); ?>\" class='btn btn-success btn-sm' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp; Download Summary Report</a></a>");
                 <?php
                     }
                 }
