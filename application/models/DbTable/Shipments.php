@@ -2235,7 +2235,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     if($row == 3){
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
-                                $possibleResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'],'selected'=>($sample['test_result_3'] == $pr['id'])?'selected':'');
+                                $possibleResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'], 'resultCode' => $pr['result_code'], 'selected'=>($sample['test_result_3'] == $pr['id'])?'selected':'');
                                 // if($sample['test_result_3'] == $pr['id']){
                                 //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-3','resultValue'=>(string)$sample['test_result_3']);
                                 //     $sample3Select                                              = $sample['test_result_3'];
@@ -2256,7 +2256,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }else{
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
-                                $possibleResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'],'selected'=>(($sample['test_result_1'] == $pr['id'] && $row == 1) || ($sample['test_result_2'] == $pr['id'] && $row == 2))?'selected':'');
+                                $possibleResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'], 'resultCode' => $pr['result_code'], 'selected'=>(($sample['test_result_1'] == $pr['id'] && $row == 1) || ($sample['test_result_2'] == $pr['id'] && $row == 2))?'selected':'');
                                 // if($sample['test_result_1'] == $pr['id'] && $row == 1){
                                 //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-1','resultValue'=>$sample['test_result_1']);
                                 //     $sample1Select                                              = $sample['test_result_1'];
@@ -2280,7 +2280,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $possibleFinalResults = array();
                 foreach ($dtsPossibleResults as $pr) {
                     if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
-                        $possibleFinalResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'],'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
+                        $possibleFinalResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'], 'resultCode' => $pr['result_code'], 'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
                         if($sample['reported_result'] == $pr['id']){
                             $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Final-Result','resultValue'=>(string)$sample['reported_result']);
                             $sampleFinalSelect                                          = $sample['reported_result'];
@@ -2665,7 +2665,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $possibleEIDResults = array();
                 foreach ($eidPossibleResults as $pr) {
                     if ($pr['scheme_sub_group'] == 'EID_FINAL') {
-                        $possibleEIDResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'],'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
+                        $possibleEIDResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'], 'resultCode' => $pr['result_code'], 'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
                     }
                 }
 

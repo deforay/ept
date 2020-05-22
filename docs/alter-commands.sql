@@ -2431,3 +2431,18 @@ CREATE TABLE `notify` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 -- Thanaseelan 15 May, 2020
 ALTER TABLE `data_manager` ADD `force_profile_check` VARCHAR(20) NULL DEFAULT 'no' AFTER `force_password_reset`;
+-- Thanaseelan 22 May, 2020
+ALTER TABLE `r_possibleresult` ADD `result_code` VARCHAR(20) NULL DEFAULT NULL AFTER `response`;
+UPDATE `r_possibleresult` SET `result_code` = 'R' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_TEST' AND `r_possibleresult`.`response` = 'REACTIVE';
+UPDATE `r_possibleresult` SET `result_code` = 'NR' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_TEST' AND `r_possibleresult`.`response` = 'NONREACTIVE';
+UPDATE `r_possibleresult` SET `result_code` = 'I' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_TEST' AND `r_possibleresult`.`response` = 'INVALID';
+UPDATE `r_possibleresult` SET `result_code` = 'P' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_FINAL' AND `r_possibleresult`.`response` = 'POSITIVE';
+UPDATE `r_possibleresult` SET `result_code` = 'N' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_FINAL' AND `r_possibleresult`.`response` = 'NEGATIVE';
+UPDATE `r_possibleresult` SET `result_code` = 'I' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_FINAL' AND `r_possibleresult`.`response` = 'INDETERMINATE';
+UPDATE `r_possibleresult` SET `result_code` = 'D' WHERE `r_possibleresult`.`scheme_sub_group` = 'EID_FINAL' AND `r_possibleresult`.`response` = 'HIV-1 Detected';
+UPDATE `r_possibleresult` SET `result_code` = 'ND' WHERE `r_possibleresult`.`scheme_sub_group` = 'EID_FINAL' AND `r_possibleresult`.`response` = 'HIV-1 Not Detected';
+UPDATE `r_possibleresult` SET `result_code` = 'E' WHERE `r_possibleresult`.`scheme_sub_group` = 'EID_FINAL' AND `r_possibleresult`.`response` = 'Equivocal';
+UPDATE `r_possibleresult` SET `result_code` = 'P' WHERE `r_possibleresult`.`scheme_sub_group` = 'DBS_FINAL' AND `r_possibleresult`.`response` = 'P';
+UPDATE `r_possibleresult` SET `result_code` = 'N' WHERE `r_possibleresult`.`scheme_sub_group` = 'DBS_FINAL' AND `r_possibleresult`.`response` = 'N';
+UPDATE `r_possibleresult` SET `result_code` = 'NT' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_FINAL' AND `r_possibleresult`.`response` = 'Not Tested';
+UPDATE `r_possibleresult` SET `result_code` = 'NT' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_FINAL' AND `r_possibleresult`.`response` = 'NOT TESTED';
