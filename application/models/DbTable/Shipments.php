@@ -2216,27 +2216,45 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             // Heading 3 end // Heading 4 Start
             $dtsPossibleResults = $schemeService->getPossibleResults('dts');
-            $dtsPossibleArray = array();
+            $dtsPossibleArray = array();$dtsPossibleResponseArray = array();
             foreach($dtsPossibleResults as $row){
                 $dtsPossibleArray[$row['id']] = $row['result_code']; 
+            }
+            foreach($dtsPossibleResults as $row){
+                $dtsPossibleResponseArray[$row['id']] = $row['response']; 
             }
             $allSamplesResult = array();
             foreach ($allSamples as $sample) {
                 $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
                 $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
-                $allSamplesResult['samples']['result1'][]       = (isset($sample['test_result_1']) && $sample['test_result_1'] != '')?$sample['test_result_1']:'';
-                $allSamplesResult['samples']['result2'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '')?$sample['test_result_2']:'';
-                $allSamplesResult['samples']['result3'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '')?$sample['test_result_3']:'';
-                
+                $allSamplesResult['samples']['result1'][]       = array(
+                    'resultCode'    => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null)?(isset($dtsPossibleArray[$sample['test_result_1']]) && $dtsPossibleArray[$sample['test_result_1']] != '' && $dtsPossibleArray[$sample['test_result_1']] != null)?$dtsPossibleArray[$sample['test_result_1']]:'X':'X',
+                    'selected'      => (isset($sample['test_result_1']) && $sample['test_result_1'] != '')?'selected':'',
+                    'show'          => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null)?(isset($dtsPossibleResponseArray[$sample['test_result_1']]) && $dtsPossibleResponseArray[$sample['test_result_1']] != '' && $dtsPossibleResponseArray[$sample['test_result_1']] != null)?$dtsPossibleResponseArray[$sample['test_result_1']]:'':'',
+                    'value'         => (isset($sample['test_result_1']) && $sample['test_result_1'] != '')?$sample['test_result_1']:'',
+                );
+                $allSamplesResult['samples']['result2'][]       = array(
+                    'resultCode'    => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null)?(isset($dtsPossibleArray[$sample['test_result_2']]) && $dtsPossibleArray[$sample['test_result_2']] != '' && $dtsPossibleArray[$sample['test_result_2']] != null)?$dtsPossibleArray[$sample['test_result_2']]:'X':'X',
+                    'selected'      => (isset($sample['test_result_2']) && $sample['test_result_2'] != '')?'selected':'',
+                    'show'          => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null)?(isset($dtsPossibleResponseArray[$sample['test_result_2']]) && $dtsPossibleResponseArray[$sample['test_result_2']] != '' && $dtsPossibleResponseArray[$sample['test_result_2']] != null)?$dtsPossibleResponseArray[$sample['test_result_2']]:'':'',
+                    'value'         => (isset($sample['test_result_2']) && $sample['test_result_2'] != '')?$sample['test_result_2']:'',
+                );
+                $allSamplesResult['samples']['result3'][]       = array(
+                    'resultCode'    => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null)?(isset($dtsPossibleArray[$sample['test_result_3']]) && $dtsPossibleArray[$sample['test_result_3']] != '' && $dtsPossibleArray[$sample['test_result_3']] != null)?$dtsPossibleArray[$sample['test_result_3']]:'X':'X',
+                    'selected'      => (isset($sample['test_result_3']) && $sample['test_result_3'] != '')?'selected':'',
+                    'show'          => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null)?(isset($dtsPossibleResponseArray[$sample['test_result_3']]) && $dtsPossibleResponseArray[$sample['test_result_3']] != '' && $dtsPossibleResponseArray[$sample['test_result_3']] != null)?$dtsPossibleResponseArray[$sample['test_result_3']]:'':'',
+                    'value'         => (isset($sample['test_result_3']) && $sample['test_result_3'] != '')?$sample['test_result_3']:'',
+                );
+                $allSamplesResult['samples']['finalResult'][]       = array(
+                    'resultCode'    => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null)?(isset($dtsPossibleArray[$sample['reported_result']]) && $dtsPossibleArray[$sample['reported_result']] != '' && $dtsPossibleArray[$sample['reported_result']] != null)?$dtsPossibleArray[$sample['reported_result']]:'X':'X',
+                    'selected'      => (isset($sample['reported_result']) && $sample['reported_result'] != '')?'selected':'',
+                    'show'          => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null)?(isset($dtsPossibleResponseArray[$sample['reported_result']]) && $dtsPossibleResponseArray[$sample['reported_result']] != '' && $dtsPossibleResponseArray[$sample['reported_result']] != null)?$dtsPossibleResponseArray[$sample['reported_result']]:'':'',
+                    'value'         => (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'',
+                );
                 $allSamplesResult['samples']['result1Code'][]       = (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null)?(isset($dtsPossibleArray[$sample['test_result_1']]) && $dtsPossibleArray[$sample['test_result_1']] != '' && $dtsPossibleArray[$sample['test_result_1']] != null)?$dtsPossibleArray[$sample['test_result_1']]:'X':'X';
                 $allSamplesResult['samples']['result2Code'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null)?(isset($dtsPossibleArray[$sample['test_result_2']]) && $dtsPossibleArray[$sample['test_result_2']] != '' && $dtsPossibleArray[$sample['test_result_2']] != null)?$dtsPossibleArray[$sample['test_result_2']]:'X':'X';
                 $allSamplesResult['samples']['result3Code'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null)?(isset($dtsPossibleArray[$sample['test_result_3']]) && $dtsPossibleArray[$sample['test_result_3']] != '' && $dtsPossibleArray[$sample['test_result_3']] != null)?$dtsPossibleArray[$sample['test_result_3']]:'X':'X';
                 $allSamplesResult['samples']['finalResultCode'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null)?(isset($dtsPossibleArray[$sample['reported_result']]) && $dtsPossibleArray[$sample['reported_result']] != '' && $dtsPossibleArray[$sample['reported_result']] != null)?$dtsPossibleArray[$sample['reported_result']]:'X':'X';
-                /* if(!$testThreeOptional){
-                }else{
-                    $allSamplesResult['samples']['result3'][]   = '';
-                } */
-                $allSamplesResult['samples']['finalResult'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
                 $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1)?true:false;
                 foreach(range(1,3) as $row){
                     $possibleResults = array();
@@ -2276,6 +2294,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         }
                         $allSamplesResult['sampleList'][$sample['sample_label']]['Result-'.$row]['status']    = true;
                         $allSamplesResult['sampleList'][$sample['sample_label']]['Result-'.$row]['data']      = $possibleResults;
+
                         if(isset($sample['test_result_1']) && $sample['test_result_1'] != "" && $row == 1){
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-'.$row]['value'] = $sample['test_result_1'];
                         }else if(isset($sample['test_result_2']) && $sample['test_result_2'] != "" && $row == 2){
@@ -2882,7 +2901,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     }
 
     public function saveShipmentsFormDetailsByAPI($params){
-
+        // Zend_Debug::dump($params);die;
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
             return array('status' =>'version-failed','message'=>'App Version Failed.');
@@ -2902,7 +2921,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         /* To check the form have group of array or single array */
         $returnResposne = array();
-        // Zend_Debug::dump($params);die;
         $responseStatus = false;
         if(isset($params['syncType']) && $params['syncType'] == 'group'){
             foreach($params['data'] as $key=>$row){
