@@ -40,6 +40,32 @@ class AuthController extends Zend_Controller_Action
 		}
 		$this->_redirect('/auth/login');
 	}
+	
+	public function verifyEmailAction()
+	{
+		$sessionAlert = new Zend_Session_Namespace('alertSpace');
+		$userService = new Application_Service_DataManagers();
+		if ($this->getRequest()->isPost()) {
+			$params = $this->getRequest()->getPost();
+			$userService->confirmPrimaryMail($params);
+			$sessionAlert->message = "Your email has been reviwed. Please login to continue.";
+			$this->_redirect('/auth/login');
+		}
+		if ($this->_hasParam('t')) {
+			$link = $this->_getParam('t');
+			$result = $userService->checkForceProfileEmail($link);
+			if($result){
+				$this->view->result = $result;
+			}else{
+				$sessionAlert = new Zend_Session_Namespace('alertSpace');
+				$sessionAlert->message = "Your email verification expired.";
+            	$sessionAlert->status = "failure";
+				$this->_redirect('/auth/login');
+			}
+		}else{
+			$this->_redirect('/auth/login');
+		}
+	}
 
 	public function loginAction()
 	{

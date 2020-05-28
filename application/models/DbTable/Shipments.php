@@ -1877,7 +1877,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'shipmentId'       => $row['shipment_id'],
                 'participantId'    => $row['participant_id'],
                 'evaluationStatus' => $row['evaluation_status'],
-
+                'is_excluded'      => '', 
                 'shipmentDate'     => $row['shipment_date'],
                 'shipmentCode'     => $row['shipment_code'],
                 'resultDueDate'    => $row['lastdate_response'],
@@ -2943,7 +2943,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $status = $this->saveShipmentByType((array)$params['data'],$dm);
             // die($status);
             if($status){
-                return array('status'=>'success','message'=>'Shipment details successfully send.');
+                return array('status'=>'success','message'=>'Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date.');
             }else{
                 return array('status'=>'fail','message'=>'Please check your network connection and try again.');
             }

@@ -332,6 +332,38 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchEmailById($email){
         return $this->fetchRow("primary_email = '" . base64_decode($email) . "'");
     }
+    
+    public function fetchForceProfileEmail($link){
+        $db = Zend_Db_Table_Abstract::getAdapter();
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $sql = $this->select()->from('data_manager')->where("last_date_for_email_reset IS NOT null AND force_profile_check = 'yes'");
+        
+        $totalList = $this->fetchAll($sql);
+        if(count($totalList) > 0){
+            foreach($totalList as $list){
+                $serverLink = hash('sha256', base64_encode($list['primary_email']).$conf->salt);
+                if($serverLink == $link){
+                    if(date('Ymd',strtotime($list['last_date_for_email_reset'])) >= date('Ymd')){
+                        $psql = $db->select()->from(array('dm' => 'data_manager'),array('dm_id'))
+                            ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
+                            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.lab_name','p.institute_name','p.state','country'))
+                            ->join(array('c' => 'countries'), 'c.id=p.country', array('*'))
+                            ->where("dm.dm_id=".$list['dm_id']);
+                        // die($psql);
+                        return array('id' => $list['dm_id'],'email' => $list['primary_email'], 'participants' => $db->fetchAll($psql));
+                    }else{
+                        return false;
+                    }
+                }
+            }
+        }
+        // die;
+        return false;
+    }
+
+    public function changeForceProfileCheckByEmail($params){
+        return $this->update(array('force_profile_check' => 'no', 'primary_email' => $params['registeredEmail'], 'last_date_for_email_reset' => '2000-01-01'), "dm_id =". base64_decode($params['dmId']));
+    }
 
     public function loginDatamanagerByAPI($params)
     {

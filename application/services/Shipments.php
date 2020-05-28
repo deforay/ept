@@ -1616,8 +1616,8 @@ class Application_Service_Shipments
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
             ->where("sp.shipment_id = ?", $sid)
             ->group("p.participant_id");
-        echo $sQuery;
-        die;
+        // echo $sQuery;
+        // die;
         $participantEmails = $db->fetchAll($sQuery);
 
         foreach ($participantEmails as $participantDetails) {
