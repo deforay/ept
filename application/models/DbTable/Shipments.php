@@ -1835,7 +1835,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* To check the shipment details for the data managers mapped participants */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch','s.updated_on_admin'))
         ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
-        ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'created_on_admin', 'created_on_user', 'updated_on_user'))
+        ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'created_on_admin', 'created_on_user', 'updated_on_user','is_excluded'))
         ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
         ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
         ->where("pmm.dm_id=?", $aResult['dm_id'])
@@ -1877,7 +1877,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'shipmentId'       => $row['shipment_id'],
                 'participantId'    => $row['participant_id'],
                 'evaluationStatus' => $row['evaluation_status'],
-                'is_excluded'      => '', 
+                'is_excluded'      => $row['is_excluded'], 
                 'shipmentDate'     => $row['shipment_date'],
                 'shipmentCode'     => $row['shipment_code'],
                 'resultDueDate'    => $row['lastdate_response'],
