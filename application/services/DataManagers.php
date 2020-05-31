@@ -22,8 +22,8 @@ class Application_Service_DataManagers
                 $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldpemail']." to ".$params['pemail'].". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['pemail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['pemail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
                 $fromMail = Application_Service_Common::getConfig('admin_email');
                 $fromName = Application_Service_Common::getConfig('admin-name');
-                $common->insertTempMail($params['pemail'], null, null, "Profile Review - e-PT", $message, $fromMail, $fromName);
-                $sessionAlert->message = "Your profile has been reviwed. Please check your mail for the instructions.";
+                $common->insertTempMail($params['pemail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
+                $sessionAlert->message = "Thank you for providing correct email id. Please check your email for the verification link.";
                 $sessionAlert->status = "success";
                 $userDb->setStatusByEmail('inactive',$params['oldpemail']);
             }else{
@@ -43,11 +43,11 @@ class Application_Service_DataManagers
         if($params['oldEmail'] != $params['registeredEmail']){
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
-            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldEmail']." to ".$params['registeredEmail'].". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
+            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldEmail']." to ".$params['registeredEmail'].". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
-            $common->insertTempMail($params['registeredEmail'], null, null, "Profile Review - e-PT", $message, $fromMail, $fromName);
-            $sessionAlert->message = "Your profile has been reviwed. Please check your mail for the instructions.";
+            $common->insertTempMail($params['registeredEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
+            $sessionAlert->message = "Thank you for providing correct email id. Please check your email for the verification link.";
             $sessionAlert->status = "success";
             $userDb->setStatusByEmail('inactive',$params['oldEmail']);
         }

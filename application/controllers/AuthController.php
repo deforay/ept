@@ -26,16 +26,16 @@ class AuthController extends Zend_Controller_Action
 				$userService->updateForceProfileCheck($email);
 				$userService->setStatusByEmailDM('active',base64_decode($email));
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
-				$sessionAlert->message = "Your email has been verified.";
+				$sessionAlert->message = "Thank you. Your email has been verified successfully. You can now use your new email to login to ePT";
 				$sessionAlert->status = "success";
 			}else{
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
-				$sessionAlert->message = "Your email verification expired.";
+				$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
             	$sessionAlert->status = "failure";
 			}
 		}else{
 			$sessionAlert = new Zend_Session_Namespace('alertSpace');
-			$sessionAlert->message = "Your email verification expired.";
+			$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
 			$sessionAlert->status = "failure";
 		}
 		$this->_redirect('/auth/login');
@@ -48,8 +48,8 @@ class AuthController extends Zend_Controller_Action
 		if ($this->getRequest()->isPost()) {
 			$params = $this->getRequest()->getPost();
 			$userService->confirmPrimaryMail($params);
-			$sessionAlert->message = "Your email has been reviwed. Please login to continue.";
-			$this->_redirect('/auth/login');
+			$sessionAlert->message = "Thank you. Please check your email for further instructions. ";
+			$this->_redirect('/');
 		}
 		if ($this->_hasParam('t')) {
 			$link = $this->_getParam('t');
@@ -58,7 +58,7 @@ class AuthController extends Zend_Controller_Action
 				$this->view->result = $result;
 			}else{
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
-				$sessionAlert->message = "Your email verification expired.";
+				$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
             	$sessionAlert->status = "failure";
 				$this->_redirect('/auth/login');
 			}
@@ -80,7 +80,7 @@ class AuthController extends Zend_Controller_Action
 			$captchaSession = new Zend_Session_Namespace('DACAPTCHA');
 			if (!isset($captchaSession->captchaStatus) || empty($captchaSession->captchaStatus) || $captchaSession->captchaStatus == 'fail') {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
-				$sessionAlert->message = "Sorry. Unable to log you in. Please check the text from image";
+				$sessionAlert->message = "Sorry. Unable to log you in. Please check if you entered the correct text from the image";
 				$sessionAlert->status = "failure";
 				$this->_redirect('/auth/login');
 			}

@@ -1,5 +1,5 @@
-<?php 
-    // Zend_Debug::dump($this->result['participants']);die;
+<?php
+// Zend_Debug::dump($this->result['participants']);die;
 ?><style>
     td {
         padding: 5px !important;
@@ -8,90 +8,138 @@
     th {
         text-align: right;
     }
+
     @media screen and (max-width: 992px) {
-        .captcha{
+        .captcha {
             margin-top: 0px !important;
         }
-        .padding-div{
+
+        .padding-div {
             padding: 0px 30px 0px 30px;
         }
-        .control-label, .captcha{
+
+        .control-label,
+        .captcha {
             float: left;
         }
     }
 </style>
-<div class="box">
+
+<div class="" style="font-size:16px;background:#fff;padding:10px;">
+
     <div class="box-body">
 
-        <h2 class="txt text-info" style="text-align: center;">Reset ePT Login email</h2>
+        <h2 class="txt text-info" style="text-align: center;">Reset your ePT login email</h2>
+        <h5 class="txt text-info" style="text-align: center;">Your old and invalid email id: <strong><?php echo $this->result['email']; ?></strong></h5>
+
+
+
+        <div class="box-body">
+            <h5>Your login id is mapped to the following ePT participants:</h5>
+            <table class="table table-striped table-bordered table-hover text-center">
+                <thead>
+                    <tr align="center">
+                        <th>Participant ID</th>
+                        <th>Name</th>
+                        <!-- <th>Institute Name</th> -->
+                        <!-- <th>Region</th> -->
+                        <th>Country</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($this->result['participants'] as $participant) { ?>
+                        <tr>
+                            <td><?php echo $participant['unique_identifier']; ?></td>
+                            <td><?php echo $participant['first_name'] . ' ' . $participant['last_name']; ?></td>
+                            <!-- <td><?php echo $participant['institute_name']; ?></td> -->
+                            <!-- <td><?php echo $participant['state']; ?></td> -->
+                            <td><?php echo $participant['iso_name']; ?></td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+        <br>
 
         <form id="resetEmail" name="resetEmail" method="post" action="/auth/verify-email">
-            <br>
-            <div class="table-responsive">
-                <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover text-center">
-                    <thead>
-                        <tr align="center">
-                            <th>Participant ID</th>
-                            <th>Name</th>
-                            <th>Institute Name</th>
-                            <th>Region</th>
-                            <th>Country</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($this->result['participants'] as $participant){?>
-                            <tr>
-                                <td><?php echo $participant['unique_identifier'];?></td>
-                                <td><?php echo $participant['first_name']. ' ' .$participant['last_name'];?></td>
-                                <td><?php echo $participant['institute_name'];?></td>
-                                <td><?php echo $participant['state'];?></td>
-                                <td><?php echo $participant['iso_name'];?></td>
-                            </tr>
-                        <?php }?>
-                    </tbody>
-                </table>
-            </div>
-            <br>
-            <hr>
-            <div class="text-center" style="margin: auto;display:block;">
+
+            <div class="" style="margin: auto;display:block;padding:10px;">
+
+                <p>Please note:
+                    <ol>
+
+                        <li>Once this form is submitted, the system will send you an automated email with a verification link.</li>
+                        <li>Please click on the verification link to activate your new email. You will only be able to login after you verify by clicking on the link.</li>
+                    </ol>
+                </p>
+                <br>
+
                 <fieldset class="form-set">
-                    <div class="form-group row text-center">
-                        <label class="col-lg-3 control-label" for="registeredEmail">Please enter valid email id <span class="mandatory">*</span></label>
-                        <div class="col-lg-3 col-md-5 col-sm-6 padding-div">
-                            <input type="hidden" value="<?php echo (isset($this->result['email']) && $this->result['email'] != "")?$this->result['email']:"";?>" id="oldEmail" name="oldEmail"/>
-                            <input type="hidden" value="<?php echo (isset($this->result['id']) && $this->result['id'] != "")?base64_encode($this->result['id']):"";?>" id="dmId" name="dmId"/>
-                            <input value="<?php echo (isset($this->result['email']) && $this->result['email'] != "")?$this->result['email']:"";?>" id="registeredEmail" name="registeredEmail" class="isRequired form-control" title="Please enter your valid email" type="text" placeholder="mymail@mail.com" />
+                    <div class="form-group row text-right">
+                        <label class="col-lg-3 control-label" for="registeredEmail">Official email id <span class="mandatory">*</span> <br><small class="text-danger">(Should be valid and active)</small></label>
+                        <div class="col-lg-3 col-md-6 col-sm-6 padding-div">
+                            <input type="hidden" value="<?php echo (isset($this->result['email']) && $this->result['email'] != "") ? $this->result['email'] : ""; ?>" id="oldEmail" name="oldEmail" />
+                            <input type="hidden" value="<?php echo (isset($this->result['id']) && $this->result['id'] != "") ? base64_encode($this->result['id']) : ""; ?>" id="dmId" name="dmId" />
+                            <input type="email" id="registeredEmail" name="registeredEmail" class="isRequired form-control" title="Please enter your valid email" placeholder="mymail@mail.com" onchange="checkDuplicate('data_manager', 'primary_email', this, null, 'Sorry. This email id already exists for another login. Please try some other email id.')" />
                         </div>
                     </div>
-                   
-                    <div class="form-group text-center">
-                        <label class="col-lg-3 control-label">Confirm your email id <span class="mandatory">*</span></label>
-                        <div class="col-lg-3 col-md-5 col-sm-6">
-                            <input id="confirmMail" name="confirmMail" class="isRequired form-control" title="Please enter your confirm email" type="text" placeholder="mymail@mail.com" />
+
+                    <div class="form-group text-right">
+                        <label class="col-lg-3 control-label">Confirm your email id <span class="mandatory">*</span><br><small class="text-danger">(Type same email id again)</small></label>
+                        <div class="col-lg-3 col-md-6 col-sm-6">
+                            <input type="email" id="confirmMail" name="confirmMail" class="isRequired form-control" title="Please enter your confirm email" placeholder="mymail@mail.com" />
                         </div>
                     </div>
                     <div class="form-group text-center">
-                        <img class="col-lg-3 captcha" id="capChaw" src="/captcha/<?php echo rand(); ?>" style="margin-top: -50px;height: 85px;"/>
-                        <div class="col-lg-3 col-md-5 col-sm-6 captcha" style="margin-top: -30px;">
+                        <img class="col-lg-3 captcha" id="capChaw" src="/captcha/<?php echo rand(); ?>" style="margin-top: -50px;height: 85px;" />
+                        <div class="col-lg-3 col-md-6 col-sm-6 captcha" style="margin-top: -30px;">
                             <input type="text" style="margin:0;width:100%;padding:3px;margin-top:8px" id="challengeResponse" placeholder="Enter text from image on left" class="isRequired form-control" title="Please enter the text from the image." maxlength="40">
                             <a onclick="getCaptcha('capChaw');return false;" style="cursor:pointer;font-size:12px;margin:5px;"><i class="icon-refresh icon-white"></i> Get New Image</a>
                         </div>
                     </div>
                     <br>
+                    <br>
+                    <br>
                     <div class="form-group row" style="margin-top: 30px;">
                         <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                            <button class="btn btn-primary" onclick="validateEmail();return false;">Save email</button>
+                            
+                            <button class="btn btn-primary" onclick="validateEmail();return false;">Change my login email</button>
+                            <br><h6>Please ensure you have entered a valid email id before submitting this form.</h6>
                         </div>
                     </div>
                 </fieldset>
             </div>
         </form>
+        <br>
+
+
     </div>
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
 <script type="text/javascript">
     $("#tableCss").remove();
+
+    var duplicated = false;
+
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+                tableName: tableName,
+                fieldName: fieldName,
+                value: obj.value,
+                fnct: fnct,
+                format: "html"
+            },
+            function(data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    obj.focus();
+                } else {
+                    duplicated = false;
+                }
+            });
+    }
 
     function getCaptcha(captchaDivId) {
         $.blockUI();
@@ -104,7 +152,8 @@
     }
 
     function validateEmail() {
-        if($('#registeredEmail').val() == $('#confirmMail').val()){
+        checkDuplicate('data_manager', 'primary_email', $("#registeredEmail"), null, 'Sorry. This email id already exists for another login. Please try some other email id.')
+        if (duplicated == false && $('#registeredEmail').val() == $('#confirmMail').val()) {
 
             flag = deforayValidator.init({
                 formId: 'resetEmail'
@@ -131,8 +180,8 @@
                     alert("Please enter the text from the image to proceed.");
                 }
             }
-        }else{
-            alert('Please make sure email and confirm email are same.');
+        } else {
+            alert('Please make sure you have entered the correct email id.');
         }
     }
 </script>

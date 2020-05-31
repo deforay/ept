@@ -4151,15 +4151,18 @@ $nRow = 3;
                 ->where("DATE(s.shipment_date) >= ?", $startDate)
                 ->where("DATE(s.shipment_date) <= ?", $endDate)
                 ->order("s.shipment_id");
-		if(isset($schemeType) && count($schemeType)>0) {
+		if(isset($schemeType) && !empty($schemeType)) {
 			$sWhere="";
 			foreach($schemeType as $val){
 				if ($sWhere!="") {
 					$sWhere .= " OR ";
                 }
-				$sWhere.="s.scheme_type='".$val."'";
-			}
-            $sQuery = $sQuery->where($sWhere);
+				$sWhere.=" s.scheme_type='".$val."' ";
+            }
+            if(!empty($sWhere)){
+                $sQuery = $sQuery->where($sWhere);
+            }
+            
         }
 		
         $resultArray = $db->fetchAll($sQuery);
@@ -4177,15 +4180,18 @@ $nRow = 3;
 								->where("DATE(s.shipment_date) <= ?", $endDate)
 								->order("s.scheme_type");
 			
-			if(isset($params['scheme']) && count($params['scheme'])>0) {
+			if(isset($params['scheme']) && !empty($params['scheme']) && count($params['scheme'])>0) {
 				$sWhere="";
 				foreach($params['scheme'] as $val){
 					if ($sWhere!="") {
 						$sWhere .= " OR ";
 					}
 					$sWhere.="s.scheme_type='".$val."'";
-				}
-				$query = $query->where($sWhere);
+                }
+                if(!empty($sWhere)){
+                    $query = $query->where($sWhere);
+                }
+				
 			}
 			$shipmentResult = $db->fetchAll($query);
 			$shipmentIDArray=array();
@@ -4201,7 +4207,7 @@ $nRow = 3;
 									->joinLeft(array('c' => 'countries'),'c.id=p.country',array('country_name' => 'iso_name'))
 									->order("scheme_type ASC");
 			
-			if(isset($params['shipmentId']) && count($params['shipmentId'])>0) {
+			if(isset($params['shipmentId']) && !empty($params['shipmentId']) && count($params['shipmentId'])>0) {
 				$impShipmentId=implode(",",$params['shipmentId']);
 				$sQuery->where('spm.shipment_id IN ('.$impShipmentId.')');
 				$shQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code','s.scheme_type'))
@@ -4370,7 +4376,7 @@ $nRow = 3;
                     }
                     
                     if(isset($attributes['extraction_assay'])){
-						$platformName = $eidExtractionAssayList[$attributes['extraction_assay']];	
+						$platformName = isset($eidExtractionAssayList[$attributes['extraction_assay']]) ? $eidExtractionAssayList[$attributes['extraction_assay']] : "";	
 					}
 
                     $firstSheetRow[]=$platformName;
