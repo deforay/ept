@@ -80,7 +80,7 @@
                         <div class="col-lg-3 col-md-6 col-sm-6 padding-div">
                             <input type="hidden" value="<?php echo (isset($this->result['email']) && $this->result['email'] != "") ? $this->result['email'] : ""; ?>" id="oldEmail" name="oldEmail" />
                             <input type="hidden" value="<?php echo (isset($this->result['id']) && $this->result['id'] != "") ? base64_encode($this->result['id']) : ""; ?>" id="dmId" name="dmId" />
-                            <input type="email" id="registeredEmail" name="registeredEmail" class="isRequired form-control" title="Please enter your valid email" placeholder="mymail@mail.com" onchange="checkDuplicate('data_manager', 'primary_email', this, null, 'Sorry. This email id already exists for another login. Please try some other email id.')" />
+                            <input type="email" id="registeredEmail" name="registeredEmail" class="isRequired form-control" title="Please enter your valid email" placeholder="mymail@mail.com" onchange="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "primary_email##" . $this->result['email']; ?>', 'Sorry. This email id already exists for another login. Please try some other email id.')" />
                         </div>
                     </div>
 
@@ -134,6 +134,7 @@
                 if (data > 0) {
                     alert(msg, "err");
                     duplicated = true;
+                    $(obj).val('');
                     obj.focus();
                 } else {
                     duplicated = false;
