@@ -310,10 +310,10 @@ try {
             $reportCompletedStatus = 'evaluated';
             if($evalRow['report_type'] == 'generateReport'){
                 $reportCompletedStatus = 'evaluated';
-                $link = '/reports/distribution';
+                $link = '/reports/distribution/shipment/sid/'.base64_encode($evalRow['shipment_id']);
             }else if($evalRow['report_type'] == 'finalized'){
                 $reportCompletedStatus = 'finalized';
-                $link = '/reports/finalize';
+                $link = '/reports/distribution/finalize/sid/'.base64_encode($evalRow['shipment_id']);
             }
             $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue'=>'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
             $db->update('evaluation_queue', array('status' => $reportCompletedStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
