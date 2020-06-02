@@ -2493,7 +2493,7 @@ CREATE TABLE `r_recency_assay` (
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`) 
-VALUES (NULL, 'recency', 'RECENCY_FINAL', 'Recent'), 
-(NULL, 'recency', 'RECENCY_FINAL', 'Long Term'), 
-(NULL, 'recency', 'RECENCY_FINAL', 'Indeterminate');
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) 
+VALUES (NULL, 'recency', 'RECENCY_FINAL', 'Recent', 'R'), 
+(NULL, 'recency', 'RECENCY_FINAL', 'Long Term','LT'), 
+(NULL, 'recency', 'RECENCY_FINAL', 'Indeterminate', 'I');
