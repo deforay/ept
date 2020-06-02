@@ -1853,7 +1853,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $data = array();$formData = array();$getParticipantDetails = array();
         $checkFormSatatus = false;
         foreach ($rResult as $key => $row) {
-            $downloadInReports = '';$downloadSummaryReports = '';
+            $downloadInReports = '';$downloadSummaryReports = '';$summaryFilePath = '';$invididualFilePath='';
             if ($row['status'] == 'finalized') {
                 $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $row['shipment_code'] . DIRECTORY_SEPARATOR . $row['shipment_code'] . "-" . $row['map_id'] . ".pdf");
                 if (!file_exists($invididualFilePath)) {
@@ -1908,7 +1908,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $formData[$key]['evaluationStatus'] = $row['evaluation_status'];
                 $formData[$key]['createdOn']        = (isset($row['created_on_user']) && $row['created_on_user'] != '')?$row['created_on_user']:(isset($row['created_on_admin']) && $row['created_on_admin'] != '')?$row['created_on_admin']:'';
                 $formData[$key]['updatedStatus']    = (isset($row['updated_on_user']) && $row['updated_on_user'] != '')?true:false;
-                $formData[$key]['updatedOn']        = (isset($row['updated_on_user']) && $row['updated_on_user'] != '')?$row['updated_on_user']:'';
+                $formData[$key]['updatedOn']        = (isset($row['updated_on_user']) && $row['updated_on_user'] != '' && $row['RESPONSEDATE'] != '' && $row['RESPONSEDATE'] != '0000-00-00')?$row['updated_on_user']:'';
                 $formData[$key]['mapId']            = $row['map_id'];
 
                 $formData[$key][$row['scheme_type'] . 'Data'] = $this->fetchShipmentFormDetails($row, $aResult);
@@ -2805,7 +2805,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $data = array();$general = new Pt_Commons_General();
         $token = $dmDb->fetchAuthTokenByToken($params);
         foreach ($resultData as $aRow) {
-            $downloadReports = '';
+            $downloadReports = '';$invididualFilePath='';
             if ($aRow['status'] == 'finalized') {
                 $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-" . $aRow['map_id'] . ".pdf");
                 if (!file_exists($invididualFilePath)) {
@@ -2875,7 +2875,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $data = array();$general = new Pt_Commons_General();
         $token = $dmDb->fetchAuthTokenByToken($params);
         foreach ($resultData as $aRow) {
-            $downloadReports = '';
+            $downloadReports = '';$summaryFilePath='';
             if ($aRow['status'] == 'finalized') {
                 $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
                 if (file_exists($summaryFilePath) && trim($token['download_link']) != '') {
