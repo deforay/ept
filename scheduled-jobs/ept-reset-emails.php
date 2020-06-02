@@ -1,6 +1,11 @@
 <?php
 include_once 'CronInit.php';
 
+require_once(__DIR__ . "/General.php");
+
+$general = new General();
+
+
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 try {
     $db = Zend_Db::factory($conf->resources->db);
@@ -30,9 +35,9 @@ try {
     $commonService = new Application_Service_Common();
     
     foreach ($resetMails as $countryName => $participants) {
-        $to = $participants[0][5];
-        $cc = '';
-        $bcc = '';
+        $to = $participants[0][4];
+        $cc = 'gappt@cdc.gov,blf3@cdc.gov';
+        $bcc = 'amit@deforay.com';
         $subject = '';
         $message = '';
         $fromMail = '';
@@ -59,8 +64,7 @@ try {
                         <thead>
                             <tr align="center">
                                 <th style="background-color:#f1f1f1;border: 1px solid black;">S.No</th>
-                                <th style="background-color:#f1f1f1;border: 1px solid black;">Lab ID</th>
-                                <th style="background-color:#f1f1f1;border: 1px solid black;">Lab Name</th>
+                                <th style="background-color:#f1f1f1;border: 1px solid black;">Participant(s)</th>
                                 <th style="background-color:#f1f1f1;border: 1px solid black;">Login ID</th>
                                 <th style="background-color:#f1f1f1;border: 1px solid black;">Expires On</th>
                                 <th style="background-color:#f1f1f1;border: 1px solid black;">Enter Correct Email</th>
@@ -69,13 +73,13 @@ try {
                         <tbody>';
         $sno = 1;
         foreach($participants as $prow){
+            
             $message .= '<tr>
-                            <td style="border: 1px solid black;">' . $sno . '</td>
-                            <td style="border: 1px solid black;">' . $prow[1] . '</td>
-                            <td style="border: 1px solid black;">' . $prow[2] . '</td>
-                            <td style="border: 1px solid black;">' . $prow[3] . '</td>
-                            <td style="border: 1px solid black;">' . $prow[4] . '</td>
-                            <td style="border: 1px solid black;"><a href="' . $conf->domain . 'auth/verify-email/?t=' . hash('sha256', base64_encode($prow[3]) . $conf->salt) . '">Click here</a></td>
+                            <td style="border: 1px solid black;text-align:center;">' . $sno . '</td>
+                            <td style="border: 1px solid black;text-align:left;">' . str_replace(", ",",<br>",$prow[1]) . '</td>
+                            <td style="border: 1px solid black;">' . $prow[2] . '</td
+                            <td style="border: 1px solid black;text-align:center;">' . $general->humanDateFormat($prow[3]) . '</td>
+                            <td style="border: 1px solid black;text-align:center;"><a href="' . $conf->domain . '/auth/verify-email/t/' . base64_encode($prow[2]).'">Click Here</a></td>
                         </tr>';
             $db->update('data_manager', array('last_date_for_email_reset' => $prow[4], 'force_profile_check' => 'yes', 'updated_on' => new Zend_Db_Expr('now()')), 'primary_email= "' . $prow[3] . '"');
             $sno++;

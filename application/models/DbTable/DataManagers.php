@@ -255,7 +255,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function updateForceProfileCheckByEmail($email)
     {
-        return $this->update(array('force_profile_check' => 'no'), "primary_email = '" . base64_decode($email) ."'");
+        return $this->update(array('force_profile_check' => 'no'), "primary_email = '" . base64_decode($email) . "'");
     }
 
     public function resetpasswordForEmail($email)
@@ -319,9 +319,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $this->fetchAll($sql);
     }
 
-    public function saveNewPassword($params){
+    public function saveNewPassword($params)
+    {
         // Zend_Debug::dump($params);die;
-        $noOfRows = $this->update(array('password' => $params['password']), "primary_email = '" . $params['registeredEmail'] ."'");
+        $noOfRows = $this->update(array('password' => $params['password']), "primary_email = '" . $params['registeredEmail'] . "'");
         if ($noOfRows != null && count($noOfRows) == 1) {
             return true;
         } else {
@@ -329,79 +330,83 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
     }
 
-    public function fetchEmailById($email){
+    public function fetchEmailById($email)
+    {
         return $this->fetchRow("primary_email = '" . base64_decode($email) . "'");
     }
-    
-    public function fetchForceProfileEmail($link){
+
+    public function fetchForceProfileEmail($link)
+    {
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $sql = $this->select()->from('data_manager')->where("last_date_for_email_reset IS NOT null AND force_profile_check = 'yes'");
         
-        $totalList = $this->fetchAll($sql);
-        if(count($totalList) > 0){
-            foreach($totalList as $list){
-                $serverLink = hash('sha256', base64_encode($list['primary_email']).$conf->salt);
-                if($serverLink == $link){
-                    if(date('Ymd',strtotime($list['last_date_for_email_reset'])) >= date('Ymd')){
-                        $psql = $db->select()->from(array('dm' => 'data_manager'),array('dm_id'))
-                            ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
-                            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.lab_name','p.institute_name','p.state','country'))
-                            ->join(array('c' => 'countries'), 'c.id=p.country', array('*'))
-                            ->where("dm.dm_id=".$list['dm_id']);
-                        // die($psql);
-                        return array('id' => $list['dm_id'],'email' => $list['primary_email'], 'participants' => $db->fetchAll($psql));
-                    }else{
-                        return false;
-                    }
-                }
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $email = base64_decode($link);
+        
+        $sql = $this->select()->from('data_manager')->where("primary_email=?", $email);
+
+        $list = $this->fetchRow($sql);
+
+        //var_dump($list->toArray());
+        //die;
+        if (!empty($list) && $list != null) {
+
+            if (date('Ymd', strtotime($list['last_date_for_email_reset'])) >= date('Ymd')) {
+                $psql = $db->select()->from(array('dm' => 'data_manager'), array('dm_id'))
+                    ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
+                    ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.lab_name', 'p.institute_name', 'p.state', 'country'))
+                    ->join(array('c' => 'countries'), 'c.id=p.country', array('*'))
+                    ->where("dm.dm_id=" . $list['dm_id']);
+                return array('id' => $list['dm_id'], 'email' => $list['primary_email'], 'participants' => $db->fetchAll($psql));
+            } else {
+                return false;
             }
         }
         // die;
         return false;
     }
 
-    public function changeForceProfileCheckByEmail($params){
-        return $this->update(array('force_profile_check' => 'no', 'primary_email' => $params['registeredEmail'], 'last_date_for_email_reset' => '2000-01-01'), "dm_id =". base64_decode($params['dmId']));
+    public function changeForceProfileCheckByEmail($params)
+    {
+        return $this->update(array('force_profile_check' => 'no', 'primary_email' => $params['registeredEmail'], 'last_date_for_email_reset' => '2000-01-01'), "dm_id =" . base64_decode($params['dmId']));
     }
 
     public function loginDatamanagerByAPI($params)
     {
         /* Check the app versions */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
         if (!isset($params['userId']) && !isset($params['key'])) {
-            return array('status' =>'fail','message'=>'Please enter the login credentials');
+            return array('status' => 'fail', 'message' => 'Please enter the login credentials');
         }
         /* Check the login credential */
         $result = $this->fetchRow("primary_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
         if (!isset($result['dm_id']) && $result['dm_id'] == "") {
-            return array('status' =>'fail','message'=>'Your username or password is incorrect');
+            return array('status' => 'fail', 'message' => 'Your username or password is incorrect');
         }
         /* Check the status for data manager */
         if (isset($result['status']) && $result['status'] != "active") {
-            return array('status' =>'fail','message'=>'You are not activated or email verification pending. Kindly contact admin');
+            return array('status' => 'fail', 'message' => 'You are not activated or email verification pending. Kindly contact admin');
         }
         /* Update the new auth token */
         $common = new Application_Service_Common();
         $params['authToken'] = $common->getRandomString(6);
         $params['download_link'] = $common->getRandomString(9);
-        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'],'last_login' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
+        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
         /* App version check */
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
         /* Validate new auth token and app-version */
-        if(!$aResult){
-            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        if (!$aResult) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
         /* Check last login before 6 month */
-        $lastLogin = date('Ymd',strtotime($result['last_login']));
+        $lastLogin = date('Ymd', strtotime($result['last_login']));
         $current = date("Ymd", strtotime(" -6 months"));
-        if(($current > $lastLogin)){
+        if (($current > $lastLogin)) {
             $aResult['force_profile_check'] = 'yes';
         }
         /* Create a new response to the API service */
@@ -419,10 +424,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'appVersion'                    => $aResult['app_version']
         );
         /* Finalizing the response data and return */
-        if(!isset($resultData) && trim($resultData['authToken']) == ''){
-            return array('status' =>'fail','message'=>'Something went wrong please try again later');
-        }else{
-            return array('status' =>'success','data'=>$resultData);
+        if (!isset($resultData) && trim($resultData['authToken']) == '') {
+            return array('status' => 'fail', 'message' => 'Something went wrong please try again later');
+        } else {
+            return array('status' => 'success', 'data' => $resultData);
         }
     }
 
@@ -430,10 +435,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         /* Check the app versions */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
         if (!isset($params['authToken'])) {
-            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
         /* Check the login credential */
         $result = $this->fetchRow("auth_token='" . $params['authToken'] . "'");
@@ -441,11 +446,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $aResult = $this->fetchAuthToken($params);
         /* App version check */
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
         /* Validate new auth token and app-version */
-        if(!$aResult){
-            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        if (!$aResult) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
         /* Create a new response to the API service */
@@ -463,10 +468,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'appVersion'                    => $aResult['app_version']
         );
         /* Finalizing the response data and return */
-        if(!isset($resultData) && trim($resultData['authToken']) == ''){
-            return array('status' =>'fail','message'=>'Something went wrong please try again later');
-        }else{
-            return array('status' =>'success','data'=>$resultData);
+        if (!isset($resultData) && trim($resultData['authToken']) == '') {
+            return array('status' => 'fail', 'message' => 'Something went wrong please try again later');
+        } else {
+            return array('status' => 'success', 'data' => $resultData);
         }
     }
 
@@ -480,12 +485,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Check the token  */
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt','force_password_reset','force_profile_check'))
+        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
             ->where("dm.auth_token=?", $params['authToken']);
         $aResult = $db->fetchRow($sQuery);
-        if (!isset($aResult['dm_id'])){
+        if (!isset($aResult['dm_id'])) {
             return false;
         }
         /* Return the response data */
@@ -506,42 +511,44 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         );
     }
 
-    public function changePasswordDatamanagerByAPI($params){
+    public function changePasswordDatamanagerByAPI($params)
+    {
         /* Check the app versions */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
         /* App version check */
         $aResult = $this->fetchAuthToken($params);
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
-        if(!$aResult){
-            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        if (!$aResult) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
-        $oldPassResult = $this->fetchRow("password='" . $params['oldPassword'] . "' AND auth_token = '".$params['authToken']."'");
-        if(!$oldPassResult){
-            return array('status' =>'fail','message'=>'Your old password is incorrect');
+        $oldPassResult = $this->fetchRow("password='" . $params['oldPassword'] . "' AND auth_token = '" . $params['authToken'] . "'");
+        if (!$oldPassResult) {
+            return array('status' => 'fail', 'message' => 'Your old password is incorrect');
         }
         /* Update the new password to the server */
-        $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => (int)$aResult['dm_id']));
-        if($update < 1){
-            return array('status' =>'fail','message'=>'You have entered old password');
+        $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => (int) $aResult['dm_id']));
+        if ($update < 1) {
+            return array('status' => 'fail', 'message' => 'You have entered old password');
         }
-        $this->update(array('updated_on'=>new Zend_Db_Expr('now()')), array('dm_id = ?' => $aResult['dm_id']));
-        return array('status' =>'success','message'=>'Password Updated Successfully');
+        $this->update(array('updated_on' => new Zend_Db_Expr('now()')), array('dm_id = ?' => $aResult['dm_id']));
+        return array('status' => 'success', 'message' => 'Password Updated Successfully');
     }
-    
-    public function setForgetPasswordDatamanagerAPI($params){
+
+    public function setForgetPasswordDatamanagerAPI($params)
+    {
         /* Check the app versions */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
         /* App version check */
         $aResult = $this->fetchRow("primary_email='" . $params['email'] . "'");
-        if(!$aResult){
-            return array('status' =>'fail','message'=>'Your email id is not registered. Please check again.');
+        if (!$aResult) {
+            return array('status' => 'fail', 'message' => 'Your email id is not registered. Please check again.');
         }
         /* Update the new password to the server */
         /* $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => $aResult['dm_id']));
@@ -556,20 +563,21 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         if ($row) {
             $common = new Application_Service_Common();
-            $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email ".$email.". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $conf->domain . "auth/new-password/email/" . base64_encode($email) . "'>" . $conf->domain . "auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
+            $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email " . $email . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $conf->domain . "auth/new-password/email/" . base64_encode($email) . "'>" . $conf->domain . "auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
             $check = $common->insertTempMail($email, null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
-            if(!$check){
-                return array('status' =>'fail','message'=>'Something went wrong please try again later.');
+            if (!$check) {
+                return array('status' => 'fail', 'message' => 'Something went wrong please try again later.');
             }
-            return array('status' =>'success','message'=>'Your password has been reset. Please check your registered mail id for the instructions.');
-        } else{
-            return array('status' =>'fail','message'=>'You have entered primary email not found');
+            return array('status' => 'success', 'message' => 'Your password has been reset. Please check your registered mail id for the instructions.');
+        } else {
+            return array('status' => 'fail', 'message' => 'You have entered primary email not found');
         }
     }
 
-    public function fetchAuthTokenByToken($params){
+    public function fetchAuthTokenByToken($params)
+    {
         return $this->fetchRow("auth_token='" . $params['authToken'] . "'");
     }
 
@@ -577,23 +585,23 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
         if (!isset($params['authToken'])) {
-            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
-        
+
         /* Validate new auth token and app-version */
         $aResult = $this->fetchAuthToken($params);
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
-        if(!$aResult){
-            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        if (!$aResult) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
-        
+
         $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
-        if(isset($result) && trim($result['dm_id'] != '')){
+        if (isset($result) && trim($result['dm_id'] != '')) {
             $response['status'] = 'success';
             $response['data'] = array(
                 'dmId'              => $result['dm_id'],
@@ -604,31 +612,31 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 'mobile'            => $result['mobile'],
                 'phone'             => $result['phone']
             );
-            $this->update(array('force_profile_check' => 'no'),'dm_id = '.$result['dm_id']);
-        }else{
+            $this->update(array('force_profile_check' => 'no'), 'dm_id = ' . $result['dm_id']);
+        } else {
             $response['status'] = 'fail';
             $response['message'] = 'No participant found.';
         }
         return $response;
     }
-    
+
     public function saveProfileDetailsByAPI($params)
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
         if (!isset($params['authToken'])) {
-            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
-        
+
         /* Validate new auth token and app-version */
         $aResult = $this->fetchAuthToken($params);
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-failed','message'=>'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
         }
-        if(!$aResult){
-            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        if (!$aResult) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
         /* started save profile details */
 
@@ -638,17 +646,17 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* check primary email already exist or not */
         $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "' AND primary_email = '" . $params['primaryEmail'] . "'");
         $forceLogin = false;
-        if(!$result){
+        if (!$result) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
-            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$fetchOldMail['primary_email']." to ".$params['primaryEmail'].". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['primaryEmail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['primaryEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
+            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from " . $fetchOldMail['primary_email'] . " to " . $params['primaryEmail'] . ". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['primaryEmail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['primaryEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
             $fromMail = $common->getConfig('admin_email');
             $fromName = $common->getConfig('admin-name');
             $common->insertTempMail($params['primaryEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
             $response['status'] = 'force-login';
             $forceLogin = true;
-            $this->setStatusByEmail('inactive',$fetchOldMail['primary_email']);
-        }else{
+            $this->setStatusByEmail('inactive', $fetchOldMail['primary_email']);
+        } else {
             $response['status'] = 'success';
         }
         $updateData = array(
@@ -660,13 +668,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'phone'             => $params['phone']
         );
         $update = $this->update($updateData, "dm_id = " . $fetchOldMail['dm_id']);
-        if($update > 0){
-            if(!$forceLogin){
+        if ($update > 0) {
+            if (!$forceLogin) {
                 $response['message'] = 'Profile saved successfully.';
-            }else{
+            } else {
                 $response['message'] = 'Your profile has been saved. Please check your mail for the instructions.';
             }
-        }else{
+        } else {
             $response['status'] = 'fail';
             $response['message'] = 'No updation found.';
         }
@@ -674,8 +682,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $response;
     }
 
-    public function setStatusByEmail($status,$email)
+    public function setStatusByEmail($status, $email)
     {
-        return $this->update(array('status' => $status),'primary_email = "'. $email .'"');
+        return $this->update(array('status' => $status), 'primary_email = "' . $email . '"');
     }
 }
