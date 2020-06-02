@@ -23,6 +23,7 @@ try {
     ini_set('auto_detect_line_endings', FALSE);
     unset($data[0]);
 
+    $resetMails = array();
     foreach ($data as $row) {
         $resetMails[$row[0]][] = $row; // $row[0] is country name, we are just bunching all country data into separate array
     }
