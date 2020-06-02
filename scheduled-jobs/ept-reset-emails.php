@@ -23,23 +23,26 @@ try {
     ini_set('auto_detect_line_endings', FALSE);
     unset($data[0]);
 
+    $resetMails = array();
     foreach ($data as $row) {
-        $resetMails[$row[0]] = $row; // $row[0] is country name, we are just bunching all country data into separate array
+        $resetMails[$row[0]][] = $row; // $row[0] is country name, we are just bunching all country data into separate array
     }
+
+    var_dump($resetMails);die;
     $commonService = new Application_Service_Common();
     foreach ($resetMails as $countryName => $participants) {
         foreach ($participants as $prow) {
             if ((isset($participants[5]) && trim($participants[5]) != '')) {
-                $cquery = $db->select()->from('data_manager')->where("primary_email = ?", $participants[3])->where("force_profile_check = ?", 'yes')->where("last_date_for_email_reset IS NULL");
+                $cquery = $db->select()->from('data_manager')->where("primary_email = ?", $participants[3]);
                 $ctotParticipantsRes = $db->fetchRow($cquery);
 
                 if ($ctotParticipantsRes) {
                     $sendMail = true;
-                break;
+                    break;
                 }
             }
         }
-        if($sendMail){
+        if ($sendMail) {
             $to = $participants[5];
             $cc = "";
             $bcc = '';
@@ -53,13 +56,13 @@ try {
             $message .= '<table border="0" cellspacing="0" cellpadding="0" style="width:100%;background-color:#FFF;">';
             $message .= '<tr><td align="center">';
             $message .= '<table cellpadding="3" style="width:98%;font-family:Helvetica,Arial,sans-serif;margin:30px 0px 30px 0px;padding:2% 0% 0% 2%;background-color:#ffffff;text-align:justify;">';
-    
+
             $message .= '<tr><td colspan="2">Dear PT Participant,</td></tr>';
-    
+
             $message .= '<tr><td colspan="2">We are in the process of improving the ePT system. During recent internal system audit, we noticed that several PT Participants\' emails  for ' . $countryName . ' were invalid and not verified.  </td></tr>';
             $message .= '<tr><td colspan="2">In order to improve security and privacy, we recommend to use valid and active emails for all the participant logins. This will also help us in sending timely announcements, updates and information on the PT program to the correct email addresses.</td></tr>';
             $message .= '<tr><td colspan="2">Below is the list of login emails that will be expired as a part of this initiative. You <u>must provide</u> a valid email for each laboratory account before the expiry date.</td></tr>';
-    
+
             // CREATE THE TABLE WITH LINKS HERE
             $message .= '
                 <tr>
@@ -79,9 +82,9 @@ try {
             $sno = 1;
             foreach ($participants as $prow) {
                 if ((isset($participants[5]) && trim($participants[5]) != '')) {
-                    $query = $db->select()->from('data_manager')->where("primary_email = ?", $participants[3])->where("force_profile_check = ?", 'yes')->where("last_date_for_email_reset IS NULL");
+                    $query = $db->select()->from('data_manager');
                     $totParticipantsRes = $db->fetchRow($query);
-    
+
                     if ($totParticipantsRes) {
                         $message .= '<tr>
                                         <td style="border: 1px solid black;">' . $sno . '</td>
@@ -101,8 +104,8 @@ try {
                     </td>
                 </tr>';
             $message .= '<tr><td colspan="2"></td></tr>';
-    
-    
+
+
             $message .= '<tr><td colspan="2">To reset the emails,</td></tr>';
             $message .= '<tr>
                                 <td colspan="2">
@@ -113,16 +116,16 @@ try {
                                     </ol>
                                 </td>
                             </tr>';
-    
+
             $message .= '<tr><td colspan="2" width="12%">We will not modify your password during this process. You can continue using the same password as before.</td></tr>';
             $message .= '<tr><td colspan="2" width="12%">If you are facing any problems or need guidance, please reply to this email.</td></tr>';
-    
+
             $message .= '<tr><td colspan="2">Sincerely,</td></tr>';
             $message .= '<tr><td colspan="2">Online PT Team</td></tr>';
             $message .= '<tr><td colspan="2"></td></tr>';
-    
+
             $message .= '<tr><td colspan="2"></td></tr>';
-    
+
             $message .= '</table>';
             $message .= '</td></tr>';
             $message .= '</table>';
