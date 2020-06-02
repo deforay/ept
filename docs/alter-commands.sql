@@ -2446,3 +2446,54 @@ UPDATE `r_possibleresult` SET `result_code` = 'P' WHERE `r_possibleresult`.`sche
 UPDATE `r_possibleresult` SET `result_code` = 'N' WHERE `r_possibleresult`.`scheme_sub_group` = 'DBS_FINAL' AND `r_possibleresult`.`response` = 'N';
 UPDATE `r_possibleresult` SET `result_code` = 'NT' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_FINAL' AND `r_possibleresult`.`response` = 'Not Tested';
 UPDATE `r_possibleresult` SET `result_code` = 'NT' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_FINAL' AND `r_possibleresult`.`response` = 'NOT TESTED';
+
+
+--- Amit 3 June, 2020
+
+
+INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) 
+      VALUES ('recency', 'Rapid HIV Recency Testing', 'response_result_recency', 'reference_result_recency', NULL, 'inactive');
+
+
+CREATE TABLE `reference_result_recency` (
+ `shipment_id` int(11) NOT NULL,
+ `dts_id` int(11) DEFAULT NULL,
+ `sample_id` int(11) NOT NULL,
+ `sample_label` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+ `reference_result` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+ `control` int(11) DEFAULT NULL,
+ `reference_control_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `reference_verification_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `reference_longterm_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `mandatory` int(11) NOT NULL DEFAULT '0',
+ `sample_score` int(11) NOT NULL DEFAULT '1',
+ PRIMARY KEY (`shipment_id`,`sample_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `response_result_recency` (
+ `shipment_map_id` int(11) NOT NULL,
+ `dts_id` int(11) DEFAULT NULL,
+ `sample_id` varchar(45) CHARACTER SET latin1 NOT NULL,
+ `reported_result` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+ `reference_control_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `reference_verification_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `reference_longterm_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `calculated_score` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+ `created_by` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+ `created_on` datetime DEFAULT NULL,
+ `updated_by` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+ `updated_on` datetime DEFAULT NULL,
+ PRIMARY KEY (`shipment_map_id`,`sample_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `r_recency_assay` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `name` varchar(255) CHARACTER SET latin1 NOT NULL,
+ `sort_order` int(11) DEFAULT '0',
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`) 
+VALUES (NULL, 'recency', 'RECENCY_FINAL', 'Recent'), 
+(NULL, 'recency', 'RECENCY_FINAL', 'Long Term'), 
+(NULL, 'recency', 'RECENCY_FINAL', 'Indeterminate');
