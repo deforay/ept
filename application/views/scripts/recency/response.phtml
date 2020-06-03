@@ -269,22 +269,22 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 								<td>
 									<select name="controlLine[]" class="isRequired form-control input-sm" title="Please choose control line">
 										<option value="">--Select--</option>
-										<option value="present" <?php echo ($reference['reference_control_line'] == "present") ? "selected='selected'" : ""; ?>>Present</option>
-										<option value="absent" <?php echo ($reference['reference_control_line'] == "absent") ? "selected='selected'" : ""; ?>>Absent</option>
+										<option value="present" <?php echo ($sample['reference_control_line'] == "present") ? "selected='selected'" : ""; ?>>Present</option>
+										<option value="absent" <?php echo ($sample['reference_control_line'] == "absent") ? "selected='selected'" : ""; ?>>Absent</option>
 									</select>
 								</td>
 								<td>
 									<select name="verificationLine[]" class="isRequired form-control input-sm" title="Please choose verification line">
 										<option value="">--Select--</option>
-										<option value="present" <?php echo ($reference['reference_verification_line'] == "present") ? "selected='selected'" : ""; ?>>Present</option>
-										<option value="absent" <?php echo ($reference['reference_verification_line'] == "absent") ? "selected='selected'" : ""; ?>>Absent</option>
+										<option value="present" <?php echo ($sample['reference_verification_line'] == "present") ? "selected='selected'" : ""; ?>>Present</option>
+										<option value="absent" <?php echo ($sample['reference_verification_line'] == "absent") ? "selected='selected'" : ""; ?>>Absent</option>
 									</select>
 								</td>
 								<td>
 									<select name="longtermLine[]" class="isRequired form-control input-sm" title="Please choose Longterm line">
 										<option value="">--Select--</option>
-										<option value="present" <?php echo ($reference['reference_longterm_line'] == "present") ? "selected='selected'" : ""; ?>>Present</option>
-										<option value="absent" <?php echo ($reference['reference_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>>Absent</option>
+										<option value="present" <?php echo ($sample['reference_longterm_line'] == "present") ? "selected='selected'" : ""; ?>>Present</option>
+										<option value="absent" <?php echo ($sample['reference_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>>Absent</option>
 									</select>
 								</td>
 								<td class="dark">
