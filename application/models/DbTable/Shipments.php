@@ -1948,6 +1948,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $allSamples =   $schemeService->getVlSamples($params['shipment_id'],$params['participant_id']);
         } if($params['scheme_type'] == 'eid'){
             $allSamples =   $schemeService->getEidSamples($params['shipment_id'],$params['participant_id']);
+        } if($params['scheme_type'] == 'recency'){
+            $allSamples =   $schemeService->getRecencySamples($params['shipment_id'],$params['participant_id']);
         }
         $shipment = $schemeService->getShipmentData($params['shipment_id'],$params['participant_id']);
         $shipment['attributes'] = json_decode($shipment['attributes'],true);
@@ -1984,7 +1986,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }else{
                 $reportAccess['status']     = 'fail';
-                $reportAccess['message']    = 'You are allowed to only view this form.';
+                $reportAccess['message']    = 'You are allowed to edit. Only view this form.';
             }
             $dts['access'] = $reportAccess;
             // Check the data manager having for access to the form
@@ -2383,7 +2385,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }else{
                 $reportAccess['status']     = 'fail';
-                $reportAccess['message']    = 'You are allowed to only view this form.';
+                $reportAccess['message']    = 'You are allowed to edit. Only view this form.';
             }
             $vl['access'] = $reportAccess;
             // Heading 1 start
@@ -2580,7 +2582,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }else{
                 $reportAccess['status'] = 'fail';
-                $reportAccess['message'] = 'You are allowed to only view this form.';
+                $reportAccess['message'] = 'You are allowed to edit. Only view this form.';
             }
             $eid['access'] = $reportAccess;
             // Heading 1 start
@@ -2765,6 +2767,221 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $eid['customFields']['status'] = false;
             }
             return $eid;
+        }
+        if($params['scheme_type'] == 'recency'){
+            $recency = array();
+            $participant = $participantDb->getParticipant($params['participant_id']);
+            $recencyPossibleResults = $schemeService->getPossibleResults('recency');
+            $recencyAssay = $schemeService->getRecencyAssay();
+            
+            $reportAccess = array();$vl = array();
+
+            if($isEditable && $dm['view_only_access'] != 'yes'){
+                if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
+                    $reportAccess['status']         = 'fail';
+                    $reportAccess['message']        = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } else if($responseAccess == 1 && $params['response_switch'] == 'on'){
+                    $reportAccess['status'] = 'success';
+                    $reportAccess['message'] = 'Your response is late';
+                } else if($responseAccess == 1){
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late';
+                } else if($shipment['status'] == 'finalized'){
+                    $reportAccess['status']         = 'fail';
+                    $reportAccess['message']        = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications.';
+                } else{
+                    $reportAccess['status']         = 'success';
+                }
+            }else{
+                $reportAccess['status'] = 'fail';
+                $reportAccess['message'] = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
+            }
+            $recency['access'] = $reportAccess;
+            // Heading 1 start
+            $heading1= array(
+                'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '')?$participant['first_name']:'').((isset($participant['last_name']) && $participant['last_name'] != '')?' '.$participant['last_name']:''),
+                'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '')?$participant['unique_identifier']:'',
+                'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '')?$participant['affiliation']:'',
+                'phone'             => (isset($participant['phone']) && $participant['phone'] != '')?$participant['phone']:'',
+                'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '')?$participant['mobile']:''
+            );
+            if(isset($participant) && count($participant) > 0){
+                $recency['Heading1']['status'] = true;
+                $recency['Heading1']['data'] = $heading1;
+            }else{
+                $recency['Heading1']['status'] = false;
+                $recency['Heading1']['data'] = $heading1;
+            }
+            // Heading1 end // Heading2 start
+            $heading2 = array();
+            if(isset($shipment) && count($shipment) > 0){
+                $modeOfReceiptSelect = array();
+                foreach ($modeOfReceipt as $receipt){
+                    $modeOfReceiptSelect[]= array(
+                        'value'     =>  (string)$receipt['mode_id'],
+                        'show'      =>  $receipt['mode_name'],
+                        'selected'   => ($shipment["mode_id"] == $receipt['mode_id'])?'selected':''
+                    );
+                }
+                $recencyAssaySelect = array();
+                foreach ($recencyAssay as $eAssayId => $eAssayName){
+                    $recencyAssaySelect[]= array(
+                        'value'     =>  (string)$eAssayId,
+                        'show'      =>  $eAssayName,
+                        'selected'   => ($shipment['attributes']['recency_assay'] == $eAssayId)?'selected':''
+                    );
+                }
+                
+                $heading2['status']    = true;
+                $heading2['data']['shipmentDate']               = date('d-M-Y',strtotime($shipment['shipment_date']));
+                $heading2['data']['resultDueDate']              = date('d-M-Y',strtotime($shipment['lastdate_response']));
+                $heading2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] !='0000:00:00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
+                $heading2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
+                $heading2['data']['testDate']                   = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
+                $heading2['data']['recencyAssaySelect']         = $recencyAssaySelect;
+                $heading2['data']['recencyAssaySelected']       = (isset($shipment['attributes']['recency_assay']) && $shipment['attributes']['recency_assay'] != "")?(string)$shipment['attributes']['recency_assay']:'';
+                $heading2['data']['recencyAssayLotNumber']        = (isset($shipment['attributes']['recency_assay_lot_no']) && $shipment['attributes']['recency_assay_lot_no'] !="")?$shipment['attributes']['recency_assay_lot_no']:'';
+                $heading2['data']['recencyAssayExpirayDate']   = (isset($shipment['attributes']['recency_assay_expiry_date']) && $shipment['attributes']['recency_assay_expiry_date'] != "" && $shipment['attributes']['recency_assay_expiry_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']['recency_assay_expiry_date'])):'';
+                
+                if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
+                    if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != ''){
+                        $heading2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                    }else{
+                        $heading2['data']['responseDate'] = '';
+                    }
+                    if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
+                        $heading2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0)?$shipment["mode_id"]:'';
+                    }else{
+                        $heading2['data']['modeOfReceiptSelected'] = ''; 
+                    }
+                }else{
+                    $heading2['data']['responseDate'] = '';
+                    $heading2['data']['modeOfReceiptSelected'] = ''; 
+                }
+                $heading2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+            }
+
+            $qcArray = array('yes','no');$qc = array();
+            foreach($qcArray as $row){
+                $qcResponseArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no'))?'selected':'');
+            }
+            $qc['qcRadio']          = $qcResponseArr;
+            $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '')?'no':'yes';
+            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000-00-00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31')?date('d-M-Y',strtotime($shipment['qc_date'])):'';
+            $qc['qcDoneBy']         = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
+            if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
+                $qc['status'] = false;
+            }else{
+                $qc['status'] = true;
+            }
+            $heading2['data']['qcData'] = $qc;
+
+            $recency['Heading2'] = $heading2;
+            // Heading 2 end // Heading 3 start
+            $allNotTestedReason = $schemeService->getVlNotTestedReasons();
+            
+            $allSamplesResult = array();
+            foreach ($allSamples as $sample) {
+                if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
+                    $sample['mandatory'] = 0;
+                }
+                $recency['Heading3']['data']['samples']['label'][]             = $sample['sample_label'];
+                $recency['Heading3']['data']['samples']['id'][]                = $sample['sample_id'];
+                $recency['Heading3']['data']['samples']['mandatory'][]         = ($sample['mandatory'] == 1)?true:false;
+                $recency['Heading3']['data']['samples']['controlLine'][]       = (isset($sample['reference_control_line']) && $sample['reference_control_line'] != "")?$sample['reference_control_line']:'';
+                $recency['Heading3']['data']['samples']['verificationLine'][]  = (isset($sample['reference_verification_line']) && $sample['reference_verification_line'] != '')?$sample['reference_verification_line']:'';
+                $recency['Heading3']['data']['samples']['longtermLine'][]      = (isset($sample['reference_longterm_line']) && $sample['reference_longterm_line'] != '')?$sample['reference_longterm_line']:'';
+                $recency['Heading3']['data']['samples']['yourResults'][]       = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
+                
+                $possibleRecencyResults = array();
+                foreach ($recencyPossibleResults as $pr) {
+                    if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+                        $possibleRecencyResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'], 'resultCode' => $pr['result_code'], 'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
+                    }
+                }
+                
+                $ctlLineResults = array();$verifyLineResults = array();$longLineResults = array();$resultArray = array('present','absent');
+                foreach ($resultArray as $pr) {
+                        $ctlLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_control_line'] == $pr)?'selected':'');
+                }
+                foreach ($resultArray as $pr) {
+                        $verifyLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_verification_line'] == $pr)?'selected':'');
+                }
+                foreach ($resultArray as $pr) {
+                        $longLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_longterm_line'] == $pr)?'selected':'');
+                }
+
+                $recency['Heading3']['data']['resultsText'] = array('Control/Sample','Control-Line','Verification-Line','Longterm-Line','Your-Results');
+                $recency['Heading3']['data']['resultStatus'] = array(true,true,true,true);
+                $recency['Heading3']['data']['sampleSelected'][$sample['sample_label']]['Control-Line']     = (isset($sample['reference_control_line']) && $sample['reference_control_line'] != '')?$sample['reference_control_line']:'';
+                $recency['Heading3']['data']['sampleSelected'][$sample['sample_label']]['Verification-Line']= (isset($sample['reference_verification_line']) && $sample['reference_verification_line'] != '')?$sample['reference_verification_line']:'';
+                $recency['Heading3']['data']['sampleSelected'][$sample['sample_label']]['Longterm-Line']    = (isset($sample['reference_longterm_line']) && $sample['reference_longterm_line'] != '')?$sample['reference_longterm_line']:'';
+                $recency['Heading3']['data']['sampleSelected'][$sample['sample_label']]['Your-Results']     = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
+                $recency['Heading3']['data']['samplesList'][$sample['sample_label']]['Control-Line']        = $ctlLineResults;
+                $recency['Heading3']['data']['samplesList'][$sample['sample_label']]['Verification-Line']   = $verifyLineResults;
+                $recency['Heading3']['data']['samplesList'][$sample['sample_label']]['Longterm-Line']       = $longLineResults;
+                $recency['Heading3']['data']['samplesList'][$sample['sample_label']]['Your-Results']        = $possibleRecencyResults;
+            }
+            
+            $allNotTestedArray = array();
+            foreach ($allNotTestedReason as $reason) {
+                $allNotTestedArray[] = array(
+                    'value'     => (string)$reason['vl_not_tested_reason_id'],
+                    'show'      => ucwords($reason['vl_not_tested_reason']),
+                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id'])?'selected':''
+                );
+            }
+            
+            if(isset($allSamples) && count($allSamples) > 0){
+                $recency['Heading3']['status'] = true;
+            }else{
+                $recency['Heading3']['status'] = false;
+            }
+            
+            if((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')){
+                $recency['Heading3']['data']['isPtTestNotPerformedRadio'] = 'no';
+                
+            }else{
+                $recency['Heading3']['data']['isPtTestNotPerformedRadio'] = 'yes';
+            }
+            $recency['Heading3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel:';
+            $recency['Heading3']['data']['vlNotTestedReason']           = $allNotTestedArray;
+            $recency['Heading3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "")?$shipment['vl_not_tested_reason']:"";
+            $recency['Heading3']['data']['ptNotTestedCommentsText']     = 'Your comments:';
+            $recency['Heading3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '')?$shipment['pt_test_not_performed_comments']:'';
+            $recency['Heading3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
+            $recency['Heading3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '')?$shipment['pt_support_comments']:'';
+            // Heading 3 End // Heading 4 Start
+            $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
+            foreach($commentArray as $row){
+                $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
+            }
+            $reviewArray['supervisorReview']            = $revieArr;
+            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '')?$shipment['supervisor_approval']:'';
+            $reviewArray['approvalLabel']               = 'Supervisor Name';
+            $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?$shipment['participant_supervisor']:'';
+            $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
+            $recency['Heading4']['status']                  = true;
+            $recency['Heading4']['data']                    = $reviewArray;
+            // Heading 4 end
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+            $customField1 = $globalConfigDb->getValue('custom_field_1');$customField2 = $globalConfigDb->getValue('custom_field_2');
+            $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+            if(isset($haveCustom) && $haveCustom != 'no'){
+                $recency['customFields']['status'] = true;
+                if (isset($customField1) && trim($customField1) != "") {
+                    $recency['customFields']['data']['customField1Text']= $customField1;
+                    $recency['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "")?$shipment['custom_field_1']:'';
+                }
+
+                if (isset($customField2) && trim($customField2) != "") {
+                    $recency['customFields']['data']['customField2Text']= $customField2;
+                    $recency['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "")?$shipment['custom_field_2']:'';
+                }
+            }else{
+                $recency['customFields']['status'] = false;
+            }
+            return $recency;
         }
     }
 
@@ -2967,7 +3184,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $allSamples =   $schemeService->getEidSamples($params['shipmentId'],$params['participantId']);
         }
         if(!$isEditable && $dm['view_only_access'] == 'yes'){
-            return array('status' =>'fail','message'=>'You are allowed to only view this form..');
+            return array('status' =>'fail','message'=>'You are allowed to edit. Only view this form..');
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
