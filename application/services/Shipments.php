@@ -96,7 +96,7 @@ class Application_Service_Shipments
 
         $sQuery = $db->select()->from(array('s' => 'shipment'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'),'reported_count' =>  new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count'))
+            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' =>  new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
             ->group('s.shipment_id');
 
@@ -1015,6 +1015,24 @@ class Application_Service_Shipments
                     )
                 );
             }
+        } else if ($params['schemeId'] == 'recency') {
+            for ($i = 0; $i < $size; $i++) {
+                $dbAdapter->insert(
+                    'reference_result_recency',
+                    array(
+                        'shipment_id' => $lastId,
+                        'sample_id' => ($i + 1),
+                        'sample_label' => $params['sampleName'][$i],
+                        'reference_result' => $params['possibleResults'][$i],
+                        'reference_control_line' => $params['controlLine'][$i],
+                        'reference_verification_line' => $params['verificationLine'][$i],
+                        'reference_longterm_line' => $params['longtermLine'][$i],
+                        'control' => $params['control'][$i],
+                        'mandatory' => $params['mandatory'][$i],
+                        'sample_score' => 1
+                    )
+                );
+            }
         }
 
         $distroService->updateDistributionStatus($params['distribution'], 'pending');
@@ -1142,6 +1160,12 @@ class Application_Service_Shipments
                 ->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
             $possibleResults = "";
+        } else if ($shipment['scheme_type'] == 'recency') {
+            $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
+                ->join(array('ref' => 'reference_result_recency'), 'ref.shipment_id=s.shipment_id')
+                ->where("s.shipment_id = ?", $sid));
+            $schemeService = new Application_Service_Schemes();
+            $possibleResults = $schemeService->getPossibleResults('recency');
         } else {
             return false;
         }
@@ -1425,6 +1449,25 @@ class Application_Service_Shipments
                 }
                 // ------------------>
             }
+        }else if ($scheme == 'recency') {
+            $dbAdapter->delete('reference_result_recency', 'shipment_id = ' . $params['shipmentId']);
+            for ($i = 0; $i < $size; $i++) {
+                $dbAdapter->insert(
+                    'reference_result_recency',
+                    array(
+                        'shipment_id' => $params['shipmentId'],
+                        'sample_id' => ($i + 1),
+                        'sample_label' => $params['sampleName'][$i],
+                        'reference_result' => $params['possibleResults'][$i],
+                        'reference_control_line' => $params['controlLine'][$i],
+                        'reference_verification_line' => $params['verificationLine'][$i],
+                        'reference_longterm_line' => $params['longtermLine'][$i],
+                        'control' => $params['control'][$i],
+                        'mandatory' => $params['mandatory'][$i],
+                        'sample_score' => 1
+                    )
+                );
+            }
         }
 
         $dbAdapter->update(
@@ -1543,29 +1586,20 @@ class Application_Service_Shipments
         return $db->addEnrollementDetails($params);
     }
 
-    public function getShipmentCode($sid)
+    public function getShipmentCode($sid, $count = null)
     {
         $code = '';
         $month = date("m");
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $db->select()->from('shipment')->where("scheme_type = ?", $sid)->where("MONTH(DATE(created_on_admin))= ?", $month);
-        $resultArray = $db->fetchAll($sQuery);
         $year = date("y");
-        $count = count($resultArray) + 1;
-        if ($sid == 'dts') {
-            $code = 'DTS' . $month . $year . '-' . $count;
-        } else if ($sid == 'vl') {
-            $code = 'VL' . $month . $year . '-' . $count;
-        } else if ($sid == 'eid') {
-            $code = 'EID' . $month . $year . '-' . $count;
-        } else if ($sid == 'dbs') {
-            $code = 'DBS' . $month . $year . '-' . $count;
-        }
-        return $this->checkShipmentCode($month, $year, $count, $sid);
-    }
 
-    public function checkShipmentCode($month, $year, $count, $sid)
-    {
+        if ($count == null) {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $sQuery = $db->select()->from('shipment')->where("scheme_type = ?", $sid)->where("MONTH(DATE(created_on_admin))= ?", $month);
+            $resultArray = $db->fetchAll($sQuery);
+
+            $count = count($resultArray) + 1;
+        }
+
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $code = '';
         if ($sid == 'dts') {
@@ -1576,23 +1610,18 @@ class Application_Service_Shipments
             $code = 'EID' . $month . $year . '-' . $count;
         } else if ($sid == 'dbs') {
             $code = 'DBS' . $month . $year . '-' . $count;
+        } else if ($sid == 'tb') {
+            $code = 'TB' . $month . $year . '-' . $count;
+        } else if ($sid == 'recency') {
+            $code = 'REC' . $month . $year . '-' . $count;
         }
         $sQuery = $db->select()->from('shipment')->where("shipment_code = ?", $code);
         $resultArray = $db->fetchAll($sQuery);
         if (count($resultArray) > 0) {
+            // looks like this shipment code exists so let us try again by
+            // incrementing the count
             $count++;
-            if ($sid == 'dts') {
-                $code = 'DTS' . $month . $year . '-' . $count;
-            } else if ($sid == 'vl') {
-                $code = 'VL' . $month . $year . '-' . $count;
-            } else if ($sid == 'eid') {
-                $code = 'EID' . $month . $year . '-' . $count;
-            } else if ($sid == 'dbs') {
-                $code = 'DBS' . $month . $year . '-' . $count;
-            } else {
-                $code = '';
-            }
-            $this->checkShipmentCode($month, $year, $count, $sid);
+            $code = $this->getShipmentCode($sid, $count);
         }
         return $code;
     }
@@ -1754,10 +1783,10 @@ class Application_Service_Shipments
         return $shipmentDb->fetchUniqueShipmentCode();
     }
 
-    public function getShipmentDetailsInAPI($params,$type = "")
+    public function getShipmentDetailsInAPI($params, $type = "")
     {
         $shipmentDb = new Application_Model_DbTable_Shipments();
-        return $shipmentDb->fetchShipmentDetailsInAPI($params,$type);
+        return $shipmentDb->fetchShipmentDetailsInAPI($params, $type);
     }
 
     public function getIndividualReportAPI($params)
@@ -1771,7 +1800,8 @@ class Application_Service_Shipments
         return $shipmentDb->fetchSummaryReportAPI($params);
     }
 
-    public function saveShipmentsFormByAPI($params){
+    public function saveShipmentsFormByAPI($params)
+    {
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->saveShipmentsFormDetailsByAPI($params);
     }

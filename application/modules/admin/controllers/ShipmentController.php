@@ -89,6 +89,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
+            }else if ($sid == 'recency') {
+                $scheme = new Application_Service_Schemes();
+                $this->view->recencyPossibleResults = $scheme->getPossibleResults($sid);
             }
         }
     }
