@@ -106,9 +106,9 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
 			</tr>
 
             <tr class ="dark">
-                <td><label>Extraction Assay</label></td>
+                <td><label>Extraction Assay <span class='mandatory'>*</span></label></td>
                 <td>
-                    <select id="extractionAssay" name="extractionAssay" class="form-control">
+                    <select id="extractionAssay" name="extractionAssay" class="form-control isRequired">
                         <option value="">--Select--</option>
                         <?php
                         foreach ($this->extractionAssay as $eAssayId => $eAssayName) {
@@ -119,9 +119,9 @@ if(isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["
                         ?>
                     </select>
                 </td>
-                <td><label>Detection Assay</label></td> 
+                <td><label>Detection Assay <span class='mandatory'>*</span></label></td> 
                 <td>
-                    <select id="detectionAssay" name="detectionAssay" class="form-control">
+                    <select id="detectionAssay" name="detectionAssay" class="form-control isRequired">
                         <option value="">--Select--</option>
                         <?php
                         foreach ($this->detectionAssay as $dAssayId => $dAssayName) {

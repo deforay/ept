@@ -2473,15 +2473,15 @@ CREATE TABLE `reference_result_recency` (
 CREATE TABLE `response_result_recency` (
  `shipment_map_id` int(11) NOT NULL,
  `dts_id` int(11) DEFAULT NULL,
- `sample_id` varchar(45) CHARACTER SET latin1 NOT NULL,
- `reported_result` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
- `reference_control_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
- `reference_verification_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
- `reference_longterm_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
- `calculated_score` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
- `created_by` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+ `sample_id` varchar(45) NOT NULL,
+ `reported_result` varchar(45) DEFAULT NULL,
+ `control_line` varchar(255) DEFAULT NULL,
+ `verification_line` varchar(255) DEFAULT NULL,
+ `longterm_line` varchar(255) DEFAULT NULL,
+ `calculated_score` varchar(45) DEFAULT NULL,
+ `created_by` varchar(45) DEFAULT NULL,
  `created_on` datetime DEFAULT NULL,
- `updated_by` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+ `updated_by` varchar(255) DEFAULT NULL,
  `updated_on` datetime DEFAULT NULL,
  PRIMARY KEY (`shipment_map_id`,`sample_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

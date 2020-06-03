@@ -91,6 +91,17 @@ class Application_Service_Schemes
         }
         return $response;
     }
+    public function getRecencyAssay()
+    {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $res = $db->fetchAll($db->select()->from('r_recency_assay')->order('sort_order'));
+        $response = array();
+        foreach ($res as $row) {
+            $response[$row['id']] = $row['name'];
+        }
+        return $response;
+    }
 
     public function getVlAssay()
     {
@@ -238,6 +249,19 @@ class Application_Service_Schemes
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->joinLeft(array('res' => 'response_result_eid'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_result', 'hiv_ct_od', 'ic_qs'))
+            ->where('sp.shipment_id = ? ', $sId)
+            ->where('sp.participant_id = ? ', $pId);
+        return $db->fetchAll($sql);
+    }
+
+    public function getRecencySamples($sId, $pId)
+    {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('ref' => 'reference_result_recency'))
+            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
+            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
+            ->joinLeft(array('res' => 'response_result_recency'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_result', 'control_line', 'verification_line', 'longterm_line'))
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
