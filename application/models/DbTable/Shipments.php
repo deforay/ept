@@ -2889,7 +2889,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $recency['Section3']['data']['samples']['id'][]                = $sample['sample_id'];
                 $recency['Section3']['data']['samples']['mandatory'][]         = ($sample['mandatory'] == 1)?true:false;
                 $recency['Section3']['data']['samples']['controlLine'][]       = (isset($sample['reference_control_line']) && $sample['reference_control_line'] != "")?$sample['reference_control_line']:'';
-                $recency['Section3']['data']['samples']['diagnosisLine'][]  = (isset($sample['reference_verification_line']) && $sample['reference_verification_line'] != '')?$sample['reference_verification_line']:'';
+                $recency['Section3']['data']['samples']['diagnosisLine'][]  = (isset($sample['reference_diagnosis_line']) && $sample['reference_diagnosis_line'] != '')?$sample['reference_diagnosis_line']:'';
                 $recency['Section3']['data']['samples']['longtermLine'][]      = (isset($sample['reference_longterm_line']) && $sample['reference_longterm_line'] != '')?$sample['reference_longterm_line']:'';
                 $recency['Section3']['data']['samples']['yourResults'][]       = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
                 
@@ -2906,7 +2906,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $ctlLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_control_line'] == $pr)?'selected':'');
                 }
                 foreach ($resultArray as $pr) {
-                        $verifyLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_verification_line'] == $pr)?'selected':'');
+                        $verifyLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_diagnosis_line'] == $pr)?'selected':'');
                 }
                 foreach ($resultArray as $pr) {
                         $longLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_longterm_line'] == $pr)?'selected':'');
@@ -2915,7 +2915,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $recency['Section3']['data']['resultsText'] = array('Control/Sample','Control Line','Diagnosis Line','Longterm Line','Your Result');
                 $recency['Section3']['data']['resultStatus'] = array(true,true,true,true);
                 $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Control Line']     = (isset($sample['reference_control_line']) && $sample['reference_control_line'] != '')?$sample['reference_control_line']:'';
-                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Diagnosis Line']= (isset($sample['reference_verification_line']) && $sample['reference_verification_line'] != '')?$sample['reference_verification_line']:'';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Diagnosis Line']= (isset($sample['reference_diagnosis_line']) && $sample['reference_diagnosis_line'] != '')?$sample['reference_diagnosis_line']:'';
                 $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Longterm Line']    = (isset($sample['reference_longterm_line']) && $sample['reference_longterm_line'] != '')?$sample['reference_longterm_line']:'';
                 $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Your Results']     = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
                 $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Control Line']        = $ctlLineResults;
@@ -3159,7 +3159,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         if(isset($params['syncType']) && $params['syncType'] == 'single'){
             $status = $this->saveShipmentByType((array)$params['data'],$dm);
-            // die($status);
+            die($status);
             if($status){
                 return array('status'=>'success','message'=>'Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date.');
             }else{

@@ -2463,7 +2463,7 @@ CREATE TABLE `reference_result_recency` (
  `reference_result` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
  `control` int(11) DEFAULT NULL,
  `reference_control_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
- `reference_verification_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `reference_diagnosis_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
  `reference_longterm_line` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
  `mandatory` int(11) NOT NULL DEFAULT '0',
  `sample_score` int(11) NOT NULL DEFAULT '1',
@@ -2476,7 +2476,7 @@ CREATE TABLE `response_result_recency` (
  `sample_id` varchar(45) NOT NULL,
  `reported_result` varchar(45) DEFAULT NULL,
  `control_line` varchar(255) DEFAULT NULL,
- `verification_line` varchar(255) DEFAULT NULL,
+ `diagnosis_line` varchar(255) DEFAULT NULL,
  `longterm_line` varchar(255) DEFAULT NULL,
  `calculated_score` varchar(45) DEFAULT NULL,
  `created_by` varchar(45) DEFAULT NULL,
@@ -2498,3 +2498,6 @@ VALUES (NULL, 'recency', 'RECENCY_FINAL', 'Recent', 'R'),
 (NULL, 'recency', 'RECENCY_FINAL', 'Long Term','LT'), 
 (NULL, 'recency', 'RECENCY_FINAL', 'Invalid', 'I'),
 (NULL, 'recency', 'RECENCY_FINAL', 'Negative', 'N');
+-- Thana 4 Jun, 2020
+ALTER TABLE `reference_result_recency` CHANGE `reference_verification_line` `reference_diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `response_result_recency` CHANGE `verification_line` `diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
