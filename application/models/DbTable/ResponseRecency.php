@@ -44,7 +44,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
 
     public function updateResultsByAPI($params, $dm)
     {
-        $sampleIds = $params['recencyData']->Heading3->data->samples->id;
+        $sampleIds = $params['recencyData']->Section3->data->samples->id;
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
 
@@ -52,19 +52,19 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                 $this->insert(array(
                     'shipment_map_id'   => $params['mapId'],
                     'sample_id'         => $sampleId,
-                    'reported_result'   => $params['recencyData']->Heading3->data->samples->yourResults[$key],
-                    'control_line'      => $params['recencyData']->Heading3->data->samples->controlLine[$key],
-                    'verification_line'  => $params['recencyData']->Heading3->data->samples->verificationLine[$key],
-                    'longterm_line'     => $params['recencyData']->Heading3->data->samples->longtermLine[$key],
+                    'reported_result'   => $params['recencyData']->Section3->data->samples->yourResults[$key],
+                    'control_line'      => $params['recencyData']->Section3->data->samples->controlLine[$key],
+                    'verification_line' => $params['recencyData']->Section3->data->samples->diagnosisLine[$key],
+                    'longterm_line'     => $params['recencyData']->Section3->data->samples->longtermLine[$key],
                     'created_by'        => $dm['dm_id'],
                     'created_on'        => new Zend_Db_Expr('now()')
                 ));
             } else {
                 $this->update(array(
-                    'reported_result'   => $params['recencyData']->Heading3->data->samples->yourResults[$key],
-                    'control_line'      => $params['recencyData']->Heading3->data->samples->controlLine[$key],
-                    'verification_line'  => $params['recencyData']->Heading3->data->samples->verificationLine[$key],
-                    'longterm_line'     => $params['recencyData']->Heading3->data->samples->longtermLine[$key],
+                    'reported_result'   => $params['recencyData']->Section3->data->samples->yourResults[$key],
+                    'control_line'      => $params['recencyData']->Section3->data->samples->controlLine[$key],
+                    'verification_line' => $params['recencyData']->Section3->data->samples->diagnosisLine[$key],
+                    'longterm_line'     => $params['recencyData']->Section3->data->samples->longtermLine[$key],
                     'updated_by'        => $dm['dm_id'],
                     'updated_on'        => new Zend_Db_Expr('now()')
                 ), "shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);

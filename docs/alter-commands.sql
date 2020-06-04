@@ -2496,4 +2496,5 @@ CREATE TABLE `r_recency_assay` (
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) 
 VALUES (NULL, 'recency', 'RECENCY_FINAL', 'Recent', 'R'), 
 (NULL, 'recency', 'RECENCY_FINAL', 'Long Term','LT'), 
-(NULL, 'recency', 'RECENCY_FINAL', 'Indeterminate', 'I');
+(NULL, 'recency', 'RECENCY_FINAL', 'Invalid', 'I'),
+(NULL, 'recency', 'RECENCY_FINAL', 'Negative', 'N');
