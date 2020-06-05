@@ -102,36 +102,36 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
         $testThreeOptional = false;
         if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
-            if (isset($params['dtsData']->Heading2->data->algorithmUsedSelected) && $params['dtsData']->Heading2->data->algorithmUsedSelected == 'myanmarNationalDtsAlgo') {
+            if (isset($params['dtsData']->Section2->data->algorithmUsedSelected) && $params['dtsData']->Section2->data->algorithmUsedSelected == 'myanmarNationalDtsAlgo') {
                 $testThreeOptional = false;
             } else {
                 $testThreeOptional = true;
             }
         }
-        $sampleIds = $params['dtsData']->Heading4->data->samples->id;
+        $sampleIds = $params['dtsData']->Section4->data->samples->id;
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
 
             $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
-            if (isset($params['dtsData']->Heading3->data->kitValue[0]) && trim($params['dtsData']->Heading3->data->kitValue[0]) == 'other') {
-                $otherTestkitId1 = $testkitsDb->addTestkitInParticipantByAPI($allSamples[0]["test_kit_name_1"], $params['dtsData']->Heading3->data->kitOther[0], 'dts', 1);
+            if (isset($params['dtsData']->Section3->data->kitValue[0]) && trim($params['dtsData']->Section3->data->kitValue[0]) == 'other') {
+                $otherTestkitId1 = $testkitsDb->addTestkitInParticipantByAPI($allSamples[0]["test_kit_name_1"], $params['dtsData']->Section3->data->kitOther[0], 'dts', 1);
                 $params['test_kit_name_1'] = $otherTestkitId1;
             } else {
-                $params['test_kit_name_1'] = (isset($params['dtsData']->Heading3->data->kitValue[0]) && $params['dtsData']->Heading3->data->kitValue[0] != '') ? $params['dtsData']->Heading3->data->kitValue[0] : '';
+                $params['test_kit_name_1'] = (isset($params['dtsData']->Section3->data->kitValue[0]) && $params['dtsData']->Section3->data->kitValue[0] != '') ? $params['dtsData']->Section3->data->kitValue[0] : '';
             }
-            if (isset($params['dtsData']->Heading3->data->kitValue[1]) && trim($params['dtsData']->Heading3->data->kitValue[1]) == 'other') {
-                $otherTestkitId2 = $testkitsDb->addTestkitInParticipantByAPI($allSamples[0]["test_kit_name_2"], $params['dtsData']->Heading3->data->kitOther[1], 'dts', 2);
+            if (isset($params['dtsData']->Section3->data->kitValue[1]) && trim($params['dtsData']->Section3->data->kitValue[1]) == 'other') {
+                $otherTestkitId2 = $testkitsDb->addTestkitInParticipantByAPI($allSamples[0]["test_kit_name_2"], $params['dtsData']->Section3->data->kitOther[1], 'dts', 2);
                 $params['test_kit_name_2'] = $otherTestkitId2;
             } else {
-                $params['test_kit_name_2'] = (isset($params['dtsData']->Heading3->data->kitValue[1]) && $params['dtsData']->Heading3->data->kitValue[1] != '') ? $params['dtsData']->Heading3->data->kitValue[1] : '';
+                $params['test_kit_name_2'] = (isset($params['dtsData']->Section3->data->kitValue[1]) && $params['dtsData']->Section3->data->kitValue[1] != '') ? $params['dtsData']->Section3->data->kitValue[1] : '';
             }
-            if (isset($params['dtsData']->Heading3->data->kitValue[2]) && trim($params['dtsData']->Heading3->data->kitValue[2]) == 'other') {
-                $otherTestkitId3 = $testkitsDb->addTestkitInParticipantByAPI($allSamples[0]["test_kit_name_3"], $params['dtsData']->Heading3->data->kitOther[2], 'dts', 3);
+            if (isset($params['dtsData']->Section3->data->kitValue[2]) && trim($params['dtsData']->Section3->data->kitValue[2]) == 'other') {
+                $otherTestkitId3 = $testkitsDb->addTestkitInParticipantByAPI($allSamples[0]["test_kit_name_3"], $params['dtsData']->Section3->data->kitOther[2], 'dts', 3);
                 $params['test_kit_name_3'] = $otherTestkitId3;
             } else {
-                $params['test_kit_name_3'] = (isset($params['dtsData']->Heading3->data->kitValue[2]) && $params['dtsData']->Heading3->data->kitValue[2] != '') ? $params['dtsData']->Heading3->data->kitValue[2] : '';
+                $params['test_kit_name_3'] = (isset($params['dtsData']->Section3->data->kitValue[2]) && $params['dtsData']->Section3->data->kitValue[2] != '') ? $params['dtsData']->Section3->data->kitValue[2] : '';
             }
-            $result3 = (isset($params['dtsData']->Heading4->data->samples->result3[$key]->value) && $params['dtsData']->Heading4->data->samples->result3[$key]->value != '') ? (string)$params['dtsData']->Heading4->data->samples->result3[$key]->value : '';
+            $result3 = (isset($params['dtsData']->Section4->data->samples->result3[$key]->value) && $params['dtsData']->Section4->data->samples->result3[$key]->value != '') ? (string)$params['dtsData']->Section4->data->samples->result3[$key]->value : '';
             if ($testThreeOptional) {
                 $params['test_kit_name_3'] = '';
                 $result3 = '';
@@ -142,36 +142,36 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'shipment_map_id'   => $params['mapId'],
                     'sample_id'         => $sampleId,
                     'test_kit_name_1'   => $params['test_kit_name_1'],
-                    'lot_no_1'          => (isset($params['dtsData']->Heading3->data->lot[0]) && $params['dtsData']->Heading3->data->lot[0] != '') ? $params['dtsData']->Heading3->data->lot[0] : '',
-                    'exp_date_1'        => (isset($params['dtsData']->Heading3->data->expDate[0]) && $params['dtsData']->Heading3->data->expDate[0] != '') ? date('Y-m-d', strtotime($params['dtsData']->Heading3->data->expDate[0])) : '',
-                    'test_result_1'     => (isset($params['dtsData']->Heading4->data->samples->result1[$key]->value) && $params['dtsData']->Heading4->data->samples->result1[$key]->value != '') ? (string)$params['dtsData']->Heading4->data->samples->result1[$key]->value : '',
+                    'lot_no_1'          => (isset($params['dtsData']->Section3->data->lot[0]) && $params['dtsData']->Section3->data->lot[0] != '') ? $params['dtsData']->Section3->data->lot[0] : '',
+                    'exp_date_1'        => (isset($params['dtsData']->Section3->data->expDate[0]) && $params['dtsData']->Section3->data->expDate[0] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[0])) : '',
+                    'test_result_1'     => (isset($params['dtsData']->Section4->data->samples->result1[$key]->value) && $params['dtsData']->Section4->data->samples->result1[$key]->value != '') ? (string)$params['dtsData']->Section4->data->samples->result1[$key]->value : '',
                     'test_kit_name_2'   => $params['test_kit_name_2'],
-                    'lot_no_2'          => (isset($params['dtsData']->Heading3->data->lot[1]) && $params['dtsData']->Heading3->data->lot[1] != '') ? $params['dtsData']->Heading3->data->lot[1] : '',
-                    'exp_date_2'        => (isset($params['dtsData']->Heading3->data->expDate[1]) && $params['dtsData']->Heading3->data->expDate[1] != '') ? date('Y-m-d', strtotime($params['dtsData']->Heading3->data->expDate[1])) : '',
-                    'test_result_2'     => (isset($params['dtsData']->Heading4->data->samples->result2[$key]->value) && $params['dtsData']->Heading4->data->samples->result2[$key]->value != '') ? (string)$params['dtsData']->Heading4->data->samples->result2[$key]->value : '',
+                    'lot_no_2'          => (isset($params['dtsData']->Section3->data->lot[1]) && $params['dtsData']->Section3->data->lot[1] != '') ? $params['dtsData']->Section3->data->lot[1] : '',
+                    'exp_date_2'        => (isset($params['dtsData']->Section3->data->expDate[1]) && $params['dtsData']->Section3->data->expDate[1] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[1])) : '',
+                    'test_result_2'     => (isset($params['dtsData']->Section4->data->samples->result2[$key]->value) && $params['dtsData']->Section4->data->samples->result2[$key]->value != '') ? (string)$params['dtsData']->Section4->data->samples->result2[$key]->value : '',
                     'test_kit_name_3'   => $params['test_kit_name_3'],
-                    'lot_no_3'          => (isset($params['dtsData']->Heading3->data->lot[2]) && $params['dtsData']->Heading3->data->lot[2] != '' && !$testThreeOptional) ? $params['dtsData']->Heading3->data->lot[2] : '',
-                    'exp_date_3'        => (isset($params['dtsData']->Heading3->data->expDate[2]) && $params['dtsData']->Heading3->data->expDate[2] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Heading3->data->expDate[2])) : null,
+                    'lot_no_3'          => (isset($params['dtsData']->Section3->data->lot[2]) && $params['dtsData']->Section3->data->lot[2] != '' && !$testThreeOptional) ? $params['dtsData']->Section3->data->lot[2] : '',
+                    'exp_date_3'        => (isset($params['dtsData']->Section3->data->expDate[2]) && $params['dtsData']->Section3->data->expDate[2] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[2])) : null,
                     'test_result_3'     => $result3,
-                    'reported_result'   => (isset($params['dtsData']->Heading4->data->samples->finalResult[$key]->value) && $params['dtsData']->Heading4->data->samples->finalResult[$key]->value != '') ? (string)$params['dtsData']->Heading4->data->samples->finalResult[$key]->value : '',
+                    'reported_result'   => (isset($params['dtsData']->Section4->data->samples->finalResult[$key]->value) && $params['dtsData']->Section4->data->samples->finalResult[$key]->value != '') ? (string)$params['dtsData']->Section4->data->samples->finalResult[$key]->value : '',
                     'created_by'        => $dm['dm_id'],
                     'created_on'        => new Zend_Db_Expr('now()')
                 ));
             } else {
                 $this->update(array(
                     'test_kit_name_1'   => $params['test_kit_name_1'],
-                    'lot_no_1'          => (isset($params['dtsData']->Heading3->data->lot[0]) && $params['dtsData']->Heading3->data->lot[0] != '') ? $params['dtsData']->Heading3->data->lot[0] : '',
-                    'exp_date_1'        => (isset($params['dtsData']->Heading3->data->expDate[0]) && $params['dtsData']->Heading3->data->expDate[0] != '') ? date('Y-m-d', strtotime($params['dtsData']->Heading3->data->expDate[0])) : '',
-                    'test_result_1'     => (isset($params['dtsData']->Heading4->data->samples->result1[$key]->value) && $params['dtsData']->Heading4->data->samples->result1[$key]->value != '') ? $params['dtsData']->Heading4->data->samples->result1[$key]->value : '',
+                    'lot_no_1'          => (isset($params['dtsData']->Section3->data->lot[0]) && $params['dtsData']->Section3->data->lot[0] != '') ? $params['dtsData']->Section3->data->lot[0] : '',
+                    'exp_date_1'        => (isset($params['dtsData']->Section3->data->expDate[0]) && $params['dtsData']->Section3->data->expDate[0] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[0])) : '',
+                    'test_result_1'     => (isset($params['dtsData']->Section4->data->samples->result1[$key]->value) && $params['dtsData']->Section4->data->samples->result1[$key]->value != '') ? $params['dtsData']->Section4->data->samples->result1[$key]->value : '',
                     'test_kit_name_2'   => $params['test_kit_name_2'],
-                    'lot_no_2'          => (isset($params['dtsData']->Heading3->data->lot[1]) && $params['dtsData']->Heading3->data->lot[1] != '') ? $params['dtsData']->Heading3->data->lot[1] : '',
-                    'exp_date_2'        => (isset($params['dtsData']->Heading3->data->expDate[1]) && $params['dtsData']->Heading3->data->expDate[1] != '') ? date('Y-m-d', strtotime($params['dtsData']->Heading3->data->expDate[1])) : '',
-                    'test_result_2'     => (isset($params['dtsData']->Heading4->data->samples->result2[$key]->value) && $params['dtsData']->Heading4->data->samples->result2[$key]->value != '') ? $params['dtsData']->Heading4->data->samples->result2[$key]->value : '',
+                    'lot_no_2'          => (isset($params['dtsData']->Section3->data->lot[1]) && $params['dtsData']->Section3->data->lot[1] != '') ? $params['dtsData']->Section3->data->lot[1] : '',
+                    'exp_date_2'        => (isset($params['dtsData']->Section3->data->expDate[1]) && $params['dtsData']->Section3->data->expDate[1] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[1])) : '',
+                    'test_result_2'     => (isset($params['dtsData']->Section4->data->samples->result2[$key]->value) && $params['dtsData']->Section4->data->samples->result2[$key]->value != '') ? $params['dtsData']->Section4->data->samples->result2[$key]->value : '',
                     'test_kit_name_3'   => $params['test_kit_name_3'],
-                    'lot_no_3'          => (isset($params['dtsData']->Heading3->data->lot[2]) && $params['dtsData']->Heading3->data->lot[2] != '' && !$testThreeOptional) ? $params['dtsData']->Heading3->data->lot[2] : '',
-                    'exp_date_3'        => (isset($params['dtsData']->Heading3->data->expDate[2]) && $params['dtsData']->Heading3->data->expDate[2] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Heading3->data->expDate[2])) : null,
+                    'lot_no_3'          => (isset($params['dtsData']->Section3->data->lot[2]) && $params['dtsData']->Section3->data->lot[2] != '' && !$testThreeOptional) ? $params['dtsData']->Section3->data->lot[2] : '',
+                    'exp_date_3'        => (isset($params['dtsData']->Section3->data->expDate[2]) && $params['dtsData']->Section3->data->expDate[2] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[2])) : null,
                     'test_result_3'     => $result3,
-                    'reported_result'   => (isset($params['dtsData']->Heading4->data->samples->finalResult[$key]->value) && $params['dtsData']->Heading4->data->samples->finalResult[$key]->value != '') ? $params['dtsData']->Heading4->data->samples->finalResult[$key]->value : '',
+                    'reported_result'   => (isset($params['dtsData']->Section4->data->samples->finalResult[$key]->value) && $params['dtsData']->Section4->data->samples->finalResult[$key]->value != '') ? $params['dtsData']->Section4->data->samples->finalResult[$key]->value : '',
                     'updated_by'        => $dm['dm_id'],
                     'updated_on'        => new Zend_Db_Expr('now()')
                 ), "shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);

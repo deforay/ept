@@ -1995,10 +1995,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 return 'Participant does not having the shipments';
             }
             
-            // Heading 1 start // First participant details start
+            // Section 1 start // First participant details start
             if(isset($participant) && count($participant) > 0){
-                $dts['Heading1']['status'] = true;
-                $dts['Heading1']['data']= array(
+                $dts['Section1']['status'] = true;
+                $dts['Section1']['data']= array(
                     'participantName'   => $participant['first_name'].' '.$participant['last_name'],
                     'participantCode'   => $participant['unique_identifier'],
                     'affiliation'       => $participant['affiliation'],
@@ -2006,9 +2006,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'mobile'            => $participant['mobile']
                 );
             }else{
-                $dts['Heading1']['status'] = false;
+                $dts['Section1']['status'] = false;
             }
-            // First participant details end // Heading 1 end // Heading 2 start // Shipement Result start
+            // First participant details end // Section 1 end // Section 2 start // Shipement Result start
             $modeOfReceiptSelect = array();
             foreach ($modeOfReceipt as $receipt){
                 $modeOfReceiptSelect[]= array(
@@ -2037,9 +2037,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             
             if(isset($participant) && count($participant) > 0){
-                $dts['Heading2']['status'] = true;
+                $dts['Section2']['status'] = true;
                 // For algorithmUsed end
-                $heading2 = array(
+                $section2 = array(
                     'shipmentDate'              => date('d-M-Y',strtotime($shipment['shipment_date'])),
                     'resultDueDate'             => date('d-M-Y',strtotime($shipment['lastdate_response'])),
                     'testReceiptDate'           => (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'',
@@ -2048,23 +2048,23 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'algorithmUsedSelect'       => $algorithmUsedSelect,
                     'algorithmUsedSelected'     => (isset($shipment['attributes']["algorithm"]) && $shipment['attributes']["algorithm"] != '')?$shipment['attributes']["algorithm"]:'',
                 );
-                $dts['Heading2']['data'] = $heading2;
+                $dts['Section2']['data'] = $section2;
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
                     if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != ''){
-                        $dts['Heading2']['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                        $dts['Section2']['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
                     }else{
-                        $dts['Heading2']['data']['responseDate'] = '';
+                        $dts['Section2']['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
-                        $dts['Heading2']['data']['modeOfReceiptSelected']     = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0)?$shipment["mode_id"]:'';
+                        $dts['Section2']['data']['modeOfReceiptSelected']     = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0)?$shipment["mode_id"]:'';
                     }else{
-                        $dts['Heading2']['data']['modeOfReceiptSelected']     = '';
+                        $dts['Section2']['data']['modeOfReceiptSelected']     = '';
                     }
                 }else{
-                    $dts['Heading2']['data']['responseDate']            = '';
-                    $dts['Heading2']['data']['modeOfReceiptSelected']     = '';
+                    $dts['Section2']['data']['responseDate']            = '';
+                    $dts['Section2']['data']['modeOfReceiptSelected']     = '';
                 }
-                $dts['Heading2']['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+                $dts['Section2']['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
                 $qcArray = array('yes','no');$qc = array();
                 foreach($qcArray as $row){
                     $qcResponseArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no'))?'selected':'');
@@ -2075,15 +2075,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $qc['qcDoneBy'] = (isset($shipment['qc_done_by'])&&$shipment['qc_done_by']!='')?$shipment['qc_done_by']:'';
                 if($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes'){
                     $qc['status']                       = false;
-                    $dts['Heading2']['data']['qcData']  = $qc;
+                    $dts['Section2']['data']['qcData']  = $qc;
                 }else{
                     $qc['status']                       = true;
-                    $dts['Heading2']['data']['qcData']  = $qc;
+                    $dts['Section2']['data']['qcData']  = $qc;
                 }
             }else{
-                $dts['Heading2']['status'] = false;
+                $dts['Section2']['status'] = false;
             }
-            // Heading 2 end // Heading 3 start
+            // Section 2 end // Section 3 start
             $testKitArray = array();$testKitKey = 0;
             $allTestKits = $schemeService->getAllDtsTestKitList(true);
             foreach ($allTestKits as $testKitKey => $testkit) {
@@ -2173,7 +2173,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // }
             $testKitArray['kitText'] = array('Test-1','Test-2','Test-3');
             if(isset($allSamples) && count($allSamples) > 0){
-                $dts['Heading3']['status'] = true;
+                $dts['Section3']['status'] = true;
                 $testKitArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] !="0000-00-00" && $allSamples[0]["exp_date_1"] != '1969-12-31')?date('d-M-Y',strtotime($allSamples[0]["exp_date_1"])):'';
                 $testKitArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] !="0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31')?date('d-M-Y',strtotime($allSamples[0]["exp_date_2"])):'';
                 $testKitArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] !="0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31')?date('d-M-Y',strtotime($allSamples[0]["exp_date_3"])):'';
@@ -2212,11 +2212,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && 'other' == $allSamples[0]["test_kit_name_3"])?'selected':''
                     );
                 // }
-                $dts['Heading3']['data']    = $testKitArray;
+                $dts['Section3']['data']    = $testKitArray;
             }else{
-                $dts['Heading3']['status']  = false;
+                $dts['Section3']['status']  = false;
             }
-            // Heading 3 end // Heading 4 Start
+            // Section 3 end // Section 4 Start
             $dtsPossibleResults = $schemeService->getPossibleResults('dts');
             $dtsPossibleArray = array();$dtsPossibleResponseArray = array();
             foreach($dtsPossibleResults as $row){
@@ -2328,12 +2328,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['value']     = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
             }
             if((isset($allSamples) && count($allSamples) > 0) && (isset($dtsPossibleResults) && count($dtsPossibleResults) > 0)){
-                $dts['Heading4']['status']  = true;
+                $dts['Section4']['status']  = true;
             }else{
-                $dts['Heading4']['status']  = false;
+                $dts['Section4']['status']  = false;
             }
-            $dts['Heading4']['data']        = $allSamplesResult;
-            // Heading 4 End // Heading 5 Start
+            $dts['Section4']['data']        = $allSamplesResult;
+            // Section 4 End // Section 5 Start
             $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
             foreach($commentArray as $row){
                 $revieArr[] = array('value' =>$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
@@ -2343,9 +2343,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $reviewArray['approvalLabel']           = 'Supervisor Name';
             $reviewArray['approvalInputText']       = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
-            $dts['Heading5']['status']              = true;
-            $dts['Heading5']['data']                = $reviewArray;
-            // Heading 5 End
+            $dts['Section5']['status']              = true;
+            $dts['Section5']['data']                = $reviewArray;
+            // Section 5 End
             $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
             $customField1 = $globalConfigDb->getValue('custom_field_1');$customField2 = $globalConfigDb->getValue('custom_field_2');
             $haveCustom = $globalConfigDb->getValue('custom_field_needed');
@@ -2388,8 +2388,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $reportAccess['message']    = 'You are allowed to edit. Only view this form.';
             }
             $vl['access'] = $reportAccess;
-            // Heading 1 start
-            $heading1= array(
+            // Section 1 start
+            $section1= array(
                 'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '')?$participant['first_name']:'').((isset($participant['last_name']) && $participant['last_name'] != '')?' '.$participant['last_name']:''),
                 'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '')?$participant['unique_identifier']:'',
                 'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '')?$participant['affiliation']:'',
@@ -2397,14 +2397,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '')?$participant['mobile']:''
             );
             if(isset($participant) && count($participant) > 0){
-                $vl['Heading1']['status']   = true;
-                $vl['Heading1']['data']     = $heading1;
+                $vl['Section1']['status']   = true;
+                $vl['Section1']['data']     = $section1;
             }else{
-                $vl['Heading1']['status']   = false;
-                $vl['Heading1']['data']     = $heading1;
+                $vl['Section1']['status']   = false;
+                $vl['Section1']['data']     = $section1;
             }
-            // Heading1 end // Heading2 start
-            $heading2 = array();$vlAssayArr = array();
+            // Section1 end // Section2 start
+            $section2 = array();$vlAssayArr = array();
             $vlAssay = $schemeService->getVlAssay();
             if(isset($shipment) && count($shipment) > 0){
                 foreach($vlAssay as $id=>$name){
@@ -2422,34 +2422,34 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'selected'  => ($shipment["mode_id"] == $receipt['mode_id'])?'selected':''
                     );
                 }
-                $heading2['status']                         = true;
-                $heading2['data']['shipmentDate']           = date('d-M-Y',strtotime($shipment['shipment_date']));
-                $heading2['data']['resultDueDate']          = date('d-M-Y',strtotime($shipment['lastdate_response']));
-                $heading2['data']['testReceiptDate']        = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
-                $heading2['data']['sampleRehydrationDate']  = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
-                $heading2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
-                $heading2['data']['specimenVolume']         = $shipment['attributes']['specimen_volume'];
-                $heading2['data']['vlAssaySelect']          = $vlAssayArr;
-                $heading2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "")?(string)$shipment['attributes']['vl_assay']:'';
-                $heading2['data']['otherAssay']             = (isset($shipment['attributes']['other_assay']) && $shipment['attributes']['other_assay'] != '')?$shipment['attributes']['other_assay']:'';
-                $heading2['data']['assayExpirationDate']    = (isset($shipment['attributes']['assay_expiration_date']) && $shipment['attributes']['assay_expiration_date'] != '' && $shipment['attributes']['assay_expiration_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['attributes']['assay_expiration_date'])):'';
-                $heading2['data']['assayLotNumber']         = $shipment['attributes']['assay_lot_number'];
+                $section2['status']                         = true;
+                $section2['data']['shipmentDate']           = date('d-M-Y',strtotime($shipment['shipment_date']));
+                $section2['data']['resultDueDate']          = date('d-M-Y',strtotime($shipment['lastdate_response']));
+                $section2['data']['testReceiptDate']        = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
+                $section2['data']['sampleRehydrationDate']  = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
+                $section2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
+                $section2['data']['specimenVolume']         = $shipment['attributes']['specimen_volume'];
+                $section2['data']['vlAssaySelect']          = $vlAssayArr;
+                $section2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "")?(string)$shipment['attributes']['vl_assay']:'';
+                $section2['data']['otherAssay']             = (isset($shipment['attributes']['other_assay']) && $shipment['attributes']['other_assay'] != '')?$shipment['attributes']['other_assay']:'';
+                $section2['data']['assayExpirationDate']    = (isset($shipment['attributes']['assay_expiration_date']) && $shipment['attributes']['assay_expiration_date'] != '' && $shipment['attributes']['assay_expiration_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['attributes']['assay_expiration_date'])):'';
+                $section2['data']['assayLotNumber']         = $shipment['attributes']['assay_lot_number'];
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
                     if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != ''){
-                        $heading2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                        $section2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
                     }else{
-                        $heading2['data']['responseDate'] = '';
+                        $section2['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
-                        $heading2['data']['modeOfReceiptSelected']  = (isset($shipment['mode_id']) && $shipment['mode_id'] != "" && $shipment['mode_id'] != 0)?$shipment['mode_id']:'';
+                        $section2['data']['modeOfReceiptSelected']  = (isset($shipment['mode_id']) && $shipment['mode_id'] != "" && $shipment['mode_id'] != 0)?$shipment['mode_id']:'';
                     }else{
-                        $heading2['data']['modeOfReceiptSelected']      = "";
+                        $section2['data']['modeOfReceiptSelected']      = "";
                     }
                 }else{
-                    $heading2['data']['responseDate']               = "";
-                    $heading2['data']['modeOfReceiptSelected']      = "";
+                    $section2['data']['responseDate']               = "";
+                    $section2['data']['modeOfReceiptSelected']      = "";
                 }
-                $heading2['data']['modeOfReceiptSelect']    = $modeOfReceiptSelect;
+                $section2['data']['modeOfReceiptSelect']    = $modeOfReceiptSelect;
             }
 
             $qcArray = array('yes','no');$qc = array();
@@ -2465,27 +2465,27 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }else{
                 $qc['status'] = true;
             }
-            $heading2['data']['qcData'] = $qc;
+            $section2['data']['qcData'] = $qc;
 
-            $vl['Heading2'] = $heading2;
-            // Heading 2 end // Heading 3 start
-            $heading3 = array();
-            $heading3['status'] = true;
+            $vl['Section2'] = $section2;
+            // Section 2 end // Section 3 start
+            $section3 = array();
+            $section3['status'] = true;
             $allNotTestedReason = $schemeService->getVlNotTestedReasons();
             if((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')){
-                $heading3['data']['isPtTestNotPerformedRadio'] = 'no';
+                $section3['data']['isPtTestNotPerformedRadio'] = 'no';
                 
             }else{
-                $heading3['data']['isPtTestNotPerformedRadio'] = 'yes';
+                $section3['data']['isPtTestNotPerformedRadio'] = 'yes';
             }
-            $heading3['data']['no']['note'][]               = "Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.";
-            $heading3['data']['no']['note'][]               = "Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).";
-            $heading3['data']['no']['note'][]               = "For negative or undetectable result (TND), please enter 0.00.";
-            $heading3['data']['no']['note'][]               = "For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section.";
-            $heading3['data']['no']['vlResultSectionLabel'] = "VL Calc (Convert copies/ml to Log<sub>10</sub>)";
-            $heading3['data']['no']['tableHeading'][]       = 'Control/Sample';
-            $heading3['data']['no']['tableHeading'][]       = 'Viral Load (log<sub>10</sub> copies/ml)';
-            $heading3['data']['no']['tableHeading'][]       = 'TND(Target Not Detected)';
+            $section3['data']['no']['note'][]               = "Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.";
+            $section3['data']['no']['note'][]               = "Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).";
+            $section3['data']['no']['note'][]               = "For negative or undetectable result (TND), please enter 0.00.";
+            $section3['data']['no']['note'][]               = "For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section.";
+            $section3['data']['no']['vlResultSectionLabel'] = "VL Calc (Convert copies/ml to Log<sub>10</sub>)";
+            $section3['data']['no']['tableSection'][]       = 'Control/Sample';
+            $section3['data']['no']['tableSection'][]       = 'Viral Load (log<sub>10</sub> copies/ml)';
+            $section3['data']['no']['tableSection'][]       = 'TND(Target Not Detected)';
             $allNotTestedArray = array();
             foreach ($allNotTestedReason as $reason) {
                 $allNotTestedArray[] = array(
@@ -2494,13 +2494,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'selected'  => ($shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id'])?'selected':''
                 );
             }
-            $heading3['data']['yes']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
-            $heading3['data']['yes']['vlNotTestedReasonSelect']     = $allNotTestedArray;
-            $heading3['data']['yes']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] !="")?$shipment['vl_not_tested_reason']:'';
-            $heading3['data']['yes']['commentsText']                = 'Your comments';
-            $heading3['data']['yes']['commentsTextArea']            = $shipment['pt_test_not_performed_comments'];
-            $heading3['data']['yes']['supportText']                 = 'Do you need any support from the PT Provider ?';
-            $heading3['data']['yes']['supportTextArea']             = $shipment['pt_support_comments'];
+            $section3['data']['yes']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
+            $section3['data']['yes']['vlNotTestedReasonSelect']     = $allNotTestedArray;
+            $section3['data']['yes']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] !="")?$shipment['vl_not_tested_reason']:'';
+            $section3['data']['yes']['commentsText']                = 'Your comments';
+            $section3['data']['yes']['commentsTextArea']            = $shipment['pt_test_not_performed_comments'];
+            $section3['data']['yes']['supportText']                 = 'Do you need any support from the PT Provider ?';
+            $section3['data']['yes']['supportTextArea']             = $shipment['pt_support_comments'];
             // return $allSamples;
             // Zend_Debug::dump($allSamples);die;
             foreach ($allSamples as $key=>$sample) {
@@ -2516,15 +2516,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 foreach($vlArray as $row){
                     $vlResponseArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>($sample['is_tnd'] == $row || ($sample['is_tnd'] == '' && $row == 'no'))?'selected':'');
                 }
-                $heading3['data']['no']['tableRowTxt']['label'][]       = $sample['sample_label'];
-                $heading3['data']['no']['tableRowTxt']['id'][]          = $sample['sample_id'];
-                $heading3['data']['no']['tableRowTxt']['mandatory'][]   = ($sample['mandatory'] == 1)?true:false;
-                $heading3['data']['no']['vlResult'][]                   = $vlResult;
-                $heading3['data']['no']['tndReferenceRadio'][]          = $vlResponseArr;
-                $heading3['data']['no']['tndReferenceRadioSelected'][]  = (isset($sample['is_tnd']) && ($sample['is_tnd'] != '' && $sample['is_tnd'] == 'yes'))?'yes':'no';
+                $section3['data']['no']['tableRowTxt']['label'][]       = $sample['sample_label'];
+                $section3['data']['no']['tableRowTxt']['id'][]          = $sample['sample_id'];
+                $section3['data']['no']['tableRowTxt']['mandatory'][]   = ($sample['mandatory'] == 1)?true:false;
+                $section3['data']['no']['vlResult'][]                   = $vlResult;
+                $section3['data']['no']['tndReferenceRadio'][]          = $vlResponseArr;
+                $section3['data']['no']['tndReferenceRadioSelected'][]  = (isset($sample['is_tnd']) && ($sample['is_tnd'] != '' && $sample['is_tnd'] == 'yes'))?'yes':'no';
             }
-            $vl['Heading3'] = $heading3;
-            // Heading 3 end // Heading 4 Start
+            $vl['Section3'] = $section3;
+            // Section 3 end // Section 4 Start
             $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
             foreach($commentArray as $row){
                 $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
@@ -2534,9 +2534,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $reviewArray['approvalLabel']               = 'Supervisor Name';
             $reviewArray['approvalInputText']           = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
-            $vl['Heading4']['status']                   = true;
-            $vl['Heading4']['data']                     = $reviewArray;
-            // Heading 4 End
+            $vl['Section4']['status']                   = true;
+            $vl['Section4']['data']                     = $reviewArray;
+            // Section 4 End
             $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
             $customField1 = $globalConfigDb->getValue('custom_field_1');$customField2 = $globalConfigDb->getValue('custom_field_2');
             $haveCustom = $globalConfigDb->getValue('custom_field_needed');
@@ -2585,8 +2585,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $reportAccess['message'] = 'You are allowed to edit. Only view this form.';
             }
             $eid['access'] = $reportAccess;
-            // Heading 1 start
-            $heading1= array(
+            // Section 1 start
+            $section1= array(
                 'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '')?$participant['first_name']:'').((isset($participant['last_name']) && $participant['last_name'] != '')?' '.$participant['last_name']:''),
                 'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '')?$participant['unique_identifier']:'',
                 'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '')?$participant['affiliation']:'',
@@ -2594,14 +2594,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '')?$participant['mobile']:''
             );
             if(isset($participant) && count($participant) > 0){
-                $eid['Heading1']['status'] = true;
-                $eid['Heading1']['data'] = $heading1;
+                $eid['Section1']['status'] = true;
+                $eid['Section1']['data'] = $section1;
             }else{
-                $eid['Heading1']['status'] = false;
-                $eid['Heading1']['data'] = $heading1;
+                $eid['Section1']['status'] = false;
+                $eid['Section1']['data'] = $section1;
             }
-            // Heading1 end // Heading2 start
-            $heading2 = array();
+            // Section1 end // Section2 start
+            $section2 = array();
             if(isset($shipment) && count($shipment) > 0){
                 $modeOfReceiptSelect = array();
                 foreach ($modeOfReceipt as $receipt){
@@ -2628,37 +2628,37 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     );
                 }
                 
-                $heading2['status']    = true;
-                $heading2['data']['shipmentDate']               = date('d-M-Y',strtotime($shipment['shipment_date']));
-                $heading2['data']['resultDueDate']              = date('d-M-Y',strtotime($shipment['lastdate_response']));
-                $heading2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] !='0000:00:00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
-                $heading2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
-                $heading2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
-                $heading2['data']['extractionAssaySelect']      = $extractionAssaySelect;
-                $heading2['data']['extractionAssaySelected']    = (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] != "")?(string)$shipment['attributes']['extraction_assay']:'';
-                $heading2['data']['detectionAssaySelect']       = $detectionAssaySelect;
-                $heading2['data']['detectionAssaySelected']     = (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] != "")?(string)$shipment['attributes']['extraction_assay']:'';
-                $heading2['data']['extractionLotNumber']        = (isset($shipment['attributes']['extraction_assay_lot_no']) && $shipment['attributes']['extraction_assay_lot_no'] !="")?$shipment['attributes']['extraction_assay_lot_no']:'';
-                $heading2['data']['detectionLotNumber']         = (isset($shipment['attributes']['detection_assay_lot_no']) && $shipment['attributes']['detection_assay_lot_no'] !="")?$shipment['attributes']['detection_assay_lot_no']:'';
-                $heading2['data']['extractionExpirationDate']   = (isset($shipment['attributes']['extraction_assay_expiry_date']) && $shipment['attributes']['extraction_assay_expiry_date'] != "" && $shipment['attributes']['extraction_assay_expiry_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']['extraction_assay_expiry_date'])):'';
-                $heading2['data']['detectionExpirationDate']    = (isset($shipment['attributes']['detection_assay_expiry_date']) && $shipment['attributes']['detection_assay_expiry_date'] !='' && $shipment['attributes']['detection_assay_expiry_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']['detection_assay_expiry_date'])):'';
+                $section2['status']    = true;
+                $section2['data']['shipmentDate']               = date('d-M-Y',strtotime($shipment['shipment_date']));
+                $section2['data']['resultDueDate']              = date('d-M-Y',strtotime($shipment['lastdate_response']));
+                $section2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] !='0000:00:00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
+                $section2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
+                $section2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
+                $section2['data']['extractionAssaySelect']      = $extractionAssaySelect;
+                $section2['data']['extractionAssaySelected']    = (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] != "")?(string)$shipment['attributes']['extraction_assay']:'';
+                $section2['data']['detectionAssaySelect']       = $detectionAssaySelect;
+                $section2['data']['detectionAssaySelected']     = (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] != "")?(string)$shipment['attributes']['extraction_assay']:'';
+                $section2['data']['extractionLotNumber']        = (isset($shipment['attributes']['extraction_assay_lot_no']) && $shipment['attributes']['extraction_assay_lot_no'] !="")?$shipment['attributes']['extraction_assay_lot_no']:'';
+                $section2['data']['detectionLotNumber']         = (isset($shipment['attributes']['detection_assay_lot_no']) && $shipment['attributes']['detection_assay_lot_no'] !="")?$shipment['attributes']['detection_assay_lot_no']:'';
+                $section2['data']['extractionExpirationDate']   = (isset($shipment['attributes']['extraction_assay_expiry_date']) && $shipment['attributes']['extraction_assay_expiry_date'] != "" && $shipment['attributes']['extraction_assay_expiry_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']['extraction_assay_expiry_date'])):'';
+                $section2['data']['detectionExpirationDate']    = (isset($shipment['attributes']['detection_assay_expiry_date']) && $shipment['attributes']['detection_assay_expiry_date'] !='' && $shipment['attributes']['detection_assay_expiry_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']['detection_assay_expiry_date'])):'';
                 
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
                     if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != ''){
-                        $heading2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                        $section2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
                     }else{
-                        $heading2['data']['responseDate'] = '';
+                        $section2['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
-                        $heading2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0)?$shipment["mode_id"]:'';
+                        $section2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0)?$shipment["mode_id"]:'';
                     }else{
-                        $heading2['data']['modeOfReceiptSelected'] = ''; 
+                        $section2['data']['modeOfReceiptSelected'] = ''; 
                     }
                 }else{
-                    $heading2['data']['responseDate'] = '';
-                    $heading2['data']['modeOfReceiptSelected'] = ''; 
+                    $section2['data']['responseDate'] = '';
+                    $section2['data']['modeOfReceiptSelected'] = ''; 
                 }
-                $heading2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+                $section2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
             }
 
             $qcArray = array('yes','no');$qc = array();
@@ -2674,10 +2674,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }else{
                 $qc['status'] = true;
             }
-            $heading2['data']['qcData'] = $qc;
+            $section2['data']['qcData'] = $qc;
 
-            $eid['Heading2'] = $heading2;
-            // Heading 2 end // Heading 3 start
+            $eid['Section2'] = $section2;
+            // Section 2 end // Section 3 start
             $allNotTestedReason = $schemeService->getVlNotTestedReasons();
             
             $allSamplesResult = array();
@@ -2718,25 +2718,25 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             
             if((isset($allSamples) && count($allSamples) > 0) && (isset($eidPossibleResults) && count($eidPossibleResults) > 0)){
-                $eid['Heading3']['status'] = true;
+                $eid['Section3']['status'] = true;
             }else{
-                $eid['Heading3']['status'] = false;
+                $eid['Section3']['status'] = false;
             }
-            $eid['Heading3']['data'] = $allSamplesResult;
+            $eid['Section3']['data'] = $allSamplesResult;
             if((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')){
-                $eid['Heading3']['data']['isPtTestNotPerformedRadio'] = 'no';
+                $eid['Section3']['data']['isPtTestNotPerformedRadio'] = 'no';
                 
             }else{
-                $eid['Heading3']['data']['isPtTestNotPerformedRadio'] = 'yes';
+                $eid['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
             }
-            $eid['Heading3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel:';
-            $eid['Heading3']['data']['vlNotTestedReason']           = $allNotTestedArray;
-            $eid['Heading3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "")?$shipment['vl_not_tested_reason']:"";
-            $eid['Heading3']['data']['ptNotTestedCommentsText']     = 'Your comments:';
-            $eid['Heading3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '')?$shipment['pt_test_not_performed_comments']:'';
-            $eid['Heading3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
-            $eid['Heading3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '')?$shipment['pt_support_comments']:'';
-            // Heading 3 End // Heading 4 Start
+            $eid['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
+            $eid['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
+            $eid['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "")?$shipment['vl_not_tested_reason']:"";
+            $eid['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
+            $eid['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '')?$shipment['pt_test_not_performed_comments']:'';
+            $eid['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
+            $eid['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '')?$shipment['pt_support_comments']:'';
+            // Section 3 End // Section 4 Start
             $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
             foreach($commentArray as $row){
                 $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
@@ -2746,9 +2746,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $reviewArray['approvalLabel']               = 'Supervisor Name';
             $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
-            $eid['Heading4']['status']                  = true;
-            $eid['Heading4']['data']                    = $reviewArray;
-            // Heading 4 end
+            $eid['Section4']['status']                  = true;
+            $eid['Section4']['data']                    = $reviewArray;
+            // Section 4 end
             $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
             $customField1 = $globalConfigDb->getValue('custom_field_1');$customField2 = $globalConfigDb->getValue('custom_field_2');
             $haveCustom = $globalConfigDb->getValue('custom_field_needed');
@@ -2797,8 +2797,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $reportAccess['message'] = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
             }
             $recency['access'] = $reportAccess;
-            // Heading 1 start
-            $heading1= array(
+            // Section 1 start
+            $section1= array(
                 'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '')?$participant['first_name']:'').((isset($participant['last_name']) && $participant['last_name'] != '')?' '.$participant['last_name']:''),
                 'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '')?$participant['unique_identifier']:'',
                 'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '')?$participant['affiliation']:'',
@@ -2806,14 +2806,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '')?$participant['mobile']:''
             );
             if(isset($participant) && count($participant) > 0){
-                $recency['Heading1']['status'] = true;
-                $recency['Heading1']['data'] = $heading1;
+                $recency['Section1']['status'] = true;
+                $recency['Section1']['data'] = $section1;
             }else{
-                $recency['Heading1']['status'] = false;
-                $recency['Heading1']['data'] = $heading1;
+                $recency['Section1']['status'] = false;
+                $recency['Section1']['data'] = $section1;
             }
-            // Heading1 end // Heading2 start
-            $heading2 = array();
+            // Section1 end // Section2 start
+            $section2 = array();
             if(isset($shipment) && count($shipment) > 0){
                 $modeOfReceiptSelect = array();
                 foreach ($modeOfReceipt as $receipt){
@@ -2832,33 +2832,33 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     );
                 }
                 
-                $heading2['status']    = true;
-                $heading2['data']['shipmentDate']               = date('d-M-Y',strtotime($shipment['shipment_date']));
-                $heading2['data']['resultDueDate']              = date('d-M-Y',strtotime($shipment['lastdate_response']));
-                $heading2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] !='0000:00:00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
-                $heading2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
-                $heading2['data']['testDate']                   = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
-                $heading2['data']['recencyAssaySelect']         = $recencyAssaySelect;
-                $heading2['data']['recencyAssaySelected']       = (isset($shipment['attributes']['recency_assay']) && $shipment['attributes']['recency_assay'] != "")?(string)$shipment['attributes']['recency_assay']:'';
-                $heading2['data']['recencyAssayLotNumber']        = (isset($shipment['attributes']['recency_assay_lot_no']) && $shipment['attributes']['recency_assay_lot_no'] !="")?$shipment['attributes']['recency_assay_lot_no']:'';
-                $heading2['data']['recencyAssayExpirayDate']   = (isset($shipment['attributes']['recency_assay_expiry_date']) && $shipment['attributes']['recency_assay_expiry_date'] != "" && $shipment['attributes']['recency_assay_expiry_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']['recency_assay_expiry_date'])):'';
+                $section2['status']    = true;
+                $section2['data']['shipmentDate']               = date('d-M-Y',strtotime($shipment['shipment_date']));
+                $section2['data']['resultDueDate']              = date('d-M-Y',strtotime($shipment['lastdate_response']));
+                $section2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] !='0000:00:00')?date('d-M-Y',strtotime($shipment['shipment_receipt_date'])):'';
+                $section2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']["sample_rehydration_date"])):'';
+                $section2['data']['testDate']                   = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00')?date('d-M-Y',strtotime($shipment["shipment_test_date"])):'';
+                $section2['data']['recencyAssaySelect']         = $recencyAssaySelect;
+                $section2['data']['recencyAssaySelected']       = (isset($shipment['attributes']['recency_assay']) && $shipment['attributes']['recency_assay'] != "")?(string)$shipment['attributes']['recency_assay']:'';
+                $section2['data']['recencyAssayLotNumber']        = (isset($shipment['attributes']['recency_assay_lot_no']) && $shipment['attributes']['recency_assay_lot_no'] !="")?$shipment['attributes']['recency_assay_lot_no']:'';
+                $section2['data']['recencyAssayExpirayDate']   = (isset($shipment['attributes']['recency_assay_expiry_date']) && $shipment['attributes']['recency_assay_expiry_date'] != "" && $shipment['attributes']['recency_assay_expiry_date'] != '0000:00:00')?date('d-M-Y',strtotime($shipment['attributes']['recency_assay_expiry_date'])):'';
                 
                 if((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')){
                     if(isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != ''){
-                        $heading2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
+                        $section2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00')?date('d-M-Y',strtotime($shipment['shipment_test_report_date'])):date('d-M-Y');
                     }else{
-                        $heading2['data']['responseDate'] = '';
+                        $section2['data']['responseDate'] = '';
                     }
                     if(isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes'){
-                        $heading2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0)?$shipment["mode_id"]:'';
+                        $section2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0)?$shipment["mode_id"]:'';
                     }else{
-                        $heading2['data']['modeOfReceiptSelected'] = ''; 
+                        $section2['data']['modeOfReceiptSelected'] = ''; 
                     }
                 }else{
-                    $heading2['data']['responseDate'] = '';
-                    $heading2['data']['modeOfReceiptSelected'] = ''; 
+                    $section2['data']['responseDate'] = '';
+                    $section2['data']['modeOfReceiptSelected'] = ''; 
                 }
-                $heading2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+                $section2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
             }
 
             $qcArray = array('yes','no');$qc = array();
@@ -2874,10 +2874,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }else{
                 $qc['status'] = true;
             }
-            $heading2['data']['qcData'] = $qc;
+            $section2['data']['qcData'] = $qc;
 
-            $recency['Heading2'] = $heading2;
-            // Heading 2 end // Heading 3 start
+            $recency['Section2'] = $section2;
+            // Section 2 end // Section 3 start
             $allNotTestedReason = $schemeService->getVlNotTestedReasons();
             
             $allSamplesResult = array();
@@ -2885,13 +2885,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
                 }
-                $recency['Heading3']['data']['samples']['label'][]             = $sample['sample_label'];
-                $recency['Heading3']['data']['samples']['id'][]                = $sample['sample_id'];
-                $recency['Heading3']['data']['samples']['mandatory'][]         = ($sample['mandatory'] == 1)?true:false;
-                $recency['Heading3']['data']['samples']['controlLine'][]       = (isset($sample['reference_control_line']) && $sample['reference_control_line'] != "")?$sample['reference_control_line']:'';
-                $recency['Heading3']['data']['samples']['verificationLine'][]  = (isset($sample['reference_verification_line']) && $sample['reference_verification_line'] != '')?$sample['reference_verification_line']:'';
-                $recency['Heading3']['data']['samples']['longtermLine'][]      = (isset($sample['reference_longterm_line']) && $sample['reference_longterm_line'] != '')?$sample['reference_longterm_line']:'';
-                $recency['Heading3']['data']['samples']['yourResults'][]       = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
+                $recency['Section3']['data']['samples']['label'][]             = $sample['sample_label'];
+                $recency['Section3']['data']['samples']['id'][]                = $sample['sample_id'];
+                $recency['Section3']['data']['samples']['mandatory'][]         = ($sample['mandatory'] == 1)?true:false;
+                $recency['Section3']['data']['samples']['controlLine'][]       = (isset($sample['control_line']) && $sample['control_line'] != "")?$sample['control_line']:'';
+                $recency['Section3']['data']['samples']['diagnosisLine'][]     = (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '')?$sample['diagnosis_line']:'';
+                $recency['Section3']['data']['samples']['longtermLine'][]      = (isset($sample['longterm_line']) && $sample['longterm_line'] != '')?$sample['longterm_line']:'';
+                $recency['Section3']['data']['samples']['yourResults'][]       = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
                 
                 $possibleRecencyResults = array();
                 foreach ($recencyPossibleResults as $pr) {
@@ -2899,28 +2899,29 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $possibleRecencyResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'], 'resultCode' => $pr['result_code'], 'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
                     }
                 }
+                $possibleRecencyResults[] = array('value'=>'','show'=>'', 'resultCode' => '', 'selected'=>'');
                 
                 $ctlLineResults = array();$verifyLineResults = array();$longLineResults = array();$resultArray = array('present','absent');
                 foreach ($resultArray as $pr) {
-                        $ctlLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_control_line'] == $pr)?'selected':'');
+                        $ctlLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['control_line'] == $pr)?'selected':'');
                 }
                 foreach ($resultArray as $pr) {
-                        $verifyLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_verification_line'] == $pr)?'selected':'');
+                        $verifyLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['diagnosis_line'] == $pr)?'selected':'');
                 }
                 foreach ($resultArray as $pr) {
-                        $longLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_longterm_line'] == $pr)?'selected':'');
+                        $longLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['longterm_line'] == $pr)?'selected':'');
                 }
 
-                $recency['Heading3']['data']['resultsText'] = array('Control/Sample','Control-Line','Verification-Line','Longterm-Line','Your-Results');
-                $recency['Heading3']['data']['resultStatus'] = array(true,true,true,true);
-                $recency['Heading3']['data']['sampleSelected'][$sample['sample_label']]['Control-Line']     = (isset($sample['reference_control_line']) && $sample['reference_control_line'] != '')?$sample['reference_control_line']:'';
-                $recency['Heading3']['data']['sampleSelected'][$sample['sample_label']]['Verification-Line']= (isset($sample['reference_verification_line']) && $sample['reference_verification_line'] != '')?$sample['reference_verification_line']:'';
-                $recency['Heading3']['data']['sampleSelected'][$sample['sample_label']]['Longterm-Line']    = (isset($sample['reference_longterm_line']) && $sample['reference_longterm_line'] != '')?$sample['reference_longterm_line']:'';
-                $recency['Heading3']['data']['sampleSelected'][$sample['sample_label']]['Your-Results']     = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
-                $recency['Heading3']['data']['samplesList'][$sample['sample_label']]['Control-Line']        = $ctlLineResults;
-                $recency['Heading3']['data']['samplesList'][$sample['sample_label']]['Verification-Line']   = $verifyLineResults;
-                $recency['Heading3']['data']['samplesList'][$sample['sample_label']]['Longterm-Line']       = $longLineResults;
-                $recency['Heading3']['data']['samplesList'][$sample['sample_label']]['Your-Results']        = $possibleRecencyResults;
+                $recency['Section3']['data']['resultsText'] = array('Control/Sample','Control Line','Diagnosis Line','Longterm Line','Your Result');
+                $recency['Section3']['data']['resultStatus'] = array(true,true,true,true);
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Control Line']     = (isset($sample['control_line']) && $sample['control_line'] != '')?$sample['control_line']:'';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Diagnosis Line']= (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '')?$sample['diagnosis_line']:'';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Longterm Line']    = (isset($sample['longterm_line']) && $sample['longterm_line'] != '')?$sample['longterm_line']:'';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Your Results']     = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
+                $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Control Line']        = $ctlLineResults;
+                $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Diagnosis Line']   = $verifyLineResults;
+                $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Longterm Line']       = $longLineResults;
+                $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Your Result']        = $possibleRecencyResults;
             }
             
             $allNotTestedArray = array();
@@ -2933,25 +2934,25 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             
             if(isset($allSamples) && count($allSamples) > 0){
-                $recency['Heading3']['status'] = true;
+                $recency['Section3']['status'] = true;
             }else{
-                $recency['Heading3']['status'] = false;
+                $recency['Section3']['status'] = false;
             }
             
             if((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')){
-                $recency['Heading3']['data']['isPtTestNotPerformedRadio'] = 'no';
+                $recency['Section3']['data']['isPtTestNotPerformedRadio'] = 'no';
                 
             }else{
-                $recency['Heading3']['data']['isPtTestNotPerformedRadio'] = 'yes';
+                $recency['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
             }
-            $recency['Heading3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel:';
-            $recency['Heading3']['data']['vlNotTestedReason']           = $allNotTestedArray;
-            $recency['Heading3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "")?$shipment['vl_not_tested_reason']:"";
-            $recency['Heading3']['data']['ptNotTestedCommentsText']     = 'Your comments:';
-            $recency['Heading3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '')?$shipment['pt_test_not_performed_comments']:'';
-            $recency['Heading3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
-            $recency['Heading3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '')?$shipment['pt_support_comments']:'';
-            // Heading 3 End // Heading 4 Start
+            $recency['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
+            $recency['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
+            $recency['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "")?$shipment['vl_not_tested_reason']:"";
+            $recency['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
+            $recency['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '')?$shipment['pt_test_not_performed_comments']:'';
+            $recency['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
+            $recency['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '')?$shipment['pt_support_comments']:'';
+            // Section 3 End // Section 4 Start
             $reviewArray = array();$commentArray = array('yes','no');$revieArr = array();
             foreach($commentArray as $row){
                 $revieArr[] = array('value' =>(string)$row,'show' =>ucwords($row),'selected'=>(isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes'))?'selected':'');
@@ -2961,9 +2962,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $reviewArray['approvalLabel']               = 'Supervisor Name';
             $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes')?$shipment['participant_supervisor']:'';
             $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '')?$shipment['user_comment']:'';
-            $recency['Heading4']['status']                  = true;
-            $recency['Heading4']['data']                    = $reviewArray;
-            // Heading 4 end
+            $recency['Section4']['status']                  = true;
+            $recency['Section4']['data']                    = $reviewArray;
+            // Section 4 end
             $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
             $customField1 = $globalConfigDb->getValue('custom_field_1');$customField2 = $globalConfigDb->getValue('custom_field_2');
             $haveCustom = $globalConfigDb->getValue('custom_field_needed');
@@ -3182,6 +3183,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $allSamples =   $schemeService->getVlSamples($params['shipmentId'],$params['participantId']);
         } if($params['schemeType'] == 'eid'){
             $allSamples =   $schemeService->getEidSamples($params['shipmentId'],$params['participantId']);
+        } if($params['schemeType'] == 'recency'){
+            $allSamples =   $schemeService->getRecencySamples($params['shipmentId'],$params['participantId']);
         }
         if(!$isEditable && $dm['view_only_access'] == 'yes'){
             return array('status' =>'fail','message'=>'You are allowed to edit. Only view this form..');
@@ -3193,46 +3196,46 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $ptGeneral = new Pt_Commons_General();
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             if($params['schemeType'] == 'vl'){
-                // Zend_Debug::dump($params["vlData"]->Heading2->data->sampleRhdDate);die;
-                if (isset($params["vlData"]->Heading2->data->sampleRhdDate) && trim($params["vlData"]->Heading2->data->sampleRhdDate) != "") {
-                    $params["vlData"]->Heading2->data->sampleRhdDate = date('Y-m-d',strtotime($params["vlData"]->Heading2->data->sampleRhdDate));
+                // Zend_Debug::dump($params["vlData"]->Section2->data->sampleRhdDate);die;
+                if (isset($params["vlData"]->Section2->data->sampleRhdDate) && trim($params["vlData"]->Section2->data->sampleRhdDate) != "") {
+                    $params["vlData"]->Section2->data->sampleRhdDate = date('Y-m-d',strtotime($params["vlData"]->Section2->data->sampleRhdDate));
                 }
-                if (isset($params["vlData"]->Heading2->data->assayExpDate) && trim($params["vlData"]->Heading2->data->assayExpDate) != "") {
-                    $params["vlData"]->Heading2->data->assayExpDate = date('Y-m-d',strtotime($params["vlData"]->Heading2->data->assayExpDate));
+                if (isset($params["vlData"]->Section2->data->assayExpDate) && trim($params["vlData"]->Section2->data->assayExpDate) != "") {
+                    $params["vlData"]->Section2->data->assayExpDate = date('Y-m-d',strtotime($params["vlData"]->Section2->data->assayExpDate));
                 }
                 $attributes = array(
-                    "sample_rehydration_date"   => date('Y-m-d',strtotime($params["vlData"]->Heading2->data->sampleRehydrationDate)),
-                    "vl_assay"                  => (string)$params["vlData"]->Heading2->data->vlAssaySelected,
-                    "assay_lot_number"          => $params["vlData"]->Heading2->data->assayLotNumber,
-                    "assay_expiration_date"     => date('Y-m-d',strtotime($params["vlData"]->Heading2->data->assayExpirationDate)),
-                    "specimen_volume"           => $params["vlData"]->Heading2->data->specimenVolume,
+                    "sample_rehydration_date"   => date('Y-m-d',strtotime($params["vlData"]->Section2->data->sampleRehydrationDate)),
+                    "vl_assay"                  => (string)$params["vlData"]->Section2->data->vlAssaySelected,
+                    "assay_lot_number"          => $params["vlData"]->Section2->data->assayLotNumber,
+                    "assay_expiration_date"     => date('Y-m-d',strtotime($params["vlData"]->Section2->data->assayExpirationDate)),
+                    "specimen_volume"           => $params["vlData"]->Section2->data->specimenVolume,
                     // "uploaded_file" => $params['uploadedFilePath']
                 );
     
-                if (isset($params["vlData"]->Heading2->data->otherAssay) && $params["vlData"]->Heading2->data->otherAssay != "") {
-                    $attributes['other_assay'] = $params["vlData"]->Heading2->data->otherAssay;
+                if (isset($params["vlData"]->Section2->data->otherAssay) && $params["vlData"]->Section2->data->otherAssay != "") {
+                    $attributes['other_assay'] = $params["vlData"]->Section2->data->otherAssay;
                 }
     
                 $attributes = json_encode($attributes);
                 $data = array(
-                    "shipment_receipt_date"         =>  date('Y-m-d',strtotime($params["vlData"]->Heading2->data->testReceiptDate)),
-                    "shipment_test_date"            =>  date('Y-m-d',strtotime($params["vlData"]->Heading2->data->testDate)),
-                    // "lastdate_response"         => (isset($params['vlData']->Heading2->data->responseDate) && trim($params['vlData']->Heading2->data->responseDate) != '')?date('Y-m-d',strtotime($params['vlData']->Heading2->data->responseDate)):date('Y-m-d'),
+                    "shipment_receipt_date"         =>  date('Y-m-d',strtotime($params["vlData"]->Section2->data->testReceiptDate)),
+                    "shipment_test_date"            =>  date('Y-m-d',strtotime($params["vlData"]->Section2->data->testDate)),
+                    // "lastdate_response"         => (isset($params['vlData']->Section2->data->responseDate) && trim($params['vlData']->Section2->data->responseDate) != '')?date('Y-m-d',strtotime($params['vlData']->Section2->data->responseDate)):date('Y-m-d'),
                     "attributes"                    =>  $attributes,
-                    "shipment_test_report_date"     =>  (isset($params["vlData"]->Heading2->data->responseDate) && trim($params["vlData"]->Heading2->data->responseDate) != '')?date('Y-m-d',strtotime($params["vlData"]->Heading2->data->responseDate)):date('Y-m-d'),
-                    "supervisor_approval"           =>  $params["vlData"]->Heading4->data->supervisorReviewSelected,
-                    "participant_supervisor"        =>  $params["vlData"]->Heading4->data->approvalInputText,
-                    "user_comment"                  =>  $params["vlData"]->Heading4->data->comments,
+                    "shipment_test_report_date"     =>  (isset($params["vlData"]->Section2->data->responseDate) && trim($params["vlData"]->Section2->data->responseDate) != '')?date('Y-m-d',strtotime($params["vlData"]->Section2->data->responseDate)):date('Y-m-d'),
+                    "supervisor_approval"           =>  $params["vlData"]->Section4->data->supervisorReviewSelected,
+                    "participant_supervisor"        =>  $params["vlData"]->Section4->data->approvalInputText,
+                    "user_comment"                  =>  $params["vlData"]->Section4->data->comments,
                     "updated_by_user"               =>  $dm['dm_id'],
-                    "mode_id"                       =>  (isset($params["vlData"]->Heading2->data->modeOfReceiptSelected) && $params["vlData"]->Heading2->data->modeOfReceiptSelected != "" && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')?$params["vlData"]->Heading2->data->modeOfReceiptSelected:null,
+                    "mode_id"                       =>  (isset($params["vlData"]->Section2->data->modeOfReceiptSelected) && $params["vlData"]->Section2->data->modeOfReceiptSelected != "" && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')?$params["vlData"]->Section2->data->modeOfReceiptSelected:null,
                     "updated_on_user"               =>  new Zend_Db_Expr('now()')
                 );
     
-                $data['is_pt_test_not_performed']       = (isset($params["vlData"]->Heading3->data->isPtTestNotPerformedRadio) && $params["vlData"]->Heading3->data->isPtTestNotPerformedRadio == 'yes')?'yes':'no';
+                $data['is_pt_test_not_performed']       = (isset($params["vlData"]->Section3->data->isPtTestNotPerformedRadio) && $params["vlData"]->Section3->data->isPtTestNotPerformedRadio == 'yes')?'yes':'no';
                 if($data['is_pt_test_not_performed'] == 'yes'){
-                    $data['vl_not_tested_reason']           = $params["vlData"]->Heading3->data->yes->vlNotTestedReasonSelected;
-                    $data['pt_test_not_performed_comments'] = $params["vlData"]->Heading3->data->yes->commentsTextArea;
-                    $data['pt_support_comments']            = $params["vlData"]->Heading3->data->yes->supportTextArea;
+                    $data['vl_not_tested_reason']           = $params["vlData"]->Section3->data->yes->vlNotTestedReasonSelected;
+                    $data['pt_test_not_performed_comments'] = $params["vlData"]->Section3->data->yes->commentsTextArea;
+                    $data['pt_support_comments']            = $params["vlData"]->Section3->data->yes->supportTextArea;
                 }else{
                     $data['vl_not_tested_reason']           = '';
                     $data['pt_test_not_performed_comments'] = '';
@@ -3240,10 +3243,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
     
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
-                    $data['qc_done'] = $params['vlData']->Heading2->data->qcData->qcRadioSelected;
+                    $data['qc_done'] = $params['vlData']->Section2->data->qcData->qcRadioSelected;
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                        $data['qc_date'] = (isset($params['vlData']->Heading2->data->qcData->qcDate) && $params['vlData']->Heading2->data->qcData->qcDate != '')?date('Y-m-d',strtotime($params['vlData']->Heading2->data->qcData->qcDate)):'';
-                        $data['qc_done_by'] = (isset($params['vlData']->Heading2->data->qcData->qcDoneBy) && $params['vlData']->Heading2->data->qcData->qcDoneBy != '')?$params['vlData']->Heading2->data->qcData->qcDoneBy:'';
+                        $data['qc_date'] = (isset($params['vlData']->Section2->data->qcData->qcDate) && $params['vlData']->Section2->data->qcData->qcDate != '')?date('Y-m-d',strtotime($params['vlData']->Section2->data->qcData->qcDate)):'';
+                        $data['qc_done_by'] = (isset($params['vlData']->Section2->data->qcData->qcDoneBy) && $params['vlData']->Section2->data->qcData->qcDoneBy != '')?$params['vlData']->Section2->data->qcData->qcDoneBy:'';
                         $data['qc_created_on'] = new Zend_Db_Expr('now()');
                     } else {
                         $data['qc_date'] = '';
@@ -3280,29 +3283,29 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             if($params['schemeType'] == 'dts'){
                 // Zend_Debug::dump($params);die;
-                $attributes["sample_rehydration_date"] = (isset($params['dtsData']->Heading2->data->sampleRehydrationDate) && $params['dtsData']->Heading2->data->sampleRehydrationDate != '')?date('Y-m-d',strtotime($params['dtsData']->Heading2->data->sampleRehydrationDate)):'';
-                $attributes["algorithm"] = (isset($params['dtsData']->Heading2->data->algorithmUsedSelected) && $params['dtsData']->Heading2->data->algorithmUsedSelected != '')?$params['dtsData']->Heading2->data->algorithmUsedSelected:'';
+                $attributes["sample_rehydration_date"] = (isset($params['dtsData']->Section2->data->sampleRehydrationDate) && $params['dtsData']->Section2->data->sampleRehydrationDate != '')?date('Y-m-d',strtotime($params['dtsData']->Section2->data->sampleRehydrationDate)):'';
+                $attributes["algorithm"] = (isset($params['dtsData']->Section2->data->algorithmUsedSelected) && $params['dtsData']->Section2->data->algorithmUsedSelected != '')?$params['dtsData']->Section2->data->algorithmUsedSelected:'';
                 $attributes = json_encode($attributes);
 
                 $data = array(
-                    "shipment_receipt_date"     => date('Y-m-d',strtotime($params['dtsData']->Heading2->data->testReceiptDate)),
-                    "shipment_test_date"        => date('Y-m-d',strtotime($params['dtsData']->Heading2->data->testingDate)),
-                    "shipment_test_report_date" => (isset($params['dtsData']->Heading2->data->responseDate) && trim($params['dtsData']->Heading2->data->responseDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Heading2->data->responseDate)):date('Y-m-d'),
-                    // "lastdate_response"         => (isset($params['dtsData']->Heading2->data->respDate) && trim($params['dtsData']->Heading2->data->respDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Heading2->data->respDate)):date('Y-m-d'),
+                    "shipment_receipt_date"     => date('Y-m-d',strtotime($params['dtsData']->Section2->data->testReceiptDate)),
+                    "shipment_test_date"        => date('Y-m-d',strtotime($params['dtsData']->Section2->data->testingDate)),
+                    "shipment_test_report_date" => (isset($params['dtsData']->Section2->data->responseDate) && trim($params['dtsData']->Section2->data->responseDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Section2->data->responseDate)):date('Y-m-d'),
+                    // "lastdate_response"         => (isset($params['dtsData']->Section2->data->respDate) && trim($params['dtsData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Section2->data->respDate)):date('Y-m-d'),
                     "attributes"                => $attributes,
-                    "supervisor_approval"       => (isset($params['dtsData']->Heading5->data->supervisorReviewSelected) && $params['dtsData']->Heading5->data->supervisorReviewSelected != '')?$params['dtsData']->Heading5->data->supervisorReviewSelected:'',
-                    "participant_supervisor"    => (isset($params['dtsData']->Heading5->data->approvalInputText) && $params['dtsData']->Heading5->data->approvalInputText !='')?$params['dtsData']->Heading5->data->approvalInputText:'',
-                    "user_comment"              => (isset($params['dtsData']->Heading5->data->comments) && $params['dtsData']->Heading5->data->comments != '')?$params['dtsData']->Heading5->data->comments:'',
+                    "supervisor_approval"       => (isset($params['dtsData']->Section5->data->supervisorReviewSelected) && $params['dtsData']->Section5->data->supervisorReviewSelected != '')?$params['dtsData']->Section5->data->supervisorReviewSelected:'',
+                    "participant_supervisor"    => (isset($params['dtsData']->Section5->data->approvalInputText) && $params['dtsData']->Section5->data->approvalInputText !='')?$params['dtsData']->Section5->data->approvalInputText:'',
+                    "user_comment"              => (isset($params['dtsData']->Section5->data->comments) && $params['dtsData']->Section5->data->comments != '')?$params['dtsData']->Section5->data->comments:'',
                     "updated_by_user"           => $dm['dm_id'],
-                    "mode_id"                   => (isset($params['dtsData']->Heading2->data->modeOfReceiptSelected) && $params['dtsData']->Heading2->data->modeOfReceiptSelected != '' && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')?$params['dtsData']->Heading2->data->modeOfReceiptSelected:'',
+                    "mode_id"                   => (isset($params['dtsData']->Section2->data->modeOfReceiptSelected) && $params['dtsData']->Section2->data->modeOfReceiptSelected != '' && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')?$params['dtsData']->Section2->data->modeOfReceiptSelected:'',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
 
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
-                    $data['qc_done'] = $params['dtsData']->Heading2->data->qcData->qcRadioSelected;
+                    $data['qc_done'] = $params['dtsData']->Section2->data->qcData->qcRadioSelected;
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                        $data['qc_date'] = (isset($params['dtsData']->Heading2->data->qcData->qcDate) && $params['dtsData']->Heading2->data->qcData->qcDate != '')?date('Y-m-d',strtotime($params['dtsData']->Heading2->data->qcData->qcDate)):'';
-                        $data['qc_done_by'] = (isset($params['dtsData']->Heading2->data->qcData->qcDoneBy) && $params['dtsData']->Heading2->data->qcData->qcDoneBy != '')?$params['dtsData']->Heading2->data->qcData->qcDoneBy:'';
+                        $data['qc_date'] = (isset($params['dtsData']->Section2->data->qcData->qcDate) && $params['dtsData']->Section2->data->qcData->qcDate != '')?date('Y-m-d',strtotime($params['dtsData']->Section2->data->qcData->qcDate)):'';
+                        $data['qc_done_by'] = (isset($params['dtsData']->Section2->data->qcData->qcDoneBy) && $params['dtsData']->Section2->data->qcData->qcDoneBy != '')?$params['dtsData']->Section2->data->qcData->qcDoneBy:'';
                         $data['qc_created_on'] = new Zend_Db_Expr('now()');
                     } else {
                         $data['qc_date'] = '';
@@ -3339,35 +3342,35 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if($params['schemeType'] == 'eid'){
                 // Zend_Debug::dump($params);die;
                 $attributes = array(
-                    "sample_rehydration_date"       => date('Y-m-d',strtotime($params['eidData']->Heading2->data->sampleRehydrationDate)),
-                    "extraction_assay"              => (isset($params['eidData']->Heading2->data->extractionAssaySelected) && $params['eidData']->Heading2->data->extractionAssaySelected!="")?$params['eidData']->Heading2->data->extractionAssaySelected:'',
-                    "detection_assay"               => (isset($params['eidData']->Heading2->data->detectionAssaySelected) && $params['eidData']->Heading2->data->detectionAssaySelected!="")?$params['eidData']->Heading2->data->detectionAssaySelected:'',
-                    "extraction_assay_expiry_date"  => (isset($params['eidData']->Heading2->data->extractionExpirationDate) && $params['eidData']->Heading2->data->extractionExpirationDate!="")?date('Y-m-d',strtotime($params['eidData']->Heading2->data->extractionExpirationDate)):'',
-                    "detection_assay_expiry_date"   => (isset($params['eidData']->Heading2->data->detectionExpirationDate) && $params['eidData']->Heading2->data->detectionExpirationDate!="")?date('Y-m-d',strtotime($params['eidData']->Heading2->data->detectionExpirationDate)):'',
-                    "extraction_assay_lot_no"       => (isset($params['eidData']->Heading2->data->extractionLotNumber) && $params['eidData']->Heading2->data->extractionLotNumber!="")?$params['eidData']->Heading2->data->extractionLotNumber:'',
-                    "detection_assay_lot_no"        => (isset($params['eidData']->Heading2->data->detectionLotNumber) && $params['eidData']->Heading2->data->detectionLotNumber!="")?$params['eidData']->Heading2->data->detectionLotNumber:'',
+                    "sample_rehydration_date"       => date('Y-m-d',strtotime($params['eidData']->Section2->data->sampleRehydrationDate)),
+                    "extraction_assay"              => (isset($params['eidData']->Section2->data->extractionAssaySelected) && $params['eidData']->Section2->data->extractionAssaySelected!="")?$params['eidData']->Section2->data->extractionAssaySelected:'',
+                    "detection_assay"               => (isset($params['eidData']->Section2->data->detectionAssaySelected) && $params['eidData']->Section2->data->detectionAssaySelected!="")?$params['eidData']->Section2->data->detectionAssaySelected:'',
+                    "extraction_assay_expiry_date"  => (isset($params['eidData']->Section2->data->extractionExpirationDate) && $params['eidData']->Section2->data->extractionExpirationDate!="")?date('Y-m-d',strtotime($params['eidData']->Section2->data->extractionExpirationDate)):'',
+                    "detection_assay_expiry_date"   => (isset($params['eidData']->Section2->data->detectionExpirationDate) && $params['eidData']->Section2->data->detectionExpirationDate!="")?date('Y-m-d',strtotime($params['eidData']->Section2->data->detectionExpirationDate)):'',
+                    "extraction_assay_lot_no"       => (isset($params['eidData']->Section2->data->extractionLotNumber) && $params['eidData']->Section2->data->extractionLotNumber!="")?$params['eidData']->Section2->data->extractionLotNumber:'',
+                    "detection_assay_lot_no"        => (isset($params['eidData']->Section2->data->detectionLotNumber) && $params['eidData']->Section2->data->detectionLotNumber!="")?$params['eidData']->Section2->data->detectionLotNumber:'',
                 );
                 $attributes = json_encode($attributes);
 
                 $data = array(
-                    "shipment_receipt_date"     => date('Y-m-d',strtotime($params['eidData']->Heading2->data->testReceiptDate)),
-                    "shipment_test_date"        => date('Y-m-d',strtotime($params['eidData']->Heading2->data->testDate)),
-                    "shipment_test_report_date" => (isset($params['eidData']->Heading2->data->responseDate) && trim($params['eidData']->Heading2->data->responseDate) != '')?date('Y-m-d',strtotime($params['eidData']->Heading2->data->responseDate)):date('Y-m-d'),
-                    // "lastdate_response"         => (isset($params['eidData']->Heading2->data->respDate) && trim($params['eidData']->Heading2->data->respDate) != '')?date('Y-m-d',strtotime($params['eidData']->Heading2->data->respDate)):date('Y-m-d'),
+                    "shipment_receipt_date"     => date('Y-m-d',strtotime($params['eidData']->Section2->data->testReceiptDate)),
+                    "shipment_test_date"        => date('Y-m-d',strtotime($params['eidData']->Section2->data->testDate)),
+                    "shipment_test_report_date" => (isset($params['eidData']->Section2->data->responseDate) && trim($params['eidData']->Section2->data->responseDate) != '')?date('Y-m-d',strtotime($params['eidData']->Section2->data->responseDate)):date('Y-m-d'),
+                    // "lastdate_response"         => (isset($params['eidData']->Section2->data->respDate) && trim($params['eidData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['eidData']->Section2->data->respDate)):date('Y-m-d'),
                     "attributes"                => $attributes,
-                    "supervisor_approval"       => $params['eidData']->Heading4->data->supervisorReviewSelected,
-                    "participant_supervisor"    => $params['eidData']->Heading4->data->approvalInputText,
-                    "user_comment"              => $params['eidData']->Heading4->data->comments,
+                    "supervisor_approval"       => $params['eidData']->Section4->data->supervisorReviewSelected,
+                    "participant_supervisor"    => $params['eidData']->Section4->data->approvalInputText,
+                    "user_comment"              => $params['eidData']->Section4->data->comments,
                     "updated_by_user"           => $dm['dm_id'],
-                    "mode_id"                   => (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')?$params['eidData']->Heading2->data->modeOfReceiptSelected:'',
+                    "mode_id"                   => (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')?$params['eidData']->Section2->data->modeOfReceiptSelected:'',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
 
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
-                    $data['qc_done'] = $params['eidData']->Heading2->data->qcData->qcRadioSelected;
+                    $data['qc_done'] = $params['eidData']->Section2->data->qcData->qcRadioSelected;
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                        $data['qc_date'] = date('Y-m-d',strtotime($params['eidData']->Heading2->data->qcData->qcDate));
-                        $data['qc_done_by'] = trim($params['eidData']->Heading2->data->qcData->qcDoneBy);
+                        $data['qc_date'] = date('Y-m-d',strtotime($params['eidData']->Section2->data->qcData->qcDate));
+                        $data['qc_done_by'] = trim($params['eidData']->Section2->data->qcData->qcDoneBy);
                         $data['qc_created_on'] = new Zend_Db_Expr('now()');
                     } else {
                         $data['qc_date'] = '';
@@ -3376,11 +3379,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 }
                 
-                $data['is_pt_test_not_performed']       = $params['eidData']->Heading3->data->isPtTestNotPerformedRadio;
+                $data['is_pt_test_not_performed']       = $params['eidData']->Section3->data->isPtTestNotPerformedRadio;
                 if($data['is_pt_test_not_performed'] == 'yes'){
-                    $data['vl_not_tested_reason']           = $params['eidData']->Heading3->data->vlNotTestedReasonSelected;
-                    $data['pt_test_not_performed_comments'] = $params['eidData']->Heading3->data->ptNotTestedComments;
-                    $data['pt_support_comments']            = $params['eidData']->Heading3->data->ptSupportComments;
+                    $data['vl_not_tested_reason']           = $params['eidData']->Section3->data->vlNotTestedReasonSelected;
+                    $data['pt_test_not_performed_comments'] = $params['eidData']->Section3->data->ptNotTestedComments;
+                    $data['pt_support_comments']            = $params['eidData']->Section3->data->ptSupportComments;
                 }else{
                     $data['vl_not_tested_reason']           = '';
                     $data['pt_test_not_performed_comments'] = '';
@@ -3411,6 +3414,72 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $db->rollBack();
                     return false;
                 }
+            }
+            if($params['schemeType'] == 'recency'){
+                // Zend_Debug::dump($params['recencyData']->Section2->data->recencyAssayLotNumber);die;
+                $attributes = array(
+                    "sample_rehydration_date"   => date('Y-m-d',strtotime($params['recencyData']->Section2->data->sampleRehydrationDate)),
+                    "recency_assay"             => (isset($params['recencyData']->Section2->data->recencyAssaySelected) && $params['recencyData']->Section2->data->recencyAssaySelected!="")?$params['recencyData']->Section2->data->recencyAssaySelected:'',
+                    "recency_assay_lot_no"      => (isset($params['recencyData']->Section2->data->recencyAssayLotNumber) && $params['recencyData']->Section2->data->recencyAssayLotNumber!="")?$params['recencyData']->Section2->data->recencyAssayLotNumber:'',
+                    "recency_assay_expiry_date" => (isset($params['recencyData']->Section2->data->recencyAssayExpirayDate) && $params['recencyData']->Section2->data->recencyAssayExpirayDate!="")?date('Y-m-d',strtotime($params['recencyData']->Section2->data->recencyAssayExpirayDate)):'',
+                );
+                $attributes = json_encode($attributes);
+
+                $data = array(
+                    "shipment_receipt_date"     => date('Y-m-d',strtotime($params['recencyData']->Section2->data->testReceiptDate)),
+                    "shipment_test_date"        => date('Y-m-d',strtotime($params['recencyData']->Section2->data->testDate)),
+                    "attributes"                => $attributes,
+                    "supervisor_approval"       => $params['recencyData']->Section4->data->supervisorReviewSelected,
+                    "participant_supervisor"    => $params['recencyData']->Section4->data->approvalInputText,
+                    "user_comment"              => $params['recencyData']->Section4->data->comments,
+                    "updated_by_user"           => $dm['dm_id'],
+                    "mode_id"                   => (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')?$params['recencyData']->Section2->data->modeOfReceiptSelected:'',
+                    "updated_on_user"           => new Zend_Db_Expr('now()')
+                );
+                if (isset($params['responseDate']) && trim($params['responseDate']) != '') {
+                    $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['responseDate']);
+                } else {
+                    $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                }
+
+                if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
+                    $data['qc_done'] = $params['recencyData']->Section2->data->qcData->qcRadioSelected;
+                    if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
+                        $data['qc_date']        = date('Y-m-d',strtotime($params['recencyData']->Section2->data->qcData->qcDate));
+                        $data['qc_done_by']     = trim($params['recencyData']->Section2->data->qcData->qcDoneBy);
+                        $data['qc_created_on']  = new Zend_Db_Expr('now()');
+                    } else {
+                        $data['qc_date'] = '';
+                        $data['qc_done_by'] = '';
+                        $data['qc_created_on'] = '';
+                    }
+                }
+                
+                $data['is_pt_test_not_performed']       = $params['recencyData']->Section3->data->isPtTestNotPerformedRadio;
+                if($data['is_pt_test_not_performed'] == 'yes'){
+                    $data['vl_not_tested_reason']           = $params['recencyData']->Section3->data->vlNotTestedReasonSelected;
+                    $data['pt_test_not_performed_comments'] = $params['recencyData']->Section3->data->ptNotTestedComments;
+                    $data['pt_support_comments']            = $params['recencyData']->Section3->data->ptSupportComments;
+                }else{
+                    $data['vl_not_tested_reason']           = '';
+                    $data['pt_test_not_performed_comments'] = '';
+                    $data['pt_support_comments']            = '';
+                }
+                
+                $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+                $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+                // $haveCustom;
+                if(isset($haveCustom) && $haveCustom != 'no'){
+                    $data['custom_field_1'] = $params['recencyData']->customFields->data->customField1Val;
+                    $data['custom_field_2'] = $params['recencyData']->customFields->data->customField2Val;
+                }
+
+                $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data,$dm,$params);
+
+                $recencyResponseDb = new Application_Model_DbTable_ResponseRecency();
+                $eidResponseStatus = $recencyResponseDb->updateResultsByAPI($params,$dm);
+                $db->commit();
+                return true;
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
