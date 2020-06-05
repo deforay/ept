@@ -60,7 +60,6 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                     'created_on'        => new Zend_Db_Expr('now()')
                 ));
             } else {
-                Zend_Debug::dump($params['recencyData']->Section3->data->samples->controlLine[$key]);
                 $update = $this->update(array(
                     'reported_result'   => $params['recencyData']->Section3->data->samples->yourResults[$key],
                     'control_line'      => $params['recencyData']->Section3->data->samples->controlLine[$key],
@@ -70,9 +69,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                     'updated_on'        => new Zend_Db_Expr('now()')
                 ), "shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
             }
-            Zend_Debug::dump($update);
         }
-        // die;
         return true;
     }
 }
