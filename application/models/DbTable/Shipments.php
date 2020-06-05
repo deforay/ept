@@ -2729,10 +2729,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }else{
                 $eid['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
             }
-            $eid['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel:';
+            $eid['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
             $eid['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
             $eid['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "")?$shipment['vl_not_tested_reason']:"";
-            $eid['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments:';
+            $eid['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
             $eid['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '')?$shipment['pt_test_not_performed_comments']:'';
             $eid['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
             $eid['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '')?$shipment['pt_support_comments']:'';
@@ -2888,35 +2888,35 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $recency['Section3']['data']['samples']['label'][]             = $sample['sample_label'];
                 $recency['Section3']['data']['samples']['id'][]                = $sample['sample_id'];
                 $recency['Section3']['data']['samples']['mandatory'][]         = ($sample['mandatory'] == 1)?true:false;
-                $recency['Section3']['data']['samples']['controlLine'][]       = (isset($sample['reference_control_line']) && $sample['reference_control_line'] != "")?$sample['reference_control_line']:'';
-                $recency['Section3']['data']['samples']['diagnosisLine'][]  = (isset($sample['reference_diagnosis_line']) && $sample['reference_diagnosis_line'] != '')?$sample['reference_diagnosis_line']:'';
-                $recency['Section3']['data']['samples']['longtermLine'][]      = (isset($sample['reference_longterm_line']) && $sample['reference_longterm_line'] != '')?$sample['reference_longterm_line']:'';
+                $recency['Section3']['data']['samples']['controlLine'][]       = (isset($sample['control_line']) && $sample['control_line'] != "")?$sample['control_line']:'';
+                $recency['Section3']['data']['samples']['diagnosisLine'][]     = (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '')?$sample['diagnosis_line']:'';
+                $recency['Section3']['data']['samples']['longtermLine'][]      = (isset($sample['longterm_line']) && $sample['longterm_line'] != '')?$sample['longterm_line']:'';
                 $recency['Section3']['data']['samples']['yourResults'][]       = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
                 
                 $possibleRecencyResults = array();
-                $possibleRecencyResults[] = array('value'=>'','show'=>'', 'resultCode' => '', 'selected'=>'');
                 foreach ($recencyPossibleResults as $pr) {
                     if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
                         $possibleRecencyResults[] = array('value'=>(string)$pr['id'],'show'=>$pr['response'], 'resultCode' => $pr['result_code'], 'selected'=>($sample['reported_result'] == $pr['id'])?'selected':'');
                     }
                 }
+                $possibleRecencyResults[] = array('value'=>'','show'=>'', 'resultCode' => '', 'selected'=>'');
                 
                 $ctlLineResults = array();$verifyLineResults = array();$longLineResults = array();$resultArray = array('present','absent');
                 foreach ($resultArray as $pr) {
-                        $ctlLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_control_line'] == $pr)?'selected':'');
+                        $ctlLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['control_line'] == $pr)?'selected':'');
                 }
                 foreach ($resultArray as $pr) {
-                        $verifyLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_diagnosis_line'] == $pr)?'selected':'');
+                        $verifyLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['diagnosis_line'] == $pr)?'selected':'');
                 }
                 foreach ($resultArray as $pr) {
-                        $longLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['reference_longterm_line'] == $pr)?'selected':'');
+                        $longLineResults[] = array('value'=>(string)$pr,'show'=>ucwords($pr), 'selected'=>($sample['longterm_line'] == $pr)?'selected':'');
                 }
 
                 $recency['Section3']['data']['resultsText'] = array('Control/Sample','Control Line','Diagnosis Line','Longterm Line','Your Result');
                 $recency['Section3']['data']['resultStatus'] = array(true,true,true,true);
-                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Control Line']     = (isset($sample['reference_control_line']) && $sample['reference_control_line'] != '')?$sample['reference_control_line']:'';
-                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Diagnosis Line']= (isset($sample['reference_diagnosis_line']) && $sample['reference_diagnosis_line'] != '')?$sample['reference_diagnosis_line']:'';
-                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Longterm Line']    = (isset($sample['reference_longterm_line']) && $sample['reference_longterm_line'] != '')?$sample['reference_longterm_line']:'';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Control Line']     = (isset($sample['control_line']) && $sample['control_line'] != '')?$sample['control_line']:'';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Diagnosis Line']= (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '')?$sample['diagnosis_line']:'';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Longterm Line']    = (isset($sample['longterm_line']) && $sample['longterm_line'] != '')?$sample['longterm_line']:'';
                 $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Your Results']     = (isset($sample['reported_result']) && $sample['reported_result'] != '')?$sample['reported_result']:'';
                 $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Control Line']        = $ctlLineResults;
                 $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Diagnosis Line']   = $verifyLineResults;
@@ -2945,10 +2945,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }else{
                 $recency['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
             }
-            $recency['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel:';
+            $recency['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
             $recency['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
             $recency['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "")?$shipment['vl_not_tested_reason']:"";
-            $recency['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments:';
+            $recency['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
             $recency['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '')?$shipment['pt_test_not_performed_comments']:'';
             $recency['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
             $recency['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '')?$shipment['pt_support_comments']:'';
@@ -3159,7 +3159,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         if(isset($params['syncType']) && $params['syncType'] == 'single'){
             $status = $this->saveShipmentByType((array)$params['data'],$dm);
-            die($status);
+            // die($status);
             if($status){
                 return array('status'=>'success','message'=>'Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date.');
             }else{
