@@ -2406,7 +2406,7 @@ CREATE TABLE `system_config` (
  PRIMARY KEY (`system_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-INSERT INTO `system_config` (`system_id`, `display_name`, `name`, `value`) VALUES (NULL, 'App-Verion', 'app_version', '0.0.1');
+INSERT INTO `system_config` (`system_id`, `display_name`, `name`, `value`) VALUES (NULL, 'App-Version', 'app_version', '0.0.1');
 -- Thanaseelan 03 Feb, 2020
 ALTER TABLE `shipment_participant_map` ADD `synced` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `show_announcement`;
 ALTER TABLE `shipment_participant_map` ADD `synced_on` DATETIME NULL DEFAULT NULL AFTER `synced`;
