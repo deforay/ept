@@ -32,9 +32,15 @@ class Pt_Commons_General {
         }
     }
 
+    // returns true if $needle is a substring of $haystack
+    public static function stringContains($needle, $haystack)
+    {
+        return strpos($haystack, $needle) !== false;
+    }
+
     public static function humanDateFormat($date) {
 
-        if ($date == null || $date == "" || $date == "0000-00-00") {
+        if ($date == null || $date == "" || $date == "0000-00-00" || Pt_Commons_General::stringContains("0000-00-00", $date)) {
             return "";
         } else {
             $dateArray = explode('-', $date);
@@ -49,7 +55,7 @@ class Pt_Commons_General {
 
     public function getZendDateFormat($date) {
 
-        if ($date == null || $date == "" || $date == "0000-00-00") {
+        if ($date == null || $date == "" || $date == "0000-00-00" || Pt_Commons_General::stringContains("0000-00-00", $date)) {
             return "";
         } else {
             $dateArray = explode('-', $date);

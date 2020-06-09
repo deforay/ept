@@ -51,6 +51,8 @@ class CommonController extends Zend_Controller_Action
                     $this->view->result = $shipmentService->removeDtsEidResults($mapId);
                 }else if($schemeType == 'vl'){
                     $this->view->result = $shipmentService->removeDtsVlResults($mapId);
+                }else if($schemeType == 'recency'){
+                    $this->view->result = $shipmentService->removeRecencyResults($mapId);
                 }
             }
         }else{

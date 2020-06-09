@@ -503,26 +503,30 @@ class Application_Service_Shipments
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = array(
-                "shipment_receipt_date" => '',
-                "shipment_test_date" => '',
-                "attributes" => '',
-                "shipment_test_report_date" => '',
-                "supervisor_approval" => '',
-                "participant_supervisor" => '',
-                "user_comment" => '',
-                "final_result" => '',
-                "failure_reason" => '',
-                "evaluation_comment" => '',
+                "shipment_receipt_date" => null,
+                "shipment_test_date" => null,
+                "attributes" => null,
+                "shipment_test_report_date" => null,
+                "supervisor_approval" => null,
+                "participant_supervisor" => null,
+                "user_comment" => null,
+                "final_result" => null,
+                "failure_reason" => null,
+                "evaluation_comment" => null,
                 "is_followup" => 'no',
-                "is_excluded" => '',
-                "is_pt_test_not_performed" => '',
-                "vl_not_tested_reason" => '',
+                "is_excluded" => null,
+                "is_pt_test_not_performed" => null,
+                "vl_not_tested_reason" => null,
                 "updated_on_user" => new Zend_Db_Expr('now()'),
                 "updated_by_user" => $authNameSpace->dm_id,
-                "qc_date" => '',
-                "qc_done_by" => '',
-                "qc_created_on" => '',
-                "mode_id" => ''
+                "qc_date" => null,
+                "qc_done_by" => null,
+                "qc_created_on" => null,
+                "mode_id" => null,
+                "custom_field_1" => null,
+                "custom_field_2" => null,
+                "synced" => 'no',
+                "synced_on" => null
             );
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -540,30 +544,74 @@ class Application_Service_Shipments
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = array(
-                "shipment_receipt_date" => '',
-                "shipment_test_date" => '',
-                "attributes" => '',
-                "shipment_test_report_date" => '',
-                "supervisor_approval" => '',
-                "participant_supervisor" => '',
-                "user_comment" => '',
-                "final_result" => '',
-                "failure_reason" => '',
+                "shipment_receipt_date" => null,
+                "shipment_test_date" => null,
+                "attributes" => null,
+                "shipment_test_report_date" => null,
+                "supervisor_approval" => null,
+                "participant_supervisor" => null,
+                "user_comment" => null,
+                "final_result" => null,
+                "failure_reason" => null,
                 "is_followup" => 'no',
-                "evaluation_comment" => '',
-                "is_excluded" => '',
-                "is_pt_test_not_performed" => '',
-                "vl_not_tested_reason" => '',
+                "evaluation_comment" => null,
+                "is_excluded" => null,
+                "is_pt_test_not_performed" => null,
+                "vl_not_tested_reason" => null,
                 "updated_on_user" => new Zend_Db_Expr('now()'),
                 "updated_by_user" => $authNameSpace->dm_id,
-                "qc_date" => '',
-                "qc_done_by" => '',
-                "qc_created_on" => '',
-                "mode_id" => ''
+                "qc_date" => null,
+                "qc_done_by" => null,
+                "qc_created_on" => null,
+                "mode_id" => null,
+                "custom_field_1" => null,
+                "custom_field_2" => null,
+                "synced" => 'no',
+                "synced_on" => null
             );
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $responseDb = new Application_Model_DbTable_ResponseEid();
+            $responseDb->delete("shipment_map_id=$mapId");
+        } catch (Exception $e) {
+            return ($e->getMessage());
+            return "Unable to delete. Please try again later or contact system admin for help";
+        }
+    }
+    public function removeRecencyResults($mapId)
+    {
+        try {
+            $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $data = array(
+                "shipment_receipt_date" => null,
+                "shipment_test_date" => null,
+                "attributes" => null,
+                "shipment_test_report_date" => null,
+                "supervisor_approval" => null,
+                "participant_supervisor" => null,
+                "user_comment" => null,
+                "final_result" => null,
+                "failure_reason" => null,
+                "is_followup" => 'no',
+                "evaluation_comment" => null,
+                "is_excluded" => null,
+                "is_pt_test_not_performed" => null,
+                "vl_not_tested_reason" => null,
+                "updated_on_user" => new Zend_Db_Expr('now()'),
+                "updated_by_user" => $authNameSpace->dm_id,
+                "qc_date" => null,
+                "qc_done_by" => null,
+                "qc_created_on" => null,
+                "mode_id" => null,
+                "custom_field_1" => null,
+                "custom_field_2" => null,
+                "synced" => 'no',
+                "synced_on" => null
+            );
+            $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+
+            $responseDb = new Application_Model_DbTable_ResponseRecency();
             $responseDb->delete("shipment_map_id=$mapId");
         } catch (Exception $e) {
             return ($e->getMessage());
@@ -577,26 +625,30 @@ class Application_Service_Shipments
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = array(
-                "shipment_receipt_date" => '',
-                "shipment_test_date" => '',
-                "attributes" => '',
-                "shipment_test_report_date" => '',
-                "supervisor_approval" => '',
-                "participant_supervisor" => '',
-                "user_comment" => '',
-                "final_result" => '',
-                "failure_reason" => '',
-                "evaluation_comment" => '',
+                "shipment_receipt_date" => null,
+                "shipment_test_date" => null,
+                "attributes" => null,
+                "shipment_test_report_date" => null,
+                "supervisor_approval" => null,
+                "participant_supervisor" => null,
+                "user_comment" => null,
+                "final_result" => null,
+                "failure_reason" => null,
+                "evaluation_comment" => null,
                 "is_followup" => 'no',
-                "is_excluded" => '',
-                "is_pt_test_not_performed" => '',
-                "vl_not_tested_reason" => '',
+                "is_excluded" => null,
+                "is_pt_test_not_performed" => null,
+                "vl_not_tested_reason" => null,
                 "updated_on_user" => new Zend_Db_Expr('now()'),
                 "updated_by_user" => $authNameSpace->dm_id,
-                "qc_date" => '',
-                "qc_done_by" => '',
-                "qc_created_on" => '',
-                "mode_id" => ''
+                "qc_date" => null,
+                "qc_done_by" => null,
+                "qc_created_on" => null,
+                "mode_id" => null,
+                "custom_field_1" => null,
+                "custom_field_2" => null,
+                "synced" => 'no',
+                "synced_on" => null
             );
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
