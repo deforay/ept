@@ -274,7 +274,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 									</select>
 								</td>
 								<td>
-									<select name="verificationLine[]" class="isRequired form-control input-sm" title="Please choose verification line">
+									<select name="diagnosisLine[]" class="isRequired form-control input-sm" title="Please choose diagnosis line">
 										<option value="">--Select--</option>
 										<option value="present" <?php echo ($sample['diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>>Present</option>
 										<option value="absent" <?php echo ($sample['diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>>Absent</option>

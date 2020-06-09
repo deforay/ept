@@ -1879,6 +1879,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $data[] = array(
                 'isSynced'         => '',
                 'schemeType'       => $row['scheme_type'],
+                'schemeName'       => ucwords($row['scheme_name']),
                 'shipmentId'       => $row['shipment_id'],
                 'participantId'    => $row['participant_id'],
                 'evaluationStatus' => $row['evaluation_status'],
@@ -1908,6 +1909,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             /* This API to get the shipments form using type form */
             if ($type == 'form') {
                 $formData[$key]['schemeType']       = $row['scheme_type'];
+                $formData[$key]['schemeName']       = ucwords($row['scheme_name']);
                 $formData[$key]['shipmentId']       = $row['shipment_id'];
                 $formData[$key]['participantId']    = $row['participant_id'];
                 $formData[$key]['evaluationStatus'] = $row['evaluation_status'];

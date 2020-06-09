@@ -19,27 +19,28 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                 $params['longterm_line'][$key] = '';
             }
             if ($res == null || count($res) == 0) {
-                return $this->insert(array(
+                $this->insert(array(
                     'shipment_map_id' => $params['smid'],
                     'sample_id' => $sampleId,
                     'reported_result' => $params['result'][$key],
                     'control_line' => $params['controlLine'][$key],
-                    'diagnosis_line' => $params['verificationLine'][$key],
+                    'diagnosis_line' => $params['diagnosisLine'][$key],
                     'longterm_line' => $params['longtermLine'][$key],
                     'created_by' => $authNameSpace->dm_id,
                     'created_on' => new Zend_Db_Expr('now()')
                 ));
             } else {
-                return $this->update(array(
+                $this->update(array(
                     'reported_result' => $params['result'][$key],
                     'control_line' => $params['controlLine'][$key],
-                    'diagnosis_line' => $params['verificationLine'][$key],
+                    'diagnosis_line' => $params['diagnosisLine'][$key],
                     'longterm_line' => $params['longtermLine'][$key],
                     'updated_by' => $authNameSpace->dm_id,
                     'updated_on' => new Zend_Db_Expr('now()')
                 ), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             }
         }
+        return true;
     }
 
     public function updateResultsByAPI($params, $dm)
