@@ -1879,7 +1879,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $data[] = array(
                 'isSynced'         => '',
                 'schemeType'       => $row['scheme_type'],
-                'schemeName'       => ucwords($row['scheme_name']),
+                'schemeName'       => ($row['scheme_name']),
+                'shipmentCode'       => ($row['shipment_code']),
                 'shipmentId'       => $row['shipment_id'],
                 'participantId'    => $row['participant_id'],
                 'evaluationStatus' => $row['evaluation_status'],
@@ -1891,7 +1892,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'status'           => $row['status'],
                 'statusUpdatedOn'  => $row['updated_on_admin'],
                 'responseSwitch'   => $row['response_switch'],
-                'schemeName'       => $row['scheme_name'],
                 'mapId'            => $row['map_id'],
                 'uniqueIdentifier' => $row['unique_identifier'],
                 'participantName'  => $row['first_name'] . ' ' . $row['last_name'],
@@ -1911,6 +1911,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $formData[$key]['schemeType']       = $row['scheme_type'];
                 $formData[$key]['schemeName']       = ucwords($row['scheme_name']);
                 $formData[$key]['shipmentId']       = $row['shipment_id'];
+                $formData[$key]['shipmentCode']       = $row['shipment_code'];
                 $formData[$key]['participantId']    = $row['participant_id'];
                 $formData[$key]['evaluationStatus'] = $row['evaluation_status'];
                 $formData[$key]['createdOn']        = (isset($row['created_on_user']) && $row['created_on_user'] != '') ? $row['created_on_user'] : (isset($row['created_on_admin']) && $row['created_on_admin'] != '') ? $row['created_on_admin'] : '';
@@ -1923,6 +1924,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $checkFormSatatus = true;
                     $getParticipantDetails[$key]['schemeType']       = $row['scheme_type'];
                     $getParticipantDetails[$key]['shipmentId']       = $row['shipment_id'];
+                    $getParticipantDetails[$key]['shipmentCode']       = $row['shipment_code'];
                     $getParticipantDetails[$key]['participantId']    = $row['participant_id'];
                     $getParticipantDetails[$key]['evaluationStatus'] = $row['evaluation_status'];
                 }
