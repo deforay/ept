@@ -264,7 +264,7 @@ class Application_Service_Participants
 		try {
 			$excel = new PHPExcel();
 			$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
-			$cacheSettings = array('memoryCacheSize' => '80MB');
+			$cacheSettings = array('memoryCacheSize' => '256MB');
 			PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
 			$output = array();
 			$sheet = $excel->getActiveSheet();
