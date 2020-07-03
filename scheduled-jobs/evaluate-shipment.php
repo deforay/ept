@@ -318,6 +318,20 @@ try {
             $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue'=>'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
             $db->update('evaluation_queue', array('status' => $reportCompletedStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
             $db->insert('notify',array('title'=>'Reports Generated','description'=>'Reports for Shipment '.$evalRow['shipment_code'].' are ready for download','link'=>$link));
+            $notification = array(
+                "body"  =>  'Reports for Shipment '.$evalRow['shipment_code'].' are ready for download',
+                "title" =>  "e-PT Shipment Reports",
+                "icon"  =>  "ic_launcher"
+            );
+            $db->insert('push_notification',array(
+                'notification_json' => json_encode($notification),
+                'data_json'         => '',
+                'push_status'       =>  'refuse',
+                'created_on'        =>  new Zend_Db_Expr('now()'),
+                'token_identify_id' =>  $evalRow['shipment_id'],
+                'identify_type'     =>  'shipment',
+                'notification_type' =>  'reports'
+            ));
         }
     }
 } catch (Exception $e) {

@@ -686,4 +686,33 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         return $this->update(array('status' => $status), 'primary_email = "' . $email . '"');
     }
+    
+    public function savePushNotifyToken($params)
+    {
+        $update = 0;$response = array();
+        /* Check the app versions & parameters */
+        if (!isset($params['appVersion'])) {
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
+        }
+        if (!isset($params['authToken'])) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+        }
+
+        /* Validate new auth token and app-version */
+        $aResult = $this->fetchAuthToken($params);
+        if ($aResult == 'app-version-failed') {
+            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
+        }
+        if (!$aResult) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+        }
+        $update = $this->update(array('push_notify_token' => $params['token']), 'dm_id = "' . $aResult['dm_id'] . '"');
+        if ($update > 0) {
+            $response['status']     = 'success';
+        } else {
+            $response['status']     = 'fail';
+        }
+
+        return $response;
+    }
 }

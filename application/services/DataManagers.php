@@ -224,4 +224,10 @@ class Application_Service_DataManagers
         $userDb = new Application_Model_DbTable_DataManagers();
 		return $userDb->setStatusByEmail($status,$email);
     }
+    
+    public function savePushToken($params)
+    {
+        $userDb = new Application_Model_DbTable_DataManagers();
+		return $userDb->savePushNotifyToken($params);
+    }
 }

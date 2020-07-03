@@ -4,6 +4,8 @@ $controllerName = Zend_Controller_Front::getInstance()->getRequest()->getControl
 $actionName = Zend_Controller_Front::getInstance()->getRequest()->getActionName();
 /* Notification Section Start */
 $notifyData = $this->getNotification();
+$pushCount = $this->getPushNotification();
+
 // Zend_Debug::dump($notifyData);die;
 $notifyCount = (count($notifyData) > 0)?count($notifyData):0;
 $scrollHeight = '';
@@ -18,7 +20,7 @@ if(isset($notifyData) && $notifyCount > 0){
 		}
 	}
 	$notify = '
-	<ul class="dropdown-menu" style="overflow: auto;'.$scrollHeight.'">';
+	<ul class="dropdown-menu" style="overflow: auto;'.$scrollHeight.'"><h4 style=" padding: 0px 0px 7px 7px; border-bottom: 1px solid #8080804a; margin-bottom: 0px; "><b>General Notifications</b></h4>';
 	foreach($notifyData as $notifyRow){
 		if($count < 10){
 			$count++;
@@ -213,7 +215,7 @@ if($adminSession->privileges != ""){
 				<ul class="nav navbar-nav navbar-right">
 					<?php if($notifyCount > 0){?>
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-envelope">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="General Notification"><i class="icon-envelope">
 								<?php if($nCount > 0) {?>
 									<span class="count-notify"><?php echo $nCount;?></span>
 								<?php } ?>
@@ -223,6 +225,13 @@ if($adminSession->privileges != ""){
 					<?php }else{
 						echo '<li><a href="javascript:void(0);"><i class="icon-envelope" style="opacity: 0.6;"></i></a></li>';
 					} ?>
+					<li class="dropdown">
+						<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'push-notification', 'action' => 'index')); ?>" title="Push Notification"><i class="icon-bell">
+							<?php if($pushCount > 0) {?>
+								<span class="count-notify"><?php echo $pushCount;?></span>
+							<?php } ?>
+						</i></a>
+					</li>
 					<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'login', 'action' => 'log-out')); ?>"><i class="icon-signout"></i> Logout</a></li>
 				</ul>
 			</div>

@@ -2501,3 +2501,20 @@ VALUES (NULL, 'recency', 'RECENCY_FINAL', 'Recent', 'R'),
 -- Thana 4 Jun, 2020
 ALTER TABLE `reference_result_recency` CHANGE `reference_verification_line` `reference_diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `response_result_recency` CHANGE `verification_line` `diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+
+-- Thana 3 Jul, 2020
+ALTER TABLE `data_manager` ADD `push_notify_token` TEXT NULL DEFAULT NULL AFTER `last_date_for_email_reset`;
+CREATE TABLE `push_notification` (
+ `id` int NOT NULL AUTO_INCREMENT,
+ `notification_json` text,
+ `data_json` text,
+ `push_status` varchar(50) DEFAULT NULL,
+ `created_on` datetime DEFAULT NULL,
+ `approved_by` int DEFAULT NULL,
+ `approved_on` datetime DEFAULT NULL,
+ `token_identify_id` int DEFAULT NULL,
+ `identify_type` varchar(50) DEFAULT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ALTER TABLE `push_notification` CHANGE `notification_json` `notification_json` TEXT NULL DEFAULT NULL COMMENT 'create notify message (title body and icon) and convert into json and store here', CHANGE `data_json` `data_json` TEXT NULL DEFAULT NULL COMMENT 'create notify data message and convert into Json then store here', CHANGE `push_status` `push_status` VARCHAR(50) NULL DEFAULT NULL COMMENT 'refuse, pending, send, not-send', CHANGE `token_identify_id` `token_identify_id` INT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM', CHANGE `identify_type` `identify_type` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Type of identify id either shipment, people(DM), General and not-responded people.';
+ALTER TABLE `push_notification` ADD `notification_type` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Reports, Shipment, General' AFTER `identify_type`;

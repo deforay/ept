@@ -68,6 +68,47 @@ class Application_Service_Common
         }
     }
 
+    public function sendAlert($params)
+    {
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $headers = array(
+            'Content-Type:application/json',
+            'Authorization:key='.$conf->fcm->serverkey
+        );
+
+        $json_data = array(
+            "to"            =>  'ckXAefQQhug:APA91bGFIBUN1qgn4-z0zusKnLeHZ2Lo6f8MkAC20wR7AooYu1txAo3NGGMwK4FoUdxdc2aa6Qt70aZ_ZR8Z85fMcIlAphFPzUmkUhrtWC9WkhmUfnu7at6eEaKsZWMx0DPpIjJgFiGK',
+            "notification"  =>  array(
+                "body"  =>  "e-PT reports from Thanaseelan",
+                "title" =>  "e-PT Reports",
+                "icon"  =>  "ic_launcher"
+            ),
+            /* "data"          =>  array(
+                "message"   => "Your reports was ready please see the result."
+            ) */
+        );
+        
+        $data = json_encode($json_data);
+        /* Message to be send */
+        $url = (isset($conf->fcm->url) && trim($conf->fcm->url) != '')?$conf->fcm->url:'https://fcm.googleapis.com/fcm/send';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $result = curl_exec($ch);
+        if ($result === FALSE) {
+            die('Oops! FCM Send Error: ' . curl_error($ch));
+        } else {
+            echo "<pre>";
+            print_r($result);
+        }
+        curl_close($ch);
+    }
+
     public static function getRandomString($length = 8)
     {
         $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
@@ -350,5 +391,21 @@ class Application_Service_Common
     public function saveNotifyStatus($id){
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         return $db->update('notify',array("status" =>'readed'), "id = " . $id);
+    }
+    
+    public function getAllPushNotify($params){
+        $db = new Application_Model_DbTable_PushNotification();
+        return $db->fetchAllPushNotify($params);
+    }
+    
+    public function approve($params){
+        $db = new Application_Model_DbTable_PushNotification();
+        return $db->approveNotify($params);
+    }
+
+    public function fetchUnReadPushNotify(){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $count = $db->fetchAll($db->select()->from('push_notification')->where('push_status ="refuse"'));
+        return count($count);
     }
 }

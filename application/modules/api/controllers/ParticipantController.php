@@ -123,4 +123,14 @@ class Api_ParticipantController extends Zend_Controller_Action
             ),JSON_PRETTY_PRINT));
         }
     }
+
+    public function pushTokenAction()
+    {
+        $this->_helper->viewRenderer->setNoRender(true);
+        $params = json_decode(file_get_contents('php://input'));
+        // Zend_Debug::dump($params);die;
+        $dataManagerService = new Application_Service_DataManagers();
+        $result = $dataManagerService->savePushToken((array)$params);
+        $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
+    }
 }
