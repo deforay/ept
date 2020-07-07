@@ -1817,7 +1817,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
         if (!isset($params['appVersion'])) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
@@ -1826,7 +1826,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $aResult = $dmDb->fetchAuthToken($params);
         /* App version check */
         if ($aResult == 'app-version-failed') {
-            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
         /* Validate new auth token and app-version */
         if (!$aResult) {
@@ -2000,7 +2000,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             } else {
                 $reportAccess['status']     = 'fail';
-                $reportAccess['message']    = 'You are allowed to edit. Only view this form.';
+                $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
             }
             $dts['access'] = $reportAccess;
             // Check the data manager having for access to the form
@@ -2407,7 +2407,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             } else {
                 $reportAccess['status']     = 'fail';
-                $reportAccess['message']    = 'You are allowed to edit. Only view this form.';
+                $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
             }
             $vl['access'] = $reportAccess;
             // Section 1 start
@@ -2609,7 +2609,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             } else {
                 $reportAccess['status'] = 'fail';
-                $reportAccess['message'] = 'You are allowed to edit. Only view this form.';
+                $reportAccess['message'] = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
             }
             $eid['access'] = $reportAccess;
             // Section 1 start
@@ -3027,7 +3027,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
@@ -3037,7 +3037,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $dmDb = new Application_Model_DbTable_DataManagers();
         $aResult = $dmDb->fetchAuthToken($params);
         if ($aResult == 'app-version-failed') {
-            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
@@ -3099,7 +3099,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
@@ -3109,7 +3109,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $dmDb = new Application_Model_DbTable_DataManagers();
         $aResult = $dmDb->fetchAuthToken($params);
         if ($aResult == 'app-version-failed') {
-            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
@@ -3163,7 +3163,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         // Zend_Debug::dump($params);die;
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
@@ -3173,7 +3173,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $dmDb = new Application_Model_DbTable_DataManagers();
         $dm = $dmDb->fetchAuthToken($params);
         if ($dm == 'app-version-failed') {
-            return array('status' => 'version-failed', 'message' => 'App Version Failed.');
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
         if (!$dm) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
@@ -3232,7 +3232,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $allSamples =   $schemeService->getRecencySamples($params['shipmentId'], $params['participantId']);
         }
         if (!$isEditable && $dm['view_only_access'] == 'yes') {
-            return array('status' => 'fail', 'message' => 'You are allowed to edit. Only view this form..');
+            return array('status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..');
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();

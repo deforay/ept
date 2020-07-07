@@ -179,27 +179,22 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
         return $this->update(array('push_status'=>'pending','approved_by' => $authNameSpace->admin_id, 'approved_on' => new Zend_Db_Expr('now()')),"id = ".base64_decode($params['notifyId']));
     }
     
-    public function saveNewPushNotificationDetails($params){
-        // Zend_Debug::dump($params);die;
+    public function insertPushNotificationDetails($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType){
         $notification = array(
-            "body"  =>  $params['msgBody'],
-            "title" =>  $params['title'],
-            "icon"  =>  "ic_launcher"
+            "title" =>  $title,
+            "body"  =>  $msgBody,
+            "icon"  =>  $icon
         );
         $data = array(
             'notification_json' => json_encode($notification),
-            'data_json'         => '',
-            'push_status'       =>  $params['status'],
-            'token_identify_id' =>  implode(",",$params['participants']),
-            'identify_type'     =>  $params['identifyType'],
-            'notification_type' =>  $params['notificationType']
+            'data_json'         => $dataMsg,
+            'push_status'       => 'pending',
+            'token_identify_id' => $shipmentId,
+            'identify_type'     => $identifyType,
+            'notification_type' => $notificationType,
+            'created_on'        => new Zend_Db_Expr('now()')
         );
-        if(isset($params['hiddenId']) && $params['hiddenId'] > 0){
-            return $this->update($data,"id = ".$params['hiddenId']);
-        } else{
-            $data['created_on'] = new Zend_Db_Expr('now()');
-            return $this->insert($data);
-        }
+        return $this->insert($data);
     }
 
     public function fetchPushNotificationDetailsById($id)

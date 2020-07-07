@@ -1838,6 +1838,7 @@ class Application_Service_Shipments
         $commonServices = new Application_Service_Common();
         $general = new Pt_Commons_General();
         $notParticipatedMailContent = $commonServices->getEmailTemplate('not_participated');
+        $pushContent = $commonServices->getPushTemplateByPurpose('not-participated');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $return = 0;
         $sQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'))
@@ -1848,9 +1849,7 @@ class Application_Service_Shipments
             ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL OR sp.shipment_test_date like '')")
             ->where("sp.shipment_id = ?", $sid)
             ->group("sp.participant_id");
-        //echo $sQuery;die;
         $participantEmails = $db->fetchAll($sQuery);
-        //    Zend_Debug::dump($participantEmails);die;
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = $general->humanDateFormat($participantDetails['distribution_date']);
@@ -1868,6 +1867,38 @@ class Application_Service_Shipments
                 $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
                 $count = $participantDetails['last_not_participated_mail_count'] + 1;
                 $return = $db->update('shipment_participant_map', array('last_not_participated_mailed_on' => new Zend_Db_Expr('now()'), 'last_not_participated_mail_count' => $count), 'map_id = ' . $participantDetails['map_id']);
+            }
+
+            // Push notification section
+            $pushQuery = $db->select()
+                ->from(array('s' => 'shipment'),array('s.shipment_code', 's.shipment_code'))
+                ->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('sp.shipment_id', 'sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'))
+                ->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+                ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+                ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+                ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=sp.participant_id',array('dm_id'))
+                ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
+                ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL OR sp.shipment_test_date like '')")
+                ->where("s.shipment_id=?", $sid)
+                ->group('dm.dm_id');
+            // die($pushQuery);
+            $dmDetails = $db->fetchAll($pushQuery);
+            // Zend_Debug::dump($pushContent);die;
+            if(count($dmDetails) > 0){
+                foreach($dmDetails as $dm){
+                    $surveyDate = $general->humanDateFormat($dm['distribution_date']);
+                    $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                    $replace = array($dm['participantName'], $dm['shipment_code'], $dm['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
+                    $title = str_replace($search, $replace, $pushContent['notify_title']);
+                    $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
+                    if(isset($pushContent['data_msg']) && $pushContent['data_msg'] != ''){
+                        $dataMsg = str_replace($search, $replace, $pushContent['data_msg']);
+                    } else{
+                        $dataMsg = '';
+                    }
+                    $commonServices->insertPushNotification($title,$msgBody,$dataMsg,$pushContent['icon'],$dm['shipment_id'],'not-responder-participants','shipment');
+                    $db->update('data_manager', array('push_status' => 'pending'), 'dm_id = ' . $dm['dm_id']);
+                }
             }
         }
         return $return;

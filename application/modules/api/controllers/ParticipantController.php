@@ -133,4 +133,13 @@ class Api_ParticipantController extends Zend_Controller_Action
         $result = $dataManagerService->savePushToken((array)$params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
     }
+    
+    public function getNotificationsAction()
+    {
+        $this->_helper->viewRenderer->setNoRender(true);
+        $params = $this->_getAllParams();
+        $dataManagerService = new Application_Service_DataManagers();
+        $result = $dataManagerService->savePushToken((array)$params);
+        $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
+    }
 }

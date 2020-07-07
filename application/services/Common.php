@@ -407,6 +407,11 @@ class Application_Service_Common
         $db = new Application_Model_DbTable_PushNotification();
         return $db->fetchPushNotificationDetailsById($id);
     }
+    
+    public function insertPushNotification($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType){
+        $db = new Application_Model_DbTable_PushNotification();
+        return $db->insertPushNotificationDetails($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType);
+    }
 
     public function fetchUnReadPushNotify(){
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

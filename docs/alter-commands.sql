@@ -2510,8 +2510,6 @@ CREATE TABLE `push_notification` (
  `data_json` text,
  `push_status` varchar(50) DEFAULT NULL,
  `created_on` datetime DEFAULT NULL,
- `approved_by` int DEFAULT NULL,
- `approved_on` datetime DEFAULT NULL,
  `token_identify_id` int DEFAULT NULL,
  `identify_type` varchar(50) DEFAULT NULL,
  PRIMARY KEY (`id`)
