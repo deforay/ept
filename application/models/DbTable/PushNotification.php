@@ -162,11 +162,12 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
                         </div>
                     </div>';
             if($aRow['push_status'] == 'refuse'){
-                $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="approveNotify(\''.base64_encode($aRow['id']).'\')"><span><i class="icon-check"></i> Approve</span></a>';	    
+                $approve = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="approveNotify(\''.base64_encode($aRow['id']).'\')"><span><i class="icon-check"></i> Approve</span></a>';  
             } else{
-                $row[] = '';
+                $approve = '';
             }
-            
+            $edit = '<a style=" margin-left: 10px; " class="btn btn-info btn-xs" href="/admin/push-notification/edit/id/'.$aRow['id'].'"><span><i class="icon-check"></i> Edit</span></a>';
+            $row[] = $approve . $edit;
             $output['aaData'][] = $row;
         }
 
@@ -174,7 +175,35 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
     }
     
     public function approveNotify($params){
-        return $this->update(array('push_status'=>'pending'),"id = ".base64_decode($params['notifyId']));
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        return $this->update(array('push_status'=>'pending','approved_by' => $authNameSpace->admin_id, 'approved_on' => new Zend_Db_Expr('now()')),"id = ".base64_decode($params['notifyId']));
+    }
+    
+    public function saveNewPushNotificationDetails($params){
+        // Zend_Debug::dump($params);die;
+        $notification = array(
+            "body"  =>  $params['msgBody'],
+            "title" =>  $params['title'],
+            "icon"  =>  "ic_launcher"
+        );
+        $data = array(
+            'notification_json' => json_encode($notification),
+            'data_json'         => '',
+            'push_status'       =>  $params['status'],
+            'token_identify_id' =>  implode(",",$params['participants']),
+            'identify_type'     =>  $params['identifyType'],
+            'notification_type' =>  $params['notificationType']
+        );
+        if(isset($params['hiddenId']) && $params['hiddenId'] > 0){
+            return $this->update($data,"id = ".$params['hiddenId']);
+        } else{
+            $data['created_on'] = new Zend_Db_Expr('now()');
+            return $this->insert($data);
+        }
+    }
+
+    public function fetchPushNotificationDetailsById($id)
+    {
+        return $this->fetchRow($this->select()->from($this->_name)->where('id ='.$id));
     }
 }
-

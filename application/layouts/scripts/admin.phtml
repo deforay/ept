@@ -4,7 +4,6 @@ $controllerName = Zend_Controller_Front::getInstance()->getRequest()->getControl
 $actionName = Zend_Controller_Front::getInstance()->getRequest()->getActionName();
 /* Notification Section Start */
 $notifyData = $this->getNotification();
-$pushCount = $this->getPushNotification();
 
 // Zend_Debug::dump($notifyData);die;
 $notifyCount = (count($notifyData) > 0)?count($notifyData):0;
@@ -20,7 +19,7 @@ if(isset($notifyData) && $notifyCount > 0){
 		}
 	}
 	$notify = '
-	<ul class="dropdown-menu" style="overflow: auto;'.$scrollHeight.'"><h4 style=" padding: 0px 0px 7px 7px; border-bottom: 1px solid #8080804a; margin-bottom: 0px; "><b>General Notifications</b></h4>';
+	<ul class="dropdown-menu" style="overflow: auto;'.$scrollHeight.'"><h4 class="notify-title"><b>Notifications</b></h4>';
 	foreach($notifyData as $notifyRow){
 		if($count < 10){
 			$count++;
@@ -102,6 +101,14 @@ if($adminSession->privileges != ""){
 				left: 25px;
 			}
 		}
+		.notify-title{
+			padding: 0px 0px 7px 7px;
+			border-bottom: 1px solid #8080804a;
+			margin: 0px 0px;
+			position: sticky;
+			top: -5px;
+			background: white;
+		}
 		.count-notify{
 			background-color: #ff0000d1;
 			color: white;
@@ -157,8 +164,7 @@ if($adminSession->privileges != ""){
 							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config'), 'default', true); ?>">PDF Report Settings</a></li>
 							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-fields'), 'default', true); ?>">Shipment Custom Fields</a></li>
 							<li class="divider"></li>
-							<li><a href="/admin/mail-template/index/9u690s3/new_shipment/"> New Shipment Mail Template</a></li>
-							<li><a href="/admin/mail-template/index/9u690s3/not_participated/"> Not Participated Mail Template</a></li>
+							<li><a href="/admin/mail-template"> Mail Template</a></li>
 							<li class="divider"></li>
 							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-banner'), 'default', true); ?>">Home Banner</a></li>
 							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'publications'), 'default', true); ?>">Publications</a></li>
@@ -225,13 +231,6 @@ if($adminSession->privileges != ""){
 					<?php }else{
 						echo '<li><a href="javascript:void(0);"><i class="icon-envelope" style="opacity: 0.6;"></i></a></li>';
 					} ?>
-					<li class="dropdown">
-						<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'push-notification', 'action' => 'index')); ?>" title="Push Notification"><i class="icon-bell">
-							<?php if($pushCount > 0) {?>
-								<span class="count-notify"><?php echo $pushCount;?></span>
-							<?php } ?>
-						</i></a>
-					</li>
 					<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'login', 'action' => 'log-out')); ?>"><i class="icon-signout"></i> Logout</a></li>
 				</ul>
 			</div>

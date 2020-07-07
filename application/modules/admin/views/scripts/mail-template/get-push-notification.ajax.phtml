@@ -1,0 +1,87 @@
+<div class="well">
+    <fieldset>
+        <form class="form-horizontal" role="form">
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="title">Title<span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <input value="<?php echo $this->result['notify_title']; ?>" type="text" id="title<?php echo $this->purpose; ?>" name="title" class="isRequired form-control" title="Please enter a push notification title" placeholder="Enter the push notification title" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="msgBody">Push Notification Message<span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <textarea type="text" id="msgBody<?php echo $this->purpose; ?>" name="msgBody" class="isRequired form-control" title="Please enter a push notification message" placeholder="Enter the push notification message"><?php echo $this->result['notify_body']; ?></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="message" class="col-lg-3 control-label">Key</label>
+                <div class="col-lg-6">
+                    <span class="help-block">Lab Name/Participant Name : ##NAME##</span>
+                    <span class="help-block">Shipment Code : ##SHIPCODE##</span>
+                    <span class="help-block">Scheme Type : ##SHIPTYPE##</span>
+                    <span class="help-block">PT Survey Code : ##SURVEYCODE##</span>
+                    <span class="help-block">PT Survey Date : ##SURVEYDATE##</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="dataMsg">Data Message</label>
+                <div class="col-lg-6">
+                    <textarea type="text" id="dataMsg<?php echo $this->purpose; ?>" name="dataMsg" class="richtextarea form-control" title="Please enter a push notification message" placeholder="Enter the push notification message"><?php echo $this->result['data_msg']; ?></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="icon">Icon</label>
+                <div class="col-lg-6">
+                    <input value="<?php echo $this->result['icon']; ?>" type="text" id="icon<?php echo $this->purpose; ?>" name="icon" class="richtextarea form-control" title="Please enter a push notification icon" placeholder="Enter the push notification icon" />
+                </div>
+            </div>
+            <br><br>
+
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
+                <input type="hidden" name="notifyId" id="notifyId<?php echo $this->purpose; ?>" value="<?php echo $this->result['id']; ?>" />
+                <input type="hidden" name="purpose" id="purpose<?php echo $this->purpose; ?>" value="<?php echo $this->purpose; ?>" />
+                <a href="javascript:void(0);" class="btn btn-primary" onclick="validateNow('<?php echo $this->purpose; ?>');">Update</a>
+                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin';" tabindex="8" value="Cancel" />
+            </div>
+        </form>
+    </fieldset>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#msgBody<?php echo $this->purpose; ?>,#dataMsg<?php echo $this->purpose; ?>").wysihtml5();
+    });
+
+    function validateNow(purpose) {
+        if ($('#title' + purpose).val() != '' && $('#msgBody' + purpose).val() != '') {
+            $.blockUI();
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'save-push-notification')); ?>", {
+                    title: $('#title' + purpose).val(),
+                    msgBody: $('#msgBody' + purpose).val(),
+                    dataMsg: $('#dataMsg' + purpose).val(),
+                    icon: $('#icon' + purpose).val(),
+                    notifyId: $('#notifyId' + purpose).val(),
+                    purpose: $('#purpose' + purpose).val(),
+                    format: "html"
+                },
+                function(data) {
+                    $.unblockUI();
+                    if (data != null || data > 0 || data != undefined) {
+                        alert('Updated successfully.');
+                        // location.reload();
+                    }
+                });
+        } else {
+            if ($('#title' + purpose).val() == '') {
+                alert($('#title' + purpose).attr('title'));
+                $('#title' + purpose).focus();
+            } else if ($('#msgBody' + purpose).val() == '') {
+                alert($('#msgBody' + purpose).attr('title'));
+                $('#msgBody' + purpose).focus();
+            }
+        }
+    }
+</script>

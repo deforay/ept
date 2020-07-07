@@ -264,7 +264,7 @@ class Application_Service_Common
         $db = new Application_Model_DbTable_ModeOfReceipt();
         return $db->fetchAllModeOfReceipt();
     }
-
+    
     public function updateHomeBanner($params)
     {
         $filterRules = array(
@@ -402,10 +402,25 @@ class Application_Service_Common
         $db = new Application_Model_DbTable_PushNotification();
         return $db->approveNotify($params);
     }
+    
+    public function getPushNotificationDetailsById($id){
+        $db = new Application_Model_DbTable_PushNotification();
+        return $db->fetchPushNotificationDetailsById($id);
+    }
 
     public function fetchUnReadPushNotify(){
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $count = $db->fetchAll($db->select()->from('push_notification')->where('push_status ="refuse"'));
         return count($count);
+    }
+
+    public function updatePushTemplate($params){
+        $db = new Application_Model_DbTable_PushNotificationTemplate();
+        return $db->updatePushTemplateDetails($params);
+    }
+
+    public function getPushTemplateByPurpose($purpose){
+        $db = new Application_Model_DbTable_PushNotificationTemplate();
+        return $db->fetchPushTemplateByPurpose($purpose);
     }
 }

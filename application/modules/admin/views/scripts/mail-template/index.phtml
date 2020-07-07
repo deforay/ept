@@ -1,117 +1,203 @@
-<?php
-//Zend_Debug::dump($this->mailTemplateDetails);die;
-$title='';
-if($this->mailPurpose=='new_shipment'){
-    $title='New Shipment Announcement';
-}else if($this->mailPurpose=='not_participated'){
-    $title='Not Participated Reminder';
-}
-?>
-<div class="well">
-    <form name="mailTemplate" id="mailTemplate" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "mail-template", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
-        <fieldset>
-            <legend><?php echo $title ; ?> Mail Template</legend>
-            <div class="form-group">
-                <label for="adminName" class="col-lg-3 control-label">From Name <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <input type="text" class="form-control isRequired" id="adminName" name="adminName" placeholder="Enter Admin Name" title="Please enter from name" value="<?php echo $this->mailTemplateDetails["from_name"]; ?>" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="adminEmail" class="col-lg-3 control-label">From Email <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <input type="text" class="form-control isRequired" id="adminEmail" name="adminEmail" placeholder="Enter Admin Email" title="Please enter from email" value="<?php echo $this->mailTemplateDetails["mail_from"]; ?>" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="adminBcc" class="col-lg-3 control-label">Bcc</label>
-                <div class="col-lg-6">
-                    <textarea class="form-control" id="adminBcc" name="adminBcc" placeholder="Enter comma seperated mails" title="Please enter bcc mails"><?php echo $this->mailTemplateDetails["mail_bcc"]; ?></textarea>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="adminCc" class="col-lg-3 control-label">Cc </label>
-                <div class="col-lg-6">
-                    <textarea class="form-control" id="adminCc" name="adminCc" placeholder="Enter comma seperated mails" title="Please enter Cc mails"><?php echo $this->mailTemplateDetails["mail_cc"]; ?></textarea>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-3 control-label">Note:</label>
-                <div class="col-lg-6">
-                    <p class="form-control-static" style="color: red;">You can enter comma[,] seperated email ids.</p>
-                </div>
-            </div>
+<style>
+    .accordion {
+        background-color: #eee;
+        color: #444;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+        transition: 0.4s;
+    }
 
-            <div class="form-group">
-                <label for="subject" class="col-lg-3 control-label">Subject <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <textarea class="form-control isRequired" id="subject" name="subject" placeholder="Enter Subject" title="Please enter subject"><?php echo $this->mailTemplateDetails["mail_subject"]; ?></textarea>
-                </div>
+    .active,
+    .accordion:hover {
+        background-color: #ccc;
+    }
+
+    .panel {
+        padding: 0 18px;
+        display: none;
+        background-color: white;
+        overflow: hidden;
+    }
+
+    a.accordion:after {
+        content: '\002B';
+        color: #777;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+    }
+    a.accordion.active:after {
+        content: "\2212";
+    }
+
+    a.accordion:hover,
+    a.accordion:focus {
+        text-decoration: none;
+        color: black;
+    }
+
+    .tabContainer {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    ul.tabs {
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+
+    ul.tabs li {
+        background: none;
+        color: #222;
+        display: inline-block;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+
+    ul.tabs li.current {
+        background: white;
+        color: #222;
+    }
+
+    .tab-content {
+        display: none;
+        padding: 15px;
+    }
+
+    .tab-content.current {
+        display: grid;
+        background-color: white;
+    }
+</style>
+<link href="<?php echo $this->baseUrl('/css/glyphicon.css'); ?>" rel="stylesheet">
+<link rel="stylesheet" href="<?php echo $this->baseUrl('/css/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css'); ?>" type="text/css" />
+<div class="well">
+    <fieldset style=" display: flex; ">
+        <div class="tabContainer">
+            <ul class="tabs">
+                <li class="tab-link current" data-tab="tab-mail">Mail Template</li>
+                <li class="tab-link" data-tab="tab-push">Push Notification Template</li>
+            </ul>
+            <div id="tab-mail" class="tab-content current">
+                <a href="javascript:void(0);" class="accordion">New Shipment Mail Template</a>
+                <div class="panel" id="newShipment"></div>
+
+                <a href="javascript:void(0);" class="accordion">Not Participated Mail Template</a>
+                <div class="panel" id="notParticipant"></div>
+
+                <a href="javascript:void(0);" class="accordion">Report Mail Template</a>
+                <div class="panel" id="report"></div>
+
+                <a href="javascript:void(0);" class="accordion">Announcement Mail Template</a>
+                <div class="panel" id="announcement"></div>
             </div>
-            <div class="form-group">
-                <label for="message" class="col-lg-3 control-label">Message <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <textarea class="form-control" id="message" name="message" placeholder="Enter Message" title="Please enter message"><?php echo $this->mailTemplateDetails["mail_content"]; ?></textarea>
-                </div>
+            <div id="tab-push" class="tab-content">
+                <a href="javascript:void(0);" class="accordion">New Shipment Push Notification</a>
+                <div class="panel" id="newShipmentPush"></div>
+
+                <a href="javascript:void(0);" class="accordion">Not Participated Push Notification</a>
+                <div class="panel" id="notParticipantPush"></div>
+
+                <a href="javascript:void(0);" class="accordion">Report Push Notification</a>
+                <div class="panel" id="reportPush"></div>
+
+                <a href="javascript:void(0);" class="accordion">Announcement Push Notification</a>
+                <div class="panel" id="announcementPush"></div>
             </div>
-            <div class="form-group">
-                <label for="message" class="col-lg-3 control-label">Key</label>
-                <div class="col-lg-6">
-                    <span class="help-block">Lab Name/Participant Name : ##NAME##</span>
-                    <span class="help-block">Shipment Code : ##SHIPCODE##</span>
-                    <span class="help-block">Scheme Type : ##SHIPTYPE##</span>
-                    <span class="help-block">PT Survey Code : ##SURVEYCODE##</span>
-                    <span class="help-block">PT Survey Date : ##SURVEYDATE##</span>
-                </div>
-            </div>
-             <div class="form-group">
-                <label for="footer" class="col-lg-3 control-label">Footer</label>
-                <div class="col-lg-6">
-                    <textarea class="form-control" id="footer" name="footer" placeholder="Enter Footer Content" title="Please footer content"><?php echo $this->mailTemplateDetails["mail_footer"]; ?></textarea>
-                </div>
-            </div>
-            <input type="hidden" id="mailPurpose" name="mailPurpose" value="<?php echo $this->mailPurpose; ?>" />
-            <input type="hidden" id="mailId" name="mailId" value="<?php echo $this->mailTemplateDetails["mail_temp_id"]; ?>" />
-            
-            <br>
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();
-                        return false;" tabindex="7" value="Update"/>
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/index';" tabindex="8" value="Cancel"/>
-            </div>
-        </fieldset>
-    </form>
+        </div>
+    </fieldset>
 </div>
-<script type="text/javascript" src="<?php echo $this->baseUrl('plugins/ckeditor/ckeditor.js'); ?>"></script>
+<script src="<?php echo $this->baseUrl('/js/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js'); ?>" type="text/javascript"></script>
 <script type="text/javascript">
-                    function validateNow() {
-                        var message = CKEDITOR.instances['message'].getData();
-                        $("#message").html(message);
-                        flag = deforayValidator.init({
-                            formId: 'mailTemplate'
-                        });
-                        if (flag) {
-                            $.blockUI();
-                            document.getElementById('mailTemplate').submit();
-                        }
-                    }
-                    $(document).ready(function () {
-                        CKEDITOR.config.width = 740;
-                        CKEDITOR.replace('message', {
-                            filebrowserBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=files'); ?>',
-                            filebrowserImageBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=images'); ?>',
-                            filebrowserFlashBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=flash'); ?>',
-                            filebrowserUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=files'); ?>',
-                            filebrowserImageUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=images'); ?>',
-                            filebrowserFlashUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=flash'); ?>'
-                        });
-                        CKEDITOR.replace('footer', {
-                            filebrowserBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=files'); ?>',
-                            filebrowserImageBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=images'); ?>',
-                            filebrowserFlashBrowseUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/browse.php?type=flash'); ?>',
-                            filebrowserUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=files'); ?>',
-                            filebrowserImageUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=images'); ?>',
-                            filebrowserFlashUploadUrl: '<?php echo $this->baseUrl('plugins/f1nd3r-p1ug1n/upload.php?type=flash'); ?>'
-                        });
-                    });
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $('ul.tabs li').click(function() {
+            var tab_id = $(this).attr('data-tab');
+
+            $('ul.tabs li').removeClass('current');
+            $('.tab-content').removeClass('current');
+
+            $(this).addClass('current');
+            $("#" + tab_id).addClass('current');
+        });
+
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-mail-template'), 'default', true); ?>", {
+                template: 'new_shipment',
+                format: "html"
+            },
+            function(data) {
+                $('#newShipment').html(data);
+            });
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-mail-template'), 'default', true); ?>", {
+                template: 'not_participated',
+                format: "html"
+            },
+            function(data) {
+                $('#notParticipant').html(data);
+            });
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-mail-template'), 'default', true); ?>", {
+                template: 'report',
+                format: "html"
+            },
+            function(data) {
+                $('#report').html(data);
+            });
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-mail-template'), 'default', true); ?>", {
+                template: 'announcement',
+                format: "html"
+            },
+            function(data) {
+                $('#announcement').html(data);
+            });
+        
+        
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-push-notification'), 'default', true); ?>", {
+                template: 'new-shipment',
+                format: "html"
+            },
+            function(data) {
+                $('#newShipmentPush').html(data);
+            });
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-push-notification'), 'default', true); ?>", {
+                template: 'not-participated',
+                format: "html"
+            },
+            function(data) {
+                $('#notParticipantPush').html(data);
+            });
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-push-notification'), 'default', true); ?>", {
+                template: 'report',
+                format: "html"
+            },
+            function(data) {
+                $('#reportPush').html(data);
+            });
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-push-notification'), 'default', true); ?>", {
+                template: 'announcement',
+                format: "html"
+            },
+            function(data) {
+                $('#announcementPush').html(data);
+            });
+    });
 </script>

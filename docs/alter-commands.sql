@@ -2518,3 +2518,18 @@ CREATE TABLE `push_notification` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ALTER TABLE `push_notification` CHANGE `notification_json` `notification_json` TEXT NULL DEFAULT NULL COMMENT 'create notify message (title body and icon) and convert into json and store here', CHANGE `data_json` `data_json` TEXT NULL DEFAULT NULL COMMENT 'create notify data message and convert into Json then store here', CHANGE `push_status` `push_status` VARCHAR(50) NULL DEFAULT NULL COMMENT 'refuse, pending, send, not-send', CHANGE `token_identify_id` `token_identify_id` INT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM', CHANGE `identify_type` `identify_type` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Type of identify id either shipment, people(DM), General and not-responded people.';
 ALTER TABLE `push_notification` ADD `notification_type` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Reports, Shipment, General' AFTER `identify_type`;
+ALTER TABLE `push_notification` CHANGE `token_identify_id` `token_identify_id` TEXT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM';
+-- Thana 6 Jul, 2020
+ALTER TABLE `data_manager` ADD `push_status` VARCHAR(50) NULL DEFAULT NULL AFTER `push_notify_token`;
+-- Thana 7 Jul, 2020
+CREATE TABLE `push_notification_template` (
+ `id` int NOT NULL AUTO_INCREMENT,
+ `purpose` varchar(255) DEFAULT NULL,
+ `notify_title` varchar(255) DEFAULT NULL,
+ `notify_body` text,
+ `data_msg` text,
+ `icon` varchar(255) DEFAULT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `push_notification_template` (`id`, `purpose`, `notify_title`, `notify_body`, `data_msg`, `icon`) VALUES (NULL, 'announcement', 'Announcement', 'Announcement Body', 'Announcement message', 'ic_launcher'), (NULL, 'report', 'Report', 'Report Body', 'Report Data Message', 'ic_launcher'), (NULL, 'not_participated', 'Not Participated', 'Not Participated Body', 'Not Participated Data Message', 'ic_launcher'), (NULL, 'new_shipment', 'New Shipment', 'New Shipment Body', 'New Shipment Data Message', 'ic_launcher');
