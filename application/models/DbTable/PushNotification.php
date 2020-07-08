@@ -201,4 +201,53 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
     {
         return $this->fetchRow($this->select()->from($this->_name)->where('id ='.$id));
     }
+    
+    public function fetchNotificationByAPI($params)
+    {
+        $response = array();
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        /* Check the app versions & parameters */
+        if (!isset($params['appVersion'])) {
+            return array('status' =>'version-failed','message'=>'App version is not updated. Kindly go to the play store and update the app');
+        }
+        if (!isset($params['authToken'])) {
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        }
+        
+        /* Validate new auth token and app-version */
+        $dmDb = new Application_Model_DbTable_DataManagers();
+        $aResult = $dmDb->fetchAuthToken($params);
+        if ($aResult == 'app-version-failed') {
+            return array('status' =>'version-failed','message'=>'App version is not updated. Kindly go to the play store and update the app');
+        }
+        if(!$aResult){
+            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        }
+        $notification = $this->fetchAll($this->select()->from($this->_name)->where('push_status ="send"')->group('token_identify_id'))->toArray();
+        if(isset($notification) && count($notification) > 0){
+            foreach($notification as $notify){
+                $subQuery = $dbAdapter->select()
+                ->from(array('s' => 'shipment'),array('shipment_code'))
+                ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('map_id'))
+                ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=spm.participant_id',array('dm_id'))
+                ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
+                ->where("s.shipment_id=?", $notify['token_identify_id'])
+                ->where("dm.auth_token=?", $params['authToken'])
+                ->group('dm.dm_id');
+                $subResult = $dbAdapter->fetchAll($subQuery);
+                if(isset($subResult) && count($subResult) > 0){
+                    $response['status'] =  'success';
+                    $response['data'][] =  array(
+                        'notification'      => json_decode($notify['notification_json']),
+                        'createdOn'         => date('d-M-Y H:i:s a',strtotime($notify['created_on'])),
+                        'notificationType'  => $notify['notification_type'],
+                    );
+                }
+            }
+        } else{
+            $response['status'] =  'fail';
+            $response['message'] =  'No notification found'; 
+        }
+        return $response;
+    }
 }

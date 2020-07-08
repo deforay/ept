@@ -428,4 +428,9 @@ class Application_Service_Common
         $db = new Application_Model_DbTable_PushNotificationTemplate();
         return $db->fetchPushTemplateByPurpose($purpose);
     }
+
+    public function getNotificationByAPI($params){
+        $db = new Application_Model_DbTable_PushNotification();
+        return $db->fetchNotificationByAPI($params);
+    }
 }

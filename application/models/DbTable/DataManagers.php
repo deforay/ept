@@ -486,7 +486,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Check the token  */
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check'))
+        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
             ->where("dm.auth_token=?", $params['authToken']);
@@ -708,7 +708,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
-        $update = $this->update(array('push_notify_token' => $params['token']), 'dm_id = "' . $aResult['dm_id'] . '"');
+        $update = $this->update(array('push_notify_token' => $params['token'], 'push_status' => 'pending'), 'dm_id = "' . $aResult['dm_id'] . '"');
         if ($update > 0) {
             $response['status']     = 'success';
         } else {
