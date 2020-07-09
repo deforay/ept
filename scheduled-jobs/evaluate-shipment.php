@@ -318,20 +318,48 @@ try {
             $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue'=>'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
             $db->update('evaluation_queue', array('status' => $reportCompletedStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
             $db->insert('notify',array('title'=>'Reports Generated','description'=>'Reports for Shipment '.$evalRow['shipment_code'].' are ready for download','link'=>$link));
-            $notification = array(
-                "body"  =>  'Reports for Shipment '.$evalRow['shipment_code'].' are ready for download',
-                "title" =>  "e-PT Shipment Reports",
-                "icon"  =>  "ic_launcher"
-            );
-            $db->insert('push_notification',array(
-                'notification_json' => json_encode($notification),
-                'data_json'         => '',
-                'push_status'       =>  'refuse',
-                'created_on'        =>  new Zend_Db_Expr('now()'),
-                'token_identify_id' =>  $evalRow['shipment_id'],
-                'identify_type'     =>  'shipment',
-                'notification_type' =>  'reports'
-            ));
+            /* New report push notification start */
+            $pushContent = $commonService->getPushTemplateByPurpose('report');
+
+            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+            $replace = array('', $evalRow['shipment_code'], $evalRow['scheme_type'], '', '');
+            $title = str_replace($search, $replace, $pushContent['notify_title']);
+            $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
+            if(isset($pushContent['data_msg']) && $pushContent['data_msg'] != ''){
+                $dataMsg = str_replace($search, $replace, $pushContent['data_msg']);
+            } else{
+                $dataMsg = '';
+            }
+            $commonService->insertPushNotification($title,$msgBody,$dataMsg,$pushContent['icon'],$evalRow['shipment_id'],'new-reports','reports');
+            
+            $notParticipatedMailContent = $commonService->getEmailTemplate('not_participated');
+            $subQuery = $db->select()
+            ->from(array('s' => 'shipment'),array('shipment_code', 'scheme_type'))
+            ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('map_id'))
+            ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=spm.participant_id',array('dm_id'))
+            ->join(array('p'=>'participant'),'p.participant_id=pmm.participant_id',array('participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
+            ->where("s.shipment_id=?", $evalRow['shipment_id'])
+            ->group('dm.dm_id');
+            // die($subQuery);
+            $subResult = $db->fetchAll($subQuery);
+            foreach($subResult as $row){
+                $db->update('data_manager', array('push_status' => 'pending'), 'dm_id = ' . $row['dm_id']);
+                /* New shipment mail alert start */
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $replace = array($row['participantName'], $row['shipment_code'], $row['scheme_type'], '', '');
+                $content = $notParticipatedMailContent['mail_content'];
+                $message = str_replace($search, $replace, $content);
+                $subject = $notParticipatedMailContent['mail_subject'];
+                $fromEmail = $notParticipatedMailContent['mail_from'];
+                $fromFullName = $notParticipatedMailContent['from_name'];
+                $toEmail = $row['primary_email'];
+                $cc = $notParticipatedMailContent['mail_cc'];
+                $bcc = $notParticipatedMailContent['mail_bcc'];
+                $commonService->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
+                /* New shipment mail alert end */
+            }
+            /* New report push notification end */
         }
     }
 } catch (Exception $e) {

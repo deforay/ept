@@ -13,9 +13,6 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
         $aColumns = array("notification_json");
         $orderColumns = array('notification_json');
 	
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'distribution_id';
-	
         /*
          * Paging
          */
@@ -191,10 +188,19 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
             'push_status'       => 'pending',
             'token_identify_id' => $shipmentId,
             'identify_type'     => $identifyType,
-            'notification_type' => $notificationType,
-            'created_on'        => new Zend_Db_Expr('now()')
+            'notification_type' => $notificationType
         );
-        return $this->insert($data);
+        $rowSet = $this->fetchAll($this->select()->from($this->_name)
+        ->where('push_status = "pending"')
+        ->where('token_identify_id = "'.$shipmentId.'"')
+        ->where('identify_type = "'.$identifyType.'"')
+        ->where('notification_type = "'.$notificationType.'"')
+        )->toArray();
+        // Zend_Debug::dump($rowSet);die;
+        if(count($rowSet) == 0){
+            $data['created_on'] = new Zend_Db_Expr('now()');
+            return $this->insert($data);
+        }
     }
 
     public function fetchPushNotificationDetailsById($id)
@@ -243,6 +249,10 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
                         'notificationType'  => $notify['notification_type'],
                     );
                 }
+            }
+            if(!isset($response['data'])){
+                $response['status'] =  'fail';
+                $response['message'] =  'No notification found'; 
             }
         } else{
             $response['status'] =  'fail';

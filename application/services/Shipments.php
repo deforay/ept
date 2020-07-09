@@ -924,7 +924,7 @@ class Application_Service_Shipments
             'created_by_admin' => $authNameSpace->primary_email
         );
         $lastId = $db->insert($data);
-
+        
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $size = count($params['sampleName']);
         if ($params['schemeId'] == 'eid') {
@@ -1883,7 +1883,7 @@ class Application_Service_Shipments
                 ->group('dm.dm_id');
             // die($pushQuery);
             $dmDetails = $db->fetchAll($pushQuery);
-            // Zend_Debug::dump($pushContent);die;
+            // Zend_Debug::dump($dmDetails);die;
             if(count($dmDetails) > 0){
                 foreach($dmDetails as $dm){
                     $surveyDate = $general->humanDateFormat($dm['distribution_date']);

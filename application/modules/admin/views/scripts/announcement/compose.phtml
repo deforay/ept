@@ -1,0 +1,181 @@
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+
+<fieldset>
+	<legend>Announcement</legend>
+	<form method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "announcement", "action" => "compose"), 'default', true); ?>" id="announcementForm" role="form" onsubmit="validateNow();return false;" autocomplete="off" enctype="multipart/form-data">
+		<div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label" for="subject">Subject<span class="mandatory">*</span></label>
+                <div class="col-lg-8">
+                    <input type="text" id="subject" name="subject" class="isRequired form-control" title="Please enter a subject" placeholder="Enter the subject" />
+                </div>
+            </div>
+
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label" for="message">Message<span class="mandatory">*</span></label>
+                <div class="col-lg-8">
+                    <textarea type="text" id="message" name="message" class="isRequired form-control" title="Please enter a message" placeholder="Enter the message"></textarea>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <h3>Select list of participants to send <span class="mandatory">*</span></h3>
+        <hr>
+        <div class="row">
+			<div class="form-group col-lg-5">
+				<div class="form-group">
+					<label class="col-lg-2 control-label">State</label>
+					<div class="col-lg-10">
+						<select style="width:100%" name="state[]" id="state" multiple="multiple" title="Select one or more State" data-selected-text-format="count>3">
+							<?php foreach ($this->participantState as $partState) { ?>
+								<option value="<?php echo $partState['state']; ?>"><?php echo $partState['state']; ?> </option>
+							<?php } ?>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="form-group col-lg-5">
+				<div class="form-group">
+					<label class="col-lg-2 control-label">City</label>
+					<div class="col-lg-10">
+						<select style="width:100%" name="city[]" id="city" multiple="multiple" title="Select one or more City" data-selected-text-format="count>3">
+							<?php foreach ($this->participantCity as $partCity) { ?>
+								<option value="<?php echo $partCity['city']; ?>"><?php echo $partCity['city']; ?> </option>
+							<?php } ?>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-2">
+				<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants()" value="Filter" />
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections<br /><br />
+				<div style="width:500px;margin:0 auto;clear:both;">
+					<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+				</div>
+			</div>
+			<br />
+			<select id="participants" name="participants[]" class="isRequired" multiple="multiple" title="Please select at least one participant">
+                <?php foreach ($this->participants as $participant) { ?>
+                    <option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+                <?php } ?>
+            </select>
+		</div>
+
+		<div style="clear:both;margin: 90px auto 30px auto; text-align: center;" align="center">
+			<input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();return false;" tabindex="7" value="Enroll" />
+			<input class="btn btn-danger btn-sm" type="button" onclick="window.history.go(-1);" tabindex="8" value="Cancel" />
+		</div>
+	</form>
+</fieldset>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
+<script>
+	$(document).ready(function() {
+
+
+		$("#city").select2({
+			placeholder: "Select one or more city",
+			allowClear: true
+		});
+		//$('#city').selectpicker();
+		//$('#state').selectpicker();
+		$("#state").select2({
+			placeholder: "Select one or more state",
+			allowClear: true
+		});
+
+		$('#participants').multiSelect({
+			selectableFooter: "<div class='custom-header'>Participants not yet enrolled for this scheme (<span id='msUnselectedCountHolder'></span>)</div>",
+			selectionFooter: "<div class='custom-header'>Enrolled/Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
+			selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+			selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+			afterInit: function(ms) {
+				var that = this,
+					$selectableSearch = that.$selectableUl.prev(),
+					$selectionSearch = that.$selectionUl.prev(),
+					selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
+					selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+
+				that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+					.on('keydown', function(e) {
+						if (e.which === 40) {
+							that.$selectableUl.focus();
+							return false;
+						}
+					});
+
+				that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+					.on('keydown', function(e) {
+						if (e.which == 40) {
+							that.$selectionUl.focus();
+							return false;
+						}
+					});
+			},
+			afterSelect: function() {
+				this.qs1.cache();
+				this.qs2.cache();
+			},
+			afterDeselect: function() {
+				this.qs1.cache();
+				this.qs2.cache();
+			}
+		});
+
+
+		$('#select-all').click(function() {
+			$('#participants').multiSelect('select_all');
+			return false;
+		});
+		$('#deselect-all').click(function() {
+			$('#participants').multiSelect('deselect_all');
+			return false;
+		});
+	});
+
+
+
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'announcementForm'
+		});
+		if (flag) {
+			$.blockUI();
+			document.getElementById('announcementForm').submit();
+		}
+	}
+
+	function fetchParticipants() {
+
+		var shipId = $("#shipmentId").val();
+		var stateId = [$("#state").val()].join(',');
+		var cityId = [$("#city").val()].join(',');
+
+		$.blockUI();
+		if ($.trim(stateId) != '' || $.trim(cityId) != '') {
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
+					sid: shipId,
+					choosenState: stateId,
+					choosenCity: cityId,
+					format: "html"
+				},
+				function(data) {
+					$.unblockUI();
+					$("#participants").html(data);
+					$('#participants').multiselect("refresh");
+
+				});
+		} else {
+			alert("Please Select a state / City ")
+			$.unblockUI();
+		}
+	}
+</script>

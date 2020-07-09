@@ -2531,3 +2531,13 @@ CREATE TABLE `push_notification_template` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `push_notification_template` (`id`, `purpose`, `notify_title`, `notify_body`, `data_msg`, `icon`) VALUES (NULL, 'announcement', 'Announcement', 'Announcement Body', 'Announcement message', 'ic_launcher'), (NULL, 'report', 'Report', 'Report Body', 'Report Data Message', 'ic_launcher'), (NULL, 'not_participated', 'Not Participated', 'Not Participated Body', 'Not Participated Data Message', 'ic_launcher'), (NULL, 'new_shipment', 'New Shipment', 'New Shipment Body', 'New Shipment Data Message', 'ic_launcher');
+-- Thana 9 Jul, 2020
+CREATE TABLE `announcements_notification` (
+ `id` int NOT NULL AUTO_INCREMENT,
+ `subject` varchar(255) DEFAULT NULL,
+ `message` text,
+ `participants` text,
+ `created_on` datetime DEFAULT NULL,
+ `created_by` int DEFAULT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
