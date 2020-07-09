@@ -232,14 +232,23 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
         $notification = $this->fetchAll($this->select()->from($this->_name)->where('push_status ="send"')->group('token_identify_id'))->toArray();
         if(isset($notification) && count($notification) > 0){
             foreach($notification as $notify){
-                $subQuery = $dbAdapter->select()
-                ->from(array('s' => 'shipment'),array('shipment_code'))
-                ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('map_id'))
-                ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=spm.participant_id',array('dm_id'))
-                ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
-                ->where("s.shipment_id=?", $notify['token_identify_id'])
-                ->where("dm.auth_token=?", $params['authToken'])
-                ->group('dm.dm_id');
+                if($notify['notification_type'] == 'announcement'){
+                    $subQuery = $dbAdapter->select()
+                    ->from(array('s' => 'shipment'),array('shipment_code'))
+                    ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('map_id'))
+                    ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=spm.participant_id',array('dm_id'))
+                    ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
+                    ->where("dm.dm_id IN (".$notify['token_identify_id'].")");
+                } else{
+                    $subQuery = $dbAdapter->select()
+                    ->from(array('s' => 'shipment'),array('shipment_code'))
+                    ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('map_id'))
+                    ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=spm.participant_id',array('dm_id'))
+                    ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
+                    ->where("s.shipment_id=?", $notify['token_identify_id'])
+                    ->where("dm.auth_token=?", $params['authToken'])
+                    ->group('dm.dm_id');
+                }
                 $subResult = $dbAdapter->fetchAll($subQuery);
                 if(isset($subResult) && count($subResult) > 0){
                     $response['status'] =  'success';
