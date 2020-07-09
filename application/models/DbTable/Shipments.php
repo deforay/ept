@@ -1994,7 +1994,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $reportAccess['message'] = 'Your response is late';
                 } else if ($shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
-                    $reportAccess['message'] = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
+                    $reportAccess['message'] = 'This shipment has already been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
                 } else {
                     $reportAccess['status'] = 'success';
                 }

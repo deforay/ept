@@ -1,8 +1,8 @@
 <?php
 
-include_once 'CronInit.php';
+include_once('CronInit.php');
 
-require_once 'tcpdf/tcpdf.php';
+require_once('tcpdf/tcpdf.php');
 
 defined('PARTICIPANT_REPORT_LAYOUT')
     || define('PARTICIPANT_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));
