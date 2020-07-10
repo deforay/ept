@@ -1,0 +1,7 @@
+{
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.14"
+    },
+    "require-dev": {
+    }
+}
