@@ -421,7 +421,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'forceProfileCheck'             => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != "") ? $aResult['force_profile_check'] : 'no',
             'name'                          => $result['first_name'] . ' ' . $result['last_name'],
             'phone'                         => $result['phone'],
-            'appVersion'                    => $aResult['app_version']
+            'appVersion'                    => $aResult['app_version'],
+            'pushStatus'                    => $aResult['push_status']
         );
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
