@@ -81,6 +81,7 @@ foreach($pnResult as $row){
                 if($response->success > 0){
                     $pushStatus = "send";
                 } else{
+                    $status = false;
                     $pushStatus = "not-send";   
                 }
             } else{

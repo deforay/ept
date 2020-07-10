@@ -392,7 +392,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $common = new Application_Service_Common();
         $params['authToken'] = $common->getRandomString(6);
         $params['download_link'] = $common->getRandomString(9);
-        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
+        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()'), 'push_status' => 'not-send'), "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
         /* App version check */
         if ($aResult == 'app-version-failed') {
