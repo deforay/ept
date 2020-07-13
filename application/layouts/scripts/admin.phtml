@@ -6,34 +6,35 @@ $actionName = Zend_Controller_Front::getInstance()->getRequest()->getActionName(
 $notifyData = $this->getNotification();
 
 // Zend_Debug::dump($notifyData);die;
-$notifyCount = (count($notifyData) > 0)?count($notifyData):0;
+$notifyCount = (count($notifyData) > 0) ? count($notifyData) : 0;
 $scrollHeight = '';
-if($notifyCount >= 5){
+if ($notifyCount >= 5) {
 	$scrollHeight = 'height: 300px;';
 }
-if(isset($notifyData) && $notifyCount > 0){
-	$count = 0;$nCount = 0;
-	foreach($notifyData as $notifyRow){
-		if($notifyRow['status'] == 'read'){
-			$nCount +=1; 
+if (isset($notifyData) && $notifyCount > 0) {
+	$count = 0;
+	$nCount = 0;
+	foreach ($notifyData as $notifyRow) {
+		if ($notifyRow['status'] == 'read') {
+			$nCount += 1;
 		}
 	}
 	$notify = '
-	<ul class="dropdown-menu" style="overflow: auto;'.$scrollHeight.'"><h4 class="notify-title"><b>Notifications</b></h4>';
-	foreach($notifyData as $notifyRow){
-		if($count < 10){
+	<ul class="dropdown-menu" style="overflow: auto;' . $scrollHeight . '"><h4 class="notify-title"><b>Notifications</b></h4>';
+	foreach ($notifyData as $notifyRow) {
+		if ($count < 10) {
 			$count++;
-			$notifyRead = ($notifyRow['status'] == 'read')?'style=" background: #80808024; "':'';
-			$notifyLink = (isset($notifyRow['link']) && $notifyRow['link'] != '')?$notifyRow['link']:'javascript:void(0);';
-			$notify.='<li '.$notifyRead.'><a onclick="notifyReaded('.$notifyRow['id'].');" href="'.$notifyLink.'">
-						<h4>'.ucwords($notifyRow['title']).'<span class="notify-time">'.date('d-M-Y H:i a',strtotime($notifyRow['created_on'])).'</span></h4>
-						<p>'.$notifyRow['description'].'</p></a>
+			$notifyRead = ($notifyRow['status'] == 'read') ? 'style=" background: #80808024; "' : '';
+			$notifyLink = (isset($notifyRow['link']) && $notifyRow['link'] != '') ? $notifyRow['link'] : 'javascript:void(0);';
+			$notify .= '<li ' . $notifyRead . '><a onclick="notifyReaded(' . $notifyRow['id'] . ');" href="' . $notifyLink . '">
+						<h4>' . ucwords($notifyRow['title']) . '<span class="notify-time">' . date('d-M-Y H:i a', strtotime($notifyRow['created_on'])) . '</span></h4>
+						<p>' . $notifyRow['description'] . '</p></a>
 					</li>';
-		}else{
-		break;
+		} else {
+			break;
 		}
 	}
-	$notify.='</ul>';
+	$notify .= '</ul>';
 }
 /* Notification Section End */
 $hideShipmentResponseReport = false;
@@ -45,10 +46,10 @@ if (count($adminSession->activeSchemes) == 1 && in_array('vl', $adminSession->ac
 	$hideShipmentResponseReport = true;
 }
 
-if($adminSession->privileges != ""){
+if ($adminSession->privileges != "") {
 	$pstatus = false;
-	$privileges = explode(',',$adminSession->privileges);
-}else{
+	$privileges = explode(',', $adminSession->privileges);
+} else {
 	$pstatus = true;
 	$privileges = array();
 }
@@ -86,22 +87,25 @@ if($adminSession->privileges != ""){
 		::-webkit-scrollbar {
 			width: 05px;
 		}
+
 		::-webkit-scrollbar-track {
-			-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+			-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 			border-radius: 10px;
 		}
-		
+
 		::-webkit-scrollbar-thumb {
 			border-radius: 10px;
-			-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+			-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
 		}
-		@media screen and (max-width: 768px) and (min-width: 320px){
-			.count-notify{
+
+		@media screen and (max-width: 768px) and (min-width: 320px) {
+			.count-notify {
 				width: 4% !important;
 				left: 25px;
 			}
 		}
-		.notify-title{
+
+		.notify-title {
 			padding: 0px 0px 7px 7px;
 			border-bottom: 1px solid #8080804a;
 			margin: 0px 0px;
@@ -109,7 +113,8 @@ if($adminSession->privileges != ""){
 			top: -5px;
 			background: white;
 		}
-		.count-notify{
+
+		.count-notify {
 			background-color: #ff0000d1;
 			color: white;
 			border-radius: 50%;
@@ -121,6 +126,7 @@ if($adminSession->privileges != ""){
 			font-weight: 700;
 			right: 0px;
 		}
+
 		.notify-time {
 			font-size: small;
 			float: right;
@@ -144,92 +150,92 @@ if($adminSession->privileges != ""){
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?>><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index'), 'default', true); ?>"><i class="icon-dashboard"></i>&nbsp;&nbsp;Dashboard</a></li>
-					<?php if(!$pstatus && in_array('config-ept',$privileges)){?>
-					<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'configMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i>&nbsp;&nbsp;Configure <b class="caret"></b></a>
-						<ul class="dropdown-menu" style="overflow-y:scroll;">
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'system-admins'), 'default', true); ?>">PT Managers</a></li>
-							<li class="divider"></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants'), 'default', true); ?>">PT Participants</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers'), 'default', true); ?>">PT Participant Login</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>">Participant Login Map</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'pending'), 'default', true); ?>">Pending PT Participants</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments'), 'default', true); ?>">Scheme Enrollments</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>">Testkits</a></li>
-							<li class="divider"></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'global-config'), 'default', true); ?>">ePT Global Settings</a></li>
-							<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
-								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>">DTS Settings</a></li>
-							<?php } ?>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config'), 'default', true); ?>">PDF Report Settings</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-fields'), 'default', true); ?>">Shipment Custom Fields</a></li>
-							<li class="divider"></li>
-							<li><a href="/admin/mail-template"> Mail Template</a></li>
-							<li><a href="/admin/announcement"> Announcement</a></li>
-							<li class="divider"></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-banner'), 'default', true); ?>">Home Banner</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'publications'), 'default', true); ?>">Publications</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'partners'), 'default', true); ?>">Partners</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-assay'), 'default', true); ?>">VL Assay</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay'), 'default', true); ?>">Eid Assay</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'contact-us'), 'default', true); ?>">Contact Messages</a></li>
-						</ul>
-					</li>
-					<?php } 
-					if(!$pstatus && in_array('manage-shipments',$privileges)){ ?>
-					<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manageMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-beaker"></i>&nbsp;&nbsp;Manage <b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions'), 'default', true); ?>">PT Survey</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment'), 'default', true); ?>">Shipments</a></li>
-							<li class="divider"></li>
-							<li><a href="javascript:void(0);">Packaging</a></li>
-						</ul>
-					</li>
-					<?php } 
-					if(!$pstatus && in_array('analyze-generate-reports',$privileges)){ ?>
-					<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'analyze') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-search"></i>&nbsp;&nbsp;Analyze <b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate'), 'default', true); ?>">Evaluate Responses</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution'), 'default', true); ?>">Generate Reports</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize'), 'default', true); ?>">Finalize Reports</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'shipments'), 'default', true); ?>">View Finalized Shipments</a></li>
-						</ul>
-					</li>
+					<?php if (!$pstatus && in_array('config-ept', $privileges)) { ?>
+						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'configMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i>&nbsp;&nbsp;Configure <b class="caret"></b></a>
+							<ul class="dropdown-menu" style="overflow-y:scroll;">
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'system-admins'), 'default', true); ?>">PT Managers</a></li>
+								<li class="divider"></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants'), 'default', true); ?>">PT Participants</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers'), 'default', true); ?>">PT Participant Login</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>">Participant Login Map</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'pending'), 'default', true); ?>">Pending PT Participants</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments'), 'default', true); ?>">Scheme Enrollments</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>">Testkits</a></li>
+								<li class="divider"></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'global-config'), 'default', true); ?>">ePT Global Settings</a></li>
+								<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
+									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>">DTS Settings</a></li>
+								<?php } ?>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config'), 'default', true); ?>">PDF Report Settings</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-fields'), 'default', true); ?>">Shipment Custom Fields</a></li>
+								<li class="divider"></li>
+								<li><a href="/admin/mail-template"> Mail Template</a></li>
+								<li><a href="/admin/announcement"> Announcement</a></li>
+								<li class="divider"></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-banner'), 'default', true); ?>">Home Banner</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'publications'), 'default', true); ?>">Publications</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'partners'), 'default', true); ?>">Partners</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-assay'), 'default', true); ?>">VL Assay</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay'), 'default', true); ?>">Eid Assay</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'contact-us'), 'default', true); ?>">Contact Messages</a></li>
+							</ul>
+						</li>
 					<?php }
-					if(!$pstatus && in_array('access-reports',$privileges)){ ?>
-					<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'report') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-bar-chart"></i>&nbsp;&nbsp;Reports <b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed'), 'default', true); ?>">Participant Response Report</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance'), 'default', true); ?>">Participant Performance Report</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions'), 'default', true); ?>">Corrective Actions Report</a></li>
-							<?php if ($hideShipmentResponseReport == false) { ?>
-								<!-- <li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response'), 'default', true); ?>">Shipment Response Report</a></li> -->
-							<?php } ?>
-							<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
-								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit'), 'default', true); ?>">TestKit Report For DTS</a></li>
-							<?php } ?>
-							<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments'), 'default', true); ?>">Shipments Report</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis'), 'default', true); ?>">VL Sample Analysis</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution'), 'default', true); ?>">VL Assay Distribution</a></li>
-							<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'index'), 'default', true); ?>">Annual Report</a></li>
-						</ul>
-					</li>
-					<?php }?>
+					if (!$pstatus && in_array('manage-shipments', $privileges)) { ?>
+						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manageMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-beaker"></i>&nbsp;&nbsp;Manage <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions'), 'default', true); ?>">PT Survey</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment'), 'default', true); ?>">Shipments</a></li>
+								<li class="divider"></li>
+								<li><a href="javascript:void(0);">Packaging</a></li>
+							</ul>
+						</li>
+					<?php }
+					if (!$pstatus && in_array('analyze-generate-reports', $privileges)) { ?>
+						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'analyze') ? "class='active dropdown'" : "class='dropdown'"; ?>>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-search"></i>&nbsp;&nbsp;Analyze <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate'), 'default', true); ?>">Evaluate Responses</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution'), 'default', true); ?>">Generate Reports</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize'), 'default', true); ?>">Finalize Reports</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'shipments'), 'default', true); ?>">View Finalized Shipments</a></li>
+							</ul>
+						</li>
+					<?php }
+					if (!$pstatus && in_array('access-reports', $privileges)) { ?>
+						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'report') ? "class='active dropdown'" : "class='dropdown'"; ?>>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-bar-chart"></i>&nbsp;&nbsp;Reports <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed'), 'default', true); ?>">Participant Response Report</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance'), 'default', true); ?>">Participant Performance Report</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions'), 'default', true); ?>">Corrective Actions Report</a></li>
+								<?php if ($hideShipmentResponseReport == false) { ?>
+									<!-- <li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response'), 'default', true); ?>">Shipment Response Report</a></li> -->
+								<?php } ?>
+								<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
+									<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit'), 'default', true); ?>">TestKit Report For DTS</a></li>
+								<?php } ?>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments'), 'default', true); ?>">Shipments Report</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis'), 'default', true); ?>">VL Sample Analysis</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution'), 'default', true); ?>">VL Assay Distribution</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'index'), 'default', true); ?>">Annual Report</a></li>
+							</ul>
+						</li>
+					<?php } ?>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<?php if($notifyCount > 0){?>
+					<?php if ($notifyCount > 0) { ?>
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="General Notification"><i class="icon-envelope">
-								<?php if($nCount > 0) {?>
-									<span class="count-notify"><?php echo $nCount;?></span>
-								<?php } ?>
-							</i></a>
-							<?php echo $notify;?>
+									<?php if ($nCount > 0) { ?>
+										<span class="count-notify"><?php echo $nCount; ?></span>
+									<?php } ?>
+								</i></a>
+							<?php echo $notify; ?>
 						</li>
-					<?php }else{
+					<?php } else {
 						echo '<li><a href="javascript:void(0);"><i class="icon-envelope" style="opacity: 0.6;"></i></a></li>';
 					} ?>
 					<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'login', 'action' => 'log-out')); ?>"><i class="icon-signout"></i> Logout</a></li>
@@ -323,9 +329,17 @@ if($adminSession->privileges != ""){
 			hidedefModal();
 		}
 
-		function notifyReaded(id){
-			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {nid: id},
-			function(data) {})
+		function notifyReaded(id) {
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
+					nid: id
+				},
+				function(data) {})
+		}
+
+		function allowOnlyAlphaNumericAndHyphen(inputId) {
+			var s = $(inputId).val().toString();
+			var x = s.replace(/[^\A-Za-z0-9\-]/gi, '');
+			$(inputId).val(x);
 		}
 	</script>
 	<img src="/images/loading.gif" style="display:none;" />

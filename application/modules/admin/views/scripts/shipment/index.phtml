@@ -153,12 +153,17 @@
 
         });
 
+        $('#shipmentCode').on('input', function(event) {
+            allowOnlyAlphaNumericAndHyphen('#shipmentCode');
+        });
+
         //drawTable();
         schemeSelected($("#scheme").val());
         $(".datepicker").datepicker({dateFormat: '<?php echo $this->defaultDateFormat(); ?>'});
     });
 
     function validateNow() {
+        allowOnlyAlphaNumericAndHyphen('#shipmentCode');
         flag = deforayValidator.init({
             formId: 'shipmentForm'
         });
