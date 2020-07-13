@@ -2503,7 +2503,7 @@ ALTER TABLE `reference_result_recency` CHANGE `reference_verification_line` `ref
 ALTER TABLE `response_result_recency` CHANGE `verification_line` `diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 
 -- Thana 3 Jul, 2020
-ALTER TABLE `data_manager` ADD `push_notify_token` TEXT NULL DEFAULT NULL AFTER `last_date_for_email_reset`;
+ALTER TABLE `data_manager` ADD `push_notify_token` TEXT NULL DEFAULT NULL;
 CREATE TABLE `push_notification` (
  `id` int NOT NULL AUTO_INCREMENT,
  `notification_json` text,

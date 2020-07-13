@@ -2249,6 +2249,10 @@ $dtFormat =  $vHelper->getDateFormat();
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
+
+		$('#shipmentCode').on('input', function(event) {
+            allowOnlyAlphaNumericAndHyphen('#shipmentCode');
+        });		
 		$("body").on("change", 'select.controlOrNot', function() {
 			var scoreElem = $(this).parent().parent().find('.score');
 			if ($(this).val() == 1) {
@@ -2261,7 +2265,10 @@ $dtFormat =  $vHelper->getDateFormat();
 		});
 	});
 
+
+
 	function validateNow() {
+		allowOnlyAlphaNumericAndHyphen('#shipmentCode');
 		//checkDuplicate('shipment', 'shipment_code', $("#shipmentCode"), '<?php echo "shipment_id##" . $shipmentData['shipment']['shipment_id']; ?>', 'This Code already exists for another Shipment. Please try something else.')
 		flag = deforayValidator.init({
 			formId: 'shipmentForm'
