@@ -10,8 +10,8 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 	
-        $aColumns = array("subject", "message");
-        $orderColumns = array("id", "subject", "message");
+        $aColumns = array("subject", "message", 'DATE_FORMAT(created_on,"%d-%b-%Y")');
+        $orderColumns = array("id", "subject", "message", "created_on");
 	
         /*
          * Paging
@@ -129,6 +129,7 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
             $row = array();
             $row[] = $aRow['subject'];
             $row[] = $aRow['message'];
+            $row[] = date('d-M-Y h:i:s a',strtotime($aRow['created_on']));
             $output['aaData'][] = $row;
         }
 

@@ -2518,7 +2518,7 @@ ALTER TABLE `push_notification` CHANGE `notification_json` `notification_json` T
 ALTER TABLE `push_notification` ADD `notification_type` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Reports, Shipment, General' AFTER `identify_type`;
 ALTER TABLE `push_notification` CHANGE `token_identify_id` `token_identify_id` TEXT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM';
 -- Thana 6 Jul, 2020
-ALTER TABLE `data_manager` ADD `push_status` VARCHAR(50) NULL DEFAULT NULL AFTER `push_notify_token`;
+ALTER TABLE `data_manager` ADD `push_status` VARCHAR(50) NULL DEFAULT 'not-send' AFTER `push_notify_token`;
 -- Thana 7 Jul, 2020
 CREATE TABLE `push_notification_template` (
  `id` int NOT NULL AUTO_INCREMENT,
@@ -2541,3 +2541,5 @@ CREATE TABLE `announcements_notification` (
  `created_by` int DEFAULT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+-- Thana 13 Jul, 2020
+ALTER TABLE `evaluation_queue` ADD `date_finalised` VARCHAR(255) NULL DEFAULT NULL AFTER `status`;

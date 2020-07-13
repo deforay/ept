@@ -315,8 +315,15 @@ try {
                 $reportCompletedStatus = 'finalized';
                 $link = '/reports/distribution/finalize/sid/'.base64_encode($evalRow['shipment_id']);
             }
+            $update = array(
+                'status' => $reportCompletedStatus, 
+                'last_updated_on' => new Zend_Db_Expr('now()')
+            );
+            if($evalRow['report_type'] == 'finalized'){
+                $update['date_finalised'] = date('Y-m-d');
+            }
             $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue'=>'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
-            $db->update('evaluation_queue', array('status' => $reportCompletedStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
             $db->insert('notify',array('title'=>'Reports Generated','description'=>'Reports for Shipment '.$evalRow['shipment_code'].' are ready for download','link'=>$link));
             /* New report push notification start */
             $pushContent = $commonService->getPushTemplateByPurpose('report');

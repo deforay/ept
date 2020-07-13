@@ -229,7 +229,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
         if(!$aResult){
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
         }
-        $notification = $this->fetchAll($this->select()->from($this->_name)->where('push_status ="send"')->group('token_identify_id'))->toArray();
+        $notification = $this->fetchAll($this->select()->from($this->_name)->where('push_status ="send"')->order('created_on DESC'))->toArray();
         if(isset($notification) && count($notification) > 0){
             foreach($notification as $notify){
                 if($notify['notification_type'] == 'announcement'){
@@ -254,7 +254,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
                     $response['status'] =  'success';
                     $response['data'][] =  array(
                         'notification'      => json_decode($notify['notification_json']),
-                        'createdOn'         => date('d-M-Y H:i:s a',strtotime($notify['created_on'])),
+                        'createdOn'         => date('d-M-Y h:i:s a',strtotime($notify['created_on'])),
                         'notificationType'  => $notify['notification_type'],
                     );
                 }
