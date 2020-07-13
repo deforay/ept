@@ -18,12 +18,11 @@ error_reporting(E_ALL);
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
-
 class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType,$layout)
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType,$layout, $datetime = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -32,6 +31,20 @@ class IndividualPDF extends TCPDF
         $this->resultStatus = $resultStatus;
         $this->schemeType = $schemeType;
         $this->layout = $layout;
+        $this->dateTime = $datetime;
+    }
+
+    public function humanDateTimeFormat($date) {
+        if ($date == "0000-00-00 00:00:00") {
+            return "";
+        } else {
+            $dateTimeArray = explode(' ', $date);
+            $dateArray = explode('-', $dateTimeArray[0]);
+            $newDate = $dateArray[2] . "-";
+            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+            $mon = $monthsArray[$dateArray[1] - 1];
+            return $newDate .= $mon . "-" . $dateArray[0]." ".$dateTimeArray[1];
+        }
     }
 
     //Page header
@@ -86,7 +99,11 @@ class IndividualPDF extends TCPDF
         } else {
             $finalizeReport = ' | INDIVIDUAL REPORT ';
         }
-        
+        if(isset($this->dateTime) && $this->dateTime != ''){
+            $showTime = $this->dateTime;
+        } else{
+            $showTime = date("Y-m-d H:i:s");
+        }
         // Position at 15 mm from bottom
         $this->SetY(-12);
         // Set font
@@ -98,7 +115,7 @@ class IndividualPDF extends TCPDF
         if(isset($this->layout) && $this->layout == 'zimbabwe'){
             $this->Cell(0, 05,  strtoupper($this->header), 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }else{
-            $this->writeHTML("Report generated on " . date("d M Y H:i:s") . $finalizeReport, true, false, true, false, 'C');
+            $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
         }
     }
 }
@@ -107,7 +124,7 @@ class IndividualPDF extends TCPDF
 class SummaryPDF extends TCPDF
 {
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType)
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -115,6 +132,20 @@ class SummaryPDF extends TCPDF
         $this->logoRight = $logoRight;
         $this->resultStatus = $resultStatus;
         $this->schemeType = $schemeType;
+        $this->dateTime = $datetime;
+    }
+
+    public function humanDateTimeFormat($date) {
+        if ($date == "0000-00-00 00:00:00") {
+            return "";
+        } else {
+            $dateTimeArray = explode(' ', $date);
+            $dateArray = explode('-', $dateTimeArray[0]);
+            $newDate = $dateArray[2] . "-";
+            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+            $mon = $monthsArray[$dateArray[1] - 1];
+            return $newDate .= $mon . "-" . $dateArray[0]." ".$dateTimeArray[1];
+        }
     }
 
     //Page header
@@ -169,6 +200,11 @@ class SummaryPDF extends TCPDF
         } else {
             $finalizeReport = ' | SUMMARY REPORT ';
         }
+        if(isset($this->dateTime) && $this->dateTime != ''){
+            $showTime = $this->dateTime;
+        } else{
+            $showTime = date("Y-m-d H:i:s");
+        }
         // Position at 15 mm from bottom
         $this->SetY(-15);
         // Set font
@@ -176,7 +212,7 @@ class SummaryPDF extends TCPDF
         // Page number
         //$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
 
-        $this->Cell(0, 10, "Report generated on " . date("d M Y H:i:s") . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
     }
 }
 
@@ -206,7 +242,6 @@ function dateFormat($dateIn)
             return   $mon . "-" . $newDate  . $dateArray[0];
     }
 }
-
 
 try {
 
@@ -319,8 +354,8 @@ try {
                 'status' => $reportCompletedStatus, 
                 'last_updated_on' => new Zend_Db_Expr('now()')
             );
-            if($evalRow['report_type'] == 'finalized'){
-                $update['date_finalised'] = date('Y-m-d');
+            if($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == ''){
+                $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
             $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue'=>'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
             $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);

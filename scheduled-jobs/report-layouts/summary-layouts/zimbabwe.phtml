@@ -1,6 +1,6 @@
 <?php
 require_once('tcpdf/tcpdf.php');
-require_once(CRON_FOLDER.'/General.php');;
+require_once(CRON_FOLDER.'/General.php');
 $general = new General();
 //require_once('libchart/classes/libchart.php');
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -49,7 +49,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type']);
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised']);
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------

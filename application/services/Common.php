@@ -3,6 +3,19 @@
 class Application_Service_Common
 {
 
+    public function humanDateTimeFormat($date) {
+        if ($date == "0000-00-00 00:00:00") {
+            return "";
+        } else {
+            $dateTimeArray = explode(' ', $date);
+            $dateArray = explode('-', $dateTimeArray[0]);
+            $newDate = $dateArray[2] . "-";
+            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+            $mon = $monthsArray[$dateArray[1] - 1];
+            return $newDate .= $mon . "-" . $dateArray[0]." ".$dateTimeArray[1];
+        }
+    }
+
     public function sendMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = array())
     {
         //Send to email
