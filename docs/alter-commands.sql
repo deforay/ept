@@ -2544,4 +2544,4 @@ CREATE TABLE `announcements_notification` (
 -- Thana 13 Jul, 2020
 ALTER TABLE `evaluation_queue` ADD `date_finalised` DATETIME NULL DEFAULT NULL AFTER `last_updated_on`;
 
--- Version 6.0
+-- Version 6.0 14-July-2020
