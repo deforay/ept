@@ -252,7 +252,7 @@ try {
 
     //$smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
-    $limit = 1;
+    $limit = 3;
     $sQuery = $db->select()
         ->from(array('eq' => 'evaluation_queue'))
         ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type'))
