@@ -487,7 +487,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Check the token  */
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status'))
+        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
             ->where("dm.auth_token=?", $params['authToken']);
@@ -511,6 +511,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'force_profile_check'               => $aResult['force_profile_check'],
             'app_version'                       => $appVersion['value'],
             'push_status'                       => $aResult['push_status'],
+            'marked_push_notify'              => $aResult['marked_push_notify'],
         );
     }
 
@@ -690,7 +691,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $this->update(array('status' => $status), 'primary_email = "' . $email . '"');
     }
     
-    public function savePushNotifyToken($params)
+    public function savePushNotifyTokenAPI($params)
     {
         $update = 0;$response = array();
         /* Check the app versions & parameters */
@@ -710,6 +711,54 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
         $update = $this->update(array('push_notify_token' => $params['token'], 'push_status' => 'pending'), 'dm_id = "' . $aResult['dm_id'] . '"');
+        if ($update > 0) {
+            $response['status']     = 'success';
+        } else {
+            $response['status']     = 'fail';
+        }
+
+        return $response;
+    }
+
+    public function savePushReadAPI($params)
+    {
+        $update = 0;$response = array();
+        /* Check the app versions & parameters */
+        if (!isset($params['appVersion'])) {
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
+        }
+        if (!isset($params['authToken'])) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+        }
+
+        /* Validate new auth token and app-version */
+        $aResult = $this->fetchAuthToken($params);
+        if ($aResult == 'app-version-failed') {
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
+        }
+        if (!$aResult) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+        }
+
+        if(!isset($params['notifyId']) || $params['notifyId'] == ''){
+            return array('status' => 'notify-fail', 'message' => 'Notify Id missing to update as read / unread');
+        }
+
+        $notifyArray = explode("," , $aResult['marked_push_notify']);
+        foreach($notifyArray as $shipment){
+            $notifyImplode[] = $shipment;
+        }
+        if(!in_array($params['notifyId'], $notifyArray) && $params['markAsRead'] == true){
+            $notifyImplode[] = $params['notifyId'];
+        } else if($params['markAsRead'] == false){
+            if (($key = array_search($params['notifyId'], $notifyImplode)) !== false) {
+                unset($notifyImplode[$key]);
+            }
+        }
+
+        $update = $this->update(array(
+            'marked_push_notify' => implode(",", $notifyImplode)
+        ), 'dm_id = "' . $aResult['dm_id'] . '"');
         if ($update > 0) {
             $response['status']     = 'success';
         } else {
