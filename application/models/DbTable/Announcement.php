@@ -10,8 +10,8 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 	
-        $aColumns = array("subject", "message", 'DATE_FORMAT(created_on,"%d-%b-%Y")');
-        $orderColumns = array("id", "subject", "message", "created_on");
+        $aColumns = array("subject", "message", 'DATE_FORMAT(created_on,"%d-%b-%Y")', 'pn.push_status');
+        $orderColumns = array("id", "subject", "message", "created_on", "pn.push_status");
 	
         /*
          * Paging
@@ -88,7 +88,8 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
          */
 		
 		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(array($this->_name));
+        $sQuery = $dbAdapter->select()->from(array('a' => $this->_name))
+                            ->join(array('pn' => 'push_notification'),'a.id = pn.announcement_id',array('push_status'));
 				
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -130,6 +131,7 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
             $row[] = $aRow['subject'];
             $row[] = $aRow['message'];
             $row[] = date('d-M-Y h:i:s a',strtotime($aRow['created_on']));
+            $row[] = str_replace("-", " ", ucwords($aRow['push_status']));
             $output['aaData'][] = $row;
         }
 

@@ -57,7 +57,7 @@ class Application_Service_Announcement {
             }
             $title      = $params['subject'];
             $msgBody    = $params['message'];
-            $commonServices->insertPushNotification($title,$msgBody,'','',implode(",", $datamanagers),'announcement','announcement');
+            $commonServices->insertPushNotification($title,$msgBody,'','',implode(",", $datamanagers),'announcement','announcement',$lastId);
         }
         return $lastId;
 	}
