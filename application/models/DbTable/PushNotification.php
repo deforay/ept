@@ -254,9 +254,10 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
                     ->where("dm.auth_token=?", $params['authToken'])
                     ->group('dm.dm_id');
                 }
+                // die($subQuery);
                 $subResult = $dbAdapter->fetchRow($subQuery);
                 // Zend_Debug::dump($subResult);die;
-                if(isset($subResult) && count($subResult) > 0){
+                if($subResult){
                     if(isset($subResult['marked_push_notify']) && $subResult['marked_push_notify'] != ''){
                         $notifyArray = explode(",", $subResult['marked_push_notify']);
                         foreach($notifyArray as $notifyId){
@@ -273,6 +274,9 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
                         'notifyId'          => $notify['id'],
                         'markAsRead'        => (in_array($notify['id'],$notifyList))?true:false,
                     );
+                } else{
+                    $response['status'] =  'fail';
+                    $response['message'] =  'No notification found';     
                 }
             }
             if(!isset($response['data'])){

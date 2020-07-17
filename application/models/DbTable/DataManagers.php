@@ -722,6 +722,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function savePushReadAPI($params)
     {
+        $common = new Application_Service_Common();
         $update = 0;$response = array();
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
@@ -743,7 +744,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if(!isset($params['notifyId']) || $params['notifyId'] == ''){
             return array('status' => 'notify-fail', 'message' => 'Notify Id missing to update as read / unread');
         }
-
+        if(!$common->getPushNotificationDetailsById($params['notifyId'])){
+            return  array('status' => 'notify-fail', 'message' => 'Notify id not matched with you');
+        }
         $notifyArray = explode("," , $aResult['marked_push_notify']);
         foreach($notifyArray as $shipment){
             $notifyImplode[] = $shipment;
