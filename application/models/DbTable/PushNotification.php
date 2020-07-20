@@ -279,7 +279,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
                     $response['message'] =  'No notification found';     
                 }
             }
-            if(!isset($response['data'])){
+            if(!isset($response['data']) || count($response['data']) <= 0){
                 $response['status'] =  'fail';
                 $response['message'] =  'No notification found'; 
             }
