@@ -2549,3 +2549,4 @@ ALTER TABLE `evaluation_queue` ADD `date_finalised` DATETIME NULL DEFAULT NULL A
 ALTER TABLE `data_manager` ADD `marked_push_notify` text NULL DEFAULT NULL AFTER `push_status`;
 -- Thana 16 Jul, 2020
 ALTER TABLE `push_notification` ADD `announcement_id` INT NULL DEFAULT NULL AFTER `notification_type`;
+ALTER TABLE `push_notification` CHANGE `token_identify_id` `token_identify_id` TEXT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM';
