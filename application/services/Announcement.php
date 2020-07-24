@@ -10,7 +10,7 @@ class Application_Service_Announcement {
     public function composeNewAnnouncement($params){
 		$db = new Application_Model_DbTable_Announcement();
         $lastId =  $db->saveNewAnnouncement($params);
-        
+        // Zend_Debug::dump($params);die;
         if($lastId > 0){
             $commonServices = new Application_Service_Common();
             $notParticipatedMailContent = $commonServices->getEmailTemplate('not_participated');
@@ -46,9 +46,9 @@ class Application_Service_Announcement {
                 ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
                 ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=sp.participant_id',array('dm_id'))
                 ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
-                ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL OR sp.shipment_test_date like '')")
                 ->where("sp.participant_id IN(".implode(",", $params['participants']).")")
                 ->group('dm.dm_id');
+            // die($pushQuery);
             $dmDetails = $db->fetchAll($pushQuery);
             if(count($dmDetails) > 0){
                 foreach($dmDetails as $dm){
@@ -57,7 +57,7 @@ class Application_Service_Announcement {
             }
             $title      = $params['subject'];
             $msgBody    = $params['message'];
-            $commonServices->insertPushNotification($title,$msgBody,'','',implode(",", $datamanagers),'announcement','announcement');
+            $commonServices->insertPushNotification($title,$msgBody,'','',implode(",", $datamanagers),'announcement','announcement',$lastId);
         }
         return $lastId;
 	}

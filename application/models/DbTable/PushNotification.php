@@ -176,7 +176,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
         return $this->update(array('push_status'=>'pending','approved_by' => $authNameSpace->admin_id, 'approved_on' => new Zend_Db_Expr('now()')),"id = ".base64_decode($params['notifyId']));
     }
     
-    public function insertPushNotificationDetails($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType){
+    public function insertPushNotificationDetails($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType,$announcementId){
         $notification = array(
             "title" =>  $title,
             "body"  =>  $msgBody,
@@ -190,6 +190,9 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
             'identify_type'     => $identifyType,
             'notification_type' => $notificationType
         );
+        if(isset($announcementId) && $announcementId != ''){
+            $data['announcement_id'] = $announcementId;
+        }
         $rowSet = $this->fetchAll($this->select()->from($this->_name)
         ->where('push_status = "pending"')
         ->where('token_identify_id = "'.$shipmentId.'"')
@@ -229,39 +232,49 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
         if(!$aResult){
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
         }
-        $notification = $this->fetchAll($this->select()->from($this->_name)->where('push_status ="send"')->order('created_on DESC'))->toArray();
+        $notification = $this->fetchAll($this->select()->from($this->_name)->order('created_on DESC'))->toArray();
         if(isset($notification) && count($notification) > 0){
             foreach($notification as $notify){
                 if($notify['notification_type'] == 'announcement'){
                     $subQuery = $dbAdapter->select()
-                    ->from(array('s' => 'shipment'),array('shipment_code'))
+                    ->from(array('s' => 'shipment'),array('shipment_id', 'shipment_code'))
                     ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('map_id'))
                     ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=spm.participant_id',array('dm_id'))
-                    ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
-                    ->where("dm.dm_id IN (".$notify['token_identify_id'].")");
+                    ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token', 'marked_push_notify'))
+                    ->where("dm.auth_token=?", $params['authToken'])
+                    ->where("dm.dm_id IN (".$notify['token_identify_id'].")")
+                    ->group('dm.dm_id');
                 } else{
                     $subQuery = $dbAdapter->select()
-                    ->from(array('s' => 'shipment'),array('shipment_code'))
+                    ->from(array('s' => 'shipment'),array('shipment_id', 'shipment_code'))
                     ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('map_id'))
                     ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=spm.participant_id',array('dm_id'))
-                    ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
+                    ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token', 'marked_push_notify'))
                     ->where("s.shipment_id=?", $notify['token_identify_id'])
                     ->where("dm.auth_token=?", $params['authToken'])
                     ->group('dm.dm_id');
                 }
-                $subResult = $dbAdapter->fetchAll($subQuery);
-                if(isset($subResult) && count($subResult) > 0){
+                // die($subQuery);
+                $subResult = $dbAdapter->fetchRow($subQuery);
+                // Zend_Debug::dump($subResult);die;
+                if($subResult){
+                    if(isset($subResult['marked_push_notify']) && $subResult['marked_push_notify'] != ''){
+                        $notifyArray = explode(",", $subResult['marked_push_notify']);
+                        foreach($notifyArray as $notifyId){
+                            $notifyList[] = $notifyId;
+                        }
+                    } else{
+                        $notifyList = array();
+                    }
                     $response['status'] =  'success';
                     $response['data'][] =  array(
                         'notification'      => json_decode($notify['notification_json']),
                         'createdOn'         => date('d-M-Y h:i:s a',strtotime($notify['created_on'])),
                         'notificationType'  => $notify['notification_type'],
+                        'notifyId'          => $notify['id'],
+                        'markAsRead'        => (in_array($notify['id'],$notifyList))?true:false,
                     );
                 }
-            }
-            if(!isset($response['data'])){
-                $response['status'] =  'fail';
-                $response['message'] =  'No notification found'; 
             }
         } else{
             $response['status'] =  'fail';

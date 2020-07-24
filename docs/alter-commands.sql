@@ -2543,5 +2543,10 @@ CREATE TABLE `announcements_notification` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 -- Thana 13 Jul, 2020
 ALTER TABLE `evaluation_queue` ADD `date_finalised` DATETIME NULL DEFAULT NULL AFTER `last_updated_on`;
-
 -- Version 6.0 14-July-2020
+
+-- Thana 15 Jul, 2020
+ALTER TABLE `data_manager` ADD `marked_push_notify` text NULL DEFAULT NULL AFTER `push_status`;
+-- Thana 16 Jul, 2020
+ALTER TABLE `push_notification` ADD `announcement_id` INT NULL DEFAULT NULL AFTER `notification_type`;
+ALTER TABLE `push_notification` CHANGE `token_identify_id` `token_identify_id` TEXT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM';

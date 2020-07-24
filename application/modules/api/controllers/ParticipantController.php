@@ -129,7 +129,16 @@ class Api_ParticipantController extends Zend_Controller_Action
         $this->_helper->viewRenderer->setNoRender(true);
         $params = json_decode(file_get_contents('php://input'));
         $dataManagerService = new Application_Service_DataManagers();
-        $result = $dataManagerService->savePushToken((array)$params);
+        $result = $dataManagerService->savePushTokenAPI((array)$params);
+        $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
+    }
+    
+    public function pushReadAction()
+    {
+        $this->_helper->viewRenderer->setNoRender(true);
+        $params = json_decode(file_get_contents('php://input'));
+        $dataManagerService = new Application_Service_DataManagers();
+        $result = $dataManagerService->savePushReadStatusAPI((array)$params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
     }
     
