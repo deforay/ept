@@ -2499,8 +2499,8 @@ VALUES (NULL, 'recency', 'RECENCY_FINAL', 'Recent', 'R'),
 (NULL, 'recency', 'RECENCY_FINAL', 'Invalid', 'I'),
 (NULL, 'recency', 'RECENCY_FINAL', 'Negative', 'N');
 -- Thana 4 Jun, 2020
-ALTER TABLE `reference_result_recency` CHANGE `reference_verification_line` `reference_diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
-ALTER TABLE `response_result_recency` CHANGE `verification_line` `diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+-- ALTER TABLE `reference_result_recency` CHANGE `reference_verification_line` `reference_diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+-- ALTER TABLE `response_result_recency` CHANGE `verification_line` `diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 
 -- Thana 3 Jul, 2020
 ALTER TABLE `data_manager` ADD `push_notify_token` TEXT NULL DEFAULT NULL;
