@@ -3,7 +3,8 @@
 class Application_Service_Common
 {
 
-    public function humanDateTimeFormat($date) {
+    public function humanDateTimeFormat($date)
+    {
         if ($date == "0000-00-00 00:00:00") {
             return "";
         } else {
@@ -12,7 +13,7 @@ class Application_Service_Common
             $newDate = $dateArray[2] . "-";
             $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
             $mon = $monthsArray[$dateArray[1] - 1];
-            return $newDate .= $mon . "-" . $dateArray[0]." ".$dateTimeArray[1];
+            return $newDate .= $mon . "-" . $dateArray[0] . " " . $dateTimeArray[1];
         }
     }
 
@@ -86,7 +87,7 @@ class Application_Service_Common
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $headers = array(
             'Content-Type:application/json',
-            'Authorization:key='.$conf->fcm->serverkey
+            'Authorization:key=' . $conf->fcm->serverkey
         );
 
         $json_data = array(
@@ -100,10 +101,10 @@ class Application_Service_Common
                 "message"   => "Your reports was ready please see the result."
             ) */
         );
-        
+
         $data = json_encode($json_data);
         /* Message to be send */
-        $url = (isset($conf->fcm->url) && trim($conf->fcm->url) != '')?$conf->fcm->url:'https://fcm.googleapis.com/fcm/send';
+        $url = (isset($conf->fcm->url) && trim($conf->fcm->url) != '') ? $conf->fcm->url : 'https://fcm.googleapis.com/fcm/send';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -172,6 +173,12 @@ class Application_Service_Common
         $fieldName = $params['fieldName'];
         $value = trim($params['value']);
         $fnct = $params['fnct'];
+
+        // no point in checking duplication if the value is null or empty
+        if (empty($value)) {
+            return 0;
+        }
+
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if ($fnct == '' || $fnct == 'null') {
             $sql = $db->select()->from($tableName)->where($fieldName . "=" . "'$value'");
@@ -277,7 +284,7 @@ class Application_Service_Common
         $db = new Application_Model_DbTable_ModeOfReceipt();
         return $db->fetchAllModeOfReceipt();
     }
-    
+
     public function updateHomeBanner($params)
     {
         $filterRules = array(
@@ -396,53 +403,63 @@ class Application_Service_Common
         }
     }
 
-    public function fetchNotify(){
+    public function fetchNotify()
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         return $db->fetchAll($db->select()->from('notify')->order('created_on DESC'));
     }
-    
-    public function saveNotifyStatus($id){
+
+    public function saveNotifyStatus($id)
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->update('notify',array("status" =>'readed'), "id = " . $id);
+        return $db->update('notify', array("status" => 'readed'), "id = " . $id);
     }
-    
-    public function getAllPushNotify($params){
+
+    public function getAllPushNotify($params)
+    {
         $db = new Application_Model_DbTable_PushNotification();
         return $db->fetchAllPushNotify($params);
     }
-    
-    public function approve($params){
+
+    public function approve($params)
+    {
         $db = new Application_Model_DbTable_PushNotification();
         return $db->approveNotify($params);
     }
-    
-    public function getPushNotificationDetailsById($id){
+
+    public function getPushNotificationDetailsById($id)
+    {
         $db = new Application_Model_DbTable_PushNotification();
         return $db->fetchPushNotificationDetailsById($id);
     }
-    
-    public function insertPushNotification($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType){
+
+    public function insertPushNotification($title, $msgBody, $dataMsg, $icon, $shipmentId, $identifyType, $notificationType)
+    {
         $db = new Application_Model_DbTable_PushNotification();
-        return $db->insertPushNotificationDetails($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType);
+        return $db->insertPushNotificationDetails($title, $msgBody, $dataMsg, $icon, $shipmentId, $identifyType, $notificationType);
     }
 
-    public function fetchUnReadPushNotify(){
+    public function fetchUnReadPushNotify()
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $count = $db->fetchAll($db->select()->from('push_notification')->where('push_status ="refuse"'));
         return count($count);
     }
 
-    public function updatePushTemplate($params){
+    public function updatePushTemplate($params)
+    {
         $db = new Application_Model_DbTable_PushNotificationTemplate();
         return $db->updatePushTemplateDetails($params);
     }
 
-    public function getPushTemplateByPurpose($purpose){
+    public function getPushTemplateByPurpose($purpose)
+    {
         $db = new Application_Model_DbTable_PushNotificationTemplate();
         return $db->fetchPushTemplateByPurpose($purpose);
     }
 
-    public function getNotificationByAPI($params){
+    public function getNotificationByAPI($params)
+    {
         $db = new Application_Model_DbTable_PushNotification();
         return $db->fetchNotificationByAPI($params);
     }
