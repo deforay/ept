@@ -35,19 +35,20 @@ foreach($pnResult as $row){
     $subResult = $db->fetchAll($subQuery);
     
     $notify = (array)json_decode($row['notification_json']);
-    $status = true;
+    $status = false;
     foreach($subResult as $subRow){
 
         $json_data = array(
             "to"            => $subRow['push_notify_token'],
             "notification"  => array(
-                "body"  => $notify['body'],
-                "title" => $notify['title'],
-                "icon"  => (isset($notify['icon']) && $notify['icon'] != '')?$notify['icon']:'ic_launcher'
+                "title"             => $notify['title'],
+                "body"              => $notify['body'],
+                // "icon"              => (isset($notify['icon']) && $notify['icon'] != '')?$notify['icon']:"fcm_push_icon"
             ),
             "data"          =>  array(
-                "message"   => $row['data_json']
-            )
+                "notifyType"        => $row['notification_type']
+            ),
+            // "priority"      => "high"
         );
         
         $data = json_encode($json_data);
@@ -80,8 +81,8 @@ foreach($pnResult as $row){
             if(isset($response) && $response != '' && $response != NULL){
                 if($response->success > 0){
                     $pushStatus = "send";
+                    $status = true;
                 } else{
-                    $status = false;
                     $pushStatus = "not-send";   
                 }
             } else{
