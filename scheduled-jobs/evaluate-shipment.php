@@ -345,9 +345,11 @@ try {
             $reportCompletedStatus = 'evaluated';
             if($evalRow['report_type'] == 'generateReport'){
                 $reportCompletedStatus = 'evaluated';
+                $notifyType = 'individual_reports';
                 $link = '/reports/distribution/shipment/sid/'.base64_encode($evalRow['shipment_id']);
             }else if($evalRow['report_type'] == 'finalized'){
                 $reportCompletedStatus = 'finalized';
+                $notifyType = 'summary_reports';
                 $link = '/reports/distribution/finalize/sid/'.base64_encode($evalRow['shipment_id']);
             }
             $update = array(
@@ -372,7 +374,8 @@ try {
             } else{
                 $dataMsg = '';
             }
-            $commonService->insertPushNotification($title,$msgBody,$dataMsg,$pushContent['icon'],$evalRow['shipment_id'],'new-reports','reports');
+            // $notifyType = ($evalRow['report_type'] = 'generateReport')?'individual_reports':'summary_reports';
+            $commonService->insertPushNotification($title,$msgBody,$dataMsg,$pushContent['icon'],$evalRow['shipment_id'],'new-reports',$notifyType);
             
             $notParticipatedMailContent = $commonService->getEmailTemplate('not_participated');
             $subQuery = $db->select()

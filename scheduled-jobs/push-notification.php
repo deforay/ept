@@ -43,12 +43,17 @@ foreach($pnResult as $row){
             "notification"  => array(
                 "title"             => $notify['title'],
                 "body"              => $notify['body'],
-                // "icon"              => (isset($notify['icon']) && $notify['icon'] != '')?$notify['icon']:"fcm_push_icon"
+                "icon"              => (isset($notify['icon']) && $notify['icon'] != '')?$notify['icon']:"fcm_push_icon"
             ),
-            "data"          =>  array(
+            "data"  => array(
+                "title"             => $notify['title'],
+                "body"              => $notify['body'],
                 "notifyType"        => $row['notification_type']
             ),
-            // "priority"      => "high"
+            /* "data"          =>  array(
+                "notifyType"        => $row['notification_type']
+            ), */
+            "priority"      => 10
         );
         
         $data = json_encode($json_data);
