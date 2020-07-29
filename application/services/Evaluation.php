@@ -193,7 +193,7 @@ class Application_Service_Evaluation
 	public function getShipmentToEvaluate($shipmentId, $reEvaluate = false)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.distribution_id', 's.number_of_samples', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status'))
+		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.shipment_attributes', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.distribution_id', 's.number_of_samples', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
 			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
@@ -2010,6 +2010,7 @@ class Application_Service_Evaluation
 			$controlTesKitFail = "";
 
 			$attributes = json_decode($shipment['attributes'], true);
+			$shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
 
 
 			//Response was submitted after the last response date.
@@ -2319,7 +2320,9 @@ class Application_Service_Evaluation
 
 					//$algoString = "Wrongly reported in the pattern : <strong>" . $r1 . "</strong> <strong>" . $r2 . "</strong> <strong>" . $r3 . "</strong>";
 
-					if ($attributes['algorithm'] == 'serial') {
+					if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
+						// no algorithm to check
+					} else if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
 						if ($r1 == 'NR') {
 							if (($r2 == '-') && ($r3 == '-' || $r3 == 'X')) {
 								$algoResult = 'Pass';
@@ -2495,7 +2498,7 @@ class Application_Service_Evaluation
 
 				$maxScore += $result['sample_score'];
 
-				if (isset($result['test_result_1']) && $result['test_result_1'] != "" && $result['test_result_1'] != null) {
+				if (isset($result['test_result_1']) && !empty($result['test_result_1']) && trim($result['test_result_1']) != false) {
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit1 == "")) {
 						$failureReason[] = array(
@@ -2515,7 +2518,7 @@ class Application_Service_Evaluation
 						$correctResponse = false;
 					}
 				}
-				if (isset($result['test_result_2']) && $result['test_result_2'] != "" && $result['test_result_2'] != null) {
+				if (isset($result['test_result_2']) && !empty($result['test_result_2']) && trim($result['test_result_2']) != false) {
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit2 == "")) {
 						$failureReason[] = array(
@@ -2535,7 +2538,7 @@ class Application_Service_Evaluation
 						$correctResponse = false;
 					}
 				}
-				if (isset($result['test_result_3']) && $result['test_result_3'] != "" && $result['test_result_3'] != null) {
+				if (isset($result['test_result_3']) && !empty($result['test_result_3']) && trim($result['test_result_3']) != false) {
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit3 == "")) {
 						$failureReason[] = array(
@@ -2587,7 +2590,14 @@ class Application_Service_Evaluation
 
 			//Let us now calculate documentation score
 			$documentationScore = 0;
-			$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 5);
+			if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
+				// for Dried Samples, we will have rehydration as one of the documentation scores
+				$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 5);
+			} else {
+				// for Non Dried Samples, we will NOT have rehydration as one of the documentation scores
+				$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 4);
+			}
+
 
 			// D.1
 			if (isset($results[0]['shipment_receipt_date']) && strtolower($results[0]['shipment_receipt_date']) != '') {
@@ -2601,14 +2611,17 @@ class Application_Service_Evaluation
 			}
 
 			//D.3
-			if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
-				$documentationScore += $documentationScorePerItem;
-			} else {
-				$failureReason[] = array(
-					'warning' => "Missing reporting rehydration date for DTS Panel",
-					'correctiveAction' => $correctiveActions[12]
-				);
-				$correctiveActionList[] = 12;
+			if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
+				// Only for Dried Samples we will check Sample Rehydration
+				if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
+					$documentationScore += $documentationScorePerItem;
+				} else {
+					$failureReason[] = array(
+						'warning' => "Missing reporting rehydration date for DTS Panel",
+						'correctiveAction' => $correctiveActions[12]
+					);
+					$correctiveActionList[] = 12;
+				}
 			}
 
 			//D.5
@@ -2623,22 +2636,27 @@ class Application_Service_Evaluation
 			}
 
 			//D.7
-			// Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-			$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
-			$testedOnDate = new DateTime($results[0]['shipment_test_date']);
-			$interval = $sampleRehydrationDate->diff($testedOnDate);
+			if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
+				
+				// Only for Dried samples we will do this check
 
-			$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
-			$rehydrateHours = $sampleRehydrateDays * 24;
+				// Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
+				$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
+				$testedOnDate = new DateTime($results[0]['shipment_test_date']);
+				$interval = $sampleRehydrationDate->diff($testedOnDate);
 
-			if ($interval->days > $sampleRehydrateDays) {
-				$failureReason[] = array(
-					'warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
-					'correctiveAction' => $correctiveActions[14]
-				);
-				$correctiveActionList[] = 14;
-			} else {
-				$documentationScore += $documentationScorePerItem;
+				$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+				$rehydrateHours = $sampleRehydrateDays * 24;
+
+				if ($interval->days > $sampleRehydrateDays) {
+					$failureReason[] = array(
+						'warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
+						'correctiveAction' => $correctiveActions[14]
+					);
+					$correctiveActionList[] = 14;
+				} else {
+					$documentationScore += $documentationScorePerItem;
+				}
 			}
 
 			//D.8
