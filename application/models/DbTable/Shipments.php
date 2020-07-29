@@ -1966,6 +1966,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         $shipment = $schemeService->getShipmentData($params['shipment_id'], $params['participant_id']);
         $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $shipment['shipment_attributes'] = json_decode($shipment['shipment_attributes'], true);
 
         $modeOfReceipt = $commonService->getAllModeOfReceipt();
         $globalQcAccess = $commonService->getConfig('qc_access');
@@ -2058,11 +2059,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'shipmentDate'              => date('d-M-Y', strtotime($shipment['shipment_date'])),
                     'resultDueDate'             => date('d-M-Y', strtotime($shipment['lastdate_response'])),
                     'testReceiptDate'           => (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '',
-                    'sampleRehydrationDate'     => (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '',
+                    // 'sampleRehydrationDate'     => (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '',
                     'testingDate'               => (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_date'])) : '',
                     'algorithmUsedSelect'       => $algorithmUsedSelect,
                     'algorithmUsedSelected'     => (isset($shipment['attributes']["algorithm"]) && $shipment['attributes']["algorithm"] != '') ? $shipment['attributes']["algorithm"] : '',
+                    'sampleType'                => (isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != '') ? $shipment['shipment_attributes']["sampleType"] : '',
+                    'screeningTest'             => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
                 );
+                if((isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != 'serum')){
+                    $section2['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
+                } 
                 $dts['Section2']['data'] = $section2;
                 if ((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')) {
                     if (isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != '') {
@@ -2121,38 +2127,41 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ($testkit['testkit_1'] == '1' && isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"]) {
                     $testKitArray['kitName'][0] = $testkit['TESTKITNAME'];
                 }
-                if ($testkit['testkit_2'] == '1' && isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]) {
-                    $testKitArray['kitName'][1] = $testkit['TESTKITNAME'];
-                }
-                if ($testkit['testkit_3'] == '1' && isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]) {
-                    $testKitArray['kitName'][2] = $testkit['TESTKITNAME'];
-                }
 
-                if ($testkit['testkit_2'] == '1') {
-                    $testKitArray['kitNameDropdown']['Test-2']['status'] = true;
-                    $testKitArray['kitNameDropdown']['Test-2']['data'][] = array(
-                        'value'         => (string) $testkit['TESTKITNAMEID'],
-                        'show'          => $testkit['TESTKITNAME'],
-                        'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]) ? 'selected' : ''
-                    );
-                    /* if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
-                        $testKitArray['Test-2']['data'][] = array(
-                            'kitNameDropdown'   => $testkit['TESTKITNAME'],
-                            'kitValue'  => (string)$testkit['TESTKITNAMEID']
+                if(isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no'){
+                    if ($testkit['testkit_2'] == '1' && isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]) {
+                        $testKitArray['kitName'][1] = $testkit['TESTKITNAME'];
+                    }
+                    if ($testkit['testkit_3'] == '1' && isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]) {
+                        $testKitArray['kitName'][2] = $testkit['TESTKITNAME'];
+                    }
+    
+                    if ($testkit['testkit_2'] == '1') {
+                        $testKitArray['kitNameDropdown']['Test-2']['status'] = true;
+                        $testKitArray['kitNameDropdown']['Test-2']['data'][] = array(
+                            'value'         => (string) $testkit['TESTKITNAMEID'],
+                            'show'          => $testkit['TESTKITNAME'],
+                            'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]) ? 'selected' : ''
                         );
-                    } */
-                }
-                if (!$testThreeOptional) {
-                    $testKitArray['kitNameDropdown']['Test-3']['status'] = true;
-                } else {
-                    $testKitArray['kitNameDropdown']['Test-3']['status'] = false;
-                }
-                if ($testkit['testkit_3'] == '1') {
-                    $testKitArray['kitNameDropdown']['Test-3']['data'][] = array(
-                        'value'         => (string) $testkit['TESTKITNAMEID'],
-                        'show'          => $testkit['TESTKITNAME'],
-                        'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]) ? 'selected' : ''
-                    );
+                        /* if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
+                            $testKitArray['Test-2']['data'][] = array(
+                                'kitNameDropdown'   => $testkit['TESTKITNAME'],
+                                'kitValue'  => (string)$testkit['TESTKITNAMEID']
+                            );
+                        } */
+                    }
+                    if (!$testThreeOptional) {
+                        $testKitArray['kitNameDropdown']['Test-3']['status'] = true;
+                    } else {
+                        $testKitArray['kitNameDropdown']['Test-3']['status'] = false;
+                    }
+                    if ($testkit['testkit_3'] == '1') {
+                        $testKitArray['kitNameDropdown']['Test-3']['data'][] = array(
+                            'value'         => (string) $testkit['TESTKITNAMEID'],
+                            'show'          => $testkit['TESTKITNAME'],
+                            'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]) ? 'selected' : ''
+                        );
+                    }
                 }
                 /* if(isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]){
                     $testKitArray['Test-3']['data'][] = array(
@@ -2164,11 +2173,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (!isset($testKitArray['kitName'][0])) {
                 $testKitArray['kitName'][0] = '';
             }
-            if (!isset($testKitArray['kitName'][1])) {
-                $testKitArray['kitName'][1] = '';
-            }
-            if (!isset($testKitArray['kitName'][2])) {
-                $testKitArray['kitName'][2] = '';
+            if(isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no'){
+                if (!isset($testKitArray['kitName'][1])) {
+                    $testKitArray['kitName'][1] = '';
+                }
+                if (!isset($testKitArray['kitName'][2])) {
+                    $testKitArray['kitName'][2] = '';
+                }
             }
             // if($allSamples[0]["test_kit_name_1"] == ''){
             //     $testKitArray['kitNameDropdown']['Test-1'] = array(
@@ -2188,27 +2199,44 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             //         'kitValue'  => ''
             //     );
             // }
-            $testKitArray['kitText'] = array('Test-1', 'Test-2', 'Test-3');
+            if(isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no'){
+                $testKitArray['kitText'] = array('Test-1', 'Test-2', 'Test-3');
+            }else{
+                $testKitArray['kitText'] = array('Test-1');
+            }
             if (isset($allSamples) && count($allSamples) > 0) {
                 $dts['Section3']['status'] = true;
                 $testKitArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] != "0000-00-00" && $allSamples[0]["exp_date_1"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_1"])) : '';
-                $testKitArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] != "0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_2"])) : '';
-                $testKitArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] != "0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_3"])) : '';
+                
+                if(isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no'){
+                    $testKitArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] != "0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_2"])) : '';
+                    $testKitArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] != "0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_3"])) : '';
+                }
                 $testKitArray['kitValue'][0] = (isset($allSamples[0]["test_kit_name_1"]) && trim($allSamples[0]["test_kit_name_1"]) != "") ? $allSamples[0]["test_kit_name_1"] : '';
-                $testKitArray['kitValue'][1] = (isset($allSamples[0]["test_kit_name_2"]) && trim($allSamples[0]["test_kit_name_2"]) != "") ? $allSamples[0]["test_kit_name_2"] : '';
-                $testKitArray['kitValue'][2] = (isset($allSamples[0]["test_kit_name_3"]) && trim($allSamples[0]["test_kit_name_3"]) != "") ? $allSamples[0]["test_kit_name_3"] : '';
+                
+                if(isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no'){
+                    $testKitArray['kitValue'][1] = (isset($allSamples[0]["test_kit_name_2"]) && trim($allSamples[0]["test_kit_name_2"]) != "") ? $allSamples[0]["test_kit_name_2"] : '';
+                    $testKitArray['kitValue'][2] = (isset($allSamples[0]["test_kit_name_3"]) && trim($allSamples[0]["test_kit_name_3"]) != "") ? $allSamples[0]["test_kit_name_3"] : '';
+                }
                 $testKitArray['lot'][0]      = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "") ? $allSamples[0]["lot_no_1"] : '';
-                $testKitArray['lot'][1]      = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "") ? $allSamples[0]["lot_no_2"] : '';
-                $testKitArray['lot'][2]      = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "") ? $allSamples[0]["lot_no_3"] : '';
-                $testKitArray['kitOther']   = array('', '', '');
+                
+                if(isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no'){
+                    $testKitArray['lot'][1]      = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "") ? $allSamples[0]["lot_no_2"] : '';
+                    $testKitArray['lot'][2]      = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "") ? $allSamples[0]["lot_no_3"] : '';
+                    $testKitArray['kitOther']   = array('', '', '');
+                }else{
+                    $testKitArray['kitOther']   = array('');
+                }
                 if ($allSamples[0]["test_kit_name_1"] == '') {
                     $testKitArray['kitName'][0] = '';
                 }
-                if ($allSamples[0]["test_kit_name_2"] == '') {
-                    $testKitArray['kitName'][1] = '';
-                }
-                if ($allSamples[0]["test_kit_name_3"] == '') {
-                    $testKitArray['kitName'][2] = '';
+                if(isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no'){
+                    if ($allSamples[0]["test_kit_name_2"] == '') {
+                        $testKitArray['kitName'][1] = '';
+                    }
+                    if ($allSamples[0]["test_kit_name_3"] == '') {
+                        $testKitArray['kitName'][2] = '';
+                    }
                 }
                 // $testKitArray['testKitTextArray'] = array('Test-1','Test-2','Test-3');
 
@@ -2217,17 +2245,19 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && 'other' == $allSamples[0]["test_kit_name_1"]) ? 'selected' : ''
                 );
-                $testKitArray['kitNameDropdown']['Test-2']['data'][] = array(
-                    'value'         => 'other',
-                    'show'          => 'Other',
-                    'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && 'other' == $allSamples[0]["test_kit_name_2"]) ? 'selected' : ''
-                );
-                // if(!$testThreeOptional){
-                $testKitArray['kitNameDropdown']['Test-3']['data'][] = array(
-                    'value'         => 'other',
-                    'show'          => 'Other',
-                    'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && 'other' == $allSamples[0]["test_kit_name_3"]) ? 'selected' : ''
-                );
+                if(isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no'){
+                    $testKitArray['kitNameDropdown']['Test-2']['data'][] = array(
+                        'value'         => 'other',
+                        'show'          => 'Other',
+                        'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && 'other' == $allSamples[0]["test_kit_name_2"]) ? 'selected' : ''
+                    );
+                    // if(!$testThreeOptional){
+                    $testKitArray['kitNameDropdown']['Test-3']['data'][] = array(
+                        'value'         => 'other',
+                        'show'          => 'Other',
+                        'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && 'other' == $allSamples[0]["test_kit_name_3"]) ? 'selected' : ''
+                    );
+                }
                 // }
                 $dts['Section3']['data']    = $testKitArray;
             } else {
@@ -2253,18 +2283,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'show'          => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? (isset($dtsPossibleResponseArray[$sample['test_result_1']]) && $dtsPossibleResponseArray[$sample['test_result_1']] != '' && $dtsPossibleResponseArray[$sample['test_result_1']] != null) ? $dtsPossibleResponseArray[$sample['test_result_1']] : '' : '',
                     'value'         => (isset($sample['test_result_1']) && $sample['test_result_1'] != '') ? $sample['test_result_1'] : '',
                 );
-                $allSamplesResult['samples']['result2'][]       = array(
-                    'resultCode'    => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? (isset($dtsPossibleArray[$sample['test_result_2']]) && $dtsPossibleArray[$sample['test_result_2']] != '' && $dtsPossibleArray[$sample['test_result_2']] != null) ? $dtsPossibleArray[$sample['test_result_2']] : 'X' : 'X',
-                    'selected'      => (isset($sample['test_result_2']) && $sample['test_result_2'] != '') ? 'selected' : '',
-                    'show'          => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? (isset($dtsPossibleResponseArray[$sample['test_result_2']]) && $dtsPossibleResponseArray[$sample['test_result_2']] != '' && $dtsPossibleResponseArray[$sample['test_result_2']] != null) ? $dtsPossibleResponseArray[$sample['test_result_2']] : '' : '',
-                    'value'         => (isset($sample['test_result_2']) && $sample['test_result_2'] != '') ? $sample['test_result_2'] : '',
-                );
-                $allSamplesResult['samples']['result3'][]       = array(
-                    'resultCode'    => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? (isset($dtsPossibleArray[$sample['test_result_3']]) && $dtsPossibleArray[$sample['test_result_3']] != '' && $dtsPossibleArray[$sample['test_result_3']] != null) ? $dtsPossibleArray[$sample['test_result_3']] : 'X' : 'X',
-                    'selected'      => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? 'selected' : '',
-                    'show'          => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? (isset($dtsPossibleResponseArray[$sample['test_result_3']]) && $dtsPossibleResponseArray[$sample['test_result_3']] != '' && $dtsPossibleResponseArray[$sample['test_result_3']] != null) ? $dtsPossibleResponseArray[$sample['test_result_3']] : '' : '',
-                    'value'         => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? $sample['test_result_3'] : '',
-                );
+                if(isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no'){
+                    $allSamplesResult['samples']['result2'][]       = array(
+                        'resultCode'    => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? (isset($dtsPossibleArray[$sample['test_result_2']]) && $dtsPossibleArray[$sample['test_result_2']] != '' && $dtsPossibleArray[$sample['test_result_2']] != null) ? $dtsPossibleArray[$sample['test_result_2']] : 'X' : 'X',
+                        'selected'      => (isset($sample['test_result_2']) && $sample['test_result_2'] != '') ? 'selected' : '',
+                        'show'          => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? (isset($dtsPossibleResponseArray[$sample['test_result_2']]) && $dtsPossibleResponseArray[$sample['test_result_2']] != '' && $dtsPossibleResponseArray[$sample['test_result_2']] != null) ? $dtsPossibleResponseArray[$sample['test_result_2']] : '' : '',
+                        'value'         => (isset($sample['test_result_2']) && $sample['test_result_2'] != '') ? $sample['test_result_2'] : '',
+                    );
+                    $allSamplesResult['samples']['result3'][]       = array(
+                        'resultCode'    => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? (isset($dtsPossibleArray[$sample['test_result_3']]) && $dtsPossibleArray[$sample['test_result_3']] != '' && $dtsPossibleArray[$sample['test_result_3']] != null) ? $dtsPossibleArray[$sample['test_result_3']] : 'X' : 'X',
+                        'selected'      => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? 'selected' : '',
+                        'show'          => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? (isset($dtsPossibleResponseArray[$sample['test_result_3']]) && $dtsPossibleResponseArray[$sample['test_result_3']] != '' && $dtsPossibleResponseArray[$sample['test_result_3']] != null) ? $dtsPossibleResponseArray[$sample['test_result_3']] : '' : '',
+                        'value'         => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? $sample['test_result_3'] : '',
+                    );
+                }
                 $allSamplesResult['samples']['finalResult'][]       = array(
                     'resultCode'    => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? (isset($dtsPossibleArray[$sample['reported_result']]) && $dtsPossibleArray[$sample['reported_result']] != '' && $dtsPossibleArray[$sample['reported_result']] != null) ? $dtsPossibleArray[$sample['reported_result']] : 'X' : 'X',
                     'selected'      => (isset($sample['reported_result']) && $sample['reported_result'] != '') ? 'selected' : '',
@@ -2272,13 +2304,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'value'         => (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '',
                 );
                 $allSamplesResult['samples']['result1Code'][]       = (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? (isset($dtsPossibleArray[$sample['test_result_1']]) && $dtsPossibleArray[$sample['test_result_1']] != '' && $dtsPossibleArray[$sample['test_result_1']] != null) ? $dtsPossibleArray[$sample['test_result_1']] : 'X' : 'X';
-                $allSamplesResult['samples']['result2Code'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? (isset($dtsPossibleArray[$sample['test_result_2']]) && $dtsPossibleArray[$sample['test_result_2']] != '' && $dtsPossibleArray[$sample['test_result_2']] != null) ? $dtsPossibleArray[$sample['test_result_2']] : 'X' : 'X';
-                $allSamplesResult['samples']['result3Code'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? (isset($dtsPossibleArray[$sample['test_result_3']]) && $dtsPossibleArray[$sample['test_result_3']] != '' && $dtsPossibleArray[$sample['test_result_3']] != null) ? $dtsPossibleArray[$sample['test_result_3']] : 'X' : 'X';
+                if(isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no'){
+                    $allSamplesResult['samples']['result2Code'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? (isset($dtsPossibleArray[$sample['test_result_2']]) && $dtsPossibleArray[$sample['test_result_2']] != '' && $dtsPossibleArray[$sample['test_result_2']] != null) ? $dtsPossibleArray[$sample['test_result_2']] : 'X' : 'X';
+                    $allSamplesResult['samples']['result3Code'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? (isset($dtsPossibleArray[$sample['test_result_3']]) && $dtsPossibleArray[$sample['test_result_3']] != '' && $dtsPossibleArray[$sample['test_result_3']] != null) ? $dtsPossibleArray[$sample['test_result_3']] : 'X' : 'X';
+                }
                 $allSamplesResult['samples']['finalResultCode'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? (isset($dtsPossibleArray[$sample['reported_result']]) && $dtsPossibleArray[$sample['reported_result']] != '' && $dtsPossibleArray[$sample['reported_result']] != null) ? $dtsPossibleArray[$sample['reported_result']] : 'X' : 'X';
                 $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1) ? true : false;
                 foreach (range(1, 3) as $row) {
                     $possibleResults = array();
-                    if ($row == 3) {
+                    if ($row == 3 && (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no')) {
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
                                 $possibleResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['test_result_3'] == $pr['id']) ? 'selected' : '');
@@ -2313,12 +2347,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             }
                         }
                         $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = true;
-                        $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = $possibleResults;
+                        if(((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') && $row == 2 ) || $row == 1){
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = $possibleResults;
+                        }
 
                         if (isset($sample['test_result_1']) && $sample['test_result_1'] != "" && $row == 1) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_1'];
                         } else if (isset($sample['test_result_2']) && $sample['test_result_2'] != "" && $row == 2) {
-                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_2'];
+                            if((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no')){
+                                $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_2'];
+                            }
                         } else {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
                         }
@@ -2335,11 +2373,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 }
                 // $allSamplesResult['sampleSelect'][$sample['sample_label']][]=array($sample1Select,$sample2Select,$sample3Select,$sampleFinalSelect);
-                $allSamplesResult['resultsText'] = array('Result-1', 'Result-2', 'Result-3', 'Final-Result');
+                
+                if((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'yes')){
+                    $allSamplesResult['resultsText'] = array('Result-1','Final-Result');
+                } else{
+                    $allSamplesResult['resultsText'] = array('Result-1', 'Result-2', 'Result-3', 'Final-Result');
+                }
+
                 if (!$testThreeOptional) {
                     $allSamplesResult['resultStatus'] = array(true, true, true, true);
                 } else {
                     $allSamplesResult['resultStatus'] = array(true, true, false, true);
+                }
+                if((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'yes')){
+                    $allSamplesResult['resultStatus'] = array(true, true);
                 }
                 $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['status']    = true;
                 $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['data']      = $possibleFinalResults;
