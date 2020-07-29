@@ -309,8 +309,8 @@ try {
             $customField2 = $commonService->getConfig('custom_field_2');
             $haveCustom = $commonService->getConfig('custom_field_needed');
 
-            $startValue = 1;
-            for ($startValue = 1; $startValue <= $totParticipantsRes['reported_count']; $startValue = $startValue + 50) {
+            $startValue = 0;
+            for ($startValue = 0; $startValue <= $totParticipantsRes['reported_count']; $startValue = $startValue + 50) {
                 $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 50, $startValue);
                 $endValue = $startValue + 49;
                 if ($endValue > $totParticipantsRes['reported_count']) {
