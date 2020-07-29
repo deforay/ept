@@ -224,20 +224,12 @@ if (count($this->shipment) > 0) {
         }
 
         if ($this->shipment[0]['report_generated'] == 'yes') {
-            if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .
-                "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] .
-                "-summary.pdf")) {
-
-                $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .
-                    "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] .
-                    "-summary.pdf");
-
+            if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] ."-summary.pdf")) {
+                $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
             ?>
-
-                document.getElementById("summaryDiv").innerHTML = "<a href=\"/d/<?php echo $filePath; ?>\" id='summaryReport' class='btn btn-info btn-sm col-md-3' target='_blank' style='margin:10px 10px;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
-                $(".summaryDivTop").html("<a href=\"/d/<?php echo $filePath; ?>\" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>");
-        <?php
-            }
+            document.getElementById("summaryDiv").innerHTML = "<a href=\"/d/<?php echo $filePath; ?>\" id='summaryReport' class='btn btn-info btn-sm col-md-3' target='_blank' style='margin:10px 10px;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
+            $(".summaryDivTop").html("<a href=\"/d/<?php echo $filePath; ?>\" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>");
+            <?php }
         } ?>
         $(document).ready(function() {
 
