@@ -7,22 +7,22 @@ class Admin_ShipmentController extends Zend_Controller_Action
     {
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-                ->addActionContext('get-sample-form', 'html')
-                ->addActionContext('get-shipment-code', 'html')
-                ->addActionContext('remove', 'html')
-                ->addActionContext('view-enrollments', 'html')
-                ->addActionContext('delete-shipment-participant', 'html')
-                ->addActionContext('new-shipment-mail', 'html')
-                ->addActionContext('unenrollments', 'html')
-                ->addActionContext('response-switch', 'html')
-                ->addActionContext('enroll-shipment-participant', 'html')
-                ->addActionContext('shipment-responded-participants', 'html')
-                ->addActionContext('shipment-not-responded-participants', 'html')
-                ->addActionContext('shipment-not-enrolled-participants', 'html')
-                ->addActionContext('export-shipment-responded-participants', 'html')
-                ->addActionContext('export-shipment-not-responded-participants', 'html')
-                ->addActionContext('get-participants', 'html')
-                ->initContext();
+            ->addActionContext('get-sample-form', 'html')
+            ->addActionContext('get-shipment-code', 'html')
+            ->addActionContext('remove', 'html')
+            ->addActionContext('view-enrollments', 'html')
+            ->addActionContext('delete-shipment-participant', 'html')
+            ->addActionContext('new-shipment-mail', 'html')
+            ->addActionContext('unenrollments', 'html')
+            ->addActionContext('response-switch', 'html')
+            ->addActionContext('enroll-shipment-participant', 'html')
+            ->addActionContext('shipment-responded-participants', 'html')
+            ->addActionContext('shipment-not-responded-participants', 'html')
+            ->addActionContext('shipment-not-enrolled-participants', 'html')
+            ->addActionContext('export-shipment-responded-participants', 'html')
+            ->addActionContext('export-shipment-not-responded-participants', 'html')
+            ->addActionContext('get-participants', 'html')
+            ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
     }
 
@@ -89,7 +89,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
-            }else if ($sid == 'recency') {
+            } else if ($sid == 'recency') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->recencyPossibleResults = $scheme->getPossibleResults($sid);
             }
@@ -109,7 +109,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $sid = (int) base64_decode($this->_getParam('sid'));
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
-                
+
                 $this->view->participantCity  = $participantService->getUniqueCity();
                 $this->view->participantState  = $participantService->getUniqueState();
 
@@ -149,19 +149,18 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
 
                 $schemeService = new Application_Service_Schemes();
-                if($response['shipment']['scheme_type'] == 'dts'){
+                if ($response['shipment']['scheme_type'] == 'dts') {
                     $this->view->wb = $schemeService->getDbsWb();
                     $this->view->eia = $schemeService->getDbsEia();
                     $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts');
-                    $this->view->allTestKits = $schemeService->getAllDtsTestKit();                    
-                }else if($response['shipment']['scheme_type'] == 'vl'){
-                    
+                    $this->view->allTestKits = $schemeService->getAllDtsTestKit();
+                } else if ($response['shipment']['scheme_type'] == 'vl') {
+
                     $this->view->vlAssay = $schemeService->getVlAssay();
-                    
                 }
-                
+
                 // oOps !! Nothing to edit....
-                if ($response== null || $response == "" || $response === false) {
+                if ($response == null || $response == "" || $response === false) {
                     $this->_redirect("/admin/shipment");
                 }
             } else {
@@ -246,24 +245,24 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $this->view->pcount = $shipmentService->getShipmentNotParticipated($sid);
             $this->_helper->layout()->disableLayout();
         }
-        
     }
 
-    public function manageEnrollAction(){
-         if ($this->_hasParam('sid')) {
+    public function manageEnrollAction()
+    {
+        if ($this->_hasParam('sid')) {
             $shipmentId = (int) base64_decode($this->_getParam('sid'));
             $schemeType = base64_decode($this->_getParam('sctype'));
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipment = $shipmentService->getShipmentForEdit($shipmentId);
             $this->view->shipmentId = $shipmentId;
             $this->view->schemeType = $schemeType;
-        } 
+        }
     }
 
     public function shipmentRespondedParticipantsAction()
     {
-           if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
             $clientsServices = new Application_Service_Participants();
             $clientsServices->getShipmentRespondedParticipants($params);
         }
@@ -272,7 +271,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function shipmentNotRespondedParticipantsAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->_getAllParams();
             $clientsServices = new Application_Service_Participants();
             $clientsServices->getShipmentNotRespondedParticipants($params);
         }
@@ -281,7 +280,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function shipmentNotEnrolledParticipantsAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->_getAllParams();
             $clientsServices = new Application_Service_Participants();
             $clientsServices->getShipmentNotEnrolledParticipants($params);
         }
@@ -289,88 +288,76 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function enrollShipmentParticipantAction()
     {
-         if ($this->_hasParam('sid') && $this->_hasParam('pid')) {
+        if ($this->_hasParam('sid') && $this->_hasParam('pid')) {
             if ($this->getRequest()->isPost()) {
                 $shipmentId = (int) base64_decode($this->_getParam('sid'));
                 $participantId = $this->_getParam('pid');
                 $shipmentService = new Application_Service_Shipments();
-                $this->view->result = $shipmentService->enrollShipmentParticipant($shipmentId,$participantId);
+                $this->view->result = $shipmentService->enrollShipmentParticipant($shipmentId, $participantId);
             }
         } else {
             $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
         }
-        
     }
 
     public function responseSwitchAction()
     {
-         if ($this->_hasParam('sid') && $this->_hasParam('switchStatus')) {
+        if ($this->_hasParam('sid') && $this->_hasParam('switchStatus')) {
             if ($this->getRequest()->isPost()) {
                 $shipmentId = (int) ($this->_getParam('sid'));
                 $switchStatus = strtolower($this->_getParam('switchStatus'));
                 $shipmentService = new Application_Service_Shipments();
-                $this->view->message = $shipmentService->responseSwitch($shipmentId,$switchStatus);
+                $this->view->message = $shipmentService->responseSwitch($shipmentId, $switchStatus);
             }
         } else {
             $this->view->message = "Unable to update status. Please try again later or contact system admin for help";
         }
     }
 
-    public function exportShipmentRespondedParticipantsAction(){
+    public function exportShipmentRespondedParticipantsAction()
+    {
         if ($this->getRequest()->isPost()) {
             $params = $this->_getAllParams();
             $clientsServices = new Application_Service_Participants();
-            $this->view->result=$clientsServices->exportShipmentRespondedParticipantsDetails($params);
-        }
-    }
-    
-    public function exportShipmentNotRespondedParticipantsAction(){
-        if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
-            $clientsServices = new Application_Service_Participants();
-            $this->view->result=$clientsServices->exportShipmentNotRespondedParticipantsDetails($params);
+            $this->view->result = $clientsServices->exportShipmentRespondedParticipantsDetails($params);
         }
     }
 
-    public function getParticipantsAction(){
-        
+    public function exportShipmentNotRespondedParticipantsAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $clientsServices = new Application_Service_Participants();
+            $this->view->result = $clientsServices->exportShipmentNotRespondedParticipantsDetails($params);
+        }
+    }
+
+    public function getParticipantsAction()
+    {
+
         if ($this->getRequest()->isPost()) {
             $params = $params = $this->getRequest()->getPost();
-            
+
             if ($params['sid']) {
                 $participantService = new Application_Service_Participants();
                 $shipmentService = new Application_Service_Shipments();
                 $sid = $params['sid'];
                 $stateId = $params['choosenState'];
                 $cityId = $params['choosenCity'];
-                
+
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
-                
+
                 //echo count($previouslySelected);die;
                 if (count($previouslySelected) == 0 || $previouslySelected == "" || $previouslySelected == null) {
                     //echo"ss";die;
                     $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
-                    $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type'],$stateId,$cityId);
+                    $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type'], $stateId, $cityId);
                 } else {
-                    
-                    $this->view->previouslyUnSelected = $participantService->getUnEnrolledByShipmentId($sid,$stateId,$cityId);
+
+                    $this->view->previouslyUnSelected = $participantService->getUnEnrolledByShipmentId($sid, $stateId, $cityId);
                 }
             }
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

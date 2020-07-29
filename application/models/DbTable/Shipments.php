@@ -1897,7 +1897,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'participantName'  => $row['first_name'] . ' ' . $row['last_name'],
                 'state'            => $row['state'],
                 'dmId'             => $row['dm_id'],
-                'createdOn'        => (isset($row['created_on_user']) && $row['created_on_user'] != '') ? $row['created_on_user'] : (isset($row['created_on_admin']) && $row['created_on_admin'] != '') ? $row['created_on_admin'] : '',
+                'createdOn'        => (isset($row['created_on_user']) && $row['created_on_user'] != '') ? $row['created_on_user'] : ((isset($row['created_on_admin']) && $row['created_on_admin'] != '') ? $row['created_on_admin'] : ''),
                 'updatedStatus'    => (isset($row['updated_on_user']) && $row['updated_on_user'] != '') ? true : false,
                 'updatedOn'        => (isset($row['updated_on_user']) && $row['updated_on_user'] != '') ? $row['updated_on_user'] : '',
                 'mapId'            => $row['map_id'],

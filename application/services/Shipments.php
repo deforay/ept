@@ -912,8 +912,18 @@ class Application_Service_Shipments
             }
         }
 
+        $shipmentAttributes = array();
+
+        if(isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])){
+            $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
+        }
+        if(isset($params['screeningTest']) && !empty($params['screeningTest'])){
+            $shipmentAttributes['screeningTest'] = $params['screeningTest'];
+        }
+
         $data = array(
             'shipment_code' => $params['shipmentCode'],
+            'shipment_attributes' => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
             'distribution_id' => $params['distribution'],
             'scheme_type' => $scheme,
             'shipment_date' => $distro['distribution_date'],

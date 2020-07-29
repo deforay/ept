@@ -15,9 +15,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->group('p.participant_id'));
     }
 
-    public function checkParticipantAccess($participantId,$dmId='',$comingFrom='')
+    public function checkParticipantAccess($participantId, $dmId = '', $comingFrom = '')
     {
-        if($comingFrom != 'API'){
+        if ($comingFrom != 'API') {
             $authNameSpace =  new Zend_Session_Namespace('datamanagers');
             $dmId = $authNameSpace->dm_id;
         }
@@ -344,14 +344,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         return $participantId;
     }
-    
+
     public function saveRequestParticipant($params)
     {
         $common = new Application_Service_Common();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = Zend_Db_Table_Abstract::getAdapter();
 
-        
+
         $data = array(
             'unique_identifier' => $common->getRandomString(4),
             'institute_name' => $params['instituteName'],
@@ -387,7 +387,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $data['individual'] = 'no';
         }
         $participantId = $this->insert($data);
-        
+
 
         if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
             foreach ($params['enrolledProgram'] as $epId) {
@@ -1305,53 +1305,53 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('city' => new Zend_Db_Expr(" DISTINCT p.city ")))
             ->where("p.status='active'")->where("p.city IS NOT NULL")->where("trim(p.city)!=''"));
     }
-    
+
     public function fetchParticipantSearch($search)
     {
         $sql = $this->select();
-        $sql =  $sql->where("first_name LIKE '%".$search."%'")
-                    ->orWhere("last_name LIKE '%".$search."%'")
-                    ->orWhere("unique_identifier LIKE '%".$search."%'")
-                    ->orWhere("institute_name LIKE '%".$search."%'")
-                    ->orWhere("region LIKE '%".$search."%'");
+        $sql =  $sql->where("first_name LIKE '%" . $search . "%'")
+            ->orWhere("last_name LIKE '%" . $search . "%'")
+            ->orWhere("unique_identifier LIKE '%" . $search . "%'")
+            ->orWhere("institute_name LIKE '%" . $search . "%'")
+            ->orWhere("region LIKE '%" . $search . "%'");
         return $this->fetchAll($sql);
     }
-    
+
     public function fetchMapActiveParticipantDetails($userSystemId)
     {
         return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
-        ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
-        ->where("pmm.dm_id = ?", $userSystemId)->group('p.participant_id'));
+            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+            ->where("pmm.dm_id = ?", $userSystemId)->group('p.participant_id'));
     }
 
     public function fetchFilterDetailsAPI($params)
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
-            return array('status' =>'version-failed','message'=>'App version is not updated. Kindly go to the play store and update the app');
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
         if (!isset($params['authToken'])) {
-            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
-        
+
         /* Validate new auth token and app-version */
         $dmDb = new Application_Model_DbTable_DataManagers();
         $aResult = $dmDb->fetchAuthToken($params);
         if ($aResult == 'app-version-failed') {
-            return array('status' =>'version-failed','message'=>'App version is not updated. Kindly go to the play store and update the app');
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
-        if(!$aResult){
-            return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
+        if (!$aResult) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
-        
+
         $result = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
             ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
             ->where("pmm.dm_id = ?", $aResult['dm_id'])
             //->where("p.status = 'active'")
             ->group('p.participant_id'));
-        if(count($result) > 0){
+        if (count($result) > 0) {
             $response['status'] = 'success';
-            foreach($result as $row){
+            foreach ($result as $row) {
                 $response['data']['participants'][] = array(
                     'participant_id'    => $row['participant_id'],
                     'unique_identifier' => $row['unique_identifier'],
@@ -1372,9 +1372,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $schemeDb = new Application_Model_DbTable_SchemeList();
             $schemeList =  $schemeDb->getFullSchemeList();
             // Zend_Debug::dump($schemeList);die;
-            if(count($schemeList) > 0) {
-                foreach($schemeList as $scheme){
-                    if($scheme['status'] == 'active'){
+            if (count($schemeList) > 0) {
+                foreach ($schemeList as $scheme) {
+                    if ($scheme['status'] == 'active') {
                         $response['data']['shipments'][] = array(
                             'scheme_id'     => $scheme['scheme_id'],
                             'scheme_name'   => $scheme['scheme_name']
@@ -1382,7 +1382,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     }
                 }
             }
-        }else{
+        } else {
             $response['status'] = 'fail';
             $response['message'] = 'There is no participant found.';
         }
