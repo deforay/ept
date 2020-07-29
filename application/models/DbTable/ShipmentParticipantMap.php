@@ -66,7 +66,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             /* New shipment push notification end */
 
             /* New shipment mail alert start */
-            $notParticipatedMailContent = $commonServices->getEmailTemplate('not_participated');
+            $notParticipatedMailContent = $commonServices->getEmailTemplate('new_shipment');
             $subQuery = $this->select()
             ->from(array('s' => 'shipment'),array('shipment_code', 'scheme_type'))
             ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('map_id'))
@@ -74,7 +74,8 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             ->join(array('p'=>'participant'),'p.participant_id=pmm.participant_id',array('participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
             ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
-            ->group('dm.dm_id');
+            ->group('dm.dm_id')->setIntegrityCheck(false);
+            // echo $subQuery;die;
             $subResult = $this->fetchAll($subQuery);
             foreach($subResult as $dm){
                 $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);

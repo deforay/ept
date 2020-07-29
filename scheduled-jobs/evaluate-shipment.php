@@ -377,7 +377,7 @@ try {
             // $notifyType = ($evalRow['report_type'] = 'generateReport')?'individual_reports':'summary_reports';
             $commonService->insertPushNotification($title,$msgBody,$dataMsg,$pushContent['icon'],$evalRow['shipment_id'],'new-reports',$notifyType);
             
-            $notParticipatedMailContent = $commonService->getEmailTemplate('not_participated');
+            $notParticipatedMailContent = $commonService->getEmailTemplate('report');
             $subQuery = $db->select()
             ->from(array('s' => 'shipment'),array('shipment_code', 'scheme_type'))
             ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('map_id'))

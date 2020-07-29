@@ -176,7 +176,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
         return $this->update(array('push_status'=>'pending','approved_by' => $authNameSpace->admin_id, 'approved_on' => new Zend_Db_Expr('now()')),"id = ".base64_decode($params['notifyId']));
     }
     
-    public function insertPushNotificationDetails($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType,$announcementId){
+    public function insertPushNotificationDetails($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType,$announcementId=''){
         $notification = array(
             "title" =>  $title,
             "body"  =>  $msgBody,

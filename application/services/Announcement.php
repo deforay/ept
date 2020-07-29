@@ -13,7 +13,7 @@ class Application_Service_Announcement {
         // Zend_Debug::dump($params);die;
         if($lastId > 0){
             $commonServices = new Application_Service_Common();
-            $notParticipatedMailContent = $commonServices->getEmailTemplate('not_participated');
+            $notParticipatedMailContent = $commonServices->getEmailTemplate('announcement');
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'))
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('s.shipment_code', 's.shipment_code'))
