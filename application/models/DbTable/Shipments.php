@@ -2346,8 +2346,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                                 // }
                             }
                         }
-                        $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = true;
                         if(((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') && $row == 2 ) || $row == 1){
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = true;
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = $possibleResults;
                         }
 
@@ -2358,7 +2358,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_2'];
                             }
                         } else {
-                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
+                            if($row == 1){
+                                $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
+                            }
                         }
                     }
                 }
