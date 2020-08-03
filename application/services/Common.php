@@ -433,10 +433,10 @@ class Application_Service_Common
         return $db->fetchPushNotificationDetailsById($id);
     }
 
-    public function insertPushNotification($title, $msgBody, $dataMsg, $icon, $shipmentId, $identifyType, $notificationType)
+    public function insertPushNotification($title, $msgBody, $dataMsg, $icon, $shipmentId, $identifyType, $notificationType,$announcementId = '')
     {
         $db = new Application_Model_DbTable_PushNotification();
-        return $db->insertPushNotificationDetails($title, $msgBody, $dataMsg, $icon, $shipmentId, $identifyType, $notificationType);
+        return $db->insertPushNotificationDetails($title, $msgBody, $dataMsg, $icon, $shipmentId, $identifyType, $notificationType,$announcementId);
     }
 
     public function fetchUnReadPushNotify()

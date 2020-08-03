@@ -102,7 +102,7 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-		
+		// die($sQuery);
         $rResult = $dbAdapter->fetchAll($sQuery);
 	
         /* Data set length after filtering */
