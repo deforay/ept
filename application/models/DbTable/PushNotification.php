@@ -176,7 +176,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
         return $this->update(array('push_status'=>'pending','approved_by' => $authNameSpace->admin_id, 'approved_on' => new Zend_Db_Expr('now()')),"id = ".base64_decode($params['notifyId']));
     }
     
-    public function insertPushNotificationDetails($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType,$announcementId=''){
+    public function insertPushNotificationDetails($title,$msgBody,$dataMsg,$icon,$shipmentId,$identifyType,$notificationType,$announcementId){
         $notification = array(
             "title" =>  $title,
             "body"  =>  $msgBody,
@@ -193,17 +193,17 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
         if(isset($announcementId) && $announcementId != ''){
             $data['announcement_id'] = $announcementId;
         }
-        $rowSet = $this->fetchAll($this->select()->from($this->_name)
+        /* $rowSet = $this->fetchAll($this->select()->from($this->_name)
         ->where('push_status = "pending"')
         ->where('token_identify_id = "'.$shipmentId.'"')
         ->where('identify_type = "'.$identifyType.'"')
         ->where('notification_type = "'.$notificationType.'"')
         )->toArray();
-        // Zend_Debug::dump($rowSet);die;
-        if(count($rowSet) == 0){
+        Zend_Debug::dump($rowSet);die;
+        if(count($rowSet) == 0){ */
             $data['created_on'] = new Zend_Db_Expr('now()');
             return $this->insert($data);
-        }
+        // }
     }
 
     public function fetchPushNotificationDetailsById($id)
