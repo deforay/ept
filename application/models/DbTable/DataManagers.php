@@ -469,6 +469,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'phone'                         => $result['phone'],
             'appVersion'                    => $aResult['app_version'],
             'pushStatus'                    => $aResult['push_status'],
+            'fcm'                           => $aResult['fcm'],
         );
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {

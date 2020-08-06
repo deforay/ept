@@ -232,7 +232,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
         if(!$aResult){
             return array('status' =>'auth-fail','message'=>'Something went wrong. Please log in again');
         }
-        $notification = $this->fetchAll($this->select()->from($this->_name)->order('created_on DESC'))->toArray();
+        $notification = $this->fetchAll($this->select()->from($this->_name)->order('created_on DESC')->limit(50))->toArray();
         if(isset($notification) && count($notification) > 0){
             foreach($notification as $notify){
                 if($notify['notification_type'] == 'announcement'){
@@ -254,6 +254,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
                     ->where("dm.auth_token=?", $params['authToken'])
                     ->group('dm.dm_id');
                 }
+                // echo "<br><br><pre>";echo $subQuery;echo "<br><br><br>";
                 // die($subQuery);
                 $subResult = $dbAdapter->fetchRow($subQuery);
                 // Zend_Debug::dump($subResult);die;
@@ -276,6 +277,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
                     );
                 }
             }
+            // die;
         } else{
             $response['status'] =  'fail';
             $response['message'] =  'No notification found'; 
