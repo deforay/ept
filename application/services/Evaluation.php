@@ -2594,8 +2594,9 @@ class Application_Service_Evaluation
 				// for Dried Samples, we will have rehydration as one of the documentation scores
 				$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 5);
 			} else {
-				// for Non Dried Samples, we will NOT have rehydration as one of the documentation scores
-				$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 4);
+				// for Non Dried Samples, we will NOT have rehydration documentation scores 
+				// there are 2 conditions for rehydration so 5 - 2 = 3
+				$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 3);
 			}
 
 

@@ -21,9 +21,9 @@ class DtsController extends Zend_Controller_Action
 			$data = $this->getRequest()->getPost();			
 			$shipmentService->updateDtsResults($data);
 			if(isset($data['comingFrom']) && trim($data['comingFrom'])!=''){
-				$this->_redirect("/participant/".$data['comingFrom']);
+				$this->redirect("/participant/".$data['comingFrom']);
 			}else{
-				$this->_redirect("/participant/current-schemes");
+				$this->redirect("/participant/current-schemes");
 			}
 		}
 		else{
@@ -34,7 +34,7 @@ class DtsController extends Zend_Controller_Action
 			
 			$access = $shipmentService->checkParticipantAccess($pID);
 			if($access == false){
-				$this->_redirect("/participant/current-schemes");
+				$this->redirect("/participant/current-schemes");
 			}
 			
 
