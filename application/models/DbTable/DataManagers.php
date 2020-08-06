@@ -422,7 +422,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'name'                          => $result['first_name'] . ' ' . $result['last_name'],
             'phone'                         => $result['phone'],
             'appVersion'                    => $aResult['app_version'],
-            'pushStatus'                    => $aResult['push_status']
+            'pushStatus'                    => $aResult['push_status'],
+            'fcm'                           => $aResult['fcm'],
         );
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
@@ -494,8 +495,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $aResult = $db->fetchRow($sQuery);
         if (!isset($aResult['dm_id'])) {
             return false;
-        }
+        } 
         /* Return the response data */
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         return  array(
             'dm_id'                             => $aResult['dm_id'],
             'view_only_access'                  => $aResult['view_only_access'],
@@ -511,7 +513,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'force_profile_check'               => $aResult['force_profile_check'],
             'app_version'                       => $appVersion['value'],
             'push_status'                       => $aResult['push_status'],
-            'marked_push_notify'              => $aResult['marked_push_notify'],
+            'marked_push_notify'                => $aResult['marked_push_notify'],
+            'fcm'                               => $conf->fcm->toArray()
         );
     }
 
@@ -604,6 +607,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
         if (isset($result) && trim($result['dm_id'] != '')) {
             $response['status'] = 'success';
@@ -614,7 +618,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 'lastName'          => $result['last_name'],
                 'secondaryEmail'    => $result['secondary_email'],
                 'mobile'            => $result['mobile'],
-                'phone'             => $result['phone']
+                'phone'             => $result['phone'],
+                'fcm'               => $conf->fcm->toArray()
             );
             $this->update(array('force_profile_check' => 'no'), 'dm_id = ' . $result['dm_id']);
         } else {

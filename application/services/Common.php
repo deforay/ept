@@ -326,7 +326,7 @@ class Application_Service_Common
     public function sendTempMail()
     {
         $tempMailDb = new Application_Model_DbTable_TempMail();
-        $configResult = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $dbAdapter = $this->sm->get('Zend\Db\Adapter\Adapter');
         $sql = new Sql($dbAdapter);
 
@@ -336,7 +336,7 @@ class Application_Service_Common
         $limit = '10';
         $sQuery = $this->getAdapter()->select()->from(array('tm' => 'temp_mail'))
             ->where("status='pending'")->limit($limit);
-        $rResult = $this->getAdapter()->fetchAll($sQuery);
+        $mailResult = $this->getAdapter()->fetchAll($sQuery);
         if (count($mailResult) > 0) {
             foreach ($mailResult as $result) {
                 $id = $result['temp_id'];
