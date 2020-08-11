@@ -1,7 +1,8 @@
 <?php
 
-//Zend_Debug::dump($this->shipmentData);
+// Zend_Debug::dump($this->shipmentData);die;
 $shipmentData = $this->shipmentData;
+$shipmentAttribute = json_decode($shipmentData['shipment']['shipment_attributes'],true);
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat =  $vHelper->getDateFormat();
 ?>
@@ -103,6 +104,28 @@ $dtFormat =  $vHelper->getDateFormat();
 					}
 
 				?>
+					<div class="form-group">
+						<label class="col-lg-3 control-label" for="dtsSampleType">Sample Type <span class="mandatory">*</span></label>
+
+						<div class="col-lg-5">
+							<select id="dtsSampleType" name="dtsSampleType" class="isRequired form-control" title="Please select a Sample Type">
+								<option value="">--Select--</option>
+								<option value="dried" <?php echo (isset($shipmentAttribute['sampleType']) && $shipmentAttribute['sampleType'] == 'dried')?"selected='selected'":"";?>>Dried Test Tube</option>
+								<option value="serum" <?php echo (isset($shipmentAttribute['sampleType']) && $shipmentAttribute['sampleType'] == 'serum')?"selected='selected'":"";?>>Serum</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-lg-3 control-label" for="screeningTest">Is this a Screening Test Panel? <span class="mandatory">*</span><br> <small>(This creates a panel with only ONE test)</small></label>
+
+						<div class="col-lg-5">
+							<select id="screeningTest" name="screeningTest" class="isRequired form-control" title="Please select if this is a Screening Test">
+								<option value="">--Select--</option>
+								<option value="yes" <?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'yes')?"selected='selected'":"";?>>Yes</option>
+								<option value="no" <?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'no')?"selected='selected'":"";?>>No</option>
+							</select>
+						</div>
+					</div>
 					<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 						<thead>
 							<tr align="center">
