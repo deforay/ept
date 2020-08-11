@@ -2540,7 +2540,7 @@ CREATE TABLE `announcements_notification` (
  `created_on` datetime DEFAULT NULL,
  `created_by` int DEFAULT NULL,
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 -- Thana 13 Jul, 2020
 ALTER TABLE `evaluation_queue` ADD `date_finalised` DATETIME NULL DEFAULT NULL AFTER `last_updated_on`;
 -- Version 6.0 14-July-2020
@@ -2555,3 +2555,4 @@ ALTER TABLE `push_notification` CHANGE `token_identify_id` `token_identify_id` T
 -- Amit 29 July 2020
 
 ALTER TABLE `shipment` ADD `shipment_attributes` JSON NULL DEFAULT NULL AFTER `average_score`;
+UPDATE `shipment` SET `shipment_attributes` = '{\r\n \"sampleType\": \"dried\",\r\n \"screeningTest\": \"no\"\r\n}' WHERE `scheme_type` = 'dts' and `shipment_attributes` is null;

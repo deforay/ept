@@ -9,8 +9,21 @@ syntax: regexp
 ^scheduled-jobs/certificate-template/(?!index.php)
 ^public/temporary/(?!index.php)
 ^downloads/(?!index.php)
+
+
+syntax: glob
 error_log
+npm-debug.log
 Thumbs.db
 Thumbs.db.orig
 .DS_Store
 .DS_Store.orig
+.git
+.git/*
+.gitattributes
+.gitignore
+application.ini
+config.development.php
+index-new.php
+
+
