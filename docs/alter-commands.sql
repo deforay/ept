@@ -2556,3 +2556,8 @@ ALTER TABLE `push_notification` CHANGE `token_identify_id` `token_identify_id` T
 
 ALTER TABLE `shipment` ADD `shipment_attributes` JSON NULL DEFAULT NULL AFTER `average_score`;
 UPDATE `shipment` SET `shipment_attributes` = '{\r\n \"sampleType\": \"dried\",\r\n \"screeningTest\": \"no\"\r\n}' WHERE `scheme_type` = 'dts' and `shipment_attributes` is null;
+
+
+-- Version 6.1.0 Amit 11 Aug 2020
+
+
