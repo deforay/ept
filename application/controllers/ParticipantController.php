@@ -16,6 +16,7 @@ class ParticipantController extends Zend_Controller_Action {
                 ->addActionContext('add-qc', 'html')
                 ->addActionContext('scheme', 'html')
                 ->addActionContext('profile-update-redirect', 'html')
+                ->addActionContext('get-participant-scheme-chart', 'html')
                 //->addActionContext('download-file-details', 'html')
                 ->initContext();
     }
@@ -35,6 +36,8 @@ class ParticipantController extends Zend_Controller_Action {
         $this->_helper->layout()->activeMenu = 'dashboard';
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
 	    $scheme = new Application_Service_Schemes();
+	    $dm = new Application_Service_DataManagers();
+        $this->view->participants = $dm->getParticipantsByDM();
         $this->view->schemes = $scheme->getAllSchemes();
         $this->view->authNameSpace = $authNameSpace;
     }
@@ -256,6 +259,14 @@ class ParticipantController extends Zend_Controller_Action {
 		$authNameSpace->force_profile_updation=0;
 		$this->view->authNameSpace = $authNameSpace;
     }
+    
+    public function getParticipantSchemeChartAction() {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $shipmentService = new Application_Service_Shipments();
+            $this->view->result = $shipmentService->getShipmentListBasedOnParticipant($params);
+        }
+    }
 	
 	public function certificateAction() {
 		$this->_helper->layout()->activeMenu = 'my-account';
@@ -279,6 +290,7 @@ class ParticipantController extends Zend_Controller_Action {
         $participantService = new Application_Service_Participants();
         $this->view->download=$participantService->getParticipantUniqueIdentifier();
     }
+
     public function downloadFileDetailsAction() {
         if($this->_hasParam('fileName')){
             $params = $this->_getAllParams();

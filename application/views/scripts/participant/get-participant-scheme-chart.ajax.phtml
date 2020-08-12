@@ -1,0 +1,101 @@
+<?php
+// Zend_Debug::dump($this->result);die;
+if (isset($this->result) && count($this->result) > 0) {
+
+?>
+    <script>
+        Highcharts.chart('participantChartContainer', {
+            chart: {
+                scrollablePlotArea: {
+                    minWidth: 700,
+                    scrollPositionX: 1
+                },
+                type: 'column'
+            },
+            title: {
+                text: 'Shipment Participant Score'
+            },
+            subtitle: {
+                text: 'Following are the list of finalized shipment details'
+            },
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                }
+            },
+            xAxis: {
+                type: 'category'
+            },
+            yAxis: {
+                min:0,
+                max:100,
+                title: {
+                    text: 'scores 100%'
+                }
+
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.y:.1f}%'
+                    }
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+            },
+
+            series: [{
+                name: "Shipment Code",
+                colorByPoint: true,
+                data: [
+                    <?php foreach($this->result as $row){
+                        $score = ($row['shipment_score'] == "")?0.00:$row['shipment_score'];
+                        $val = '{
+                            name : "'.$row['shipment_code'].'",
+                            y:'.$score.',';
+                            if(count($row[$row['shipment_code']]) > 0){
+                                $val .= 'drilldown:"'.$row['shipment_code'].'"';
+                            }
+                        $val .= '},';
+                        echo $val;
+                    }?>
+                ]
+            }],
+            drilldown: {
+                series: [
+                    <?php foreach($this->result as $subRow){
+                        if(count($subRow[$subRow['shipment_code']]) > 0){
+                            $subscore = ($subRow['shipment_score'] == "")?0.00:$subRow['shipment_score'];
+
+                            $data = '{
+                                name : "'.$subRow['shipment_code'].'",
+                                id:"'.$subRow['shipment_code'].'",
+                                data:[';
+                                foreach($subRow[$subRow['shipment_code']] as $rowData){
+                                    $data .= '[
+                                        "'.$rowData['participantName'].'",
+                                        '.$subscore.'
+                                    ],';
+                                }
+                            
+                            $data.=']},';
+                            echo $data;
+                        }
+                    }?>
+                ]
+            }
+        });
+    </script>
+<?php } else {
+    echo '<h3 class="text-center">No Data Available</h3>';
+} ?>

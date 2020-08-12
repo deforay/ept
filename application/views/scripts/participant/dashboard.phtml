@@ -1,252 +1,352 @@
 <?php
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $genderHelper = $this->getHelper('DateFormat');
-$dtFormat=  $genderHelper->getDateFormat();
+$dtFormat =  $genderHelper->getDateFormat();
 $activeSchemes = array();
-if(isset($this->schemes) && count($this->schemes) >0 ){
-    foreach($this->schemes as $scheme){
-	$activeSchemes[] = $scheme['scheme_id'];
-    }
+if (isset($this->schemes) && count($this->schemes) > 0) {
+	foreach ($this->schemes as $scheme) {
+		$activeSchemes[] = $scheme['scheme_id'];
+	}
 }
+$participant = array();
+foreach($this->participants as $row){
+	$participant[] = $row['participant_id'];
+}
+// Zend_Debug::dump(implode(',',$participant));die;
 ?>
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <style>
-    .green{
-	background-color:green;
-    }
-    .red{
-	background-color:red;
-    }
+	.highcharts-figure, .highcharts-data-table table {
+		min-width: 310px; 
+		max-width: 800px;
+		margin: 1em auto;
+	}
+
+	.highcharts-data-table table {
+		font-family: Verdana, sans-serif;
+		border-collapse: collapse;
+		border: 1px solid #EBEBEB;
+		margin: 10px auto;
+		text-align: center;
+		width: 100%;
+		max-width: 500px;
+	}
+	.highcharts-data-table caption {
+		padding: 1em 0;
+		font-size: 1.2em;
+		color: #555;
+	}
+	.highcharts-data-table th {
+		font-weight: 600;
+		padding: 0.5em;
+	}
+	.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+		padding: 0.5em;
+	}
+	.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+		background: #f8f8f8;
+	}
+	.highcharts-data-table tr:hover {
+		background: #f1f7ff;
+	}
+	#participantChartContainer{
+		max-width: 921px;
+		min-width: 921px;
+		height: 400px;
+		width: 400px;
+	}
+
+	.btn-group.open {
+		width: 100%;
+	}
+	.green {
+		background-color: green;
+	}
+
+	.red {
+		background-color: red;
+	}
+	.show-filter{
+		display: block;
+		background: aliceblue;
+		text-align: center;
+		margin-left: 60px !important;
+		border-radius: 3%;
+	}
 </style>
 <section class="content-header">
-    <h1> Dashboard </h1>
+	<h1> Dashboard </h1>
 </section>
 <section class="content">
-              <?php
-	      if(count($activeSchemes) > 0 && in_array('vl',$activeSchemes)) {
-	      ?>
-                <div class="box">
-		    <div class="box-body">
-			    <h3 class="txt text-info">Dried Tube Specimen - HIV Viral Load</h3>
-			    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsViralLoadTable">
-				    <thead>
-					<tr>
-					    <th>Shipment Date</th>
-					    <th>Shipment Code</th>
-					    <th>Participant Id</th>
-					    <th>Participant</th>
-					    <th>Response Date</th>
-					    <th>Performance</th>
-					</tr>
-				    </thead>
-				    <tbody>
-					<tr>
-					  <td colspan="6" class="dataTables_empty">Loading data from server</td>
-					</tr>
-				    </tbody>
-			    </table>
-		    </div>
-		</div>
-		<?php } ?>
-		<?php
-	        if(count($activeSchemes) > 0 && in_array('tb',$activeSchemes)) {
-	        ?>
-		<div class="box">
-                    <div class="box-body">
-			    <h3 class="txt text-info">Dried Tube Specimen - Tuberculosis</h3>
-			    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsTuberculosisTable">
-				    <thead>
-					<tr>
-					    <th>Shipment Date</th>
-					    <th>Shipment Code</th>
-						<th>Participant Id</th>
-					    <th>Participant</th>
-					    <th>Response Date</th>
-					    <th>Performance</th>
-					</tr>
-				    </thead>
-				    <tbody>
-					<tr>
-					  <td colspan="6" class="dataTables_empty">Loading data from server</td>
-					</tr>
-				    </tbody>
-			    </table>
-		    </div>
-		</div>
-		<?php } ?>
-		<?php
-	        if(count($activeSchemes) > 0 && in_array('eid',$activeSchemes)) {
-	        ?>
-		<div class="box">
-                    <div class="box-body">
-			    <h3 class="txt text-info">Dried Blood Spot - Early Infant Diagnosis</h3>
-			    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="earlyInfantDiagnosisTable">
-				    <thead>
-					<tr>
-					    <th>Shipment Date</th>
-					    <th>Shipment Code</th>
-						<th>Participant Id</th>
-					    <th>Participant</th>
-					    <th>Response Date</th>
-					    <th>Performance</th>
-					</tr>
-				    </thead>
-				    <tbody>
-					<tr>
-					  <td colspan="6" class="dataTables_empty">Loading data from server</td>
-					</tr>
-				    </tbody>
-			    </table>
-		    </div>
-		</div>
-		<?php } ?>
-		<?php
-	        if(count($activeSchemes) > 0 && in_array('dts',$activeSchemes)) {
-	        ?>
-		<div class="box">
-                    <div class="box-body">
-			    <h3 class="txt text-info">Dried Tube Specimen - HIV Serology</h3>
-			    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsHIVSerologyTable">
-				    <thead>
-					<tr>
-					    <th>Shipment Date</th>
-					    <th>Shipment Code</th>
-						<th>Participant Id</th>
-					    <th>Participant</th>
-					    <th>Response Date</th>
-					    <th>Performance</th>
-					</tr>
-				    </thead>
-				    <tbody>
-					<tr>
-					  <td colspan="6" class="dataTables_empty">Loading data from server</td>
-					</tr>
-				    </tbody>
-			    </table>
-		    </div>
-		</div>
-		<?php } ?>
-		<?php
-	        if(count($activeSchemes) > 0 && in_array('dbs',$activeSchemes)) {
-	        ?>
-		<div class="box">
-                    <div class="box-body">
-			    <h3 class="txt text-info">Dried Blood Spot - HIV Serology</h3>
-			    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dbsHIVSerologyTable">
-				    <thead>
-					<tr>
-					    <th>Shipment Date</th>
-					    <th>Shipment Code</th>
-						<th>Participant Id</th>
-					    <th>Participant</th>
-					    <th>Response Date</th>
-					    <th>Performance</th>
-					</tr>
-				    </thead>
-				    <tbody>
-					<tr>
-					  <td colspan="6" class="dataTables_empty">Loading data from server</td>
-					</tr>
-				    </tbody>
-			    </table>
-		    </div>
-		</div>
-		<?php } ?>
+	<div class="box">
 
-
-		<div class="box" style="display:none;">
-                <div class="box-body">
-					<h3 class="txt text-info">Schemes Overview</h3>
-					<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="overviewTable">
-						<thead>
-						    <tr>
-							<th>Year</th>
-							<th>Scheme Type</th>
-							<th>Total Schemes <br>Shipped</th>
-							<th>Reported Within <br>Due Date</th>
-							<th>Responses <br>not received yet</th>
-						    </tr>
-						</thead>
-						<tbody>
-						    <tr>
-						      <td colspan="5" class="dataTables_empty">Loading data from server</td>
-						    </tr>
-						</tbody>
-					</table>
+		<div class="box-body">
+			<!-- <h3 class="txt text-info"></h3> -->
+			<span class="filter btn btn-warning btn-xs pull-right" onclick="showFilter(this)" style=" top: -34px !important; position: relative; ">Show/Filters</span>
+			<fieldset class="show-filter" style="display: none;">
+				<div class="form-group col-lg-6" style=" top: 8px; ">
+					<label class="col-lg-4 control-label" for="dateRange" style=" top: 5px; ">Shipment Date</label>
+					<div class="col-lg-6">
+						<input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+					</div>
 				</div>
+				<?php if(count($this->participants) > 1){ ?>
+				<div class="form-group col-lg-6" style=" top: 8px; ">
+					<label class="col-lg-4 control-label" for="participant" style=" top: 5px; ">Pariticipants</label>
+					<div class="col-lg-6" style=" text-align: left; ">
+						<select id="participant" name="participant[]" class="form-control multipleSelect" multiple="multiple" title="Select one or more participants">
+							<option value="">-- Select--</option>
+							<?php foreach($this->participants as $row){
+									echo '<option value="'.$row['participant_id'].'">'.ucwords($row['first_name']." " . $row['last_name'] ."(".$row['unique_identifier'] .")").'</option>';
+							} ?>
+						</select>
+					</div>
+				</div>
+				<?php }?>
+				<input type="hidden" id="participantDefault" name="participantDefault" value="<?php echo implode(',',$participant);?>"/>
+				<div class="form-group col-lg-12" style=" top: 8px; ">
+					<input name="submitbtn" class="btn btn-sm btn-primary" type="button" tabindex="7" value="Search" onclick="participantChartContainer('search',$('#participant'));"/>
+					<input class="btn btn-sm btn-danger" type="button" onclick="window.location.href = '/participant/dashboard';" tabindex="8" value="Clear"/>
+				</div>
+			</fieldset>
+			<div id="participantChartContainer"></div>
 		</div>
-		
+	</div>
+	<?php
+	if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) {
+	?>
 		<div class="box">
-                <div class="box-body">
-					<h3 class="txt text-info">All Shipments</h3>
-
-					<?php
-					if($this->globalQcAccess=='yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access=='yes')){
-					?>					
-					<table class="table">
+			<div class="box-body">
+				<h3 class="txt text-info">Dried Tube Specimen - HIV Viral Load</h3>
+				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsViralLoadTable">
+					<thead>
 						<tr>
-							<td style="width:100%;">
-								<select id="qualityChecked" name="qualityChecked" onchange="schemeTable.fnDraw()"  class="form-control">
+							<th>Shipment Date</th>
+							<th>Shipment Code</th>
+							<th>Participant Id</th>
+							<th>Participant</th>
+							<th>Response Date</th>
+							<th>Performance</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td colspan="6" class="dataTables_empty text-center">Loading data from server</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	<?php } ?>
+	<?php
+	if (count($activeSchemes) > 0 && in_array('tb', $activeSchemes)) {
+	?>
+		<div class="box">
+			<div class="box-body">
+				<h3 class="txt text-info">Dried Tube Specimen - Tuberculosis</h3>
+				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsTuberculosisTable">
+					<thead>
+						<tr>
+							<th>Shipment Date</th>
+							<th>Shipment Code</th>
+							<th>Participant Id</th>
+							<th>Participant</th>
+							<th>Response Date</th>
+							<th>Performance</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td colspan="6" class="dataTables_empty text-center">Loading data from server</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	<?php } ?>
+	<?php
+	if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) {
+	?>
+		<div class="box">
+			<div class="box-body">
+				<h3 class="txt text-info">Dried Blood Spot - Early Infant Diagnosis</h3>
+				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="earlyInfantDiagnosisTable">
+					<thead>
+						<tr>
+							<th>Shipment Date</th>
+							<th>Shipment Code</th>
+							<th>Participant Id</th>
+							<th>Participant</th>
+							<th>Response Date</th>
+							<th>Performance</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td colspan="6" class="dataTables_empty text-center">Loading data from server</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	<?php } ?>
+	<?php
+	if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) {
+	?>
+		<div class="box">
+			<div class="box-body">
+				<h3 class="txt text-info">Dried Tube Specimen - HIV Serology</h3>
+				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsHIVSerologyTable">
+					<thead>
+						<tr>
+							<th>Shipment Date</th>
+							<th>Shipment Code</th>
+							<th>Participant Id</th>
+							<th>Participant</th>
+							<th>Response Date</th>
+							<th>Performance</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td colspan="6" class="dataTables_empty text-center">Loading data from server</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	<?php } ?>
+	<?php
+	if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) {
+	?>
+		<div class="box">
+			<div class="box-body">
+				<h3 class="txt text-info">Dried Blood Spot - HIV Serology</h3>
+				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dbsHIVSerologyTable">
+					<thead>
+						<tr>
+							<th>Shipment Date</th>
+							<th>Shipment Code</th>
+							<th>Participant Id</th>
+							<th>Participant</th>
+							<th>Response Date</th>
+							<th>Performance</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td colspan="6" class="dataTables_empty text-center">Loading data from server</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	<?php } ?>
+
+
+	<div class="box" style="display:none;">
+		<div class="box-body">
+			<h3 class="txt text-info">Schemes Overview</h3>
+			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="overviewTable">
+				<thead>
+					<tr>
+						<th>Year</th>
+						<th>Scheme Type</th>
+						<th>Total Schemes <br>Shipped</th>
+						<th>Reported Within <br>Due Date</th>
+						<th>Responses <br>not received yet</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="5" class="dataTables_empty text-center">Loading data from server</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="box">
+		<div class="box-body">
+			<h3 class="txt text-info">All Shipments</h3>
+
+			<?php
+			if ($this->globalQcAccess == 'yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes')) {
+			?>
+				<table class="table">
+					<tr>
+						<td style="width:100%;">
+							<select id="qualityChecked" name="qualityChecked" onchange="schemeTable.fnDraw()" class="form-control">
 								<option value=""> -- Filter QC Checked Responses --</option>
 								<option value="yes">Show QC Checked Responses</option>
 								<option value="no">Show Not QC Checked Responses</option>
-								</select>
-							</td>
-						</tr>
-					</table>
-					<input type="hidden" name="participantMapId" id="participantMapId"/>
-					<div style="padding-top:20px;display:none;" id="qcTopButton">
-						<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) Selected for Bulk Quality Check</b></a>
-					</div>
-					<?php
-					}
-					?>
+							</select>
+						</td>
+					</tr>
+				</table>
+				<input type="hidden" name="participantMapId" id="participantMapId" />
+				<div style="padding-top:20px;display:none;" id="qcTopButton">
+					<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) Selected for Bulk Quality Check</b></a>
+				</div>
+			<?php
+			}
+			?>
 			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="allSchemeTable">
 				<thead>
-				    <tr>
-					<th></th>
-					<th style="width:30px;">Year</th>
-					<th style="width:100px;">Shipment<br/>Date</th>
-					<th style="width:50px;">Scheme</th>
-					<th style="width:100px;">Shipment Code</th>
-					<th>Participant Id</th>
-					<th>Participant</th>
-					<th style="width:100px;">Response<br/>Date</th>
-					<th style="width:100px;">Action</th>
-					<th>Report</th>
-	    
-				    </tr>
+					<tr>
+						<th></th>
+						<th style="width:30px;">Year</th>
+						<th style="width:100px;">Shipment<br />Date</th>
+						<th style="width:50px;">Scheme</th>
+						<th style="width:100px;">Shipment Code</th>
+						<th>Participant Id</th>
+						<th>Participant</th>
+						<th style="width:100px;">Response<br />Date</th>
+						<th style="width:100px;">Action</th>
+						<th>Report</th>
+
+					</tr>
 				</thead>
 				<tbody>
-				    <tr>
-					<td colspan="10" class="dataTables_empty">Loading data from server</td>
-				    </tr>
+					<tr>
+						<td colspan="10" class="dataTables_empty text-center">Loading data from server</td>
+					</tr>
 				</tbody>
 			</table>
-				</div>
-			</div>
-		
-			
+		</div>
+	</div>
+
+
 </section>
 
 <div class="deleteAction dialog" id="migrateBox">
 	<div style="padding:10px;">
-        <span onClick="hidedefModal()" class="closeModal"></span>
-        <h3>Quality Check Done</h3>
-        <table  class="display datatable table table-bordered table-hover table-striped ">
+		<span onClick="hidedefModal()" class="closeModal"></span>
+		<h3>Quality Check Done</h3>
+		<table class="display datatable table table-bordered table-hover table-striped ">
 			<tr>
 				<th>QC Done on : </th>
-				<td><input type="text" id="qcDate" name="qcDate"  style="width:180px;float:left;"  maxlength="11" value=""  class="isRequired form-control" readonly="readonly" /></td>
+				<td><input type="text" id="qcDate" name="qcDate" style="width:180px;float:left;" maxlength="11" value="" class="isRequired form-control" readonly="readonly" /></td>
 			</tr>
 		</table>
-		
+
 		<div class="box-footer" style="text-align: center">
 			<button class="btn btn-primary" onclick="submitQcForm();return false;">Submit</button>
 		</div>
-    </div>
+	</div>
 </div>
-
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script>
-    var s1Table = null;
+	var startDate = "";
+	var endDate = "";
+
+	var s1Table = null;
 	var s2Table = null;
 	var s3Table = null;
 	var s4Table = null;
@@ -254,371 +354,475 @@ if(isset($this->schemes) && count($this->schemes) >0 ){
 	sOneLastShipmentRow = [];
 	sOneLastShipmentRowColor = [];
 	<?php
-	if(count($activeSchemes) > 0 && in_array('vl',$activeSchemes)) {
+	if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) {
 	?>
-	function dtsViralLoadSchemes(){
-		s1Table = $('#dtsViralLoadTable').dataTable({
-			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
-			},
-			"bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"}
-			],
-			"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-			    if($.inArray(aData[1], sOneLastShipmentRow) == -1){
-				sOneLastShipmentRow = [];
-				sOneLastShipmentRow.push(aData[1]);
-				if($.inArray("#ecf1ef", sOneLastShipmentRowColor) == -1){
-				    sOneLastShipmentRowColor = [];
-				    sOneLastShipmentRowColor.push("#ecf1ef");
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#ecf1ef");
-				}else{
-				    sOneLastShipmentRowColor = [];
-				    sOneLastShipmentRowColor.push("#fffff2");
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fffff2");
+
+		function dtsViralLoadSchemes() {
+			s1Table = $('#dtsViralLoadTable').dataTable({
+				"oLanguage": {
+					"sLengthMenu": "_MENU_ records per page"
+				},
+				"bJQueryUI": false,
+				"bAutoWidth": false,
+				"bInfo": true,
+				"bScrollCollapse": true,
+				"sPaginationType": "full_numbers",
+				"bRetrieve": true,
+				"aoColumns": [{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					}
+				],
+				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+					if ($.inArray(aData[1], sOneLastShipmentRow) == -1) {
+						sOneLastShipmentRow = [];
+						sOneLastShipmentRow.push(aData[1]);
+						if ($.inArray("#ecf1ef", sOneLastShipmentRowColor) == -1) {
+							sOneLastShipmentRowColor = [];
+							sOneLastShipmentRowColor.push("#ecf1ef");
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#ecf1ef");
+						} else {
+							sOneLastShipmentRowColor = [];
+							sOneLastShipmentRowColor.push("#fffff2");
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#fffff2");
+						}
+					} else {
+						if ($.inArray("#ecf1ef", sOneLastShipmentRowColor) == -1) {
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#fffff2");
+						}
+						if ($.inArray("#fffff2", sOneLastShipmentRowColor) == -1) {
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#ecf1ef");
+						}
+					}
+				},
+				"aaSorting": [
+					[0, "desc"]
+				],
+				"bProcessing": true,
+				"bServerSide": true,
+				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
+				"fnServerData": function(sSource, aoData, fnCallback) {
+					aoData.push({
+						"name": "scheme",
+						"value": "vl"
+					});
+					$.ajax({
+						"dataType": 'json',
+						"type": "POST",
+						"url": sSource,
+						"data": aoData,
+						"success": function(json) {
+							//    if(json.shipmentArray.length >0){
+							//	
+							//    }
+							fnCallback(json);
+						}
+					});
 				}
-			    }else{
-				if($.inArray("#ecf1ef", sOneLastShipmentRowColor) == -1){
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fffff2");
-				}
-				if($.inArray("#fffff2", sOneLastShipmentRowColor) == -1){
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#ecf1ef");
-				}
-			    }
-			},
-			"aaSorting": [[ 0, "desc" ]],
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    aoData.push({"name": "scheme", "value": "vl"});
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": function(json){
-				//    if(json.shipmentArray.length >0){
-				//	
-				//    }
-				    fnCallback(json);
-				}
-			    });
-			}
-		});
-	}
+			});
+		}
 	<?php } ?>
 	sTwoLastShipmentRow = [];
 	sTwoLastShipmentRowColor = [];
 	<?php
-	if(count($activeSchemes) > 0 && in_array('tb',$activeSchemes)) {
+	if (count($activeSchemes) > 0 && in_array('tb', $activeSchemes)) {
 	?>
-	function dtsTuberculosisSchemes(){
-		s2Table = $('#dtsTuberculosisTable').dataTable({
-			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
-			},
-			"bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"}
-			],
-			"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-			    if($.inArray(aData[1], sTwoLastShipmentRow) == -1){
-				sTwoLastShipmentRow = [];
-				sTwoLastShipmentRow.push(aData[1]);
-				if($.inArray("#ecf1ef", sTwoLastShipmentRowColor) == -1){
-				    sTwoLastShipmentRowColor = [];
-				    sTwoLastShipmentRowColor.push("#ecf1ef");
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#ecf1ef");
-				}else{
-				    sTwoLastShipmentRowColor = [];
-				    sTwoLastShipmentRowColor.push("#fffff2");
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fffff2");
+
+		function dtsTuberculosisSchemes() {
+			s2Table = $('#dtsTuberculosisTable').dataTable({
+				"oLanguage": {
+					"sLengthMenu": "_MENU_ records per page"
+				},
+				"bJQueryUI": false,
+				"bAutoWidth": false,
+				"bInfo": true,
+				"bScrollCollapse": true,
+				"sPaginationType": "full_numbers",
+				"bRetrieve": true,
+				"aoColumns": [{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					}
+				],
+				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+					if ($.inArray(aData[1], sTwoLastShipmentRow) == -1) {
+						sTwoLastShipmentRow = [];
+						sTwoLastShipmentRow.push(aData[1]);
+						if ($.inArray("#ecf1ef", sTwoLastShipmentRowColor) == -1) {
+							sTwoLastShipmentRowColor = [];
+							sTwoLastShipmentRowColor.push("#ecf1ef");
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#ecf1ef");
+						} else {
+							sTwoLastShipmentRowColor = [];
+							sTwoLastShipmentRowColor.push("#fffff2");
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#fffff2");
+						}
+					} else {
+						if ($.inArray("#ecf1ef", sTwoLastShipmentRowColor) == -1) {
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#fffff2");
+						}
+						if ($.inArray("#fffff2", sTwoLastShipmentRowColor) == -1) {
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#ecf1ef");
+						}
+					}
+				},
+				"aaSorting": [
+					[0, "desc"]
+				],
+				"bProcessing": true,
+				"bServerSide": true,
+				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
+				"fnServerData": function(sSource, aoData, fnCallback) {
+					aoData.push({
+						"name": "scheme",
+						"value": "tb"
+					});
+					$.ajax({
+						"dataType": 'json',
+						"type": "POST",
+						"url": sSource,
+						"data": aoData,
+						"success": fnCallback
+					});
 				}
-			    }else{
-				if($.inArray("#ecf1ef", sTwoLastShipmentRowColor) == -1){
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fffff2");
-				}
-				if($.inArray("#fffff2", sTwoLastShipmentRowColor) == -1){
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#ecf1ef");
-				}
-			    }
-			},
-			"aaSorting": [[ 0, "desc" ]],
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    aoData.push({"name": "scheme", "value": "tb"});
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
-			}
-		});
-	}
+			});
+		}
 	<?php } ?>
 	sThreeLastShipmentRow = [];
 	sThreeLastShipmentRowColor = [];
 	<?php
-	if(count($activeSchemes) > 0 && in_array('eid',$activeSchemes)) {
+	if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) {
 	?>
-	function dbsEarlyInfantDiagnosisSchemes(){
-		s3Table = $('#earlyInfantDiagnosisTable').dataTable({
-			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
-			},
-			"bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"}
-			],
-			"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-			    if($.inArray(aData[1], sThreeLastShipmentRow) == -1){
-				sThreeLastShipmentRow = [];
-				sThreeLastShipmentRow.push(aData[1]);
-				if($.inArray("#ecf1ef", sThreeLastShipmentRowColor) == -1){
-				    sThreeLastShipmentRowColor = [];
-				    sThreeLastShipmentRowColor.push("#ecf1ef");
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#ecf1ef");
-				}else{
-				    sThreeLastShipmentRowColor = [];
-				    sThreeLastShipmentRowColor.push("#fffff2");
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fffff2");
+
+		function dbsEarlyInfantDiagnosisSchemes() {
+			s3Table = $('#earlyInfantDiagnosisTable').dataTable({
+				"oLanguage": {
+					"sLengthMenu": "_MENU_ records per page"
+				},
+				"bJQueryUI": false,
+				"bAutoWidth": false,
+				"bInfo": true,
+				"bScrollCollapse": true,
+				"sPaginationType": "full_numbers",
+				"bRetrieve": true,
+				"aoColumns": [{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					}
+				],
+				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+					if ($.inArray(aData[1], sThreeLastShipmentRow) == -1) {
+						sThreeLastShipmentRow = [];
+						sThreeLastShipmentRow.push(aData[1]);
+						if ($.inArray("#ecf1ef", sThreeLastShipmentRowColor) == -1) {
+							sThreeLastShipmentRowColor = [];
+							sThreeLastShipmentRowColor.push("#ecf1ef");
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#ecf1ef");
+						} else {
+							sThreeLastShipmentRowColor = [];
+							sThreeLastShipmentRowColor.push("#fffff2");
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#fffff2");
+						}
+					} else {
+						if ($.inArray("#ecf1ef", sThreeLastShipmentRowColor) == -1) {
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#fffff2");
+						}
+						if ($.inArray("#fffff2", sThreeLastShipmentRowColor) == -1) {
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#ecf1ef");
+						}
+					}
+				},
+				"aaSorting": [
+					[0, "desc"]
+				],
+				"bProcessing": true,
+				"bServerSide": true,
+				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
+				"fnServerData": function(sSource, aoData, fnCallback) {
+					aoData.push({
+						"name": "scheme",
+						"value": "eid"
+					});
+					$.ajax({
+						"dataType": 'json',
+						"type": "POST",
+						"url": sSource,
+						"data": aoData,
+						"success": fnCallback
+					});
 				}
-			    }else{
-				if($.inArray("#ecf1ef", sThreeLastShipmentRowColor) == -1){
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fffff2");
-				}
-				if($.inArray("#fffff2", sThreeLastShipmentRowColor) == -1){
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#ecf1ef");
-				}
-			    }
-			},
-			"aaSorting": [[ 0, "desc" ]],
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    aoData.push({"name": "scheme", "value": "eid"});
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
-			}
-		});
-	}
+			});
+		}
 	<?php } ?>
 	sFourLastShipmentRow = [];
 	sFourLastShipmentRowColor = [];
 	<?php
-	if(count($activeSchemes) > 0 && in_array('dts',$activeSchemes)) {
+	if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) {
 	?>
-	function dtsHIVSerologySchemes(){
-		s4Table = $('#dtsHIVSerologyTable').dataTable({
-			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
-			},
-			"bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"}
-			],
-			"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-			    if($.inArray(aData[1], sFourLastShipmentRow) == -1){
-				sFourLastShipmentRow = [];
-				sFourLastShipmentRow.push(aData[1]);
-				if($.inArray("#ecf1ef", sFourLastShipmentRowColor) == -1){
-				    sFourLastShipmentRowColor = [];
-				    sFourLastShipmentRowColor.push("#ecf1ef");
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#ecf1ef");
-				}else{
-				    sFourLastShipmentRowColor = [];
-				    sFourLastShipmentRowColor.push("#fffff2");
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fffff2");
+
+		function dtsHIVSerologySchemes() {
+			s4Table = $('#dtsHIVSerologyTable').dataTable({
+				"oLanguage": {
+					"sLengthMenu": "_MENU_ records per page"
+				},
+				"bJQueryUI": false,
+				"bAutoWidth": false,
+				"bInfo": true,
+				"bScrollCollapse": true,
+				"sPaginationType": "full_numbers",
+				"bRetrieve": true,
+				"aoColumns": [{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					}
+				],
+				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+					if ($.inArray(aData[1], sFourLastShipmentRow) == -1) {
+						sFourLastShipmentRow = [];
+						sFourLastShipmentRow.push(aData[1]);
+						if ($.inArray("#ecf1ef", sFourLastShipmentRowColor) == -1) {
+							sFourLastShipmentRowColor = [];
+							sFourLastShipmentRowColor.push("#ecf1ef");
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#ecf1ef");
+						} else {
+							sFourLastShipmentRowColor = [];
+							sFourLastShipmentRowColor.push("#fffff2");
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#fffff2");
+						}
+					} else {
+						if ($.inArray("#ecf1ef", sFourLastShipmentRowColor) == -1) {
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#fffff2");
+						}
+						if ($.inArray("#fffff2", sFourLastShipmentRowColor) == -1) {
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#ecf1ef");
+						}
+					}
+				},
+				"aaSorting": [
+					[0, "desc"]
+				],
+				"bProcessing": true,
+				"bServerSide": true,
+				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
+				"fnServerData": function(sSource, aoData, fnCallback) {
+					aoData.push({
+						"name": "scheme",
+						"value": "dts"
+					});
+					$.ajax({
+						"dataType": 'json',
+						"type": "POST",
+						"url": sSource,
+						"data": aoData,
+						"success": fnCallback
+					});
 				}
-			    }else{
-				if($.inArray("#ecf1ef", sFourLastShipmentRowColor) == -1){
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fffff2");
-				}
-				if($.inArray("#fffff2", sFourLastShipmentRowColor) == -1){
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#ecf1ef");
-				}
-			    }
-			},
-			"aaSorting": [[ 0, "desc" ]],
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    aoData.push({"name": "scheme", "value": "dts"});
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
-			}
-		});
-	}
+			});
+		}
 	<?php } ?>
 	sFiveLastShipmentRow = [];
 	sFiveLastShipmentRowColor = [];
 	<?php
-	if(count($activeSchemes) > 0 && in_array('dbs',$activeSchemes)) {
+	if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) {
 	?>
-	function dbsHIVSerologySchemes(){
-		s4Table = $('#dbsHIVSerologyTable').dataTable({
-			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
-			},
-			"bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"}
-			],
-			"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-			    if($.inArray(aData[1], sFiveLastShipmentRow) == -1){
-				sFiveLastShipmentRow = [];
-				sFiveLastShipmentRow.push(aData[1]);
-				if($.inArray("#ecf1ef", sFiveLastShipmentRowColor) == -1){
-				    sFiveLastShipmentRowColor = [];
-				    sFiveLastShipmentRowColor.push("#ecf1ef");
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#ecf1ef");
-				}else{
-				    sFiveLastShipmentRowColor = [];
-				    sFiveLastShipmentRowColor.push("#fffff2");
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fffff2");
+
+		function dbsHIVSerologySchemes() {
+			s4Table = $('#dbsHIVSerologyTable').dataTable({
+				"oLanguage": {
+					"sLengthMenu": "_MENU_ records per page"
+				},
+				"bJQueryUI": false,
+				"bAutoWidth": false,
+				"bInfo": true,
+				"bScrollCollapse": true,
+				"sPaginationType": "full_numbers",
+				"bRetrieve": true,
+				"aoColumns": [{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					}
+				],
+				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+					if ($.inArray(aData[1], sFiveLastShipmentRow) == -1) {
+						sFiveLastShipmentRow = [];
+						sFiveLastShipmentRow.push(aData[1]);
+						if ($.inArray("#ecf1ef", sFiveLastShipmentRowColor) == -1) {
+							sFiveLastShipmentRowColor = [];
+							sFiveLastShipmentRowColor.push("#ecf1ef");
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#ecf1ef");
+						} else {
+							sFiveLastShipmentRowColor = [];
+							sFiveLastShipmentRowColor.push("#fffff2");
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#fffff2");
+						}
+					} else {
+						if ($.inArray("#ecf1ef", sFiveLastShipmentRowColor) == -1) {
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#fffff2");
+						}
+						if ($.inArray("#fffff2", sFiveLastShipmentRowColor) == -1) {
+							$(nRow).attr("class", "");
+							$(nRow).css("background-color", "#ecf1ef");
+						}
+					}
+				},
+				"aaSorting": [
+					[0, "desc"]
+				],
+				"bProcessing": true,
+				"bServerSide": true,
+				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
+				"fnServerData": function(sSource, aoData, fnCallback) {
+					aoData.push({
+						"name": "scheme",
+						"value": "dbs"
+					});
+					$.ajax({
+						"dataType": 'json',
+						"type": "POST",
+						"url": sSource,
+						"data": aoData,
+						"success": fnCallback
+					});
 				}
-			    }else{
-				if($.inArray("#ecf1ef", sFiveLastShipmentRowColor) == -1){
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#fffff2");
-				}
-				if($.inArray("#fffff2", sFiveLastShipmentRowColor) == -1){
-				    $(nRow).attr("class","");
-				    $(nRow).css("background-color","#ecf1ef");
-				}
-			    }
-			},
-			"aaSorting": [[ 0, "desc" ]],
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    aoData.push({"name": "scheme", "value": "dbs"});
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
-			}
-		});
-	}
+			});
+		}
 	<?php } ?>
-	$(document).ready(function(){
-	    <?php
-	    if(count($activeSchemes) > 0 && in_array('vl',$activeSchemes)) {
-	    ?>
-	     dtsViralLoadSchemes();
-	    <?php } ?>
-	    <?php
-	    if(count($activeSchemes) > 0 && in_array('tb',$activeSchemes)) {
-	    ?>
-	     dtsTuberculosisSchemes();
-	    <?php } ?>
-	    <?php
-	    if(count($activeSchemes) > 0 && in_array('eid',$activeSchemes)) {
-	    ?>
-	     dbsEarlyInfantDiagnosisSchemes();
-	    <?php } ?>
-	    <?php
-	    if(count($activeSchemes) > 0 && in_array('dts',$activeSchemes)) {
-	    ?>
-	     dtsHIVSerologySchemes();
-	    <?php } ?>
-	    <?php
-	    if(count($activeSchemes) > 0 && in_array('dbs',$activeSchemes)) {
-	    ?>
-	     dbsHIVSerologySchemes();
-	    <?php } ?>
+	$(document).ready(function() {
+		$('.multipleSelect').multiselect({
+            includeSelectAllOption: true
+        });
+		<?php
+		if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) {
+		?>
+			dtsViralLoadSchemes();
+		<?php } ?>
+		<?php
+		if (count($activeSchemes) > 0 && in_array('tb', $activeSchemes)) {
+		?>
+			dtsTuberculosisSchemes();
+		<?php } ?>
+		<?php
+		if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) {
+		?>
+			dbsEarlyInfantDiagnosisSchemes();
+		<?php } ?>
+		<?php
+		if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) {
+		?>
+			dtsHIVSerologySchemes();
+		<?php } ?>
+		<?php
+		if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) {
+		?>
+			dbsHIVSerologySchemes();
+		<?php } ?>
+
+		$('#dateRange').daterangepicker({
+			format: 'DD-MMM-YYYY',
+			ranges: {
+				'Last 30 Days': [moment().subtract('days', 29), moment()],
+				'Last 60 Days': [moment().subtract('days', 59), moment()],
+				'Last 90 Days': [moment().subtract('days', 89), moment()],
+				'Last 180 Days': [moment().subtract('days', 179), moment()],
+				'Last 12 Months': [moment().subtract('month', 12), moment()],
+				'Last 18 Months': [moment().subtract('month', 18), moment()],
+			}
+		},
+		function(start, end) {
+			startDate = start.format('YYYY-MM-DD');
+			endDate = end.format('YYYY-MM-DD');
+		});
 	});
-	
+
 	// var oTable = null;
 	// function overviewSchemes(){
 	// 	oTable = $('#overviewTable').dataTable({
@@ -654,145 +858,217 @@ if(isset($this->schemes) && count($this->schemes) >0 ){
 	// 		}
 	// 	});
 	// }
-	
+
 	// $(document).ready(function(){
 	// 	overviewSchemes();
 	// });
-	
-    var schemeTable = null;
-	var selectedQc=[];
-	function allSchemes(){
+
+	var schemeTable = null;
+	var selectedQc = [];
+
+	function allSchemes() {
 		schemeTable = $('#allSchemeTable').dataTable({
 			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
+				"sLengthMenu": "_MENU_ records per page"
 			},
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
 			"bScrollCollapse": true,
 			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-				{"bSortable":false},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":""},
-			    {"sClass":""},
-			    {"sClass":"center"},
-			    {"sClass":"center","bSortable":false},
-			    {"sClass":"center","bSortable":false}
+			"bRetrieve": true,
+			"aoColumns": [{
+					"bSortable": false
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center",
+					"bSortable": false
+				},
+				{
+					"sClass": "center",
+					"bSortable": false
+				}
 			],
-			"aaSorting": [[ 1, "desc" ]],
+			"aaSorting": [
+				[1, "desc"]
+			],
 			"fnDrawCallback": function() {
-                var checkBoxes=document.getElementsByName("subchk[]");
-                len = checkBoxes.length;
-                for(c=0;c<len;c++){
-                    if (jQuery.inArray(checkBoxes[c].id,selectedQc) != -1 )
-                    {
-                        checkBoxes[c].setAttribute("checked",true);
-                    }
-                }
-                
-            },
+				var checkBoxes = document.getElementsByName("subchk[]");
+				len = checkBoxes.length;
+				for (c = 0; c < len; c++) {
+					if (jQuery.inArray(checkBoxes[c].id, selectedQc) != -1) {
+						checkBoxes[c].setAttribute("checked", true);
+					}
+				}
+
+			},
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'all-schemes', 'format' => 'html')); ?>",
-			"fnServerParams": function (aoData) {
-                aoData.push({"name": "qualityChecked", "value": $("#qualityChecked").val()});
-				if($("#qualityChecked").val() == 'yes'){
+			"fnServerParams": function(aoData) {
+				aoData.push({
+					"name": "qualityChecked",
+					"value": $("#qualityChecked").val()
+				});
+				if ($("#qualityChecked").val() == 'yes') {
 					$("#qcTopButton").show();
-				}else{
+				} else {
 					$("#qcTopButton").hide();
 				}
-            },
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
+			},
+			"fnServerData": function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": aoData,
+					"success": fnCallback
+				});
 			}
 		});
 	}
-	
-	
-	$(document).ready(function(){
+
+
+	$(document).ready(function() {
 		allSchemes();
-		
+		participantChartContainer('','');
 	});
-    
-    
-	
-    function removeSchemes(schemeType,mid){
-		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 
+
+
+
+	function removeSchemes(schemeType, mid) {
+		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
 			$.blockUI();
-			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'common', 'action' => 'delete-response')); ?>", { schemeType:schemeType, mid: mid, format: "html" },
-			    function (data) {
-				alert("Response removed successfully");
-				schemeTable.fnDraw();
-				$.unblockUI();
-			});
-		}		
-		
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'delete-response')); ?>", {
+					schemeType: schemeType,
+					mid: mid,
+					format: "html"
+				},
+				function(data) {
+					alert("Response removed successfully");
+					schemeTable.fnDraw();
+					$.unblockUI();
+				});
+		}
+
 	}
-	
-	function addQc(mapId,obj){
-		if(obj.checked==true)
-        {
-			if($.inArray(mapId,selectedQc) == -1){
-			selectedQc.push(mapId);
+
+	function addQc(mapId, obj) {
+		if (obj.checked == true) {
+			if ($.inArray(mapId, selectedQc) == -1) {
+				selectedQc.push(mapId);
 			}
-		}else{
+		} else {
 			selectedQc.remove(mapId);
 		}
 		$("#participantMapId").val(selectedQc);
 		$("#qcCount").text(selectedQc.length);
-        
-    }
-	function addSingleQc(mapId,qcDate) {
+
+	}
+
+	function addSingleQc(mapId, qcDate) {
 		//$("#qcDate").val(qcDate);
-        if($.inArray(mapId,selectedQc) == -1){
+		if ($.inArray(mapId, selectedQc) == -1) {
 			selectedQc.push(mapId);
 			$("#participantMapId").val(selectedQc);
 		}
 		showQcForm();
-    }
+	}
+
 	function showQcForm() {
-        showdefModal("migrateBox", 600,400);
-		$("#qcDate").datepicker({dateFormat: '<?php echo $dtFormat; ?>'});
-    }
-	
+		showdefModal("migrateBox", 600, 400);
+		$("#qcDate").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
+	}
+
 	function submitQcForm() {
-		participantMapId=$("#participantMapId").val();
-		qcDate=$("#qcDate").val();
-		if (participantMapId!="" && qcDate!="") {
-            $.post("<?php echo $this->url(array('module'=>'default','controller' =>'participant', 'action' => 'add-qc')); ?>", { mapId: participantMapId,qcDate:qcDate,format: "html" },
-			function(data){
-			if(data>0){
-				schemeTable.fnDraw();
-				$("#countChecksPending").text("0");
-				selectedQc = '';
-				alert("Qc details added successfully");
-				hidedefModal();
-			}
-			});
-			
-        }else{
+		participantMapId = $("#participantMapId").val();
+		qcDate = $("#qcDate").val();
+		if (participantMapId != "" && qcDate != "") {
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'add-qc')); ?>", {
+					mapId: participantMapId,
+					qcDate: qcDate,
+					format: "html"
+				},
+				function(data) {
+					if (data > 0) {
+						schemeTable.fnDraw();
+						$("#countChecksPending").text("0");
+						selectedQc = '';
+						alert("Qc details added successfully");
+						hidedefModal();
+					}
+				});
+
+		} else {
 			alert("Please select the date");
 		}
-        
-    }
-	
+
+	}
+
 	function checkQcStatus() {
-        if(selectedQc.length==0){
+		if (selectedQc.length == 0) {
 			alert("Please select at least one shipment to proceed with QC");
-		}else{
+		} else {
 			showQcForm();
 		}
-    }	
+	}
 
+	function participantChartContainer(val,obj){
+		if(val == "search"){
+			if($(obj.val() != '')){
+
+				var participant = $('#participant').val()
+				var type = "array";
+			}else{
+				var participant = $('#participantDefault').val();
+				var type = "string";
+			}
+		} else{
+			var participant = $('#participantDefault').val();
+			var type = "string";
+		}
+		// console.log($('#participantDefault').val());
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+			startDate : startDate,
+			endDate: endDate,
+			participants: participant,
+			type : type,
+			format: "html"
+		},
+		function(data) {
+			$('#participantChartContainer').html(data);
+		});
+	}
+
+	function showFilter(obj){
+		$('.show-filter').toggle();
+		if($(obj).html() == "Show/Filters"){
+			$(obj).html('Hide/Filters');
+		} else{
+			$(obj).html('Show/Filters');
+		}
+	}
 </script>

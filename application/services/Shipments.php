@@ -2016,4 +2016,71 @@ class Application_Service_Shipments
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->saveShipmentsFormDetailsByAPI($params);
     }
+
+    public function getShipmentListBasedOnParticipant($params)
+    {
+        $resultArray = array();
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        if($params['type'] == 'array'){
+            $participantIds = implode(',',$params['participants']);
+        } else{
+            $participantIds = $params['participants'];
+        }
+        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response','max_score','average_score'))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score', 'documentation_score', 'participantCount' => new Zend_Db_Expr("count(sp.participant_id)"),'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))
+            ->where("s.status='finalized'")
+            ->where("sp.participant_id IN(".$participantIds.")")
+            ->group('s.shipment_id')
+            ->order("s.shipment_id");
+        if(isset($params['startDate']) && $params['startDate'] != ""){
+            $sQuery->where('s.shipment_date >="'.$params['startDate'].'"');
+        }
+        if(isset($params['endDate']) && $params['endDate'] != ""){
+            $sQuery->where('s.shipment_date <="'.$params['endDate'].'"');
+        }
+        // echo($sQuery);die;
+        $result =  $db->fetchAll($sQuery);
+        $response = array();
+        foreach($result as $key=>$row){
+            $response[] = array(
+                'shipment_code'         => $row['shipment_code'],
+                'max_score'             => $row['max_score'],
+                'average_score'         => $row['average_score'],
+                'participantCount'      => $row['participantCount'],
+                'shipment_score'        => $row['shipment_score'],
+                'documentation_score'   => $row['documentation_score'],
+            );
+            if($row['participantCount'] > 1){
+                $subQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response','max_score','average_score'))
+                    ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score', 'documentation_score', 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))
+                    ->join(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)")))
+                    ->where("s.status='finalized'")
+                    ->where("sp.participant_id IN(".$participantIds.")")
+                    ->where("s.shipment_code = '".$row['shipment_code']."'")
+                    ->group('sp.participant_id')
+                    ->order("sp.participant_id");
+                if(isset($params['startDate']) && $params['startDate'] != ""){
+                    $subQuery->where('s.shipment_date >="'.$params['startDate'].'"');
+                }
+                if(isset($params['endDate']) && $params['endDate'] != ""){
+                    $subQuery->where('s.shipment_date <="'.$params['endDate'].'"');
+                }
+                // echo $subQuery;die;
+                $participantresult =  $db->fetchAll($subQuery);
+                if(isset($participantresult) && count($participantresult) > 0){
+                    foreach($participantresult as $subRow){
+                        $response[$key][$subRow['shipment_code']][] = array(
+                            'shipment_code'         => $subRow['shipment_code'],
+                            'max_score'             => $subRow['max_score'],
+                            'average_score'         => $subRow['average_score'],
+                            'participantName'       => $subRow['participantName'],
+                            'shipment_score'        => $subRow['shipment_score'],
+                            'documentation_score'   => $subRow['documentation_score'],
+                        ); 
+                    }
+                }
+            }
+        }
+        return $response;
+    }
 }

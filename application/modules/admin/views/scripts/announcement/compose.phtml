@@ -123,19 +123,20 @@
 	$(document).ready(function() {
 		currentHighlighted = getCookie('did');
 		$('#dateRange').daterangepicker({
-				format: 'DD-MMM-YYYY',
-				ranges: {
-					'Last 60 Days': [moment().subtract('days', 59), moment()],
-					'Last 90 Days': [moment().subtract('days', 89), moment()],
-					'Last 180 Days': [moment().subtract('days', 179), moment()],
-					'Last 12 Months': [moment().subtract('month', 12), moment()],
-					'Last 18 Months': [moment().subtract('month', 18), moment()],
-				}
-			},
-			function(start, end) {
-				startDate = start.format('YYYY-MM-DD');
-				endDate = end.format('YYYY-MM-DD');
-			});
+			format: 'DD-MMM-YYYY',
+			ranges: {
+				'Last 30 Days': [moment().subtract('days', 29), moment()],
+				'Last 60 Days': [moment().subtract('days', 59), moment()],
+				'Last 90 Days': [moment().subtract('days', 89), moment()],
+				'Last 180 Days': [moment().subtract('days', 179), moment()],
+				'Last 12 Months': [moment().subtract('month', 12), moment()],
+				'Last 18 Months': [moment().subtract('month', 18), moment()],
+			}
+		},
+		function(start, end) {
+			startDate = start.format('YYYY-MM-DD');
+			endDate = end.format('YYYY-MM-DD');
+		});
 	});
 
 	function getShipmentCodes(schemeType) {

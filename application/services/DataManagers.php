@@ -128,6 +128,18 @@ class Application_Service_DataManagers
         return $db->fetchAll($db->select()->from('participant_manager_map')->where("dm_id= ?", $datamanagerId)->group('participant_id'));
     }
 
+    public function getParticipantsByDM()
+    {
+        $dmNameSpace = new Zend_Session_Namespace('datamanagers');
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('pmm'=>'participant_manager_map'))
+        ->join(array('p'=>'participant'),'pmm.participant_id=p.participant_id',array('*'))
+        ->where("dm_id= ?", $dmNameSpace->dm_id)
+        ->group('p.participant_id');
+        // die($sql);
+        return $db->fetchAll($sql);
+    }
+
     public function changePassword($oldPassword, $newPassword)
     {
         $userDb = new Application_Model_DbTable_DataManagers();
