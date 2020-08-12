@@ -2019,68 +2019,84 @@ class Application_Service_Shipments
 
     public function getShipmentListBasedOnParticipant($params)
     {
-        $resultArray = array();
+        $response = array();
+        $shipmentDate = explode(" ",$params['shipmentDate']);
+        // Zend_Debug::dump($shipmentDate);die;
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if($params['type'] == 'array'){
             $participantIds = implode(',',$params['participants']);
         } else{
             $participantIds = $params['participants'];
         }
-        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response','max_score','average_score'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score', 'documentation_score', 'participantCount' => new Zend_Db_Expr("count(sp.participant_id)"),'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))
-            ->where("s.status='finalized'")
-            ->where("sp.participant_id IN(".$participantIds.")")
-            ->group('s.shipment_id')
-            ->order("s.shipment_id");
-        if(isset($params['startDate']) && $params['startDate'] != ""){
-            $sQuery->where('s.shipment_date >="'.$params['startDate'].'"');
-        }
-        if(isset($params['endDate']) && $params['endDate'] != ""){
-            $sQuery->where('s.shipment_date <="'.$params['endDate'].'"');
-        }
-        // echo($sQuery);die;
-        $result =  $db->fetchAll($sQuery);
-        $response = array();
-        foreach($result as $key=>$row){
-            $response[] = array(
-                'shipment_code'         => $row['shipment_code'],
-                'max_score'             => $row['max_score'],
-                'average_score'         => $row['average_score'],
-                'participantCount'      => $row['participantCount'],
-                'shipment_score'        => $row['shipment_score'],
-                'documentation_score'   => $row['documentation_score'],
-            );
-            if($row['participantCount'] > 1){
-                $subQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response','max_score','average_score'))
-                    ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score', 'documentation_score', 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))
-                    ->join(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)")))
+
+        $monthYear = Pt_Commons_General::getMonthsInRange($shipmentDate[0], $shipmentDate[1]);
+
+        // Zend_Debug::dump($monthYear);die;
+        if(count($monthYear) > 0){
+            foreach($monthYear as $monthIndex=>$monthYr){
+
+                $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response','max_score','average_score'))
+                    ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score', 'documentation_score', 'participantCount' => new Zend_Db_Expr("count(sp.participant_id)"),'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))
+                    // ->join(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)")))
                     ->where("s.status='finalized'")
                     ->where("sp.participant_id IN(".$participantIds.")")
-                    ->where("s.shipment_code = '".$row['shipment_code']."'")
-                    ->group('sp.participant_id')
-                    ->order("sp.participant_id");
-                if(isset($params['startDate']) && $params['startDate'] != ""){
-                    $subQuery->where('s.shipment_date >="'.$params['startDate'].'"');
+                    ->where("s.scheme_type = '".$params['shipmentType']."'")
+                    ->group('s.shipment_id')
+                    ->group("DATE_FORMAT(s.shipment_code,'%b-%Y')")
+                    ->order("s.shipment_id");
+                if(isset($shipmentDate[0]) && $shipmentDate[0] != ""){
+                    $sQuery->where('s.shipment_date >="'.date('Y-m-01',strtotime($monthYr)).'"');
                 }
-                if(isset($params['endDate']) && $params['endDate'] != ""){
-                    $subQuery->where('s.shipment_date <="'.$params['endDate'].'"');
+                if(isset($shipmentDate[1]) && $shipmentDate[1] != ""){
+                    $sQuery->where('s.shipment_date <="'.date('Y-m-t',strtotime($monthYr)).'"');
                 }
-                // echo $subQuery;die;
-                $participantresult =  $db->fetchAll($subQuery);
-                if(isset($participantresult) && count($participantresult) > 0){
-                    foreach($participantresult as $subRow){
-                        $response[$key][$subRow['shipment_code']][] = array(
-                            'shipment_code'         => $subRow['shipment_code'],
-                            'max_score'             => $subRow['max_score'],
-                            'average_score'         => $subRow['average_score'],
-                            'participantName'       => $subRow['participantName'],
-                            'shipment_score'        => $subRow['shipment_score'],
-                            'documentation_score'   => $subRow['documentation_score'],
-                        ); 
+                // echo($sQuery);die;
+                $result =  $db->fetchAll($sQuery);
+                if(count($result) > 0){
+
+                    foreach($result as $key=>$row){
+                        $response[$monthIndex][$key] = array(
+                            'shipment_code'         => $row['shipment_code'],
+                            'participantName'       => $row['participantName'],
+                            'shipment_score'        => $row['shipment_score'],
+                            'documentation_score'   => $row['documentation_score'],
+                            'participantCount'      => $row['participantCount'],
+                            'scheme_type'           => $row['scheme_type']
+                        );
+                        /* if($row['participantCount'] > 1){
+                            $subQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response','max_score','average_score'))
+                                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score', 'documentation_score', 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))
+                                ->join(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)")))
+                                ->where("s.status='finalized'")
+                                ->where("sp.participant_id IN(".$participantIds.")")
+                                ->where("s.shipment_code = '".$row['shipment_code']."'")
+                                ->group('sp.participant_id')
+                                ->order("sp.participant_id");
+                            if(isset($shipmentDate[0]) && $shipmentDate[0] != ""){
+                                $sQuery->where('s.shipment_date >="'.date('Y-m-01',strtotime($monthYr)).'"');
+                            }
+                            if(isset($shipmentDate[1]) && $shipmentDate[1] != ""){
+                                $sQuery->where('s.shipment_date <="'.date('Y-m-t',strtotime($monthYr)).'"');
+                            }
+                            // echo $subQuery;die;
+                            $participantresult =  $db->fetchAll($subQuery);
+                            if(isset($participantresult) && count($participantresult) > 0){
+                                foreach($participantresult as $subRow){
+                                    $response[$monthIndex][$key][$subRow['shipment_code']][] = array(
+                                        'shipment_code'         => $subRow['shipment_code'],
+                                        'participantName'       => $subRow['participantName'],
+                                        'shipment_score'        => $subRow['shipment_score'],
+                                        'documentation_score'   => $subRow['documentation_score'],
+                                    ); 
+                                }
+                            }
+                        } */
                     }
+                } else{
+                    $response[$monthIndex] = null;
                 }
             }
         }
-        return $response;
+        return array('result' => $response, 'monthRange' => $monthYear);
     }
 }

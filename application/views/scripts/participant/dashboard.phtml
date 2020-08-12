@@ -17,7 +17,7 @@ foreach($this->participants as $row){
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <style>
 	.highcharts-figure, .highcharts-data-table table {
-		min-width: 310px; 
+		min-width: 360px; 
 		max-width: 800px;
 		margin: 1em auto;
 	}
@@ -49,6 +49,7 @@ foreach($this->participants as $row){
 	.highcharts-data-table tr:hover {
 		background: #f1f7ff;
 	}
+
 	#participantChartContainer{
 		max-width: 921px;
 		min-width: 921px;
@@ -86,16 +87,16 @@ foreach($this->participants as $row){
 			<fieldset class="show-filter" style="display: none;">
 				<div class="form-group col-lg-6" style=" top: 8px; ">
 					<label class="col-lg-4 control-label" for="dateRange" style=" top: 5px; ">Shipment Date</label>
-					<div class="col-lg-6">
-						<input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+					<div class="col-lg-8">
+						<input type="text" id="dateRange" name="dateRange" value="<?php echo date('d-M-Y',strtotime('- 365 DAYS')) . ' ' . date('d-M-Y') ?>" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
 					</div>
 				</div>
 				<?php if(count($this->participants) > 1){ ?>
 				<div class="form-group col-lg-6" style=" top: 8px; ">
 					<label class="col-lg-4 control-label" for="participant" style=" top: 5px; ">Pariticipants</label>
-					<div class="col-lg-6" style=" text-align: left; ">
+					<div class="col-lg-8" style=" text-align: left; ">
 						<select id="participant" name="participant[]" class="form-control multipleSelect" multiple="multiple" title="Select one or more participants">
-							<option value="">-- Select--</option>
+							
 							<?php foreach($this->participants as $row){
 									echo '<option value="'.$row['participant_id'].'">'.ucwords($row['first_name']." " . $row['last_name'] ."(".$row['unique_identifier'] .")").'</option>';
 							} ?>
@@ -109,7 +110,16 @@ foreach($this->participants as $row){
 					<input class="btn btn-sm btn-danger" type="button" onclick="window.location.href = '/participant/dashboard';" tabindex="8" value="Clear"/>
 				</div>
 			</fieldset>
-			<div id="participantChartContainer"></div>
+			<h3 class="txt text-info" style=" text-align: center; margin: 3%; text-decoration: underline; ">Participant Shipment Score for VL Scheme</h3>
+			<div id="participantChartContainerVl"></div><hr>
+			<h3 class="txt text-info" style=" text-align: center; margin: 3%; text-decoration: underline; ">Participant Shipment Score for EId Scheme</h3>
+			<div id="participantChartContainerEid"></div><hr>
+			<h3 class="txt text-info" style=" text-align: center; margin: 3%; text-decoration: underline; ">Participant Shipment Score for DTS Scheme</h3>
+			<div id="participantChartContainerDts"></div><hr>
+			<h3 class="txt text-info" style=" text-align: center; margin: 3%; text-decoration: underline; ">Participant Shipment Score for DBS Scheme</h3>
+			<div id="participantChartContainerDbs"></div><hr>
+			<h3 class="txt text-info" style=" text-align: center; margin: 3%; text-decoration: underline; ">Participant Shipment Score for Recency Scheme</h3>
+			<div id="participantChartContainerRecency"></div>
 		</div>
 	</div>
 	<?php
@@ -807,6 +817,7 @@ foreach($this->participants as $row){
 		<?php } ?>
 
 		$('#dateRange').daterangepicker({
+    		maxDate: moment(),
 			format: 'DD-MMM-YYYY',
 			ranges: {
 				'Last 30 Days': [moment().subtract('days', 29), moment()],
@@ -1038,7 +1049,7 @@ foreach($this->participants as $row){
 
 	function participantChartContainer(val,obj){
 		if(val == "search"){
-			if($(obj.val() != '')){
+			if($(obj).val() != '' && $(obj).val() != null){
 
 				var participant = $('#participant').val()
 				var type = "array";
@@ -1050,16 +1061,69 @@ foreach($this->participants as $row){
 			var participant = $('#participantDefault').val();
 			var type = "string";
 		}
-		// console.log($('#participantDefault').val());
+		/* for shipment vl */
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-			startDate : startDate,
-			endDate: endDate,
+			shipmentDate : $('#dateRange').val(),
 			participants: participant,
 			type : type,
+			shipmentType : 'vl',
+			render:'participantChartContainerVl',
 			format: "html"
 		},
 		function(data) {
-			$('#participantChartContainer').html(data);
+			$('#participantChartContainerVl').html(data);
+		});
+		
+		/* for shipment eid */
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+			shipmentDate : $('#dateRange').val(),
+			participants: participant,
+			type : type,
+			shipmentType : 'eid',
+			render:'participantChartContainerEid',
+			format: "html"
+		},
+		function(data) {
+			$('#participantChartContainerEid').html(data);
+		});
+		
+		/* for shipment dts */
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+			shipmentDate : $('#dateRange').val(),
+			participants: participant,
+			type : type,
+			shipmentType : 'dts',
+			render:'participantChartContainerDts',
+			format: "html"
+		},
+		function(data) {
+			$('#participantChartContainerDts').html(data);
+		});
+		
+		/* for shipment dbs */
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+			shipmentDate : $('#dateRange').val(),
+			participants: participant,
+			type : type,
+			shipmentType : 'dbs',
+			render:'participantChartContainerDbs',
+			format: "html"
+		},
+		function(data) {
+			$('#participantChartContainerDbs').html(data);
+		});
+
+		/* for shipment recency */
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+			shipmentDate : $('#dateRange').val(),
+			participants: participant,
+			type : type,
+			shipmentType : 'recency',
+			render:'participantChartContainerRecency',
+			format: "html"
+		},
+		function(data) {
+			$('#participantChartContainerRecency').html(data);
 		});
 	}
 

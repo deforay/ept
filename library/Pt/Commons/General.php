@@ -219,5 +219,16 @@ class Pt_Commons_General {
             return $newDate .= $dateArray[1] . "/" . $dateArray[0];
         }
     }
+
+    function getMonthsInRange($startDate, $endDate){
+		$months = array();
+		while (strtotime($startDate) <= strtotime($endDate)) {
+			//$monthYear=array('year' => date('Y', strtotime($startDate)),'month' => date('M', strtotime($startDate)),);
+			$monthYear = date('M', strtotime($startDate)) . "-" . date('Y', strtotime($startDate));
+			$months[$monthYear] = $monthYear;
+			$startDate = date('d M Y', strtotime($startDate . '+ 1 month'));
+		}
+		return $months;
+	}
 }
 

@@ -287,6 +287,8 @@ try {
             $pQuery = $db->select()->from(
                 array('spm' => 'shipment_participant_map'),
                 array(
+                    'custom_field_1',
+                    'custom_field_2',
                     'participant_count' => new Zend_Db_Expr('count("participant_id")'),
                     'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed not like 'yes')")
                 )

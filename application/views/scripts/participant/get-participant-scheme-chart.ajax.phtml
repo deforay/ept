@@ -1,101 +1,92 @@
 <?php
 // Zend_Debug::dump($this->result);die;
-if (isset($this->result) && count($this->result) > 0) {
-
+$result = $this->result['result'];
+$status = false;
+foreach($result as $row){
+    if($row != null){
+        $status = true;
+    }    
+}
+if (isset($this->result) && count($this->result) > 0 && $status) {
 ?>
     <script>
-        Highcharts.chart('participantChartContainer', {
+        Highcharts.chart('<?php echo $this->render;?>', {
             chart: {
-                scrollablePlotArea: {
-                    minWidth: 700,
-                    scrollPositionX: 1
-                },
-                type: 'column'
+                type: 'spline'
             },
             title: {
-                text: 'Shipment Participant Score'
+                text: ''
             },
             subtitle: {
-                text: 'Following are the list of finalized shipment details'
-            },
-            accessibility: {
-                announceNewData: {
-                    enabled: true
-                }
+                text: ''
             },
             xAxis: {
-                type: 'category'
+                //categories: ["21 Mar", "22 Mar", "23 Mar", "24 Mar", "25 Mar", "26 Mar", "27 Mar"]
+                categories: [<?php 
+                    if(count($this->result['monthRange']) > 0){
+                        foreach($this->result['monthRange'] as $monthYr){
+                            echo "'".$monthYr."',";
+                        }
+                    }
+                ?>]
             },
             yAxis: {
                 min:0,
                 max:100,
                 title: {
-                    text: 'scores 100%'
+                    text: 'Percentage %'
                 }
 
             },
-            legend: {
-                enabled: false
+            tooltip: {
+                crosshairs: true,
+                shared: true
             },
             plotOptions: {
                 series: {
-                    borderWidth: 0,
-                    dataLabels: {
-                        enabled: true,
-                        format: '{point.y:.1f}%'
+                    lineWidth: 3
+                },
+                spline: {
+                    marker: {
+                        radius: 4,
+                        lineColor: '#666666',
+                        lineWidth: 1
                     }
                 }
             },
+
             credits: {
                 enabled: false
             },
-            tooltip: {
-                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
-            },
 
-            series: [{
-                name: "Shipment Code",
+            series: [
+                {
+                gridLineWidth: 0,
+                minorGridLineWidth: 0,
+                name: "Shipment Score",
                 colorByPoint: true,
                 data: [
-                    <?php foreach($this->result as $row){
-                        $score = ($row['shipment_score'] == "")?0.00:$row['shipment_score'];
-                        $val = '{
-                            name : "'.$row['shipment_code'].'",
-                            y:'.$score.',';
-                            if(count($row[$row['shipment_code']]) > 0){
-                                $val .= 'drilldown:"'.$row['shipment_code'].'"';
-                            }
-                        $val .= '},';
-                        echo $val;
-                    }?>
-                ]
-            }],
-            drilldown: {
-                series: [
-                    <?php foreach($this->result as $subRow){
-                        if(count($subRow[$subRow['shipment_code']]) > 0){
-                            $subscore = ($subRow['shipment_score'] == "")?0.00:$subRow['shipment_score'];
-
-                            $data = '{
-                                name : "'.$subRow['shipment_code'].'",
-                                id:"'.$subRow['shipment_code'].'",
-                                data:[';
-                                foreach($subRow[$subRow['shipment_code']] as $rowData){
-                                    $data .= '[
-                                        "'.$rowData['participantName'].'",
-                                        '.$subscore.'
-                                    ],';
+                <?php 
+                    if(count($result) > 0){
+                        foreach($result as $row){
+                            if($row != null){
+                                foreach($row as $val){
+                                    echo '
+                                    {
+                                        name: "'.$val['shipment_code'].'",
+                                        y:'.number_format(($val['shipment_score'] + $val['documentation_score']),2).'
+                                    },
+                                    ';
                                 }
-                            
-                            $data.=']},';
-                            echo $data;
+                            } 
                         }
-                    }?>
-                ]
-            }
+                    }
+
+                ?>]
+                }
+            ]
         });
     </script>
 <?php } else {
-    echo '<h3 class="text-center">No Data Available</h3>';
+    echo '<h3 class="text-center">No Shipment Details Available</h3>';
 } ?>

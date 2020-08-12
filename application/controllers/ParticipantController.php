@@ -265,6 +265,8 @@ class ParticipantController extends Zend_Controller_Action {
             $params = $this->_getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $this->view->result = $shipmentService->getShipmentListBasedOnParticipant($params);
+            $this->view->shipmentType = $params['shipmentType'];
+            $this->view->render = $params['render'];
         }
     }
 	
