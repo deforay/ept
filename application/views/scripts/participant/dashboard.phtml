@@ -1062,6 +1062,7 @@ foreach($this->participants as $row){
 			var type = "string";
 		}
 		/* for shipment vl */
+		$('#participantChartContainerVl').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
 			shipmentDate : $('#dateRange').val(),
 			participants: participant,
@@ -1075,6 +1076,7 @@ foreach($this->participants as $row){
 		});
 		
 		/* for shipment eid */
+		$('#participantChartContainerEid').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
 			shipmentDate : $('#dateRange').val(),
 			participants: participant,
@@ -1088,6 +1090,7 @@ foreach($this->participants as $row){
 		});
 		
 		/* for shipment dts */
+		$('#participantChartContainerDts').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
 			shipmentDate : $('#dateRange').val(),
 			participants: participant,
@@ -1101,6 +1104,7 @@ foreach($this->participants as $row){
 		});
 		
 		/* for shipment dbs */
+		$('#participantChartContainerDbs').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
 			shipmentDate : $('#dateRange').val(),
 			participants: participant,
@@ -1114,6 +1118,7 @@ foreach($this->participants as $row){
 		});
 
 		/* for shipment recency */
+		$('#participantChartContainerRecency').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
 			shipmentDate : $('#dateRange').val(),
 			participants: participant,
