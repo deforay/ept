@@ -78,7 +78,14 @@ if (isset($this->result) && count($this->result) > 0 && $status) {
                                     },
                                     ';
                                 }
-                            } 
+                            } else{
+                                echo '
+                                {
+                                    name: "No shipment available",
+                                    y:-1.00
+                                },
+                                ';
+                            }
                         }
                     }
 
