@@ -1,37 +1,43 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.min.css"); ?>">
 <fieldset>
     <legend>Participant Upload Statistics</legend>
-        <div class="form-group col-lg-12">
-        <?php if(isset($this->response['data']) && count($this->response['data']) > 0){ ?>
-                <h4 align="center" class="text-success" style=" margin-bottom: 5%;margin-top: 5%; ">The following participants were added successfully.</h4>
-                <table class="table table-bordered table-striped dataTable table-hover table-responsive" id="successTable">
-                    <thead>
-                        <tr>
-                            <td>S.NO</td>
-                            <td>Unique Identifier</td>
-                            <td>Name</td>
-                            <td>Email</td>
-                            <td>Mobile</td>
-                            <td>Institute</td>
-                            <td>City/Region</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($this->response['data'] as $key=>$row){
+
+
+    <div class="form-group col-lg-12">
+        <h3>Total <?= count($this->response['data']) + count($this->response['error-data']) ?> | Added <?= count($this->response['data']) ?> | Not Added <?= count($this->response['error-data']) ?></h3>
+        <?php if (isset($this->response['data']) && count($this->response['data']) > 0) { ?>
+            <h3 class="text-success">The following participants were added successfully.</h3>
+            <table class="table table-bordered table-striped dataTable table-hover table-responsive" id="successTable">
+                <thead>
+                    <tr>
+                        <td>S.NO</td>
+                        <td>Unique Identifier</td>
+                        <td>Name</td>
+                        <td>Email</td>
+                        <td>Mobile</td>
+                        <td>Institute</td>
+                        <td>City/Region</td>
+                        <td>Country</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($this->response['data'] as $key => $row) {
                         echo '<tr>
-                                <td>'.$row['serialNo'].'</td>
-                                <td>'.$row['identifier'].'</td>
-                                <td>'.$row['first_name']. ' ' . $row['first_name'].'</td>
-                                <td>'.$row['email'].'</td>
-                                <td>'.$row['mobile'].'</td>
-                                <td>'.$row['institute'].'</td>
-                                <td>'.$row['city'].'</td>
+                                <td>' . $row['serialNo'] . '</td>
+                                <td>' . $row['identifier'] . '</td>
+                                <td>' . $row['first_name'] . ' ' . $row['first_name'] . '</td>
+                                <td>' . $row['email'] . '</td>
+                                <td>' . $row['mobile'] . '</td>
+                                <td>' . $row['institute'] . '</td>
+                                <td>' . $row['city'] . '</td>
+                                <td>' . $row['country'] . '</td>
                             </tr>';
-                        }?>
-                    </tbody>
-                </table>
-            <?php } if(isset($this->response['error-data']) && count($this->response['error-data']) > 0){ ?>
-            <h4 align="center" class="text-danger" style=" margin-bottom: 5%;margin-top: 5%; ">The following participants were skipped either due to duplication of Primary Email or Unique Participant ID found.</h4>
+                    } ?>
+                </tbody>
+            </table>
+        <?php }
+        if (isset($this->response['error-data']) && count($this->response['error-data']) > 0) { ?>
+            <h3 class="text-danger">The following participants were NOT ADDED. <br><small>The Primary Email and Participant ID have to be unique. If duplicates are found they do not get added. <br> Also ensure that the Country names are entered correctly.</small></h3>
             <table class="table table-bordered table-striped table-hover dataTable table-responsive" id="errorTable">
                 <thead>
                     <tr>
@@ -41,38 +47,42 @@
                         <td>Email</td>
                         <td>Mobile</td>
                         <td>Institute</td>
-                        <td>Region</td>
+                        <td>City</td>
+                        <td>Country</td>
+                        <td>Possbile Error</td>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach($this->response['error-data'] as $key=>$row){
-                    echo '<tr>
-                            <td>'.$row['serialNo'].'</td>
-                            <td>'.$row['identifier'].'</td>
-                            <td>'.$row['first_name']. ' ' . $row['first_name'].'</td>
-                            <td>'.$row['email'].'</td>
-                            <td>'.$row['mobile'].'</td>
-                            <td>'.$row['institute'].'</td>
-                            <td>'.$row['city'].'</td>
+                    <?php foreach ($this->response['error-data'] as $key => $row) {
+                        echo '<tr>
+                            <td>' . $row['serialNo'] . '</td>
+                            <td>' . $row['identifier'] . '</td>
+                            <td>' . $row['first_name'] . ' ' . $row['first_name'] . '</td>
+                            <td>' . $row['email'] . '</td>
+                            <td>' . $row['mobile'] . '</td>
+                            <td>' . $row['institute'] . '</td>
+                            <td>' . $row['city'] . '</td>
+                            <td>' . $row['country'] . '</td>
+                            <td>' . $row['error'] . '</td>
                         </tr>';
-                    }?>
+                    } ?>
                 </tbody>
             </table>
-        <?php }?>
-        </div>
-    
+        <?php } ?>
+    </div>
+
     <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
         <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants/bulk-import';" tabindex="8" value="Back" />
     </div>
 </fieldset>
 <script type="text/javascript" src="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.min.js"); ?>"></script>
 <script type="text/javascript" charset="utf-8">
-$(document).ready(function() {
-    <?php if(isset($this->response['data']) && count($this->response['data']) > 0){ ?>
-        $('#successTable').dataTable();
-    <?php }?>
-    <?php if(isset($this->response['error-data']) && count($this->response['error-data']) > 0){ ?>
-        $('#errorTable').dataTable();
-    <?php }?>
-});
+    $(document).ready(function() {
+        <?php if (isset($this->response['data']) && count($this->response['data']) > 0) { ?>
+            $('#successTable').dataTable();
+        <?php } ?>
+        <?php if (isset($this->response['error-data']) && count($this->response['error-data']) > 0) { ?>
+            $('#errorTable').dataTable();
+        <?php } ?>
+    });
 </script>

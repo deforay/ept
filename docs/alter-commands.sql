@@ -2561,3 +2561,5 @@ UPDATE `shipment` SET `shipment_attributes` = '{\r\n \"sampleType\": \"dried\",\
 -- Version 6.1.0 Amit 11 Aug 2020
 
 
+-- Amit 18 Aug 2020
+ALTER TABLE `countries` CHANGE `iso_name` `iso_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
