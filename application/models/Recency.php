@@ -12,6 +12,7 @@ class Application_Model_Recency
 
     public function evaluate($shipmentResult, $shipmentId)
     {
+
         $counter = 0;
         $maxScore = 0;
         $scoreHolder = array();
@@ -163,15 +164,15 @@ class Application_Model_Recency
     }
 
 
-    public function getSampleScore()
-    {
+    // public function getSampleScore()
+    // {
 
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+    //     $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+    //     $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-        $sampleScore = 0;
-        return $sampleScore;
-    }
+    //     $sampleScore = 0;
+    //     return $sampleScore;
+    // }
 
     public function getDocumentationScore($results, $attributes, $shipmentAttributes)
     {

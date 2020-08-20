@@ -594,6 +594,28 @@ class Application_Service_Participants
 
 							$lastInsertedId = 0;
 
+
+							$sheetData[$i]['A'] = filter_var(trim($sheetData[$i]['A']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['B'] = filter_var(trim($sheetData[$i]['B']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['C'] = filter_var(trim($sheetData[$i]['C']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['D'] = filter_var(trim($sheetData[$i]['D']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['E'] = filter_var(trim($sheetData[$i]['E']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['F'] = filter_var(trim($sheetData[$i]['F']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['G'] = filter_var(trim($sheetData[$i]['G']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['H'] = filter_var(trim($sheetData[$i]['H']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['I'] = filter_var(trim($sheetData[$i]['I']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['J'] = filter_var(trim($sheetData[$i]['J']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['K'] = filter_var(trim($sheetData[$i]['K']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['L'] = filter_var(trim($sheetData[$i]['L']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['M'] = filter_var(trim($sheetData[$i]['M']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['N'] = filter_var(trim($sheetData[$i]['N']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['O'] = filter_var(trim($sheetData[$i]['O']), FILTER_SANITIZE_STRING);
+							$sheetData[$i]['Q'] = filter_var(trim($sheetData[$i]['Q']), FILTER_SANITIZE_STRING);
+
+
+							$sheetData[$i]['P'] = filter_var(trim($sheetData[$i]['P']), FILTER_SANITIZE_EMAIL);
+							$sheetData[$i]['R'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_EMAIL);
+
 							$dataForStatistics = array(
 								'serialNo' 	=> $sheetData[$i]['A'],
 								'identifier' => $sheetData[$i]['B'],
@@ -606,22 +628,22 @@ class Application_Service_Participants
 								'country' => $sheetData[$i]['K']
 							);
 
-							if ((isset($sheetData[$i]['P']) && !empty(trim($sheetData[$i]['P'])))) {
+							if (!empty($sheetData[$i]['P']) && $sheetData[$i]['P'] != false) {
 
 								$dmId = 0;
-								$isIndividual = strtolower(trim($sheetData[$i]['C']));
+								$isIndividual = strtolower($sheetData[$i]['C']);
 								if (!in_array($isIndividual, array('yes', 'no'))) {
 									$isIndividual = 'yes'; // Default we treat testers as individuals
 								}
 								/* To check the duplication in participant table */
 								$psql = $db->select()->from('participant')
-									->where("email LIKE '" . trim($sheetData[$i]['P']) . "'")
-									->orWhere("unique_identifier LIKE '" . trim($sheetData[$i]['B']) . "'");
+									->where("email LIKE ?", $sheetData[$i]['P'])
+									->orWhere("unique_identifier LIKE ?", $sheetData[$i]['B']);
 								$presult = $db->fetchRow($psql);
 
 								/* To check the duplication in data manager table */
 								$dmsql = $db->select()->from('data_manager')
-									->where("primary_email LIKE '" . trim($sheetData[$i]['P']) . "'");
+									->where("primary_email LIKE ?", $sheetData[$i]['P']);
 								$dmresult = $db->fetchRow($dmsql);
 
 								/* To find the country id */
@@ -641,40 +663,40 @@ class Application_Service_Participants
 
 								if (!$presult && !$dmresult) {
 									$lastInsertedId = $db->insert('participant', array(
-										'unique_identifier' => trim($sheetData[$i]['B']),
+										'unique_identifier' => ($sheetData[$i]['B']),
 										'individual' 		=> $isIndividual,
-										'first_name' 		=> trim($sheetData[$i]['D']),
-										'last_name' 		=> trim($sheetData[$i]['E']),
-										'institute_name' 	=> trim($sheetData[$i]['F']),
-										'department_name' 	=> trim($sheetData[$i]['G']),
-										'address' 			=> trim($sheetData[$i]['H']),
-										'city' 				=> trim($sheetData[$i]['I']),
-										'state' 			=> trim($sheetData[$i]['J']),
+										'first_name' 		=> ($sheetData[$i]['D']),
+										'last_name' 		=> ($sheetData[$i]['E']),
+										'institute_name' 	=> ($sheetData[$i]['F']),
+										'department_name' 	=> ($sheetData[$i]['G']),
+										'address' 			=> ($sheetData[$i]['H']),
+										'city' 				=> ($sheetData[$i]['I']),
+										'state' 			=> ($sheetData[$i]['J']),
 										'country' 			=> (isset($cresult['id']) && $cresult['id'] != "") ? $cresult['id'] : 0,
-										'zip' 				=> trim($sheetData[$i]['L']),
-										'long' 				=> trim($sheetData[$i]['M']),
-										'lat' 				=> trim($sheetData[$i]['N']),
-										'mobile' 			=> trim($sheetData[$i]['O']),
-										'email' 			=> trim($sheetData[$i]['P']),
-										'additional_email' 	=> trim($sheetData[$i]['R']),
+										'zip' 				=> ($sheetData[$i]['L']),
+										'long' 				=> ($sheetData[$i]['M']),
+										'lat' 				=> ($sheetData[$i]['N']),
+										'mobile' 			=> ($sheetData[$i]['O']),
+										'email' 			=> ($sheetData[$i]['P']),
+										'additional_email' 	=> ($sheetData[$i]['R']),
 										'created_by' 		=> $authNameSpace->admin_id,
 										'created_on' 		=> new Zend_Db_Expr('now()'),
 										'status'			=> 'active'
 									));
 
 									$pasql = $db->select()->from('participant')
-										->where("email LIKE '" . trim($sheetData[$i]['P']) . "'")
-										->orWhere("unique_identifier LIKE '" . trim($sheetData[$i]['B']) . "'");
+										->where("email LIKE ?", trim($sheetData[$i]['P']))
+										->orWhere("unique_identifier LIKE ?", trim($sheetData[$i]['B']));
 									$paresult = $db->fetchRow($pasql);
 									$lastInsertedId = $paresult['participant_id'];
 									if ($lastInsertedId > 0) {
 										$dmId = $db->insert('data_manager', array(
-											'first_name' 		=> trim($sheetData[$i]['D']),
-											'last_name' 		=> trim($sheetData[$i]['E']),
-											'institute' 		=> trim($sheetData[$i]['F']),
-											'mobile' 			=> trim($sheetData[$i]['O']),
-											'secondary_email' 	=> trim($sheetData[$i]['R']),
-											'primary_email' 	=> trim($sheetData[$i]['P']),
+											'first_name' 		=> ($sheetData[$i]['D']),
+											'last_name' 		=> ($sheetData[$i]['E']),
+											'institute' 		=> ($sheetData[$i]['F']),
+											'mobile' 			=> ($sheetData[$i]['O']),
+											'secondary_email' 	=> ($sheetData[$i]['R']),
+											'primary_email' 	=> ($sheetData[$i]['P']),
 											'password' 			=> (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
 											'created_by' 		=> $authNameSpace->admin_id,
 											'created_on' 		=> new Zend_Db_Expr('now()'),

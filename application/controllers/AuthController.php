@@ -22,25 +22,25 @@ class AuthController extends Zend_Controller_Action
 		if ($this->_hasParam('email')) {
 			$email = $this->_getParam('email');
 			$result = $userService->checkEmail($email);
-			if($result){
+			if ($result) {
 				$userService->updateForceProfileCheck($email);
-				$userService->setStatusByEmailDM('active',base64_decode($email));
+				$userService->setStatusByEmailDM('active', base64_decode($email));
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Thank you. Your email has been verified successfully. You can now use your new email to login to ePT";
 				$sessionAlert->status = "success";
-			}else{
+			} else {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
-            	$sessionAlert->status = "failure";
+				$sessionAlert->status = "failure";
 			}
-		}else{
+		} else {
 			$sessionAlert = new Zend_Session_Namespace('alertSpace');
 			$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
 			$sessionAlert->status = "failure";
 		}
 		$this->_redirect('/auth/login');
 	}
-	
+
 	public function verifyEmailAction()
 	{
 		$sessionAlert = new Zend_Session_Namespace('alertSpace');
@@ -54,15 +54,15 @@ class AuthController extends Zend_Controller_Action
 		if ($this->_hasParam('t')) {
 			$link = $this->_getParam('t');
 			$result = $userService->checkForceProfileEmail($link);
-			if($result){
+			if ($result) {
 				$this->view->result = $result;
-			}else{
+			} else {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
-            	$sessionAlert->status = "failure";
+				$sessionAlert->status = "failure";
 				$this->_redirect('/auth/login');
 			}
-		}else{
+		} else {
 			$this->_redirect('/auth/login');
 		}
 	}
@@ -130,10 +130,10 @@ class AuthController extends Zend_Controller_Action
 				//$authNameSpace->UserFld2 = $rs->UserFld2;
 				//$authNameSpace->UserFld3 = $rs->UserFld3;
 				/* For force_profile_check start*/
-				$lastLogin = date('Ymd',strtotime($lastLogin));
+				$lastLogin = date('Ymd', strtotime($lastLogin));
 				$current = date("Ymd", strtotime(" -6 months"));
 
-				if($authNameSpace->force_profile_check =='yes' || ($current > $lastLogin)){
+				if ($authNameSpace->force_profile_check == 'yes' || ($current > $lastLogin)) {
 					$authNameSpace->force_profile_check_primary = 'yes';
 					$sessionAlert = new Zend_Session_Namespace('alertSpace');
 					$sessionAlert->message = "Please review your profile and primary email.";
@@ -142,7 +142,7 @@ class AuthController extends Zend_Controller_Action
 					$userService->updateLastLogin($rs->dm_id);
 					$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($rs->dm_id);
 					$this->_redirect('participant/user-info');
-				}else {
+				} else {
 					$userService = new Application_Service_DataManagers();
 					$userService->updateLastLogin($rs->dm_id);
 					$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($rs->dm_id);
@@ -179,20 +179,20 @@ class AuthController extends Zend_Controller_Action
 			$this->_redirect('/auth/login');
 		}
 	}
-	
+
 	public function newPasswordAction()
 	{
 		$userService = new Application_Service_DataManagers();
 		if ($this->getRequest()->isPost()) {
 			$params = $this->getRequest()->getPost();
 			$this->_redirect($userService->newPassword($params));
-		}else{
+		} else {
 			if ($this->_hasParam('email')) {
 				$email = $this->_getParam('email');
 				$result = $userService->checkEmail($email);
-				if($result){
+				if ($result) {
 					$this->view->email = $result;
-				}else{
+				} else {
 					$this->view->email = "";
 				}
 			}
