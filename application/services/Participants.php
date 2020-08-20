@@ -662,76 +662,88 @@ class Application_Service_Participants
 								}
 
 								if (!$presult && !$dmresult) {
-									$lastInsertedId = $db->insert('participant', array(
-										'unique_identifier' => ($sheetData[$i]['B']),
-										'individual' 		=> $isIndividual,
-										'first_name' 		=> ($sheetData[$i]['D']),
-										'last_name' 		=> ($sheetData[$i]['E']),
-										'institute_name' 	=> ($sheetData[$i]['F']),
-										'department_name' 	=> ($sheetData[$i]['G']),
-										'address' 			=> ($sheetData[$i]['H']),
-										'city' 				=> ($sheetData[$i]['I']),
-										'state' 			=> ($sheetData[$i]['J']),
-										'country' 			=> (isset($cresult['id']) && $cresult['id'] != "") ? $cresult['id'] : 0,
-										'zip' 				=> ($sheetData[$i]['L']),
-										'long' 				=> ($sheetData[$i]['M']),
-										'lat' 				=> ($sheetData[$i]['N']),
-										'mobile' 			=> ($sheetData[$i]['O']),
-										'email' 			=> ($sheetData[$i]['P']),
-										'additional_email' 	=> ($sheetData[$i]['R']),
-										'created_by' 		=> $authNameSpace->admin_id,
-										'created_on' 		=> new Zend_Db_Expr('now()'),
-										'status'			=> 'active'
-									));
 
-									$pasql = $db->select()->from('participant')
-										->where("email LIKE ?", trim($sheetData[$i]['P']))
-										->orWhere("unique_identifier LIKE ?", trim($sheetData[$i]['B']));
-									$paresult = $db->fetchRow($pasql);
-									$lastInsertedId = $paresult['participant_id'];
-									if ($lastInsertedId > 0) {
-										$dmId = $db->insert('data_manager', array(
+									$db->beginTransaction();
+									try {
+										$lastInsertedId = $db->insert('participant', array(
+											'unique_identifier' => ($sheetData[$i]['B']),
+											'individual' 		=> $isIndividual,
 											'first_name' 		=> ($sheetData[$i]['D']),
 											'last_name' 		=> ($sheetData[$i]['E']),
-											'institute' 		=> ($sheetData[$i]['F']),
+											'institute_name' 	=> ($sheetData[$i]['F']),
+											'department_name' 	=> ($sheetData[$i]['G']),
+											'address' 			=> ($sheetData[$i]['H']),
+											'city' 				=> ($sheetData[$i]['I']),
+											'state' 			=> ($sheetData[$i]['J']),
+											'country' 			=> (isset($cresult['id']) && $cresult['id'] != "") ? $cresult['id'] : 0,
+											'zip' 				=> ($sheetData[$i]['L']),
+											'long' 				=> ($sheetData[$i]['M']),
+											'lat' 				=> ($sheetData[$i]['N']),
 											'mobile' 			=> ($sheetData[$i]['O']),
-											'secondary_email' 	=> ($sheetData[$i]['R']),
-											'primary_email' 	=> ($sheetData[$i]['P']),
-											'password' 			=> (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
+											'email' 			=> ($sheetData[$i]['P']),
+											'additional_email' 	=> ($sheetData[$i]['R']),
 											'created_by' 		=> $authNameSpace->admin_id,
 											'created_on' 		=> new Zend_Db_Expr('now()'),
 											'status'			=> 'active'
 										));
 
-										// $dmasql = $db->select()->from('data_manager')
-										// 	->where("primary_email LIKE '" . trim($sheetData[$i]['P']) . "'");
-										// $dmaresult = $db->fetchRow($dmasql);
+										$pasql = $db->select()->from('participant')
+											->where("email LIKE ?", trim($sheetData[$i]['P']))
+											->orWhere("unique_identifier LIKE ?", trim($sheetData[$i]['B']));
+										$paresult = $db->fetchRow($pasql);
+										$lastInsertedId = $paresult['participant_id'];
+										if ($lastInsertedId > 0) {
+											$db->insert('data_manager', array(
+												'first_name' 		=> ($sheetData[$i]['D']),
+												'last_name' 		=> ($sheetData[$i]['E']),
+												'institute' 		=> ($sheetData[$i]['F']),
+												'mobile' 			=> ($sheetData[$i]['O']),
+												'secondary_email' 	=> ($sheetData[$i]['R']),
+												'primary_email' 	=> ($sheetData[$i]['P']),
+												'password' 			=> (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
+												'created_by' 		=> $authNameSpace->admin_id,
+												'created_on' 		=> new Zend_Db_Expr('now()'),
+												'status'			=> 'active'
+											));
 
-										// $dmId = $dmaresult['dm_id'];
+											$dmId = $db->lastInsertId();
 
-										if ($dmId > 0) {
-											$db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
-											$response['data'][] = $dataForStatistics;
+											if ($dmId != null && $dmId > 0) {
+												$db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
+												$response['data'][] = $dataForStatistics;
+											} else {
+												$dataForStatistics['error'] = 'Could not add Participant Login';
+												$response['error-data'][] = $dataForStatistics;
+												throw new Zend_Exception('Could not add Participant Login');
+											}
 										} else {
-											$dataForStatistics['error'] = 'Could not add Participant Login';
+											$dataForStatistics['error'] = 'Could not add Participant';
 											$response['error-data'][] = $dataForStatistics;
+											throw new Zend_Exception('Could not add Participant');
 										}
-									} else {
-										$dataForStatistics['error'] = 'Could not add Participant';
-										$response['error-data'][] = $dataForStatistics;
+										$db->commit();
+									} catch (Exception $e) {
+										// If any of the queries failed and threw an exception,
+										// we want to roll back the whole transaction, reversing
+										// changes made in the transaction, even those that succeeded.
+										// Thus all changes are committed together, or none are.
+										$db->rollBack();
+										error_log($e->getMessage());
+										error_log($e->getTraceAsString());
+										continue;
 									}
 								} else {
 									$dataForStatistics['error'] = 'Possible duplicate of Email or Unique ID.';
 									$response['error-data'][] = $dataForStatistics;
 								}
-								if ($lastInsertedId > 0 || $dmId > 0) {
-									if (file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-										unlink(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
-									}
-									$response['message'] = "File has expired please re-import again!";
-								}
+								// if ($lastInsertedId > 0 || $dmId > 0) {
+								// 	if (file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
+								// 		unlink(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+								// 	}
+								// 	$response['message'] = "File has expired please re-import again!";
+								// }
 							} else {
-								$dataForStatistics['error'] = 'Email Missing';
+								$dataForStatistics['error'] = 'Primary Email Missing';
 								$response['error-data'][] = $dataForStatistics;
 							}
 						}
@@ -752,7 +764,6 @@ class Application_Service_Participants
 			}
 		} catch (Exception $exc) {
 			error_log("IMPORT-PARTICIPANTS-DATA-EXCEL--" . $exc->getMessage());
-			die;
 			error_log($exc->getTraceAsString());
 			$alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
 			return false;
