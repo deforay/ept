@@ -4,7 +4,7 @@ class Application_Model_Recency
 {
 
     private $db = null;
-    private $failureReason = null;
+    private $failureReason = array();
     public function __construct($db = null)
     {
         $this->db = $db;
@@ -43,10 +43,10 @@ class Application_Model_Recency
             $lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
             if ($createdOn->compare($lastDate, Zend_date::DATES) > 0) {
                 //$lastDateResult = 'Fail';
-                $this->failureReason[] = array(
+                /* $this->failureReason[] = array(
                     'warning' => "Response was submitted after the last response date.",
                     'correctiveAction' => "Response should be submitted within the last response date."
-                );
+                ); */
             }
 
             if ($createdOn->compare($lastDate) <= 0) {
@@ -72,7 +72,7 @@ class Application_Model_Recency
                             }
                         } else {
                             if ($result['sample_score'] > 0) {
-                                $this->failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                /* $this->failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly"; */
                             }
                         }
                     }
@@ -96,10 +96,10 @@ class Application_Model_Recency
                 $grandTotal = ($responseScore + $documentationScore);
                 if ($grandTotal < $config->evaluation->recency->passPercentage) {
                     $scoreResult = 'Fail';
-                    $this->failureReason[] = array(
+                    /* $this->failureReason[] = array(
                         'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $config->evaluation->recency->passPercentage . "</strong>)",
                         'correctiveAction' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $config->evaluation->recency->passPercentage . "</strong>)",
-                    );
+                    ); */
                     $correctiveActionList[] = 15;
                 } else {
                     $scoreResult = 'Pass';
@@ -113,7 +113,7 @@ class Application_Model_Recency
                     $shipmentResult[$counter]['documentation_score'] = 0;
                     $shipmentResult[$counter]['display_result'] = '';
                     $shipmentResult[$counter]['is_followup'] = 'yes';
-                    $this->failureReason[] = array('warning' => 'Excluded from Evaluation');
+                    // $this->failureReason[] = array('warning' => 'Excluded from Evaluation');
                     $finalResult = 3;
                     $shipmentResult[$counter]['failure_reason'] = $this->failureReason = json_encode($this->failureReason);
                 } else {
@@ -123,7 +123,7 @@ class Application_Model_Recency
                     // checking if total score and maximum scores are the same
                     if ($totalScore != $maxScore) {
                         $scoreResult = 'Fail';
-                        $this->failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
+                        // $this->failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
                     } else {
                         $scoreResult = 'Pass';
                     }
@@ -200,10 +200,10 @@ class Application_Model_Recency
         if (isset($results[0]['shipment_receipt_date']) && strtolower($results[0]['shipment_receipt_date']) != '') {
             $documentationScore += $documentationScorePerItem;
         } else {
-            $this->failureReason[] = array(
+            /* $this->failureReason[] = array(
                 'warning' => "Shipment Receipt Date not provided",
                 'correctiveAction' => "Provide Shipment Receipt Date"
-            );
+            ); */
         }
 
         //D.3
@@ -212,10 +212,10 @@ class Application_Model_Recency
             if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
                 $documentationScore += $documentationScorePerItem;
             } else {
-                $this->failureReason[] = array(
+                /* $this->failureReason[] = array(
                     'warning' => "Missing reporting rehydration date for Shipment Panel",
                     'correctiveAction' => "Provide Shipment rehydration Date"
-                );
+                ); */
             }
         }
 
@@ -223,10 +223,10 @@ class Application_Model_Recency
         if (isset($results[0]['shipment_test_date']) && trim($results[0]['shipment_test_date']) != "") {
             $documentationScore += $documentationScorePerItem;
         } else {
-            $this->failureReason[] = array(
+            /* $this->failureReason[] = array(
                 'warning' => "Shipment test date not provided",
                 'correctiveAction' => "Provide Shipment test date"
-            );
+            ); */
         }
 
         //D.7
@@ -243,10 +243,10 @@ class Application_Model_Recency
             $rehydrateHours = $sampleRehydrateDays * 24;
 
             if ($interval->days > $sampleRehydrateDays) {
-                $this->failureReason[] = array(
+                /* $this->failureReason[] = array(
                     'warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
                     'correctiveAction' => "Testing should be done within $rehydrateHours hours of rehydration."
-                );
+                ); */
             } else {
                 $documentationScore += $documentationScorePerItem;
             }
@@ -256,10 +256,10 @@ class Application_Model_Recency
         if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
             $documentationScore += $documentationScorePerItem;
         } else {
-            $this->failureReason[] = array(
+            /* $this->failureReason[] = array(
                 'warning' => "Supervisor approval absent",
                 'correctiveAction' => "Provide Supervisor approval",
-            );
+            ); */
         }
         return $documentationScore;
     }

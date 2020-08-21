@@ -324,7 +324,7 @@ try {
                         $layoutFile = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout;
                         include($layoutFile.'.phtml');
                     }else{
-                        include('default.php');
+                        include(PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default.phtml');
                     }
                 }
             }
@@ -340,7 +340,7 @@ try {
                     $layoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout;
                     include($layoutFile.'.phtml');
                 }else{
-                    include('default-summary.php');
+                    include(SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default-summary.phtml');
                 }
             }
 
