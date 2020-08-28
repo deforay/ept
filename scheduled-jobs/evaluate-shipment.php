@@ -1,16 +1,15 @@
 <?php
-
 include_once('CronInit.php');
 
 require_once('tcpdf/tcpdf.php');
 
 defined('PARTICIPANT_REPORT_LAYOUT')
-    || define('PARTICIPANT_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));
+|| define('PARTICIPANT_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));
 defined('SUMMARY_REPORT_LAYOUT')
-    || define('SUMMARY_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/summary-layouts'));
+|| define('SUMMARY_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/summary-layouts'));
 
 defined('CRON_FOLDER')
-    || define('CRON_FOLDER', realpath(dirname(__FILE__) . '/../scheduled-jobs'));
+|| define('CRON_FOLDER', realpath(dirname(__FILE__) . '/../scheduled-jobs'));
 
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
@@ -21,7 +20,7 @@ $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLI
 class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
-
+    
     public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType,$layout, $datetime = "")
     {
         $this->scheme_name = $schemeName;
@@ -244,29 +243,26 @@ function dateFormat($dateIn)
 }
 
 try {
-
+    
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
-
+    
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-
+    
     //$smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
-
+    
     $limit = 3;
     $sQuery = $db->select()
-        ->from(array('eq' => 'evaluation_queue'))
-        ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type'))
-        ->where("eq.status=?", 'pending')
-        ->limit($limit);
+    ->from(array('eq' => 'evaluation_queue'))
+    ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type'))
+    ->where("eq.status=?", 'pending')
+    ->limit($limit);
     $evalResult = $db->fetchAll($sQuery);
-
+    
     $reportService = new Application_Service_Reports();
     $commonService = new Application_Service_Common();
     $schemeService = new Application_Service_Schemes();
     $evalService = new Application_Service_Evaluation();
-
-
-
     if (count($evalResult) > 0) {
         foreach ($evalResult as $evalRow) {
 
@@ -305,6 +301,7 @@ try {
             $logoRight = $reportService->getReportConfigValue('logo-right');
             $layout = $reportService->getReportConfigValue('report-layout');
             $possibleDtsResults = $schemeService->getPossibleResults('dts');
+            $recencyPossibleResults = $schemeService->getPossibleResults('recency');
             $passPercentage = $commonService->getConfig('pass_percentage');
             $resultStatus = $evalRow['report_type'];
             $customField1 = $commonService->getConfig('custom_field_1');
@@ -313,7 +310,7 @@ try {
 
             $startValue = 0;
             for ($startValue = 0; $startValue <= $totParticipantsRes['reported_count']; $startValue = $startValue + 50) {
-                $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 50, $startValue);
+                $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 1, $startValue);
                 $endValue = $startValue + 49;
                 if ($endValue > $totParticipantsRes['reported_count']) {
                     $endValue = $totParticipantsRes['reported_count'];

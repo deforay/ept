@@ -4,6 +4,7 @@ require_once 'tcpdf/tcpdf.php';
 require_once(CRON_FOLDER . DIRECTORY_SEPARATOR . 'General.php');
 $general = new General();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
+// Zend_Debug::dump($resultArray);die;
 //var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
@@ -14,6 +15,12 @@ $dtsResults = array();
 foreach ($possibleDtsResults as $pr) {
     $dtsResults[$pr['id']] = ucfirst(strtolower($pr['response']));
 }
+
+$recencyResults = array();
+foreach ($recencyPossibleResults as $pr) {
+    $recencyResults[$pr['id']] = ucfirst(strtolower($pr['response']));
+}
+
 if (sizeof($resultArray['shipment']) > 0) {
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
@@ -267,7 +274,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         
         if (sizeof($result['responseResult']) > 0) {
-            if ($schemeType != 'vl' && $schemeType != 'eid') {
+            if ($schemeType != 'vl' && $schemeType != 'eid' && $schemeType != 'recency') {
                 $labRes = '<span style="font-weight: bold;font-size:12px;">Your laboratory test results : <br/></span><table border="1" style="font-size:12px;">';
                 $labRes .= '<tr style="background-color:#dbe4ee;">
                                 <td></td>
@@ -384,6 +391,199 @@ if (sizeof($resultArray['shipment']) > 0) {
 							$labRes .= '<td>' . ucfirst(strtolower($response['referenceResult'])) . '</td>
 							<td>' . ucfirst(strtolower($response['labResult'])) . '</td>
 
+							<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $score . '</td>
+						  </tr>';
+                }
+                $labRes .= '</table>';
+
+                $pdf->SetLeftMargin(15);
+                $pdf->writeHTML($labRes, true, false, true, false, '');
+
+                if (count($nonMandatorySamples) > 0) {
+
+                    $nmsTable = "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
+                    $nmsTable .= "<br/>";
+                    $pdf->writeHTML($nmsTable, true, false, true, false, '');
+                }
+
+                //Let us now calculate documentation score
+                $documentationScore = 0;
+                $documentationScorePerItem = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore / 5) : 0;
+                $attributes = json_decode($result['attributes'], true);
+
+                $img = array();
+                $imgPass = UPLOAD_PATH . '/../images/check.jpg';
+                $imgFail = UPLOAD_PATH . '/../images/cross.jpg';
+
+                $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>
+					<table border="1" style="font-size:12px;width:100%;">
+						<tr style="background-color:#dbe4ee;">
+							<td style="text-align:center;font-weight:bold;width:75%">Documentation Item</td>
+							<td style="text-align:center;font-weight:bold;width:25%" colspan="2">Score</td>
+						</tr>';
+
+                if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                } else {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                }
+
+                $docRes .= '<tr>
+							<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
+							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $scoreDoc . '</td>
+					</tr>';
+
+                if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                } else {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                }
+
+                $docRes .= '<tr>
+							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>
+							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $scoreDoc . '</td>
+					</tr>';
+
+                if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "" && $shipmentAttributesSampleTypeDisplay == "") {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                } else {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                }
+
+                $docRes .= '<tr style="'.$shipmentAttributesSampleTypeDisplay.'">
+							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>
+							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $scoreDoc . '</td>
+					</tr>';
+
+                if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                } else {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                }
+
+                $docRes .= '<tr>
+							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
+							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $scoreDoc . '</td>
+					</tr>';
+
+                $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+                $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
+                $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
+                $interval = $sampleRehydrationDate->diff($testedOnDate);
+
+                // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
+                $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+                $rehydrateHours = $sampleRehydrateDays * 24;
+
+                if ($interval->days > $sampleRehydrateDays) {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                } else {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                }
+
+                $docRes .= '<tr style="'.$shipmentAttributesSampleTypeDisplay.'">
+							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>
+							<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $scoreDoc . '</td>
+					</tr>';
+
+                $docRes .= '</table>';
+
+                $pdf->writeHTML($docRes, true, false, true, false, '');
+
+                if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
+                    $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+                    $failRes .= '<table border="1" style="font-size:11px;">';
+                    $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
+                    $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+                    foreach ($warnings as $warning) {
+                        $failRes .= '<tr>';
+                        $failRes .= '<td> ' . (isset($warning['warning']) ? $warning['warning'] : "") . ' </td>';
+                        $failRes .= '<td> ' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . ' </td>';
+                        $failRes .= '</tr>';
+                    }
+                    $failRes .= '</table>';
+                    $pdf->writeHTML($failRes, true, false, true, false, '');
+                }
+            } else if ($schemeType == 'recency') {
+                $labRes = '<span style="font-weight: bold;font-size:12px;">Your laboratory test results : <br/></span><table border="1" style="font-size:12px;">';
+                $labRes .= '<tr style="background-color:#dbe4ee;">
+                                <th style="text-align:center;font-weight:bold;">Specimen Panel ID </th>
+                                <th style="text-align:center;font-weight:bold;">Control Line</th>
+                                <th style="text-align:center;font-weight:bold;">Diagnosis Line</th>
+                                <th style="text-align:center;font-weight:bold;">Longterm Line</th>
+                                <th style="text-align:center;font-weight:bold;">Expected Result</th>
+                                <th style="text-align:center;font-weight:bold;">Your Result</th>
+                                <th style="text-align:center;font-weight:bold;" colspan="2">Score</th>
+                            </tr>';
+
+                $nonMandatorySamples = array();
+                $controlSamples = array();
+                $correctSamples = array();
+                $totalProperSamples = 0;
+                $correctSamplesCount = 0;
+                $wrongSamples = array();
+                $otherSamples = array();
+                $allSamples = array();
+
+                foreach ($result['responseResult'] as $response) {
+                    $allSamples[] = $response['sample_label'];
+                    if ($response['control'] == 1) {
+                        $controlSamples[] = $response['sample_label'];
+                    }
+
+                    if ($response['mandatory'] == 0) {
+                        $nonMandatorySamples[] = $response['sample_label'];
+                    } else if ($response['calculated_score'] == 'Pass') {
+                        $correctSamples[] = $response['sample_label'];
+                    } else if ($response['calculated_score'] == 'Fail') {
+                        $wrongSamples[] = $response['sample_label'];
+                    } else {
+                        $otherSamples[] = $response['sample_label'];
+                    }
+                }
+
+                $correctSamplesCount = count($correctSamples);
+                $totalProperSamples = $correctSamplesCount + count($wrongSamples);
+                $maxDocumentationPoints = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore) : 0;
+                $maximumResponseScore = 100 - $maxDocumentationPoints;
+                $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
+
+                foreach ($result['responseResult'] as $response) {
+
+                    if ($response['calculated_score'] == 'Pass') {
+                        $img = UPLOAD_PATH . '/../images/check.jpg';
+
+                        $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
+                    } else if ($response['calculated_score'] == 'Fail') {
+                        $img = UPLOAD_PATH . '/../images/cross.jpg';
+                        $score = ($response['control'] == 0) ? 0 : "N.A.";
+                    } else {
+                        $img = UPLOAD_PATH . '/../images/minus.jpg';
+                        $score = "N.A.";
+                    }
+                    $labRes .= '<tr>
+							<td style="text-align:center;">' . $response['sample_label'] . '</td>
+							<td>' . (isset($response['control_line']) && $response['control_line'] != "" ? $response['control_line'] : "") . '</td>
+                            <td>' . (isset($response['diagnosis_line']) && $response['diagnosis_line'] != "" ? $response['diagnosis_line'] : "") . '</td>
+                            <td>' . (isset($response['longterm_line']) && $response['longterm_line'] != "" ? $response['longterm_line'] : "") . '</td>
+							<td>' . ucfirst(strtolower($response['referenceResult'])) . '</td>
+							<td>' . ucfirst(strtolower($response['labResult'])) . '</td>
 							<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $score . '</td>
 						  </tr>';
