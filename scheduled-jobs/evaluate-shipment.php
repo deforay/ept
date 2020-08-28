@@ -87,7 +87,7 @@ class IndividualPDF extends TCPDF
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - Rapid HIV Dried Tube Specimen </span>';
         }
 
-        $this->writeHTMLCell(0, 0, 42, 10, $html, 0, 0, 0, true, 'J', true);
+        $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
         $html = '<hr/>';
         $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
     }
@@ -191,7 +191,7 @@ class SummaryPDF extends TCPDF
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
         }
 
-        $this->writeHTMLCell(0, 0, 42, 10, $html, 0, 0, 0, true, 'J', true);
+        $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
         $html = '<hr/>';
         $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
     }
