@@ -1281,6 +1281,55 @@ class Application_Service_Evaluation
 
 
 				$shipmentResult['participantScores'] = $db->fetchAll($sql);
+			} else if ($shipmentResult['scheme_type'] == 'recency') {
+				$sql = $db->select()->from(array('refdts' => 'reference_result_recency'), array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory'))
+					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
+					->where("refdts.shipment_id = ?", $shipmentResult['shipment_id']);
+				$sqlRes = $db->fetchAll($sql);
+
+				$shipmentResult['referenceResult'] = $sqlRes;
+
+				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes', 'spm.is_excluded'))
+					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
+					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
+					->where("spm.shipment_id = ?", $shipmentId)
+					->where("spm.final_result IS NOT NULL")
+					->where("spm.final_result!=''")
+					// ->where("spm.final_result = ?",'2')
+					//->where("substring(spm.evaluation_status,4,1) != '0'")
+					->group('spm.map_id');
+				$sQueryRes = $db->fetchAll($sQuery);
+				//error_log($sQuery);
+				if (count($sQueryRes) > 0) {
+
+					$tQuery = $db->select()->from(array('refdts' => 'reference_result_recency'), array('refdts.sample_id', 'refdts.sample_label'))
+						->join(array('resdts' => 'response_result_recency'), 'resdts.sample_id=refdts.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN (resdts.reported_result=refdts.reference_result AND spm.is_excluded='no') THEN 1 ELSE 0 END)")))
+						->join(array('spm' => 'shipment_participant_map'), 'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id', array())
+						->where("spm.shipment_id = ?", $shipmentId)
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
+						//->where("substring(spm.evaluation_status,4,1) != '0'")
+						->group(array("refdts.sample_id"));
+
+					$shipmentResult['summaryResult'][] = $sQueryRes;
+					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
+
+					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id'))
+						->join(array('resdts' => 'response_result_recency'), 'resdts.shipment_map_id=spm.map_id', array('resdts.control_line', 'resdts.diagnosis_line', 'resdts.diagnosis_line'))
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
+						//->where("substring(spm.evaluation_status,4,1) != '0'")
+						->where("spm.shipment_id = ?", $shipmentId)
+						->group('spm.map_id');
+					$rQueryRes = $db->fetchAll($rQuery);
+				}
+
+				$sql = $db->select()->from(array('p' => 'participant'))
+					->join(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id')
+					->where("spm.shipment_id = ?", $shipmentId);
+
+
+				$shipmentResult['participantScores'] = $db->fetchAll($sql);
 			} else if ($shipmentResult['scheme_type'] == 'eid') {
 				$schemeService = new Application_Service_Schemes();
 				$extractionAssay = $schemeService->getEidExtractionAssay();

@@ -699,7 +699,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $pdf->writeHTML($docRes, true, false, true, false, '');
 
-                if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
+                /* if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
                     $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
                     $failRes .= '<table border="1" style="font-size:11px;">';
                     $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
@@ -712,7 +712,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     }
                     $failRes .= '</table>';
                     $pdf->writeHTML($failRes, true, false, true, false, '');
-                }
+                } */
             } else if ($schemeType == 'eid') {
 
                 $n = count($result['responseResult']);

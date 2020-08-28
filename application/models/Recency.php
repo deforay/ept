@@ -70,14 +70,24 @@ class Application_Model_Recency
                             if (0 == $result['control']) {
                                 $totalScore += $result['sample_score'];
                             }
+                            $score = "Pass";
                         } else {
                             if ($result['sample_score'] > 0) {
                                 /* $this->failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly"; */
                             }
+                            $score = "Fail";
                         }
+                    } else{
+                        $score = "Fail";
                     }
                     if (0 == $result['control']) {
                         $maxScore += $result['sample_score'];
+                    }
+
+                    if ($score == 'Fail' || (!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null) || ($result['reference_result'] != $result['reported_result'])) {
+                        $this->db->update('response_result_recency', array('calculated_score' => "Fail"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    } else {
+                        $this->db->update('response_result_recency', array('calculated_score' => "Pass"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
                     }
                 }
 
@@ -149,6 +159,7 @@ class Application_Model_Recency
 
                 // let us update the total score in DB
                 $this->db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $this->failureReason), "map_id = " . $shipment['map_id']);
+
                 //$counter++;
             } else {
                 $this->failureReason = array('warning' => "Response was submitted after the last response date.");
