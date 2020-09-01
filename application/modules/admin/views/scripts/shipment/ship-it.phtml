@@ -35,6 +35,7 @@
 			</div>
 		</div>
 
+		<input type="hidden" id="selectedForEnrollment" name="selectedForEnrollment" value="" />
 		<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />
 
 		<div class="form-group">
@@ -166,6 +167,9 @@
 		});
 		if (flag) {
 			$.blockUI();
+			let enrolled = JSON.stringify($("#participants").val());
+			$("#selectedForEnrollment").val(enrolled);
+			$("#participants").val(""); // THIS IS IMPORTANT. TO REDUCE NUMBER OF PHP VARIABLES			
 			document.getElementById('shipForm').submit();
 		}
 	}

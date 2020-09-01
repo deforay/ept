@@ -2,36 +2,38 @@
 <div class="well">
 	<fieldset>
 		<legend>Enroll Participants</legend>
-		<form name="enroll" id="enroll" method="post" action="<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments','action'=>'add'),'default',true); ?>">
-		
-		<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections<br/><br/>
-			<div style="width:500px;margin:0 auto;clear:both;">
-			<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>  <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+		<form name="enroll" id="enroll" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments', 'action' => 'add'), 'default', true); ?>">
+
+			<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections<br /><br />
+				<div style="width:500px;margin:0 auto;clear:both;">
+					<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+				</div>
 			</div>
-		</div>
-		<br/>
-			<select id="participants" name="participants[]" multiple="multiple" >
+			<br />
+			<select id="participants" name="participants[]" multiple="multiple">
 				<?php
-				foreach($this->participants as $participant){
-					?>
-					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-					<?php
+				foreach ($this->participants as $participant) {
+				?>
+					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+				<?php
 				}
 				?>
 				<?php
-				foreach($this->enrolled as $participant){
-					?>
-					<option value="<?php echo $participant['participant_id']; ?>" selected='selected'><?php echo $participant['first_name'] . " " .$participant['last_name'] ; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-					<?php
+				foreach ($this->enrolled as $participant) {
+				?>
+					<option value="<?php echo $participant['participant_id']; ?>" selected='selected'><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+				<?php
 				}
 				?>
 			</select>
-			<input type="hidden" name="schemeId" id="schemeId" value="<?php echo $this->scheme;?>" />
-			<br/>
+			
+			<input type="hidden" name="selectedForEnrollment" id="selectedForEnrollment" value="" />
+			<input type="hidden" name="schemeId" id="schemeId" value="<?php echo $this->scheme; ?>" />
+			<br />
 			<div class="col-md-12 col-xs-12" style="" align="center">
-			<input type="submit" class="btn btn-primary" value="Enroll Selected" />
-			<input type="button" onclick="window.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments','action'=>'index'),'default',true); ?>'" class="btn btn-danger" value="Cancel" />
-		</div>
+				<input type="button" class="btn btn-primary" onclick="sendEnrollmentForScheme();" value="Enroll Selected" />
+				<input type="button" onclick="window.location.href='<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments', 'action' => 'index'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
+			</div>
 		</form>
 	</fieldset>
 
@@ -39,56 +41,61 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
-	$(document).ready(function(){
-		
-		
-		
-$('#participants').multiSelect({
-	selectableFooter: "<div class='custom-header'>Unenrolled Participants (<span id='msUnselectedCountHolder'></span>)</div>",
-	selectionFooter: "<div class='custom-header'>Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
-	selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-	selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-	afterInit: function(ms){
-	  var that = this,
-		  $selectableSearch = that.$selectableUl.prev(),
-		  $selectionSearch = that.$selectionUl.prev(),
-		  selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
-		  selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
-  
-	  that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-	  .on('keydown', function(e){
-		if (e.which === 40){
-		  that.$selectableUl.focus();
-		  return false;
-		}
-    });
+	$(document).ready(function() {
 
-    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-    .on('keydown', function(e){
-      if (e.which == 40){
-        that.$selectionUl.focus();
-        return false;
-      }
-    });
-  },
-  afterSelect: function(){
-    this.qs1.cache();
-    this.qs2.cache();
-  },
-  afterDeselect: function(){
-    this.qs1.cache();
-    this.qs2.cache();
-  }
-});
+		$('#participants').multiSelect({
+			selectableFooter: "<div class='custom-header'>Unenrolled Participants (<span id='msUnselectedCountHolder'></span>)</div>",
+			selectionFooter: "<div class='custom-header'>Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
+			selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+			selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+			afterInit: function(ms) {
+				var that = this,
+					$selectableSearch = that.$selectableUl.prev(),
+					$selectionSearch = that.$selectionUl.prev(),
+					selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
+					selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+
+				that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+					.on('keydown', function(e) {
+						if (e.which === 40) {
+							that.$selectableUl.focus();
+							return false;
+						}
+					});
+
+				that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+					.on('keydown', function(e) {
+						if (e.which == 40) {
+							that.$selectionUl.focus();
+							return false;
+						}
+					});
+			},
+			afterSelect: function() {
+				this.qs1.cache();
+				this.qs2.cache();
+			},
+			afterDeselect: function() {
+				this.qs1.cache();
+				this.qs2.cache();
+			}
+		});
 
 
-$('#select-all').click(function(){
-  $('#participants').multiSelect('select_all');
-  return false;
-});
-$('#deselect-all').click(function(){
-  $('#participants').multiSelect('deselect_all');
-  return false;
-});
+		$('#select-all').click(function() {
+			$('#participants').multiSelect('select_all');
+			return false;
+		});
+		$('#deselect-all').click(function() {
+			$('#participants').multiSelect('deselect_all');
+			return false;
+		});
 	});
+	function sendEnrollmentForScheme(){
+		let enrolled = JSON.stringify($("#participants").val());
+		$("#selectedForEnrollment").val(enrolled);
+		$("#participants").val(""); // THIS IS IMPORTANT. TO REDUCE NUMBER OF PHP VARIABLES
+		document.getElementById('enroll').submit();
+
+	}
 </script>
