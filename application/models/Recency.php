@@ -167,7 +167,7 @@ class Application_Model_Recency
             }
             $counter++;
         }
-        $this->db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
+        $this->db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
 
         //Zend_Debug::dump($shipmentResult);die;
 

@@ -564,9 +564,12 @@ class Application_Service_Participants
 		try {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');
 			$adminSession = new Zend_Session_Namespace('administrators');
-			$participantDb = new Application_Model_DbTable_Participants();
-			$userDb = new Application_Model_DbTable_DataManagers();
-			$common = new Application_Service_Common();
+			// $participantDb = new Application_Model_DbTable_Participants();
+			// $userDb = new Application_Model_DbTable_DataManagers();
+			// $common = new Application_Service_Common();
+			$schemeDb = new Application_Model_DbTable_SchemeList();
+			$activeSchemes = $schemeDb->getAllSchemes();
+			// var_dump($activeSchemes);die;
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			// $rResult = $db->fetchAll();
 			$allowedExtensions = array('xls', 'xlsx', 'csv');

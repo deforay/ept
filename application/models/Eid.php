@@ -121,7 +121,7 @@ class Application_Model_Eid
             }
             $counter++;
         }
-        $db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
+        $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
 
         //Zend_Debug::dump($shipmentResult);die;
 
