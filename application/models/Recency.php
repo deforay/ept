@@ -23,7 +23,6 @@ class Application_Model_Recency
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-
         foreach ($shipmentResult as $shipment) {
 
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
@@ -101,8 +100,6 @@ class Application_Model_Recency
                     $responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
                 }
 
-
-
                 $grandTotal = ($responseScore + $documentationScore);
                 if ($grandTotal < $config->evaluation->recency->passPercentage) {
                     $scoreResult = 'Fail';
@@ -129,15 +126,6 @@ class Application_Model_Recency
                 } else {
                     $shipment['is_excluded'] = 'no';
 
-
-                    // checking if total score and maximum scores are the same
-                    if ($totalScore != $maxScore) {
-                        $scoreResult = 'Fail';
-                        // $this->failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
-                    } else {
-                        $scoreResult = 'Pass';
-                    }
-
                     // if any of the results have failed, then the final result is fail
                     if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
                         $finalResult = 2;
@@ -156,9 +144,8 @@ class Application_Model_Recency
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $shipmentResult[$counter]['failure_reason'] = $this->failureReason = json_encode($this->failureReason);
                 }
-
                 // let us update the total score in DB
-                $this->db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $this->failureReason), "map_id = " . $shipment['map_id']);
+                $this->db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, 'failure_reason' => $this->failureReason), "map_id = " . $shipment['map_id']);
 
                 //$counter++;
             } else {
@@ -169,7 +156,6 @@ class Application_Model_Recency
         }
         $this->db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
 
-        //Zend_Debug::dump($shipmentResult);die;
 
         return $shipmentResult;
     }

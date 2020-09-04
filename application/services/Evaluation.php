@@ -411,7 +411,7 @@ class Application_Service_Evaluation
 			$vlModel = new Application_Model_Vl();
 			$shipmentResult = $vlModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 		}
-
+		
 		return $shipmentResult;
 	}
 
