@@ -781,7 +781,7 @@ class Application_Model_Dts
 
 		//die('here');
 
-		$db->update('shipment', array('max_score' => $maxScore, 'average_score' => $averageScore), "shipment_id = " . $shipmentId);
+		$db->update('shipment', array('max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
 		return $shipmentResult;
 	}
 }

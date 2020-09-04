@@ -8,7 +8,7 @@ class Admin_IndexController extends Zend_Controller_Action
         $this->_helper->layout()->pageName = 'dashboard';
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('get-scheme-participants', 'html')
-                    ->initContext();
+            ->initContext();
     }
 
     public function indexAction()
@@ -17,26 +17,21 @@ class Admin_IndexController extends Zend_Controller_Action
         $shipmentService = new Application_Service_Shipments();
         $scheme = new Application_Service_Schemes();
         $clientsServices = new Application_Service_Participants();
-       
-        $this->view->events=$distributionService->getAllDistributionStatus();
-        $this->view->schemeCountResult=$scheme->countEnrollmentSchemes();
-        $this->view->shipmentCountResult=$shipmentService->getParticipantCountBasedOnShipment();
-        $this->view->pendingParticipants=$clientsServices->getPendingParticipants();
-       
+
+        $this->view->events = $distributionService->getAllDistributionStatus();
+        $this->view->schemeCountResult = $scheme->countEnrollmentSchemes();
+        $this->view->shipmentCountResult = $shipmentService->getParticipantCountBasedOnShipment();
+        $this->view->pendingParticipants = $clientsServices->getPendingParticipants();
+
         $this->view->schemes = $scheme->getAllSchemes();
     }
 
     public function getSchemeParticipantsAction()
     {
-        if($this->_hasParam('schemeType')){
-            $schemeType=$this->_getParam('schemeType');
+        if ($this->hasParam('schemeType')) {
+            $schemeType = $this->_getParam('schemeType');
             $participantService = new Application_Service_Participants();
-            $this->view->participants=$participantService->getSchemeWiseParticipants($schemeType);
+            $this->view->participants = $participantService->getSchemeWiseParticipants($schemeType);
         }
     }
-
-
 }
-
-
-

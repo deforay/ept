@@ -15,18 +15,8 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $this->getAdapter()->beginTransaction();
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $this->delete('shipment_id=' . $params['shipmentId']);
-            foreach ($params['participants'] as $participant) {
-
-
-                //$row = $this->fetchRow('shipment_id='.$params['shipmentId'] .' and participant_id='.$participant);
-                //if($row != null && $row != ""){
-                //    echo('shipment_id='.$params['shipmentId'] .' and participant_id='.$participant);
-                //    $data = array('shipment_id'=>$params['shipmentId'],
-                //                  'participant_id'=>$participant,
-                //                  'updated_by_admin' => $authNameSpace->admin_id,
-                //                  "updated_on_admin"=>new Zend_Db_Expr('now()'));
-                //    $this->update($data,'shipment_id='.$params['shipmentId'] .' and participant_id='.$participant);                    
-                //}else{
+            $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
+            foreach ($params['selectedForEnrollment'] as $participant) {
                 $data = array(
                     'shipment_id' => $params['shipmentId'],
                     'participant_id' => $participant,
@@ -35,16 +25,15 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                     "created_on_admin" => new Zend_Db_Expr('now()')
                 );
                 $this->insert($data);
-                //}
             }
 
             $shipmentDb = new Application_Model_DbTable_Shipments();
             $shipmentDb->updateShipmentStatus($params['shipmentId'], 'ready');
-            
+
             $shipmentRow = $shipmentDb->fetchRow('shipment_id=' . $params['shipmentId']);
-            
+
             $resultSet = $shipmentDb->fetchAll($shipmentDb->select()->where("status = 'pending' AND distribution_id = " . $shipmentRow['distribution_id']));
-            
+
             if (count($resultSet) == 0) {
                 $distroService = new Application_Service_Distribution();
                 $distroService->updateDistributionStatus($shipmentRow['distribution_id'], 'configured');
@@ -54,30 +43,30 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $participantRow = $participantDb->fetchRow('participant_id=' . $participant);
             // Zend_Debug::dump($participantRow);die;
             $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
-            $replace = array($participantRow['first_name'] .' '.$participantRow['last_name'], $shipmentRow['shipment_code'], $shipmentRow['scheme_type'], '', '');
+            $replace = array($participantRow['first_name'] . ' ' . $participantRow['last_name'], $shipmentRow['shipment_code'], $shipmentRow['scheme_type'], '', '');
             $title = str_replace($search, $replace, $pushContent['notify_title']);
             $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
-            if(isset($pushContent['data_msg']) && $pushContent['data_msg'] != ''){
+            if (isset($pushContent['data_msg']) && $pushContent['data_msg'] != '') {
                 $dataMsg = str_replace($search, $replace, $pushContent['data_msg']);
-            } else{
+            } else {
                 $dataMsg = '';
             }
-            $commonServices->insertPushNotification($title,$msgBody,$dataMsg,$pushContent['icon'],$shipmentRow['shipment_id'],'new-shipment','shipment');
+            $commonServices->insertPushNotification($title, $msgBody, $dataMsg, $pushContent['icon'], $shipmentRow['shipment_id'], 'new-shipment', 'shipment');
             /* New shipment push notification end */
 
             /* New shipment mail alert start */
             $notParticipatedMailContent = $commonServices->getEmailTemplate('new_shipment');
             $subQuery = $this->select()
-            ->from(array('s' => 'shipment'),array('shipment_code', 'scheme_type'))
-            ->join(array('spm'=>'shipment_participant_map'),'spm.shipment_id=s.shipment_id',array('map_id'))
-            ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=spm.participant_id',array('dm_id'))
-            ->join(array('p'=>'participant'),'p.participant_id=pmm.participant_id',array('participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-            ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
-            ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
-            ->group('dm.dm_id')->setIntegrityCheck(false);
+                ->from(array('s' => 'shipment'), array('shipment_code', 'scheme_type'))
+                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('map_id'))
+                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=spm.participant_id', array('dm_id'))
+                ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+                ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
+                ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
+                ->group('dm.dm_id')->setIntegrityCheck(false);
             // echo $subQuery;die;
             $subResult = $this->fetchAll($subQuery);
-            foreach($subResult as $dm){
+            foreach ($subResult as $dm) {
                 $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
                 $content = $notParticipatedMailContent['mail_content'];
