@@ -28,7 +28,7 @@ if (sizeof($resultArray['shipment']) > 0) {
     $totalPages = count($resultArray['shipment']);
     $j = 1;
     //$resultArray['dmResult'];
-    //var_dump($resultArray['shipment']);die;
+    // Zend_Debug::dump($recencyAssay[1]);die;
 
     foreach ($resultArray['shipment'] as $result) {
 
@@ -144,7 +144,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['attributes'])) {
             $attributes = json_decode($result['attributes'], true);
         }
-
+        // Zend_Debug::dump($attributes['recency_assay']);die;
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
             $sampleRehydrationDate = $general->humanDateFormat($attributes['sample_rehydration_date']);
@@ -521,15 +521,37 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $pdf->writeHTML($failRes, true, false, true, false, '');
                 }
             } else if ($schemeType == 'recency') {
-                $labRes = '<span style="font-weight: bold;font-size:12px;">Your laboratory test results : <br/></span><table border="1" style="font-size:12px;">';
+                $labRes = '<span style="font-weight: bold;font-size:12px;">Your laboratory test results : <br/></span>
+                        <table border="1" style="font-size:12px;">';
+                $labRes .= '<tr>
+                                <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;">Kit Name</th>
+                                <td>'.$recencyAssay[$attributes['recency_assay']].'</td>
+                            </tr>
+                            <tr>
+                                <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;">Lot No.</th>
+                                <td>'.$attributes['recency_assay_lot_no'].'</td>
+                            </tr>
+                            <tr>
+                                <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;">Expiry Date</th>
+                                <td>'.$general->humanDateFormat($attributes['recency_assay_expiry_date']).'</td>
+                            </tr>
+                        </table>
+                        <table border="1" style="font-size:12px;">';
                 $labRes .= '<tr style="background-color:#dbe4ee;">
-                                <th style="text-align:center;font-weight:bold;">Specimen Panel ID </th>
-                                <th style="text-align:center;font-weight:bold;">Control Line</th>
-                                <th style="text-align:center;font-weight:bold;">Diagnosis Line</th>
-                                <th style="text-align:center;font-weight:bold;">Longterm Line</th>
-                                <th style="text-align:center;font-weight:bold;">Expected Result</th>
-                                <th style="text-align:center;font-weight:bold;">Your Result</th>
-                                <th style="text-align:center;font-weight:bold;" colspan="2">Score</th>
+                                <th rowspan="2" style="text-align:center;font-weight:bold;width:10%;">Specimen Panel ID </th>
+                                <th colspan="4" style="text-align:center;font-weight:bold;width:40%;">Expected Result</th>
+                                <th colspan="4" style="text-align:center;font-weight:bold;width:40%;">Your Result</th>
+                                <th  colspan="2" rowspan="2" style="text-align:center;font-weight:bold;width:10%;">Score</th>
+                            </tr>
+                            <tr>
+                                <th style="text-align:center;font-weight:bold;width:9%;">Control Line</th>
+                                <th style="text-align:center;font-weight:bold;width:11%;">Diagnosis Line</th>
+                                <th style="text-align:center;font-weight:bold;width:10%;">Longterm Line</th>
+                                <th style="text-align:center;font-weight:bold;width:10%;">Final Result</th>
+                                <th style="text-align:center;font-weight:bold;width:9%;">Control Line</th>
+                                <th style="text-align:center;font-weight:bold;width:11%;">Diagnosis Line</th>
+                                <th style="text-align:center;font-weight:bold;width:10%;">Longterm Line</th>
+                                <th style="text-align:center;font-weight:bold;width:10%;">Final Result</th>
                             </tr>';
 
                 $nonMandatorySamples = array();
@@ -579,11 +601,15 @@ if (sizeof($resultArray['shipment']) > 0) {
                     }
                     $labRes .= '<tr>
 							<td style="text-align:center;">' . $response['sample_label'] . '</td>
-							<td>' . (isset($response['control_line']) && $response['control_line'] != "" ? $response['control_line'] : "") . '</td>
-                            <td>' . (isset($response['diagnosis_line']) && $response['diagnosis_line'] != "" ? $response['diagnosis_line'] : "") . '</td>
-                            <td>' . (isset($response['longterm_line']) && $response['longterm_line'] != "" ? $response['longterm_line'] : "") . '</td>
+                            <td>' . (isset($response['refControlLine']) && $response['refControlLine'] != "" ? $response['refControlLine'] : "") . '</td>
+                            <td>' . (isset($response['refDiagnosisLine']) && $response['refDiagnosisLine'] != "" ? $response['refDiagnosisLine'] : "") . '</td>
+                            <td>' . (isset($response['refLongTermLine']) && $response['refLongTermLine'] != "" ? $response['refLongTermLine'] : "") . '</td>
 							<td>' . ucfirst(strtolower($response['referenceResult'])) . '</td>
-							<td>' . ucfirst(strtolower($response['labResult'])) . '</td>
+                            
+                            <th>' . (isset($response['control_line']) && $response['control_line'] != "" ? $response['control_line'] : "") . '</th>
+                            <th>' . (isset($response['diagnosis_line']) && $response['diagnosis_line'] != "" ? $response['diagnosis_line'] : "") . '</th>
+                            <th>' . (isset($response['longterm_line']) && $response['longterm_line'] != "" ? $response['longterm_line'] : "") . '</th>
+							<th>' . ucfirst(strtolower($response['labResult'])) . '</th>
 							<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $score . '</td>
 						  </tr>';
@@ -893,7 +919,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $html .= '<br>' . $reportComment;
             }
         } else {
-            $html = '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
+            $html = '<p style="font-size:12px;">You have received a score of '.$result['shipment_score'].'%.</p>';
+            $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
         }
         if ($schemeType == 'vl') {
             $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';

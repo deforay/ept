@@ -313,7 +313,7 @@ try {
             $customField1 = $commonService->getConfig('custom_field_1');
             $customField2 = $commonService->getConfig('custom_field_2');
             $haveCustom = $commonService->getConfig('custom_field_needed');
-
+            $recencyAssay = $schemeService->getRecencyAssay();
             $startValue = 0;
             for ($startValue = 0; $startValue <= $totParticipantsRes['reported_count']; $startValue = $startValue + 50) {
                 $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 1, $startValue);
