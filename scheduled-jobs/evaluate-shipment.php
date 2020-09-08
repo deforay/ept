@@ -316,7 +316,7 @@ try {
             $recencyAssay = $schemeService->getRecencyAssay();
             $startValue = 0;
             for ($startValue = 0; $startValue <= $totParticipantsRes['reported_count']; $startValue = $startValue + 50) {
-                $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 1, $startValue);
+                $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 50, $startValue);
                 $endValue = $startValue + 49;
                 if ($endValue > $totParticipantsRes['reported_count']) {
                     $endValue = $totParticipantsRes['reported_count'];
