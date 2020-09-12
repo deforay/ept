@@ -971,7 +971,7 @@ class Application_Service_Evaluation
 				$vlGraphResult = array();
 				foreach ($spmResult as $val) {
 					$valAttributes = json_decode($val['attributes'], true);
-					if ($attributes['vl_assay'] == $valAttributes['vl_assay']) {
+					if ((isset($attributes['id']) && isset($valAttributes['vl_assay'])) && ($attributes['vl_assay'] == $valAttributes['vl_assay'])) {
 						if (array_key_exists($val['sample_label'], $vlGraphResult)) {
 							if (isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'] <= $val['reported_viral_load'] && isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'] >= $val['reported_viral_load']) {
 								$vlGraphResult[$val['sample_label']]['vl'][] = $val['reported_viral_load'];
@@ -1013,7 +1013,7 @@ class Application_Service_Evaluation
 				$labResult = array();
 				foreach ($cResult as $val) {
 					$valAttributes = json_decode($val['attributes'], true);
-					if ($attributes['vl_assay'] == $valAttributes['vl_assay']) {
+					if ((isset($attributes['vl_assay']) && isset($valAttributes['vl_assay'])) && ($attributes['vl_assay'] == $valAttributes['vl_assay'])) {
 						if ($valAttributes['vl_assay'] == 6) {
 							$assayName = $valAttributes['other_assay'];
 						} else {
@@ -1569,7 +1569,7 @@ class Application_Service_Evaluation
 
 					foreach ($cResult as $val) {
 						$valAttributes = json_decode($val['attributes'], true);
-						if ($vlAssayRow['id'] == $valAttributes['vl_assay']) {
+						if ((isset($vlAssayRow['id']) && isset($valAttributes['vl_assay'])) && ($vlAssayRow['id'] == $valAttributes['vl_assay'])) {
 							if ($vlAssayRow['id'] == 6) {
 								if (isset($valAttributes['other_assay'])) {
 									$otherAssayName[] = $valAttributes['other_assay'];
