@@ -1,6 +1,6 @@
 <?php
     /* Libchart - PHP chart library
-     * Copyright (C) 2005-2011 Jean-Marc Trémeaux (jm.tremeaux at gmail.com)
+     * Copyright (C) 2005-2011 Jean-Marc Trï¿½meaux (jm.tremeaux at gmail.com)
      * 
      * This program is free software: you can redistribute it and/or modify
      * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
     /**
      * Pie chart.
      *
-     * @author Jean-Marc Trémeaux (jm.tremeaux at gmail.com)
+     * @author Jean-Marc Trï¿½meaux (jm.tremeaux at gmail.com)
      */
     class PieChart extends Chart {
         protected $pieCenterX;
@@ -32,7 +32,7 @@
          * @param integer width of the image
          * @param integer height of the image
          */
-        public function PieChart($width = 600, $height = 250) {
+        public function __construct($width = 600, $height = 250) {
             parent::Chart($width, $height);
             $this->plot->setGraphPadding(new Padding(15, 10, 30, 30));
         }
@@ -64,9 +64,8 @@
          * @return integer result of the comparison
          */
         protected function sortPie($v1, $v2) {
-            return $v1[0] == $v2[0] ? 0 :
-                $v1[0] > $v2[0] ? -1 :
-                1;
+            return ($v1[0] == $v2[0]) ? 0 :
+                                (($v1[0] > $v2[0]) ? -1 :1);
         }
         
         /**

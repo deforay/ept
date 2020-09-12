@@ -1,0 +1,198 @@
+<?php
+require_once('tcpdf/tcpdf.php');
+require_once(CRON_PATH . '/General.php');
+$general = new General();
+// Zend_Debug::dump($resultArray);die;
+//require_once('libchart/classes/libchart.php');
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+if ($resultArray['shipment'] != "") {
+
+    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
+        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
+    }
+    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
+        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
+    }
+
+    // create new PDF document
+    $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+    // set default header data
+    $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+    // set header and footer fonts
+    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+    // set default monospaced font
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+    // set margins
+
+    $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+    // set auto page breaks
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+    // set image scale factor
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+    // set some language-dependent strings (optional)
+    if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+        require_once(dirname(__FILE__) . '/lang/eng.php');
+        $pdf->setLanguageArray($l);
+    }
+
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised']);
+    // add a page
+    //$pdf->AddPage();
+    // ---------------------------------------------------------
+
+    $pdf->AddPage('P', 'A4');
+    $pdf->SetFont('helvetica', 'B', 11);
+
+    $referenceRes = '<table style="text-align:center;width:100%" align="left">';
+    $referenceRes .= '<tr>';
+    $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
+    $referenceRes .= '</tr>';
+    $referenceRes .= '<tr>';
+    $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . $general->humanDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
+    $referenceRes .= '</tr>';
+    $referenceRes .= '</table>';
+    $pdf->writeHTML($referenceRes, true, false, true, false, '');
+
+    //if (count($resultArray['shipment']['summaryResult']) > 0) {
+    //    
+    //    
+    //    foreach ($resultArray['shipment']['summaryResult'] as $result) {
+    //        $acceptableCount = 0;
+    //        $notAcceptableScore = 0;
+    //        $countIsExcluded = 0;
+    //        $partCount = count($result);
+    //        
+    //        for ($i = 0; $i < $partCount; $i++) {
+    //            if($result[$i]['is_excluded']=='yes'){
+    //                $countIsExcluded++;
+    //            }
+    //            
+    //            $score=($result[$i]['shipment_score']/$resultArray['shipment']['no_of_samples'])*100;
+    //            
+    //            if($score==100){
+    //                $acceptableCount++;
+    //            }else{
+    //                $notAcceptableScore++;
+    //            }
+    //        }
+    //    }
+    //   
+    //    // set font
+    //    $pdf->SetFont('helvetica', 'B', 12);
+    //    
+    //    $overview= '<table border="1" style="font-size:13px;"><tr>';
+    //    $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Responses </td>';
+    //    $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Acceptable</td>';
+    //    $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Not Acceptable</td>';
+    //    $overview.='<td style="background-color:#dbe4ee;text-align:center;"># Is Excluded</td>';
+    //    $overview.='</tr>';
+    //    
+    //    
+    //    $overview.='<tr>';
+    //    $overview.='<td style="text-align:center;">' . $partCount . '</td>';
+    //    $overview.='<td style="text-align:center;">' . $acceptableCount.'</td>';
+    //    $overview.='<td style="text-align:center;">' . $notAcceptableScore.'</td>';
+    //    $overview.='<td style="text-align:center;">'.$countIsExcluded.'</td>';
+    //    
+    //    $overview.='</tr>';
+    //
+    //    $overview.='</table><br/>';
+    //    $pdf->writeHTML($overview, true, false, true, false, '');     
+    //}
+
+    //Zend_Debug::dump($resultArray['vlCalculation']);die;
+    if (count($resultArray['vlCalculation']) > 0) {
+
+        foreach ($resultArray['vlCalculation'] as $vlCal) {
+
+            if (isset($vlCal['participant-count']) && $vlCal['participant-count'] > 6) {
+                if (isset($vlCal['otherAssayName']) && count($vlCal['otherAssayName']) > 0) {
+                    continue;
+                    $calRes = '<h5>Summary of ' . implode(", ", $vlCal['otherAssayName']) . ' | No. of Labs : ' . $vlCal['participant-count'] . ' </h5>';
+                } else {
+                    $calRes = '<h5>Summary of ' . $vlCal['vlAssay'] . ' Results | No. of Labs : ' . $vlCal['participant-count'] . ' </h5>';
+                }
+
+                $calRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;height:500px;">
+                    <tr>
+                        <!-- <td style="background-color:#8ECF64;text-align:center;"><br><br>Platform </td> -->
+                        <td style="background-color:#8ECF64;text-align:center;"><br><br>Specimen ID </td>
+                        <td style="background-color:#8ECF64;text-align:center;width:100px;"><br><br>Mean<br/>(log<sub>10</sub> copies/ml)</td>
+                        <td style="background-color:#8ECF64;text-align:center;"><br><br>S.D.</td>
+                        <td style="background-color:#8ECF64;text-align:center;">Lowest Acceptable Limit</td>
+                        <td style="background-color:#8ECF64;text-align:center;">Highest Acceptable Limit</td>
+                        <td style="background-color:#8ECF64;text-align:center;"><br><br>CV</td>
+                    </tr>';
+
+                $countCal = count($vlCal) - 1;
+                $otherList = "";
+
+                for ($c = 0; $c < $countCal; $c++) {
+                    if (isset($vlCal[$c]['mean'])) {
+                        $calRes .= '<tr>';
+                        // if($c==0){
+                        //     //if($vlCal[$c]['vl_assay']==6){
+                        //         //$calRes.='<td style="text-align:center;" rowspan="'.$countCal.'"><br><br>'.implode(", ",$vlCal['otherAssayName']).'</td>';
+                        //         //////$otherList = implode(", ",$vlCal['otherAssayName']);
+                        //     //}else{
+                        //         $calRes.='<td style="text-align:center;" rowspan="'.$countCal.'"><br><br>'.$vlCal['shortName'].'</td>';
+                        //     //}
+                        // }
+
+                        $calRes .= '<td>' . $vlCal[$c]['sample_label'] . '</td>
+                                <td>' . number_format(round($vlCal[$c]['mean'], 2), 2, '.', '') . '</td>
+                                <td>' . number_format(round($vlCal[$c]['sd'], 2), 2, '.', '') . '</td>
+                                <td>' . number_format(round($vlCal[$c]['low_limit'], 2), 2, '.', '') . '</td>
+                                <td>' . number_format(round($vlCal[$c]['high_limit'], 2), 2, '.', '') . '</td>
+                                <td>' . number_format(round($vlCal[$c]['cv'], 2), 2, '.', '') . '</td>
+                            </tr>';
+                    }
+                }
+
+                $calRes .= '</table>';
+
+                $pdf->writeHTML($calRes, true, false, true, false, '');
+            }
+        }
+    }
+
+
+    $uncalculatedAssayList = null;
+    //Zend_Debug::dump($resultArray['pendingAssay']);die;
+    // if(isset($resultArray['pendingAssay']['count']) && ($resultArray['pendingAssay']['count'])>0){
+
+    //     if($pdf->getY()>=250){
+    //         $pdf->AddPage();
+    //     }
+    //     $unCalRes='<h5>Summary of Other Results | No. of Labs : '.$resultArray['pendingAssay']['count'].' </h5>';
+    //     $unCalRes.='<table cellpadding="6" border="1" style="text-align:left;font-weight:normal;width:660px;font-size:11px;"><tr><td>'.implode(", ",$resultArray['pendingAssay']['assayNames']).' platforms were not analyzed or graded due to less than 6 participating labs using the same platform.</td></tr></table>';
+
+    //     $pdf->writeHTML($unCalRes, true, false, true, false, '');            
+
+    // }
+    $footerHead = '<h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
+    $footerHead .= '<small>Notes:<ol><li>Results from participants using Biocentric and "Other" Platforms were not used for results evaluation due to less than 6 participating labs in this PT event.</li><li>A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</li></ol></small>';
+    $pdf->writeHTML($footerHead, true, false, true, false, '');
+
+
+
+
+    //Close and output PDF document
+    $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
+    $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+    //$pdf->Output('example_003.pdf', 'I');
+    $pdf->Output($filePath, "F");
+    //============================================================+
+    // END OF FILE
+    //============================================================+
+}
