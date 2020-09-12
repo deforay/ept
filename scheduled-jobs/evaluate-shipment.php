@@ -315,9 +315,10 @@ try {
             $haveCustom = $commonService->getConfig('custom_field_needed');
             $recencyAssay = $schemeService->getRecencyAssay();
             $startValue = 0;
-            for ($startValue = 0; $startValue <= $totParticipantsRes['reported_count']; $startValue = $startValue + 50) {
-                $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 1, $startValue);
-                $endValue = $startValue + 49;
+            $limit = 50;
+            for ($startValue = 0; $startValue <= $totParticipantsRes['reported_count']; $startValue = $startValue + $limit) {
+                $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], $limit, $startValue);
+                $endValue = $startValue + ($limit - 1);
                 if ($endValue > $totParticipantsRes['reported_count']) {
                     $endValue = $totParticipantsRes['reported_count'];
                 }
