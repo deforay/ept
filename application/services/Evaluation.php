@@ -441,6 +441,10 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('dbs');
 			$evalComments = $schemeService->getSchemeEvaluationComments('dbs');
 			$results = $schemeService->getDbsSamples($shipmentId, $participantId);
+		} else if ($scheme == 'recency') {
+			$possibleResults = $schemeService->getPossibleResults('recency');
+			$evalComments = $schemeService->getSchemeEvaluationComments('recency');
+			$results = $schemeService->getRecencySamples($shipmentId, $participantId);
 		}
 
 
@@ -514,6 +518,10 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('dbs');
 			$evalComments = $schemeService->getSchemeEvaluationComments('dbs');
 			$results = $schemeService->getDtsSamples($shipmentId, $participantId);
+		} else if ($scheme == 'recency') {
+			$possibleResults = $schemeService->getPossibleResults('recency');
+			$evalComments = $schemeService->getSchemeEvaluationComments('recency');
+			$results = $schemeService->getRecencySamples($shipmentId, $participantId);
 		}
 
 
@@ -765,6 +773,48 @@ class Application_Service_Evaluation
 					'updated_by' => $admin,
 					'updated_on' => new Zend_Db_Expr('now()')
 				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+			}
+		} else if ($params['scheme'] == 'recency') {
+
+
+			$attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['rehydrationDate']);
+			$attributes["algorithm"] = $params['algorithm'];
+			$attributes = array(
+				"sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+				"recency_assay" => $params['recencyAssay'],
+				"recency_assay_lot_no" => $params['recencyAssayLotNo'],
+				"recency_assay_expiry_date" => Pt_Commons_General::dateFormat($params['recencyAssayExpiryDate']),
+			);
+
+			$attributes = json_encode($attributes);
+			$mapdata = array(
+				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
+				"shipment_test_date" => Pt_Commons_General::dateFormat($params['testedOn']),
+				"attributes" => $attributes,
+				"supervisor_approval" => $params['supervisorApproval'],
+				"participant_supervisor" => $params['participantSupervisor'],
+				"user_comment" => $params['userComments'],
+				"updated_by_admin" => $admin,
+				"updated_on_admin" => new Zend_Db_Expr('now()')
+			);
+			if (isset($params['customField1']) && trim($params['customField1']) != "") {
+				$mapdata['custom_field_1'] = $params['customField1'];
+			}
+
+			if (isset($params['customField2']) && trim($params['customField2']) != "") {
+				$mapdata['custom_field_2'] = $params['customField2'];
+			}
+			$db->update('shipment_participant_map', $mapdata, "map_id = " . $params['smid']);
+
+			for ($i = 0; $i < $size; $i++) {
+				$db->update('response_result_recency', array(
+					'reported_result' => $params['reported_result'][$i],
+					'control_line' => $params['controlLine'][$i],
+					'diagnosis_line' => $params['diagnosisLine'][$i],
+					'longterm_line' => $params['longtermLine'][$i],
+					'updated_by' => $admin,
+					'updated_on' => new Zend_Db_Expr('now()')
+                ), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $params['sampleId'][$i]);
 			}
 		}
 

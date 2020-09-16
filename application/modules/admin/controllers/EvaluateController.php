@@ -65,19 +65,17 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $sid = (int)base64_decode($this->_getParam('sid'));
             $pid = (int)base64_decode($this->_getParam('pid'));
             $this->view->scheme = $scheme = base64_decode($this->_getParam('scheme'));
+            $schemeService = new Application_Service_Schemes();
             if ($scheme == 'eid') {
-
-                $schemeService = new Application_Service_Schemes();
                 $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
                 $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
-            }
-            if ($scheme == 'dts') {
-                $schemeService = new Application_Service_Schemes();
+            } if ($scheme == 'dts') {
                 $this->view->allTestKits = $schemeService->getAllDtsTestKit();
             } else if ($scheme == 'vl') {
-                $schemeService = new Application_Service_Schemes();
                 $this->view->vlRange = $schemeService->getVlRange($sid);
                 $this->view->vlAssay = $schemeService->getVlAssay();
+            } else if ($scheme == 'recency') {
+                $this->view->recencyAssay = $schemeService->getRecencyAssay();
             }
             $evalService = new Application_Service_Evaluation();
             $this->view->evaluateData = $evalService->viewEvaluation($sid, $pid, $scheme);
@@ -120,22 +118,20 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                 $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
+                $schemeService = new Application_Service_Schemes();
                 if ($scheme == 'eid') {
-
-                    $schemeService = new Application_Service_Schemes();
                     $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
                     $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
                 } else if ($scheme == 'dts') {
-                    $schemeService = new Application_Service_Schemes();
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
                 } else if ($scheme == 'dbs') {
-                    $schemeService = new Application_Service_Schemes();
                     $this->view->wb = $schemeService->getDbsWb();
                     $this->view->eia = $schemeService->getDbsEia();
                 } else if ($scheme == 'vl') {
-                    $schemeService = new Application_Service_Schemes();
                     $this->view->vlRange = $schemeService->getVlRange($sid);
                     $this->view->vlAssay = $schemeService->getVlAssay();
+                } else if ($scheme == 'recency') {
+                    $this->view->recencyAssay = $schemeService->getRecencyAssay();
                 }
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sid, $pid, $scheme);
