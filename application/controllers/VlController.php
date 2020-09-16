@@ -54,9 +54,9 @@ class VlController extends Zend_Controller_Action
 
 
 			if (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
-				$this->_redirect("/participant/" . $data['comingFrom']);
+				$this->redirect("/participant/" . $data['comingFrom']);
 			} else {
-				$this->_redirect("/participant/current-schemes");
+				$this->redirect("/participant/current-schemes");
 			}
 
 			//die;            

@@ -21,7 +21,7 @@ class ContactUsController extends Zend_Controller_Action
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $this->view->from = $q = $this->getRequest()->getParam('q');
             if($q == 'register'){
-                $this->_redirect('/pt-request-enrollment');
+                $this->redirect('/pt-request-enrollment');
             }
             if(!isset($authNameSpace->dm_id)){
                 $this->_helper->layout()->setLayout('home');

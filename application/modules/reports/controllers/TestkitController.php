@@ -17,14 +17,14 @@ class Reports_TestkitController extends Zend_Controller_Action
     public function preDispatch(){
         $adminSession = new Zend_Session_Namespace('administrators');
         if(!in_array('dts',$adminSession->activeSchemes)){
-            $this->_redirect("/admin");
+            $this->redirect("/admin");
         }
     }
 
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $reportService->getTestKitDetailedReport($params);
         }
@@ -38,7 +38,7 @@ class Reports_TestkitController extends Zend_Controller_Action
     public function chartAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response=$reportService->getTestKitReport($params);
             $this->view->response = $response;
@@ -48,7 +48,7 @@ class Reports_TestkitController extends Zend_Controller_Action
     public function participantAction()
     {
        if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $reportService->getTestKitParticipantReport($params);
         }
@@ -58,7 +58,7 @@ class Reports_TestkitController extends Zend_Controller_Action
     {
          $this->_helper->layout()->disableLayout();
          if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->result = $reportService->generatePdfTestKitDetailedReport($params);
             $this->view->header=$reportService->getReportConfigValue('report-header');

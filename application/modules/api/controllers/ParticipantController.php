@@ -9,7 +9,7 @@ class Api_ParticipantController extends Zend_Controller_Action
     public function getAction()
     {
         $this->_helper->viewRenderer->setNoRender(true);
-        $params = $this->_getAllParams();
+        $params = $this->getAllParams();
         $shipmentService = new Application_Service_Shipments();
         $result = $shipmentService->getIndividualReportAPI($params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
@@ -18,7 +18,7 @@ class Api_ParticipantController extends Zend_Controller_Action
     public function getFilterAction()
     {
         $this->_helper->viewRenderer->setNoRender(true);
-        $params = $this->_getAllParams();
+        $params = $this->getAllParams();
         $participantService = new Application_Service_Participants();
         $result = $participantService->getFilterDetailsAPI($params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
@@ -27,7 +27,7 @@ class Api_ParticipantController extends Zend_Controller_Action
     public function getProfileCheckAction()
     {
         $this->_helper->viewRenderer->setNoRender(true);
-        $params = $this->_getAllParams();
+        $params = $this->getAllParams();
         $participantService = new Application_Service_Participants();
         $result = $participantService->getProfileCheckDetailsAPI($params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
@@ -45,7 +45,7 @@ class Api_ParticipantController extends Zend_Controller_Action
     public function summaryAction()
     {
         $this->_helper->viewRenderer->setNoRender(true);
-        $params = $this->_getAllParams();
+        $params = $this->getAllParams();
         $shipmentService = new Application_Service_Shipments();
         $result = $shipmentService->getSummaryReportAPI($params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
@@ -53,7 +53,7 @@ class Api_ParticipantController extends Zend_Controller_Action
 
     public function downloadAction() {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        if ($params = $this->_getAllParams()) {
+        if ($params = $this->getAllParams()) {
             // Zend_Debug::dump($params);die;
             $defaultParams = array('module','controller','action');
             foreach($params as $link=>$mapId){
@@ -90,7 +90,7 @@ class Api_ParticipantController extends Zend_Controller_Action
 
     public function downloadSummaryAction() {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        if ($params = $this->_getAllParams()) {
+        if ($params = $this->getAllParams()) {
             $defaultParams = array('module','controller','action');
             foreach($params as $link=>$mapId){
                 if(!in_array($link,$defaultParams)){
@@ -145,7 +145,7 @@ class Api_ParticipantController extends Zend_Controller_Action
     public function getNotificationsAction()
     {
         $this->_helper->viewRenderer->setNoRender(true);
-        $params = $this->_getAllParams();
+        $params = $this->getAllParams();
         $commonServices = new Application_Service_Common();
         $result = $commonServices->getNotificationByAPI($params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));

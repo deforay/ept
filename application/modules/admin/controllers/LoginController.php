@@ -17,7 +17,7 @@ class Admin_LoginController extends Zend_Controller_Action
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry. Unable to log you in. Please check the text from image";
 				$sessionAlert->status = "failure";
-				$this->_redirect('/admin');
+				$this->redirect('/admin');
 			}
 
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -55,7 +55,7 @@ class Admin_LoginController extends Zend_Controller_Action
 				}
 				$authNameSpace->activeSchemes = $schemeList;
 
-				$this->_redirect('/admin');
+				$this->redirect('/admin');
 			} else {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry. Unable to log you in. Please check your login credentials";
@@ -73,6 +73,6 @@ class Admin_LoginController extends Zend_Controller_Action
 	{
 		Zend_Auth::getInstance()->clearIdentity();
 		Zend_Session::destroy();
-		$this->_redirect('/');
+		$this->redirect('/');
 	}
 }

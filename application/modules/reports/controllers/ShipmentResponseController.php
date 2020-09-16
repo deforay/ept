@@ -14,7 +14,7 @@ class Reports_ShipmentResponseController extends Zend_Controller_Action
 
     public function indexAction(){
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response=$reportService->getShipmentResponseReport($params);
             $this->view->response = $response;
@@ -27,7 +27,7 @@ class Reports_ShipmentResponseController extends Zend_Controller_Action
     {
        $reportService = new Application_Service_Reports();
         if($this->getRequest()->isPost()){
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $this->view->dateRange=$params['dateRange'];
             $this->view->shipmentName=$params['shipmentName'];
             $this->view->header=$reportService->getReportConfigValue('report-header');

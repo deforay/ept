@@ -29,7 +29,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             //Zend_Debug::dump($params);die;
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getAllShipments($params);
@@ -54,9 +54,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->addShipment($params);
             if (isset($params['selectedDistribution']) && $params['selectedDistribution'] != "" && $params['selectedDistribution'] != null) {
-                $this->_redirect("/admin/shipment/index/did/" . base64_encode($params['selectedDistribution']));
+                $this->redirect("/admin/shipment/index/did/" . base64_encode($params['selectedDistribution']));
             } else {
-                $this->_redirect("/admin/shipment");
+                $this->redirect("/admin/shipment");
             }
         }
     }
@@ -102,7 +102,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $shipmentService->shipItNow($params);
-            $this->_redirect("/admin/shipment");
+            $this->redirect("/admin/shipment");
         } else {
             if ($this->_hasParam('sid')) {
                 $participantService = new Application_Service_Participants();
@@ -141,7 +141,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $params = $this->getRequest()->getPost();
             $shipmentService->updateShipment($params);
-            $this->_redirect("/admin/shipment");
+            $this->redirect("/admin/shipment");
         } else {
             if ($this->_hasParam('sid')) {
                 $sid = (int) base64_decode($this->_getParam('sid'));
@@ -161,10 +161,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 // oOps !! Nothing to edit....
                 if ($response == null || $response == "" || $response === false) {
-                    $this->_redirect("/admin/shipment");
+                    $this->redirect("/admin/shipment");
                 }
             } else {
-                $this->_redirect("/admin/shipment");
+                $this->redirect("/admin/shipment");
             }
         }
     }
@@ -174,7 +174,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         //$this->_helper->layout()->setLayout('modal');
         $participantService = new Application_Service_Participants();
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $participantService->getShipmentEnrollement($params);
         }
         if ($this->_hasParam('id')) {
@@ -183,7 +183,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $this->view->shipment = $shipmentService->getShipment($shipmentId);
             $this->view->shipmentCode = $this->_getParam('shipmentCode');
         } else {
-            $this->_redirect("/admin/index");
+            $this->redirect("/admin/index");
         }
     }
 
@@ -204,7 +204,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
     {
         $participantService = new Application_Service_Participants();
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $participantService->getShipmentUnEnrollements($params);
         }
     }
@@ -212,10 +212,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function addEnrollmentsAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->addEnrollements($params);
-            $this->_redirect("/admin/shipment/view-enrollments/id/" . $params['shipmentId']);
+            $this->redirect("/admin/shipment/view-enrollments/id/" . $params['shipmentId']);
         }
     }
 
@@ -262,7 +262,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function shipmentRespondedParticipantsAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $clientsServices->getShipmentRespondedParticipants($params);
         }
@@ -271,7 +271,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function shipmentNotRespondedParticipantsAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $clientsServices->getShipmentNotRespondedParticipants($params);
         }
@@ -280,7 +280,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function shipmentNotEnrolledParticipantsAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $clientsServices->getShipmentNotEnrolledParticipants($params);
         }
@@ -317,7 +317,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function exportShipmentRespondedParticipantsAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $this->view->result = $clientsServices->exportShipmentRespondedParticipantsDetails($params);
         }
@@ -326,7 +326,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
     public function exportShipmentNotRespondedParticipantsAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $this->view->result = $clientsServices->exportShipmentNotRespondedParticipantsDetails($params);
         }

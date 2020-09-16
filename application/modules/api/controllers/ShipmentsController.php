@@ -9,7 +9,7 @@ class Api_ShipmentsController extends Zend_Controller_Action
 
     public function getAction()
     {
-        $params = $this->_getAllParams();
+        $params = $this->getAllParams();
         $clientsServices = new Application_Service_Shipments();
         $result = $clientsServices->getShipmentDetailsInAPI($params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
@@ -17,7 +17,7 @@ class Api_ShipmentsController extends Zend_Controller_Action
     
     public function getShipmentFormAction()
     {
-        $params = $this->_getAllParams();
+        $params = $this->getAllParams();
         $clientsServices = new Application_Service_Shipments();
         $result = $clientsServices->getShipmentDetailsInAPI($params,'form');
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));

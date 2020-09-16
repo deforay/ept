@@ -15,7 +15,7 @@ class Reports_AnnualController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response=$reportService->getAnnualReport($params);
             $this->view->result= $response;

@@ -12,7 +12,7 @@ class Admin_TestkitController extends Zend_Controller_Action {
 
     public function indexAction() {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $schemeService = new Application_Service_Schemes();
             $schemeService->getAllDtsTestKitInGrid($params);
         }
@@ -24,7 +24,7 @@ class Admin_TestkitController extends Zend_Controller_Action {
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();            
             $schemeService->addTestkit($params);
-            $this->_redirect("/admin/testkit");
+            $this->redirect("/admin/testkit");
         }
         
     }
@@ -35,12 +35,12 @@ class Admin_TestkitController extends Zend_Controller_Action {
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $schemeService->updateTestkit($params);
-            $this->_redirect("/admin/testkit");
+            $this->redirect("/admin/testkit");
         } else if ($this->_hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
             $this->view->result = $schemeService->getDtsTestkit($id);
         } else {
-            $this->_redirect('admin/testkit/index');
+            $this->redirect('admin/testkit/index');
         }
     }
 
@@ -49,7 +49,7 @@ class Admin_TestkitController extends Zend_Controller_Action {
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $schemeService->updateTestkitStage($params);
-            $this->_redirect("/admin/testkit/standard-kit");
+            $this->redirect("/admin/testkit/standard-kit");
         }
     }
 

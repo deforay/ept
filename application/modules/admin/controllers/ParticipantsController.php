@@ -18,7 +18,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $clientsServices->getAllParticipants($params);
         }
@@ -32,7 +32,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $participantService->addParticipant($params);
-            $this->_redirect("/admin/participants");
+            $this->redirect("/admin/participants");
         }
 
         $this->view->affiliates = $participantService->getAffiliateList();
@@ -57,12 +57,12 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $result = $participantService->addBulkParticipant();
             if(!$result){
-                $this->_redirect("/admin/participants");
+                $this->redirect("/admin/participants");
             }else{
                 $this->view->response = $result;
             }
         }else{
-            $this->_redirect("/admin/participants");
+            $this->redirect("/admin/participants");
         }
     }
 
@@ -74,7 +74,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $participantService->updateParticipant($params);
-            $this->_redirect("/admin/participants");
+            $this->redirect("/admin/participants");
         } else {
             if ($this->_hasParam('id')) {
                 $userId = (int) $this->_getParam('id');
@@ -115,7 +115,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $participantService->addParticipantManagerMap($params);
-            $this->_redirect("/admin/participants/participant-manager-map");
+            $this->redirect("/admin/participants/participant-manager-map");
         }
         $this->view->participants = $participantService->getAllActiveParticipants();
         $this->view->dataManagers = $dataManagerService->getDataManagerList();

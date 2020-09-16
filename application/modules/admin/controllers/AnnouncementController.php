@@ -14,7 +14,7 @@ class Admin_AnnouncementController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $service = new Application_Service_Announcement();
             $service->getAllAnnouncementByGrid($params);
         } 
@@ -26,7 +26,7 @@ class Admin_AnnouncementController extends Zend_Controller_Action
             $params = $this->getRequest()->getPost();
             $service = new Application_Service_Announcement();
             $service->composeNewAnnouncement($params);
-            $this->_redirect("/admin/announcement");
+            $this->redirect("/admin/announcement");
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();

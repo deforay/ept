@@ -13,7 +13,7 @@ class Admin_PublicationsController extends Zend_Controller_Action
 
     public function indexAction(){
        if ($this->getRequest()->isPost()) {
-            $parameters = $this->_getAllParams();
+            $parameters = $this->getAllParams();
             $publicationService = new Application_Service_Publication();
             $publicationService->getAllPublication($parameters);
         }
@@ -24,7 +24,7 @@ class Admin_PublicationsController extends Zend_Controller_Action
             $params = $this->getRequest()->getPost();
             $publicationService = new Application_Service_Publication();
             $publicationService->addPublication($params);
-            $this->_redirect("/admin/publications");
+            $this->redirect("/admin/publications");
         }
     }
     
@@ -33,13 +33,13 @@ class Admin_PublicationsController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $publicationService->updatePublication($params);
-            $this->_redirect("/admin/publications");
+            $this->redirect("/admin/publications");
         }
         if($this->_hasParam('id')){
             $publicationId = (int)$this->_getParam('id');
             $this->view->publication = $publicationService->getPublication($publicationId);
         }else{
-            $this->_redirect("/admin/publications");
+            $this->redirect("/admin/publications");
         }
     }
 

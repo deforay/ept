@@ -12,7 +12,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action {
         $commonServices = new Application_Service_Common();
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($this->getRequest()->isPost()) {
-           // Zend_Debug::dump($this->_getAllParams());die;
+           // Zend_Debug::dump($this->getAllParams());die;
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
             $config->$sec->map->center = $this->getRequest()->getPost('mapCenter');
@@ -25,7 +25,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action {
 
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $commonServices->updateConfig($params);
         }
 

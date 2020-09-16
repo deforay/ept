@@ -16,7 +16,7 @@ class Reports_DetailedController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response=$reportService->getParticipantDetailedReport($params);
             $this->view->response = $response;
@@ -29,7 +29,7 @@ class Reports_DetailedController extends Zend_Controller_Action
     public function reportAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->getAllParams();            
             $reportService = new Application_Service_Reports();
             $reportService->getAllParticipantDetailedReport($params);
         }

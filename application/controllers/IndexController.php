@@ -11,7 +11,7 @@ class IndexController extends Zend_Controller_Action
     public function preDispatch(){
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if(isset($authNameSpace->ForcePasswordReset) && ($authNameSpace->ForcePasswordReset == 1 || $authNameSpace->ForcePasswordReset == '1')){
-            $this->_redirect("/participant/password");
+            $this->redirect("/participant/password");
         }
     }
 

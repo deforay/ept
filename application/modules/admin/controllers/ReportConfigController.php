@@ -11,10 +11,10 @@ class Admin_ReportConfigController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->getAllParams();            
             $reportService = new Application_Service_Reports();
             $reportService->updateReportConfigs($params);
-            $this->_redirect("/admin/report-config/");
+            $this->redirect("/admin/report-config/");
         }else{
             $reportService = new Application_Service_Reports();
             $this->view->logo=$reportService->getReportConfigValue('logo');

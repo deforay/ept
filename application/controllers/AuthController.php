@@ -11,7 +11,7 @@ class AuthController extends Zend_Controller_Action
 
 	public function indexAction()
 	{
-		$this->_redirect('/auth/login');
+		$this->redirect('/auth/login');
 	}
 
 	public function verifyAction()
@@ -38,7 +38,7 @@ class AuthController extends Zend_Controller_Action
 			$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
 			$sessionAlert->status = "failure";
 		}
-		$this->_redirect('/auth/login');
+		$this->redirect('/auth/login');
 	}
 
 	public function verifyEmailAction()
@@ -49,7 +49,7 @@ class AuthController extends Zend_Controller_Action
 			$params = $this->getRequest()->getPost();
 			$userService->confirmPrimaryMail($params);
 			$sessionAlert->message = "Thank you. Please check your email for further instructions. ";
-			$this->_redirect('/');
+			$this->redirect('/');
 		}
 		if ($this->_hasParam('t')) {
 			$link = $this->_getParam('t');
@@ -60,10 +60,10 @@ class AuthController extends Zend_Controller_Action
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
 				$sessionAlert->status = "failure";
-				$this->_redirect('/auth/login');
+				$this->redirect('/auth/login');
 			}
 		} else {
-			$this->_redirect('/auth/login');
+			$this->redirect('/auth/login');
 		}
 	}
 
@@ -82,7 +82,7 @@ class AuthController extends Zend_Controller_Action
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry. Unable to log you in. Please check if you entered the correct text from the image";
 				$sessionAlert->status = "failure";
-				$this->_redirect('/auth/login');
+				$this->redirect('/auth/login');
 			}
 
 			$params['username'] = trim($params['username']);
@@ -141,7 +141,7 @@ class AuthController extends Zend_Controller_Action
 					$userService = new Application_Service_DataManagers();
 					$userService->updateLastLogin($rs->dm_id);
 					$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($rs->dm_id);
-					$this->_redirect('participant/user-info');
+					$this->redirect('participant/user-info');
 				} else {
 					$userService = new Application_Service_DataManagers();
 					$userService->updateLastLogin($rs->dm_id);
@@ -151,9 +151,9 @@ class AuthController extends Zend_Controller_Action
 				/* For force_profile_check end */
 
 				if (isset($params['redirectUrl']) && $params['redirectUrl'] != '/auth/login') {
-					$this->_redirect($params['redirectUrl']);
+					$this->redirect($params['redirectUrl']);
 				} else {
-					$this->_redirect('/participant/dashboard');
+					$this->redirect('/participant/dashboard');
 				}
 			} else {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
@@ -167,7 +167,7 @@ class AuthController extends Zend_Controller_Action
 	{
 		Zend_Auth::getInstance()->clearIdentity();
 		Zend_Session::destroy();
-		$this->_redirect('/');
+		$this->redirect('/');
 	}
 
 	public function resetPasswordAction()
@@ -176,7 +176,7 @@ class AuthController extends Zend_Controller_Action
 			$email = $this->getRequest()->getPost('registeredEmail');
 			$userService = new Application_Service_DataManagers();
 			$userService->resetPassword($email);
-			$this->_redirect('/auth/login');
+			$this->redirect('/auth/login');
 		}
 	}
 
@@ -185,7 +185,7 @@ class AuthController extends Zend_Controller_Action
 		$userService = new Application_Service_DataManagers();
 		if ($this->getRequest()->isPost()) {
 			$params = $this->getRequest()->getPost();
-			$this->_redirect($userService->newPassword($params));
+			$this->redirect($userService->newPassword($params));
 		} else {
 			if ($this->_hasParam('email')) {
 				$email = $this->_getParam('email');

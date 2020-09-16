@@ -19,7 +19,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $evalService = new Application_Service_Evaluation();
             $evalService->getAllDistributions($params);
         }
@@ -87,7 +87,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
             $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
         } else {
-            $this->_redirect("/admin/evaluate/");
+            $this->redirect("/admin/evaluate/");
         }
     }
 
@@ -145,7 +145,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
                 $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
             } else {
-                $this->_redirect("/admin/evaluate/");
+                $this->redirect("/admin/evaluate/");
             }
         }
     }
@@ -204,7 +204,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $schemeService = new Application_Service_Schemes();
             $schemeService->updateVlInformation($params);
             $shipmentId = (int)base64_decode($this->_getParam('sid'));
-            $this->_redirect("/admin/evaluate/index/scheme/vl/showcalc/" . base64_encode($shipmentId));
+            $this->redirect("/admin/evaluate/index/scheme/vl/showcalc/" . base64_encode($shipmentId));
         }
         if ($this->hasParam('sid')) {
             if ($this->getRequest()->isPost()) {
@@ -225,9 +225,9 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $shipmentId = (int)($this->_getParam('sid'));
             $schemeService = new Application_Service_Schemes();
             $this->view->result = $schemeService->setVlRange($shipmentId);
-            $this->_redirect("/admin/evaluate/index/scheme/vl/showcalc/" . base64_encode($shipmentId));
+            $this->redirect("/admin/evaluate/index/scheme/vl/showcalc/" . base64_encode($shipmentId));
         } else {
-            $this->_redirect("/admin/evaluate/");
+            $this->redirect("/admin/evaluate/");
         }
     }
 
