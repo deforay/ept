@@ -15,16 +15,16 @@ if (isset($notifyData) && $notifyCount > 0) {
 	$count = 0;
 	$nCount = 0;
 	foreach ($notifyData as $notifyRow) {
-		if ($notifyRow['status'] == 'read') {
+		if ($notifyRow['status'] == 'unread') {
 			$nCount += 1;
 		}
 	}
 	$notify = '
-	<ul class="dropdown-menu" style="overflow: auto;' . $scrollHeight . '"><h4 class="notify-title"><b>Notifications</b></h4>';
+	<ul class="dropdown-menu" style="overflow: auto;' . $scrollHeight . '"><h4 class="notify-title"><b>Notifications</b><a href="javasciprt:void(0);" onclick="markasRead();" class="pull-right" style=" font-size: small; margin-right: 10px !important; ">Mark All as Read</a></h4>';
 	foreach ($notifyData as $notifyRow) {
 		if ($count < 10) {
 			$count++;
-			$notifyRead = ($notifyRow['status'] == 'read') ? 'style=" background: #80808024; "' : '';
+			$notifyRead = ($notifyRow['status'] == 'unread') ? 'style=" background: #80808024; "' : '';
 			$notifyLink = (isset($notifyRow['link']) && $notifyRow['link'] != '') ? $notifyRow['link'] : 'javascript:void(0);';
 			$notify .= '<li ' . $notifyRead . '><a onclick="notifyRead(' . $notifyRow['id'] . ');" href="' . $notifyLink . '">
 						<h4>' . ucwords($notifyRow['title']) . '<span class="notify-time">' . date('d-M-Y H:i a', strtotime($notifyRow['created_on'])) . '</span></h4>
@@ -106,7 +106,7 @@ if ($adminSession->privileges != "") {
 		}
 
 		.notify-title {
-			padding: 0px 0px 7px 7px;
+			padding: 5px 0px 7px 7px;
 			border-bottom: 1px solid #8080804a;
 			margin: 0px 0px;
 			position: sticky;
@@ -340,15 +340,26 @@ if ($adminSession->privileges != "") {
 
 		function notifyRead(id) {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-					nid: id
-				},
-				function(data) {})
+				nid: id
+			},
+			function(data) {})
 		}
 
 		function allowOnlyAlphaNumericAndHyphen(inputId) {
 			var s = $(inputId).val().toString();
 			var x = s.replace(/[^\A-Za-z0-9\-]/gi, '');
 			$(inputId).val(x);
+		}
+		
+		function markasRead(){
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
+				nid: 'all'
+			},
+			function(data) {
+				if(data > 0){
+					location.reload();
+				}
+			})
 		}
 	</script>
 	<img src="/images/loading.gif" style="display:none;" />

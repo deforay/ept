@@ -412,7 +412,10 @@ class Application_Service_Common
     public function saveNotifyStatus($id)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->update('notify', array("status" => 'readed'), "id = " . $id);
+        if($id == "all"){
+            return $db->update('notify', array("status" => 'read'), "status = 'unread'");
+        }
+        return $db->update('notify', array("status" => 'read'), "id = " . $id);
     }
 
     public function getAllPushNotify($params)
