@@ -26,7 +26,7 @@ if (isset($notifyData) && $notifyCount > 0) {
 			$count++;
 			$notifyRead = ($notifyRow['status'] == 'unread') ? 'style=" background: #80808024; "' : '';
 			$notifyLink = (isset($notifyRow['link']) && $notifyRow['link'] != '') ? $notifyRow['link'] : 'javascript:void(0);';
-			$notify .= '<li ' . $notifyRead . '><a onclick="notifyRead(' . $notifyRow['id'] . ');" href="' . $notifyLink . '">
+			$notify .= '<li ' . $notifyRead . ' class="readc"><a onclick="notifyRead(' . $notifyRow['id'] . ');" href="' . $notifyLink . '">
 						<h4>' . ucwords($notifyRow['title']) . '<span class="notify-time">' . date('d-M-Y H:i a', strtotime($notifyRow['created_on'])) . '</span></h4>
 						<p>' . $notifyRow['description'] . '</p></a>
 					</li>';
@@ -357,7 +357,8 @@ if ($adminSession->privileges != "") {
 			},
 			function(data) {
 				if(data > 0){
-					location.reload();
+					$('.readc').removeAttr( 'style' );
+					$('.count-notify').html('');
 				}
 			})
 		}
