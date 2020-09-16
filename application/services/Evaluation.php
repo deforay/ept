@@ -518,6 +518,10 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('dbs');
 			$evalComments = $schemeService->getSchemeEvaluationComments('dbs');
 			$results = $schemeService->getDtsSamples($shipmentId, $participantId);
+		} else if ($scheme == 'recency') {
+			$possibleResults = $schemeService->getPossibleResults('recency');
+			$evalComments = $schemeService->getSchemeEvaluationComments('recency');
+			$results = $schemeService->getRecencySamples($shipmentId, $participantId);
 		}
 
 
@@ -775,10 +779,16 @@ class Application_Service_Evaluation
 
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['rehydrationDate']);
 			$attributes["algorithm"] = $params['algorithm'];
-			$attributes = json_encode($attributes);
+			$attributes = array(
+				"sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+				"recency_assay" => $params['recencyAssay'],
+				"recency_assay_lot_no" => $params['recencyAssayLotNo'],
+				"recency_assay_expiry_date" => Pt_Commons_General::dateFormat($params['recencyAssayExpiryDate']),
+			);
 
+			$attributes = json_encode($attributes);
 			$mapdata = array(
-				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receivedOn']),
+				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
 				"shipment_test_date" => Pt_Commons_General::dateFormat($params['testedOn']),
 				"attributes" => $attributes,
 				"supervisor_approval" => $params['supervisorApproval'],

@@ -65,19 +65,17 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $sid = (int)base64_decode($this->_getParam('sid'));
             $pid = (int)base64_decode($this->_getParam('pid'));
             $this->view->scheme = $scheme = base64_decode($this->_getParam('scheme'));
+            $schemeService = new Application_Service_Schemes();
             if ($scheme == 'eid') {
-
-                $schemeService = new Application_Service_Schemes();
                 $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
                 $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
-            }
-            if ($scheme == 'dts') {
-                $schemeService = new Application_Service_Schemes();
+            } if ($scheme == 'dts') {
                 $this->view->allTestKits = $schemeService->getAllDtsTestKit();
             } else if ($scheme == 'vl') {
-                $schemeService = new Application_Service_Schemes();
                 $this->view->vlRange = $schemeService->getVlRange($sid);
                 $this->view->vlAssay = $schemeService->getVlAssay();
+            } else if ($scheme == 'recency') {
+                $this->view->recencyAssay = $schemeService->getRecencyAssay();
             }
             $evalService = new Application_Service_Evaluation();
             $this->view->evaluateData = $evalService->viewEvaluation($sid, $pid, $scheme);
