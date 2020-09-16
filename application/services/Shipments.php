@@ -2029,7 +2029,7 @@ class Application_Service_Shipments
             $participantIds = $params['participants'];
         }
 
-        $monthYear = Pt_Commons_General::getMonthsInRange($shipmentDate[0], $shipmentDate[1]);
+        $monthYear = Pt_Commons_General::getMonthsInRange($shipmentDate[0], $shipmentDate[1], 'dashboard');
 
         // Zend_Debug::dump($monthYear);die;
         if(count($monthYear) > 0){
@@ -2050,8 +2050,8 @@ class Application_Service_Shipments
                 if(isset($shipmentDate[1]) && $shipmentDate[1] != ""){
                     $sQuery->where('s.shipment_date <="'.date('Y-m-t',strtotime($monthYr)).'"');
                 }
-                // echo "Monthyear => ".$monthYr."<br>";
-                // echo($sQuery);echo "<br><br>";
+                /* echo "Monthyear => ".$monthYr."<br>";
+                echo($sQuery);echo "<br><br>"; */
                 $result =  $db->fetchAll($sQuery);
                 // Zend_Debug::dump($result);
                 if(count($result) > 0){
