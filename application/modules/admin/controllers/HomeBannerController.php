@@ -11,9 +11,9 @@ class Admin_HomeBannerController extends Zend_Controller_Action
     public function indexAction(){
        $commonServices = new Application_Service_Common();  
        if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->getAllParams();            
             $commonServices->updateHomeBanner($params);
-            $this->_redirect("/admin/home-banner");
+            $this->redirect("/admin/home-banner");
         }else{
             $this->view->banner = $commonServices->getHomeBannerDetails();
         }

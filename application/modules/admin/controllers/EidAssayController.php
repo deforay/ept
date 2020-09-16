@@ -12,7 +12,7 @@ class Admin_EidAssayController extends Zend_Controller_Action{
 
     public function indexAction(){
         if ($this->getRequest()->isPost()) {
-            $parameters = $this->_getAllParams();
+            $parameters = $this->getAllParams();
             $vlAssayService = new Application_Service_VlAssay();
             if(isset($parameters['fromSource']) && $parameters['fromSource'] == "extraction"){
               $vlAssayService->getAllEidExtractionAssay($parameters);
@@ -33,12 +33,12 @@ class Admin_EidAssayController extends Zend_Controller_Action{
             $vlAssayService = new Application_Service_VlAssay();
             if(isset($params['category']) && trim($params['category']) == 'extraction'){
               $vlAssayService->addEidExtractionAssay($params);
-              $this->_redirect("/admin/eid-assay/index/fromSource/".$params['category']);
+              $this->redirect("/admin/eid-assay/index/fromSource/".$params['category']);
             }elseif(isset($params['category']) && trim($params['category']) == 'detection'){
               $vlAssayService->addEidDetectionAssay($params);
-              $this->_redirect("/admin/eid-assay/index/fromSource/".$params['category']);
+              $this->redirect("/admin/eid-assay/index/fromSource/".$params['category']);
             }
-            $this->_redirect("/admin/eid-assay/");
+            $this->redirect("/admin/eid-assay/");
         }else{
             $this->view->source = "";
             if($this->_hasParam('source')){
@@ -48,7 +48,7 @@ class Admin_EidAssayController extends Zend_Controller_Action{
     }
     
     public function editAction(){
-        $this->_redirect("/admin/eid-assay");
+        $this->redirect("/admin/eid-assay");
     }
     
     public function changeStatusAction(){

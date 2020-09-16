@@ -17,7 +17,7 @@ class Reports_CorrectiveActionsController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response=$reportService->getCorrectiveActionReport($params);
             $this->view->response = $response;
@@ -30,7 +30,7 @@ class Reports_CorrectiveActionsController extends Zend_Controller_Action
     {
        $reportService = new Application_Service_Reports();
         if($this->getRequest()->isPost()){
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $this->view->exported=$reportService->exportCorrectiveActionsReport($params);
         }
     }
@@ -39,7 +39,7 @@ class Reports_CorrectiveActionsController extends Zend_Controller_Action
     {
        $reportService = new Application_Service_Reports();
         if($this->getRequest()->isPost()){
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $this->view->header=$reportService->getReportConfigValue('report-header');
             $this->view->logo=$reportService->getReportConfigValue('logo');
             $this->view->logoRight=$reportService->getReportConfigValue('logo-right');

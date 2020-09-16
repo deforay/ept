@@ -27,11 +27,11 @@ class ParticipantController extends Zend_Controller_Action
     {
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_OVERVIEW
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getShipmentOverview($params);
         } else {
-            $this->_redirect("/participant/dashboard");
+            $this->redirect("/participant/dashboard");
         }
     }
 
@@ -51,7 +51,7 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeMenu = 'view-reports';
         $this->_helper->layout()->activeSubMenu = 'individual-reports';
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getindividualReport($params);
         }
@@ -71,7 +71,7 @@ class ParticipantController extends Zend_Controller_Action
             $params = $this->_request->getPost();
             $userService->updateUser($params);
             if ($authNameSpace->force_profile_check_primary == 'yes' && $sessionAlert->status == 'success') {
-                $this->_redirect('/auth/login');
+                $this->redirect('/auth/login');
             }
         }
         // whether it is a GET or POST request, we always show the user info
@@ -100,7 +100,7 @@ class ParticipantController extends Zend_Controller_Action
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dbUsersProfile = new Application_Service_Participants();
         if ($this->getRequest()->isPost()) {
-            $parameters = $this->_getAllParams();
+            $parameters = $this->getAllParams();
             $dbUsersProfile->getParticipantSchemesBySchemeId($parameters);
         } else {
             $this->_helper->layout()->activeMenu = 'my-account';
@@ -119,7 +119,7 @@ class ParticipantController extends Zend_Controller_Action
             $oldPassword = $this->getRequest()->getPost('oldpassword');
             $response = $user->changePassword($oldPassword, $newPassword);
             if ($response) {
-                $this->_redirect('/participant/current-schemes');
+                $this->redirect('/participant/current-schemes');
             }
         }
     }
@@ -135,7 +135,7 @@ class ParticipantController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $data = $this->getRequest()->getPost();
             $participantService->updateParticipant($data);
-            $this->_redirect('/participant/testers');
+            $this->redirect('/participant/testers');
         } else {
             $this->view->rsParticipant = $participantService->getParticipantDetails($this->_getParam('psid'));
         }
@@ -167,7 +167,7 @@ class ParticipantController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $data = $this->getRequest()->getPost();
             $participantService->addParticipantForDataManager($data);
-            $this->_redirect('/participant/testers');
+            $this->redirect('/participant/testers');
         }
 
         $this->view->affiliates = $participantService->getAffiliateList();
@@ -190,7 +190,7 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeMenu = 'defaulted-schemes';
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_DEFAULTED
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getShipmentDefault($params);
         }
@@ -201,7 +201,7 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeMenu = 'current-schemes';
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_CURRENT
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getShipmentCurrent($params);
         }
@@ -217,7 +217,7 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeMenu = 'all-schemes';
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_ALL
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getShipmentAll($params);
         }
@@ -236,7 +236,7 @@ class ParticipantController extends Zend_Controller_Action
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
                 ->where("spm.map_id = ?", $id));
         } else {
-            $this->_redirect("/participant/dashboard");
+            $this->redirect("/participant/dashboard");
         }
     }
 
@@ -244,7 +244,7 @@ class ParticipantController extends Zend_Controller_Action
     {
         if ($this->getRequest()->isPost()) {
             //SHIPMENT_ALL
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getShipmentReport($params);
         }
@@ -255,7 +255,7 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeMenu = 'view-reports';
         $this->_helper->layout()->activeSubMenu = 'summary-reports';
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getSummaryReport($params);
         }
@@ -266,7 +266,7 @@ class ParticipantController extends Zend_Controller_Action
     public function addQcAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $this->view->result = $shipmentService->addQcDetails($params);
         }
@@ -282,7 +282,7 @@ class ParticipantController extends Zend_Controller_Action
     public function getParticipantSchemeChartAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $this->view->result = $shipmentService->getShipmentListBasedOnParticipant($params);
             $this->view->shipmentType = $params['shipmentType'];
@@ -304,7 +304,7 @@ class ParticipantController extends Zend_Controller_Action
             //$this->view->psId='5001';
             //echo "came";die;
         } else {
-            $this->_redirect("/participant/dashboard");
+            $this->redirect("/participant/dashboard");
         }
     }
     public function fileDownloadsAction()
@@ -317,10 +317,10 @@ class ParticipantController extends Zend_Controller_Action
     public function downloadFileDetailsAction()
     {
         if ($this->_hasParam('fileName')) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $this->view->parameters = $params;
         } else {
-            $this->_redirect("/participant/file-download");
+            $this->redirect("/participant/file-download");
         }
     }
 }

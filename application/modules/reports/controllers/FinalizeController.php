@@ -17,7 +17,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->getAllParams();            
             $distributionService = new Application_Service_Distribution();
             $distributionService->getAllDistributionReports($params);
         }
@@ -37,7 +37,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
     public function shipmentsAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->getAllParams();            
             $distributionService = new Application_Service_Shipments();
             $distributionService->getAllFinalizedShipments($params);
         }
@@ -64,7 +64,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
             $this->view->responseCount = $evalService->getResponseCount($id,$shipment[0]['distribution_id']);
             $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
         }else{
-            $this->_redirect("/reports/finalize/");
+            $this->redirect("/reports/finalize/");
         }
     }
 }

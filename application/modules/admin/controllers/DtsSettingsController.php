@@ -14,7 +14,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
         $schemeService = new Application_Service_Schemes();
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($this->getRequest()->isPost()) {
-           // Zend_Debug::dump($this->_getAllParams());die;
+           // Zend_Debug::dump($this->getAllParams());die;
             $testKits[1] =$this->getRequest()->getPost('testkit1');
             $testKits[2] =$this->getRequest()->getPost('testkit2');
             $testKits[3] =$this->getRequest()->getPost('testkit3');

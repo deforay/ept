@@ -16,7 +16,7 @@ class ShipmentFormController extends Zend_Controller_Action
     {
           if ($this->getRequest()->isPost()) {
             //SHIPMENT_CURRENT
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getAllShipmentForm($params);
           }else{

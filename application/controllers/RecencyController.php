@@ -54,7 +54,7 @@ class RecencyController extends Zend_Controller_Action
 
 			$shipmentService->updateRecencyResults($data);
 
-			$this->_redirect("/participant/current-schemes");
+			$this->redirect("/participant/current-schemes");
 
 			//die;
 		} else {

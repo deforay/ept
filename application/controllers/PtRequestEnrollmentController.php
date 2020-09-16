@@ -20,12 +20,12 @@ class PtRequestEnrollmentController extends Zend_Controller_Action
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry. Unable to log you in. Please check the text from image";
 				$sessionAlert->status = "failure";
-				$this->_redirect("/pt-request-enrollment");
+				$this->redirect("/pt-request-enrollment");
             }
                         
             $params = $this->getRequest()->getPost();
             $participantService->requestParticipant($params);
-            $this->_redirect("/pt-request-enrollment");
+            $this->redirect("/pt-request-enrollment");
         }
 
         $this->view->affiliates = $participantService->getAffiliateList();

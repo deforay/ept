@@ -11,7 +11,7 @@ class Admin_VlAssayController extends Zend_Controller_Action{
 
     public function indexAction(){
         if ($this->getRequest()->isPost()) {
-            $parameters = $this->_getAllParams();
+            $parameters = $this->getAllParams();
             $vlAssayService = new Application_Service_VlAssay();
             $vlAssayService->getAllVlAssay($parameters);
         } 
@@ -22,7 +22,7 @@ class Admin_VlAssayController extends Zend_Controller_Action{
             $params = $this->getRequest()->getPost();
             $vlAssayService = new Application_Service_VlAssay();
             $vlAssayService->addVlAssay($params);
-            $this->_redirect("/admin/vl-assay");
+            $this->redirect("/admin/vl-assay");
         }
     }
     
@@ -31,13 +31,13 @@ class Admin_VlAssayController extends Zend_Controller_Action{
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $vlAssayService->updateVlAssay($params);
-            $this->_redirect("/admin/vl-assay");
+            $this->redirect("/admin/vl-assay");
         }
         if($this->_hasParam('id')){
             $id = (int)$this->_getParam('id');
             $this->view->vlAssay = $vlAssayService->getVlAssay($id);
         }else{
-            $this->_redirect("/admin/vl-assay");
+            $this->redirect("/admin/vl-assay");
         }
     }
 }

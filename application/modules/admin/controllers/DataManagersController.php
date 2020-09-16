@@ -15,7 +15,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $clientsServices = new Application_Service_DataManagers();
             $clientsServices->getAllUsers($params);
         }
@@ -28,7 +28,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
             $userService->addUser($params);
-            $this->_redirect("/admin/data-managers");
+            $this->redirect("/admin/data-managers");
         }else{
             $this->view->participants = $participantService->getAllActiveParticipants();
         }
@@ -45,7 +45,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
             $userService->updateUser($params);
-            $this->_redirect("/admin/data-managers");
+            $this->redirect("/admin/data-managers");
         } else {
             if ($this->_hasParam('id')) {
                 $userId = (int) $this->_getParam('id');

@@ -60,7 +60,7 @@ class EidController extends Zend_Controller_Action
 			
             $shipmentService->updateEidResults($data);
 
-    		$this->_redirect("/participant/current-schemes");
+    		$this->redirect("/participant/current-schemes");
 
     		//die;
         }else{

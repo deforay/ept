@@ -29,7 +29,7 @@ class Api_LoginController extends Zend_Controller_Action
 
     public function loginDetailsAction()
     {
-        $params = $this->_getAllParams();
+        $params = $this->getAllParams();
         $clientsServices = new Application_Service_DataManagers();
         $result = $clientsServices->getLoggedInDetails((array)$params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));

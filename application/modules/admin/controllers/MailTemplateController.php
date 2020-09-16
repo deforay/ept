@@ -19,7 +19,7 @@ class Admin_MailTemplateController extends Zend_Controller_Action
     {
         $commonServices = new Application_Service_Common();
         if($this->getRequest()->isPost()){
-           $params = $this->_getAllParams();
+           $params = $this->getAllParams();
            $this->view->result = $commonServices->updateTemplate($params);
         }
     }
@@ -28,7 +28,7 @@ class Admin_MailTemplateController extends Zend_Controller_Action
     {
         $commonServices = new Application_Service_Common();
         if($this->getRequest()->isPost()){
-           $params = $this->_getAllParams();
+           $params = $this->getAllParams();
            $this->view->result = $commonServices->updatePushTemplate($params);
         }
     }

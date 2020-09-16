@@ -16,7 +16,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->getAllParams();            
             $distributionService = new Application_Service_Distribution();
             $distributionService->getAllDistributions($params);
         }else if($this->_hasParam('searchString')){
@@ -29,9 +29,9 @@ class Admin_DistributionsController extends Zend_Controller_Action
         $distributionService = new Application_Service_Distribution();
         
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();            
+            $params = $this->getAllParams();            
             $distributionService->addDistribution($params);
-            $this->_redirect("/admin/distributions");
+            $this->redirect("/admin/distributions");
         }
 
         $this->view->distributionDates = $distributionService->getDistributionDates();
@@ -68,9 +68,9 @@ class Admin_DistributionsController extends Zend_Controller_Action
     {
         $distributionService = new Application_Service_Distribution();
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $distributionService->updateDistribution($params);
-            $this->_redirect("/admin/distributions");
+            $this->redirect("/admin/distributions");
         }
         else if($this->_hasParam('d8s5_8d')){
             $id = (int)base64_decode($this->_getParam('d8s5_8d'));
@@ -81,7 +81,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
                 $this->view->fromStatus = 'shipped';
             }
         }else{
-            $this->_redirect('admin/distributions/index');
+            $this->redirect('admin/distributions/index');
         }
         
     }

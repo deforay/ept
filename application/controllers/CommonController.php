@@ -27,7 +27,7 @@ class CommonController extends Zend_Controller_Action
         if (!$this->_hasParam('tableName')) {
             $this->view->data = "";
         } else {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $commonServices = new Application_Service_Common();
             $this->view->data = $commonServices->checkDuplicate($params);
         }        
