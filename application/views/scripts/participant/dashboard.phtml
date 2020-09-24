@@ -1130,13 +1130,13 @@ foreach($this->participants as $row){
 		function(data) {
 			$('#participantChartContainerRecency').html(data);
 		});
-
+		$('.vl,.recency').remove();
 		vl =	$("div").hasClass("vl");
 		eid =	$("div").hasClass("eid");
 		dts =	$("div").hasClass("dts");
 		dbs =	$("div").hasClass("dbs");
 		recency =	$("div").hasClass("recency");
-		if( (vl != true) || (eid != true) || (dts != true) || (dbs != true) || (recency != true) ){
+		if( (vl == false) && (eid == false) && (dts == false) && (dbs == false) && (recency == false) ){
 			$('.all').remove();
 		}
 	}
