@@ -503,7 +503,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return false;
         } 
         /* Return the response data */
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         return  array(
             'dm_id'                             => $aResult['dm_id'],
             'view_only_access'                  => $aResult['view_only_access'],

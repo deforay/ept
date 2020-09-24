@@ -1,6 +1,7 @@
 <?php
 
 include_once 'CronInit.php';
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
 $db = Zend_Db::factory($conf->resources->db);
@@ -58,9 +59,9 @@ foreach($pnResult as $row){
         
         $data = json_encode($json_data);
         //FCM API end-point
-        $url = $conf->fcm->url;
+        $url = $config->fcm->url;
         //api_key in Firebase Console -> Project Settings -> CLOUD MESSAGING -> Server key
-        $server_key = $conf->fcm->serverkey;
+        $server_key = $config->fcm->serverkey;
         
         //header with content_type api key
         $headers = array(
