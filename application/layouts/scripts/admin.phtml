@@ -163,6 +163,8 @@ if ($adminSession->privileges != "") {
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments'), 'default', true); ?>">Scheme Enrollments</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>">Testkits</a></li>
 								<li class="divider"></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'push-notification-settings'), 'default', true); ?>">Push Notification Settings</a></li>
+								<li class="divider"></li>
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'global-config'), 'default', true); ?>">ePT Global Settings</a></li>
 								<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>">DTS Settings</a></li>

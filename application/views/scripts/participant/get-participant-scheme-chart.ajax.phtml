@@ -1,7 +1,8 @@
 <?php
-// Zend_Debug::dump($this->result);die;
 $result = $this->result['result'];
 $status = false;
+
+// Zend_Debug::dump($this->result);die;
 foreach($result as $row){
     if($row != null){
         $status = true;
@@ -71,10 +72,11 @@ if (isset($this->result) && count($this->result) > 0 && $status) {
                         foreach($result as $row){
                             if($row != null){
                                 foreach($row as $val){
+                                    $score = str_replace(",","",(number_format(($val['shipment_score'] + $val['documentation_score']) / $val['participantCount'],2)));
                                     echo '
                                     {
                                         name: "'.$val['shipment_code'].'",
-                                        y:'.number_format(($val['shipment_score'] + $val['documentation_score']),2).'
+                                        y:'.$score.'
                                     },
                                     ';
                                 }
@@ -82,7 +84,7 @@ if (isset($this->result) && count($this->result) > 0 && $status) {
                                 echo '
                                 {
                                     name: "No shipment available",
-                                    y:-1.00
+                                    y:0.00
                                 },
                                 ';
                             }
@@ -94,6 +96,8 @@ if (isset($this->result) && count($this->result) > 0 && $status) {
             ]
         });
     </script>
-<?php } else {
-    echo '<h3 class="text-center">No Shipment Details Available</h3>';
-} ?>
+<?php } else { ?>
+    <script>
+        $('.<?php echo $this->shipmentType;?>').remove();
+    </script>
+<?php } ?>

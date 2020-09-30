@@ -220,14 +220,18 @@ class Pt_Commons_General {
         }
     }
 
-    function getMonthsInRange($startDate, $endDate){
+    function getMonthsInRange($startDate, $endDate, $type = ""){
 		$months = array();
 		while (strtotime($startDate) <= strtotime($endDate)) {
 			//$monthYear=array('year' => date('Y', strtotime($startDate)),'month' => date('M', strtotime($startDate)),);
 			$monthYear = date('M', strtotime($startDate)) . "-" . date('Y', strtotime($startDate));
 			$months[$monthYear] = $monthYear;
 			$startDate = date('d M Y', strtotime($startDate . '+ 1 month'));
-		}
+        }
+        if($type == "dashboard"){
+            $monthYear = date('M', strtotime($endDate)) . "-" . date('Y', strtotime($endDate));
+            $months[$monthYear] = $monthYear;
+        }
 		return $months;
 	}
 }

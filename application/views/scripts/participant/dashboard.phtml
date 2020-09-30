@@ -79,7 +79,7 @@ foreach($this->participants as $row){
 	<h1> Dashboard </h1>
 </section>
 <section class="content">
-	<div class="box">
+	<div class="box all">
 
 		<div class="box-body">
 			<!-- <h3 class="txt text-info"></h3> -->
@@ -110,16 +110,16 @@ foreach($this->participants as $row){
 					<input class="btn btn-sm btn-danger" type="button" onclick="window.location.href = '/participant/dashboard';" tabindex="8" value="Clear"/>
 				</div>
 			</fieldset>
-			<h3 class="txt text-info" style=" text-align: center; margin: 3%; text-decoration: underline; ">Participant Shipment Score for VL Scheme</h3>
-			<div id="participantChartContainerVl"></div><hr>
-			<h3 class="txt text-info" style=" text-align: center; margin: 3%; text-decoration: underline; ">Participant Shipment Score for EId Scheme</h3>
-			<div id="participantChartContainerEid"></div><hr>
-			<h3 class="txt text-info" style=" text-align: center; margin: 3%; text-decoration: underline; ">Participant Shipment Score for DTS Scheme</h3>
-			<div id="participantChartContainerDts"></div><hr>
-			<h3 class="txt text-info" style=" text-align: center; margin: 3%; text-decoration: underline; ">Participant Shipment Score for DBS Scheme</h3>
-			<div id="participantChartContainerDbs"></div><hr>
-			<h3 class="txt text-info" style=" text-align: center; margin: 3%; text-decoration: underline; ">Participant Shipment Score for Recency Scheme</h3>
-			<div id="participantChartContainerRecency"></div>
+			<h3 class="txt text-info vl" style=" text-align: left; margin: 3%; ">Participant Shipment Score for VL Scheme</h3>
+			<div id="participantChartContainerVl" class="vl"></div><hr class="vl">
+			<h3 class="txt text-info eid" style=" text-align: left; margin: 3%; ">Participant Shipment Score for EId Scheme</h3>
+			<div id="participantChartContainerEid" class="eid"></div><hr class="eid">
+			<h3 class="txt text-info dts" style=" text-align: left; margin: 3%; ">Participant Shipment Score for DTS Scheme</h3>
+			<div id="participantChartContainerDts" class="dts"></div><hr class="dts">
+			<h3 class="txt text-info dbs" style=" text-align: left; margin: 3%; ">Participant Shipment Score for DBS Scheme</h3>
+			<div id="participantChartContainerDbs" class="dbs"></div><hr class="dbs">
+			<h3 class="txt text-info recency" style=" text-align: left; margin: 3%; ">Participant Shipment Score for Recency Scheme</h3>
+			<div id="participantChartContainerRecency" class="recency"></div>
 		</div>
 	</div>
 	<?php
@@ -1130,6 +1130,15 @@ foreach($this->participants as $row){
 		function(data) {
 			$('#participantChartContainerRecency').html(data);
 		});
+
+		vl =	$("div").hasClass("vl");
+		eid =	$("div").hasClass("eid");
+		dts =	$("div").hasClass("dts");
+		dbs =	$("div").hasClass("dbs");
+		recency =	$("div").hasClass("recency");
+		if( (vl == false) && (eid == false) && (dts == false) && (dbs == false) && (recency == false) ){
+			$('.all').remove();
+		}
 	}
 
 	function showFilter(obj){

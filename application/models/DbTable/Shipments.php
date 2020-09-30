@@ -2685,7 +2685,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $detectionAssaySelect[] = array(
                         'value'     =>  (string) $dAssayId,
                         'show'      =>  $dAssayName,
-                        'selected'   => ($shipment['attributes']['detection_assay'] == $dAssayId) ? 'selected' : ''
+                        'selected'   => (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] == $dAssayId) ? 'selected' : ''
                     );
                 }
 
