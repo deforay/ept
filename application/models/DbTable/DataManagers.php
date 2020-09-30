@@ -460,6 +460,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
+        /* Get push notification server json file */
+        $reader = file_get_contents(UPLOAD_PATH. DIRECTORY_SEPARATOR . 'google-services.json');
+
         /* Create a new response to the API service */
         $resultData = array(
             'id'                            => $result['dm_id'],
@@ -475,6 +478,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'appVersion'                    => $aResult['app_version'],
             'pushStatus'                    => $aResult['push_status'],
             'fcm'                           => $aResult['fcm'],
+            'fcmFileStatus'                 => (isset($reader) && $reader != "")?true:false,
+            'fcmJsonFile'                   => json_decode($reader, true)
         );
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
