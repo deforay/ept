@@ -28,8 +28,7 @@ try {
             $alertMail = new Zend_Mail();
             $id = "temp_id=" . $result['temp_id'];
             $db->update('temp_mail', array('status' => 'not-sent'), 'temp_id=' . $result['temp_id']);
-            //$fromEmail = $conf->email->config->username;
-            $fromEmail = "pt@vlsmartconnect.com";
+            $fromEmail = $conf->email->config->username;
             $fromFullName = "ePT System";
             $subject = $result['subject'];
             $alertMail->setBodyHtml($result['message']);
