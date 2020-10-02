@@ -1,75 +1,76 @@
-<?php 
+<?php
 // Zend_Debug::dump($this->province);die;
 ?>
 <section class="content-header">
-    <h1>Report PT Data </h1>
+	<h1>Report PT Data </h1>
 </section>
 <section class="content">
-		<div class="box">
-                <div class="box-body">
-					
-					<input type="radio" name="currentType" class="currentType" id="currentType1" value="all" /> All Schemes &nbsp;&nbsp;&nbsp;
-					<input type="radio" name="currentType" class="currentType" id="currentType2" value="active" checked="checked" /> Active Schemes only &nbsp;&nbsp;&nbsp;
-					<input type="radio" name="currentType" class="currentType" id="currentType3" value="inactive" /> Inactive Schemes only
-					<br/><br/>
+	<div class="box">
+		<div class="box-body">
 
-					<table class="table table-striped">
-						<tr class="dark">
-							<td>Shipment Code</td>
-							<td>Province</td>
-							<!-- <td>Action</td> -->
-						</tr>
-						<tr class="light">
-							<td>
-								<select id="shipmentCode" name="shipmentCode" class="form-control">
-								<option value=""> -- Select Code --</option>
-								<?php foreach ($this->shipment as $shipment) {	?>
-									<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>	
-								<?php }?>
-								</select>
-							</td>
-							<td>
-								<select id="province" name="province"  class="form-control">
-								<option value=""> -- Select State --</option>
-								<?php foreach ($this->province as $province) {	?>
-									<option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>	
-								<?php }?>
-								</select>
-							</td>
-							<td><button class="btn btn-success btn-sm" onclick="ReportFilter()"><span>Filter</span></button></td>
-						</tr>
-					</table>
-    				<br><br>
-	
-					<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="currentSchemeTable">
-							<thead>
-								<tr>
-									<th style="width:100px;">Shipment<br/>Date</th>
-									<th style="width:50px;">Scheme</th>
-									<th style="width:100px;">Shipment Code</th>
-									<th>Participant ID</th>
-									<th>Participant</th>
-									<th style="width:110px;">Result Due Date</th>
-									<th style="width:100px;">Response<br/>Date</th>
-									<th style="width:100px;">Action</th>
-								</tr>
-							</thead>
-							<tbody>
-							<tr>
-								<td colspan="9" class="dataTables_empty">Loading data from server</td>
-							</tr>
-							</tbody>
-					</table>
-				</div>
+			<input type="radio" name="currentType" class="currentType" id="currentType1" value="all" /> All Schemes &nbsp;&nbsp;&nbsp;
+			<input type="radio" name="currentType" class="currentType" id="currentType2" value="active" checked="checked" /> Active Schemes only &nbsp;&nbsp;&nbsp;
+			<input type="radio" name="currentType" class="currentType" id="currentType3" value="inactive" /> Inactive Schemes only
+			<br /><br />
+
+			<table class="table table-striped">
+				<tr class="dark">
+					<td>Shipment Code</td>
+					<td>Province</td>
+					<!-- <td>Action</td> -->
+				</tr>
+				<tr class="light">
+					<td>
+						<select id="shipmentCode" name="shipmentCode" class="form-control">
+							<option value=""> -- Select Code --</option>
+							<?php foreach ($this->shipment as $shipment) {	?>
+								<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>
+							<?php } ?>
+						</select>
+					</td>
+					<td>
+						<select id="province" name="province" class="form-control">
+							<option value=""> -- Select State --</option>
+							<?php foreach ($this->province as $province) {	?>
+								<option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>
+							<?php } ?>
+						</select>
+					</td>
+					<td><button class="btn btn-success btn-sm" onclick="ReportFilter()"><span>Filter</span></button></td>
+				</tr>
+			</table>
+			<br><br>
+
+			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="currentSchemeTable">
+				<thead>
+					<tr>
+						<th style="width:100px;">Shipment<br />Date</th>
+						<th style="width:50px;">Scheme</th>
+						<th style="width:100px;">Shipment Code</th>
+						<th>Participant ID</th>
+						<th>Participant</th>
+						<th>Institute Name</th>
+						<th style="width:110px;">Result Due Date</th>
+						<th style="width:100px;">Response<br />Date</th>
+						<th style="width:100px;">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="9" class="dataTables_empty">Loading data from server</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
+	</div>
 </section>
 <script>
-	
 	var csTable = null;
-	function currentSchemes(){
+
+	function currentSchemes() {
 		csTable = $('#currentSchemeTable').dataTable({
 			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
+				"sLengthMenu": "_MENU_ records per page"
 			},
 			"bJQueryUI": false,
 			"bAutoWidth": false,
@@ -78,70 +79,104 @@
 			"sPaginationType": "full_numbers",
 			"bRetrieve": false,
 			"bDestroy": true,
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":""},
-			    {"sClass":""},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center","bSortable":false}
+			"aoColumns": [{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center",
+					"bSortable": false
+				}
 			],
-			"aaSorting": [[ 5, "desc" ]],
+			"aaSorting": [
+				[5, "desc"]
+			],
 			"bProcessing": true,
 			"bServerSide": true,
 			"bAutoWidth": false,
 			"bStateSave": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'current-schemes', 'format' => 'html')); ?>",
-			"fnServerParams": function ( aoData ) {
-				aoData.push( { "name": "currentType", "value": $('input[name=currentType]').filter(':checked').val() } );
-				aoData.push( { "name": "shipmentCode", "value": $("#shipmentCode").val() } );
-				aoData.push( { "name": "province", "value": $("#province").val() } );
+			"fnServerParams": function(aoData) {
+				aoData.push({
+					"name": "currentType",
+					"value": $('input[name=currentType]').filter(':checked').val()
+				});
+				aoData.push({
+					"name": "shipmentCode",
+					"value": $("#shipmentCode").val()
+				});
+				aoData.push({
+					"name": "province",
+					"value": $("#province").val()
+				});
 			},
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
+			"fnServerData": function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": aoData,
+					"success": fnCallback
+				});
 			}
 		});
 	}
-	
-	 
-	$(document).ready(function(){
-		
+
+
+	$(document).ready(function() {
+
 		currentSchemes();
 
-		$('#currentType1,#currentType2,#currentType3').click(function(){
+		$('#currentType1,#currentType2,#currentType3').click(function() {
 			currentSchemes();
 		});
 	});
-	
-	
-        function removeSchemes(schemeType,mid){
-		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 
+
+
+	function removeSchemes(schemeType, mid) {
+		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
 			$.blockUI();
-			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'common', 'action' => 'delete-response')); ?>", { schemeType:schemeType, mid: mid, format: "html" },
-			    function (data) {
-				alert("Response removed successfully");
-				
-				csTable.fnDraw();
-				
-				$.unblockUI();
-			});
-		}		
-		
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'delete-response')); ?>", {
+					schemeType: schemeType,
+					mid: mid,
+					format: "html"
+				},
+				function(data) {
+					alert("Response removed successfully");
+
+					csTable.fnDraw();
+
+					$.unblockUI();
+				});
+		}
+
 	}
 
-				function ReportFilter() {
-                    if (  $("#shipmentCode").val() == "" || $("#shipmentCode").val() == null || $("#shipmentCode").val() == undefined ||  $("#province").val() == "" || $("#province").val() == null || $("#province").val() == undefined) {
-                        alert("Please choose code or province Detail to proceed");
-                        return false;
-                    }
-                    csTable.fnDraw();
-                }
+	function ReportFilter() {
+		if ($("#shipmentCode").val() == "" || $("#shipmentCode").val() == null || $("#shipmentCode").val() == undefined || $("#province").val() == "" || $("#province").val() == null || $("#province").val() == undefined) {
+			alert("Please choose code or province Detail to proceed");
+			return false;
+		}
+		csTable.fnDraw();
+	}
 </script>
