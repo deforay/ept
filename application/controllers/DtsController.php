@@ -53,7 +53,7 @@ class DtsController extends Zend_Controller_Action
 			$this->view->shipment = $shipment;
 			
 			//Zend_Debug::dump($this->view->shipment);
-			$this->view->allTestKits = $schemeService->getAllDtsTestKitList(true);
+			$this->view->allTestKits = $schemeService->getAllDtsTestKitList();
 			$this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts');
 			$this->view->shipId = $sID;
 			$this->view->participantId = $pID;

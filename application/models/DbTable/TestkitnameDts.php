@@ -244,7 +244,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
         return $result;
     }
 
-    public function addTestkitInParticipant($oldName, $testkitName,$scheme) {
+    public function addTestkitInParticipant($oldName, $testkitName,$scheme, $testkit = "") {
 
         if (trim($testkitName) != "") {
             $commonService = new Application_Service_Common();
@@ -261,6 +261,17 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
                     'Approval'      => '0',
                     'Created_On'    => new Zend_Db_Expr('now()')
                 );
+                if($testkit != ""){
+                    if($testkit == 1){
+                        $data['testkit_1'] = 1;
+                    }
+                    if($testkit == 2){
+                        $data['testkit_2'] = 1;
+                    }
+                    if($testkit == 3){
+                        $data['testkit_3'] = 1;
+                    }
+                }
                 $saveId = $this->insert($data);
                 return $tkId;
             } else {

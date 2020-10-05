@@ -16,17 +16,17 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
             if (isset($params['test_kit_name_1']) && trim($params['test_kit_name_1']) == 'other') {
-                $otherTestkitId1 = $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_1'], $params['test_kit_other_name_1'], 'dts');
+                $otherTestkitId1 = $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_1'], $params['test_kit_other_name_1'], 'dts', 1);
                 $params['test_kit_name_1'] = $otherTestkitId1;
             }
 
             if (isset($params['test_kit_name_2']) && trim($params['test_kit_name_2']) == 'other') {
-                $otherTestkitId2 = $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_2'], $params['test_kit_other_name_2'], 'dts');
+                $otherTestkitId2 = $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_2'], $params['test_kit_other_name_2'], 'dts', 2);
                 $params['test_kit_name_2'] = $otherTestkitId2;
             }
 
             if (isset($params['test_kit_name_3']) && trim($params['test_kit_name_3']) == 'other') {
-                $otherTestkitId3 = $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_3'], $params['test_kit_other_name_3'], 'dts');
+                $otherTestkitId3 = $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_3'], $params['test_kit_other_name_3'], 'dts', 3);
                 $params['test_kit_name_3'] = $otherTestkitId3;
             }
             // Zend_Debug::dump($params);die;
