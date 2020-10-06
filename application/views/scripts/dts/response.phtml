@@ -544,6 +544,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         window.history.back();
     }
 
+    $(document).ready(()=>{ 
+        <?php if(count($allowedAlgorithms) == 1 && count($allowedAlgorithms) != 0){ ?>
+            $('#algorithm').val('<?php echo $allowedAlgorithms[0];?>');
+        <?php } ?>
+    }); 
     $(function() {
         showHideTest2();
         showHideTest3();
