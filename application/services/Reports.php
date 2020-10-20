@@ -1321,6 +1321,8 @@ class Application_Service_Reports
             return $this->generateDtsViralLoadExcelReport($shipmentId);
         } else if ($schemeType == 'eid') {
             return $this->generateDbsEidExcelReport($shipmentId);
+        } else if ($schemeType == 'recency') {
+            return $this->generateRecencyExcelReport($shipmentId);
         } else {
             return false;
         }
@@ -2709,7 +2711,7 @@ class Application_Service_Reports
         $result = $db->fetchRow($query);
 
 
-        $refQuery = $db->select()->from(array('refRes' => 'reference_result_eid'))->where("refRes.shipment_id = ?", $shipmentId);
+        $refQuery = $db->select()->from(array('refRes' => 'reference_result_recency'))->where("refRes.shipment_id = ?", $shipmentId);
         $refResult = $db->fetchAll($refQuery);
 
 
@@ -2762,7 +2764,7 @@ class Application_Service_Reports
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
-        $colNameCount = 10;
+        $colNameCount = 11;
         $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount)->getColumn();
 
         foreach ($refResult as $refRow) {
@@ -2772,7 +2774,7 @@ class Application_Service_Reports
         }
 
         $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount - 1)->getColumn();
-        // $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
+        $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
         $firstSheet->setCellValue($cellName1 . '1', html_entity_decode("PATIENT RESPONSE", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle);
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor);
@@ -2785,14 +2787,10 @@ class Application_Service_Reports
             $colNameCount++;
         }
         $cellName4 = $firstSheet->getCellByColumnAndRow($colNameCount - 1)->getColumn();
-        // $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
-        $firstSheet->setCellValue($cellName3 . '1', html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->setCellValue($cellName3 . '1', html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->setCellValue($cellName3 . '1', html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
         $firstSheet->setCellValue($cellName3 . '1', html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '1')->applyFromArray($borderStyle);
         $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '2')->applyFromArray($referenceColor);
-
 
         $firstSheet->setTitle('Recency PT Results');
 
@@ -2806,10 +2804,7 @@ class Application_Service_Reports
         $row = 2; // $row 0 is already the column headings
 
         $schemeService = new Application_Service_Schemes();
-        $extractionAssayList = $schemeService->getEidExtractionAssay();
-        $detectionAssayList = $schemeService->getEidDetectionAssay();
-
-        //Zend_Debug::dump($extractionAssayList);die;
+        $assayList = $schemeService->getRecencyAssay();
 
         foreach ($resultOverAll as $rowOverAll) {
             //Zend_Debug::dump($rowOverAll);
@@ -2819,12 +2814,16 @@ class Application_Service_Reports
                 ->joinLeft(array('pr' => 'r_possibleresult'), "res.reported_result=pr.id")
                 ->where("res.shipment_map_id = ?", $rowOverAll['map_id']);
             $resultResponse = $db->fetchAll($queryResponse);
+            
+            $rqResponse = $db->select()->from(array('ref' => 'reference_result_recency'))
+                ->joinLeft(array('pr' => 'r_possibleresult'), "ref.reference_result=pr.id")
+                ->where("ref.shipment_id = ?", $shipmentId);
+            $refResponse = $db->fetchAll($rqResponse);
 
             $attributes = json_decode($rowOverAll['attributes'], true);
-            $extraction = (array_key_exists($attributes['recency_assay'], $extractionAssayList)) ? $extractionAssayList[$attributes['recency_assay']] : "";
-            $detection = (array_key_exists($attributes['recency_assay_lot_no'], $detectionAssayList)) ? $detectionAssayList[$attributes['recency_assay_lot_no']] : "";
+            $extraction = (array_key_exists($attributes['recency_assay'], $assayList)) ? $assayList[$attributes['recency_assay']] : "";
+            $assayLot = $attributes['recency_assay_lot_no'];
             $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_General::humanDateFormat($attributes['sample_rehydration_date']) : "";
-
 
             $firstSheet->getCellByColumnAndRow(0, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2837,7 +2836,7 @@ class Application_Service_Reports
             $col = 7;
 
             $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($detection, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayLot, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00" && $rowOverAll['shipment_receipt_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_receipt_date']) : "";
             $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_test_date']) : "";
@@ -2845,6 +2844,9 @@ class Application_Service_Reports
             $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
             foreach ($resultResponse as $responseRow) {
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            }
+            foreach ($refResponse as $responseRow) {
                 $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             }
         }
