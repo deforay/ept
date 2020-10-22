@@ -159,13 +159,13 @@
 	function generateShipmentParticipantList(shipmentId,schemeType){
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'get-shipment-participant-list')); ?>", {shipmentId: shipmentId,schemeType: schemeType, format: "html"},
-                function(data) {
+		function(data) {
 			if (data!="") {
 				//alert(data);$.unblockUI();return;
 				document.location.href = '/temporary/'+data;
 			}
 			$.unblockUI();
-                });
+		});
 	}
         
 </script>
