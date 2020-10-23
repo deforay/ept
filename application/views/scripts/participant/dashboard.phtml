@@ -1130,15 +1130,16 @@ foreach($this->participants as $row){
 		function(data) {
 			$('#participantChartContainerRecency').html(data);
 		});
-
-		vl =	$("div").hasClass("vl");
-		eid =	$("div").hasClass("eid");
-		dts =	$("div").hasClass("dts");
-		dbs =	$("div").hasClass("dbs");
-		recency =	$("div").hasClass("recency");
-		if( (vl == false) && (eid == false) && (dts == false) && (dbs == false) && (recency == false) ){
-			$('.all').remove();
-		}
+		setTimeout(function(){ 
+			vl =	$("div").hasClass("vl");
+			eid =	$("div").hasClass("eid");
+			dts =	$("div").hasClass("dts");
+			dbs =	$("div").hasClass("dbs");
+			recency =	$("div").hasClass("recency");
+			if( (vl == false) && (eid == false) && (dts == false) && (dbs == false) && (recency == false) ){
+				$('.all').remove();
+			}
+		}, 1000);
 	}
 
 	function showFilter(obj){
