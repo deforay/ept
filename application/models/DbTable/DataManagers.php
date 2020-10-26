@@ -338,10 +338,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchForceProfileEmail($link)
     {
         $db = Zend_Db_Table_Abstract::getAdapter();
-        
+
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $email = base64_decode($link);
-        
+
         $sql = $this->select()->from('data_manager')->where("primary_email=?", $email);
 
         $list = $this->fetchRow($sql);
@@ -410,7 +410,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $aResult['force_profile_check'] = 'yes';
         }
         /* Get push notification server json file */
-        $reader = file_get_contents(UPLOAD_PATH. DIRECTORY_SEPARATOR . 'google-services.json');
+        $reader = null;
+        if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json')) {
+            $reader = file_get_contents(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json');
+        }
+
 
         /* Create a new response to the API service */
         $resultData = array(
@@ -427,8 +431,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'appVersion'                    => $aResult['app_version'],
             'pushStatus'                    => $aResult['push_status'],
             'fcm'                           => $aResult['fcm'],
-            'fcmFileStatus'                 => (isset($reader) && $reader != "")?true:false,
-            'fcmJsonFile'                   => json_decode($reader, true)
+            'fcmFileStatus'                 => !empty($reader) ? true : false,
+            'fcmJsonFile'                   => !empty($reader) ? json_decode($reader, true) : null
         );
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
@@ -461,7 +465,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
 
         /* Get push notification server json file */
-        $reader = file_get_contents(UPLOAD_PATH. DIRECTORY_SEPARATOR . 'google-services.json');
+        //$reader = file_get_contents(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json');
+        $reader = null;
+        if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json')) {
+            $reader = file_get_contents(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json');
+        }
 
         /* Create a new response to the API service */
         $resultData = array(
@@ -478,8 +486,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'appVersion'                    => $aResult['app_version'],
             'pushStatus'                    => $aResult['push_status'],
             'fcm'                           => $aResult['fcm'],
-            'fcmFileStatus'                 => (isset($reader) && $reader != "")?true:false,
-            'fcmJsonFile'                   => json_decode($reader, true)
+            'fcmFileStatus'                 => !empty($reader) ? true : false,
+            'fcmJsonFile'                   => !empty($reader) ? json_decode($reader, true) : null
         );
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
@@ -506,9 +514,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $aResult = $db->fetchRow($sQuery);
         if (!isset($aResult['dm_id'])) {
             return false;
-        } 
+        }
         /* Return the response data */
         $conf = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        $fcmData = !empty($conf->fcm) ? $conf->fcm->toArray() : array();
         return  array(
             'dm_id'                             => $aResult['dm_id'],
             'view_only_access'                  => $aResult['view_only_access'],
@@ -525,7 +534,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'app_version'                       => $appVersion['value'],
             'push_status'                       => $aResult['push_status'],
             'marked_push_notify'                => $aResult['marked_push_notify'],
-            'fcm'                               => $conf->fcm->toArray()
+            'fcm'                               => $fcmData
         );
     }
 
@@ -706,10 +715,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         return $this->update(array('status' => $status), 'primary_email = "' . $email . '"');
     }
-    
+
     public function savePushNotifyTokenAPI($params)
     {
-        $update = 0;$response = array();
+        $update = 0;
+        $response = array();
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
@@ -739,7 +749,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function savePushReadAPI($params)
     {
         $common = new Application_Service_Common();
-        $update = 0;$response = array();
+        $update = 0;
+        $response = array();
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
@@ -757,19 +768,19 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
-        if(!isset($params['notifyId']) || $params['notifyId'] == ''){
+        if (!isset($params['notifyId']) || $params['notifyId'] == '') {
             return array('status' => 'notify-fail', 'message' => 'Notify Id missing to update as read / unread');
         }
-        if(!$common->getPushNotificationDetailsById($params['notifyId'])){
+        if (!$common->getPushNotificationDetailsById($params['notifyId'])) {
             return  array('status' => 'notify-fail', 'message' => 'Notify id not matched with you');
         }
-        $notifyArray = explode("," , $aResult['marked_push_notify']);
-        foreach($notifyArray as $shipment){
+        $notifyArray = explode(",", $aResult['marked_push_notify']);
+        foreach ($notifyArray as $shipment) {
             $notifyImplode[] = $shipment;
         }
-        if(!in_array($params['notifyId'], $notifyArray) && $params['markAsRead'] == true){
+        if (!in_array($params['notifyId'], $notifyArray) && $params['markAsRead'] == true) {
             $notifyImplode[] = $params['notifyId'];
-        } else if($params['markAsRead'] == false){
+        } else if ($params['markAsRead'] == false) {
             if (($key = array_search($params['notifyId'], $notifyImplode)) !== false) {
                 unset($notifyImplode[$key]);
             }
