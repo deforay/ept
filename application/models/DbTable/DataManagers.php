@@ -449,7 +449,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
         if (!isset($params['authToken'])) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
         /* Check the login credential */
         $result = $this->fetchRow("auth_token='" . $params['authToken'] . "'");
@@ -461,7 +461,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Validate new auth token and app-version */
         if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
 
         /* Get push notification server json file */

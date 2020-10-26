@@ -54,7 +54,7 @@
                 <label for="storageBucket" class="col-lg-2 control-label">Upload New Google-services.json </label>
                 <div class="col-lg-4 input-group" style=" display: inline-flex; ">
                     <?php if(file_exists(UPLOAD_PATH.DIRECTORY_SEPARATOR.'google-services.json')){ ?>
-                        <a href="/uploads/google-services.json" class="file-exist" download><i class="fa fa-download"></i> Download Google Service Json</a> <span class="mandatory" onclick="fileShow();"> <a class="mandatory file-exist" title="Replace New file" href="javascript:void(0);" style=" padding: 6px; background: antiquewhite; text-decoration: none; ">X</a></span>
+                        <a href="/uploads/google-services.json" class="file-exist" download><i class="fa fa-download"></i> Download Google Service JSON</a> <span class="mandatory" onclick="fileShow();"> <a class="mandatory file-exist" title="Replace New file" href="javascript:void(0);" style=" padding: 6px; background: antiquewhite; text-decoration: none; ">X</a></span>
                     <?php } else{ ?>
                         <input type="file" id="googleServiceJson" name="googleServiceJson" class="form-control" title="Please upload the google service json file" style=" width: 330px; "/>
                     <?php }?>
