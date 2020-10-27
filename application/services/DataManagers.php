@@ -24,7 +24,7 @@ class Application_Service_DataManagers
             $common->insertTempMail($params['pemail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
             $sessionAlert->message = "Thank you for providing correct email id. Please check your email for the verification link.";
             $sessionAlert->status = "success";
-            $userDb->setStatusByEmail('inactive',$params['oldpemail']);
+            // $userDb->setStatusByEmail('inactive',$params['oldpemail']);
         }else{
             if ($authNameSpace->force_profile_check_primary == 'yes') {
                 $sessionAlert->status = "failure";
@@ -49,9 +49,24 @@ class Application_Service_DataManagers
             $common->insertTempMail($params['registeredEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
             $sessionAlert->message = "Thank you for providing correct email id. Please check your email for the verification link.";
             $sessionAlert->status = "success";
-            $userDb->setStatusByEmail('inactive',$params['oldEmail']);
+            // $userDb->setStatusByEmail('inactive',$params['oldEmail']);
         }
         return $userDb->changeForceProfileCheckByEmail($params);
+    }
+    
+    public function resentDMVerifyMail($params)
+    {
+        $userDb = new Application_Model_DbTable_DataManagers();
+        $sessionAlert = new Zend_Session_Namespace('alertSpace');
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $common = new Application_Service_Common();
+        $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldEmail']." to ".$params['registeredEmail'].". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
+        $fromMail = Application_Service_Common::getConfig('admin_email');
+        $fromName = Application_Service_Common::getConfig('admin-name');
+        $send = $common->insertTempMail($params['registeredEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
+        if(isset($send) && $send > 0){
+            return $send;
+        }
     }
 
     public function updateLastLogin($dmId)
@@ -59,7 +74,12 @@ class Application_Service_DataManagers
         $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->updateLastLogin($dmId);
     }
-
+    
+    public function checkOldMail($dmId)
+    {
+        $userDb = new Application_Model_DbTable_DataManagers();
+        return $userDb->fetchRow('new_email IS NOT NULL AND dm_id = '.$dmId);
+    }
 
     public function getAllUsers($params)
     {
@@ -201,14 +221,19 @@ class Application_Service_DataManagers
         return $userDb->fetchEmailById($email);
     }
     
+    public function verifyEmailById($email){
+        $userDb = new Application_Model_DbTable_DataManagers();
+        return $userDb->fetchVerifyEmailById($email);
+    }
+    
     public function checkForceProfileEmail($link){
         $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->fetchForceProfileEmail($link);
     }
     
-    public function updateForceProfileCheck($email){
+    public function updateForceProfileCheck($email, $result = ""){
         $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->updateForceProfileCheckByEmail($email);
+        return $userDb->updateForceProfileCheckByEmail($email, $result);
     }
 
     public function loginDatamanagerAPI($params){

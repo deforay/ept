@@ -213,8 +213,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'updated_on' => new Zend_Db_Expr('now()')
         );
 
-        if ($dmNameSpace->force_profile_check_primary == 'yes') {
-            $data['primary_email'] = $params['pemail'];
+        if ($dmNameSpace->force_profile_check_primary == 'yes' || ($params['oldpemail'] != $params['pemail'])) {
+            $data['new_email'] = $params['pemail'];
         }
         if (isset($params['institute']) && $params['institute'] != "") {
             $data['institute'] = $params['institute'];
@@ -253,8 +253,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $dmId;
     }
 
-    public function updateForceProfileCheckByEmail($email)
+    public function updateForceProfileCheckByEmail($email, $result = "")
     {
+        $row = $this->fetchRow(array("new_email = '" . $email . "' AND new_email IS NOT NULL"));
+        if((isset($result) && $result != "") || isset($row) && $row != ""){
+            return $this->update(array('force_profile_check' => 'no', 'primary_email' => $result['new_email'], 'new_email' => null), "new_email = '" . base64_decode($email) . "'");
+        }
         return $this->update(array('force_profile_check' => 'no'), "primary_email = '" . base64_decode($email) . "'");
     }
 
@@ -333,6 +337,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchEmailById($email)
     {
         return $this->fetchRow("primary_email = '" . base64_decode($email) . "'");
+    }
+    
+    public function fetchVerifyEmailById($email)
+    {
+        return $this->fetchRow("new_email = '" . base64_decode($email) . "'");
     }
 
     public function fetchForceProfileEmail($link)

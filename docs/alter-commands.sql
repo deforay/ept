@@ -2569,3 +2569,6 @@ ALTER TABLE `notify` CHANGE `status` `status` VARCHAR(50) CHARACTER SET utf8mb4 
 
 -- Amit 09 Oct 2020
 ALTER TABLE `shipment_participant_map` CHANGE `user_comment` `user_comment` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
+-- Thana 27-Oct-2020
+ALTER TABLE `data_manager` ADD `new_email` VARCHAR(255) NULL DEFAULT NULL AFTER `marked_push_notify`;

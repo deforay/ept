@@ -19,6 +19,7 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('scheme', 'html')
             ->addActionContext('profile-update-redirect', 'html')
             ->addActionContext('get-participant-scheme-chart', 'html')
+            ->addActionContext('resent-mail-verification', 'html')
             //->addActionContext('download-file-details', 'html')
             ->initContext();
     }
@@ -70,12 +71,6 @@ class ParticipantController extends Zend_Controller_Action
         if ($this->_request->isPost()) {
             $params = $this->_request->getPost();
             $userService->updateUser($params);
-            if($params['oldpemail'] != $params['pemail']){
-                $this->redirect('/auth/login');
-            }
-            if ($authNameSpace->force_profile_check_primary == 'yes' && $sessionAlert->status == 'success') {
-                $this->redirect('/auth/login');
-            }
         }
         // whether it is a GET or POST request, we always show the user info
         $this->view->rsUser = $userInfo = $userService->getUserInfo();
@@ -240,6 +235,16 @@ class ParticipantController extends Zend_Controller_Action
                 ->where("spm.map_id = ?", $id));
         } else {
             $this->redirect("/participant/dashboard");
+        }
+    }
+    
+    public function resentMailVerificationAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $dmService = new Application_Service_DataManagers();
+            $this->view->result = $dmService->resentDMVerifyMail($params);
         }
     }
 

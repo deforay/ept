@@ -12,7 +12,15 @@
             
                 
                 <table style="width: 95%;margin: auto;" class="table table-striped table-hover">
-            
+                    <?php if(isset($this->rsUser['new_email']) && $this->rsUser['new_email'] != ""){ ?>
+                        <tr align="left"  class="dark">
+                            <td colspan="2" style=" text-align: center; padding: 25px; ">Please verify your primary email change to <b>“<?php echo $this->rsUser['new_email'];?>”</b> by clicking on the verification link sent to your email.<br> <a href="javascript:void(0);" onclick="reSentVerifyMail('<?php echo $this->rsUser['new_email'];?>');">Click here to resend the verification mail</a></td>
+                        </tr>
+                        <tr align="left"  class="alert-success" style="display: none;">
+                            <td colspan="2" style=" text-align: center; background:lightgreen; color:darkgreen;">Please check your email for the verification link.</td>
+                        </tr>
+                    <?php } ?>
+
                     <tr align="left"  class="dark">
                         <td>Primary e-mail address (used for login)</td>
                         <td>
@@ -117,5 +125,21 @@
             }
             return duplicated;
         });
-    }	    
+    }    
+    
+    function reSentVerifyMail(email) {
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'resent-mail-verification')); ?>", {
+            registeredEmail: email,
+            oldEmail: $('#oldpemail').val(),
+            format: "html"
+        },
+        function(data) {
+            if(data > 0){
+                $('.alert-success').fadeIn(500);
+                setTimeout(function(){
+                    $('.alert-success').fadeOut(500);
+                }, 10000); 
+            }
+        });
+    }    
 </script>

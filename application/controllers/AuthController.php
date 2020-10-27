@@ -21,9 +21,9 @@ class AuthController extends Zend_Controller_Action
 		$authNameSpace->force_profile_check_primary = 'no';
 		if ($this->_hasParam('email')) {
 			$email = $this->_getParam('email');
-			$result = $userService->checkEmail($email);
+			$result = $userService->verifyEmailById($email);
 			if ($result) {
-				$userService->updateForceProfileCheck($email);
+				$userService->updateForceProfileCheck($email, $result);
 				$userService->setStatusByEmailDM('active', base64_decode($email));
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Thank you. Your email has been verified successfully. You can now use your new email to login to ePT";
@@ -70,6 +70,7 @@ class AuthController extends Zend_Controller_Action
 	public function loginAction()
 	{
 		$dbUsersProfile = new Application_Service_Participants();
+		$dataManager = new Application_Service_DataManagers();
 		// action body
 		if ($this->getRequest()->isPost()) {
 			//die;
@@ -132,7 +133,6 @@ class AuthController extends Zend_Controller_Action
 				/* For force_profile_check start*/
 				$lastLogin = date('Ymd', strtotime($lastLogin));
 				$current = date("Ymd", strtotime(" -6 months"));
-
 				if ($authNameSpace->force_profile_check == 'yes' || ($current > $lastLogin)) {
 					$authNameSpace->force_profile_check_primary = 'yes';
 					$sessionAlert = new Zend_Session_Namespace('alertSpace');
@@ -149,9 +149,15 @@ class AuthController extends Zend_Controller_Action
 					$authNameSpace->force_profile_check_primary = 'no';
 				}
 				/* For force_profile_check end */
-
+				/* Check Old mail login */
+				$oldMail = $dataManager->checkOldMail($rs->dm_id);
+				if(isset($oldMail) && $oldMail != ""){
+					$sessionAlert = new Zend_Session_Namespace('alertSpace');
+					$sessionAlert->message = "Please verify your new email ".$oldMail['new_email']." that you changed last login";
+					$sessionAlert->status = "failure";
+					$this->redirect('participant/user-info');
+				}
 				if (isset($params['redirectUrl']) && $params['redirectUrl'] != '/auth/login') {
-					$this->redirect($params['redirectUrl']);
 				} else {
 					$this->redirect('/participant/dashboard');
 				}
