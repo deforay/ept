@@ -9,14 +9,15 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
     public function updateResults($params)
     {
         $sampleIds = $params['sampleId'];
-
+        // Zend_Debug::dump($params);die;
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
-                $params['control_line'][$key] = '';
-                $params['diagnosis_line'][$key] = '';
-                $params['longterm_line'][$key] = '';
+                $params['controlLine'][$key] = '';
+                $params['diagnosisLine'][$key] = '';
+                $params['longtermLine'][$key] = '';
+                $params['result'][$key] = '';
             }
             if ($res == null || count($res) == 0) {
                 $this->insert(array(

@@ -2675,19 +2675,23 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $extractionAssaySelect = array();
                 foreach ($extractionAssay as $eAssayId => $eAssayName) {
-                    $extractionAssaySelect[] = array(
-                        'value'     =>  (string) $eAssayId,
-                        'show'      =>  $eAssayName,
-                        'selected'   => ($shipment['attributes']['extraction_assay'] == $eAssayId) ? 'selected' : ''
-                    );
+                    if(isset($eAssayName) && $eAssayName != ""){
+                        $extractionAssaySelect[] = array(
+                            'value'     =>  (string) $eAssayId,
+                            'show'      =>  $eAssayName,
+                            'selected'   => ($shipment['attributes']['extraction_assay'] == $eAssayId) ? 'selected' : ''
+                        );
+                    }
                 }
                 $detectionAssaySelect = array();
                 foreach ($detectionAssay as $dAssayId => $dAssayName) {
-                    $detectionAssaySelect[] = array(
-                        'value'     =>  (string) $dAssayId,
-                        'show'      =>  $dAssayName,
-                        'selected'   => (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] == $dAssayId) ? 'selected' : ''
-                    );
+                    if(isset($dAssayName) && $dAssayName != ""){
+                        $detectionAssaySelect[] = array(
+                            'value'     =>  (string) $dAssayId,
+                            'show'      =>  $dAssayName,
+                            'selected'   => (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] == $dAssayId) ? 'selected' : ''
+                        );
+                    }
                 }
 
                 $section2['status']    = true;
