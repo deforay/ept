@@ -70,6 +70,9 @@ class ParticipantController extends Zend_Controller_Action
         if ($this->_request->isPost()) {
             $params = $this->_request->getPost();
             $userService->updateUser($params);
+            if($params['oldpemail'] != $params['pemail']){
+                $this->redirect('/auth/login');
+            }
             if ($authNameSpace->force_profile_check_primary == 'yes' && $sessionAlert->status == 'success') {
                 $this->redirect('/auth/login');
             }
