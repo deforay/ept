@@ -19,9 +19,9 @@ RewriteRule ^(.*)$ %{ENV:BASE}index.php [NC,L]
 
 
 
-#<IfModule mod_headers.c>
-#    Header set Access-Control-Allow-Origin "*"
-#</IfModule>
-#Header set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
-#Header set Access-Control-Max-Age "1000"
-#Header set Access-Control-Allow-Headers "x-requested-with, Content-Type, origin, authorization, accept, client-security-token"
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+Header set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
+Header set Access-Control-Max-Age "1000"
+Header set Access-Control-Allow-Headers "x-requested-with, Content-Type, origin, authorization, accept, client-security-token"
