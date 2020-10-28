@@ -48,7 +48,7 @@ class AuthController extends Zend_Controller_Action
 		if ($this->getRequest()->isPost()) {
 			$params = $this->getRequest()->getPost();
 			$userService->confirmPrimaryMail($params);
-			$sessionAlert->message = "Thank you. Please check your email for further instructions. ";
+			// $sessionAlert->message = "Thank you. Please check your email for further instructions. ";
 			$this->redirect('/');
 		}
 		if ($this->_hasParam('t')) {

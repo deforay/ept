@@ -22,7 +22,7 @@ class Application_Service_DataManagers
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
             $common->insertTempMail($params['pemail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
-            $sessionAlert->message = "Thank you for providing correct email id. Please check your email for the verification link.";
+            $sessionAlert->message = "Please check your email “".$params['pemail']."”. Once you verify, you can use “".$params['pemail']."” to login to ePT.";
             $sessionAlert->status = "success";
             // $userDb->setStatusByEmail('inactive',$params['oldpemail']);
         }else{
@@ -47,7 +47,7 @@ class Application_Service_DataManagers
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
             $common->insertTempMail($params['registeredEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
-            $sessionAlert->message = "Thank you for providing correct email id. Please check your email for the verification link.";
+            $sessionAlert->message = "Please check your email “".$params['registeredEmail']."”. Once you verify, you can use “".$params['registeredEmail']."” to login to ePT.";
             $sessionAlert->status = "success";
             // $userDb->setStatusByEmail('inactive',$params['oldEmail']);
         }

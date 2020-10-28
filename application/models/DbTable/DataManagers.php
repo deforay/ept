@@ -382,9 +382,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function loginDatamanagerByAPI($params)
     {
         /* Check the app versions */
-        if (!isset($params['appVersion'])) {
+        /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!isset($params['userId']) && !isset($params['key'])) {
             return array('status' => 'fail', 'message' => 'Please enter the login credentials');
         }
@@ -404,9 +404,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()'), 'push_status' => 'not-send'), "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
         /* App version check */
-        if ($aResult == 'app-version-failed') {
+        /* if ($aResult == 'app-version-failed') {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         /* Validate new auth token and app-version */
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
@@ -460,9 +460,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchLoggedInDetails($params)
     {
         /* Check the app versions */
-        if (!isset($params['appVersion'])) {
+        /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
@@ -471,9 +471,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $aResult = $this->fetchAuthToken($params);
         /* App version check */
-        if ($aResult == 'app-version-failed') {
+        /* if ($aResult == 'app-version-failed') {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         /* Validate new auth token and app-version */
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
@@ -515,11 +515,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchAuthToken($params)
     {
         /* Check the app versions */
-        $configDb = new Application_Model_DbTable_SystemConfig();
+        /* $configDb = new Application_Model_DbTable_SystemConfig();
         $appVersion = $configDb->getValue($params['appVersion']);
         if (!$appVersion) {
             return 'app-version-failed';
-        }
+        } */
         /* Check the token  */
         $db = Zend_Db_Table_Abstract::getAdapter();
         $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify', 'new_email'))
@@ -556,14 +556,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function changePasswordDatamanagerByAPI($params)
     {
         /* Check the app versions */
-        if (!isset($params['appVersion'])) {
+        /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         /* App version check */
         $aResult = $this->fetchAuthToken($params);
-        if ($aResult == 'app-version-failed') {
+        /* if ($aResult == 'app-version-failed') {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
@@ -626,18 +626,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchProfileCheckDetailsAPI($params)
     {
         /* Check the app versions & parameters */
-        if (!isset($params['appVersion'])) {
+        /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
         /* Validate new auth token and app-version */
         $aResult = $this->fetchAuthToken($params);
-        if ($aResult == 'app-version-failed') {
+        /* if ($aResult == 'app-version-failed') {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
@@ -667,18 +667,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function saveProfileDetailsByAPI($params)
     {
         /* Check the app versions & parameters */
-        if (!isset($params['appVersion'])) {
+        /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
         /* Validate new auth token and app-version */
         $aResult = $this->fetchAuthToken($params);
-        if ($aResult == 'app-version-failed') {
+        /* if ($aResult == 'app-version-failed') {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
@@ -715,7 +715,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             if (!$forceLogin) {
                 $response['message'] = 'Profile saved successfully.';
             } else {
-                $response['message'] = 'Your profile has been saved. Please check your mail for the instructions.';
+                $response['message'] = 'Please check your email “'.$params['primaryEmail'].'”. Once you verify, you can use “'.$params['primaryEmail'].'” to login to ePT.';
             }
         } else {
             $response['status'] = 'fail';
@@ -735,18 +735,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $update = 0;
         $response = array();
         /* Check the app versions & parameters */
-        if (!isset($params['appVersion'])) {
+        /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
         /* Validate new auth token and app-version */
         $aResult = $this->fetchAuthToken($params);
-        if ($aResult == 'app-version-failed') {
+        /* if ($aResult == 'app-version-failed') {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
@@ -766,18 +766,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $update = 0;
         $response = array();
         /* Check the app versions & parameters */
-        if (!isset($params['appVersion'])) {
+        /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
         /* Validate new auth token and app-version */
         $aResult = $this->fetchAuthToken($params);
-        if ($aResult == 'app-version-failed') {
+        /* if ($aResult == 'app-version-failed') {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
