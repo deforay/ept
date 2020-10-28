@@ -150,4 +150,21 @@ class Api_ParticipantController extends Zend_Controller_Action
         $result = $commonServices->getNotificationByAPI($params);
         $this->getResponse()->setBody(json_encode($result,JSON_PRETTY_PRINT));
     }
+    
+    public function resendAction()
+    {
+        $this->_helper->viewRenderer->setNoRender(true);
+        $params = $this->getAllParams();
+        $explode = explode('##', base64_decode($params['id']));
+        $params['registeredEmail'] = $explode[0];
+        $params['oldEmail'] = $explode[1];
+        $dmServices = new Application_Service_DataManagers();
+        $result = $dmServices->resentDMVerifyMail($params);
+        if($result > 0){
+            $response = array('status' => 'success', 'message' =>'Please check your email for the verification link.');
+        } else{
+            $response = array('status' => 'fail', 'message' =>'Something went wrong. Please try again.');
+        }
+        $this->getResponse()->setBody(json_encode($response,JSON_PRETTY_PRINT));
+    }
 }

@@ -56,8 +56,6 @@ class Application_Service_DataManagers
     
     public function resentDMVerifyMail($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        $sessionAlert = new Zend_Session_Namespace('alertSpace');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $common = new Application_Service_Common();
         $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldEmail']." to ".$params['registeredEmail'].". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
@@ -67,6 +65,7 @@ class Application_Service_DataManagers
         if(isset($send) && $send > 0){
             return $send;
         }
+        return 0;
     }
 
     public function updateLastLogin($dmId)

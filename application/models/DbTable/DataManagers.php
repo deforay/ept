@@ -441,13 +441,19 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'pushStatus'                    => $aResult['push_status'],
             'fcm'                           => $aResult['fcm'],
             'fcmFileStatus'                 => !empty($reader) ? true : false,
-            'fcmJsonFile'                   => !empty($reader) ? json_decode($reader, true) : null
+            'fcmJsonFile'                   => !empty($reader) ? json_decode($reader, true) : null,
         );
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
             return array('status' => 'fail', 'message' => 'Something went wrong please try again later');
         } else {
-            return array('status' => 'success', 'data' => $resultData);
+            $row = $this->fetchRow('auth_token="'. $params['authToken'] .'" AND new_email IS NOT NULL');
+            if(!$row){
+                return array('status' => 'success', 'data' => $resultData);
+            } else{
+                $resultData['resendMail'] = '/api/participant/resend?id='. base64_encode($row['new_email'].'##'.$row['primary_email']);
+                return array('status' => 'success', 'message' => 'Please verify your primary email change to “'.$row['new_email'].'”', 'data' => $resultData);
+            }
         }
     }
 
@@ -516,7 +522,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Check the token  */
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify'))
+        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify', 'new_email'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
             ->where("dm.auth_token=?", $params['authToken']);
@@ -680,7 +686,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         /* check old data */
         $fetchOldMail = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
-
+        $updateData = array(
+            'first_name'        => $params['firstName'],
+            'last_name'         => $params['lastName'],
+            'secondary_email'   => $params['secondaryEmail'],
+            'mobile'            => $params['mobile'],
+            'phone'             => $params['phone']
+        );
         /* check primary email already exist or not */
         $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "' AND primary_email = '" . $params['primaryEmail'] . "'");
         $forceLogin = false;
@@ -691,20 +703,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $fromMail = $common->getConfig('admin_email');
             $fromName = $common->getConfig('admin-name');
             $common->insertTempMail($params['primaryEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
-            $response['status'] = 'force-login';
+            // $response['status'] = 'force-login';
             $forceLogin = true;
-            $this->setStatusByEmail('inactive', $fetchOldMail['primary_email']);
-        } else {
-            $response['status'] = 'success';
+            $updateData['new_email'] = $params['primaryEmail'];
+            // $this->setStatusByEmail('inactive', $fetchOldMail['primary_email']);
         }
-        $updateData = array(
-            'primary_email'     => $params['primaryEmail'],
-            'first_name'        => $params['firstName'],
-            'last_name'         => $params['lastName'],
-            'secondary_email'   => $params['secondaryEmail'],
-            'mobile'            => $params['mobile'],
-            'phone'             => $params['phone']
-        );
+        $response['status'] = 'success';
+        
         $update = $this->update($updateData, "dm_id = " . $fetchOldMail['dm_id']);
         if ($update > 0) {
             if (!$forceLogin) {
