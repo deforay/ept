@@ -439,6 +439,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'phone'                         => $result['phone'],
             'appVersion'                    => $aResult['app_version'],
             'pushStatus'                    => $aResult['push_status'],
+            'resendMail'                    => '',
             'fcm'                           => $aResult['fcm'],
             'fcmFileStatus'                 => !empty($reader) ? true : false,
             'fcmJsonFile'                   => !empty($reader) ? json_decode($reader, true) : null,
@@ -514,10 +515,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function fetchAuthToken($params)
     {
-        /* Check the app versions */
-        /* $configDb = new Application_Model_DbTable_SystemConfig();
+        $configDb = new Application_Model_DbTable_SystemConfig();
         $appVersion = $configDb->getValue($params['appVersion']);
-        if (!$appVersion) {
+        /* Check the app versions */
+        /*if (!$appVersion) {
             return 'app-version-failed';
         } */
         /* Check the token  */

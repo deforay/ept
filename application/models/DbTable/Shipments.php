@@ -2469,7 +2469,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $vlAssayArr[] = array(
                         'value'     => (string) $id,
                         'show'      => $name,
-                        'selected'  => ($shipment['attributes']['vl_assay'] == $id) ? 'selected' : ''
+                        'selected'  => (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] == $id) ? 'selected' : ''
                     );
                 }
                 $modeOfReceiptSelect = array();
@@ -2486,7 +2486,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $section2['data']['testReceiptDate']        = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
                 $section2['data']['sampleRehydrationDate']  = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
                 $section2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment["shipment_test_date"])) : '';
-                $section2['data']['specimenVolume']         = $shipment['attributes']['specimen_volume'];
+                $section2['data']['specimenVolume']         = (isset($shipment['attributes']['specimen_volume']) && $shipment['attributes']['specimen_volume'] != "")?$shipment['attributes']['specimen_volume']:null;
                 $section2['data']['vlAssaySelect']          = $vlAssayArr;
                 $section2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "") ? (string) $shipment['attributes']['vl_assay'] : '';
                 $section2['data']['otherAssay']             = (isset($shipment['attributes']['other_assay']) && $shipment['attributes']['other_assay'] != '') ? $shipment['attributes']['other_assay'] : '';
@@ -2679,7 +2679,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $extractionAssaySelect[] = array(
                             'value'     =>  (string) $eAssayId,
                             'show'      =>  $eAssayName,
-                            'selected'   => ($shipment['attributes']['extraction_assay'] == $eAssayId) ? 'selected' : ''
+                            'selected'   => (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] == $eAssayId) ? 'selected' : ''
                         );
                     }
                 }
@@ -2898,7 +2898,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $recencyAssaySelect[] = array(
                         'value'     =>  (string) $eAssayId,
                         'show'      =>  $eAssayName,
-                        'selected'   => ($shipment['attributes']['recency_assay'] == $eAssayId) ? 'selected' : ''
+                        'selected'   => (isset($shipment['attributes']['recency_assay']) && $shipment['attributes']['recency_assay'] == $eAssayId) ? 'selected' : ''
                     );
                 }
 
