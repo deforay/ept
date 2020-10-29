@@ -388,9 +388,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (!isset($params['userId']) && !isset($params['key'])) {
             return array('status' => 'fail', 'message' => 'Please enter the login credentials');
         }
+        
+        $result = $this->fetchRow("new_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
+        if ($result) {
+            $resultData['resendMail'] = '/api/participant/resend?id='. base64_encode($result['new_email'].'##'.$result['primary_email']);
+            return array('status' => 'fail', 'message' => 'Please verify your primary email change to “'.$result['new_email'].'”', 'data' => $resultData);
+        }
         /* Check the login credential */
         $result = $this->fetchRow("primary_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
-        if (!isset($result['dm_id']) && $result['dm_id'] == "") {
+        if (!$result) {
             return array('status' => 'fail', 'message' => 'Your username or password is incorrect');
         }
         /* Check the status for data manager */
@@ -409,7 +415,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } */
         /* Validate new auth token and app-version */
         if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+            return array('status' => 'auth-fail', 'message' => 'Please check your credential. Please log in again');
         }
 
         /* Check last login before 6 month */
@@ -702,7 +708,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'phone'             => $params['phone']
         );
         /* check primary email already exist or not */
-        $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "' AND primary_email = '" . $params['primaryEmail'] . "'");
+        $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "' AND primary_email = '" . $params['primaryEmail'] . "' AND new_email != '" . $params['primaryEmail'] . "'");
         $forceLogin = false;
         if (!$result) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -727,7 +733,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             }
         } else {
             $response['status'] = 'fail';
-            $response['message'] = 'No updation found.';
+            $response['message'] = 'Profile udpated already.';
         }
 
         return $response;
