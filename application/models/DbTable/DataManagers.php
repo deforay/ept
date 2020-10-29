@@ -501,6 +501,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'phone'                         => $result['phone'],
             'appVersion'                    => $aResult['app_version'],
             'pushStatus'                    => $aResult['push_status'],
+            'resendMail'                    => '',
             'fcm'                           => $aResult['fcm'],
             'fcmFileStatus'                 => !empty($reader) ? true : false,
             'fcmJsonFile'                   => !empty($reader) ? json_decode($reader, true) : null
@@ -509,7 +510,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
             return array('status' => 'fail', 'message' => 'Something went wrong please try again later');
         } else {
-            return array('status' => 'success', 'data' => $resultData);
+            $row = $this->fetchRow('auth_token="'. $params['authToken'] .'" AND new_email IS NOT NULL');
+            if(!$row){
+                return array('status' => 'success', 'data' => $resultData);
+            } else{
+                $resultData['resendMail'] = '/api/participant/resend?id='. base64_encode($row['new_email'].'##'.$row['primary_email']);
+                return array('status' => 'success', 'message' => 'Please verify your primary email change to “'.$row['new_email'].'”', 'data' => $resultData);
+            }
         }
     }
 
@@ -546,8 +553,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'last_name'                         => $aResult['last_name'],
             'state'                             => $aResult['state'],
             'force_password_reset'              => $aResult['force_password_reset'],
-            'force_profile_check'               => $aResult['force_profile_check'],
-            'app_version'                       => $appVersion['value'],
+            'force_profile_check'               => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != '')?$aResult['force_profile_check']:null,
+            'app_version'                       => (isset($appVersion['value']) && $appVersion['value'] != '')?$appVersion['value']:null,
             'push_status'                       => $aResult['push_status'],
             'marked_push_notify'                => $aResult['marked_push_notify'],
             'fcm'                               => $fcmData
