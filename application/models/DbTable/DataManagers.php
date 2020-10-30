@@ -392,7 +392,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $result = $this->fetchRow("new_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
         if ($result) {
             $resultData['resendMail'] = '/api/participant/resend?id='. base64_encode($result['new_email'].'##'.$result['primary_email']);
-            return array('status' => 'fail', 'message' => 'Please verify your primary email change to “'.$result['new_email'].'”', 'data' => $resultData);
+            return array('status' => 'fail', 'message' => 'Please verify the change of your primary email from '.$result['primary_email'].' to '.$result['new_email'].' by clicking on verification link sent to <b>'.$result['new_email'].'</b>', 'data' => $resultData);
         }
         /* Check the login credential */
         $result = $this->fetchRow("primary_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
