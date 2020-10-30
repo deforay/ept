@@ -726,14 +726,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         
         $update = $this->update($updateData, "dm_id = " . $fetchOldMail['dm_id']);
         if ($update > 0) {
-            if (!$forceLogin) {
+            if (!$forceLogin || !$result) {
                 $response['message'] = 'Profile saved successfully.';
             } else {
                 $response['message'] = 'Please check your email “'.$params['primaryEmail'].'”. Once you verify, you can use “'.$params['primaryEmail'].'” to login to ePT.';
             }
         } else {
             $response['status'] = 'fail';
-            $response['message'] = 'Profile udpated already.';
+            $response['message'] = 'Not found any update.';
         }
 
         return $response;
