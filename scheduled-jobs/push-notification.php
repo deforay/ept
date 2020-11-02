@@ -6,6 +6,11 @@ $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLI
 
 $db = Zend_Db::factory($conf->resources->db);
 Zend_Db_Table::setDefaultAdapter($db);
+
+$globalConfig = $db->fetchRow($db->select()->from('global_config')->where("name like 'disable_push_notification'"));
+if($globalConfig['value'] == 'yes' && $globalConfig['name'] == 'disable_push_notification'){
+    exit;
+}
 $limit = 10;
 $sQuery = $db->select()
     ->from(array('pn' => 'push_notification'))

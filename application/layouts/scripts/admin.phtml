@@ -4,6 +4,7 @@ $controllerName = Zend_Controller_Front::getInstance()->getRequest()->getControl
 $actionName = Zend_Controller_Front::getInstance()->getRequest()->getActionName();
 /* Notification Section Start */
 $notifyData = $this->getNotification();
+$configData = $this->getGlobalConfig();
 
 // Zend_Debug::dump($notifyData);die;
 $notifyCount = (count($notifyData) > 0) ? count($notifyData) : 0;
@@ -185,20 +186,22 @@ if ($adminSession->privileges != "") {
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'contact-us'), 'default', true); ?>">Contact Messages</a></li>
 							</ul>
 						</li>
-					<?php }
-					if (!$pstatus && in_array('manage-shipments', $privileges)) { ?>
-						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manageMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-beaker"></i>&nbsp;&nbsp;Manage <b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions'), 'default', true); ?>">PT Survey</a></li>
-								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment'), 'default', true); ?>">Shipments</a></li>
-								<li class="divider"></li>
-								<li><a href="javascript:void(0);">Packaging</a></li>
+					<?php }?>
+					<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manageMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-beaker"></i>&nbsp;&nbsp;Manage <b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<?php if (!$pstatus && in_array('manage-shipments', $privileges)) { ?>
+							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions'), 'default', true); ?>">PT Survey</a></li>
+							<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment'), 'default', true); ?>">Shipments</a></li>
+							<?php } ?>
+							<li class="divider"></li>
+							<li><a href="javascript:void(0);">Packaging</a></li>
+							<?php if(isset($configData['disable_push_notification']) && $configData['disable_push_notification'] != 'yes'){ ?>
 								<li><a href="/admin/announcement"> Announcement</a></li>
-							</ul>
-						</li>
-					<?php }
-					if (!$pstatus && in_array('analyze-generate-reports', $privileges)) { ?>
+							<?php }?>
+						</ul>
+					</li>
+					<?php if (!$pstatus && in_array('analyze-generate-reports', $privileges)) { ?>
 						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'analyze') ? "class='active dropdown'" : "class='dropdown'"; ?>>
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-search"></i>&nbsp;&nbsp;Analyze <b class="caret"></b></a>
 							<ul class="dropdown-menu">

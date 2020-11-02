@@ -1,100 +1,111 @@
 <div class="well">
-    <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
-        <fieldset>
-            <legend>ePT Global Settings</legend>
-            <div class="form-group">
-			<label for="admin_email" class="col-lg-3 control-label">Admin Email <span class="mandatory">*</span></label>
-			<div class="col-lg-6">
-				<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?php echo $this->admin_email; ?>" />
-			</div>
-	     </div>
-            <div class="form-group">
-			<label for="admin_email" class="col-lg-3 control-label">Institute Name</label>
-			<div class="col-lg-6">
-				<input type="text" class="form-control" id="instituteName" name="instituteName" placeholder="Enter Institute Name" title="Enter Institute Name" value="<?php echo $this->config->instituteName; ?>" />
-			</div>
-	     </div>
-	     <div class="form-group">
-			<label for="text_under_logo" class="col-lg-3 control-label">Text Under Logo</label>
-			<div class="col-lg-6">
-				<input type="text" class="form-control" id="text_under_logo" name="text_under_logo" placeholder="Enter Text Under Logo" title="Enter Text Under Logo" value="<?php echo $this->text_under_logo; ?>" />
-			</div>
-	     </div>
-            <div class="form-group">
-			<label for="schemeId" class="col-lg-3 control-label">Choose Active Schemes <span class="mandatory">*</span></label>
-			<div class="col-lg-6">
-                            <select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">
-                                <?php
-                                foreach($this->allSchemes as $schemes){
-                                ?>
-                                <option value="<?php echo $schemes["scheme_id"] ?>" <?php echo ($schemes['status'] == "active") ? "selected='selected'" : ""; ?>><?php echo ucwords($schemes["scheme_name"]); ?></option>
-                                        <?php
-                                }
-                                            ?>
-				</select>
-			</div>
-	     </div>
-            <div class="form-group">
-			<label for="admin_email" class="col-lg-3 control-label">Accept Response After Finalize <span class="mandatory">*</span></label>
-			<div class="col-lg-6">
-				<input type="radio" name="response_after_evaluate" id="response_after_evaluate_yes" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate=="yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether enter response after finalize"/> Yes
-	                        <input type="radio" name="response_after_evaluate" id="response_after_evaluate_no" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
-			</div>
-	     </div>
-            
-            <div class="form-group">
-                <label for="mapCenter" class="col-lg-3 control-label">Map Center <span class="mandatory">*</span></label>
-                <div class="col-lg-2 input-group" style="width:240px;">
-                    <input type="text" id="mapCenter" name="mapCenter" size="50" class="isRequired form-control" placeholder="Please enter a map center" value="<?php echo $this->config->map->center; ?>"/>
-		    <span class="input-group-addon"><i class="icon-map-marker"></i></span>
-                </div>
-            </div>
-			
-            <div class="form-group">
-                <label for="mapZoom" class="col-lg-3 control-label">Map Zoom <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-					<input type="text" id="mapZoom" name="mapZoom" size="50" maxlength="45" class="isRequired form-control" placeholder="Please enter the map zoom" value="<?php echo $this->config->map->zoom; ?>" style="width:70px;"/>
+	<form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
+		<fieldset>
+			<legend>ePT Global Settings</legend>
+			<div class="form-group">
+				<label for="admin_email" class="col-lg-3 control-label">Admin Email <span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?php echo $this->admin_email; ?>" />
 				</div>
-				
-            </div>
+			</div>
+			<div class="form-group">
+				<label for="admin_email" class="col-lg-3 control-label">Institute Name</label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control" id="instituteName" name="instituteName" placeholder="Enter Institute Name" title="Enter Institute Name" value="<?php echo $this->config->instituteName; ?>" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="text_under_logo" class="col-lg-3 control-label">Text Under Logo</label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control" id="text_under_logo" name="text_under_logo" placeholder="Enter Text Under Logo" title="Enter Text Under Logo" value="<?php echo $this->text_under_logo; ?>" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="schemeId" class="col-lg-3 control-label">Choose Active Schemes <span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">
+						<?php
+						foreach ($this->allSchemes as $schemes) {
+						?>
+							<option value="<?php echo $schemes["scheme_id"] ?>" <?php echo ($schemes['status'] == "active") ? "selected='selected'" : ""; ?>><?php echo ucwords($schemes["scheme_name"]); ?></option>
+						<?php
+						}
+						?>
+					</select>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="disable_push_notification" class="col-lg-3 control-label">Disable Push Notification <span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<select class="form-control isRequired" id="disable_push_notification" name="disable_push_notification" title="Please select if you want to disable push notification?">
+						<option value="">--Select--</option>
+						<option value="yes" <?php echo (isset($this->disable_push_notification) && $this->disable_push_notification == 'yes')?'selected="selected"':"";?>>Yes</option>
+						<option value="no" <?php echo (isset($this->disable_push_notification) && $this->disable_push_notification == 'no')?'selected="selected"':"";?>>No</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="admin_email" class="col-lg-3 control-label">Accept Response After Finalize <span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<input type="radio" name="response_after_evaluate" id="response_after_evaluate_yes" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether enter response after finalize" /> Yes
+					<input type="radio" name="response_after_evaluate" id="response_after_evaluate_no" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "no") ? " checked='checked' " : ""; ?> value="no" /> No
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="mapCenter" class="col-lg-3 control-label">Map Center <span class="mandatory">*</span></label>
+				<div class="col-lg-2 input-group" style="width:240px;">
+					<input type="text" id="mapCenter" name="mapCenter" size="50" class="isRequired form-control" placeholder="Please enter a map center" value="<?php echo $this->config->map->center; ?>" />
+					<span class="input-group-addon"><i class="icon-map-marker"></i></span>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="mapZoom" class="col-lg-3 control-label">Map Zoom <span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<input type="text" id="mapZoom" name="mapZoom" size="50" maxlength="45" class="isRequired form-control" placeholder="Please enter the map zoom" value="<?php echo $this->config->map->zoom; ?>" style="width:70px;" />
+				</div>
+
+			</div>
 			<div class="form-group">
 				<label for="admin_email" class="col-lg-3 control-label">QC Access <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
-					<input type="radio" class="isRequired"  name="qc_access" id="qc_access_yes" <?php echo (isset($this->qc_access) && $this->qc_access=="yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose QC access"/> Yes
-					<input type="radio" class="isRequired"  name="qc_access" id="qc_access_no" <?php echo (isset($this->qc_access) && $this->qc_access =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
+					<input type="radio" class="isRequired" name="qc_access" id="qc_access_yes" <?php echo (isset($this->qc_access) && $this->qc_access == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose QC access" /> Yes
+					<input type="radio" class="isRequired" name="qc_access" id="qc_access_no" <?php echo (isset($this->qc_access) && $this->qc_access == "no") ? " checked='checked' " : ""; ?> value="no" /> No
 				</div>
 			</div>
-				
 
-            </table>
-            <br>
 
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update"/>
-                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back"/>
-            </div>
-        </fieldset>
-    </form>
+			</table>
+			<br>
+
+			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+				<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
+			</div>
+		</fieldset>
+	</form>
 </div>
 
 <script type="text/javascript">
 	function validateNow() {
-		if($("#schemeId").val() == null || $("#schemeId").val() == ""){
+		if ($("#schemeId").val() == null || $("#schemeId").val() == "") {
 			alert('You have to choose at least 1 Scheme to proceed');
 			return false;
 		}
-	//checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Survey. Please try something else.')
-        flag = deforayValidator.init({
-            formId: 'addDistributionForm'
-        });
-        if (flag) {
-            $.blockUI();
-            document.getElementById('addDistributionForm').submit();
-        }
+		//checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Survey. Please try something else.')
+		flag = deforayValidator.init({
+			formId: 'addDistributionForm'
+		});
+		if (flag) {
+			$.blockUI();
+			document.getElementById('addDistributionForm').submit();
+		}
 	}
-          $(document).ready(function() {
-				$('#schemeId').multiselect({
-					includeSelectAllOption: true
-				});
-			});
+	$(document).ready(function() {
+		$('#schemeId').multiselect({
+			includeSelectAllOption: true
+		});
+	});
 </script>

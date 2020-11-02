@@ -2575,3 +2575,4 @@ ALTER TABLE `data_manager` ADD `new_email` VARCHAR(255) NULL DEFAULT NULL AFTER 
 
 -- Thana 02-Nov-2020
 ALTER TABLE `shipment_participant_map` ADD `mode_of_response` VARCHAR(50) NULL DEFAULT NULL COMMENT 'web,app,api' AFTER `synced_on`;
+INSERT INTO `global_config` (`name`, `value`) VALUES ('disable_push_notification', 'yes');
