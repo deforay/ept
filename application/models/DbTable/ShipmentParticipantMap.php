@@ -117,7 +117,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         } else {
             $params['evaluation_status'][3] = 1;
         }
-        $params['coming_from'] = 'web';
+        $params['mode_of_response'] = 'web';
         return $this->update($params, "map_id = " . $shipmentMapId);
     }
 
@@ -287,7 +287,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $data['synced'] = 'yes';
         $data['synced_on'] = new Zend_Db_Expr('now()');
         // Zend_Debug::dump($data);die;
-        $data['coming_from'] = 'app';
+        $data['mode_of_response'] = 'app';
         return $this->update($data, "map_id = " . $params['mapId']);
     }
 }
