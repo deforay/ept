@@ -708,7 +708,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'phone'             => $params['phone']
         );
         /* check primary email already exist or not */
-        $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "' AND primary_email = '" . $params['primaryEmail'] . "' AND new_email != '" . $params['primaryEmail'] . "'");
+        $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "' AND primary_email LIKE '" . $params['primaryEmail'] . "' AND (new_email NOT LIKE '" . $params['primaryEmail'] . "' OR new_email IS NULL)");
         $forceLogin = false;
         if (!$result) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -726,10 +726,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         
         $update = $this->update($updateData, "dm_id = " . $fetchOldMail['dm_id']);
         if ($update > 0) {
-            if (!$forceLogin || !$result) {
+            if (!$forceLogin || $result) {
                 $response['message'] = 'Profile saved successfully.';
             } else {
-                $response['message'] = 'Please check your email “'.$params['primaryEmail'].'”. Once you verify, you can use “'.$params['primaryEmail'].'” to login to ePT.';
+                $response['message'] = 'Please check your email '.$params['primaryEmail'].'. Once you verify, you can use '.$params['primaryEmail'].' to login to ePT.';
             }
         } else {
             $response['status'] = 'fail';

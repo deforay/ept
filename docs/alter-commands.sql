@@ -2572,3 +2572,6 @@ ALTER TABLE `shipment_participant_map` CHANGE `user_comment` `user_comment` TEXT
 
 -- Thana 27-Oct-2020
 ALTER TABLE `data_manager` ADD `new_email` VARCHAR(255) NULL DEFAULT NULL AFTER `marked_push_notify`;
+
+-- Thana 02-Nov-2020
+ALTER TABLE `shipment_participant_map` ADD `coming_from` VARCHAR(50) NULL DEFAULT NULL COMMENT 'web,app,api' AFTER `synced_on`;
