@@ -1753,6 +1753,13 @@ class Application_Service_Shipments
         try {
             error_log($mapId);
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $responseTable = array('response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl');
+            foreach($responseTable as $response){
+                $shipment = $db->fetchRow($db->select()->from($response,array('shipment_map_id'))->where('shipment_map_id =?',$mapId));
+                if($shipment){
+                    $db->delete($response, "shipment_map_id = " . $mapId);
+                }
+            }
             return  $db->delete('shipment_participant_map', "map_id = " . $mapId);
         } catch (Exception $e) {
             return ($e->getMessage());
