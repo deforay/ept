@@ -192,8 +192,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($this->_hasParam('mid')) {
             if ($this->getRequest()->isPost()) {
                 $mapId = (int) base64_decode($this->_getParam('mid'));
+                $sId = (int) base64_decode($this->_getParam('sid'));
                 $shipmentService = new Application_Service_Shipments();
-                $this->view->result = $shipmentService->removeShipmentParticipant($mapId);
+                $this->view->result = $shipmentService->removeShipmentParticipant($mapId, $sId);
             }
         } else {
             $this->view->message = "Unable to delete. Please try again later or contact system admin for help";

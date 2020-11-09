@@ -162,10 +162,10 @@
 		});
 	}
 	
-	function removeParticipants(mid){
+	function removeParticipants(mid, sid){
 		if (window.confirm("Are you sure you want to remove this participant?\n This cannot be undone !")) { 
 			$.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", { mid: mid, format: "html" },
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", { mid: mid, sid: sid, format: "html" },
 			    function (data) {
 			       if (data>0) {
 				alert("Participant(s) removed successfully");

@@ -640,7 +640,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['RESPONSE']);
 
             if (trim($aRow['created_on_user']) == "" && trim($aRow['final_result']) == "" && $aRow['shipmentStatus'] != 'finalized') {
-                $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
+                $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\''.base64_encode($aRow['shipment_id']).'\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             } else {
                 $row[] = '';
             }
@@ -904,7 +904,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id', 'sp.shipment_test_date', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date!='NULL') THEN 'Responded' ELSE 'Not Responded' END")))
+        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array('sp.shipment_id', 'sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date!='NULL') THEN 'Responded' ELSE 'Not Responded' END")))
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name' ,'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
             ->where("sp.shipment_test_date <>'0000-00-00'")
@@ -977,6 +977,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['phone'];
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
+            // $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\''.base64_encode($aRow['shipment_id']).'\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             $row[] = ucwords($aRow['RESPONSE']);
 
             $output['aaData'][] = $row;
@@ -1129,7 +1130,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['RESPONSE']);
-            $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
+            $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\''.base64_encode($aRow['shipment_id']).'\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             $output['aaData'][] = $row;
         }
 

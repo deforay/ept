@@ -1747,7 +1747,7 @@ class Application_Service_Shipments
         return $resultArray;
     }
 
-    public function removeShipmentParticipant($mapId)
+    public function removeShipmentParticipant($mapId, $sId ="")
     {
 
         try {
@@ -1755,7 +1755,7 @@ class Application_Service_Shipments
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $responseTable = array('response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl');
             foreach($responseTable as $response){
-                $shipment = $db->fetchRow($db->select()->from($response,array('shipment_map_id'))->where('shipment_map_id =?',$mapId));
+                $shipment = $db->fetchRow($db->select()->from($response,array('shipment_map_id'))->where('shipment_map_id =?',$mapId)->where('sample_id =?',$sId));
                 if($shipment){
                     $db->delete($response, "shipment_map_id = " . $mapId);
                 }
