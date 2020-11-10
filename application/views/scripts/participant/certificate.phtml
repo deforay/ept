@@ -25,9 +25,9 @@ $folderPath=UPLOAD_PATH. DIRECTORY_SEPARATOR."certificate";
 		?>
 		<tr>
 			<td style="width:20%"><?php echo $val['year']; ?></td>
-			<td style="width:20%"><?php echo strtoupper($val['scheme_type']); ?></td>
+			<td style="width:20%"><?php echo strtoupper($val['scheme_name']); ?></td>
 			<td><?php
-			$fileName=$val['unique_identifier']."-".strtoupper($val['scheme_type'])."-".$val['year'].".pdf";
+			$fileName=$val['unique_identifier']."-".strtoupper($val['scheme_name'])."-".$val['year'].".pdf";
 			$filePath=$folderPath. DIRECTORY_SEPARATOR.$val['year']. DIRECTORY_SEPARATOR.$val['scheme_type']. DIRECTORY_SEPARATOR.$fileName;
 			if(file_exists($filePath)){
 			?>

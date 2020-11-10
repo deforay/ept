@@ -1019,7 +1019,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $row[] = $aRow['SHIP_YEAR'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
-            $row[] = strtoupper($aRow['scheme_type']);
+            $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
 
             $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
@@ -1177,7 +1177,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = array();
-            $row[] = strtoupper($aRow['scheme_type']);
+            $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = $aRow['unique_identifier'];
@@ -1335,7 +1335,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = array();
-            $row[] = strtoupper($aRow['scheme_type']);
+            $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf") && $aRow['status'] == 'finalized') {
