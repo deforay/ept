@@ -137,7 +137,8 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 $result3 = '';
             }
             // Zend_Debug::dump($params);die;
-            if ($res == null || count($res) == 0) {
+            $count = (isset($res) && $res != "")?count($res):0;
+            if ($res == null || $count == 0) {
                 $this->insert(array(
                     'shipment_map_id'   => $params['mapId'],
                     'sample_id'         => $sampleId,
