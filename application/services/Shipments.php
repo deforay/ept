@@ -423,7 +423,7 @@ class Application_Service_Shipments
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
         }
-    }    
+    }
 
     public function updateDtsResults($params)
     {
@@ -467,17 +467,17 @@ class Application_Service_Shipments
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
-                    $data['qc_date'] = NULL;
-                    $data['qc_done_by'] = NULL;
-                    $data['qc_created_on'] = NULL;
+                    $data['qc_date'] = null;
+                    $data['qc_done_by'] = null;
+                    $data['qc_created_on'] = null;
                 }
             }
-            if (isset($params['customField1']) && trim($params['customField1']) != "") {
-                $data['custom_field_1'] = $params['customField1'];
+            if (isset($params['customField1']) && !empty(trim($params['customField1']))) {
+                $data['custom_field_1'] = trim($params['customField1']);
             }
 
-            if (isset($params['customField2']) && trim($params['customField2']) != "") {
-                $data['custom_field_2'] = $params['customField2'];
+            if (isset($params['customField2']) && !empty(trim($params['customField2']))) {
+                $data['custom_field_2'] = trim($params['customField2']);
             }
 
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
@@ -914,10 +914,10 @@ class Application_Service_Shipments
 
         $shipmentAttributes = array();
 
-        if(isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])){
+        if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
             $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
         }
-        if(isset($params['screeningTest']) && !empty($params['screeningTest'])){
+        if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];
         }
 
@@ -934,7 +934,7 @@ class Application_Service_Shipments
             'created_by_admin' => $authNameSpace->primary_email
         );
         $lastId = $db->insert($data);
-        
+
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $size = count($params['sampleName']);
         if ($params['schemeId'] == 'eid') {
@@ -1621,7 +1621,7 @@ class Application_Service_Shipments
                 }
                 // ------------------>
             }
-        }else if ($scheme == 'recency') {
+        } else if ($scheme == 'recency') {
             $dbAdapter->delete('reference_result_recency', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
                 $dbAdapter->insert(
@@ -1643,10 +1643,10 @@ class Application_Service_Shipments
         }
         $shipmentAttributes = array();
 
-        if(isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])){
+        if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
             $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
         }
-        if(isset($params['screeningTest']) && !empty($params['screeningTest'])){
+        if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];
         }
         $dbAdapter->update(
@@ -1747,16 +1747,16 @@ class Application_Service_Shipments
         return $resultArray;
     }
 
-    public function removeShipmentParticipant($mapId, $sId ="")
+    public function removeShipmentParticipant($mapId, $sId = "")
     {
 
         try {
             error_log($mapId);
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $responseTable = array('response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl');
-            foreach($responseTable as $response){
-                $shipment = $db->fetchRow($db->select()->from($response,array('shipment_map_id'))->where('shipment_map_id =?',$mapId)->where('sample_id =?',$sId));
-                if($shipment){
+            foreach ($responseTable as $response) {
+                $shipment = $db->fetchRow($db->select()->from($response, array('shipment_map_id'))->where('shipment_map_id =?', $mapId)->where('sample_id =?', $sId));
+                if ($shipment) {
                     $db->delete($response, "shipment_map_id = " . $mapId);
                 }
             }
@@ -1896,32 +1896,32 @@ class Application_Service_Shipments
 
             // Push notification section
             $pushQuery = $db->select()
-                ->from(array('s' => 'shipment'),array('s.shipment_code', 's.shipment_code'))
-                ->join(array('sp'=>'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array('sp.shipment_id', 'sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'))
+                ->from(array('s' => 'shipment'), array('s.shipment_code', 's.shipment_code'))
+                ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.shipment_id', 'sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
                 ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
                 ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
-                ->join(array('pmm'=>'participant_manager_map'),'pmm.participant_id=sp.participant_id',array('dm_id'))
-                ->join(array('dm'=>'data_manager'),'pmm.dm_id=dm.dm_id',array('primary_email', 'push_notify_token'))
+                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array('dm_id'))
+                ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
                 ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL OR sp.shipment_test_date like '')")
                 ->where("s.shipment_id=?", $sid)
                 ->group('dm.dm_id');
             // die($pushQuery);
             $dmDetails = $db->fetchAll($pushQuery);
             // Zend_Debug::dump($dmDetails);die;
-            if(count($dmDetails) > 0){
-                foreach($dmDetails as $dm){
+            if (count($dmDetails) > 0) {
+                foreach ($dmDetails as $dm) {
                     $surveyDate = $general->humanDateFormat($dm['distribution_date']);
                     $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                     $replace = array($dm['participantName'], $dm['shipment_code'], $dm['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                     $title = str_replace($search, $replace, $pushContent['notify_title']);
                     $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
-                    if(isset($pushContent['data_msg']) && $pushContent['data_msg'] != ''){
+                    if (isset($pushContent['data_msg']) && $pushContent['data_msg'] != '') {
                         $dataMsg = str_replace($search, $replace, $pushContent['data_msg']);
-                    } else{
+                    } else {
                         $dataMsg = '';
                     }
-                    $commonServices->insertPushNotification($title,$msgBody,$dataMsg,$pushContent['icon'],$dm['shipment_id'],'not-responder-participants','shipment');
+                    $commonServices->insertPushNotification($title, $msgBody, $dataMsg, $pushContent['icon'], $dm['shipment_id'], 'not-responder-participants', 'shipment');
                     $db->update('data_manager', array('push_status' => 'pending'), 'dm_id = ' . $dm['dm_id']);
                 }
             }
@@ -2027,43 +2027,43 @@ class Application_Service_Shipments
     public function getShipmentListBasedOnParticipant($params)
     {
         $response = array();
-        $shipmentDate = explode(" ",$params['shipmentDate']);
+        $shipmentDate = explode(" ", $params['shipmentDate']);
         // Zend_Debug::dump($shipmentDate);die;
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        if($params['type'] == 'array'){
-            $participantIds = implode(',',$params['participants']);
-        } else{
+        if ($params['type'] == 'array') {
+            $participantIds = implode(',', $params['participants']);
+        } else {
             $participantIds = $params['participants'];
         }
 
         $monthYear = Pt_Commons_General::getMonthsInRange($shipmentDate[0], $shipmentDate[1], 'dashboard');
 
         // Zend_Debug::dump($monthYear);die;
-        if(count($monthYear) > 0){
-            foreach($monthYear as $monthIndex=>$monthYr){
+        if (count($monthYear) > 0) {
+            foreach ($monthYear as $monthIndex => $monthYr) {
 
-                $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response','max_score','average_score'))
-                    ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score' => new Zend_Db_Expr("SUM(sp.shipment_score)"), 'documentation_score' => new Zend_Db_Expr("SUM(sp.documentation_score)"), 'participantCount' => new Zend_Db_Expr("count(sp.participant_id)"),'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))
+                $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response', 'max_score', 'average_score'))
+                    ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score' => new Zend_Db_Expr("SUM(sp.shipment_score)"), 'documentation_score' => new Zend_Db_Expr("SUM(sp.documentation_score)"), 'participantCount' => new Zend_Db_Expr("count(sp.participant_id)"), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))
                     // ->join(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)")))
                     ->where("s.status='finalized'")
-                    ->where("sp.participant_id IN(".$participantIds.")")
-                    ->where("s.scheme_type = '".$params['shipmentType']."'")
+                    ->where("sp.participant_id IN(" . $participantIds . ")")
+                    ->where("s.scheme_type = '" . $params['shipmentType'] . "'")
                     ->group('s.shipment_id')
                     ->group("DATE_FORMAT(s.shipment_code,'%b-%Y')")
                     ->order("s.shipment_id");
-                if(isset($shipmentDate[0]) && $shipmentDate[0] != ""){
-                    $sQuery->where('s.shipment_date >="'.date('Y-m-01',strtotime($monthYr)).'"');
+                if (isset($shipmentDate[0]) && $shipmentDate[0] != "") {
+                    $sQuery->where('s.shipment_date >="' . date('Y-m-01', strtotime($monthYr)) . '"');
                 }
-                if(isset($shipmentDate[1]) && $shipmentDate[1] != ""){
-                    $sQuery->where('s.shipment_date <="'.date('Y-m-t',strtotime($monthYr)).'"');
+                if (isset($shipmentDate[1]) && $shipmentDate[1] != "") {
+                    $sQuery->where('s.shipment_date <="' . date('Y-m-t', strtotime($monthYr)) . '"');
                 }
                 /* echo "Monthyear => ".$monthYr."<br>";
                 echo($sQuery);echo "<br><br>"; */
                 $result =  $db->fetchAll($sQuery);
                 // Zend_Debug::dump($result);
-                if(count($result) > 0){
+                if (count($result) > 0) {
 
-                    foreach($result as $key=>$row){
+                    foreach ($result as $key => $row) {
                         $response[$monthIndex][$key] = array(
                             'shipment_code'         => $row['shipment_code'],
                             // 'participantName'       => $row['participantName'],
@@ -2073,7 +2073,7 @@ class Application_Service_Shipments
                             'scheme_type'           => $row['scheme_type']
                         );
                     }
-                } else{
+                } else {
                     $response[$monthIndex] = null;
                 }
             }

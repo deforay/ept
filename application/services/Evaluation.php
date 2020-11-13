@@ -899,6 +899,7 @@ class Application_Service_Evaluation
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId)
+			->where("sp.is_excluded != 'yes'")
 			//->where("substring(sp.evaluation_status,4,1) != '0'")
 		;
 		if (isset($sLimit) && isset($sOffset)) {
