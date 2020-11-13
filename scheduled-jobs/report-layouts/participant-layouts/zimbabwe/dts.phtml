@@ -170,15 +170,15 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
 
         $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
         $labInfo .= '	<td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';
         $labInfo .= '	<td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
-        $labInfo .= '	<td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Participant City</strong><br>' . $result['city'] . '</td>';
         $labInfo .= '	<td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>';
         $labInfo .= '	<td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>';
-        $labInfo .= '	<td><strong>Shipment Type</strong><br>' . $result['scheme_name'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
@@ -191,26 +191,21 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
-        $labInfo .= '	<td>';
-        if (isset($attributes['algorithm'])) {
-            $labInfo .= '	<strong>Algorithm</strong><br>' . ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') ? 'Myanmar National Algorithm' : ucfirst($attributes['algorithm']);
-        }
-        $labInfo .= ' </td>';
+        $labInfo .= '	<td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor']) . '</td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
+
         $labInfo .= '	<td>';
-        $labInfo .= '	<strong>Supervisor Name</strong><br>' . ($result['participant_supervisor']);
-        $labInfo .= ' </td>';
-        $labInfo .= '	<td>';
-        if (isset($haveCustom) && $haveCustom == 'yes') {
-            $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . $totParticipantsRes['custom_field_1'];
+        if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField1)) {
+            $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . (!empty($totParticipantsRes['custom_field_1']) ? $totParticipantsRes['custom_field_1'] : '');
         }
-        $labInfo .= ' </td>';
-        $labInfo .= '	<td>';
-        if (isset($haveCustom) && $haveCustom == 'yes') {
-            $labInfo .= '	<strong>' . $customField2 . '</strong> <br>' . $totParticipantsRes['custom_field_2'];
+        $labInfo .= '</td>';
+        $labInfo .= '<td>';
+        if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField2)) {
+            $labInfo .= '<strong>' . $customField2 . '</strong> <br>' . (!empty($totParticipantsRes['custom_field_2']) ? $totParticipantsRes['custom_field_2'] : '');
         }
-        $labInfo .= ' </td>';
+        $labInfo .= '</td>';
+        $labInfo .= '<td></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
@@ -498,7 +493,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $comment .= '</tr>';
             }
 
-            if (trim($result['optional_eval_comment']) != "") {
+            if (!empty(trim($result['optional_eval_comment']))) {
                 $comment .= '<tr>';
                 $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
                 $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
