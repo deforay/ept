@@ -3201,9 +3201,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         // Zend_Debug::dump($params);die;
         /* Check the app versions & parameters */
-        if (!isset($params['appVersion'])) {
+        /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
@@ -3211,9 +3211,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* Validate new auth token and app-version */
         $dmDb = new Application_Model_DbTable_DataManagers();
         $dm = $dmDb->fetchAuthToken($params);
-        if ($dm == 'app-version-failed') {
+        /* if ($dm == 'app-version-failed') {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         if (!$dm) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
