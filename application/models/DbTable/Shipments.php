@@ -1944,6 +1944,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function fetchShipmentFormDetails($params, $dm)
     {
+        // ini_set("memory_limit", -1);
         // Service / Model Calling
         $participantDb  = new Application_Model_DbTable_Participants();
         $schemeService  = new Application_Service_Schemes();
