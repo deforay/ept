@@ -598,9 +598,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function setForgetPasswordDatamanagerAPI($params)
     {
         /* Check the app versions */
-        if (!isset($params['appVersion'])) {
+        /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         /* App version check */
         $aResult = $this->fetchRow("primary_email='" . $params['email'] . "'");
         if (!$aResult) {
