@@ -353,7 +353,16 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             //Let us now calculate documentation score
             $documentationScore = 0;
-            $documentationScorePerItem = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore / 5) : 0;
+
+            if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
+                // for Dried Samples, we will have rehydration as one of the documentation scores
+                $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / 5), 2);
+            } else {
+                // for Non Dried Samples, we will NOT have rehydration documentation scores 
+                // there are 2 conditions for rehydration so 5 - 2 = 3
+                $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / 3), 2);
+            }
+
             $attributes = json_decode($result['attributes'], true);
 
             $img = array();
@@ -367,13 +376,20 @@ if (sizeof($resultArray['shipment']) > 0) {
 							<td style="text-align:center;font-weight:bold;width:25%" colspan="2">Score</td>
 						</tr>';
 
-            if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
+            // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
+            if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
                 $scoreDoc = $documentationScorePerItem;
                 $img = $imgPass;
             } else {
-                $scoreDoc = 0;
-                $img = $imgFail;
+                if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                } else {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                }
             }
+
 
             $docRes .= '<tr>
 							<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
@@ -465,13 +481,13 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $pdf->writeHTML($failRes, true, false, true, false, '');
             }
         }
-
+        $totalScore = $result['shipment_score'] + $result['documentation_score'];
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
-            $totalScore = $result['shipment_score'] + $result['documentation_score'];
+
             if ($totalScore >= $passPercentage) {
                 $wishes = '<p style="font-size:12px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
             } else {
@@ -514,7 +530,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
-        $html = '<p style="font-size:12px;">You have received a score of ' . $result['shipment_score'] . '%.</p>';
+        $html = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
         $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
 
 
@@ -552,39 +568,39 @@ if (sizeof($resultArray['shipment']) > 0) {
         $j++;
     }
 
-    $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
-    $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    $pdfNew->save($mergeFilePath);
+    // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
+    // $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
+    // $pdfNew->save($mergeFilePath);
 
-    foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
-        $pdfNew->pages = array();
-        $expRes = explode(",", $dmRes);
-        $resCount = count($expRes);
-        if ($resCount > 0) {
-            foreach ($expRes as $res) {
-                $expStrRes = explode("#", $res);
-                $dmFileName = $dmID . ".pdf";
-                $participantFileName = $expStrRes[1] . ".pdf";
-                $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
-                $participantFileName = str_replace(" ", "-", $participantFileName);
-                $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
-                if (file_exists($filePath)) {
-                    $loadpdf = Zend_Pdf::load($filePath);
-                    foreach ($loadpdf->pages as $page) {
-                        $pdfExtract = $extractor->clonePage($page);
-                        $pdfNew->pages[] = $pdfExtract;
-                    }
-                }
-            }
-        }
+    // foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
+    //     $pdfNew->pages = array();
+    //     $expRes = explode(",", $dmRes);
+    //     $resCount = count($expRes);
+    //     if ($resCount > 0) {
+    //         foreach ($expRes as $res) {
+    //             $expStrRes = explode("#", $res);
+    //             $dmFileName = $dmID . ".pdf";
+    //             $participantFileName = $expStrRes[1] . ".pdf";
+    //             $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
+    //             $participantFileName = str_replace(" ", "-", $participantFileName);
+    //             $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
+    //             if (file_exists($filePath)) {
+    //                 $loadpdf = Zend_Pdf::load($filePath);
+    //                 foreach ($loadpdf->pages as $page) {
+    //                     $pdfExtract = $extractor->clonePage($page);
+    //                     $pdfNew->pages[] = $pdfExtract;
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
-        $dmFileName = str_replace(" ", "-", $dmFileName);
+    //     $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
+    //     $dmFileName = str_replace(" ", "-", $dmFileName);
 
-        $mergePdf = $shipmentCode . "-" . $dmFileName;
-        $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-        $pdfNew->save($mergeFilePath);
-    }
+    //     $mergePdf = $shipmentCode . "-" . $dmFileName;
+    //     $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
+    //     $pdfNew->save($mergeFilePath);
+    // }
     //============================================================+
     // END OF FILE
     //============================================================+

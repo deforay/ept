@@ -1636,7 +1636,15 @@ class Application_Service_Reports
         if ($result['scheme_type'] == 'dts') {
             $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-            $documentationScorePerItem = ($config->evaluation->dts->documentationScore / 5);
+            $shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
+            if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
+                // for Dried Samples, we will have rehydration as one of the documentation scores
+                $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / 5), 2);
+            } else {
+                // for Non Dried Samples, we will NOT have rehydration documentation scores 
+                // there are 2 conditions for rehydration so 5 - 2 = 3
+                $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / 3), 2);
+            }            
         }
 
         $docScoreSheet = new PHPExcel_Worksheet($excel, 'Documentation Score');
@@ -1817,11 +1825,17 @@ class Application_Service_Reports
                     $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
 
-                if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
+                // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
+                if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
                     $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    } else {
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    }
                 }
+
 
                 if (isset($rehydrationDate) && trim($rehydrationDate) != "") {
                     $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2506,7 +2520,7 @@ class Application_Service_Reports
 
 
         $refQuery = $db->select()->from(array('refRes' => 'reference_result_eid'))
-        ->where("refRes.shipment_id = ?", $shipmentId);
+            ->where("refRes.shipment_id = ?", $shipmentId);
         $refResult = $db->fetchAll($refQuery);
 
         $firstSheet = new PHPExcel_Worksheet($excel, 'DBS EID PT Results');
@@ -2523,7 +2537,7 @@ class Application_Service_Reports
         $firstSheet->mergeCells('C1:C2');
         $firstSheet->setCellValue('C1', html_entity_decode("Institute", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getStyle('C1:C2')->applyFromArray($borderStyle);
-        
+
         $firstSheet->mergeCells('D1:D2');
         $firstSheet->setCellValue('D1', html_entity_decode("Department", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getStyle('D1:D2')->applyFromArray($borderStyle);
@@ -2667,7 +2681,7 @@ class Application_Service_Reports
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }
-    
+
     public function generateRecencyExcelReport($shipmentId)
     {
 
@@ -2708,8 +2722,8 @@ class Application_Service_Reports
 
 
         $refQuery = $db->select()->from(array('refRes' => 'reference_result_recency'))
-        ->joinLeft(array('pr' => 'r_possibleresult'), "refRes.reference_result=pr.id")
-        ->where("refRes.shipment_id = ?", $shipmentId);
+            ->joinLeft(array('pr' => 'r_possibleresult'), "refRes.reference_result=pr.id")
+            ->where("refRes.shipment_id = ?", $shipmentId);
         $refResult = $db->fetchAll($refQuery);
 
 
@@ -2727,7 +2741,7 @@ class Application_Service_Reports
         $firstSheet->mergeCells('C1:C2');
         $firstSheet->setCellValue('C1', html_entity_decode("Institute", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getStyle('C1:C2')->applyFromArray($borderStyle);
-        
+
         $firstSheet->mergeCells('D1:D2');
         $firstSheet->setCellValue('D1', html_entity_decode("Department", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getStyle('D1:D2')->applyFromArray($borderStyle);
@@ -2812,7 +2826,7 @@ class Application_Service_Reports
                 ->joinLeft(array('pr' => 'r_possibleresult'), "res.reported_result=pr.id")
                 ->where("res.shipment_map_id = ?", $rowOverAll['map_id']);
             $resultResponse = $db->fetchAll($queryResponse);
-            
+
             $rqResponse = $db->select()->from(array('ref' => 'reference_result_recency'))
                 ->joinLeft(array('pr' => 'r_possibleresult'), "ref.reference_result=pr.id")
                 ->where("ref.shipment_id = ?", $shipmentId);
@@ -2919,9 +2933,9 @@ class Application_Service_Reports
         //------------- Participant List Details End ------>
         //<-------- Second sheet start
         $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date');
-        
+
         if ($result['scheme_type'] == 'recency') {
-            foreach(range(0,$result['number_of_samples']) as $dummy){
+            foreach (range(0, $result['number_of_samples']) as $dummy) {
                 array_push($reportHeadings, 'Control Line', 'Diagnosis Line', 'Long Term Line');
             }
             array_push($reportHeadings, 'Comments');
@@ -2938,7 +2952,7 @@ class Application_Service_Reports
         $currentRow = 2;
         $n = count($reportHeadings);
         $finalResColoumn = $n - (($result['number_of_samples'] + 1) * 3);
-        $finalResColoumn --;
+        $finalResColoumn--;
         $c = 0;
 
         // To get the sample list
@@ -2949,17 +2963,17 @@ class Application_Service_Reports
 
             $sheet->getCellByColumnAndRow($colNo, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->getStyleByColumnAndRow($colNo, $currentRow)->getFont()->setBold(true);
-            
+
             $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
             $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
 
             $cellName = $sheet->getCellByColumnAndRow($colNo, 3)->getColumn();
             $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle);
-            
+
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
                     $col = 7;
-                    foreach($samples as $sample){
+                    foreach ($samples as $sample) {
                         $firstCellName = $sheet->getCellByColumnAndRow($col, 1)->getColumn();
                         $secondCellName = $sheet->getCellByColumnAndRow(($col + 2), 1)->getColumn();
 
@@ -2968,19 +2982,19 @@ class Application_Service_Reports
                         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle);
                         $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle);
                         $sheet->getCellByColumnAndRow($col, 1)->setValueExplicit(html_entity_decode($sample, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        
+
                         $colorCol = $col;
                         $cellNameBar = $sheet->getCellByColumnAndRow($colorCol, 1)->getColumn();
                         $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
                         $colorCol = $colorCol + 1;
-                        
+
                         $cellNameBar = $sheet->getCellByColumnAndRow($colorCol, 1)->getColumn();
                         $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
                         $colorCol = $colorCol + 1;
-                        
+
                         $cellNameBar = $sheet->getCellByColumnAndRow($colorCol, 1)->getColumn();
                         $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
-                        
+
                         $col = $col + 3;
                     }
                     $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
@@ -2988,7 +3002,6 @@ class Application_Service_Reports
                     $l = $c - 1;
                     $c++;
                     $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($refResult[$l]['reference_result'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-
                 }
             }
             $sheet->getStyle($cellName . '3')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
@@ -3009,7 +3022,7 @@ class Application_Service_Reports
         $cellName = $sheet->getCellByColumnAndRow($n, 3)->getColumn();
         //$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
         //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
-        
+
         //<-------- Sheet three heading -------
         $sheetThree = new PHPExcel_Worksheet($excel, 'Panel Score');
         $excel->addSheet($sheetThree, 3);
@@ -3308,7 +3321,7 @@ class Application_Service_Reports
         }
         return $headings;
     }
-    
+
     public function addRecencySampleNameInArray($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -3316,7 +3329,7 @@ class Application_Service_Reports
             ->where("shipment_id = ?", $shipmentId)->order("sample_id");
         $result =  $db->fetchAll($query);
         $samples = array();
-        foreach($result as $row){
+        foreach ($result as $row) {
             $samples[] = $row['sample_label'];
         }
         return $samples;

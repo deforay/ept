@@ -1,6 +1,6 @@
 <?php
-
-require_once 'tcpdf/tcpdf.php';
+// This file is imported in evaluate-shipment.php
+require_once('tcpdf/tcpdf.php');
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'General.php');
 $general = new General();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
@@ -170,30 +170,31 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
+        $labInfo .= '	<td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
         $labInfo .= '	<td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';
         $labInfo .= '	<td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Participant City</strong><br>' . $result['city'] . '</td>';
-        $labInfo .= '	<td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>';
+        $labInfo .= '	<td><strong>Participant Institute</strong><br>' . $result['institute_name'] . '</td>';
+        $labInfo .= '	<td><strong>Participant District</strong><br>' . $result['city'] . '</td>';
         $labInfo .= '	<td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>';
         $labInfo .= '</tr>';
-
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
-        $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>';
-
+        $labInfo .= '	<td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>';
         $labInfo .= '	<td><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
+        $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
+        $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>';
         $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
-        $labInfo .= '	<td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor']) . '</td>';
         $labInfo .= '</tr>';
+
         $labInfo .= '<tr>';
+
+        $labInfo .= '	<td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor']) . '</td>';
 
         $labInfo .= '	<td>';
         if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField1)) {
@@ -205,7 +206,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '<strong>' . $customField2 . '</strong> <br>' . (!empty($totParticipantsRes['custom_field_2']) ? $totParticipantsRes['custom_field_2'] : '');
         }
         $labInfo .= '</td>';
-        $labInfo .= '<td></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
@@ -460,13 +460,12 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $pdf->writeHTML($failRes, true, false, true, false, '');
             }
         }
-
+        $totalScore = $result['shipment_score'] + $result['documentation_score'];
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
-            $totalScore = $result['shipment_score'] + $result['documentation_score'];
             $wishes = '<p style="font-size:12px;">Overall final result remarks: ';
             if ($totalScore >= $passPercentage) {
                 $wishes .= 'Satisfactory';
@@ -511,7 +510,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
-        $html = '<p style="font-size:12px;">You have received a score of ' . $result['shipment_score'] . '%.</p>';
+        $html = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
         $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
 
 
@@ -549,39 +548,39 @@ if (sizeof($resultArray['shipment']) > 0) {
         $j++;
     }
 
-    $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
-    $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    $pdfNew->save($mergeFilePath);
+    // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
+    // $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
+    // $pdfNew->save($mergeFilePath);
 
-    foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
-        $pdfNew->pages = array();
-        $expRes = explode(",", $dmRes);
-        $resCount = count($expRes);
-        if ($resCount > 0) {
-            foreach ($expRes as $res) {
-                $expStrRes = explode("#", $res);
-                $dmFileName = $dmID . ".pdf";
-                $participantFileName = $expStrRes[1] . ".pdf";
-                $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
-                $participantFileName = str_replace(" ", "-", $participantFileName);
-                $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
-                if (file_exists($filePath)) {
-                    $loadpdf = Zend_Pdf::load($filePath);
-                    foreach ($loadpdf->pages as $page) {
-                        $pdfExtract = $extractor->clonePage($page);
-                        $pdfNew->pages[] = $pdfExtract;
-                    }
-                }
-            }
-        }
+    // foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
+    //     $pdfNew->pages = array();
+    //     $expRes = explode(",", $dmRes);
+    //     $resCount = count($expRes);
+    //     if ($resCount > 0) {
+    //         foreach ($expRes as $res) {
+    //             $expStrRes = explode("#", $res);
+    //             $dmFileName = $dmID . ".pdf";
+    //             $participantFileName = $expStrRes[1] . ".pdf";
+    //             $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
+    //             $participantFileName = str_replace(" ", "-", $participantFileName);
+    //             $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
+    //             if (file_exists($filePath)) {
+    //                 $loadpdf = Zend_Pdf::load($filePath);
+    //                 foreach ($loadpdf->pages as $page) {
+    //                     $pdfExtract = $extractor->clonePage($page);
+    //                     $pdfNew->pages[] = $pdfExtract;
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
-        $dmFileName = str_replace(" ", "-", $dmFileName);
+    //     $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
+    //     $dmFileName = str_replace(" ", "-", $dmFileName);
 
-        $mergePdf = $shipmentCode . "-" . $dmFileName;
-        $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-        $pdfNew->save($mergeFilePath);
-    }
+    //     $mergePdf = $shipmentCode . "-" . $dmFileName;
+    //     $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
+    //     $pdfNew->save($mergeFilePath);
+    // }
     //============================================================+
     // END OF FILE
     //============================================================+

@@ -2,12 +2,11 @@
 class Application_Model_Dts
 {
 
-    public function __construct()
-    {
-        
-    }
+	public function __construct()
+	{
+	}
 
-    public function evaluate($shipmentResult, $shipmentId)
+	public function evaluate($shipmentResult, $shipmentId)
 	{
 
 		$counter = 0;
@@ -73,7 +72,7 @@ class Application_Model_Dts
 			//$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
 
 			// 3 tests algo added for Myanmar initally, might be used in other places eventually
-			//$threeTestCorrectResponses = array('PXX','PPP');  
+			//$threeTestCorrectResponses = array('NXX','PPP');  
 
 			$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
 
@@ -453,6 +452,12 @@ class Application_Model_Dts
 							$algoResult = 'Pass';
 						} else if ($r1 == 'R' && $r2 == 'R' && $r3 == 'NR') {
 							$algoResult = 'Pass';
+						} else if ($r1 == 'NR' && $r2 == '-' && $r3 == '-') {
+							$algoResult = 'Pass';
+						} else if ($r1 == 'NR' && $r2 == 'NR' && $r3 == '-') {
+							$algoResult = 'Pass';
+						} else if ($r1 == 'NR' && $r2 == 'NR' && $r3 == 'NR') {
+							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
 							$failureReason[] = array(
@@ -705,14 +710,19 @@ class Application_Model_Dts
 			}
 
 			//D.8
-			if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
+			// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
+			if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
 				$documentationScore += $documentationScorePerItem;
 			} else {
-				$failureReason[] = array(
-					'warning' => "Supervisor approval absent",
-					'correctiveAction' => $correctiveActions[11]
-				);
-				$correctiveActionList[] = 11;
+				if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
+					$documentationScore += $documentationScorePerItem;
+				} else {
+					$failureReason[] = array(
+						'warning' => "Supervisor approval absent",
+						'correctiveAction' => $correctiveActions[11]
+					);
+					$correctiveActionList[] = 11;
+				}
 			}
 
 			$grandTotal = ($responseScore + $documentationScore);
