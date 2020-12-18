@@ -1668,7 +1668,14 @@ class Application_Service_Evaluation
 		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 		$sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
-			->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('others' => new Zend_Db_Expr("SUM(sp.shipment_test_date IS NULL)"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > s.lastdate_response AND sp.is_excluded != 'yes')"), array()))
+			->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array(
+				'others' => new Zend_Db_Expr("SUM( CASE WHEN (sp.shipment_test_date IS NULL) THEN 1 ELSE 0 END)"), 
+				'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.is_excluded = 'yes') THEN 1 ELSE 0 END)"), 
+				'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"), 
+				'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"), 
+				'number_late' => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_date > s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"
+			), 
+			array()))
 			->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code'))
 			->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
@@ -1676,8 +1683,6 @@ class Application_Service_Evaluation
 			->where("sp.shipment_id = ?", $shipmentId);
 		//->where("p.status = 'active'")
 		//->group('s.shipment_id');
-
-		//echo $sQuery;die;
 
 		return $dbAdapter->fetchRow($sQuery);
 	}

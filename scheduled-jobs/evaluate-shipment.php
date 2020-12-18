@@ -350,7 +350,7 @@ try {
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
             $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
-
+            // print_r($responseResult);die;
             if (count($resultArray) > 0) {
 
                 // this is the default layout
