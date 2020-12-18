@@ -662,6 +662,9 @@ class Application_Service_Reports
             $sQuery = $sQuery->order($sOrder);
         }
 
+        $chartSession = new Zend_Session_Namespace('timelinessChart');
+        $chartSession->timelinessChartQuery = $sQuery;
+
         $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
         $sQuerySession->participantQuery = $sQuery;
 
@@ -4172,7 +4175,22 @@ class Application_Service_Reports
 
         echo json_encode($output);
     }
-
+    public function getChartInfo()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuerySession = new Zend_Session_Namespace('timelinessChart');
+        $rResult = $db->fetchAll($sQuerySession->timelinessChartQuery);
+        $row = array();
+        foreach ($rResult as $key=>$aRow) {
+            $row['region'][$key]        = '"'.$aRow['region'].'"';
+            $row['shipped'][$key]       = $aRow['total_shipped'];
+            $row['response'][$key]      = $aRow['total_responses'];
+            $row['valid'][$key]         = $aRow['valid_responses'];
+            $row['passed'][$key]        = $aRow['total_passed'];
+            $row['percentage'][$key]    = round($aRow['pass_percentage'], 2);
+        }
+        return $row;
+    }
     public function exportParticipantPerformanceRegionReport($params)
     {
         $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');

@@ -1,0 +1,53 @@
+<div id="container"></div>
+<script>
+    Highcharts.chart('container', {
+        title: {
+            text: 'Performance by timeliness'
+        },
+        xAxis: {
+            categories: [<?php echo implode(",",$this->result['region']);?>]
+        },
+        credits: {
+            enabled: false
+        },
+        labels: {
+            items: [{
+                html: '',
+                style: {
+                    left: '50px',
+                    top: '18px',
+                    color: ( // theme
+                        Highcharts.defaultOptions.title.style &&
+                        Highcharts.defaultOptions.title.style.color
+                    ) || 'black'
+                }
+            }]
+        },
+        series: [{
+            type: 'column',
+            name: 'Shipped',
+            data: [<?php echo implode(",",$this->result['shipped']);?>]
+        }, {
+            type: 'column',
+            name: 'Response',
+            data: [<?php echo implode(",",$this->result['response']);?>]
+        }, {
+            type: 'column',
+            name: 'Valid',
+            data: [<?php echo implode(",",$this->result['valid']);?>]
+        }, {
+            type: 'column',
+            name: 'Passed',
+            data: [<?php echo implode(",",$this->result['passed']);?>]
+        },{
+            type: 'spline',
+            name: 'Average',
+            data: [<?php echo implode(",",$this->result['percentage']);?>],
+            marker: {
+                lineWidth: 2,
+                lineColor: Highcharts.getOptions().colors[3],
+                fillColor: 'white'
+            }
+        }]
+    });
+</script>

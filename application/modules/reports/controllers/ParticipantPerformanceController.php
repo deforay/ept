@@ -12,6 +12,7 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
             ->addActionContext('region-wise-participant-report', 'html')
             ->addActionContext('participant-performance-export-pdf', 'html')
             ->addActionContext('participant-performance-region-wise-export', 'html')
+            ->addActionContext('participant-performance-timeliness-barchart', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
@@ -82,6 +83,15 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
             $this->view->exported = $reportService->exportParticipantPerformanceRegionReport($params);
+        }
+    }
+    
+    public function participantPerformanceTimelinessBarchartAction()
+    {
+        $reportService = new Application_Service_Reports();
+        if ($this->getRequest()->isPost()) {
+            // $params = $this->getAllParams();
+            $this->view->result = $reportService->getChartInfo();
         }
     }
 }
