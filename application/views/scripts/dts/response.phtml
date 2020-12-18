@@ -443,18 +443,17 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             </tr>
                         <?php } ?>
                     </table>
-                    <?php if (isset($this->haveCustom) && $this->haveCustom == 'yes') { ?>
+                    <?php if (isset($this->haveCustom) && $this->haveCustom == 'yes') {  ?>
                         <table class="table table-bordered">
                             <tr>
-                                <th style="width:250px;padding:5px;"><?php echo $this->customField1; ?> </th>
-                                <td style="padding:5px;"><input name="customField1" id="customField1" type="text" size="80" maxlength="40" value="<?php echo $this->shipment['custom_field_1']; ?>" class="form-control" /></td>
-                            </tr>
-                            <?php if (isset($this->customField2) && $this->customField2 != "") { ?>
-                                <tr>
-                                    <th style="width:250px;padding:5px;"><?php echo $this->customField2; ?> </th>
-                                    <td style="padding:5px;"><input name="customField2" id="customField2" type="text" class="form-control" value="<?php echo $this->shipment['custom_field_2']; ?>" /></td>
-                                </tr>
+                            <?php if (isset($this->customField1) && $this->customField1 != "") {?>
+                                <th style="width: 25%;padding:5px;"><?php echo $this->customField1; ?> </th>
+                                <td style="width: 25%;padding:5px;"><input name="customField1" id="customField1" type="text" size="80" maxlength="40" value="<?php echo $this->shipment['custom_field_1']; ?>" class="form-control" /></td>
+                            <?php } if (isset($this->customField2) && $this->customField2 != "") { ?>
+                                <th style="width: 25%;padding:5px;"><?php echo $this->customField2; ?> </th>
+                                <td style="width: 25%;padding:5px;"><input name="customField2" id="customField2" type="text" class="form-control" value="<?php echo $this->shipment['custom_field_2']; ?>" /></td>
                             <?php } ?>
+                            </tr>
                         </table>
                     <?php } ?>
                     <hr>
