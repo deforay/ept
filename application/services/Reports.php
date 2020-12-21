@@ -4265,15 +4265,16 @@ class Application_Service_Reports
                 array(
                     "shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
                     "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+                    "network_id" => new Zend_Db_Expr('count("p.network_tier")'),
                     "beforeDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date <= s.lastdate_response)"),
                     "afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date > s.lastdate_response)"),
                     "fail_percentage" => new Zend_Db_Expr("((SUM(final_result = 2))/(SUM(final_result = 2) + SUM(final_result = 1)))*100"),
                 )
             )
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id',array('participant_id','institute_name','region'))
-            ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id',array(''))
+            ->joinLeft(array('rn' => 'r_network_tiers'), 'p.network_tier=rn.network_id',array('network_name'))
             ->where('final_result = 2')
-            ->group(array('p.institute_name'));
+            ->group(array('p.network_tier'));
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -4291,11 +4292,12 @@ class Application_Service_Reports
         $rResult = $dbAdapter->fetchAll($sQuery);
         $row = array();
         foreach ($rResult as $key=>$aRow) {
-            $row['institute_name'][$key]      = '"'.$aRow['institute_name'].'"';
+            $row['network_name'][$key]      = '"'.$aRow['network_name'].'"';
             $row['totalShipped'][$key]      = '"N='.$aRow['total_shipped'].'"';
             $row['beforeDueDate'][$key]     = round($aRow['beforeDueDate'], 2);
             $row['afterDueDate'][$key]      = round($aRow['afterDueDate'], 2);
             $row['fail_percentage'][$key]   = round($aRow['fail_percentage'], 2);
+            $row['network_id'][$key]        = round($aRow['network_id'], 2);
         }
         return $row;
     }

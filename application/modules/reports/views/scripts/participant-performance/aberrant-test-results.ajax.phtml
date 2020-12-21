@@ -8,25 +8,13 @@ Highcharts.chart('aberraantContainer', {
         selected: 1
     },
     scrollbar: {
-        barBackgroundColor: 'gray',
-        barBorderRadius: 7,
-        barBorderWidth: 0,
-        buttonBackgroundColor: 'gray',
-        buttonBorderWidth: 0,
-        buttonBorderRadius: 7,
-        trackBackgroundColor: 'none',
-        trackBorderWidth: 1,
-        trackBorderRadius: 8,
-        trackBorderColor: '#CCC'
-    },
-    scrollbar: {
         enabled: true
     },
     title: {
         text: 'Aberrant Test Results'
     },
     xAxis: {
-        categories: [<?php echo implode(",",$this->result['failed']['institute_name']);?>],
+        categories: [<?php echo implode(",",$this->result['failed']['network_name']);?>],
         labels: {
             overflow: 'justify'
         }
@@ -41,14 +29,14 @@ Highcharts.chart('aberraantContainer', {
             }
         },
         title: {
-            text: 'Aberrant Test Count',
+            text: 'Network Tier',
             style: {
                 color: '#89A54E'
             }
         },
-        min: 0, 
-        max: 100,
-        tickInterval: 5,
+        /* min: 0, 
+        max: 1000,
+        tickInterval: 50, */
         opposite: true
 
     }],
@@ -65,7 +53,7 @@ Highcharts.chart('aberraantContainer', {
         yDecimals: 0,
         valueDecimale: 0,
         headerFormat: '<table class="tip"><caption><b>{point.key}</b></caption>'+'<tbody>',
-        pointFormat: '<tr><td>{series.name}:</td>'+'<td style="text-align:right">{point.y}%</td></tr>',
+        pointFormat: '<tr><td>{series.name}:</td>'+'<td style="text-align:right">{point.y}</td></tr>',
         footerFormat: '</tbody></table>'
     },
     labels: {
@@ -84,12 +72,8 @@ Highcharts.chart('aberraantContainer', {
     series: [
         {
             type: 'column',
-            name: 'Before Due Date',
-            data: [<?php echo implode(",",$this->result['failed']['beforeDueDate']);?>]
-        }, {
-            type: 'column',
-            name: 'After Due Date',
-            data: [<?php echo implode(",",$this->result['failed']['afterDueDate']);?>]
+            name: 'Network Tier',
+            data: [<?php echo implode(",",$this->result['failed']['network_id']);?>]
         }, {
         type: 'pie',
         name: 'Total Pass / Fail Report',
