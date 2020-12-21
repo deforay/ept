@@ -1,22 +1,18 @@
-<?php
-// Zend_Debug::dump($this->result);
-// die;
-?>
 <div id="container"></div>
 <script>
     Highcharts.chart('container', {
         title: {
-            text: 'Combination chart'
+            text: 'Performance by timeliness'
         },
         xAxis: {
-            categories: ['Apples', 'Oranges', 'Pears', 'Bananas', 'Plums']
+            categories: [<?php echo implode(",",$this->result['region']);?>]
         },
         credits: {
             enabled: false
         },
         labels: {
             items: [{
-                html: 'Total fruit consumption',
+                html: '',
                 style: {
                     left: '50px',
                     top: '18px',
@@ -29,20 +25,16 @@
         },
         series: [{
             type: 'column',
-            name: 'Jane',
-            data: [3, 2, 1, 3, 4]
+            name: 'Before Due Date',
+            data: [<?php echo implode(",",$this->result['beforeDueDate']);?>]
         }, {
             type: 'column',
-            name: 'John',
-            data: [2, 3, 5, 7, 6]
-        }, {
-            type: 'column',
-            name: 'Joe',
-            data: [4, 3, 3, 9, 0]
+            name: 'After Due Date',
+            data: [<?php echo implode(",",$this->result['afterDueDate']);?>]
         }, {
             type: 'spline',
-            name: 'Average',
-            data: [3, 2.67, 3, 6.33, 3.33],
+            name: 'Average Pass',
+            data: [<?php echo implode(",",$this->result['percentage']);?>],
             marker: {
                 lineWidth: 2,
                 lineColor: Highcharts.getOptions().colors[3],

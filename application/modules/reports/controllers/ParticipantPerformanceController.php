@@ -13,6 +13,7 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
             ->addActionContext('participant-performance-export-pdf', 'html')
             ->addActionContext('participant-performance-region-wise-export', 'html')
             ->addActionContext('participant-performance-timeliness-barchart', 'html')
+            ->addActionContext('aberrant-test-results', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
@@ -90,8 +91,17 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
     {
         $reportService = new Application_Service_Reports();
         if ($this->getRequest()->isPost()) {
-            // $params = $this->getAllParams();
-            $this->view->result = $reportService->getChartInfo();
+            $params = $this->getAllParams();
+            $this->view->result = $reportService->getChartInfo($params);
+        }
+    }
+    
+    public function aberrantTestResultsAction()
+    {
+        $reportService = new Application_Service_Reports();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $this->view->result = $reportService->getAberrantChartInfo($params);
         }
     }
 }
