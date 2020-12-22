@@ -2526,7 +2526,7 @@ class Application_Service_Reports
             ->where("refRes.shipment_id = ?", $shipmentId);
         $refResult = $db->fetchAll($refQuery);
 
-        $firstSheet = new PHPExcel_Worksheet($excel, 'DBS EID PT Results');
+        $firstSheet = new PHPExcel_Worksheet($excel, 'EID PT Results');
         $excel->addSheet($firstSheet, 0);
 
         $firstSheet->mergeCells('A1:A2');
@@ -2575,7 +2575,7 @@ class Application_Service_Reports
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
-        $colNameCount = 10;
+        $colNameCount = 11;
         $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount)->getColumn();
 
         foreach ($refResult as $refRow) {
@@ -2586,7 +2586,7 @@ class Application_Service_Reports
 
         $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount - 1)->getColumn();
         $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
-        $firstSheet->setCellValue($cellName1 . '1', html_entity_decode("PATIENT RESPONSE", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->setCellValue($cellName1 . '1', html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle);
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor);
 
@@ -2604,7 +2604,7 @@ class Application_Service_Reports
         $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '2')->applyFromArray($referenceColor);
 
 
-        $firstSheet->setTitle('DBS EID PT Results');
+        $firstSheet->setTitle('EID PT Results');
 
         $queryOverAll = $db->select()->from(array('s' => 'shipment'))
             ->joinLeft(array('spm' => 'shipment_participant_map'), "spm.shipment_id = s.shipment_id")
@@ -2790,7 +2790,7 @@ class Application_Service_Reports
 
         $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount - 1)->getColumn();
         $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
-        $firstSheet->setCellValue($cellName1 . '1', html_entity_decode("PATIENT RESPONSE", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->setCellValue($cellName1 . '1', html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle);
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor);
 

@@ -199,7 +199,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
         $labInfo .= '	<td>';
         if (isset($attributes['algorithm'])) {
-            $labInfo .= '	<strong>Algorithm</strong><br>' . ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') ? 'Myanmar National Algorithm' : ucfirst($attributes['algorithm']);
+            $labInfo .= '	<strong>Algorithm</strong><br>' . ($attributes['algorithm'] == 'myanmarNationalDtsAlgo' ? 'Myanmar National Algorithm' : ucfirst($attributes['algorithm']));
         }
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
