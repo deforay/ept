@@ -46,15 +46,10 @@
         background: #f1f7ff;
     }
 </style>
-<!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
-<!-- <script src="https://code.highcharts.com/modules/series-label.js"></script> -->
-<script src="https://code.highcharts.com/stock/highstock.js"></script>
-<script src="https://code.highcharts.com/stock/modules/data.js"></script>
-<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
-<!-- <script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script> -->
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/highstock.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/data.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/exporting.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/export-data.js'); ?>"></script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <legend>
     <h3>Participant Performance Overview</h3>

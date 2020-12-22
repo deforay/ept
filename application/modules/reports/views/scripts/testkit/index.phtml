@@ -146,6 +146,10 @@
 </table>
 <!--s<script src="http://code.highcharts.com/highcharts.js"></script>-->
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/highstock.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/data.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/exporting.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/export-data.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript">
             var startDate = "";
@@ -196,6 +200,8 @@
                         title: {
                             text: 'Test Kit DTS Chart'
                         },
+                        exporting: { enabled: true },
+                        credits: { enabled: false },
                         tooltip: {
                             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
                         },
