@@ -43,11 +43,11 @@ try {
             $toArray = explode(",", $result['to_email']);
             foreach ($toArray as $toId) {
                 if ($toId != '') {
-                    echo $toId.PHP_EOL;
+                    echo $toId . PHP_EOL;
                     $alertMail->addTo(trim($toId));
                 }
             }
-            if (isset($result['cc']) && trim($result['cc']) != "") {
+            if (isset($result['cc']) && !empty(trim($result['cc']))) {
                 $result['cc'] = str_replace(";", ",", $result['cc']);
                 $result['cc'] = str_replace("/", ",", $result['cc']);
                 $result['cc'] = str_replace(" ", "", $result['cc']);
@@ -59,11 +59,16 @@ try {
                 }
             }
 
-            if (isset($result['bcc']) && trim($result['bcc']) != "") {
+            if (isset($result['bcc']) && !empty(trim($result['bcc']))) {
+                $result['bcc'] = str_replace(";", ",", $result['bcc']);
+                $result['bcc'] = str_replace("/", ",", $result['bcc']);
+                $result['bcc'] = str_replace(" ", "", $result['bcc']);
                 $bccArray = explode(",", $result['bcc']);
                 foreach ($bccArray as $bccId) {
                     if ($bccId != '') {
-                        $alertMail->addBcc(trim($bccId));
+                        if ($bccId != '' && strtoupper($bccId) != 'NULL' && $bccId != null) {
+                            $alertMail->addBcc(trim($bccId));
+                        }
                     }
                 }
             }
@@ -74,13 +79,12 @@ try {
             if ($sendResult == true) {
                 $db->delete('temp_mail', $id);
             }
-
         }
     }
 } catch (Exception $e) {
     error_log($e->getMessage());
-    echo($e->getMessage()). PHP_EOL;
+    echo ($e->getMessage()) . PHP_EOL;
     error_log($e->getTraceAsString());
-    echo('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
+    echo ('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
     error_log('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
 }

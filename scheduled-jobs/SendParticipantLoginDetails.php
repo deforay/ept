@@ -41,7 +41,7 @@ try {
             $fromName = '';
             //Subject
             //$subject.= "Notice for CDC 2017-2nd PT shipment for EID and VL - ". $participant[0]." | ".$participant[1] ;
-            $subject .= "[REMINDER] 2020 CDC EID and VL PT | Lab ID : " . $participant[0] . " | " . $participant[1] . " | " . $participant[3];
+            $subject .= "[REMINDER 2] 2020 CDC EID and VL PT | Lab ID : " . $participant[0] . " | " . $participant[1] . " | " . $participant[3];
             //Message
             $message .= '<table border="0" cellspacing="0" cellpadding="0" style="width:100%;background-color:#FFF;">';
             $message .= '<tr><td align="center">';
@@ -50,7 +50,7 @@ try {
             $message .= '<tr><td colspan="2">Dear PT Participant,</td></tr>';
 
 
-            $message .= '<tr><td colspan="2">This is a gentle reminder to submit your PT Panel results to the online ePT system on or before the due date of <strong>27 November, 2020</strong>. Only results submitted online will be considered for evaluation</td></tr>';
+            $message .= '<tr><td colspan="2">This is a gentle reminder to submit your PT Panel results to the online ePT system on or before the due date of <strong>04 December, 2020</strong>. Only results submitted online will be considered for evaluation</td></tr>';
 
             $message .= '<tr><td colspan="2">To submit your results, login to https://ept.vlsmartconnect.com/auth/login with the following credentials </td></tr>';
             $message .= '<tr><td width="12%"><strong>Login ID</strong> : </td><td>' . $participant[5] . '</td></tr>';
