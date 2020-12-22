@@ -77,33 +77,19 @@ if($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->res
         },
         plotOptions: {
             column: {
-                // stacking: 'normal',
                 dataLabels: {
                     enabled: true
                 },
-                // enableMouseTracking: false
             }
         },
         series: [{
             type: 'column',
             name: 'Before Due Date',
-            showInLegend: false, 
             data: [<?php echo $before;?>]
         }, {
             type: 'column',
             name: 'After Due Date',
-            showInLegend: false, 
             data: [<?php echo $after;?>]
-        }/* , {
-            type: 'spline',
-            name: 'Average Pass',
-            showInLegend: false, 
-            data: [<?php echo $this->result['pass_percentage'];?>],
-            marker: {
-                lineWidth: 2,
-                lineColor: Highcharts.getOptions().colors[3],
-                fillColor: 'white'
-            }
-        } */]
+        }]
     });
 </script>

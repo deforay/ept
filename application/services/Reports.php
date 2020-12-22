@@ -4193,7 +4193,6 @@ class Application_Service_Reports
             )
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id',array('region'))
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id',array(''));
-            // ->group(array('s.shipment_id'));
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -4225,7 +4224,6 @@ class Application_Service_Reports
                     "pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100")
                 )
             )
-            // ->group(array('s.shipment_id'))
             ;
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
