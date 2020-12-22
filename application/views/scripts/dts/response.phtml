@@ -149,8 +149,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 
                             </td>
                             <td>
-                                <?php if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] != 'serum') { ?>
-                                    <input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Sample Rehydration Date" />
+                                <?php if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] != 'serum') { 
+                                    $sampleRehydrationDate = (isset($this->shipment['attributes']["sample_rehydration_date"]) && $this->shipment['attributes']["sample_rehydration_date"] != "")?$this->shipment['attributes']["sample_rehydration_date"]:"";?>
+                                    <input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($sampleRehydrationDate); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Sample Rehydration Date" />
                                     <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('sampleRehydrationDate')"> Clear</i>
                                 <?php
                                 }
@@ -443,18 +444,17 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             </tr>
                         <?php } ?>
                     </table>
-                    <?php if (isset($this->haveCustom) && $this->haveCustom == 'yes') { ?>
+                    <?php if (isset($this->haveCustom) && $this->haveCustom == 'yes') {  ?>
                         <table class="table table-bordered">
                             <tr>
-                                <th style="width:250px;padding:5px;"><?php echo $this->customField1; ?> </th>
-                                <td style="padding:5px;"><input name="customField1" id="customField1" type="text" size="80" maxlength="40" value="<?php echo $this->shipment['custom_field_1']; ?>" class="form-control" /></td>
-                            </tr>
-                            <?php if (isset($this->customField2) && $this->customField2 != "") { ?>
-                                <tr>
-                                    <th style="width:250px;padding:5px;"><?php echo $this->customField2; ?> </th>
-                                    <td style="padding:5px;"><input name="customField2" id="customField2" type="text" class="form-control" value="<?php echo $this->shipment['custom_field_2']; ?>" /></td>
-                                </tr>
+                            <?php if (isset($this->customField1) && $this->customField1 != "") {?>
+                                <th style="width: 25%;padding:5px;"><?php echo $this->customField1; ?> </th>
+                                <td style="width: 25%;padding:5px;"><input name="customField1" id="customField1" type="text" size="80" maxlength="40" value="<?php echo $this->shipment['custom_field_1']; ?>" class="form-control" /></td>
+                            <?php } if (isset($this->customField2) && $this->customField2 != "") { ?>
+                                <th style="width: 25%;padding:5px;"><?php echo $this->customField2; ?> </th>
+                                <td style="width: 25%;padding:5px;"><input name="customField2" id="customField2" type="text" class="form-control" value="<?php echo $this->shipment['custom_field_2']; ?>" /></td>
                             <?php } ?>
+                            </tr>
                         </table>
                     <?php } ?>
                     <hr>

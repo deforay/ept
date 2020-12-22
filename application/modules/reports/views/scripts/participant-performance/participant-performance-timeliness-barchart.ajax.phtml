@@ -1,0 +1,79 @@
+<div id="container"></div>
+<script>
+    Highcharts.chart('container', {
+        title: {
+            text: 'Performance by timeliness'
+        },
+        xAxis: {
+            categories: [<?php echo implode(",",$this->result['totalShipped']);?>]
+        },
+        yAxis: [{ // Primary yAxis
+            labels: {
+                formatter: function() {
+                    return this.value +'%';
+                },
+                style: {
+                    
+                }
+            },
+            title: {
+                text: 'Percentage',
+                style: {
+                    color: '#89A54E'
+                }
+            },
+            min: 0, 
+            max: 100,
+            // tickInterval: 5
+            // opposite: true
+
+        }],
+        credits: {
+            enabled: false
+        },
+        tooltip: {
+            borderRadius: 2,
+            borderWidth: 1,
+            borderColor: '#999',
+            shadow: false,
+            shared: true,
+            useHTML: true,
+            yDecimals: 0,
+            valueDecimale: 0,
+            headerFormat: '<table class="tip"><caption><b>{point.key}</b></caption>'+'<tbody>',
+            pointFormat: '<tr><td>{series.name}:</td>'+'<td style="text-align:right">{point.y}%</td></tr>',
+            footerFormat: '</tbody></table>'
+        },
+        labels: {
+            items: [{
+                html: '',
+                style: {
+                    left: '50px',
+                    top: '18px',
+                    color: ( // theme
+                        Highcharts.defaultOptions.title.style &&
+                        Highcharts.defaultOptions.title.style.color
+                    ) || 'black'
+                }
+            }]
+        },
+        series: [{
+            type: 'column',
+            name: 'Before Due Date',
+            data: [<?php echo implode(",",$this->result['beforeDueDate']);?>]
+        }, {
+            type: 'column',
+            name: 'After Due Date',
+            data: [<?php echo implode(",",$this->result['afterDueDate']);?>]
+        }/* , {
+            type: 'spline',
+            name: 'Average Pass',
+            data: [<?php echo implode(",",$this->result['percentage']);?>],
+            marker: {
+                lineWidth: 2,
+                lineColor: Highcharts.getOptions().colors[3],
+                fillColor: 'white'
+            }
+        } */]
+    });
+</script>

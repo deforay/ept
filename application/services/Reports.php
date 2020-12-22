@@ -662,6 +662,9 @@ class Application_Service_Reports
             $sQuery = $sQuery->order($sOrder);
         }
 
+        $chartSession = new Zend_Session_Namespace('timelinessChart');
+        $chartSession->timelinessChartQuery = $sQuery;
+
         $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
         $sQuerySession->participantQuery = $sQuery;
 
@@ -4172,7 +4175,132 @@ class Application_Service_Reports
 
         echo json_encode($output);
     }
+    public function getChartInfo($parameters)
+    {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id',array(''))
+            ->joinLeft(
+                array('sp' => 'shipment_participant_map'),
+                'sp.shipment_id=s.shipment_id',
+                array(
+                    "shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
+                    "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+                    "beforeDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date <= s.lastdate_response)"),
+                    "afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date > s.lastdate_response)"),
+                    "pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100")
+                )
+            )
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id',array('region'))
+            ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id',array(''))
+            ->group(array('s.shipment_id'));
 
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+        }
+
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
+            $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
+        }
+        $rResult = $dbAdapter->fetchAll($sQuery);
+        $row = array();
+        foreach ($rResult as $key=>$aRow) {
+            $row['totalShipped'][$key]        = '"N='.$aRow['total_shipped'].'"';
+            $row['beforeDueDate'][$key] = round($aRow['total_shipped']%$aRow['beforeDueDate'], 2);
+            $row['afterDueDate'][$key]  = round($aRow['total_shipped']%$aRow['afterDueDate'], 2);
+            $row['valid'][$key]         = $aRow['total_shipped'];
+            // $row['percentage'][$key]    = round($aRow['pass_percentage'], 2);
+        }
+        return $row;
+    }
+    
+    public function getAberrantChartInfo($parameters)
+    {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id',array(''))
+            ->joinLeft(
+                array('sp' => 'shipment_participant_map'),
+                'sp.shipment_id=s.shipment_id',
+                array(
+                    "shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
+                    "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+                    "fail_percentage" => new Zend_Db_Expr("((SUM(final_result = 2))/(SUM(final_result = 2) + SUM(final_result = 1)))*100"),
+                    "pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100")
+                )
+            )
+            ->group(array('s.shipment_id'));
+
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+        }
+
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
+            $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
+        }
+        // die($sQuery);
+        $rResult = $dbAdapter->fetchRow($sQuery);
+        $rResult['failed'] = $this->getFaileParticipants($parameters);
+        return $rResult;
+    }
+
+    public function getFaileParticipants($parameters)
+    {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id',array(''))
+            ->joinLeft(
+                array('sp' => 'shipment_participant_map'),
+                'sp.shipment_id=s.shipment_id',
+                array(
+                    "shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
+                    "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+                    "network_id" => new Zend_Db_Expr('count("p.network_tier")'),
+                    "beforeDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date <= s.lastdate_response)"),
+                    "afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date > s.lastdate_response)"),
+                    "fail_percentage" => new Zend_Db_Expr("((SUM(final_result = 2))/(SUM(final_result = 2) + SUM(final_result = 1)))*100"),
+                )
+            )
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id',array('participant_id','institute_name','region'))
+            ->joinLeft(array('rn' => 'r_network_tiers'), 'p.network_tier=rn.network_id',array('network_name'))
+            ->where('final_result = 2')
+            ->group(array('p.network_tier'));
+
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+        }
+
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
+            $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
+        }
+        // die($sQuery);
+        $rResult = $dbAdapter->fetchAll($sQuery);
+        $row = array();
+        foreach ($rResult as $key=>$aRow) {
+            $row['network_name'][$key]      = '"'.$aRow['network_name'].'"';
+            $row['totalShipped'][$key]      = '"N='.$aRow['total_shipped'].'"';
+            $row['beforeDueDate'][$key]     = round($aRow['beforeDueDate'], 2);
+            $row['afterDueDate'][$key]      = round($aRow['afterDueDate'], 2);
+            $row['fail_percentage'][$key]   = round($aRow['fail_percentage'], 2);
+            $row['network_id'][$key]        = round($aRow['network_id'], 2);
+        }
+        return $row;
+    }
     public function exportParticipantPerformanceRegionReport($params)
     {
         $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');

@@ -1,6 +1,9 @@
 <?php
 require_once('tcpdf/tcpdf.php');
-require_once('libchart/classes/libchart.php');
+// require_once('libchart/classes/libchart.php');
+require_once('jpgraph/jpgraph.php');
+require_once('jpgraph/jpgraph_bar.php');
+require_once('jpgraph/jpgraph_pie.php');
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'General.php');
 $general = new General();
 // Zend_Debug::dump($resultArray);die;
@@ -53,7 +56,7 @@ if ($resultArray['shipment'] != "") {
 
 
 
-    if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
+    /* if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
         $chart = new PieChart(700, 400);
         $dataSet = new XYDataSet();
         foreach ($resultArray['shipment']['pieChart'] as $piechart) {
@@ -70,7 +73,7 @@ if ($resultArray['shipment'] != "") {
         if (file_exists($piechart)) {
             unlink($piechart);
         }
-    }
+    } */
 
 
 
@@ -126,7 +129,50 @@ if ($resultArray['shipment'] != "") {
             $scoringPer = round(($maxScore / $partCount) * 100, 2);
         }
 
-        $chart = new VerticalBarChart(700, 400);
+        // JPGraph Charts
+        foreach ($barPoints as $key => $val) {
+            $dataX[] = $val;
+            $dataY[] = $key;
+        }
+
+        // Create the graph. These two calls are always required
+        $graph = new Graph(700,400,'auto');
+        $graph->SetScale("textlin");
+
+        $theme_class=new UniversalTheme;
+        $graph->SetTheme($theme_class);
+        
+        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+        $graph->SetBox(false);
+
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($dataY);
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false,false);
+
+        // Create the bar plots
+        $b1plot = new BarPlot($dataX);
+
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+        // ...and add it to the graPH
+        $graph->Add($gbplot);
+
+
+        $b1plot->SetColor("white");
+        $b1plot->SetFillColor("#cc1111");
+
+        // Setup the titles
+        $graph->title->Set("Comparison of test performance between participating laboratorie");
+        $graph->yaxis->title->Set('% score');
+        $graph->xaxis->title->Set('Number of participants');
+        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
+        // $graph->yaxis->title->SetFont(FF_FONT2,FS_BOLD);
+        // $graph->xaxis->title->SetFont(FF_FONT2,FS_BOLD);
+        // Display the graph
+        $graph->Stroke(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
+
+        /* $chart = new VerticalBarChart(700, 400);
         $dataSet = new XYSeriesDataSet();
 
         $chart->getPlot()->getPalette()->setBarColor(array(
@@ -146,7 +192,7 @@ if ($resultArray['shipment'] != "") {
         //Bound::setUpperBound(50);
         $chart->getPlot()->setGraphCaptionRatio(0.5);
         $chart->setTitle("Comparison of test performance between participating laboratories");
-        $chart->render(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
+        $chart->render(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png"); */
 
         // set font
         $pdf->SetFont('helvetica', 'B', 12);
@@ -283,7 +329,7 @@ if ($resultArray['shipment'] != "") {
 
     //$pdf->AddPage();
 
-    if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
+    /* if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
         $dataSet = new XYDataSet();
         $chart = new PieChart(700, 400);
         
@@ -301,14 +347,14 @@ if ($resultArray['shipment'] != "") {
         if (file_exists($piechart)) {
             unlink($piechart);
         }
-    }
+    } */
 
 
 
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;
-        $chart1 = new PieChart(700, 400);
-        $dataSet = new XYDataSet();
+        /* $chart1 = new PieChart(700, 400);
+        $dataSet = new XYDataSet(); */
 
         $passed = $responseResult["number_passed"];
         $failed = $responseResult["number_failed"];
@@ -316,17 +362,34 @@ if ($resultArray['shipment'] != "") {
         $late = $responseResult["number_late"];
         $excluded = $responseResult["excluded"];
 
-        $dataSet->addPoint(new Point("Passed (N=$passed)", $passed));
+        // Some data
+        $data = array($passed,$failed,$notResponded,$late,$excluded);
+        // Create the Pie Graph.
+        $graph = new PieGraph(700,400);
+        $graph->SetShadow();
+        
+        // Set A title for the plot
+        $graph->title->Set("Shipment Participant Result Report");
+        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
+         
+        $p1 = new PiePlot($data);
+        $p1->SetLegends(array("Passed (N=$passed)","Failed (N=$failed)","Not Responded (N=$notResponded)","Late Response (N=$late)","Excluded (N=$excluded)"));
+        $p1->SetCenter(0.4);
+         
+        $graph->Add($p1);
+        
+        $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
+        $graph->Stroke($performancePiechart);
+        /* $dataSet->addPoint(new Point("Passed (N=$passed)", $passed));
         $dataSet->addPoint(new Point("Failed (N=$failed)", $failed));
         $dataSet->addPoint(new Point("Not Responded (N=$notResponded)", $notResponded));
         $dataSet->addPoint(new Point("Late Response (N=$late)", $late));
         $dataSet->addPoint(new Point("Excluded (N=$excluded)", $excluded));
 
-        $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
 
         $chart1->setDataSet($dataSet);
         $chart1->setTitle("Shipment Participant Result Report");
-        $chart1->render($performancePiechart);
+        $chart1->render($performancePiechart); */
         $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 300);
         if (file_exists($performancePiechart)) {
             unlink($performancePiechart);
