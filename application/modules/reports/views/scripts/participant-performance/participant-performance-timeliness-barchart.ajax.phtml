@@ -1,11 +1,29 @@
+<?php 
+// Zend_Debug::dump($this->result);die;
+if($this->result['total_shipped'] > $this->result['afterDueDate'] && $this->result['afterDueDate'] > 0){
+    $after = round($this->result['total_shipped']%$this->result['afterDueDate'],2);
+} else if($this->result['afterDueDate'] > 0){ 
+    $after = round($this->result['total_shipped']/$this->result['afterDueDate']*100,2);
+} else {
+    $after = 0;
+}
+
+if($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->result['beforeDueDate'] > 0){
+    $before = round($this->result['total_shipped']%$this->result['beforeDueDate'],2);
+} else if($this->result['beforeDueDate'] > 0){ 
+    $before = round($this->result['total_shipped']/$this->result['beforeDueDate']*100,2);
+} else {
+    $before = 0;
+}
+?>
 <div id="container"></div>
 <script>
     Highcharts.chart('container', {
         title: {
-            text: 'Performance by timeliness N=<?php echo $this->result['totalShipped'];?>'
+            text: 'Performance by timeliness N=<?php echo $this->result['total_shipped'];?>'
         },
         xAxis: {
-            categories: [<?php echo implode(",",$this->result['shipment_code']);?>]
+            categories: ['']
         },
         yAxis: [{ // Primary yAxis
             labels: {
@@ -57,18 +75,30 @@
                 }
             }]
         },
+        plotOptions: {
+            column: {
+                // stacking: 'normal',
+                dataLabels: {
+                    enabled: true
+                },
+                // enableMouseTracking: false
+            }
+        },
         series: [{
             type: 'column',
             name: 'Before Due Date',
-            data: [<?php echo implode(",",$this->result['beforeDueDate']);?>]
+            showInLegend: false, 
+            data: [<?php echo $before;?>]
         }, {
             type: 'column',
             name: 'After Due Date',
-            data: [<?php echo implode(",",$this->result['afterDueDate']);?>]
+            showInLegend: false, 
+            data: [<?php echo $after;?>]
         }/* , {
             type: 'spline',
             name: 'Average Pass',
-            data: [<?php echo implode(",",$this->result['percentage']);?>],
+            showInLegend: false, 
+            data: [<?php echo $this->result['pass_percentage'];?>],
             marker: {
                 lineWidth: 2,
                 lineColor: Highcharts.getOptions().colors[3],

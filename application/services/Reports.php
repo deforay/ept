@@ -4192,8 +4192,8 @@ class Application_Service_Reports
                 )
             )
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id',array('region'))
-            ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id',array(''))
-            ->group(array('s.shipment_id'));
+            ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id',array(''));
+            // ->group(array('s.shipment_id'));
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -4207,18 +4207,7 @@ class Application_Service_Reports
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
         }
-        $rResult = $dbAdapter->fetchAll($sQuery);
-        // Zend_Debug::dump($rResult);die;
-        $row = array();
-        foreach ($rResult as $key=>$aRow) {
-            $row['totalShipped']+= (int)$aRow['total_shipped'];
-            $row['shipment_code'][$key] = '"'.$aRow['shipment_code'].'"';
-            $row['beforeDueDate'][$key] = round($aRow['total_shipped']%$aRow['beforeDueDate'], 2);
-            $row['afterDueDate'][$key]  = round($aRow['total_shipped']%$aRow['afterDueDate'], 2);
-            $row['valid'][$key]         = $aRow['total_shipped'];
-            // $row['percentage'][$key]    = round($aRow['pass_percentage'], 2);
-        }
-        return $row;
+        return $dbAdapter->fetchRow($sQuery);
     }
     
     public function getAberrantChartInfo($parameters)
@@ -4236,7 +4225,8 @@ class Application_Service_Reports
                     "pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100")
                 )
             )
-            ->group(array('s.shipment_id'));
+            // ->group(array('s.shipment_id'))
+            ;
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);

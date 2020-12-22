@@ -69,6 +69,15 @@ Highcharts.chart('aberraantContainer', {
             }
         }]
     },
+    plotOptions: {
+        column: {
+            // stacking: 'normal',
+            dataLabels: {
+                enabled: true
+            },
+            // enableMouseTracking: false
+        }
+    },
     series: [
         {
             type: 'column',
