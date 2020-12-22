@@ -4208,9 +4208,11 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
         }
         $rResult = $dbAdapter->fetchAll($sQuery);
+        // Zend_Debug::dump($rResult);die;
         $row = array();
         foreach ($rResult as $key=>$aRow) {
-            $row['totalShipped'][$key]        = '"N='.$aRow['total_shipped'].'"';
+            $row['totalShipped']+= (int)$aRow['total_shipped'];
+            $row['shipment_code'][$key] = '"'.$aRow['shipment_code'].'"';
             $row['beforeDueDate'][$key] = round($aRow['total_shipped']%$aRow['beforeDueDate'], 2);
             $row['afterDueDate'][$key]  = round($aRow['total_shipped']%$aRow['afterDueDate'], 2);
             $row['valid'][$key]         = $aRow['total_shipped'];

@@ -2,10 +2,10 @@
 <script>
     Highcharts.chart('container', {
         title: {
-            text: 'Performance by timeliness'
+            text: 'Performance by timeliness N=<?php echo $this->result['totalShipped'];?>'
         },
         xAxis: {
-            categories: [<?php echo implode(",",$this->result['totalShipped']);?>]
+            categories: [<?php echo implode(",",$this->result['shipment_code']);?>]
         },
         yAxis: [{ // Primary yAxis
             labels: {

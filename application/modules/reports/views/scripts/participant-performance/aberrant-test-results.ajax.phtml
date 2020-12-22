@@ -29,7 +29,7 @@ Highcharts.chart('aberraantContainer', {
             }
         },
         title: {
-            text: 'Network Tier',
+            text: ' Number of Participants',
             style: {
                 color: '#89A54E'
             }
@@ -73,6 +73,7 @@ Highcharts.chart('aberraantContainer', {
         {
             type: 'column',
             name: 'Network Tier',
+            color: 'red',
             data: [<?php echo implode(",",$this->result['failed']['network_id']);?>]
         }, {
         type: 'pie',
@@ -80,11 +81,11 @@ Highcharts.chart('aberraantContainer', {
         data: [{
             name: 'Failed',
             y: <?php echo $this->result['fail_percentage'];?>,
-            color: Highcharts.getOptions().colors[0] // Jane's color
+            color: 'red'
         }, {
             name: 'Passed',
             y: <?php echo $this->result['pass_percentage'];?>,
-            color: Highcharts.getOptions().colors[1] // John's color
+            color: 'green'
         }],
         center: [100, 80],
         size: 100,
