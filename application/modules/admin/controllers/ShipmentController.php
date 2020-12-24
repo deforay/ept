@@ -92,7 +92,14 @@ class Admin_ShipmentController extends Zend_Controller_Action
             } else if ($sid == 'recency') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->recencyPossibleResults = $scheme->getPossibleResults($sid);
-            }
+            } else if ($sid == 'covid19') {
+                $scheme = new Application_Service_Schemes();
+                $this->view->covid19PossibleResults = $scheme->getPossibleResults($sid);
+                $this->view->allTestKits = $scheme->getAllCovid19TestType();
+
+                $this->view->wb = $scheme->getDbsWb();
+                $this->view->eia = $scheme->getDbsEia();
+            } 
         }
     }
 

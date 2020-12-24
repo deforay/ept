@@ -2451,8 +2451,7 @@ UPDATE `r_possibleresult` SET `result_code` = 'NT' WHERE `r_possibleresult`.`sch
 --- Amit 3 June, 2020
 
 
-INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) 
-      VALUES ('recency', 'Rapid HIV Recency Testing', 'response_result_recency', 'reference_result_recency', NULL, 'inactive');
+c
 
 
 CREATE TABLE `reference_result_recency` (
@@ -2576,3 +2575,29 @@ ALTER TABLE `data_manager` ADD `new_email` VARCHAR(255) NULL DEFAULT NULL AFTER 
 -- Thana 02-Nov-2020
 ALTER TABLE `shipment_participant_map` ADD `mode_of_response` VARCHAR(50) NULL DEFAULT NULL COMMENT 'web,app,api' AFTER `synced_on`;
 INSERT INTO `global_config` (`name`, `value`) VALUES ('disable_push_notification', 'yes');
+
+-- Thana 24-Dec-2020
+INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) 
+      VALUES ('covid19', 'Coronavirus Disease 2019', 'response_result_covid19', 'reference_result_covid19', NULL, 'inactive');
+
+CREATE TABLE `r_test_type_covid19` (
+ `test_type_id` varchar(50) NOT NULL,
+ `scheme_type` varchar(255) NOT NULL,
+ `test_type_name` varchar(100) DEFAULT NULL,
+ `test_type_short_name` varchar(50) DEFAULT NULL,
+ `test_type_comments` varchar(50) DEFAULT NULL,
+ `updated_on` datetime DEFAULT NULL,
+ `updated_by` int DEFAULT NULL,
+ `installation_id` varchar(50) DEFAULT NULL,
+ `test_type_manufacturer` varchar(50) DEFAULT NULL,
+ `created_on` datetime DEFAULT NULL,
+ `created_by` int DEFAULT NULL,
+ `approval` int DEFAULT '1' COMMENT '1 = Approved , 0 not approved.',
+ `test_type_approval_agency` varchar(20) DEFAULT NULL COMMENT 'USAID, FDA, LOCAL',
+ `source_reference` varchar(50) DEFAULT NULL,
+ `country_adapted` int DEFAULT NULL COMMENT '0= Not allowed in the country 1 = approved in country ',
+ `test_type_1` int NOT NULL DEFAULT '0',
+ `test_type_2` int NOT NULL DEFAULT '0',
+ `test_type_3` int NOT NULL DEFAULT '0',
+ PRIMARY KEY (`test_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

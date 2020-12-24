@@ -15,6 +15,13 @@ class Application_Service_Schemes
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getActiveTestKitsNamesForScheme('dts', $countryAdapted);
     }
+
+    public function getAllCovid19TestType($countryAdapted = false)
+    {
+
+        $testkitsDb = new Application_Model_DbTable_TestTypenameCovid19();
+        return $testkitsDb->getActiveTestTypesNamesForScheme('covid19', $countryAdapted);
+    }
     public function getAllDtsTestKitList($countryAdapted = false)
     {
 
