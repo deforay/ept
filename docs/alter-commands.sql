@@ -2601,3 +2601,5 @@ CREATE TABLE `r_test_type_covid19` (
  `test_type_3` int NOT NULL DEFAULT '0',
  PRIMARY KEY (`test_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- Thana 28-Dec-2020
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'covid19', 'COVID19_FINAL', 'Postive', 'P'), (NULL, 'covid19', 'COVID19_FINAL', 'Negative', 'N'), (NULL, 'covid19', 'COVID19_FINAL', 'Interminate', 'I');

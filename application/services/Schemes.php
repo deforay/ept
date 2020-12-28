@@ -180,6 +180,33 @@ class Application_Service_Schemes
             ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
     }
+    
+    public function getCovid19Samples($sId, $pId)
+    {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('ref' => 'reference_result_covid19'))
+            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
+            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
+            ->joinLeft(array('res' => 'response_result_covid19'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array(
+                'test_type_1',
+                'lot_no_1',
+                'exp_date_1',
+                'test_result_1',
+                'test_type_2',
+                'lot_no_2',
+                'exp_date_2',
+                'test_result_2',
+                'test_type_3',
+                'lot_no_3',
+                'exp_date_3',
+                'test_result_3',
+                'reported_result',
+            ))
+            ->where('sp.shipment_id = ? ', $sId)
+            ->where('sp.participant_id = ? ', $pId);
+        return $db->fetchAll($sql);
+    }
 
     public function getDtsReferenceData($shipmentId)
     {

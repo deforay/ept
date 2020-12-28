@@ -12,19 +12,13 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
 	public function getActiveTestTypesNamesForScheme($scheme,$countryAdapted=false){
 		
 		
-        $sql = $this->getAdapter()->select()->from(array($this->_name), array('test_type_id', 'type_name'))->where("scheme_type = '$scheme'");
+        $sql = $this->getAdapter()->select()->from(array($this->_name), array('test_type_id', 'test_type_name', 'test_type_1', 'test_type_2' ,'test_type_3'))->where("scheme_type = '$scheme'");
 
         if ($countryAdapted) {
             $sql = $sql->where('country_adapted = 1');
         }
-
-        $stmt = $this->getAdapter()->fetchAll($sql);
-
-        foreach ($stmt as $typeName) {
-            $retval[$typeName['test_type_id']] = $typeName['type_name'];
-        }
-        return $retval;
-			
+        // die($sql);
+        return $this->getAdapter()->fetchAll($sql);
 	}
 
     public function addTestTypeDetails($params) {

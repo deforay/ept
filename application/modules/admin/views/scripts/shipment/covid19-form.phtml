@@ -2,7 +2,7 @@
 
 $possibleTestResults = '<select name="possibleTestResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 foreach ($this->covid19PossibleResults as $pr) {
-	if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+	if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
 		$possibleTestResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
 	}
 }
@@ -11,14 +11,14 @@ $possibleTestResults .= "</select>";
 
 $testResults = '<option value="">--Select--</option>';
 foreach ($this->covid19PossibleResults as $pr) {
-	if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+	if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
 		$testResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
 	}
 }
 
 $possibleResults = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 foreach ($this->covid19PossibleResults as $pr) {
-	if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
+	if ($pr['scheme_sub_group'] == 'COVID19_FINAL') {
 		$possibleResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
 	}
 }
@@ -29,9 +29,9 @@ $eiaChoices = '<option value="">--Select--</option>';
 foreach ($this->eia as $eiaId => $eiaName) {
 	$eiaChoices .= '<option value="' . $eiaId . '">' . $eiaName . '</option>';
 }
-$dtskit = '<option value="">--Select--</option>';
+$covid19kit = '<option value="">--Select--</option>';
 foreach ($this->allTestKits as $kitId => $kitName) {
-	$dtskit .= '<option value="' . $kitId . '">' . $kitName . '</option>';
+	$covid19kit .= '<option value="' . $kitId . '">' . $kitName . '</option>';
 }
 
 $wbChoices = '<option value="">--Select--</option>';
@@ -56,11 +56,11 @@ $dtFormat =  $vHelper->getDateFormat();
 		max-height: 100%;
 	}
 </style>
-<div class="form-group">
+<!-- <div class="form-group">
 	<label class="col-lg-3 control-label">Sample Type <span class="mandatory">*</span></label>
 
 	<div class="col-lg-5">
-		<select id="dtsSampleType" name="dtsSampleType" class="isRequired form-control input-sm" title="Please select a Sample Type">
+		<select id="covid19SampleType" name="covid19SampleType" class="isRequired form-control input-sm" title="Please select a Sample Type">
 			<option value="">--Select--</option>
 			<option value="dried">Dried Test Tube</option>
 			<option value="serum">Serum</option>
@@ -77,7 +77,7 @@ $dtFormat =  $vHelper->getDateFormat();
 			<option value="no">No</option>
 		</select>
 	</div>
-</div>
+</div> -->
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 	<thead>
 		<tr align="center">
@@ -273,7 +273,7 @@ $dtFormat =  $vHelper->getDateFormat();
 							</thead>\
 							<tbody>\
 								<tr>\
-									<td><select class="form-control" name="rhiv[' + sampleId + '][kit][]"><?php echo $dtskit; ?></select></td>\
+									<td><select class="form-control" name="rhiv[' + sampleId + '][kit][]"><?php echo $covid19kit; ?></select></td>\
 									<td><input type="text" name="rhiv[' + sampleId + '][lot][]" class="form-control"/></td>\
 									<td><input type="text" name="rhiv[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
 									<td><select class="form-control" name="rhiv[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
@@ -311,7 +311,7 @@ $dtFormat =  $vHelper->getDateFormat();
 
 	function addNewHivRow(obj, sampleId) {
 		$(obj.parentNode.parentNode).after('<tr> \
-							<td><select class="form-control" name="rhiv[' + sampleId + '][kit][]"><?php echo $dtskit; ?></select></td> \
+							<td><select class="form-control" name="rhiv[' + sampleId + '][kit][]"><?php echo $covid19kit; ?></select></td> \
 							<td><input type="text" name="rhiv[' + sampleId + '][lot][]" class="form-control"/></td> \
 							<td><input type="text" name="rhiv[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
 							<td><select class="form-control" name="rhiv[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
