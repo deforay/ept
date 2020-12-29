@@ -1,310 +1,340 @@
 <?php
 $adminSession = new Zend_Session_Namespace('administrators');
-if($adminSession->privileges != ""){
+if ($adminSession->privileges != "") {
 	$pstatus = false;
-	$privileges = explode(',',$adminSession->privileges);
-}else{
+	$privileges = explode(',', $adminSession->privileges);
+} else {
 	$pstatus = true;
 	$privileges = array();
 }
 ?><style>
-  td{
-		  vertical-align: middle !important;
-  }
+	td {
+		vertical-align: middle !important;
+	}
 </style>
-<?php if (count($this->shipment) > 0) { 
-//    Zend_Debug::dump($this->shipment);die;
-    ?>
-<div class="well" style="clear: both;">
-<a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
-<div id="allShipmentList">
-     
-          <legend><h4>All Shipments Under PT Survey <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4></legend>
-     
-          <table class="table table-bordered table-striped table-hover">
-			<tr>
-				<th style="text-align: center;">Shipment Code</th>
-				<th style="text-align: center;">Scheme</th>
-				<th style="text-align: center;">No. of Samples</th>
-				<th style="text-align: center;">No. of Participants</th>
-				<th style="text-align: center;">No. of Responses</th>
-				<th style="text-align: center;">Response %</th>
-				<th style="text-align: center;">Number Passed</th>
-				<th style="text-align: center;">Shipment Status</th>
-<!--				<th style="text-align: center;">Last Mailed On</th>
-				<th style="text-align: center;">Mail Count</th>-->
-				<th style="text-align: center;">Action</th>
-			</tr>
-			<?php
-			if(count($this->shipmentsUnderDistro) > 0){
-			foreach($this->shipmentsUnderDistro as $shipment){
-				$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
-                                
-                                 $totalParticipant=$shipment['participant_count'];
-                                $passed=(isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0;
-                                $nonResponse=$totalParticipant-$reported;
-				?>
+<?php if (count($this->shipment) > 0) {
+	//    Zend_Debug::dump($this->shipment);die;
+?>
+	<div class="well" style="clear: both;">
+		<a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
+		<div id="allShipmentList">
+
+			<legend>
+				<h4>All Shipments Under PT Survey <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4>
+			</legend>
+
+			<table class="table table-bordered table-striped table-hover">
 				<tr>
-					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
-					<td style="text-align: center;"><?php echo $shipment['scheme_name'] ?></td>
-					<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
-					<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
-					<td style="text-align: center;"><?php echo $reported ?></td>
-					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported/$shipment['participant_count'])*100,2) : 0; ?></td>					
-					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
-					<td style="text-align: center;"><?php echo ucfirst($shipment['shipment_status']) ?></td>
-<!--                                        <td style="text-align: center;">< ?php echo $this->dateFormat($shipment['last_not_participated_mailed_on']); ?></td>
-					<td style="text-align: center;">< ?php echo $shipment['last_not_participated_mail_count'] ?></td>-->
-					<td style="text-align: center;">
-						<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
-										<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
-																
-							  <?php if($nonResponse > 0){?>
-									<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> Not Responded Participants</span></a>
-							  <?php }
-                                                
-							  } else { ?>
-						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
-						<?php }?>
-					</td>
+					<th style="text-align: center;">Shipment Code</th>
+					<th style="text-align: center;">Scheme</th>
+					<th style="text-align: center;">No. of Samples</th>
+					<th style="text-align: center;">No. of Participants</th>
+					<th style="text-align: center;">No. of Responses</th>
+					<th style="text-align: center;">Response %</th>
+					<th style="text-align: center;">Number Passed</th>
+					<th style="text-align: center;">Shipment Status</th>
+					<!--				<th style="text-align: center;">Last Mailed On</th>
+				<th style="text-align: center;">Mail Count</th>-->
+					<th style="text-align: center;">Action</th>
 				</tr>
+				<?php
+				if (count($this->shipmentsUnderDistro) > 0) {
+					foreach ($this->shipmentsUnderDistro as $shipment) {
+						$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+
+						$totalParticipant = $shipment['participant_count'];
+						$passed = (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0;
+						$nonResponse = $totalParticipant - $reported;
+				?>
+						<tr>
+							<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
+							<td style="text-align: center;"><?php echo $shipment['scheme_name'] ?></td>
+							<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
+							<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
+							<td style="text-align: center;"><?php echo $reported ?></td>
+							<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported / $shipment['participant_count']) * 100, 2) : 0; ?></td>
+							<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>
+							<td style="text-align: center;"><?php echo ucfirst($shipment['shipment_status']) ?></td>
+							<!--                                        <td style="text-align: center;">< ?php echo $this->dateFormat($shipment['last_not_participated_mailed_on']); ?></td>
+					<td style="text-align: center;">< ?php echo $shipment['last_not_participated_mail_count'] ?></td>-->
+							<td style="text-align: center;">
+								<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
+									<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
+
+									<?php if ($nonResponse > 0) { ?>
+										<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> Not Responded Participants</span></a>
+									<?php }
+								} else { ?>
+									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
+								<?php } ?>
+							</td>
+						</tr>
+					<?php
+					}
+				} else {
+					?>
+					<tr>
+						<td colspan="5" align="center" style="text-align:center">
+							No shipments for this PT Survey yet
+						</td>
+					</tr>
 				<?php
 				}
-			}else{
 				?>
-				<tr>
-					<td colspan="5" align="center" style="text-align:center">
-						No shipments for this PT Survey yet
-					</td>
-				</tr>
-				<?php
-			}
-			?>
-		  </table>
-    </div><!-- /.modal-dialog -->
-</div>	
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently evaluating Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> <a href="<?php echo $this->url(array('re'=>base64_encode('yes'))); ?>" onclick="$.blockUI()" class="btn btn-primary btn-xs btn-danger"><span><i class="icon-refresh"></i>&nbsp;&nbsp;Re-Evaluate</span></a></div>
-	<div style="margin-top:10px;">
-		<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
+			</table>
+		</div><!-- /.modal-dialog -->
 	</div>
-</h4>
-<table class="table table-bordered" style="margin:0 auto;">
-	<tr>
-		<th style="text-align: right">Scheme Type</th>
-		<td><?php echo $this->shipment[0]['scheme_name']; ?></td>
-		<th style="text-align: right">PT Survey Code</th>
-		<td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
-		<th style="text-align: right">PT Survey/Shipment Date</th>
-		<td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
-	</tr>
-</table>
-<br/>
+	<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+		<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently evaluating Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> <a href="<?php echo $this->url(array('re' => base64_encode('yes'))); ?>" onclick="$.blockUI()" class="btn btn-primary btn-xs btn-danger"><span><i class="icon-refresh"></i>&nbsp;&nbsp;Re-Evaluate</span></a></div>
+		<div style="margin-top:10px;">
+			<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
+		</div>
+	</h4>
+	<table class="table table-bordered" style="margin:0 auto;">
+		<tr>
+			<th style="text-align: right">Scheme Type</th>
+			<td><?php echo $this->shipment[0]['scheme_name']; ?></td>
+			<th style="text-align: right">PT Survey Code</th>
+			<td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
+			<th style="text-align: right">PT Survey/Shipment Date</th>
+			<td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
+		</tr>
+	</table>
+	<br />
 
 	<table class="table table-bordered" style="width:95%;margin:10px auto;">
-	<tr>
-		<td style="vertical-align: middle;">
-			Comment for all Participants of this shipment
-		</td>
-		<td style="width:55%;"><textarea class="form-control" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea></td>
-		<td style="vertical-align: middle;"><button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span>Update Comment</span></button></td>
-	</tr>
-</table>
+		<tr>
+			<td style="vertical-align: middle;">
+				Comment for all Participants of this shipment
+			</td>
+			<td style="width:55%;"><textarea class="form-control" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea></td>
+			<td style="vertical-align: middle;"><button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span>Update Comment</span></button></td>
+		</tr>
+	</table>
 
-<br/><br/>
-<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
-    <thead>
-    <tr>
-        <th style="width:40px;"></th>
-        <th>Participant/Tester</th>
-        <th>Response Score</th>
-        <th>Documentation Score</th>
-        <th>Result</th>
-        <th>Comments (if any)</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-		<?php
+	<br /><br />
+	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
+		<thead>
+			<tr>
+				<th style="width:40px;"></th>
+				<th>Participant/Tester</th>
+				<th>Response Score</th>
+				<?php if ($this->shipment[0]['scheme_type'] != 'covid19') { ?>
+					<th>Documentation Score</th>
+				<?php } ?>
+				<th>Result</th>
+				<th>Comments (if any)</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+
+			<?php
 			$editList = array();
 			$viewList = array();
-			
+
 			//ZEND_DEBUG();
-			foreach($this->shipment as $shipment){
-					$btnClassName="btn-success";
-					$editList[] = "/admin/evaluate/edit/sid/".base64_encode($shipment['shipment_id'])."/pid/".base64_encode($shipment['participant_id'])."/scheme/".base64_encode($shipment['scheme_type']);
-					$viewList[] = "/admin/evaluate/view/sid/".base64_encode($shipment['shipment_id'])."/pid/".base64_encode($shipment['participant_id'])."/scheme/".base64_encode($shipment['scheme_type']);
-					$failureReasonJson = $shipment['failure_reason'];
-					$warnings = json_decode($failureReasonJson,true);
-					if(isset($warnings) && count($warnings) >0){                        
-				      $shipment['failure_reason'] = "<table class='table table-bordered table-striped table-compressed'>";
-				      $shipment['failure_reason'] .= "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";                        
-				      foreach($warnings as $warning){	
-						$shipment['failure_reason'] .= 	"<tr><td>".(isset($warning['warning']) ? $warning['warning'] : "")."</td><td>".(isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "")."</td></tr>";
-				      }
-				      $shipment['failure_reason'] .=  "</table>";;
-			      }else{
-					$shipment['failure_reason'] = "  No Warnings or Corrective Actions  ";
-			      }
-                                
-					if(isset($shipment['final_result']) && $shipment['final_result']==2){
-						$btnClassName="btn-danger ".$shipment['final_result'];
-					}else if(isset($warnings) && count($warnings) >0){
-						$btnClassName="btn-warning";
+			foreach ($this->shipment as $shipment) {
+				$btnClassName = "btn-success";
+				$editList[] = "/admin/evaluate/edit/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
+				$viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
+				$failureReasonJson = $shipment['failure_reason'];
+				$warnings = json_decode($failureReasonJson, true);
+				if (isset($warnings) && count($warnings) > 0) {
+					$shipment['failure_reason'] = "<table class='table table-bordered table-striped table-compressed'>";
+					$shipment['failure_reason'] .= "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
+					foreach ($warnings as $warning) {
+						$shipment['failure_reason'] .= 	"<tr><td>" . (isset($warning['warning']) ? $warning['warning'] : "") . "</td><td>" . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . "</td></tr>";
 					}
-					$shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
-					$shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
-				?>
+					$shipment['failure_reason'] .=  "</table>";;
+				} else {
+					$shipment['failure_reason'] = "  No Warnings or Corrective Actions  ";
+				}
+
+				if (isset($shipment['final_result']) && $shipment['final_result'] == 2) {
+					$btnClassName = "btn-danger " . $shipment['final_result'];
+				} else if (isset($warnings) && count($warnings) > 0) {
+					$btnClassName = "btn-warning";
+				}
+				$shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
+				$shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
+			?>
 				<tr>
-                    <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
-					<td style="vertical-align:middle;"><?php echo $shipment['first_name'] . " " .$shipment['last_name']. "(".$shipment['unique_identifier'].")" ?></td>
+					<td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
+					<td style="vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name'] . "(" . $shipment['unique_identifier'] . ")" ?></td>
 					<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
-					<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
+					<?php if ($this->shipment[0]['scheme_type'] != 'covid19') { ?>
+						<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
+					<?php } ?>
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['display_result']) && $shipment['display_result'] != "") ? $shipment['display_result'] : 'Not Evaluated'; ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
-					<?php if(!$pstatus && in_array('edit-participant-response',$privileges)){?>
-						<a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
-					<?php } ?>
+						<?php if (!$pstatus && in_array('edit-participant-response', $privileges)) { ?>
+							<a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
+						<?php } ?>
 						<a class="btn btn-primary btn-xs" href="/admin/evaluate/view/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-search"></i> View</span></a>&nbsp;
-					<?php
-					if($shipment['shipment_status']!='finalized' && $shipment['shipment_test_report_date']!='' && $shipment['shipment_test_report_date']!='0000-00-00 00:00:00'){
-					?>
-						<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('<?php echo $shipment['scheme_type']; ?>','<?php echo base64_encode($shipment['map_id']); ?>')"><span><i class="icon-remove"></i> Delete</span></a>
-					<?php
-					}
-					 ?>
+						<?php
+						if ($shipment['shipment_status'] != 'finalized' && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00 00:00:00') {
+						?>
+							<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('<?php echo $shipment['scheme_type']; ?>','<?php echo base64_encode($shipment['map_id']); ?>')"><span><i class="icon-remove"></i> Delete</span></a>
+						<?php
+						}
+						?>
 					</td>
 				</tr>
-				<?php
+			<?php
 			}
 			$evSession = new Zend_Session_Namespace('evalShipmentList');
 			$evSession->editUrlList = $editList;
 			$evSession->viewUrlList = $viewList;
-		?>
-    
-    </tbody>
-</table>
+			?>
 
-<script type="text/javascript" charset="utf-8">
-	var oTable = null;
-	var nTr = null;
-	$(document).ready(function() {
-		
-	  
-	  $('#shipmentEvaluation').on('click',".clicker", function (){
-	       nTr = $(this).parents('tr')[0];
-               aData = oTable.fnGetData( nTr );
-	       if ( oTable.fnIsOpen(nTr) ){
-                   //console.log(aData[5]);
-		   /* This row is already open - close it */
-		   $(this).find('i').addClass("icon-plus");
-		   $(this).find('i').removeClass("icon-minus");
-		   //$(this).removeClass('btn-danger');
-                   
-                   if(aData[4]=="Fail"){
-                       $(this).addClass('btn-danger');
-                   }else if(aData[5]==""){
-                       $(this).addClass('btn-success');
-                   }else{
-                       $(this).addClass('btn-warning');
-                   }
-		   
-		   oTable.fnClose( nTr );
-	       }
-	       else{
-		    /* Open this row */       
-		    $(this).find('i').addClass("icon-minus");
-		    $(this).find('i').removeClass("icon-add");
-		    //$(this).removeClass('btn-success');
-		    //$(this).addClass('btn-danger');			
-		    oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details' );
-	       }
-	  });		
-		
-	  oTable = $("#shipmentEvaluation").dataTable({
-		    "oLanguage": {
-			"sLengthMenu": "_MENU_ records per page"
-		    },
-		    "bJQueryUI": false,
-		    "bAutoWidth": false,
-		    "bInfo": true,
-		    "bScrollCollapse": true,
-		    "sPaginationType": "bootstrap",
-		    "bRetrieve": true,
-		    "bdestroy": false,
-		    "aoColumns": [
-			{"bSortable": false, "aTargets": [ 0 ] },
-			{"sClass":""},
-			{"sClass":"center"},
-			{"sClass":"center"},
-			{"sClass":"center"},
-			{"bSearchable": false, "bVisible": false},
-			{"sClass":"center","bSortable":false}
-		    ],
-		    "aaSorting": [[ 1, "asc" ]],
-		    "bProcessing": true,
-          });
-	});
-	
-	function fnFormatDetails ( oTable, nTr )
-	{
-		var aData = oTable.fnGetData( nTr );
-		var sOut = "";
-		if (aData[5] != "" && aData[5] != null && aData[5] != undefined) {
-			sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
-			sOut += '<tr><td>'+aData[5]+'</td></tr>';
-			sOut += '</table>';
-		}else{
-			sOut = 'No comments to show';
-		}
-		return sOut;
-
-	}	
-	
-	function updateComment(sid){
-		if ($.trim($("#shipmentComment").val()) == "") {
-			alert("Please enter comment to proceed");
-			return;
-		}
-		$.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'),'default',true); ?>", { sid: sid,comment: $("#shipmentComment").val(), format: "html" },
-            function (data) {               
-			   $.unblockUI({  onUnblock: function(){ alert(data); }  });			   
-			});		
+		</tbody>
+	</table>
+	<?php
+	if ($this->shipment[0]['scheme_type'] == 'covid19') {
+		$columns = '{"bSortable": false, "aTargets": [ 0 ] },{"sClass":""},{"sClass":"center"},{"sClass":"center"},{"bSearchable": false, "bVisible": false},{"sClass":"center","bSortable":false}';
+	} else {
+		$columns = '{"bSortable": false, "aTargets": [ 0 ] },{"sClass":""},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"bSearchable": false, "bVisible": false},{"sClass":"center","bSortable":false}';
 	}
-        function removeSchemes(schemeType,mid){
-		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 
-			$.blockUI();
-			$.post("<?php echo $this->url(array('module'=>'admin','controller' =>'evaluate', 'action' => 'delete-dts-response'), 'default', true); ?>", { mid: mid, schemeType : schemeType, format: "html" },
-			    function (data) {
-				alert("Response has been removed successfully. Please wait while we reload this evaluation.");
-                               // oTable.fnStandingRedraw();
-                               // oTable.fnDraw();
-				document.location.href= '/admin/evaluate';
-				$.unblockUI();
+	?>
+	<script type="text/javascript" charset="utf-8">
+		var oTable = null;
+		var nTr = null;
+		$(document).ready(function() {
+
+
+			$('#shipmentEvaluation').on('click', ".clicker", function() {
+				nTr = $(this).parents('tr')[0];
+				aData = oTable.fnGetData(nTr);
+				if (oTable.fnIsOpen(nTr)) {
+					//console.log(aData[5]);
+					/* This row is already open - close it */
+					$(this).find('i').addClass("icon-plus");
+					$(this).find('i').removeClass("icon-minus");
+					//$(this).removeClass('btn-danger');
+
+					if (aData[4] == "Fail") {
+						$(this).addClass('btn-danger');
+					} else if (aData[5] == "") {
+						$(this).addClass('btn-success');
+					} else {
+						$(this).addClass('btn-warning');
+					}
+
+					oTable.fnClose(nTr);
+				} else {
+					/* Open this row */
+					$(this).find('i').addClass("icon-minus");
+					$(this).find('i').removeClass("icon-add");
+					//$(this).removeClass('btn-success');
+					//$(this).addClass('btn-danger');			
+					oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
+				}
 			});
-		}		
-		
-	}
-        function mailNonParticipants(sid) {
-        if (window.confirm("Are you sure you to send email reminder to participants not yet responded ?")) {
-            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'not-participated-mail')); ?>", {sid: sid, format: "html"},
-            function (data) {
-                if (data > 0) {
-                    alert("Mail Sent successfully");
-                }
-                oTable.fnDraw();
-            });
-        }
 
-    }
-</script>
+			oTable = $("#shipmentEvaluation").dataTable({
+				"oLanguage": {
+					"sLengthMenu": "_MENU_ records per page"
+				},
+				"bJQueryUI": false,
+				"bAutoWidth": false,
+				"bInfo": true,
+				"bScrollCollapse": true,
+				"sPaginationType": "bootstrap",
+				"bRetrieve": true,
+				"bdestroy": false,
+				"aoColumns": [<?php echo $columns; ?>],
+				"aaSorting": [
+					[1, "asc"]
+				],
+				"bProcessing": true,
+			});
+		});
+
+		function fnFormatDetails(oTable, nTr) {
+			var aData = oTable.fnGetData(nTr);
+			var sOut = "";
+			<?php if ($this->shipment[0]['scheme_type'] == 'covid19') { ?>
+				if (aData[4] != "" && aData[4] != null && aData[4] != undefined) {
+					sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
+					sOut += '<tr><td>' + aData[4] + '</td></tr>';
+					sOut += '</table>';
+				} else {
+					sOut = 'No comments to show';
+				}
+			<?php } else { ?> 
+				if (aData[5] != "" && aData[5] != null && aData[5] != undefined) {
+					sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
+					sOut += '<tr><td>' + aData[5] + '</td></tr>';
+					sOut += '</table>';
+				} else {
+					sOut = 'No comments to show';
+				}
+			<?php }?>
+			return sOut;
+
+		}
+
+		function updateComment(sid) {
+			if ($.trim($("#shipmentComment").val()) == "") {
+				alert("Please enter comment to proceed");
+				return;
+			}
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>", {
+					sid: sid,
+					comment: $("#shipmentComment").val(),
+					format: "html"
+				},
+				function(data) {
+					$.unblockUI({
+						onUnblock: function() {
+							alert(data);
+						}
+					});
+				});
+		}
+
+		function removeSchemes(schemeType, mid) {
+			if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
+				$.blockUI();
+				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'delete-dts-response'), 'default', true); ?>", {
+						mid: mid,
+						schemeType: schemeType,
+						format: "html"
+					},
+					function(data) {
+						alert("Response has been removed successfully. Please wait while we reload this evaluation.");
+						// oTable.fnStandingRedraw();
+						// oTable.fnDraw();
+						document.location.href = '/admin/evaluate';
+						$.unblockUI();
+					});
+			}
+
+		}
+
+		function mailNonParticipants(sid) {
+			if (window.confirm("Are you sure you to send email reminder to participants not yet responded ?")) {
+				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'not-participated-mail')); ?>", {
+						sid: sid,
+						format: "html"
+					},
+					function(data) {
+						if (data > 0) {
+							alert("Mail Sent successfully");
+						}
+						oTable.fnDraw();
+					});
+			}
+
+		}
+	</script>
 
 <?php } else { ?>
-	
-	<br/><br/><br/>
-	<h3 style="text-align: center">No Shipment to evaluate. <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" >Click here to go back</a></h3>
-	
+
+	<br /><br /><br />
+	<h3 style="text-align: center">No Shipment to evaluate. <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>">Click here to go back</a></h3>
+
 <?php } ?>

@@ -2605,7 +2605,7 @@ CREATE TABLE `r_test_type_covid19` (
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'covid19', 'COVID19_FINAL', 'Postive', 'P'), (NULL, 'covid19', 'COVID19_FINAL', 'Negative', 'N'), (NULL, 'covid19', 'COVID19_FINAL', 'Interminate', 'I');
 
 -- Thana 29-Dec-2020
-UPDATE `scheme_list` SET `scheme_name` = 'Covid 2019' WHERE `scheme_list`.`scheme_id` = 'covid19';
+UPDATE `scheme_list` SET `scheme_name` = 'Covid-19' WHERE `scheme_list`.`scheme_id` = 'covid19';
 UPDATE `r_possibleresult` SET `response` = 'Invalid' WHERE `r_possibleresult`.`id` = 20;
 
 CREATE TABLE `reference_result_covid19` (

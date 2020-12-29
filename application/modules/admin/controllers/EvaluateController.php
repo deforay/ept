@@ -76,6 +76,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $this->view->vlAssay = $schemeService->getVlAssay();
             } else if ($scheme == 'recency') {
                 $this->view->recencyAssay = $schemeService->getRecencyAssay();
+            } else if ($scheme == 'covid19') {
+                $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
             }
             $evalService = new Application_Service_Evaluation();
             $this->view->evaluateData = $evalService->viewEvaluation($sid, $pid, $scheme);
@@ -132,6 +134,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->vlAssay = $schemeService->getVlAssay();
                 } else if ($scheme == 'recency') {
                     $this->view->recencyAssay = $schemeService->getRecencyAssay();
+                } else if ($scheme == 'covid19') {
+                    $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
                 }
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sid, $pid, $scheme);
@@ -184,6 +188,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->result = $shipmentService->removeDtsEidResults($mapId);
                 } else if ($schemeType == 'vl') {
                     $this->view->result = $shipmentService->removeDtsVlResults($mapId);
+                } else if ($schemeType == 'covid19') {
+                    $this->view->result = $shipmentService->removeCovid19Results($mapId);
                 } else {
                     $this->view->result = "Failed to delete";
                 }

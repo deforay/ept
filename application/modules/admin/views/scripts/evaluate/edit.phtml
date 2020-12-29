@@ -46,6 +46,9 @@ else if($this->scheme == 'vl'){
 else if($this->scheme == 'recency'){
 	include('edit-recency-evaluation.phtml');
 }
+else if($this->scheme == 'covid19'){
+	include('edit-covid19-evaluation.phtml');
+}
 else{
 	echo "<br/><br/><br/><h4 style='text-align:center;'>Evaluation for this scheme is not yet implemented</h4><br/><br/><br/>";
 }

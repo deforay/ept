@@ -1,0 +1,307 @@
+<?php
+
+
+
+$testThreeHidden = false;
+$testTwoHidden = false;
+$screeningTest = false;
+
+$attributes = json_decode($this->evaluateData['shipment']['attributes'], true);
+
+$allowedAlgorithms = isset($this->config->evaluation->covid19->allowedAlgorithms) ? explode(",", $this->config->evaluation->covid19->allowedAlgorithms) : array();
+
+$shipmentAttributes = isset($this->evaluateData['shipment']['shipment_attributes']) ? json_decode($this->evaluateData['shipment']['shipment_attributes'], true) : array();
+
+if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && ($this->config->evaluation->covid19->covid19MaximumTestAllowed == '1' || $this->config->evaluation->covid19->covid19MaximumTestAllowed == '2')) {
+    $testThreeHidden = true;
+}
+
+if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed != '3' && $this->config->evaluation->covid19->covid19MaximumTestAllowed != '2') {
+    $testTwoHidden = true;
+}
+/* if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
+    $testTwoHidden = true;
+    $testThreeHidden = true;
+    $screeningTest = true;
+} */
+
+?>
+
+<table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
+    <tr>
+        <th>Shipment Code</th>
+        <td><?php echo $this->evaluateData['shipment']['shipment_code']; ?></td>
+        <th>Scheme Type</th>
+        <td><?php echo strtoupper($this->evaluateData['shipment']['scheme_name']); ?></td>
+    </tr>
+    <tr>
+        <th>Shipment Date</th>
+        <td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_date']); ?></td>
+        <th>Result Due Date</th>
+        <td><?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?></td>
+    </tr>
+    <tr>
+        <th>Shipment Received on</th>
+        <td><input id="receivedOn" type="text" name="receivedOn" value="<?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_receipt_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
+        <th>Samples Tested on</th>
+        <td><input id="testedOn" type="text" name="testedOn" value="<?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_test_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
+    </tr>
+    <tr>
+        <th>
+            Sample Rehydration Date
+        </th>
+        <td>
+            <input id="rehydrationDate" type="text" name="rehydrationDate" value="<?php echo $this->dateFormat($attributes['sample_rehydration_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" />
+        </td>
+        <th>Algorithm Used</th>
+        <td>
+            <select name="algorithm" id="algorithm" class="isRequired form-control" title="Please choose the Algorithm used"  onchange="showHideTest3();">
+
+                <option value="">--Select--</option>
+                <?php if (!empty($this->config->evaluation->covid19->covid19EnforceAlgorithmCheck) && $this->config->covid19EnforceAlgorithmCheck == 'yes') { ?>
+
+                <?php } ?>
+                <?php if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
+                    <option value="serial" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>
+                <?php } ?>
+                <?php if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
+                    <option value="parallel" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
+                <?php } ?>
+                <?php if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                    <option value="myanmarNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Myanmar National Algorithm</option>
+                <?php } ?>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th>Supervisor Review</th>
+        <td>
+            <select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control" title="Please select if Supervisor Approval was conducted or not">
+                <option value=""> -- Select -- </option>
+                <option value="yes" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') echo " selected "; ?>>YES</option>
+                <option value="no" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'no') echo " selected "; ?>>NO</option>
+            </select>
+        </td>
+        <th id="labSupervisor" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?>>Supervisor Name</th>
+        <td>
+            <input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?> class="form-control" value="<?php echo $this->evaluateData['shipment']['participant_supervisor']; ?>" />
+        </td>
+    </tr>
+    <tr>
+        <th>User Comments</th>
+        <td colspan="3"><textarea class="form-control" name="userComments" id="userComments"><?php echo $this->evaluateData['shipment']['user_comment']; ?></textarea></td>
+    </tr>
+</table>
+
+<?php
+$possibleResults = array();
+foreach ($this->evaluateData['possibleResults'] as $pr) {
+    if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
+        $possibleResults[$pr['id']] = $pr['response'];
+    }
+}
+$possibleFinalResults = array();
+foreach ($this->evaluateData['possibleResults'] as $pr) {
+    if ($pr['scheme_sub_group'] == 'COVID19_FINAL') {
+        $possibleFinalResults[$pr['id']] = $pr['response'];
+    }
+}
+?>
+
+
+<table class="table table-striped table-bordered">
+
+    <thead>
+        <tr align="CENTER" class="dark">
+            <th></th>
+            <th style="text-align: center">Test-1</th>
+            <th style="text-align: center" class='testTwo'>Test-2</th>
+            <th style="text-align: center" class='testThree'>Test-3</th>
+
+        </tr>
+    </thead>
+    <tr style="text-align:center">
+        <th style="width:10%;"> Type Name</th>
+        <td>
+            <select name="test_type_1" id="test_type_1" class="isRequired form-control" title="Please Choose Test Type 1">
+                <?php $this->dropdownSelection($this->allTestTypes, $this->evaluateData['results'][0]["test_type_1"], true); ?>
+            </select> </td>
+        <td class='testTwo'>
+            <select name="test_type_2" id="test_type_2" class="isRequired form-control" title="Please Choose Test Type 2">
+                <?php $this->dropdownSelection($this->allTestTypes, $this->evaluateData['results'][0]["test_type_2"], true); ?>
+            </select> </td>
+        <td class='testThree'>
+            <select name="test_type_3" id="test_type_3" class="isRequired form-control" title="Please Choose Test Type 3">
+                <?php $this->dropdownSelection($this->allTestTypes, $this->evaluateData['results'][0]["test_type_3"], true); ?>
+            </select> </td>
+    </tr>
+    <tr align="CENTER" class="dark">
+        <th>Lot No.</th>
+        <td><input type="text" size="40" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_1"]) ? $this->evaluateData['results'][0]["lot_no_1"] : ""); ?>" class="isRequired form-control" title="Please enter Lot No. 1" /></td>
+        <td class='testTwo'><input type="text" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_2"]) ? $this->evaluateData['results'][0]["lot_no_2"] : ""); ?>" class="isRequired form-control" title="Please enter Lot No. 2" /></td>
+        <td class='testThree'><input type="text" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_3"]) ? $this->evaluateData['results'][0]["lot_no_3"] : ""); ?>" class="isRequired form-control" title="Please enter Lot No. 3" /></td>
+    </tr>
+
+    <tr style="text-align:center">
+        <th>Exp Date</th>
+        <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_1"]) && $this->evaluateData['results'][0]["exp_date_1"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_1"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_1"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
+        <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_2"]) && $this->evaluateData['results'][0]["exp_date_2"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_2"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_2"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
+        <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_3"]) && $this->evaluateData['results'][0]["exp_date_3"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_3"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_3"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
+    </tr>
+    <thead>
+        <tr align="CENTER" class="dark">
+            <th></th>
+            <th style="text-align: center;width:14.2%;">Result-1</th>
+            <th style="text-align: center;width:14.2%;" class='testTwo'>Result-2</th>
+            <th style="text-align: center;width:14.2%;" class='testThree'>Result-3</th>
+            <th style="text-align: center;width:14.2%;">Reported Result</th>
+            <th style="text-align: center;width:14.2%;">Reference Result</th>
+            <th style="text-align: center;width:14.2%;">Score</th>
+        </tr>
+    </thead>
+
+    <?php
+    $count = 1;
+    if (count($this->evaluateData['controlResults']) > 0) {
+    ?>
+        <tr>
+            <td colspan="7" style="text-align: center;">
+                <strong>Controls</strong>
+            </td>
+        </tr>
+    <?php
+    }
+
+    foreach ($this->evaluateData['controlResults'] as $sample) {
+        $count++;
+    ?>
+
+        <tr style="text-align:center;vertical-align: middle;">
+
+            <th style="white-space: nowrap;vertical-align: middle;">
+                <?php echo ($sample['sample_label']); ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+                <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+            </th>
+
+            <td>
+                <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class=" form-control">
+                    <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
+                </select>
+            </td>
+            <td class='testTwo'>
+                <select name="test_result_2[]" id="<?php echo "testresult2_" . $count; ?>" class=" form-control">
+                    <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
+                </select>
+            </td>
+            <td class='testThree'>
+                <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" class=" form-control">
+                    <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
+                </select>
+            </td>
+
+            <td>
+                <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired form-control'" : "class=' form-control'"; ?> title="Please enter the result">
+                    <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
+                </select>
+            </td>
+
+            <td style="vertical-align: middle;">
+
+                <?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?>
+
+            </td>
+            <td style="vertical-align: middle;">-</td>
+        </tr>
+    <?php } ?>
+
+
+    <tr>
+        <td colspan="7" style="text-align: center;">
+            <strong>Samples</strong>
+        </td>
+    </tr>
+    <?php
+    $total = 0;
+    $count = 1;
+
+    foreach ($this->evaluateData['results'] as $sample) {
+        $count++;
+    ?>
+
+        <tr style="text-align:center">
+
+            <th style="white-space: nowrap;vertical-align: middle;">
+                <?php echo ($sample['sample_label']); ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+                <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+            </th>
+
+            <td>
+                <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class=" form-control">
+                    <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
+                </select>
+            </td>
+            <td class='testTwo'>
+                <select name="test_result_2[]" id="<?php echo "testresult2_" . $count; ?>" class=" form-control">
+                    <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
+                </select>
+            </td>
+            <td class='testThree'>
+                <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" class=" form-control">
+                    <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
+                </select>
+            </td>
+
+            <td>
+                <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired form-control'" : "class=' form-control'"; ?> title="Please enter the result">
+                    <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
+                </select>
+            </td>
+
+            <td style="vertical-align: middle;">
+
+                <?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?>
+
+            </td>
+            <td style="vertical-align: middle;">
+            <?php echo $score = ($sample['reference_result'] == $sample['reported_result']) ? $sample['sample_score'] : 0;
+            $total += $score;
+            ?>
+            </td>
+        </tr>
+    <?php } ?>
+    <tr style="text-align:center" >
+        <td colspan="6" style="text-align: right;">Total</td>
+        <td style="vertical-align: middle;"><?php echo $total; ?></td>
+    </tr>
+</table>
+
+<script>
+    function showHideTest2() {
+
+        var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
+
+        if (test2Hidden == 'yes') {
+            $('.testTwo').hide();
+        } else {
+            $('.testTwo').show();
+        }
+
+    }
+    function showHideTest3() {
+
+        var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
+        var screeningTest = "<?php echo $screeningTest ? 'yes' : 'no'; ?>";
+
+        if (screeningTest == 'yes' || (test3Hidden == 'yes' && $("#algorithm").val() != 'myanmarNationalDtsAlgo')) {
+            $('.testThree').hide();
+        } else {
+            $('.testThree').show();
+        }
+
+    }
+
+    $(function() {
+        showHideTest2();
+        showHideTest3();
+    });
+</script>

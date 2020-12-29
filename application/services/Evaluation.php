@@ -410,7 +410,10 @@ class Application_Service_Evaluation
 		} else if ($shipmentResult[0]['scheme_type'] == 'vl') {
 			$vlModel = new Application_Model_Vl();
 			$shipmentResult = $vlModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
-		}
+		} else if ($shipmentResult[0]['scheme_type'] == 'covid19') {
+			$covid19Model = new Application_Model_Covid19();
+			$shipmentResult = $covid19Model->evaluate($shipmentResult, $shipmentId);
+		} 
 		
 		return $shipmentResult;
 	}
@@ -445,6 +448,10 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('recency');
 			$evalComments = $schemeService->getSchemeEvaluationComments('recency');
 			$results = $schemeService->getRecencySamples($shipmentId, $participantId);
+		} else if ($scheme == 'covid19') {
+			$possibleResults = $schemeService->getPossibleResults('covid19');
+			$evalComments = $schemeService->getSchemeEvaluationComments('covid19');
+			$results = $schemeService->getCovid19Samples($shipmentId, $participantId);
 		}
 
 
@@ -522,7 +529,11 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('recency');
 			$evalComments = $schemeService->getSchemeEvaluationComments('recency');
 			$results = $schemeService->getRecencySamples($shipmentId, $participantId);
-		}
+		} else if ($scheme == 'covid19') {
+			$possibleResults = $schemeService->getPossibleResults('covid19');
+			$evalComments = $schemeService->getSchemeEvaluationComments('covid19');
+			$results = $schemeService->getCovid19Samples($shipmentId, $participantId);
+		} 
 
 
 		$controlRes = array();

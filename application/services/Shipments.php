@@ -614,6 +614,50 @@ class Application_Service_Shipments
         }
     }
 
+    public function removeCovid19Results($mapId)
+    {
+        try {
+            $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $data = array(
+                "shipment_receipt_date" => null,
+                "shipment_test_date" => null,
+                "attributes" => null,
+                "shipment_test_report_date" => null,
+                "supervisor_approval" => null,
+                "participant_supervisor" => null,
+                "user_comment" => null,
+                "final_result" => null,
+                "failure_reason" => null,
+                "evaluation_comment" => null,
+                "is_followup" => 'no',
+                "is_excluded" => null,
+                "is_pt_test_not_performed" => null,
+                "vl_not_tested_reason" => null,
+                "pt_test_not_performed_comments" => null,
+                "pt_support_comments" => null,
+                "updated_on_user" => null,
+                "updated_by_user" =>  null,
+                "qc_date" => null,
+                "qc_done" => 'no',
+                "qc_done_by" => null,
+                "qc_created_on" => null,
+                "mode_id" => null,
+                "custom_field_1" => null,
+                "custom_field_2" => null,
+                "synced" => 'no',
+                "synced_on" => null
+            );
+            $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+
+            $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
+            $covid19ResponseDb->removeShipmentResults($mapId);
+        } catch (Exception $e) {
+            return ($e->getMessage());
+            return "Unable to delete. Please try again later or contact system admin for help";
+        }
+    }
+
     public function removeDtsEidResults($mapId)
     {
         try {
