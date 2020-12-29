@@ -58,6 +58,24 @@ class Application_Service_Schemes
         }
         return $retval;
     }
+    
+    public function getRecommededCovid19TestTypes($testTypes = null)
+    {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('covid19_recommended_test_types'));
+
+        if ($testTypes != null && (int) $testTypes > 0 && (int) $testTypes <= 3) {
+            $sql = $sql->where('test_no = ' . (int) $testTypes);
+        }
+
+        $stmt = $db->fetchAll($sql);
+        $retval = array();
+        foreach ($stmt as $t) {
+            $retval[$t['test_no']][] = $t['test_type'];
+        }
+        return $retval;
+    }
 
     public function setRecommededDtsTestkit($recommended)
     {
@@ -71,6 +89,23 @@ class Application_Service_Schemes
                     'testkit' => $kit,
                 );
                 $db->insert('dts_recommended_testkits', $data);
+            }
+        }
+    }
+    
+    public function setRecommededCovid19TestTypes($recommended)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->delete('covid19_recommended_test_types');
+        foreach ($recommended as $testNo => $types) {
+            if(isset($types) && $types != NULL){
+                foreach ($types as $type) {
+                    $data = array(
+                        'test_no' => $testNo,
+                        'test_type' => $type,
+                    );
+                    $db->insert('covid19_recommended_test_types', $data);
+                }
             }
         }
     }
@@ -212,6 +247,14 @@ class Application_Service_Schemes
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('reference_result_dts'))
+            ->where('shipment_id = ? ', $shipmentId);
+        return $db->fetchAll($sql);
+    }
+
+    public function getCovid19ReferenceData($shipmentId)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('reference_result_covid19'))
             ->where('shipment_id = ? ', $shipmentId);
         return $db->fetchAll($sql);
     }

@@ -2603,3 +2603,52 @@ CREATE TABLE `r_test_type_covid19` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 -- Thana 28-Dec-2020
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'covid19', 'COVID19_FINAL', 'Postive', 'P'), (NULL, 'covid19', 'COVID19_FINAL', 'Negative', 'N'), (NULL, 'covid19', 'COVID19_FINAL', 'Interminate', 'I');
+
+-- Thana 29-Dec-2020
+UPDATE `scheme_list` SET `scheme_name` = 'Covid 2019' WHERE `scheme_list`.`scheme_id` = 'covid19';
+UPDATE `r_possibleresult` SET `response` = 'Invalid' WHERE `r_possibleresult`.`id` = 20;
+
+CREATE TABLE `reference_result_covid19` (
+ `shipment_id` int NOT NULL,
+ `sample_id` int NOT NULL,
+ `sample_label` varchar(45) DEFAULT NULL,
+ `reference_result` varchar(45) DEFAULT NULL,
+ `control` int DEFAULT NULL,
+ `mandatory` int NOT NULL DEFAULT '0',
+ `sample_score` int NOT NULL DEFAULT '1',
+ PRIMARY KEY (`shipment_id`,`sample_id`),
+ CONSTRAINT `reference_result_covid19_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Referance Result for Covid19 Shipment';
+
+CREATE TABLE `response_result_covid19` (
+ `shipment_map_id` int NOT NULL,
+ `sample_id` int NOT NULL,
+ `test_type_1` varchar(45) DEFAULT NULL,
+ `lot_no_1` varchar(45) DEFAULT NULL,
+ `exp_date_1` date DEFAULT NULL,
+ `test_result_1` varchar(45) DEFAULT NULL,
+ `test_type_2` varchar(45) DEFAULT NULL,
+ `lot_no_2` varchar(45) DEFAULT NULL,
+ `exp_date_2` date DEFAULT NULL,
+ `test_result_2` varchar(45) DEFAULT NULL,
+ `test_type_3` varchar(45) DEFAULT NULL,
+ `lot_no_3` varchar(45) DEFAULT NULL,
+ `exp_date_3` date DEFAULT NULL,
+ `test_result_3` varchar(45) DEFAULT NULL,
+ `reported_result` varchar(45) DEFAULT NULL,
+ `calculated_score` varchar(45) DEFAULT NULL,
+ `created_by` varchar(45) DEFAULT NULL,
+ `created_on` datetime DEFAULT NULL,
+ `updated_by` varchar(45) DEFAULT NULL,
+ `updated_on` datetime DEFAULT NULL,
+ PRIMARY KEY (`shipment_map_id`,`sample_id`),
+ CONSTRAINT `response_result_covid19_ibfk_1` FOREIGN KEY (`shipment_map_id`) REFERENCES `shipment_participant_map` (`map_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `covid19_recommended_test_types` (
+ `test_no` int NOT NULL,
+ `test_type` varchar(255) NOT NULL,
+ PRIMARY KEY (`test_no`,`test_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'covid19', 'COVID19_TEST', 'Postive', 'P'), (NULL, 'covid19', 'COVID19_TEST', 'Negative', 'N'), (NULL, 'covid19', 'COVID19_TEST', 'Invalid', 'I');

@@ -19,7 +19,7 @@ class Covid19Controller extends Zend_Controller_Action
 		$shipmentService = new Application_Service_Shipments();		
 		if($this->_request->isPost()){
 			$data = $this->getRequest()->getPost();			
-			$shipmentService->updateDtsResults($data);
+			$shipmentService->updateCovid19Results($data);
 			if(isset($data['comingFrom']) && trim($data['comingFrom'])!=''){
 				$this->redirect("/participant/".$data['comingFrom']);
 			}else{
@@ -54,7 +54,8 @@ class Covid19Controller extends Zend_Controller_Action
 			
 			//Zend_Debug::dump($this->view->shipment);
 			$this->view->allTestTypes = $schemeService->getAllCovid19TestType();
-			$this->view->dtsPossibleResults = $schemeService->getPossibleResults('covid19');
+			$this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19');
+			$this->view->referenceDetails = $schemeService->getCovid19ReferenceData($sID);
 			$this->view->shipId = $sID;
 			$this->view->participantId = $pID;
 			$this->view->eID = $eID;
@@ -97,7 +98,7 @@ class Covid19Controller extends Zend_Controller_Action
 	    $participantService = new Application_Service_Participants();
 	    $this->view->participant = $participantService->getParticipantDetails($pID);
 		$schemeService = new Application_Service_Schemes();
-		$this->view->referenceDetails = $schemeService->getDtsReferenceData($sID);
+		$this->view->referenceDetails = $schemeService->getCovid19ReferenceData($sID);
 	    
 		$shipment = $schemeService->getShipmentData($sID,$pID);
 	    $shipment['attributes'] = json_decode($shipment['attributes'],true);

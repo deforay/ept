@@ -170,6 +170,9 @@ if ($adminSession->privileges != "") {
 								<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>">DTS Settings</a></li>
 								<?php }
+								if (in_array('covid19', $adminSession->activeSchemes)) { ?>
+									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-settings'), 'default', true); ?>">Covid19 Settings</a></li>
+								<?php }
 								if (in_array('recency', $adminSession->activeSchemes)) { ?>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'recency-settings'), 'default', true); ?>">Recency Settings</a></li>
 								<?php } ?>

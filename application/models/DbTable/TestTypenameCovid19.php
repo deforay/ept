@@ -24,7 +24,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     public function addTestTypeDetails($params) {
         $commonService = new Application_Service_Common();
         $randomStr = $commonService->getRandomString(13);
-        $testtypeId = "tk" . $randomStr;
+        $testtypeId = "tt" . $randomStr;
         $tkId = $this->checkTestTypeId($testtypeId,$params['scheme']);
 
         $data = array(
@@ -75,7 +75,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
         if ($result != "") {
             $commonService = new Application_Service_Common();
             $randomStr = $commonService->getRandomString(13);
-            $testtypeId = "tk" . $randomStr;
+            $testtypeId = "tt" . $randomStr;
             $this->checkTestTypeId($testtypeId,$scheme);
         } else {
             return $testtypeId;
@@ -242,29 +242,21 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
         if (trim($testtypeName) != "") {
             $commonService = new Application_Service_Common();
             $randomStr = $commonService->getRandomString(13);
-            $testtypeId = "tk" . $randomStr;
+            $testtypeId = "tt" . $randomStr;
             $tkId = $this->checkTestTypeId($testtypeId,$scheme);
             $result = $this->fetchRow($this->select()->where("test_type_name='".$testtypeName."'"));
 
             if ($result == "" && trim($oldName) == "") {
                 $data = array(
-                    'test_type_id'=> $tkId,
-                    'scheme_type'   => $scheme,
-                    'test_type_name'  => trim($testtypeName),
-                    'approval'      => '0',
-                    'created_on'    => new Zend_Db_Expr('now()')
+                    'test_type_id'      => $tkId,
+                    'scheme_type'       => $scheme,
+                    'test_type_name'    => trim($testtypeName),
+                    'approval'          => '0',
+                    'test_type_1'       => ($testtype==1 && $testtype != "")?'1':'0',
+                    'test_type_2'       => ($testtype==2 && $testtype != "")?'1':'0',
+                    'test_type_3'       => ($testtype==3 && $testtype != "")?'1':'0',
+                    'created_on'        => new Zend_Db_Expr('now()')
                 );
-                if($testtype != ""){
-                    if($testtype == 1){
-                        $data['testtype_1'] = 1;
-                    }
-                    if($testtype == 2){
-                        $data['testtype_2'] = 1;
-                    }
-                    if($testtype == 3){
-                        $data['testtype_3'] = 1;
-                    }
-                }
                 $saveId = $this->insert($data);
                 return $tkId;
             } else {
@@ -285,7 +277,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
         if (trim($testtypeName) != "") {
             $commonService = new Application_Service_Common();
             $randomStr = $commonService->getRandomString(13);
-            $testtypeId = "tk" . $randomStr;
+            $testtypeId = "tt" . $randomStr;
             $tkId = $this->checkTestTypeId($testtypeId,$scheme);
             $result = $this->fetchRow($this->select()->where("test_type_name='".$testtypeName."'"));
 
@@ -296,9 +288,9 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                     'test_type_name'  => trim($testtypeName),
                     'approval'      => '0',
                     'country_adapted'=> '1',
-                    'testtype_1'     => ($type==1)?'1':'0',
-                    'testtype_2'     => ($type==2)?'1':'0',
-                    'testtype_3'     => ($type==3)?'1':'0',
+                    'test_type_1'     => ($type==1)?'1':'0',
+                    'test_type_2'     => ($type==2)?'1':'0',
+                    'test_type_3'     => ($type==3)?'1':'0',
                     'created_on'    => new Zend_Db_Expr('now()')
                 );
                 // Zend_Debug::dump($data);die;
@@ -312,9 +304,9 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                         'scheme_type'   => $scheme,
                         'test_type_name'  => trim($testtypeName),
                         'country_adapted'=> '1',
-                        'testtype_1'     => ($type==1)?'1':'0',
-                        'testtype_2'     => ($type==2)?'1':'0',
-                        'testtype_3'     => ($type==3)?'1':'0'
+                        'test_type_1'     => ($type==1)?'1':'0',
+                        'test_type_2'     => ($type==2)?'1':'0',
+                        'test_type_3'     => ($type==3)?'1':'0'
                     );
                     $saveId = $this->update($data, "test_type_id='" . $result['test_type_id'] . "'");
                     return $result['test_type_id'];
