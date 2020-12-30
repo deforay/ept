@@ -2652,3 +2652,30 @@ CREATE TABLE `covid19_recommended_test_types` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'covid19', 'COVID19_TEST', 'Postive', 'P'), (NULL, 'covid19', 'COVID19_TEST', 'Negative', 'N'), (NULL, 'covid19', 'COVID19_TEST', 'Invalid', 'I');
+
+-- Thana 30-Dec-2020
+CREATE TABLE `r_covid19_corrective_actions` (
+ `action_id` int NOT NULL AUTO_INCREMENT,
+ `corrective_action` text NOT NULL,
+ `description` text NOT NULL,
+ PRIMARY KEY (`action_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
+
+INSERT INTO `r_covid19_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES
+(1, 'Please submit response before last date', 'Late response, response not evaluated. Your response received after last date. Expected result for PT panel will be available for your reference. '),
+(2, 'Review and refer to SOP for testing. Sample should be tested per National Covid-19 Testing lab.', 'For sample (1/2/3?) National Covid-19 Testing lab was not followed.'),
+(3, 'Review all testing procedures prior to performing client testing as reported result does not match expected result.', 'Sample (1/2/3?) reported result does not match with expected result.'),
+(4, 'You are required to test all samples in PT panel', 'Sample (1/2/3) was not reported '),
+(5, 'Ensure expired test type are not be used for testing. If test types are not available, please contact your superior.', 'Test type XYZ expired M days before the test date DD-MON-YYY.'),
+(6, 'Ensure expiry date information is submitted for all performed tests.', 'Result not evaluated Ð test type expiry date (first/second/third) is not reported with PT response.'),
+(7, 'Ensure test type name is reported for all performed tests.', 'Result not evaluated Ð name of test type not reported.'),
+(8, 'Please use the approved test types according to the SOP/National Covid-19 Testing lab for confirmatory and tie-breaker.', 'Testtype XYZ repeated for all 3 test types'),
+(9, 'Please use the approved test types according to the SOP/National Covid-19 Testing lab for confirmatory and tie-breaker.', 'Test type repeated for confirmatory or tiebreaker test (T1/T2/T3).'),
+(10, 'Ensure test type lot number is reported for all performed tests. ', 'Result not evaluated Ð Test Type lot number (first/second/third) is not reported.'),
+(11, 'Ensure to provide supervisor approval along with his name.', 'Missing supervisor approval for reported result.'),
+(12, 'Ensure to provide sample rehydration date', 'Re-hydration date missing in PT report form.'),
+(13, 'Ensure to provide to provide panel testing date.', 'Testing date missing in PT report form.'),
+(14, 'Covid19 Testing should be done within specified hours of rehydration as per SOP.', 'Testing is not performed within X to Y hours of rehydration.'),
+(15, 'Review all testing procedures prior to performing client testing and contact your supervisor for improvement.', 'Participant did not meet the score criteria (Participant Score is 80 and Required Score is 95)'),
+(16, 'Ensure to provide to provide panel receipt date. ', 'Panel receipt date missing in PT report form.'),
+(17, 'Please test Covid19 sample as per National Covid-19 Testing lab. Review and refer to SOP for testing.', 'For Test (1/2/3) testing is not performed with country approved test type.');

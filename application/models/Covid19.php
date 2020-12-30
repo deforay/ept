@@ -17,8 +17,8 @@ class Application_Model_Covid19
 
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-		$correctiveActions = $schemeService->getDtsCorrectiveActions();
-		$recommendedTestkits = $schemeService->getRecommededDtsTestkit();
+		$correctiveActions = $schemeService->getCovid19CorrectiveActions();
+		$recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
 
 		foreach ($shipmentResult as $shipment) {
 			//Zend_Debug::dump($shipment);
@@ -33,7 +33,7 @@ class Application_Model_Covid19
 				$createdOn = new Zend_Date($datearray);
 			}
 
-			$results = $schemeService->getDtsSamples($shipmentId, $shipment['participant_id']);
+			$results = $schemeService->getCovid19Samples($shipmentId, $shipment['participant_id']);
 
 			$totalScore = 0;
 			$maxScore = 0;
@@ -79,7 +79,7 @@ class Application_Model_Covid19
 			// Getting the Test Date string to show in Corrective Actions and other sentences
 			$testDate = $testedOn->toString('dd-MMM-YYYY');
 
-			// Getting test kit expiry dates as reported
+			// Getting test type expiry dates as reported
 			$expDate1 = "";
 			//die($results[0]['exp_date_1']);
 			if (isset($results[0]['exp_date_1']) && trim($results[0]['exp_date_1']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_1'])) != "") {
@@ -140,18 +140,18 @@ class Application_Model_Covid19
 					}
 				} else {
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test kit 1 expiry date is not reported with PT response.",
+						'warning' => "Result not evaluated – Test type 1 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
 					);
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
 				}
 
-				if (isset($recommendedTestkits[1]) && count($recommendedTestkits[1]) > 0) {
-					if (!in_array($results[0]['test_type_1'], $recommendedTestkits[1])) {
+				if (isset($recommendedTesttypes[1]) && count($recommendedTesttypes[1]) > 0) {
+					if (!in_array($results[0]['test_type_1'], $recommendedTesttypes[1])) {
 						$tk1RecommendedUsed = false;
 						$failureReason[] = array(
-							'warning' => "For Test 1, testing is not performed with country approved test kit.",
+							'warning' => "For Test 1, testing is not performed with country approved test type.",
 							'correctiveAction' => $correctiveActions[17]
 						);
 					} else {
@@ -178,18 +178,18 @@ class Application_Model_Covid19
 					}
 				} else {
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test kit 2 expiry date is not reported with PT response.",
+						'warning' => "Result not evaluated – Test type 2 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
 					);
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
 				}
 
-				if (isset($recommendedTestkits[2]) && count($recommendedTestkits[2]) > 0) {
-					if (!in_array($results[0]['test_type_2'], $recommendedTestkits[2])) {
+				if (isset($recommendedTesttypes[2]) && count($recommendedTesttypes[2]) > 0) {
+					if (!in_array($results[0]['test_type_2'], $recommendedTesttypes[2])) {
 						$tk2RecommendedUsed = false;
 						$failureReason[] = array(
-							'warning' => "For Test 2, testing is not performed with country approved test kit.",
+							'warning' => "For Test 2, testing is not performed with country approved test type.",
 							'correctiveAction' => $correctiveActions[17]
 						);
 					} else {
@@ -218,18 +218,18 @@ class Application_Model_Covid19
 				} else {
 
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test kit 3 expiry date is not reported with PT response.",
+						'warning' => "Result not evaluated – Test type 3 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
 					);
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
 				}
 
-				if (isset($recommendedTestkits[3]) && count($recommendedTestkits[3]) > 0) {
-					if (!in_array($results[0]['test_type_3'], $recommendedTestkits[3])) {
+				if (isset($recommendedTesttypes[3]) && count($recommendedTesttypes[3]) > 0) {
+					if (!in_array($results[0]['test_type_3'], $recommendedTesttypes[3])) {
 						$tk3RecommendedUsed = false;
 						$failureReason[] = array(
-							'warning' => "For Test 3, testing is not performed with country approved test kit.",
+							'warning' => "For Test 3, testing is not performed with country approved test type.",
 							'correctiveAction' => $correctiveActions[17]
 						);
 					} else {
@@ -237,8 +237,8 @@ class Application_Model_Covid19
 					}
 				}
 			}
-			//checking if testkits were repeated
-			// T.9 Test kit repeated for confirmatory or tiebreaker test (T1/T2/T3).
+			//checking if testtypes were repeated
+			// T.9 Test type repeated for confirmatory or tiebreaker test (T1/T2/T3).
 			if (($testType1 == "") && ($testType2 == "") && ($testType3 == "")) {
 				$failureReason[] = array(
 					'warning' => "No Test Type reported. Result not evaluated",
@@ -282,7 +282,7 @@ class Application_Model_Covid19
 
 
 			// checking if all LOT details were entered
-			// T.3 Ensure test kit lot number is reported for all performed tests. 
+			// T.3 Ensure test type lot number is reported for all performed tests. 
 			if ($testType1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
 				if (isset($results[0]['test_result_1']) && $results[0]['test_result_1'] != "" && $results[0]['test_result_1'] != null) {
 					$lotResult = 'Fail';
@@ -361,38 +361,8 @@ class Application_Model_Covid19
 						}
 					}
 
-					//$algoString = "Wrongly reported in the pattern : <strong>" . $r1 . "</strong> <strong>" . $r2 . "</strong> <strong>" . $r3 . "</strong>";
-
-					if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
-						// no algorithm to check
-					} else if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
-						if ($r1 == 'N') {
-							if (($r2 == '-') && ($r3 == '-' || $r3 == 'X')) {
-								$algoResult = 'Pass';
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						}
-						//			else if ($r1 == 'P' && $r2 == 'N' && $r3 == 'N') {
-						//                            $algoResult = 'Pass';
-						//                        }
-						else if ($r1 == 'P' && $r2 == 'P') {
-							if (($r3 == '-' || $r3 == 'X')) {
-								$algoResult = 'Pass';
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						} else if ($r1 == 'P' && $r2 == 'N' && ($r3 == 'P' || $r3 == 'X')) {
+					if ($r1 == 'N') {
+						if (($r2 == '-') && ($r3 == '-' || $r3 == 'X')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -402,38 +372,12 @@ class Application_Model_Covid19
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else if ($attributes['algorithm'] == 'parallel') {
-
-						if ($r1 == 'P' && $r2 == 'P') {
-							if (($r3 == '-' || $r3 == 'X')) {
-								$algoResult = 'Pass';
-							} else {
-
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						} else if ($r1 == 'P' && $r2 == 'N' && ($r3 == 'P' || $r3 == 'X')) {
-							$algoResult = 'Pass';
-						} else if ($r1 == 'P' && $r2 == 'N' && ($r3 == 'N' || $r3 == 'X')) {
-							$algoResult = 'Pass';
-						} else if ($r1 == 'N' && $r2 == 'N') {
-							if (($r3 == '-' || $r3 == 'X')) {
-								$algoResult = 'Pass';
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						} else if ($r1 == 'N' && $r2 == 'P' && ($r3 == 'N' || $r3 == 'X')) {
-							$algoResult = 'Pass';
-						} else if ($r1 == 'N' && $r2 == 'P' && ($r3 == 'P' || $r3 == 'X')) {
+					}
+					//			else if ($r1 == 'P' && $r2 == 'N' && $r3 == 'N') {
+					//                            $algoResult = 'Pass';
+					//                        }
+					else if ($r1 == 'P' && $r2 == 'P') {
+						if (($r3 == '-' || $r3 == 'X')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -443,35 +387,20 @@ class Application_Model_Covid19
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-						if ($r1 == 'P' && $r2 == 'P' && $r3 == 'P') {
-							$algoResult = 'Pass';
-						} else if ($r1 == 'P' && $r2 == 'N' && $r3 == 'N') {
-							$algoResult = 'Pass';
-						} else if ($r1 == 'P' && $r2 == 'N' && $r3 == 'P') {
-							$algoResult = 'Pass';
-						} else if ($r1 == 'P' && $r2 == 'P' && $r3 == 'N') {
-							$algoResult = 'Pass';
-						} else if ($r1 == 'N' && $r2 == '-' && $r3 == '-') {
-							$algoResult = 'Pass';
-						} else if ($r1 == 'N' && $r2 == 'N' && $r3 == '-') {
-							$algoResult = 'Pass';
-						} else if ($r1 == 'N' && $r2 == 'N' && $r3 == 'N') {
-							$algoResult = 'Pass';
-						} else {
-							$algoResult = 'Fail';
-							$failureReason[] = array(
-								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-								'correctiveAction' => $correctiveActions[2]
-							);
-							$correctiveActionList[] = 2;
-						}
+					} else if ($r1 == 'P' && $r2 == 'N' && ($r3 == 'P' || $r3 == 'X')) {
+						$algoResult = 'Pass';
 					} else {
+						$algoResult = 'Fail';
+						$failureReason[] = array(
+							'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+							'correctiveAction' => $correctiveActions[2]
+						);
+						$correctiveActionList[] = 2;
 					}
 				} else {
-					// If there are two kit used for the participants then the control
-					// needs to be tested with at least both kit.
-					// If three then all three kits required and one then atleast one.
+					// If there are two type used for the participants then the control
+					// needs to be tested with at least both type.
+					// If three then all three types required and one then atleast one.
 
 					if ($testType1 != "") {
 						if (!isset($result['test_result_1']) || $result['test_result_1'] == "") {
@@ -548,17 +477,17 @@ class Application_Model_Covid19
 				$maxScore += $result['sample_score'];
 
 				if (isset($result['test_result_1']) && !empty($result['test_result_1']) && trim($result['test_result_1']) != false) {
-					//T.1 Ensure test kit name is reported for all performed tests.
+					//T.1 Ensure test type name is reported for all performed tests.
 					if (($testType1 == "")) {
 						$failureReason[] = array(
-							'warning' => "Result not evaluated – name of Test kit 1 not reported.",
+							'warning' => "Result not evaluated – name of Test type 1 not reported.",
 							'correctiveAction' => $correctiveActions[7]
 						);
 						$correctiveActionList[] = 7;
 						$shipment['is_excluded'] = 'yes';
 					}
 					//T.5 Ensure expiry date information is submitted for all performed tests.
-					//T.15 Testing performed with a test kit that is not recommended by MOH
+					//T.15 Testing performed with a test type that is not recommended by MOH
 					if ((isset($tk1Expired) && $tk1Expired) || (isset($tk1RecommendedUsed) && !$tk1RecommendedUsed)) {
 						$testTypeExpiryResult = 'Fail';
 						if ($correctResponse) {
@@ -568,17 +497,17 @@ class Application_Model_Covid19
 					}
 				}
 				if (isset($result['test_result_2']) && !empty($result['test_result_2']) && trim($result['test_result_2']) != false) {
-					//T.1 Ensure test kit name is reported for all performed tests.
+					//T.1 Ensure test type name is reported for all performed tests.
 					if (($testType2 == "")) {
 						$failureReason[] = array(
-							'warning' => "Result not evaluated – name of Test kit 2 not reported.",
+							'warning' => "Result not evaluated – name of Test type 2 not reported.",
 							'correctiveAction' => $correctiveActions[7]
 						);
 						$correctiveActionList[] = 7;
 						$shipment['is_excluded'] = 'yes';
 					}
 					//T.5 Ensure expiry date information is submitted for all performed tests.
-					//T.15 Testing performed with a test kit that is not recommended by MOH
+					//T.15 Testing performed with a test type that is not recommended by MOH
 					if ((isset($tk2Expired) && $tk2Expired) || (isset($tk2RecommendedUsed) && !$tk2RecommendedUsed)) {
 						$testTypeExpiryResult = 'Fail';
 						if ($correctResponse) {
@@ -588,17 +517,17 @@ class Application_Model_Covid19
 					}
 				}
 				if (isset($result['test_result_3']) && !empty($result['test_result_3']) && trim($result['test_result_3']) != false) {
-					//T.1 Ensure test kit name is reported for all performed tests.
+					//T.1 Ensure test type name is reported for all performed tests.
 					if (($testType3 == "")) {
 						$failureReason[] = array(
-							'warning' => "Result not evaluated – name of Test kit 3 not reported.",
+							'warning' => "Result not evaluated – name of Test type 3 not reported.",
 							'correctiveAction' => $correctiveActions[7]
 						);
 						$correctiveActionList[] = 7;
 						$shipment['is_excluded'] = 'yes';
 					}
 					//T.5 Ensure expiry date information is submitted for all performed tests.
-					//T.15 Testing performed with a test kit that is not recommended by MOH
+					//T.15 Testing performed with a test type that is not recommended by MOH
 					if ((isset($tk3Expired) && $tk3Expired) || (isset($tk3RecommendedUsed) && !$tk3RecommendedUsed)) {
 						$testTypeExpiryResult = 'Fail';
 						if ($correctResponse) {
@@ -626,28 +555,9 @@ class Application_Model_Covid19
 				$responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
 			}
 
-			//if ((isset($config->evaluation->covid19->covid19EnforceAlgorithmCheck) && $config->evaluation->covid19->covid19EnforceAlgorithmCheck == 'yes')) {
-			if (empty($attributes['algorithm']) || strtolower($attributes['algorithm']) == 'not-reported') {
-				$failureReason[] = array(
-					'warning' => "Result not evaluated. Testing algorithm not reported.",
-					'correctiveAction' => $correctiveActions[2]
-				);
-				$correctiveActionList[] = 2;
-				$shipment['is_excluded'] = 'yes';
-			}
-			//}
-
 			//Let us now calculate documentation score
 			$documentationScore = 0;
-			if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
-				// for Dried Samples, we will have rehydration as one of the documentation scores
-				$documentationScorePerItem = ($config->evaluation->covid19->documentationScore / 5);
-			} else {
-				// for Non Dried Samples, we will NOT have rehydration documentation scores 
-				// there are 2 conditions for rehydration so 5 - 2 = 3
-				$documentationScorePerItem = ($config->evaluation->covid19->documentationScore / 3);
-			}
-
+			$documentationScorePerItem = ($config->evaluation->covid19->documentationScore / 3);
 
 			// D.1
 			if (isset($results[0]['shipment_receipt_date']) && strtolower($results[0]['shipment_receipt_date']) != '') {
@@ -661,17 +571,14 @@ class Application_Model_Covid19
 			}
 
 			//D.3
-			if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
-				// Only for Dried Samples we will check Sample Rehydration
-				if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
-					$documentationScore += $documentationScorePerItem;
-				} else {
-					$failureReason[] = array(
-						'warning' => "Missing reporting rehydration date for DTS Panel",
-						'correctiveAction' => $correctiveActions[12]
-					);
-					$correctiveActionList[] = 12;
-				}
+			if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
+				$documentationScore += $documentationScorePerItem;
+			} else {
+				$failureReason[] = array(
+					'warning' => "Missing reporting rehydration date for DTS Panel",
+					'correctiveAction' => $correctiveActions[12]
+				);
+				$correctiveActionList[] = 12;
 			}
 
 			//D.5
@@ -686,45 +593,26 @@ class Application_Model_Covid19
 			}
 
 			//D.7
-			if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
 
-				// Only for Dried samples we will do this check
+			// Testing should be done within 24*($config->evaluation->covid19->sampleRehydrateDays) hours of rehydration.
+			$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
+			$testedOnDate = new DateTime($results[0]['shipment_test_date']);
+			$interval = $sampleRehydrationDate->diff($testedOnDate);
 
-				// Testing should be done within 24*($config->evaluation->covid19->sampleRehydrateDays) hours of rehydration.
-				$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
-				$testedOnDate = new DateTime($results[0]['shipment_test_date']);
-				$interval = $sampleRehydrationDate->diff($testedOnDate);
+			$sampleRehydrateDays = $config->evaluation->covid19->sampleRehydrateDays;
+			$rehydrateHours = $sampleRehydrateDays * 24;
 
-				$sampleRehydrateDays = $config->evaluation->covid19->sampleRehydrateDays;
-				$rehydrateHours = $sampleRehydrateDays * 24;
-
-				if ($interval->days > $sampleRehydrateDays) {
-					$failureReason[] = array(
-						'warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
-						'correctiveAction' => $correctiveActions[14]
-					);
-					$correctiveActionList[] = 14;
-				} else {
-					$documentationScore += $documentationScorePerItem;
-				}
+			if ($interval->days > $sampleRehydrateDays) {
+				$failureReason[] = array(
+					'warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
+					'correctiveAction' => $correctiveActions[14]
+				);
+				$correctiveActionList[] = 14;
+			} else {
+				$documentationScore += $documentationScorePerItem;
 			}
 
 			//D.8
-			// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
-			if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-				$documentationScore += $documentationScorePerItem;
-			} else {
-				if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
-					$documentationScore += $documentationScorePerItem;
-				} else {
-					$failureReason[] = array(
-						'warning' => "Supervisor approval absent",
-						'correctiveAction' => $correctiveActions[11]
-					);
-					$correctiveActionList[] = 11;
-				}
-			}
-
 			$grandTotal = ($responseScore + $documentationScore);
 			if ($grandTotal < $config->evaluation->covid19->passPercentage) {
 				$scoreResult = 'Fail';

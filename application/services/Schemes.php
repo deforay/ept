@@ -184,6 +184,17 @@ class Application_Service_Schemes
         }
         return $response;
     }
+    
+    public function getCovid19CorrectiveActions()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $res = $db->fetchAll($db->select()->from('r_covid19_corrective_actions'));
+        $response = array();
+        foreach ($res as $row) {
+            $response[$row['action_id']] = $row['corrective_action'];
+        }
+        return $response;
+    }
 
     public function getDbsWb()
     {
