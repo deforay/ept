@@ -325,24 +325,23 @@ class Application_Model_Covid19
 					continue;
 				}
 
-
 				// Checking algorithm Pass/Fail only if it is NOT a control.
-				/* if (0 == $result['control']) {
+				if (0 == $result['control']) {
 					$r1 = $r2 = $r3 = '';
-					if ($result['test_result_1'] == 1) {
+					if ($result['test_result_1'] == 21) {
 						$r1 = 'P';
-					} else if ($result['test_result_1'] == 2) {
+					} else if ($result['test_result_1'] == 22) {
 						$r1 = 'N';
-					} else if ($result['test_result_1'] == 3) {
+					} else if ($result['test_result_1'] == 23) {
 						$r1 = 'I';
 					} else {
 						$r1 = '-';
 					}
-					if ($result['test_result_2'] == 1) {
+					if ($result['test_result_2'] == 21) {
 						$r2 = 'P';
-					} else if ($result['test_result_2'] == 2) {
+					} else if ($result['test_result_2'] == 22) {
 						$r2 = 'N';
-					} else if ($result['test_result_2'] == 3) {
+					} else if ($result['test_result_2'] == 23) {
 						$r2 = 'I';
 					} else {
 						$r2 = '-';
@@ -350,11 +349,11 @@ class Application_Model_Covid19
 					if (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && ($this->config->evaluation->covid19->covid19MaximumTestAllowed == '1' || $config->evaluation->covid19->covid19MaximumTestAllowed == '2')) {
 						$r3 = 'X';
 					} else {
-						if ($result['test_result_3'] == 1) {
+						if ($result['test_result_3'] == 21) {
 							$r3 = 'P';
-						} else if ($result['test_result_3'] == 2) {
+						} else if ($result['test_result_3'] == 22) {
 							$r3 = 'N';
-						} else if ($result['test_result_3'] == 3) {
+						} else if ($result['test_result_3'] == 23) {
 							$r3 = 'I';
 						} else {
 							$r3 = '-';
@@ -397,7 +396,7 @@ class Application_Model_Covid19
 						);
 						$correctiveActionList[] = 2;
 					}
-				} else { */
+				} else {
 					// If there are two type used for the participants then the control
 					// needs to be tested with at least both type.
 					// If three then all three types required and one then atleast one.
@@ -435,7 +434,7 @@ class Application_Model_Covid19
 							$correctiveActionList[] = 2;
 						}
 					}
-				// }
+				}
 
 				if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
 					$mandatoryResult = 'Fail';
