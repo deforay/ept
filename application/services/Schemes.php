@@ -75,7 +75,7 @@ class Application_Service_Schemes
         if ($testTypes != null && (int) $testTypes > 0 && (int) $testTypes <= 3) {
             $sql = $sql->where('test_no = ' . (int) $testTypes);
         }
-
+        // die($sql);
         $stmt = $db->fetchAll($sql);
         $retval = array();
         foreach ($stmt as $t) {

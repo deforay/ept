@@ -134,9 +134,9 @@ class Application_Model_Covid19
 							'correctiveAction' => $correctiveActions[5]
 						);
 						$correctiveActionList[] = 5;
-						$tk1Expired = true;
+						$tt1Expired = true;
 					} else {
-						$tk1Expired = false;
+						$tt1Expired = false;
 					}
 				} else {
 					$failureReason[] = array(
@@ -146,16 +146,15 @@ class Application_Model_Covid19
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
 				}
-
 				if (isset($recommendedTesttypes[1]) && count($recommendedTesttypes[1]) > 0) {
 					if (!in_array($results[0]['test_type_1'], $recommendedTesttypes[1])) {
-						$tk1RecommendedUsed = false;
+						$tt1RecommendedUsed = false;
 						$failureReason[] = array(
 							'warning' => "For Test 1, testing is not performed with country approved test type.",
 							'correctiveAction' => $correctiveActions[17]
 						);
 					} else {
-						$tk1RecommendedUsed = true;
+						$tt1RecommendedUsed = true;
 					}
 				}
 			}
@@ -172,9 +171,9 @@ class Application_Model_Covid19
 							'correctiveAction' => $correctiveActions[5]
 						);
 						$correctiveActionList[] = 5;
-						$tk2Expired = true;
+						$tt2Expired = true;
 					} else {
-						$tk2Expired = false;
+						$tt2Expired = false;
 					}
 				} else {
 					$failureReason[] = array(
@@ -187,13 +186,13 @@ class Application_Model_Covid19
 
 				if (isset($recommendedTesttypes[2]) && count($recommendedTesttypes[2]) > 0) {
 					if (!in_array($results[0]['test_type_2'], $recommendedTesttypes[2])) {
-						$tk2RecommendedUsed = false;
+						$tt2RecommendedUsed = false;
 						$failureReason[] = array(
 							'warning' => "For Test 2, testing is not performed with country approved test type.",
 							'correctiveAction' => $correctiveActions[17]
 						);
 					} else {
-						$tk2RecommendedUsed = true;
+						$tt2RecommendedUsed = true;
 					}
 				}
 			}
@@ -211,9 +210,9 @@ class Application_Model_Covid19
 							'correctiveAction' => $correctiveActions[5]
 						);
 						$correctiveActionList[] = 5;
-						$tk3Expired = true;
+						$tt3Expired = true;
 					} else {
-						$tk3Expired = false;
+						$tt3Expired = false;
 					}
 				} else {
 
@@ -227,13 +226,13 @@ class Application_Model_Covid19
 
 				if (isset($recommendedTesttypes[3]) && count($recommendedTesttypes[3]) > 0) {
 					if (!in_array($results[0]['test_type_3'], $recommendedTesttypes[3])) {
-						$tk3RecommendedUsed = false;
+						$tt3RecommendedUsed = false;
 						$failureReason[] = array(
 							'warning' => "For Test 3, testing is not performed with country approved test type.",
 							'correctiveAction' => $correctiveActions[17]
 						);
 					} else {
-						$tk3RecommendedUsed = true;
+						$tt3RecommendedUsed = true;
 					}
 				}
 			}
@@ -318,6 +317,7 @@ class Application_Model_Covid19
 			}
 
 			$samplePassOrFail = array();
+			// Zend_Debug::dump($results);die;
 			foreach ($results as $result) {
 				//if Sample is not mandatory, we will skip the evaluation
 				if (0 == $result['mandatory']) {
@@ -327,7 +327,7 @@ class Application_Model_Covid19
 
 
 				// Checking algorithm Pass/Fail only if it is NOT a control.
-				if (0 == $result['control']) {
+				/* if (0 == $result['control']) {
 					$r1 = $r2 = $r3 = '';
 					if ($result['test_result_1'] == 1) {
 						$r1 = 'P';
@@ -397,7 +397,7 @@ class Application_Model_Covid19
 						);
 						$correctiveActionList[] = 2;
 					}
-				} else {
+				} else { */
 					// If there are two type used for the participants then the control
 					// needs to be tested with at least both type.
 					// If three then all three types required and one then atleast one.
@@ -435,7 +435,7 @@ class Application_Model_Covid19
 							$correctiveActionList[] = 2;
 						}
 					}
-				}
+				// }
 
 				if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
 					$mandatoryResult = 'Fail';
@@ -473,7 +473,6 @@ class Application_Model_Covid19
 						$correctResponse = false;
 					}
 				}
-
 				$maxScore += $result['sample_score'];
 
 				if (isset($result['test_result_1']) && !empty($result['test_result_1']) && trim($result['test_result_1']) != false) {
@@ -488,7 +487,7 @@ class Application_Model_Covid19
 					}
 					//T.5 Ensure expiry date information is submitted for all performed tests.
 					//T.15 Testing performed with a test type that is not recommended by MOH
-					if ((isset($tk1Expired) && $tk1Expired) || (isset($tk1RecommendedUsed) && !$tk1RecommendedUsed)) {
+					if ((isset($tt1Expired) && $tt1Expired) || (isset($tt1RecommendedUsed) && !$tt1RecommendedUsed)) {
 						$testTypeExpiryResult = 'Fail';
 						if ($correctResponse) {
 							$totalScore -= $result['sample_score'];
@@ -508,7 +507,7 @@ class Application_Model_Covid19
 					}
 					//T.5 Ensure expiry date information is submitted for all performed tests.
 					//T.15 Testing performed with a test type that is not recommended by MOH
-					if ((isset($tk2Expired) && $tk2Expired) || (isset($tk2RecommendedUsed) && !$tk2RecommendedUsed)) {
+					if ((isset($tt2Expired) && $tt2Expired) || (isset($tt2RecommendedUsed) && !$tt2RecommendedUsed)) {
 						$testTypeExpiryResult = 'Fail';
 						if ($correctResponse) {
 							$totalScore -= $result['sample_score'];
@@ -528,7 +527,7 @@ class Application_Model_Covid19
 					}
 					//T.5 Ensure expiry date information is submitted for all performed tests.
 					//T.15 Testing performed with a test type that is not recommended by MOH
-					if ((isset($tk3Expired) && $tk3Expired) || (isset($tk3RecommendedUsed) && !$tk3RecommendedUsed)) {
+					if ((isset($tt3Expired) && $tt3Expired) || (isset($tt3RecommendedUsed) && !$tt3RecommendedUsed)) {
 						$testTypeExpiryResult = 'Fail';
 						if ($correctResponse) {
 							$totalScore -= $result['sample_score'];
@@ -547,7 +546,6 @@ class Application_Model_Covid19
 
 
 			$configuredDocScore = ((isset($config->evaluation->covid19->documentationScore) && $config->evaluation->covid19->documentationScore != "" && $config->evaluation->covid19->documentationScore != null) ? $config->evaluation->covid19->documentationScore : 0);
-
 			// Response Score
 			if ($maxScore == 0 || $totalScore == 0) {
 				$responseScore = 0;

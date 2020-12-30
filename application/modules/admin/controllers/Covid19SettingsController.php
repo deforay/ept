@@ -52,7 +52,7 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
 
         
         $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $this->view->allTestTypes = $schemeService->getAllCovid19TestType(true);
+        $this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise(true);
         $this->view->recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
 
     }

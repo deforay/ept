@@ -1333,7 +1333,7 @@ class Application_Service_Shipments
                         'reference_result' => $params['possibleResults'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => ($params['control'][$i] == 1 ? 0 : 1) // 0 for control, 1 for normal sample
+                        'sample_score' => 1
                     )
                 );
             }
