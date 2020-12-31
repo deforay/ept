@@ -317,237 +317,32 @@ class Application_Model_Covid19
 			}
 
 			$samplePassOrFail = array();
-			// Zend_Debug::dump($results);die;
 			foreach ($results as $result) {
-				//if Sample is not mandatory, we will skip the evaluation
-				if (0 == $result['mandatory']) {
-					$db->update('response_result_covid19', array('calculated_score' => "N.A."), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
-					continue;
-				}
-
-				// Checking algorithm Pass/Fail only if it is NOT a control.
-				/* Zend_Debug::dump("Result-1->".$result['test_result_1']);
-				Zend_Debug::dump("Result-2->".$result['test_result_2']);
-				Zend_Debug::dump("Result-3->".$result['test_result_3']); */
-				if (0 == $result['control']) {
-					$r1 = $r2 = $r3 = '';
-					if ($result['test_result_1'] == 21) {
-						$r1 = 'P';
-					} else if ($result['test_result_1'] == 22) {
-						$r1 = 'N';
-					} else if ($result['test_result_1'] == 23) {
-						$r1 = 'I';
-					} else {
-						$r1 = '-';
-					}
-					if ($result['test_result_2'] == 21) {
-						$r2 = 'P';
-					} else if ($result['test_result_2'] == 22) {
-						$r2 = 'N';
-					} else if ($result['test_result_2'] == 23) {
-						$r2 = 'I';
-					} else {
-						$r2 = '-';
-					}
-					if (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && ($this->config->evaluation->covid19->covid19MaximumTestAllowed == '1' || $config->evaluation->covid19->covid19MaximumTestAllowed == '2')) {
-						$r3 = 'X';
-					} else {
-						if ($result['test_result_3'] == 21) {
-							$r3 = 'P';
-						} else if ($result['test_result_3'] == 22) {
-							$r3 = 'N';
-						} else if ($result['test_result_3'] == 23) {
-							$r3 = 'I';
-						} else {
-							$r3 = '-';
-						}
-					}
-					/* Zend_Debug::dump("r-1->".$r1);
-					Zend_Debug::dump("r-2->".$r2);
-					Zend_Debug::dump("r-3->".$r3); */
-					if ($r1 == 'N') {
-						if (($r2 == '-') && ($r3 == '-' || $r3 == 'X')) {
-							$algoResult = 'Pass';
-						} else {
-							$algoResult = 'Fail';
-							$failureReason[] = array(
-								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National Covid-19 Testing algorithm was not followed.",
-								'correctiveAction' => $correctiveActions[2]
-							);
-							$correctiveActionList[] = 2;
-						}
-					}
-					//			else if ($r1 == 'P' && $r2 == 'N' && $r3 == 'N') {
-					//                            $algoResult = 'Pass';
-					//                        }
-					else if ($r1 == 'P' && $r2 == 'P') {
-						if (($r3 == '-' || $r3 == 'X')) {
-							$algoResult = 'Pass';
-						} else {
-							$algoResult = 'Fail';
-							$failureReason[] = array(
-								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National Covid-19 Testing algorithm was not followed.",
-								'correctiveAction' => $correctiveActions[2]
-							);
-							$correctiveActionList[] = 2;
-						}
-					} else if ($r1 == 'P' && $r2 == 'N' && ($r3 == 'P' || $r3 == 'X')) {
-						$algoResult = 'Pass';
-					} else {
-						$algoResult = 'Fail';
-						$failureReason[] = array(
-							'warning' => "For <strong>" . $result['sample_label'] . "</strong> National Covid-19 Testing algorithm was not followed.",
-							'correctiveAction' => $correctiveActions[2]
-						);
-						$correctiveActionList[] = 2;
-					}
-				} else {
-					// If there are two type used for the participants then the control
-					// needs to be tested with at least both type.
-					// If three then all three types required and one then atleast one.
-
-					if ($testType1 != "") {
-						if (!isset($result['test_result_1']) || $result['test_result_1'] == "") {
-							$controlTesTypeFail = 'Fail';
-							$failureReason[] = array(
-								'warning' => "For the Control Sample <strong>" . $result['sample_label'] . "</strong>, Test Type 1 (<strong>$testType1</strong>) was not used",
-								'correctiveAction' => $correctiveActions[2]
-							);
-							$correctiveActionList[] = 2;
-						}
-					}
-
-					if ($testType2 != "") {
-						if (!isset($result['test_result_2']) || $result['test_result_2'] == "") {
-							$controlTesTypeFail = 'Fail';
-							$failureReason[] = array(
-								'warning' => "For the Control Sample <strong>" . $result['sample_label'] . "</strong>, Test Type 2 (<strong>$testType2</strong>) was not used",
-								'correctiveAction' => $correctiveActions[2]
-							);
-							$correctiveActionList[] = 2;
-						}
-					}
-
-
-					if ($testType3 != "") {
-						if (!isset($result['test_result_3']) || $result['test_result_3'] == "") {
-							$controlTesTypeFail = 'Fail';
-							$failureReason[] = array(
-								'warning' => "For the Control Sample <strong>" . $result['sample_label'] . "</strong>, Test Type 3 (<strong>$testType3</strong>) was not used",
-								'correctiveAction' => $correctiveActions[2]
-							);
-							$correctiveActionList[] = 2;
-						}
-					}
-				}
-				// die;
-				if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
-					$mandatoryResult = 'Fail';
-					$shipment['is_excluded'] = 'yes';
-					$failureReason[] = array(
-						'warning' => "Sample <strong>" . $result['sample_label'] . "</strong> was not reported. Result not evaluated.",
-						'correctiveAction' => $correctiveActions[4]
-					);
-					$correctiveActionList[] = 4;
-				}
-
-				// matching reported and reference results
-				$correctResponse = false;
 				if (isset($result['reported_result']) && $result['reported_result'] != null) {
-					if ($controlTesTypeFail != 'Fail') {
-						if ($result['reference_result'] == $result['reported_result']) {
-							if ($algoResult != 'Fail' && $mandatoryResult != 'Fail') {
-								$totalScore += $result['sample_score'];
-								$correctResponse = true;
-							} else {
-								$correctResponse = false;
-								// $totalScore remains the same	
-							}
-						} else {
-							if ($result['sample_score'] > 0) {
-								$failureReason[] = array(
-									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported result does not match the expected result",
-									'correctiveAction' => $correctiveActions[3]
-								);
-								$correctiveActionList[] = 3;
-							}
-							$correctResponse = false;
+					if ($result['reference_result'] == $result['reported_result']) {
+						if (0 == $result['control']) {
+							$totalScore += $result['sample_score'];
 						}
+						$score = "Pass";
 					} else {
-						$correctResponse = false;
-					}
-				}
-				$maxScore += $result['sample_score'];
-
-				if (isset($result['test_result_1']) && !empty($result['test_result_1']) && trim($result['test_result_1']) != false) {
-					//T.1 Ensure test type name is reported for all performed tests.
-					if (($testType1 == "")) {
-						$failureReason[] = array(
-							'warning' => "Result not evaluated – name of Test type 1 not reported.",
-							'correctiveAction' => $correctiveActions[7]
-						);
-						$correctiveActionList[] = 7;
-						$shipment['is_excluded'] = 'yes';
-					}
-					//T.5 Ensure expiry date information is submitted for all performed tests.
-					//T.15 Testing performed with a test type that is not recommended by MOH
-					if ((isset($tt1Expired) && $tt1Expired) || (isset($tt1RecommendedUsed) && !$tt1RecommendedUsed)) {
-						$testTypeExpiryResult = 'Fail';
-						if ($correctResponse) {
-							$totalScore -= $result['sample_score'];
+						if ($result['sample_score'] > 0) {
+							/* $this->failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly"; */
 						}
-						$correctResponse = false;
+						$score = "Fail";
 					}
+				} else{
+					$score = "Fail";
 				}
-				if (isset($result['test_result_2']) && !empty($result['test_result_2']) && trim($result['test_result_2']) != false) {
-					//T.1 Ensure test type name is reported for all performed tests.
-					if (($testType2 == "")) {
-						$failureReason[] = array(
-							'warning' => "Result not evaluated – name of Test type 2 not reported.",
-							'correctiveAction' => $correctiveActions[7]
-						);
-						$correctiveActionList[] = 7;
-						$shipment['is_excluded'] = 'yes';
-					}
-					//T.5 Ensure expiry date information is submitted for all performed tests.
-					//T.15 Testing performed with a test type that is not recommended by MOH
-					if ((isset($tt2Expired) && $tt2Expired) || (isset($tt2RecommendedUsed) && !$tt2RecommendedUsed)) {
-						$testTypeExpiryResult = 'Fail';
-						if ($correctResponse) {
-							$totalScore -= $result['sample_score'];
-						}
-						$correctResponse = false;
-					}
-				}
-				if (isset($result['test_result_3']) && !empty($result['test_result_3']) && trim($result['test_result_3']) != false) {
-					//T.1 Ensure test type name is reported for all performed tests.
-					if (($testType3 == "")) {
-						$failureReason[] = array(
-							'warning' => "Result not evaluated – name of Test type 3 not reported.",
-							'correctiveAction' => $correctiveActions[7]
-						);
-						$correctiveActionList[] = 7;
-						$shipment['is_excluded'] = 'yes';
-					}
-					//T.5 Ensure expiry date information is submitted for all performed tests.
-					//T.15 Testing performed with a test type that is not recommended by MOH
-					if ((isset($tt3Expired) && $tt3Expired) || (isset($tt3RecommendedUsed) && !$tt3RecommendedUsed)) {
-						$testTypeExpiryResult = 'Fail';
-						if ($correctResponse) {
-							$totalScore -= $result['sample_score'];
-						}
-						$correctResponse = false;
-					}
+				if (0 == $result['control']) {
+					$maxScore += $result['sample_score'];
 				}
 
-				if (!$correctResponse || $algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])) {
+				if ($score == 'Fail' || (!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null) || ($result['reference_result'] != $result['reported_result'])) {
 					$db->update('response_result_covid19', array('calculated_score' => "Fail"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 				} else {
 					$db->update('response_result_covid19', array('calculated_score' => "Pass"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 				}
 			}
-
-
 
 			$configuredDocScore = ((isset($config->evaluation->covid19->documentationScore) && $config->evaluation->covid19->documentationScore != "" && $config->evaluation->covid19->documentationScore != null) ? $config->evaluation->covid19->documentationScore : 0);
 			// Response Score
