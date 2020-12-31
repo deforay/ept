@@ -309,9 +309,9 @@ try {
                     'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed not like 'yes')")
                 )
             )
-                ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array())
-                ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
-                ->group('spm.shipment_id');
+            ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array())
+            ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
+            ->group('spm.shipment_id');
 
             $totParticipantsRes = $db->fetchRow($pQuery);
 
@@ -325,6 +325,7 @@ try {
             for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                 $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], $limit, $offset);
                 $endValue = $offset + ($limit - 1);
+                // Zend_Debug::dump($resultArray);die;
                 // $endValue = $offset + 49;
                 if ($endValue > $totParticipantsRes['reported_count']) {
                     $endValue = $totParticipantsRes['reported_count'];
@@ -350,7 +351,6 @@ try {
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
             $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
-            // print_r($responseResult);die;
             if (count($resultArray) > 0) {
 
                 // this is the default layout

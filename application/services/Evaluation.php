@@ -1165,7 +1165,22 @@ class Application_Service_Evaluation
 				}
 
 				$shipmentResult[$i]['responseResult'] = $toReturn;
-			}
+			} else if ($res['scheme_type'] == 'covid19') {
+
+				$sQuery = $db->select()->from(array('resc19' => 'response_result_covid19'), array('resc19.shipment_map_id', 'resc19.sample_id', 'resc19.reported_result', 'responseDate' => 'resc19.created_on', 'calculated_score', 'test_type_1', 'lot_no_1', 'exp_date_1', 'test_type_2', 'lot_no_2', 'exp_date_2', 'test_type_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3'))
+					->join(array('respr' => 'r_possibleresult'), 'respr.id=resc19.reported_result', array('labResult' => 'respr.response'))
+					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resc19.shipment_map_id', array('sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
+					->join(array('refc19' => 'reference_result_covid19'), 'refc19.shipment_id=sp.shipment_id and refc19.sample_id=resc19.sample_id', array('refc19.reference_result', 'refc19.sample_label', 'refc19.mandatory', 'refc19.sample_score', 'refc19.control'))
+					->joinLeft(array('c19tk1' => 'r_test_type_covid19'), 'c19tk1.test_type_id=resc19.test_type_1', array('testType1' => 'c19tk1.test_type_name'))
+					->joinLeft(array('c19tk2' => 'r_test_type_covid19'), 'c19tk2.test_type_id=resc19.test_type_2', array('testType2' => 'c19tk2.test_type_name'))
+					->joinLeft(array('c19tk3' => 'r_test_type_covid19'), 'c19tk3.test_type_id=resc19.test_type_3', array('testType3' => 'c19tk3.test_type_name'))
+					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refc19.reference_result', array('referenceResult' => 'refpr.response'))
+					->where("resc19.shipment_map_id = ?", $res['map_id']);
+
+
+				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+				//Zend_Debug::dump($shipmentResult);
+			} 
 			//Zend_Debug::dump($shipmentResult);die;
 			$i++;
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
@@ -1344,9 +1359,9 @@ class Application_Service_Evaluation
 
 				$shipmentResult['participantScores'] = $db->fetchAll($sql);
 			} else if ($shipmentResult['scheme_type'] == 'recency') {
-				$sql = $db->select()->from(array('refdts' => 'reference_result_recency'), array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory'))
-					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
-					->where("refdts.shipment_id = ?", $shipmentResult['shipment_id']);
+				$sql = $db->select()->from(array('refrecency' => 'reference_result_recency'), array('refrecency.reference_result', 'refrecency.sample_label', 'refrecency.mandatory'))
+					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refrecency.reference_result', array('referenceResult' => 'refpr.response'))
+					->where("refrecency.shipment_id = ?", $shipmentResult['shipment_id']);
 				$sqlRes = $db->fetchAll($sql);
 
 				$shipmentResult['referenceResult'] = $sqlRes;
@@ -1364,20 +1379,20 @@ class Application_Service_Evaluation
 				//error_log($sQuery);
 				if (count($sQueryRes) > 0) {
 
-					$tQuery = $db->select()->from(array('refdts' => 'reference_result_recency'), array('refdts.sample_id', 'refdts.sample_label'))
-						->join(array('resdts' => 'response_result_recency'), 'resdts.sample_id=refdts.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN (resdts.reported_result=refdts.reference_result AND spm.is_excluded='no') THEN 1 ELSE 0 END)")))
-						->join(array('spm' => 'shipment_participant_map'), 'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id', array())
+					$tQuery = $db->select()->from(array('refrecency' => 'reference_result_recency'), array('refrecency.sample_id', 'refrecency.sample_label'))
+						->join(array('resrecency' => 'response_result_recency'), 'resrecency.sample_id=refrecency.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN (resrecency.reported_result=refrecency.reference_result AND spm.is_excluded='no') THEN 1 ELSE 0 END)")))
+						->join(array('spm' => 'shipment_participant_map'), 'resrecency.shipment_map_id=spm.map_id and refrecency.shipment_id=spm.shipment_id', array())
 						->where("spm.shipment_id = ?", $shipmentId)
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
 						//->where("substring(spm.evaluation_status,4,1) != '0'")
-						->group(array("refdts.sample_id"));
+						->group(array("refrecency.sample_id"));
 
 					$shipmentResult['summaryResult'][] = $sQueryRes;
 					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
 
 					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id'))
-						->join(array('resdts' => 'response_result_recency'), 'resdts.shipment_map_id=spm.map_id', array('resdts.control_line', 'resdts.diagnosis_line', 'resdts.diagnosis_line'))
+						->join(array('resrecency' => 'response_result_recency'), 'resrecency.shipment_map_id=spm.map_id', array('resrecency.control_line', 'resrecency.diagnosis_line', 'resrecency.diagnosis_line'))
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
 						//->where("substring(spm.evaluation_status,4,1) != '0'")
@@ -1663,7 +1678,80 @@ class Application_Service_Evaluation
 
 				//Zend_Debug::dump($vlCalculation);
 				//die;
-			}
+			} else if ($shipmentResult['scheme_type'] == 'covid19') {
+				$sql = $db->select()->from(array('refcovid19' => 'reference_result_covid19'), array('refcovid19.reference_result', 'refcovid19.sample_label', 'refcovid19.mandatory'))
+					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refcovid19.reference_result', array('referenceResult' => 'refpr.response'))
+					->where("refcovid19.shipment_id = ?", $shipmentResult['shipment_id']);
+				$sqlRes = $db->fetchAll($sql);
+
+				$shipmentResult['referenceResult'] = $sqlRes;
+
+				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes', 'spm.is_excluded'))
+					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
+					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
+					->where("spm.shipment_id = ?", $shipmentId)
+					->where("spm.final_result IS NOT NULL")
+					->where("spm.final_result!=''")
+					// ->where("spm.final_result = ?",'2')
+					//->where("substring(spm.evaluation_status,4,1) != '0'")
+					->group('spm.map_id');
+				$sQueryRes = $db->fetchAll($sQuery);
+				//error_log($sQuery);
+				if (count($sQueryRes) > 0) {
+
+					$tQuery = $db->select()->from(array('refcovid19' => 'reference_result_covid19'), array('refcovid19.sample_id', 'refcovid19.sample_label'))
+						->join(array('rescovid19' => 'response_result_covid19'), 'rescovid19.sample_id=refcovid19.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN (rescovid19.reported_result=refcovid19.reference_result AND spm.is_excluded='no') THEN 1 ELSE 0 END)")))
+						->join(array('spm' => 'shipment_participant_map'), 'rescovid19.shipment_map_id=spm.map_id and refcovid19.shipment_id=spm.shipment_id', array())
+						->where("spm.shipment_id = ?", $shipmentId)
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
+						//->where("substring(spm.evaluation_status,4,1) != '0'")
+						->group(array("refcovid19.sample_id"));
+
+					$shipmentResult['summaryResult'][] = $sQueryRes;
+					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
+
+					$typeNameRes = $db->fetchAll($db->select()->from('r_test_type_covid19')->where("scheme_type='covid19'"));
+
+					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id'))
+						->join(array('rescovid19' => 'response_result_covid19'), 'rescovid19.shipment_map_id=spm.map_id', array('rescovid19.test_type_1', 'rescovid19.test_type_2', 'rescovid19.test_type_3'))
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
+						//->where("substring(spm.evaluation_status,4,1) != '0'")
+						->where("spm.shipment_id = ?", $shipmentId)
+						->group('spm.map_id');
+					$rQueryRes = $db->fetchAll($rQuery);
+					$p = 0;
+					$typeName = array();
+					foreach ($typeNameRes as $res) {
+						$k = 1;
+						foreach ($rQueryRes as $rVal) {
+							if ($res['test_type_id'] == $rVal['test_type_1']) {
+								$typeName[$p]['type_name'] = $res['test_type_name'];
+								$typeName[$p]['count'] = $k++;
+							}
+							if ($res['test_type_id'] == $rVal['test_type_2']) {
+								$typeName[$p]['type_name'] = $res['test_type_name'];
+								$typeName[$p]['count'] = $k++;
+							}
+							if ($res['test_type_id'] == $rVal['test_type_3']) {
+								$typeName[$p]['type_name'] = $res['test_type_name'];
+								$typeName[$p]['count'] = $k++;
+							}
+						}
+
+						$p++;
+					}
+					$shipmentResult['pieChart'] = $typeName;
+				}
+
+				$sql = $db->select()->from(array('p' => 'participant'))
+					->join(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id')
+					->where("spm.shipment_id = ?", $shipmentId);
+
+
+				$shipmentResult['participantScores'] = $db->fetchAll($sql);
+			} 
 
 			$i++;
 		}

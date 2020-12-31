@@ -326,6 +326,9 @@ class Application_Model_Covid19
 				}
 
 				// Checking algorithm Pass/Fail only if it is NOT a control.
+				/* Zend_Debug::dump("Result-1->".$result['test_result_1']);
+				Zend_Debug::dump("Result-2->".$result['test_result_2']);
+				Zend_Debug::dump("Result-3->".$result['test_result_3']); */
 				if (0 == $result['control']) {
 					$r1 = $r2 = $r3 = '';
 					if ($result['test_result_1'] == 21) {
@@ -359,14 +362,16 @@ class Application_Model_Covid19
 							$r3 = '-';
 						}
 					}
-
+					/* Zend_Debug::dump("r-1->".$r1);
+					Zend_Debug::dump("r-2->".$r2);
+					Zend_Debug::dump("r-3->".$r3); */
 					if ($r1 == 'N') {
 						if (($r2 == '-') && ($r3 == '-' || $r3 == 'X')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
 							$failureReason[] = array(
-								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National Covid-19 Testing algorithm was not followed.",
 								'correctiveAction' => $correctiveActions[2]
 							);
 							$correctiveActionList[] = 2;
@@ -381,7 +386,7 @@ class Application_Model_Covid19
 						} else {
 							$algoResult = 'Fail';
 							$failureReason[] = array(
-								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National Covid-19 Testing algorithm was not followed.",
 								'correctiveAction' => $correctiveActions[2]
 							);
 							$correctiveActionList[] = 2;
@@ -391,7 +396,7 @@ class Application_Model_Covid19
 					} else {
 						$algoResult = 'Fail';
 						$failureReason[] = array(
-							'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+							'warning' => "For <strong>" . $result['sample_label'] . "</strong> National Covid-19 Testing algorithm was not followed.",
 							'correctiveAction' => $correctiveActions[2]
 						);
 						$correctiveActionList[] = 2;
@@ -435,7 +440,7 @@ class Application_Model_Covid19
 						}
 					}
 				}
-
+				// die;
 				if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
 					$mandatoryResult = 'Fail';
 					$shipment['is_excluded'] = 'yes';
