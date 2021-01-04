@@ -349,7 +349,8 @@ class Application_Model_Covid19
 			if ($maxScore == 0 || $totalScore == 0) {
 				$responseScore = 0;
 			} else {
-				$responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
+				// $responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
+				$responseScore = round(($totalScore / $maxScore) * 100, 2);
 			}
 
 			//Let us now calculate documentation score
@@ -458,7 +459,7 @@ class Application_Model_Covid19
 			$shipmentResult[$counter]['final_result'] = $finalResult;
 
 			// let us update the total score in DB
-			$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => 0, 'final_result' => $finalResult, "is_followup" => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
+			$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => 0, 'final_result' => $finalResult, "is_followup" => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => null), "map_id = " . $shipment['map_id']);
 			/* $nofOfRowsDeleted = $db->delete('covid19_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
 			$correctiveActionList = array_unique($correctiveActionList);
 			foreach ($correctiveActionList as $ca) {
