@@ -101,37 +101,46 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
         $testThreeOptional = false;
-        if (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed == 'yes') {
-            if (isset($params['covid19Data']->Section2->data->algorithmUsedSelected) && $params['covid19Data']->Section2->data->algorithmUsedSelected == 'myanmarNationalDtsAlgo') {
-                $testThreeOptional = false;
-            } else {
-                $testThreeOptional = true;
-            }
+
+        $testAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
+        if (isset($testAllowed) && ($testAllowed == '1' || $testAllowed == '2')) {
+            $testThreeOptional = true;
         }
+        
+        if (isset($testAllowed) && $testAllowed != '3' && $testAllowed != '2') {
+            $testTwoOptional = true;
+        }
+        
         $sampleIds = $params['covid19Data']->Section4->data->samples->id;
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
 
             $testTypeDb = new Application_Model_DbTable_TestTypenameCovid19();
-            if (isset($params['covid19Data']->Section3->data->kitValue[0]) && trim($params['covid19Data']->Section3->data->kitValue[0]) == 'other') {
+            if (isset($params['covid19Data']->Section3->data->typeValue[0]) && trim($params['covid19Data']->Section3->data->typeValue[0]) == 'other') {
                 $otherTestkitId1 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_1"], $params['covid19Data']->Section3->data->kitOther[0], 'covid19', 1);
                 $params['test_type_1'] = $otherTestkitId1;
             } else {
-                $params['test_type_1'] = (isset($params['covid19Data']->Section3->data->kitValue[0]) && $params['covid19Data']->Section3->data->kitValue[0] != '') ? $params['covid19Data']->Section3->data->kitValue[0] : '';
+                $params['test_type_1'] = (isset($params['covid19Data']->Section3->data->typeValue[0]) && $params['covid19Data']->Section3->data->typeValue[0] != '') ? $params['covid19Data']->Section3->data->typeValue[0] : '';
             }
-            if (isset($params['covid19Data']->Section3->data->kitValue[1]) && trim($params['covid19Data']->Section3->data->kitValue[1]) == 'other') {
+            if (isset($params['covid19Data']->Section3->data->typeValue[1]) && trim($params['covid19Data']->Section3->data->typeValue[1]) == 'other') {
                 $otherTestkitId2 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_2"], $params['covid19Data']->Section3->data->kitOther[1], 'covid19', 2);
                 $params['test_type_2'] = $otherTestkitId2;
             } else {
-                $params['test_type_2'] = (isset($params['covid19Data']->Section3->data->kitValue[1]) && $params['covid19Data']->Section3->data->kitValue[1] != '') ? $params['covid19Data']->Section3->data->kitValue[1] : '';
+                $params['test_type_2'] = (isset($params['covid19Data']->Section3->data->typeValue[1]) && $params['covid19Data']->Section3->data->typeValue[1] != '') ? $params['covid19Data']->Section3->data->typeValue[1] : '';
             }
-            if (isset($params['covid19Data']->Section3->data->kitValue[2]) && trim($params['covid19Data']->Section3->data->kitValue[2]) == 'other') {
+            if (isset($params['covid19Data']->Section3->data->typeValue[2]) && trim($params['covid19Data']->Section3->data->typeValue[2]) == 'other') {
                 $otherTestkitId3 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_3"], $params['covid19Data']->Section3->data->kitOther[2], 'covid19', 3);
                 $params['test_type_3'] = $otherTestkitId3;
             } else {
-                $params['test_type_3'] = (isset($params['covid19Data']->Section3->data->kitValue[2]) && $params['covid19Data']->Section3->data->kitValue[2] != '') ? $params['covid19Data']->Section3->data->kitValue[2] : '';
+                $params['test_type_3'] = (isset($params['covid19Data']->Section3->data->typeValue[2]) && $params['covid19Data']->Section3->data->typeValue[2] != '') ? $params['covid19Data']->Section3->data->typeValue[2] : '';
             }
+            $result2 = (isset($params['covid19Data']->Section4->data->samples->result2[$key]->value) && $params['covid19Data']->Section4->data->samples->result2[$key]->value != '') ? (string)$params['covid19Data']->Section4->data->samples->result2[$key]->value : '';
             $result3 = (isset($params['covid19Data']->Section4->data->samples->result3[$key]->value) && $params['covid19Data']->Section4->data->samples->result3[$key]->value != '') ? (string)$params['covid19Data']->Section4->data->samples->result3[$key]->value : '';
+
+            if ($testTwoOptional) {
+                $params['test_type_2'] = '';
+                $result2 = '';
+            }
             if ($testThreeOptional) {
                 $params['test_type_3'] = '';
                 $result3 = '';
@@ -142,15 +151,15 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
                 $this->insert(array(
                     'shipment_map_id'   => $params['mapId'],
                     'sample_id'         => $sampleId,
-                    'test_type_1'   => $params['test_type_1'],
+                    'test_type_1'       => $params['test_type_1'],
                     'lot_no_1'          => (isset($params['covid19Data']->Section3->data->lot[0]) && $params['covid19Data']->Section3->data->lot[0] != '') ? $params['covid19Data']->Section3->data->lot[0] : '',
                     'exp_date_1'        => (isset($params['covid19Data']->Section3->data->expDate[0]) && $params['covid19Data']->Section3->data->expDate[0] != '') ? date('Y-m-d', strtotime($params['covid19Data']->Section3->data->expDate[0])) : '',
                     'test_result_1'     => (isset($params['covid19Data']->Section4->data->samples->result1[$key]->value) && $params['covid19Data']->Section4->data->samples->result1[$key]->value != '') ? (string)$params['covid19Data']->Section4->data->samples->result1[$key]->value : '',
-                    'test_type_2'   => $params['test_type_2'],
-                    'lot_no_2'          => (isset($params['covid19Data']->Section3->data->lot[1]) && $params['covid19Data']->Section3->data->lot[1] != '') ? $params['covid19Data']->Section3->data->lot[1] : '',
-                    'exp_date_2'        => (isset($params['covid19Data']->Section3->data->expDate[1]) && $params['covid19Data']->Section3->data->expDate[1] != '') ? date('Y-m-d', strtotime($params['covid19Data']->Section3->data->expDate[1])) : '',
-                    'test_result_2'     => (isset($params['covid19Data']->Section4->data->samples->result2[$key]->value) && $params['covid19Data']->Section4->data->samples->result2[$key]->value != '') ? (string)$params['covid19Data']->Section4->data->samples->result2[$key]->value : '',
-                    'test_type_3'   => $params['test_type_3'],
+                    'test_type_2'       => $params['test_type_2'],
+                    'lot_no_2'          => (isset($params['covid19Data']->Section3->data->lot[1]) && $params['covid19Data']->Section3->data->lot[1] != '' && !$testTwoOptional) ? $params['covid19Data']->Section3->data->lot[1] : '',
+                    'exp_date_2'        => (isset($params['covid19Data']->Section3->data->expDate[1]) && $params['covid19Data']->Section3->data->expDate[1] != '' && !$testTwoOptional) ? date('Y-m-d', strtotime($params['covid19Data']->Section3->data->expDate[1])) : '',
+                    'test_result_2'     => $result2,
+                    'test_type_3'       => $params['test_type_3'],
                     'lot_no_3'          => (isset($params['covid19Data']->Section3->data->lot[2]) && $params['covid19Data']->Section3->data->lot[2] != '' && !$testThreeOptional) ? $params['covid19Data']->Section3->data->lot[2] : '',
                     'exp_date_3'        => (isset($params['covid19Data']->Section3->data->expDate[2]) && $params['covid19Data']->Section3->data->expDate[2] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['covid19Data']->Section3->data->expDate[2])) : null,
                     'test_result_3'     => $result3,
@@ -160,15 +169,15 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
                 ));
             } else {
                 $this->update(array(
-                    'test_type_1'   => $params['test_type_1'],
+                    'test_type_1'       => $params['test_type_1'],
                     'lot_no_1'          => (isset($params['covid19Data']->Section3->data->lot[0]) && $params['covid19Data']->Section3->data->lot[0] != '') ? $params['covid19Data']->Section3->data->lot[0] : '',
                     'exp_date_1'        => (isset($params['covid19Data']->Section3->data->expDate[0]) && $params['covid19Data']->Section3->data->expDate[0] != '') ? date('Y-m-d', strtotime($params['covid19Data']->Section3->data->expDate[0])) : '',
                     'test_result_1'     => (isset($params['covid19Data']->Section4->data->samples->result1[$key]->value) && $params['covid19Data']->Section4->data->samples->result1[$key]->value != '') ? $params['covid19Data']->Section4->data->samples->result1[$key]->value : '',
-                    'test_type_2'   => $params['test_type_2'],
-                    'lot_no_2'          => (isset($params['covid19Data']->Section3->data->lot[1]) && $params['covid19Data']->Section3->data->lot[1] != '') ? $params['covid19Data']->Section3->data->lot[1] : '',
-                    'exp_date_2'        => (isset($params['covid19Data']->Section3->data->expDate[1]) && $params['covid19Data']->Section3->data->expDate[1] != '') ? date('Y-m-d', strtotime($params['covid19Data']->Section3->data->expDate[1])) : '',
-                    'test_result_2'     => (isset($params['covid19Data']->Section4->data->samples->result2[$key]->value) && $params['covid19Data']->Section4->data->samples->result2[$key]->value != '') ? $params['covid19Data']->Section4->data->samples->result2[$key]->value : '',
-                    'test_type_3'   => $params['test_type_3'],
+                    'test_type_2'       => $params['test_type_2'],
+                    'lot_no_2'          => (isset($params['covid19Data']->Section3->data->lot[1]) && $params['covid19Data']->Section3->data->lot[1] != '' && !$testTwoOptional) ? $params['covid19Data']->Section3->data->lot[1] : '',
+                    'exp_date_2'        => (isset($params['covid19Data']->Section3->data->expDate[1]) && $params['covid19Data']->Section3->data->expDate[1] != '' && !$testTwoOptional) ? date('Y-m-d', strtotime($params['covid19Data']->Section3->data->expDate[1])) : '',
+                    'test_result_2'     => $result2,
+                    'test_type_3'       => $params['test_type_3'],
                     'lot_no_3'          => (isset($params['covid19Data']->Section3->data->lot[2]) && $params['covid19Data']->Section3->data->lot[2] != '' && !$testThreeOptional) ? $params['covid19Data']->Section3->data->lot[2] : '',
                     'exp_date_3'        => (isset($params['covid19Data']->Section3->data->expDate[2]) && $params['covid19Data']->Section3->data->expDate[2] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['covid19Data']->Section3->data->expDate[2])) : null,
                     'test_result_3'     => $result3,

@@ -267,6 +267,9 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         if ($params['schemeType'] == 'recency') {
             $lastDate   = $params['recencyData']->Section2->data->resultDueDate;
         }
+        if ($params['schemeType'] == 'covid19') {
+            $lastDate   = $params['covid19Data']->Section2->data->resultDueDate;
+        }
 
         // changing evaluation status 3rd character to 1 = responded
         $data['evaluation_status'][2] = 1;
@@ -286,8 +289,9 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         }
         $data['synced'] = 'yes';
         $data['synced_on'] = new Zend_Db_Expr('now()');
-        // Zend_Debug::dump($data);die;
         $data['mode_of_response'] = 'app';
+        // Zend_Debug::dump($data);die;
+
         return $this->update($data, "map_id = " . $params['mapId']);
     }
 }
