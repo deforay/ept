@@ -19,15 +19,15 @@ class Application_Service_Schemes
     public function getAllCovid19TestType($countryAdapted = false)
     {
 
-        $testkitsDb = new Application_Model_DbTable_TestTypenameCovid19();
-        return $testkitsDb->getActiveTestTypesNamesForScheme('covid19', $countryAdapted);
+        $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
+        return $testTypesDb->getActiveTestTypesNamesForScheme('covid19', $countryAdapted);
     }
     
     public function getAllCovid19TestTypeResponseWise($countryAdapted = false)
     {
 
-        $testkitsDb = new Application_Model_DbTable_TestTypenameCovid19();
-        return $testkitsDb->getActiveTestTypesNamesForSchemeResponseWise('covid19', $countryAdapted);
+        $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
+        return $testTypesDb->getActiveTestTypesNamesForSchemeResponseWise('covid19', $countryAdapted);
     }
     public function getAllDtsTestKitList($countryAdapted = false)
     {
@@ -46,6 +46,20 @@ class Application_Service_Schemes
         //            $retval[$kitName['TESTKITNAMEID']] = $kitName['TESTKITNAME'];
         //        }
         return $stmt;
+    }
+
+    public function getAllCovid19TestTypeList($countryAdapted = false)
+    {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('r_test_type_covid19'), array('test_type_id', 'test_type_name', 'test_type_1', 'test_type_2', 'test_type_3'))
+            ->where("scheme_type = 'covid19'");
+
+        if ($countryAdapted) {
+            $sql = $sql->where('country_adapted = 1');
+        }
+
+        return $db->fetchAll($sql);
     }
 
     public function getRecommededDtsTestkit($testKit = null)
@@ -750,7 +764,7 @@ class Application_Service_Schemes
             error_log($e->getMessage());
         }
     }
-
+    
     public function updateTestkit($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -764,6 +778,34 @@ class Application_Service_Schemes
             error_log($e->getMessage());
         }
     }
+    public function addTestType($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->beginTransaction();
+        try {
+            $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
+            $testTypesDb->addTestTypeDetails($params);
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log($e->getMessage());
+        }
+    }
+
+    public function updateTestType($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->beginTransaction();
+        try {
+            $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
+            $testTypesDb->updateTestTypeDetails($params);
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log($e->getMessage());
+        }
+    }
+    
     public function updateTestkitStage($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -777,17 +819,43 @@ class Application_Service_Schemes
             error_log($e->getMessage());
         }
     }
+    
+    public function updateTestTypeStage($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->beginTransaction();
+        try {
+            $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
+            $testTypesDb->updateTestTypeStageDetails($params);
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log($e->getMessage());
+        }
+    }
 
     public function getAllDtsTestKitInGrid($parameters)
     {
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getAllTestKitsForAllSchemes($parameters);
     }
+    
+    public function getAllCovid19TestTypeInGrid($parameters)
+    {
+        $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
+        return $testTypesDb->getAllTestTypesForAllSchemes($parameters);
+    }
 
     public function getDtsTestkit($testkitId)
     {
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getDtsTestkitDetails($testkitId);
+    }
+    
+    public function getCovid19TestType($testtypeId)
+    {
+        $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
+        return $testTypesDb->getCovid19TestTypeDetails($testtypeId);
     }
 
     public function getVlManualValue($shipmentId, $sampleId, $vlAssay)

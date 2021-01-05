@@ -52,23 +52,23 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
             'test_type_approval_agency' => $params['approvalAgency'],
             'source_reference'          => $params['sourceReference'],
             'country_adapted'           => $params['countryAdapted'],
-            'approval' => '1',
-            'created_on' => new Zend_Db_Expr('now()'));
+            'approval'                  => '1',
+            'created_on'                => new Zend_Db_Expr('now()'));
         return $this->insert($data);
     }
 
     public function updateTestTypeDetails($params) {
         if (trim($params['testtypeId']) != "") {
             $data = array(
-                'test_type_name' => $params['testTypeName'],
-                'test_type_short_name' => $params['shortTestTypeName'],
-                'test_type_comments' => $params['comments'],
-                'test_type_manufacturer' => $params['manufacturer'],
-				'scheme_type' => $params['scheme'],
+                'test_type_name'            => $params['testTypeName'],
+                'test_type_short_name'      => $params['shortTestTypeName'],
+                'test_type_comments'        => $params['comments'],
+                'test_type_manufacturer'    => $params['manufacturer'],
+				'scheme_type'               => $params['scheme'],
                 'test_type_approval_agency' => $params['approvalAgency'],
-                'source_reference' => $params['sourceReference'],
-                'country_adapted' => $params['countryAdapted'],
-                'approval' => $params['approved']
+                'source_reference'          => $params['sourceReference'],
+                'country_adapted'           => $params['countryAdapted'],
+                'approval'                  => $params['approved']
             );
             return $this->update($data, "test_type_id='" . $params['testtypeId'] . "'");
         }
@@ -181,8 +181,8 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name))
-								->join(array('s'=>'scheme_list'),"a.scheme_type=s.scheme_id",'scheme_name');
+        $sQuery = $this->getAdapter()->select()->from(array('t' => $this->_name))
+								->join(array('s'=>'scheme_list'),"t.scheme_type=s.scheme_id",'scheme_name');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -239,7 +239,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
             $row[] = $aRow['test_type_approval_agency'];
             $row[] = $approved;
             $row[] = $general->humanDateFormat($createdDate[0]) . " " . $createdDate[1];
-            $row[] = '<a href="/admin/testtype/edit/53s5k85_8d/' . base64_encode($aRow['test_type_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = '<a href="/admin/test-type/edit/53s5k85_8d/' . base64_encode($aRow['test_type_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
             $output['aaData'][] = $row;
         }
@@ -247,9 +247,8 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
         echo json_encode($output);
     }
 
-    public function getDtsTestTypeDetails($testtypeId) {
-        $result = $this->fetchRow($this->select()->where("test_type_id=?", $testtypeId));
-        return $result;
+    public function getCovid19TestTypeDetails($testtypeId) {
+        return $this->fetchRow($this->select()->where("test_type_id=?", $testtypeId));
     }
 
     public function addTestTypeInParticipant($oldName, $testtypeName,$scheme, $testtype = "") {
