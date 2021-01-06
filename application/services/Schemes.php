@@ -39,7 +39,6 @@ class Application_Service_Schemes
         if ($countryAdapted) {
             $sql = $sql->where('COUNTRYADAPTED = 1');
         }
-
         $stmt = $db->fetchAll($sql);
 
         //        foreach ($stmt as $kitName) {
@@ -58,7 +57,6 @@ class Application_Service_Schemes
         if ($countryAdapted) {
             $sql = $sql->where('country_adapted = 1');
         }
-
         return $db->fetchAll($sql);
     }
 

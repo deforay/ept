@@ -317,7 +317,6 @@ try {
 
             $resultStatus = $evalRow['report_type'];
 
-
             /*  for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset = $offset + 50) {
                  $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 50, $offset); */
             //$offset = 0;

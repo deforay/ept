@@ -1,14 +1,14 @@
 <?php
 $result = ''; 
-foreach ($this->testkitList as $key => $testkitList) {
+foreach ($this->testTypeList as $key => $testTypeList) {
     $selected = "";
-    if($this->testkitStage=='testkit_1' && $testkitList['testkit_1']==1){
+    if($this->testTypeStage=='test_type_1' && $testTypeList['test_type_1']==1){
         $selected = "selected='selected'";
-    }else if($this->testkitStage=='testkit_2' && $testkitList['testkit_2']==1){
+    }else if($this->testTypeStage=='test_type_2' && $testTypeList['test_type_2']==1){
         $selected = "selected='selected'";
-    }else if($this->testkitStage=='testkit_3' && $testkitList['testkit_3']==1){
+    }else if($this->testTypeStage=='test_type_3' && $testTypeList['test_type_3']==1){
         $selected = "selected='selected'";
     }
-    $result.='<option value="' . $testkitList['TESTKITNAMEID'] . '"' . $selected . '>' . $testkitList['TESTKITNAME']. '</option>';
+    $result.='<option value="' . $testTypeList['test_type_id'] . '"' . $selected . '>' . $testTypeList['test_type_name']. '</option>';
 }
 echo $result;

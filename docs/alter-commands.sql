@@ -2679,3 +2679,15 @@ INSERT INTO `r_covid19_corrective_actions` (`action_id`, `corrective_action`, `d
 (15, 'Review all testing procedures prior to performing client testing and contact your supervisor for improvement.', 'Participant did not meet the score criteria (Participant Score is 80 and Required Score is 95)'),
 (16, 'Ensure to provide to provide panel receipt date. ', 'Panel receipt date missing in PT report form.'),
 (17, 'Please test Covid19 sample as per National Covid-19 Testing lab. Review and refer to SOP for testing.', 'For Test (1/2/3) testing is not performed with country approved test type.');
+
+-- Thana 06-Jan-2021
+CREATE TABLE `reference_covid19_test_type` (
+ `id` int NOT NULL AUTO_INCREMENT,
+ `shipment_id` varchar(255) NOT NULL,
+ `sample_id` varchar(255) NOT NULL,
+ `test_type` varchar(255) NOT NULL,
+ `lot_no` varchar(255) NOT NULL,
+ `expiry_date` date NOT NULL,
+ `result` varchar(255) NOT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

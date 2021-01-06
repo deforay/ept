@@ -1337,6 +1337,33 @@ class Application_Service_Shipments
                     )
                 );
             }
+
+            // <------ Insert reference_dts_rapid_hiv table
+            if (isset($params['rtype'][$i + 1]['type'])) {
+                $eiaSize = sizeof($params['rtype'][$i + 1]['type']);
+                for ($e = 0; $e < $eiaSize; $e++) {
+                    if (isset($params['rtype'][$i + 1]['type'][$e]) && trim($params['rtype'][$i + 1]['type'][$e]) != "") {
+                        $expDate = '';
+                        if (trim($params['rtype'][$i + 1]['expiry'][$e]) != "") {
+                            $expDate = Pt_Commons_General::dateFormat($params['rtype'][$i + 1]['expiry'][$e]);
+                        }
+
+                        $dbAdapter->insert(
+                            'reference_covid19_test_type',
+                            array(
+                                'shipment_id' => $lastId,
+                                'sample_id' => ($i + 1),
+                                'test_type' => $params['rtype'][$i + 1]['type'][$e],
+                                'lot_no' => $params['rtype'][$i + 1]['lot'][$e],
+                                'expiry_date' => $expDate,
+                                'result' => $params['rtype'][$i + 1]['result'][$e]
+                            )
+                        );
+                    }
+                }
+            }
+
+            // ------------------>
         } 
 
         $distroService->updateDistributionStatus($params['distribution'], 'pending');
