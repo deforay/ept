@@ -27,7 +27,7 @@ class Application_Model_Covid19
 
 			$createdOnUser = explode(" ", $shipment['created_on_user']);
 			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
-				$createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
+				$createdOn = new Zend_Date($createdOnUser[0]);
 			} else {
 				$datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
 				$createdOn = new Zend_Date($datearray);
@@ -57,7 +57,7 @@ class Application_Model_Covid19
 
 
 			//Response was submitted after the last response date.
-			$lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
+			$lastDate = new Zend_Date($shipment['lastdate_response']);
 			if ($createdOn->compare($lastDate, Zend_date::DATES) > 0) {
 				//$lastDateResult = 'Fail';
 				$failureReason[] = array(
@@ -74,7 +74,7 @@ class Application_Model_Covid19
 			// 3 tests algo added for Myanmar initally, might be used in other places eventually
 			//$threeTestCorrectResponses = array('NXX','PPP');  
 
-			$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+			$testedOn = new Zend_Date($results[0]['shipment_test_date']);
 
 			// Getting the Test Date string to show in Corrective Actions and other sentences
 			$testDate = $testedOn->toString('dd-MMM-YYYY');
@@ -83,15 +83,15 @@ class Application_Model_Covid19
 			$expDate1 = "";
 			//die($results[0]['exp_date_1']);
 			if (isset($results[0]['exp_date_1']) && trim($results[0]['exp_date_1']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_1'])) != "") {
-				$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
+				$expDate1 = new Zend_Date($results[0]['exp_date_1']);
 			}
 			$expDate2 = "";
 			if (isset($results[0]['exp_date_2']) && trim($results[0]['exp_date_2']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_2'])) != "") {
-				$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
+				$expDate2 = new Zend_Date($results[0]['exp_date_2']);
 			}
 			$expDate3 = "";
 			if (isset($results[0]['exp_date_3']) && trim($results[0]['exp_date_3']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_3'])) != "") {
-				$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
+				$expDate3 = new Zend_Date($results[0]['exp_date_3']);
 			}
 
 			// Getting Test Type Names

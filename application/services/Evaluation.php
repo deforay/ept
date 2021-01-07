@@ -218,13 +218,13 @@ class Application_Service_Evaluation
 				$createdOnUser = explode(" ", $shipment['created_on_user']);
 				if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
-					$createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
+					$createdOn = new Zend_Date($createdOnUser[0]);
 				} else {
 					$datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
 					$createdOn = new Zend_Date($datearray);
 				}
 
-				$lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
+				$lastDate = new Zend_Date($shipment['lastdate_response']);
 				if ($createdOn->isEarlier($lastDate)) {
 
 					$results = $schemeService->getDbsSamples($shipmentId, $shipment['participant_id']);
@@ -286,20 +286,20 @@ class Application_Service_Evaluation
 
 					// checking test kit expiry dates
 
-					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+					$testedOn = new Zend_Date($results[0]['shipment_test_date']);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
 					$expDate1 = "";
 					if (trim(strtotime($results[0]['exp_date_1'])) != "") {
-						$expDate1 = new Zend_Date($results[0]['exp_date_1'], Zend_Date::ISO_8601);
+						$expDate1 = new Zend_Date($results[0]['exp_date_1']);
 					}
 					$expDate2 = "";
 					if (trim(strtotime($results[0]['exp_date_2'])) != "") {
-						$expDate2 = new Zend_Date($results[0]['exp_date_2'], Zend_Date::ISO_8601);
+						$expDate2 = new Zend_Date($results[0]['exp_date_2']);
 					}
 
 					$expDate3 = "";
 					if (trim(strtotime($results[0]['exp_date_3'])) != "") {
-						$expDate3 = new Zend_Date($results[0]['exp_date_3'], Zend_Date::ISO_8601);
+						$expDate3 = new Zend_Date($results[0]['exp_date_3']);
 					}
 
 
@@ -327,7 +327,7 @@ class Application_Service_Evaluation
 							$failureReason[]['warning'] = "EIA 1 (<strong>" . $testKit1 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate;
 						}
 					}
-					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+					$testedOn = new Zend_Date($results[0]['shipment_test_date']);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
 					if ($expDate2 != "") {
 						if ($testedOn->isLater($expDate2)) {
@@ -341,7 +341,7 @@ class Application_Service_Evaluation
 						}
 					}
 
-					$testedOn = new Zend_Date($results[0]['shipment_test_date'], Zend_Date::ISO_8601);
+					$testedOn = new Zend_Date($results[0]['shipment_test_date']);
 					$testDate = $testedOn->toString('dd-MMM-YYYY');
 					if ($expDate3 != "") {
 						if ($testedOn->isLater($expDate3)) {

@@ -1976,7 +1976,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $modeOfReceipt = $commonService->getAllModeOfReceipt();
         $globalQcAccess = $commonService->getConfig('qc_access');
         $isEditable = $spMap->isShipmentEditable($params['shipment_id'], $params['participant_id']);
-        $lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
+        $lastDate = new Zend_Date($shipment['lastdate_response']);
         $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
