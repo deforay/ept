@@ -53,7 +53,7 @@ if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $thi
         <td>
             <input id="rehydrationDate" type="text" name="rehydrationDate" value="<?php echo $this->dateFormat($attributes['sample_rehydration_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" />
         </td>
-        <th>Algorithm Used</th>
+        <!-- <th>Algorithm Used</th>
         <td>
             <select name="algorithm" id="algorithm" class="isRequired form-control" title="Please choose the Algorithm used"  onchange="showHideTest3();">
 
@@ -71,7 +71,7 @@ if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $thi
                     <option value="myanmarNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Myanmar National Algorithm</option>
                 <?php } ?>
             </select>
-        </td>
+        </td> -->
     </tr>
     <tr>
         <th>Supervisor Review</th>
