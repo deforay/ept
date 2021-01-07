@@ -74,6 +74,38 @@ if ($resultArray['shipment'] != "") {
             unlink($piechart);
         }
     } */
+    
+    /* if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
+        $y = $pdf->getY() + 5;
+        foreach ($resultArray['shipment']['pieChart'] as $piechart) {
+            $data[] = $piechart['count'];
+            $legends[] = $piechart['kit_name'] . " (N=" . $piechart['count'] . ")";
+        }
+
+        $graph = new PieGraph(700,400);
+        $graph->SetShadow();
+        
+        // Set A title for the plot
+        $graph->title->Set("Test kits used for DTS-based PT survey " . $resultArray['shipment']['distribution_code']);
+        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
+         
+        $p1 = new PiePlot($data);
+        $p1->SetLegends($legends);
+        $p1->SetCenter(0.4);
+         
+        
+        $graph->Add($p1);
+
+        // $p1->SetSliceColors(array('forestgreen','red','gray','orange','yellow'));
+        
+        $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart1.png';
+        $graph->Stroke($piechart);
+
+        $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
+        if (file_exists($piechart)) {
+            unlink($piechart);
+        }
+    } */
 
 
 
@@ -358,7 +390,7 @@ if ($resultArray['shipment'] != "") {
 
         $passed = $responseResult["number_passed"];
         $failed = $responseResult["number_failed"];
-        $notResponded = $responseResult["others"];
+        $notResponded = $responseResult["not_responded"];
         $late = $responseResult["number_late"];
         $excluded = $responseResult["excluded"];
 
@@ -376,7 +408,10 @@ if ($resultArray['shipment'] != "") {
         $p1->SetLegends(array("Passed (N=$passed)","Failed (N=$failed)","Not Responded (N=$notResponded)","Late Response (N=$late)","Excluded (N=$excluded)"));
         $p1->SetCenter(0.4);
          
+        
         $graph->Add($p1);
+
+        $p1->SetSliceColors(array('forestgreen','red','gray','orange','yellow'));
         
         $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
         $graph->Stroke($performancePiechart);
