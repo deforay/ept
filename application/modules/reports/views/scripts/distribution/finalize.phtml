@@ -218,7 +218,13 @@ if (count($this->shipment) > 0) {
 
     <div class="row">
         <div id="summaryDiv" class="col-md-12">
+            <!-- <pre><?php 
+            $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");$filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
+            echo $filePath;
+            ?></pre>
+            <a href="<?php echo $this->baseUrl("/d/" . $filePath); ?>">Download</a>
 
+            <pre><?php print_r($this->shipment[0]['report_generated']);?></pre> -->
         </div>
     </div>
     <div class="col-lg-12" align="center" id="finalizeBtn" style="display:none;clear: both;">
