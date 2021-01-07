@@ -22,13 +22,13 @@ class Application_Model_Eid
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
-                $createdOn = new Zend_Date($createdOnUser[0], Zend_Date::ISO_8601);
+                $createdOn = new Zend_Date($createdOnUser[0]);
             } else {
                 $datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
                 $createdOn = new Zend_Date($datearray);
             }
 
-            $lastDate = new Zend_Date($shipment['lastdate_response'], Zend_Date::ISO_8601);
+            $lastDate = new Zend_Date($shipment['lastdate_response']);
             if ($createdOn->compare($lastDate) <= 0) {
                 $results = $schemeService->getEidSamples($shipmentId, $shipment['participant_id']);
                 $totalScore = 0;

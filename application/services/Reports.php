@@ -1806,7 +1806,7 @@ class Application_Service_Reports
 
                 if (trim($aRow['attributes']) != "") {
                     $attributes = json_decode($aRow['attributes'], true);
-                    $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
+                    $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
                 }
 
@@ -2460,7 +2460,7 @@ class Application_Service_Reports
 
                 if (trim($aRow['attributes']) != "") {
                     $attributes = json_decode($aRow['attributes'], true);
-                    $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
+                    $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
                 }
 
@@ -3829,7 +3829,7 @@ class Application_Service_Reports
 
                 if (trim($aRow['attributes']) != "") {
                     $attributes = json_decode($aRow['attributes'], true);
-                    $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date'], Zend_Date::ISO_8601);
+                    $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
                 }
 

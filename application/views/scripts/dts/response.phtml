@@ -74,7 +74,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 
                 <?php
                 $date = new Zend_Date();
-                $lastDate = new Zend_Date($this->shipment['lastdate_response'], Zend_Date::ISO_8601);
+                $lastDate = new Zend_Date($this->shipment['lastdate_response']);
                 $response = $date->compare($lastDate, Zend_Date::DATES)
                 ?>
                 <div>
