@@ -264,8 +264,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function resetpasswordForEmail($email)
     {
-        $row = $this->fetchRow("primary_email = '" . $email . "'");
-        if ($row != null && count($row) == 1) {
+        return $this->fetchRow("primary_email = '" . $email . "'");
+        /* if ($row != null && count($row) == 1) {
             $randompassword = Application_Service_Common::getRandomString(15);
             $row->password = $randompassword;
             $row->force_password_reset = 1;
@@ -273,7 +273,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return $randompassword;
         } else {
             return false;
-        }
+        } */
     }
 
     public function getAllDataManagers($active = true)
