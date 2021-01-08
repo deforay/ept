@@ -63,7 +63,6 @@ class IndividualPDF extends TCPDF
 
         $this->header = nl2br(trim($this->header));
         $this->header = preg_replace('/<br>$/', "", $this->header);
-
         if ($this->schemeType == 'vl') {
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral Load using Dried Tube Specimen</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
 
@@ -75,7 +74,7 @@ class IndividualPDF extends TCPDF
         } else if ($this->schemeType == 'recency') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
-        } else if ($this->schemeType == 'dts') {
+        } else if ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - HIV Serum Sample </span>';
         } else {
