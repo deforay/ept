@@ -2693,3 +2693,15 @@ CREATE TABLE `reference_covid19_test_type` (
 
 -- Thana 11-Jan-2021
 UPDATE `scheme_list` SET `scheme_name` = 'SARS-CoV-2' WHERE `scheme_list`.`scheme_id` = 'covid19';
+
+CREATE TABLE `response_covid19_not_tested_reason` (
+ `covid19_not_tested_reason_id` int NOT NULL AUTO_INCREMENT,
+ `covid19_not_tested_reason` varchar(500) DEFAULT NULL,
+ `status` varchar(45) NOT NULL DEFAULT 'active',
+ PRIMARY KEY (`covid19_not_tested_reason_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+INSERT INTO `response_covid19_not_tested_reason` (`covid19_not_tested_reason_id`, `covid19_not_tested_reason`, `status`) VALUES
+(1, 'Issue with Sample', 'active'),
+(2, 'Machine not working', 'active'),
+(3, 'Other', 'active');
