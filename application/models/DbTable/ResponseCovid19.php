@@ -9,7 +9,9 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
     public function updateResults($params)
     {
         $sampleIds = $params['sampleId'];
-
+        if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
+            return $this->removeShipmentResults($params['smid']);
+        }
         foreach ($sampleIds as $key => $sampleId) {
             // die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
@@ -29,45 +31,33 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
                 $otherTestkitId3 = $testTypeDb->addTestTypeInParticipant($params['test_type_other_update_3'], $params['test_type_other_3'], 'covid19', 3);
                 $params['test_type_3'] = $otherTestkitId3;
             }
+            $data = array(
+                'test_type_1'       => $params['test_type_1'],
+                'lot_no_1'          => $params['lot_no_1'],
+                'exp_date_1'        => Pt_Commons_General::dateFormat($params['exp_date_1']),
+                'test_result_1'     => $params['test_result_1'][$key],
+                'test_type_2'       => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2)?$params['test_type_2']:null,
+                'lot_no_2'          => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2)?$params['lot_no_2']:null,
+                'exp_date_2'        => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2)?Pt_Commons_General::dateFormat($params['exp_date_2']):null,
+                'test_result_2'     => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2)?$params['test_result_2'][$key]:null,
+                'test_type_3'       => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3)?$params['test_type_3']:null,
+                'lot_no_3'          => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3)?$params['lot_no_3']:null,
+                'exp_date_3'        => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3)?Pt_Commons_General::dateFormat($params['exp_date_3']):null,
+                'test_result_3'     => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3)?$params['test_result_3'][$key]:null,
+                'reported_result'   => $params['reported_result'][$key],
+            );
+            
             // Zend_Debug::dump($params);die;
             if ($res == null || count($res) == 0) {
-                $this->insert(array(
-                    'shipment_map_id' => $params['smid'],
-                    'sample_id' => $sampleId,
-                    'test_type_1' => $params['test_type_1'],
-                    'lot_no_1' => $params['lot_no_1'],
-                    'exp_date_1' => Pt_Commons_General::dateFormat($params['exp_date_1']),
-                    'test_result_1' => $params['test_result_1'][$key],
-                    'test_type_2' => $params['test_type_2'],
-                    'lot_no_2' => $params['lot_no_2'],
-                    'exp_date_2' => Pt_Commons_General::dateFormat($params['exp_date_2']),
-                    'test_result_2' => $params['test_result_2'][$key],
-                    'test_type_3' => $params['test_type_3'],
-                    'lot_no_3' => $params['lot_no_3'],
-                    'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
-                    'test_result_3' => $params['test_result_3'][$key],
-                    'reported_result' => $params['reported_result'][$key],
-                    'created_by' => $authNameSpace->dm_id,
-                    'created_on' => new Zend_Db_Expr('now()')
-                ));
+                $data['shipment_map_id'] = $params['smid'];
+                $data['sample_id'] = $sampleId;
+                $data['created_by'] = $authNameSpace->dm_id;
+                $data['created_on'] = new Zend_Db_Expr('now()');
+                $this->insert($data);
             } else {
-                $this->update(array(
-                    'test_type_1' => $params['test_type_1'],
-                    'lot_no_1' => $params['lot_no_1'],
-                    'exp_date_1' => Pt_Commons_General::dateFormat($params['exp_date_1']),
-                    'test_result_1' => $params['test_result_1'][$key],
-                    'test_type_2' => $params['test_type_2'],
-                    'lot_no_2' => $params['lot_no_2'],
-                    'exp_date_2' => Pt_Commons_General::dateFormat($params['exp_date_2']),
-                    'test_result_2' => $params['test_result_2'][$key],
-                    'test_type_3' => $params['test_type_3'],
-                    'lot_no_3' => $params['lot_no_3'],
-                    'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
-                    'test_result_3' => $params['test_result_3'][$key],
-                    'reported_result' => $params['reported_result'][$key],
-                    'updated_by' => $authNameSpace->dm_id,
-                    'updated_on' => new Zend_Db_Expr('now()')
-                ), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+                $data['updated_by'] = $authNameSpace->dm_id;
+                $data['updated_on'] = new Zend_Db_Expr('now()');
+                $this->update($data, "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             }
         }
     }

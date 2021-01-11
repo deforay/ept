@@ -2705,3 +2705,5 @@ INSERT INTO `response_covid19_not_tested_reason` (`covid19_not_tested_reason_id`
 (1, 'Issue with Sample', 'active'),
 (2, 'Machine not working', 'active'),
 (3, 'Other', 'active');
+
+ALTER TABLE `shipment_participant_map` ADD `number_of_tests` INT(11) NULL DEFAULT NULL AFTER `shipment_test_date`;

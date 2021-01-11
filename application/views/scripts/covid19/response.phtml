@@ -250,7 +250,8 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <select class="form-control" name="numberOfParticipantTest" id="numberOfParticipantTest" title="Please select number of participant test" onchange="showHideTest(this.value);">
                                 <option value="">--Select--</option>
                                 <?php foreach(range(1,$maximumAllowed) as $no){
-                                    echo '<option value="'.$no.'">'.$no.'</option>';
+                                    $selected = (isset($this->shipment['number_of_tests']) && $this->shipment['number_of_tests'] == $no)?"selected='selected'":"";
+                                    echo '<option value="'.$no.'" '.$selected.'>'.$no.'</option>';
                                 }?>
                                 </select>
                             </td>
@@ -449,7 +450,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {
 									?>
-										<option value="<?php echo $reason['covid19_not_tested_reason_id']; ?>" <?php echo ($this->shipment['covid19_not_tested_reason'] == $reason['covid19_not_tested_reason_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['covid19_not_tested_reason']); ?></option>
+										<option value="<?php echo $reason['covid19_not_tested_reason_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['covid19_not_tested_reason_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['covid19_not_tested_reason']); ?></option>
 									<?php } ?>
 								</select>
 							</td>
@@ -600,6 +601,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         <?php } ?>
     }); 
     $(function() {
+        showHideTest(<?php echo $this->shipment['number_of_tests'];?>);
         showHideTest2();
         showHideTest3();
         //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
@@ -664,29 +666,29 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         });
 
         //PT not performed case
-	$('#isPtTestNotPerformed').change(function() {
-		if ($(this).is(':checked')) {
-			$('.vlResultSection').hide();
-			$('.vlResultValues').val('');
-			$('.tnd').attr('checked', false);
-			$('.ptNotPerformedSection').show();
-			$('.vlResultMandatory').css('visibility', 'hidden');
-			$('.vlResultValues').removeClass('isRequired');
-			$('#vlNotTestedReason').addClass('isRequired');
-			$('#ptNotTestedComments').addClass('isRequired');
-			$('#testDate').removeClass('isRequired');
-			$('#assayLotNumber').removeClass('isRequired');
-		} else {
-			$('.vlResultSection').show();
-			$('.ptNotPerformedSection').hide();
-			$('.vlResultMandatory').css('visibility', 'visible');
-			$('.vlResultValues').addClass('isRequired');
-			$('#vlNotTestedReason').removeClass('isRequired');
-			$('#ptNotTestedComments').removeClass('isRequired');
-			$('#testDate').addClass('isRequired');
-			$('#assayLotNumber').addClass('isRequired');
-		}
-	});
+        $('#isPtTestNotPerformed').change(function() {
+            if ($(this).is(':checked')) {
+                $('.vlResultSection').hide();
+                $('.vlResultValues').val('');
+                $('.tnd').attr('checked', false);
+                $('.ptNotPerformedSection').show();
+                $('.vlResultMandatory').css('visibility', 'hidden');
+                $('.vlResultValues').removeClass('isRequired');
+                $('#vlNotTestedReason').addClass('isRequired');
+                $('#ptNotTestedComments').addClass('isRequired');
+                $('#testDate').removeClass('isRequired');
+                $('#assayLotNumber').removeClass('isRequired');
+            } else {
+                $('.vlResultSection').show();
+                $('.ptNotPerformedSection').hide();
+                $('.vlResultMandatory').css('visibility', 'visible');
+                $('.vlResultValues').addClass('isRequired');
+                $('#vlNotTestedReason').removeClass('isRequired');
+                $('#ptNotTestedComments').removeClass('isRequired');
+                $('#testDate').addClass('isRequired');
+                $('#assayLotNumber').addClass('isRequired');
+            }
+        });
     });
 
 
