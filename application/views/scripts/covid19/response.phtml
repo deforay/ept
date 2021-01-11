@@ -188,21 +188,8 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 </td>
                             <?php } ?>
                         </tr>
-                        <?php if($maximumAllowed > 1){ ?>
-                        <tr class="light">
-                            <td><label> Number of test <span class='mandatory'>*</span></label></td>
-                            <td>
-                                <select class="form-control" name="numberOfParticipantTest" id="numberOfParticipantTest" title="Please select number of participant test" onchange="showHideTest(this.value);">
-                                <option value="">--Select--</option>
-                                <?php foreach(range(1,$maximumAllowed) as $no){
-                                    $selected = ($no == $maximumAllowed)?'selected="selected"':'';
-                                    echo '<option value="'.$no.'" '.$selected.'>'.$no.'</option>';
-                                }?>
-                                </select>
-                            </td>
-                        </tr>
+                        
                         <?php
-                        }
                         if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes')) {
                         ?>
                             <tr class="light">
@@ -256,8 +243,19 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 </td>
                             </tr>
                         <?php
-                        }
-                        ?>
+                        } if($maximumAllowed > 1){ ?>
+                        <tr class="light">
+                            <td><label> Number of test <span class='mandatory'>*</span></label></td>
+                            <td>
+                                <select class="form-control" name="numberOfParticipantTest" id="numberOfParticipantTest" title="Please select number of participant test" onchange="showHideTest(this.value);">
+                                <option value="">--Select--</option>
+                                <?php foreach(range(1,$maximumAllowed) as $no){
+                                    echo '<option value="'.$no.'">'.$no.'</option>';
+                                }?>
+                                </select>
+                            </td>
+                        </tr>
+                        <?php } ?>
                     </table>
                     <?php
                     $possibleResults = array();
@@ -279,7 +277,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 
 
                     <hr>
-                    <table class="table table-bordered table-striped" style="width:100%;max-width:1000px;margin:10px auto;">
+                    <table class="table table-bordered table-striped tests" style="width:100%;max-width:1000px;margin:10px auto;display:none;">
                         <thead>
                             <tr align="CENTER" class="dark">
                                 <th style="width:12%;"></th>
@@ -514,12 +512,16 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
 
     function showHideTest(no){
+        if(no != ""){
+            $('.tests').show();
+        }
         if(no == 1){
             $('.testTwo,.testThree').hide();
             test2Hidden = 'yes';
             test3Hidden = 'yes';
         } else if(no == 2){
             $('.testThree').hide();
+            test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
             if (test2Hidden == 'yes') {
                 $('.testTwo').hide();
             } else {
@@ -527,12 +529,13 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
             }
             test3Hidden = 'yes';
         } else {
+            test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
             if (test2Hidden == 'yes') {
                 $('.testTwo').hide();
             } else {
                 $('.testTwo').show();
             }
-
+            test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
             if (test3Hidden == 'yes') {
                 $('.testThree').hide();
             } else {
