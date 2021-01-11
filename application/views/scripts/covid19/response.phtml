@@ -194,8 +194,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             <td>
                                 <select class="form-control" name="numberOfParticipantTest" id="numberOfParticipantTest" title="Please select number of participant test" onchange="showHideTest(this.value);">
                                 <option value="">--Select--</option>
-                                <?php foreach(range(1,($maximumAllowed-1)) as $no){
-                                    echo '<option value="'.$no.'">'.$no.'</option>';
+                                <?php foreach(range(1,$maximumAllowed) as $no){
+                                    $selected = ($no == $maximumAllowed)?'selected="selected"':'';
+                                    echo '<option value="'.$no.'" '.$selected.'>'.$no.'</option>';
                                 }?>
                                 </select>
                             </td>
@@ -414,7 +415,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 </th>
 
                                 <td width="20%">
-                                    <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class="form-control">
+                                    <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" data-sample="<?php echo $count;?>" class="form-control test-1">
                                         <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
                                     </select>
                                 </td>
@@ -509,13 +510,14 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     </div>
 </section>
 <script>
+    var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
+    var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
 
     function showHideTest(no){
-        var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
-        var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
-
         if(no == 1){
             $('.testTwo,.testThree').hide();
+            test2Hidden = 'yes';
+            test3Hidden = 'yes';
         } else if(no == 2){
             $('.testThree').hide();
             if (test2Hidden == 'yes') {
@@ -523,6 +525,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
             } else {
                 $('.testTwo').show();
             }
+            test3Hidden = 'yes';
         } else {
             if (test2Hidden == 'yes') {
                 $('.testTwo').hide();
@@ -540,8 +543,6 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     }
     function showHideTest2() {
 
-        var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
-
         if (test2Hidden == 'yes') {
             $('.testTwo').hide();
         } else {
@@ -551,10 +552,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     }
     function showHideTest3() {
 
-        var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
-        var screeningTest = "<?php echo $screeningTest ? 'yes' : 'no'; ?>";
-
-        if (screeningTest == 'yes' || (test3Hidden == 'yes' && $("#algorithm").val() != 'myanmarNationalDtsAlgo')) {
+        if (test3Hidden == 'yes') {
             $('.testThree').hide();
         } else {
             $('.testThree').show();
@@ -621,6 +619,19 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
             $("#test_type_other_3").val('');
             $("#test_type_other_update_3").val('');
         }
+
+        $( ".test-1" ).change(function() {
+            if (test2Hidden == 'yes' && test3Hidden == 'yes') {
+                final = $(this).attr('data-sample');
+                if(this.value == 21){
+                    $('#testresultf_'+final).val(18);
+                } else if(this.value == 22){
+                    $('#testresultf_'+final).val(19);
+                } else if(this.value == 23){
+                    $('#testresultf_'+final).val(20);
+                }
+            }
+        });
     });
 
 

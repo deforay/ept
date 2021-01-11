@@ -5,8 +5,8 @@ $actionName = Zend_Controller_Front::getInstance()->getRequest()->getActionName(
 /* Notification Section Start */
 $notifyData = $this->getNotification();
 $configData = $this->getGlobalConfig();
-
-// Zend_Debug::dump($notifyData);die;
+// $activeSchemes = $this->getActiveSchemes();
+// Zend_Debug::dump($activeSchemes);die;
 $notifyCount = (count($notifyData) > 0) ? count($notifyData) : 0;
 $scrollHeight = '';
 if ($notifyCount >= 5) {
@@ -162,8 +162,11 @@ if ($adminSession->privileges != "") {
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>">Participant Login Map</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'pending'), 'default', true); ?>">Pending PT Participants</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments'), 'default', true); ?>">Scheme Enrollments</a></li>
-								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>">Testkits</a></li>
-								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-type'), 'default', true); ?>">Test Types</a></li>
+								<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>">DTS Testkits</a></li>
+								<?php } if (in_array('covid19', $adminSession->activeSchemes)) { ?>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-type'), 'default', true); ?>">Covid-19 Test Types</a></li>
+								<?php } ?>
 								<li class="divider"></li>
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'push-notification-settings'), 'default', true); ?>">Push Notification Settings</a></li>
 								<li class="divider"></li>
