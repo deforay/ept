@@ -664,33 +664,36 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                 }
             }
         });
-
+        isPtPanelNotTested();
         //PT not performed case
         $('#isPtTestNotPerformed').change(function() {
-            if ($(this).is(':checked')) {
-                $('.vlResultSection').hide();
-                $('.vlResultValues').val('');
-                $('.tnd').attr('checked', false);
-                $('.ptNotPerformedSection').show();
-                $('.vlResultMandatory').css('visibility', 'hidden');
-                $('.vlResultValues').removeClass('isRequired');
-                $('#vlNotTestedReason').addClass('isRequired');
-                $('#ptNotTestedComments').addClass('isRequired');
-                $('#testDate').removeClass('isRequired');
-                $('#assayLotNumber').removeClass('isRequired');
-            } else {
-                $('.vlResultSection').show();
-                $('.ptNotPerformedSection').hide();
-                $('.vlResultMandatory').css('visibility', 'visible');
-                $('.vlResultValues').addClass('isRequired');
-                $('#vlNotTestedReason').removeClass('isRequired');
-                $('#ptNotTestedComments').removeClass('isRequired');
-                $('#testDate').addClass('isRequired');
-                $('#assayLotNumber').addClass('isRequired');
-            }
+            isPtPanelNotTested();
         });
     });
 
+    function isPtPanelNotTested(){
+        if ($("#isPtTestNotPerformed").is(':checked')) {
+            $('.vlResultSection').hide();
+            $('.vlResultValues').val('');
+            $('.tnd').attr('checked', false);
+            $('.ptNotPerformedSection').show();
+            $('.vlResultMandatory').css('visibility', 'hidden');
+            $('.vlResultValues').removeClass('isRequired');
+            $('#vlNotTestedReason').addClass('isRequired');
+            $('#ptNotTestedComments').addClass('isRequired');
+            $('#testDate').removeClass('isRequired');
+            $('#assayLotNumber').removeClass('isRequired');
+        } else {
+            $('.vlResultSection').show();
+            $('.ptNotPerformedSection').hide();
+            $('.vlResultMandatory').css('visibility', 'visible');
+            $('.vlResultValues').addClass('isRequired');
+            $('#vlNotTestedReason').removeClass('isRequired');
+            $('#ptNotTestedComments').removeClass('isRequired');
+            $('#testDate').addClass('isRequired');
+            $('#assayLotNumber').addClass('isRequired');
+        }
+    }
 
     function validateNow() {
         flag = deforayValidator.init({
