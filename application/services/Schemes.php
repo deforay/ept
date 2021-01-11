@@ -906,4 +906,12 @@ class Application_Service_Schemes
             ->where('status = ? ', 'active');
         return $db->fetchAll($sql);
     }
+    
+    public function getCovid19NotTestedReasons()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('response_covid19_not_tested_reason'))
+            ->where('status = ? ', 'active');
+        return $db->fetchAll($sql);
+    }
 }

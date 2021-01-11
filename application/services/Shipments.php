@@ -524,6 +524,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "updated_by_user" => $authNameSpace->dm_id,
                 "mode_id" => $params['modeOfReceipt'],
+                "number_of_tests" => $params['numberOfParticipantTest'],
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 
@@ -545,6 +546,19 @@ class Application_Service_Shipments
                     $data['qc_created_on'] = null;
                 }
             }
+
+            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
+                $data['is_pt_test_not_performed'] = 'yes';
+                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
+                $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
+                $data['pt_support_comments'] = $params['ptSupportComments'];
+            } else {
+                $data['is_pt_test_not_performed'] = NULL;
+                $data['vl_not_tested_reason'] = NULL;
+                $data['pt_test_not_performed_comments'] = NULL;
+                $data['pt_support_comments'] = NULL;
+            }
+
             if (isset($params['customField1']) && !empty(trim($params['customField1']))) {
                 $data['custom_field_1'] = trim($params['customField1']);
             }

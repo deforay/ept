@@ -2690,3 +2690,18 @@ CREATE TABLE `reference_covid19_test_type` (
  `result` varchar(255) NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Thana 11-Jan-2021
+CREATE TABLE `response_covid19_not_tested_reason` (
+ `covid19_not_tested_reason_id` int NOT NULL AUTO_INCREMENT,
+ `covid19_not_tested_reason` varchar(500) DEFAULT NULL,
+ `status` varchar(45) NOT NULL DEFAULT 'active',
+ PRIMARY KEY (`covid19_not_tested_reason_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+INSERT INTO `response_covid19_not_tested_reason` (`covid19_not_tested_reason_id`, `covid19_not_tested_reason`, `status`) VALUES
+(1, 'Issue with Sample', 'active'),
+(2, 'Machine not working', 'active'),
+(3, 'Other', 'active');
+
+ALTER TABLE `shipment_participant_map` ADD `number_of_tests` INT(11) NULL DEFAULT NULL AFTER `shipment_test_date`;
