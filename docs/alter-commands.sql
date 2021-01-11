@@ -2578,7 +2578,7 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('disable_push_notification
 
 -- Thana 24-Dec-2020
 INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) 
-      VALUES ('covid19', 'Covid-19', 'response_result_covid19', 'reference_result_covid19', NULL, 'inactive');
+      VALUES ('covid19', 'SARS-Cov-2', 'response_result_covid19', 'reference_result_covid19', NULL, 'inactive');
 
 CREATE TABLE `r_test_type_covid19` (
  `test_type_id` varchar(50) NOT NULL,
@@ -2692,8 +2692,6 @@ CREATE TABLE `reference_covid19_test_type` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Thana 11-Jan-2021
-UPDATE `scheme_list` SET `scheme_name` = 'SARS-CoV-2' WHERE `scheme_list`.`scheme_id` = 'covid19';
-
 CREATE TABLE `response_covid19_not_tested_reason` (
  `covid19_not_tested_reason_id` int NOT NULL AUTO_INCREMENT,
  `covid19_not_tested_reason` varchar(500) DEFAULT NULL,

@@ -161,9 +161,6 @@ class Application_Model_Dts
 			}
 
 
-			error_log($testedOn);
-			error_log($testedOn->sub($expDate1));
-			error_log($testedOn->sub($expDate2));
 			if ($testKit2 != "") {
 				if ($expDate2 != "") {
 					if ($testedOn->isLater($expDate2)) {
@@ -454,7 +451,7 @@ class Application_Model_Dts
 							$algoResult = 'Pass';
 						} else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'R') {
 							$algoResult = 'Pass';
-						} else if ($r1 == 'R' && $r2 == 'R' && $r3 == 'NR') {
+						} else if (($r1 == 'R' && $r2 == 'R' && $r3 == 'NR') || ($r1 == 'R' && $r2 == 'R' && $r3 == 'I')) {
 							$algoResult = 'Pass';
 						} else if ($r1 == 'NR' && $r2 == '-' && $r3 == '-') {
 							$algoResult = 'Pass';

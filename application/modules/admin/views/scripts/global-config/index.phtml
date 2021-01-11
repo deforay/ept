@@ -46,14 +46,15 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="admin_email" class="col-lg-3 control-label">Accept Response After Finalize <span class="mandatory">*</span></label>
+				<label for="admin_email" class="col-lg-3 control-label">Accept responses after shipment is finalized? <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
+				<br>
 					<input type="radio" name="response_after_evaluate" id="response_after_evaluate_yes" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether enter response after finalize" /> Yes
-					<input type="radio" name="response_after_evaluate" id="response_after_evaluate_no" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "no") ? " checked='checked' " : ""; ?> value="no" /> No
+					&nbsp;<input type="radio" name="response_after_evaluate" id="response_after_evaluate_no" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "no") ? " checked='checked' " : ""; ?> value="no" /> No
 				</div>
 			</div>
 
-			<div class="form-group">
+			<!-- <div class="form-group">
 				<label for="mapCenter" class="col-lg-3 control-label">Map Center <span class="mandatory">*</span></label>
 				<div class="col-lg-2 input-group" style="width:240px;">
 					<input type="text" id="mapCenter" name="mapCenter" size="50" class="isRequired form-control" placeholder="Please enter a map center" value="<?php echo $this->config->map->center; ?>" />
@@ -67,7 +68,7 @@
 					<input type="text" id="mapZoom" name="mapZoom" size="50" maxlength="45" class="isRequired form-control" placeholder="Please enter the map zoom" value="<?php echo $this->config->map->zoom; ?>" style="width:70px;" />
 				</div>
 
-			</div>
+			</div> -->
 			<div class="form-group">
 				<label for="admin_email" class="col-lg-3 control-label">QC Access <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
