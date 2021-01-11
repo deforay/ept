@@ -20,7 +20,7 @@ if($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->res
 <script>
     Highcharts.chart('container', {
         title: {
-            text: 'Performance by timeliness N=<?php echo $this->result['total_shipped'];?>'
+            text: 'Performance by timeliness (N=<?php echo $this->result['total_shipped'];?>)'
         },
         xAxis: {
             categories: ['']
