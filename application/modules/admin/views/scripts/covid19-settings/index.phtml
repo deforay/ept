@@ -10,23 +10,23 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
             <legend style=" margin-bottom: 0px; " class="title">Covid-19 Settings</legend>
             <div class="alert alert-success" style="display: none;">some text</div>
             <div class="form-group">
-                <label for="covid19PassPercentage" class="col-lg-3 control-label">Covid19 Pass Percentage <span class="mandatory">*</span></label>
+                <label for="covid19PassPercentage" class="col-lg-3 control-label">Covid-19 Pass Percentage <span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
                     <input type="text" id="covid19PassPercentage" name="covid19PassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo $this->config->evaluation->covid19->passPercentage; ?>" />
                     <span class="input-group-addon">%</span>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="covid19PassPercentage" class="col-lg-3 control-label">Covid19 Documentation Score (Percentage)<span class="mandatory">*</span></label>
+            <!-- <div class="form-group">
+                <label for="covid19PassPercentage" class="col-lg-3 control-label">Covid-19 Documentation Score (Percentage)<span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
                     <input type="text" id="covid19DocumentationScore" name="covid19DocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Documentation Score Percentage" value="<?php echo $this->config->evaluation->covid19->documentationScore; ?>" />
                     <span class="input-group-addon">%</span>
                 </div>
-            </div>
+            </div> -->
 
             <div class="form-group covid19MaximumTestAllowedDiv">
-                <label for="covid19MaximumTestAllowed" class="col-lg-3 control-label">Covid19 Maximum Test Allowed <span class="mandatory">*</span></label>
+                <label for="covid19MaximumTestAllowed" class="col-lg-3 control-label">Covid-19 Maximum Test Allowed <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="covid19MaximumTestAllowed" name="covid19MaximumTestAllowed" title="Please select if test 3 is optional">
                         <option value="1" <?php echo (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed == "1") ? " selected='selected' " : ""; ?>>1</option>
@@ -54,7 +54,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
                 </div>
             </div>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="allowedAlgorithms" class="col-lg-3 control-label">Allowed Algorithms <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="allowedAlgorithms[]" multiple="multiple" title="Please select allowed algorithms">
@@ -63,14 +63,14 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
                         <option value="myanmarNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("myanmarNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Myanmar National Algorithm</option>
                     </select>
                 </div>
-            </div>
+            </div> -->
             <br>
             <br>
             <p class="mandatory">Note : <br />
                 <ul>
                     <li>If a response does not contain the following recommended Test Types, participants will not pass for the respective samples.</li>
                     <li>If you don't want to enforce the test type check, please leave the following 3 options blank</li>
-                    <li>Please set the <a href="/admin/test-type/standard-type">Covid19 Standard Test Types</a> before you do the below</li>
+                    <li>Please set the <a href="/admin/test-type/standard-type">Covid-19 Standard Test Types</a> before you do the below</li>
                 </ul>
 
             </p>
