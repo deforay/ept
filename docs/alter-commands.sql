@@ -2690,3 +2690,6 @@ CREATE TABLE `reference_covid19_test_type` (
  `result` varchar(255) NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Thana 11-Jan-2021
+UPDATE `scheme_list` SET `scheme_name` = 'Sars Cov-2' WHERE `scheme_list`.`scheme_id` = 'covid19';

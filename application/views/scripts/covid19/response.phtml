@@ -12,12 +12,12 @@ $testTwoHidden = false;
 $screeningTest = false;
 
 $allowedAlgorithms = isset($this->config->evaluation->covid19->allowedAlgorithms) ? explode(",", $this->config->evaluation->covid19->allowedAlgorithms) : array();
-
-if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && ($this->config->evaluation->covid19->covid19MaximumTestAllowed == '1' || $this->config->evaluation->covid19->covid19MaximumTestAllowed == '2')) {
+$maximumAllowed = $this->config->evaluation->covid19->covid19MaximumTestAllowed;
+if (isset($maximumAllowed) && ($maximumAllowed == '1' || $maximumAllowed == '2')) {
     $testThreeHidden = true;
 }
 
-if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed != '3' && $this->config->evaluation->covid19->covid19MaximumTestAllowed != '2') {
+if (isset($maximumAllowed) && $maximumAllowed != '3' && $maximumAllowed != '2') {
     $testTwoHidden = true;
 }
 /* if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
@@ -188,7 +188,20 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 </td>
                             <?php } ?>
                         </tr>
+                        <?php if($maximumAllowed > 1){ ?>
+                        <tr class="light">
+                            <td><label> Number of test <span class='mandatory'>*</span></label></td>
+                            <td>
+                                <select class="form-control" name="numberOfParticipantTest" id="numberOfParticipantTest" title="Please select number of participant test" onchange="showHideTest(this.value);">
+                                <option value="">--Select--</option>
+                                <?php foreach(range(1,($maximumAllowed-1)) as $no){
+                                    echo '<option value="'.$no.'">'.$no.'</option>';
+                                }?>
+                                </select>
+                            </td>
+                        </tr>
                         <?php
+                        }
                         if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes')) {
                         ?>
                             <tr class="light">
@@ -496,6 +509,35 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     </div>
 </section>
 <script>
+
+    function showHideTest(no){
+        var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
+        var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
+
+        if(no == 1){
+            $('.testTwo,.testThree').hide();
+        } else if(no == 2){
+            $('.testThree').hide();
+            if (test2Hidden == 'yes') {
+                $('.testTwo').hide();
+            } else {
+                $('.testTwo').show();
+            }
+        } else {
+            if (test2Hidden == 'yes') {
+                $('.testTwo').hide();
+            } else {
+                $('.testTwo').show();
+            }
+
+            if (test3Hidden == 'yes') {
+                $('.testThree').hide();
+            } else {
+                $('.testThree').show();
+            }
+
+        }
+    }
     function showHideTest2() {
 
         var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
