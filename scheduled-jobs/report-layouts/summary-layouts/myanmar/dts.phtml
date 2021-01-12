@@ -51,38 +51,6 @@ if ($resultArray['shipment'] != "") {
 
     $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], 'myanmar', $evalRow['date_finalised']);
     // add a page
-    //$pdf->AddPage();
-    // ---------------------------------------------------------
-
-    if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
-        foreach ($resultArray['shipment']['pieChart'] as $piechart) {
-            $data[] = $piechart['count'];
-            $legends[] = $piechart['kit_name'] . " (N=" . $piechart['count'] . ")";
-        }
-
-        $graph = new PieGraph(700, 400);
-        $graph->SetShadow();
-
-        // Set A title for the plot
-        $graph->title->Set("Test kits used for DTS-based PT survey " . $resultArray['shipment']['distribution_code']);
-        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
-
-        $p1 = new PiePlot($data);
-        $p1->SetLegends($legends);
-        $p1->SetCenter(0.4);
-
-
-        $graph->Add($p1);
-
-        $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart1.png';
-        $graph->Stroke($piechart);
-
-        $pdf->Image($piechart, 5, $pdf->getY(), '', '', '', '', '', false, 300);
-        if (file_exists($piechart)) {
-            unlink($piechart);
-        }
-    }
-
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', 'B', 12);
     if (count($resultArray['shipment']['referenceResult']) > 0) {
@@ -301,12 +269,41 @@ if ($resultArray['shipment'] != "") {
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
         }
         
-        $y = $pdf->getY() + 5;
+        // $y = $pdf->getY() + 5;
         $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
 
+    }
+
+    if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
+        // $y = $pdf->getY() + 5;
+        foreach ($resultArray['shipment']['pieChart'] as $piechart) {
+            $data[] = $piechart['count'];
+            $legends[] = $piechart['kit_name'] . " (N=" . $piechart['count'] . ")";
+        }
+
+        $graph = new PieGraph(700, 400);
+        $graph->SetShadow();
+
+        // Set A title for the plot
+        $graph->title->Set("Test kits used for DTS-based PT survey " . $resultArray['shipment']['distribution_code']);
+        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
+
+        $p1 = new PiePlot($data);
+        $p1->SetLegends($legends);
+        $graph->legend->SetPos(0.5,0.97,'center','bottom');
+        $graph->legend->SetColumns(3);
+        $graph->Add($p1);
+
+        $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart1.png';
+        $graph->Stroke($piechart);
+
+        $pdf->Image($piechart, 5, ($pdf->getY() + 200), '', '', '', '', 'C', false, 200);
+        if (file_exists($piechart)) {
+            unlink($piechart);
+        }
     }
 
     $pdf->AddPage();
@@ -332,7 +329,8 @@ if ($resultArray['shipment'] != "") {
 
         $p1 = new PiePlot($data);
         $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Late Response (N=$late)", "Excluded (N=$excluded)"));
-        $p1->SetCenter(0.4);
+        $graph->legend->SetPos(0.5,0.97,'center','bottom');
+        $graph->legend->SetColumns(3);
 
 
         $graph->Add($p1);
