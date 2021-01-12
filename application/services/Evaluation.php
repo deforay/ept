@@ -1326,7 +1326,8 @@ class Application_Service_Evaluation
 						->where("spm.final_result!=''")
 						//->where("substring(spm.evaluation_status,4,1) != '0'")
 						->where("spm.shipment_id = ?", $shipmentId)
-						->group('spm.map_id');
+						->group('spm.map_id')
+						->limit(10);
 					// die($rQuery);
 					$rQueryRes = $db->fetchAll($rQuery);
 					$p = 0;
