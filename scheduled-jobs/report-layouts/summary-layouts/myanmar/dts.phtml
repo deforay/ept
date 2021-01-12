@@ -111,7 +111,7 @@ if ($resultArray['shipment'] != "") {
         }
 
         // Create the graph. These two calls are always required
-        $graph = new Graph(700, 400, 'auto');
+        $graph = new Graph(700, 400);
         $graph->SetScale("textlin");
 
         $theme_class = new UniversalTheme;
@@ -140,9 +140,15 @@ if ($resultArray['shipment'] != "") {
 
         // Setup the titles
         $graph->title->Set("Comparison of test performance between participating laboratorie");
-        $graph->yaxis->title->Set('% score');
-        $graph->xaxis->title->Set('Number of participants');
+        $graph->yaxis->title->Set('% Score');
+        $graph->xaxis->title->Set('Number of participants','center');
         
+        $graph->yaxis->SetTitleMargin(32);
+        $graph->xaxis->SetTitleMargin(32);
+        // Turn the tick mark out from the plot area
+        $graph->xaxis->SetTickSide(SIDE_DOWN);
+        $graph->yaxis->SetTickSide(SIDE_LEFT);
+
         // Display the graph
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         $graph->Stroke($image_file);
@@ -270,7 +276,7 @@ if ($resultArray['shipment'] != "") {
         }
         
         // $y = $pdf->getY() + 5;
-        $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+        $pdf->Image($image_file, 10, $pdf->getY(), '', '', '', '', 'C', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
