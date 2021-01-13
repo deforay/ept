@@ -137,7 +137,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
                 $result3 = '';
             }
             /* Fetching long data into the single variable */            
-            $noOfTest       = $params['covid19Data']->Section3->data->numberOfTestSelected;
+            $noOfTest       = $params['covid19Data']->Section2->data->numberOfTestsSelected;
             $lot1           = (isset($params['covid19Data']->Section3->data->lot[0]) && $params['covid19Data']->Section3->data->lot[0] != "")?$params['covid19Data']->Section3->data->lot[0]:null;
             $lot2           = (isset($params['covid19Data']->Section3->data->lot[1]) && $params['covid19Data']->Section3->data->lot[1] != "")?$params['covid19Data']->Section3->data->lot[1]:null;
             $lot3           = (isset($params['covid19Data']->Section3->data->lot[2]) && $params['covid19Data']->Section3->data->lot[2] != "")?$params['covid19Data']->Section3->data->lot[2]:null;

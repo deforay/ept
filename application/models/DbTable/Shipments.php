@@ -3174,6 +3174,25 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $qc['status']                       = true;
                     $covid19['Section2']['data']['qcData']  = $qc;
                 }
+
+                if($testAllowed > 1){
+                    foreach(range(1,$testAllowed) as $no){
+                        $default = (isset($testAllowed) && $testAllowed == $no)?"selected":"";
+                        $numberOfTestSelect[] = array(
+                            'value'     => (int) $no,
+                            'show'      => (int) $no,
+                            'selected'  => ($shipment['number_of_tests'] == $no) ? 'selected' : $default
+                        );
+                    }
+                } else {
+                    $numberOfTestSelect[] = array(
+                        'value'     => (int) 1,
+                        'show'      => (int) 1,
+                        'selected'  => 'selected'
+                    );
+                }
+                $covid19['Section2']['data']['numberOfTestsSelected']        = $shipment['number_of_tests'];
+                $covid19['Section2']['data']['numberOfTestsSelect']          = $numberOfTestSelect;
             } else {
                 $covid19['Section2']['status'] = false;
             }
@@ -3307,24 +3326,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'selected'  => ($shipment['vl_not_tested_reason'] == $reason['covid19_not_tested_reason_id']) ? 'selected' : ''
                 );
             }
-            if($testAllowed > 1){
-                foreach(range(1,$testAllowed) as $no){
-                    $default = (isset($testAllowed) && $testAllowed == $no)?"selected":"";
-                    $numberOfTestSelect[] = array(
-                        'value'     => (int) $no,
-                        'show'      => (int) $no,
-                        'selected'  => ($shipment['number_of_tests'] == $no) ? 'selected' : $default
-                    );
-                }
-            } else {
-                $numberOfTestSelect[] = array(
-                    'value'     => (int) 1,
-                    'show'      => (int) 1,
-                    'selected'  => 'selected'
-                );
-            }
-            $covid19['Section3']['data']['numberOfTestSelected']        = $shipment['number_of_tests'];
-            $covid19['Section3']['data']['numberOfTestSelect']          = $numberOfTestSelect;
+            
             $covid19['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
             $covid19['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
             $covid19['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
@@ -4047,8 +4049,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $data['pt_test_not_performed_comments'] = '';
                     $data['pt_support_comments']            = '';
                 }
-                $data['number_of_tests'] = $params['covid19Data']->Section3->data->numberOfTestSelected;
-                
+                $data['number_of_tests'] = $params['covid19Data']->Section2->data->numberOfTestsSelected;
+
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
                 // $haveCustom;
