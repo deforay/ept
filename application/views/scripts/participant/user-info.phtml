@@ -1,6 +1,6 @@
 <?php $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$blockedDomains = $conf->blocked->email->domains;
+$blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->email->domains != "")?$conf->blocked->email->domains:'';
 // Zend_Debug::dump($blockedDomains);die;
 ?>
 <section class="content-header">

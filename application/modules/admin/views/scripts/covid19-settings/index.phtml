@@ -12,7 +12,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
             <div class="form-group">
                 <label for="covid19PassPercentage" class="col-lg-3 control-label">Covid-19 Pass Percentage <span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
-                    <input type="text" id="covid19PassPercentage" name="covid19PassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo $this->config->evaluation->covid19->passPercentage; ?>" />
+                    <input type="text" id="covid19PassPercentage" name="covid19PassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo (isset($this->config->evaluation->covid19->passPercentage) && $this->config->evaluation->covid19->passPercentage != "")?$this->config->evaluation->covid19->passPercentage:0; ?>" />
                     <span class="input-group-addon">%</span>
                 </div>
             </div>
@@ -29,6 +29,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
                 <label for="covid19MaximumTestAllowed" class="col-lg-3 control-label">Covid-19 Maximum Test Allowed <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="covid19MaximumTestAllowed" name="covid19MaximumTestAllowed" title="Please select if test 3 is optional">
+                        <option value="">--Select--</option>
                         <option value="1" <?php echo (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed == "1") ? " selected='selected' " : ""; ?>>1</option>
                         <option value="2" <?php echo (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed == "2") ? " selected='selected' " : ""; ?>>2</option>
                         <option value="3" <?php echo (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed == "3") ? " selected='selected' " : ""; ?>>3</option>
@@ -48,6 +49,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
                 <label for="sampleRehydrateDays" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
+                        <option value="">--Select--</option>
                         <option value="1" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1</option>
                         <option value="2" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2</option>
                     </select>

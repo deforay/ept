@@ -242,25 +242,26 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                     <input type="text" id="qcDoneBy" name="qcDoneBy" class="form-control <?php echo $isRquired; ?>" title="Please enter QC done by name" value="<?php echo $this->shipment['qc_done_by']; ?>" />
                                 </td>
                             </tr>
-                        <?php
-                        } if($maximumAllowed > 1){ ?>
+                        <?php } ?> 
                         <tr class="light">
-                            <td><label> Number of tests <span class='mandatory'>*</span></label></td>
+                            <?php if($maximumAllowed > 1){ ?>
+                            <td><label for="numberOfParticipantTest"> Number of tests <span class='mandatory'>*</span></label></td>
                             <td>
                                 <select class="form-control" name="numberOfParticipantTest" id="numberOfParticipantTest" title="Please select number of participant test" onchange="showHideTest(this.value);">
                                 <option value="">--Select--</option>
                                 <?php foreach(range(1,$maximumAllowed) as $no){
-                                    $selected = (isset($this->shipment['number_of_tests']) && $this->shipment['number_of_tests'] == $no)?"selected='selected'":"";
+                                    $default = (isset($maximumAllowed) && $maximumAllowed == $no)?"selected='selected'":"";
+                                    $selected = (isset($this->shipment['number_of_tests']) && $this->shipment['number_of_tests'] == $no)?"selected='selected'":$default;
                                     echo '<option value="'.$no.'" '.$selected.'>'.$no.'</option>';
                                 }?>
                                 </select>
                             </td>
+                            <?php } ?>
 					        <td colspan="2">
                                 <input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />
                                 &nbsp;&nbsp;<label style="font-size:16px;" for="isPtTestNotPerformed">PT panel not tested<label>
                             </td>
                         </tr>
-                        <?php } ?>
                     </table>
                     <?php
                     $possibleResults = array();
@@ -538,10 +539,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
 
     function showHideTest(no){
+        
         if(no != ""){
             $('.tests').show();
         } else{
-            $('.tests').hide();            
+            no = 1;
         }
         if(no == 1){
             $('.testTwo,.testThree').hide();
