@@ -4,6 +4,7 @@ require_once('tcpdf/tcpdf.php');
 require_once('jpgraph/jpgraph.php');
 require_once('jpgraph/jpgraph_bar.php');
 require_once('jpgraph/jpgraph_pie.php');
+require_once('jpgraph/jpgraph_line.php');
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'General.php');
 $general = new General();
 // Zend_Debug::dump($resultArray);die;
@@ -349,6 +350,82 @@ if ($resultArray['shipment'] != "") {
         $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 300);
         if (file_exists($performancePiechart)) {
             unlink($performancePiechart);
+        }
+    }
+    
+    $pdf->AddPage();
+
+    if (isset($resultArray['shipment']['participantBeforeAfterDueChart']) && count($resultArray['shipment']['participantBeforeAfterDueChart']) > 0  && $resultArray['shipment']['participantBeforeAfterDueChart'] != '') {
+        $y = $pdf->getY() + 5;
+        $val = $resultArray['shipment']['participantBeforeAfterDueChart'];
+        // JPGraph Charts
+        if($val['total_shipped'] > $val['afterDueDate'] && $val['afterDueDate'] > 0){
+            $after = round($val['total_shipped']%$val['afterDueDate'],2);
+        } else if($val['afterDueDate'] > 0){ 
+            $after = round($val['total_shipped']/$val['afterDueDate']*100,2);
+        } else {
+            $after = 0;
+        }
+        
+        if($val['total_shipped'] > $val['beforeDueDate'] && $val['beforeDueDate'] > 0){
+            $before = round($val['total_shipped']%$val['beforeDueDate'],2);
+        } else if($val['beforeDueDate'] > 0){ 
+            $before = round($val['total_shipped']/$val['beforeDueDate']*100,2);
+        } else {
+            $before = 0;
+        }
+
+        if($after == 0 && $before == 0){
+            $others = 100;
+        } else{
+            $other = ($after + $before);
+            $others = (100 - $other);
+        }
+
+        // Create the graph. These two calls are always required
+        $graph = new Graph(750,320,'auto');
+        $graph->SetScale("textlin");
+        $graph->SetY2Scale("lin",0,90);
+        $graph->SetY2OrderBack(false);
+
+        $theme_class = new UniversalTheme;
+        $graph->SetTheme($theme_class);
+
+        $graph->SetMargin(40,20,46,80);
+
+        $graph->SetBox(false);
+        $graph->ygrid->SetFill(false);
+        $graph->yaxis->HideLine(false);
+        $graph->xaxis->SetTickLabels(array('Before '.$before.'%','After '.$after.'%', 'Not Tested '. $others .'%'));
+        $graph->yaxis->title->Set('Percentage');
+        $graph->yaxis->HideTicks(false,false);
+
+        // Create the bar plots
+        $b1plot = new BarPlot(array($before,$after,$others));
+
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+
+        // ...and add it to the graPH
+        $graph->Add($gbplot);
+
+        $b1plot->SetColor("white");
+        $b1plot->SetFillColor(array("darkgreen","red","gray"));
+        // $b1plot->SetLegend(array("Before Due Date","After Due Date"));
+
+        $graph->legend->SetFrameWeight(1);
+        $graph->legend->SetColumns(6);
+        $graph->legend->SetColor('#4E4E4E','#00A78A');
+
+        $graph->title->Set('Performance by timeliness (N='.$val['total_shipped'].')');
+
+        // Display the graph
+        $performanceBeforeAfterChart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'before_after_bar_chart.png';
+        $graph->Stroke($performanceBeforeAfterChart);
+       
+        $pdf->Image($performanceBeforeAfterChart, 5, $y, '', '', '', '', '', false, 300);
+        if (file_exists($performanceBeforeAfterChart)) {
+            unlink($performanceBeforeAfterChart);
         }
     }
 
