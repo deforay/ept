@@ -24,10 +24,8 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
             $sec = APPLICATION_ENV;
 
 
-            $allowedAlgorithms = $this->getRequest()->getPost('allowedAlgorithms');
-            $allowedAlgorithms = implode(",",$allowedAlgorithms);
-
-            
+            // $allowedAlgorithms = $this->getRequest()->getPost('allowedAlgorithms');
+            // $allowedAlgorithms = implode(",",$allowedAlgorithms);
 
             $config->$sec->evaluation->covid19->passPercentage = $this->getRequest()->getPost('covid19PassPercentage');
             $config->$sec->evaluation->covid19->documentationScore = $this->getRequest()->getPost('covid19DocumentationScore');
