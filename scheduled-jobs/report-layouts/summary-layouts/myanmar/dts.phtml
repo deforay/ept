@@ -112,7 +112,7 @@ if ($resultArray['shipment'] != "") {
         }
 
         // Create the graph. These two calls are always required
-        $graph = new Graph(700, 400);
+        $graph = new Graph(700, 400, 'auto');
         $graph->SetScale("textlin");
 
         $theme_class = new UniversalTheme;
@@ -140,7 +140,7 @@ if ($resultArray['shipment'] != "") {
         $b1plot->SetFillColor(array('brown4', 'red', 'yellow', 'darkgreen'));
 
         // Setup the titles
-        $graph->title->Set("Comparison of test performance between participating laboratorie");
+        $graph->title->Set("Comparison of test performance between participating laboratories");
         $graph->yaxis->title->Set('% Score');
         $graph->xaxis->title->Set('Number of participants','center');
         
