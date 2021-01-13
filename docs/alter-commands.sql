@@ -2705,3 +2705,7 @@ INSERT INTO `response_covid19_not_tested_reason` (`covid19_not_tested_reason_id`
 (3, 'Other', 'active');
 
 ALTER TABLE `shipment_participant_map` ADD `number_of_tests` INT(11) NULL DEFAULT NULL AFTER `shipment_test_date`;
+
+-- Amit 1 Jan 2021
+
+ALTER TABLE `shipment_participant_map` CHANGE `shipment_test_date` `shipment_test_date` DATE NULL DEFAULT NULL;
