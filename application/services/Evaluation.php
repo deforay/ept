@@ -1404,14 +1404,14 @@ class Application_Service_Evaluation
 				$rResult = $db->fetchAll($sQuery);
 				$row = array();
 				foreach ($rResult as $key=>$aRow) {
-					$row['network_name'][$key]      = '"'.$aRow['network_name'].'"';
-					$row['totalShipped'][$key]      = '"N='.$aRow['total_shipped'].'"';
+					$row['network_name'][$key]      = $aRow['network_name'] . ' (N : '.round($aRow['network_id'], 2).')';
+					$row['totalShipped'][$key]      = $aRow['total_shipped'];
 					$row['beforeDueDate'][$key]     = round($aRow['beforeDueDate'], 2);
 					$row['afterDueDate'][$key]      = round($aRow['afterDueDate'], 2);
 					$row['fail_percentage'][$key]   = round($aRow['fail_percentage'], 2);
 					$row['network_id'][$key]        = round($aRow['network_id'], 2);
 				}
-				$shipmentResult['participantFailedChart'] = $row;
+				$shipmentResult['participantAberrantNetworkChart'] = $row;
 
 				$sql = $db->select()->from(array('p' => 'participant'))
 					->join(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id')
