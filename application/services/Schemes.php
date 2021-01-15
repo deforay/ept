@@ -22,7 +22,7 @@ class Application_Service_Schemes
         $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
         return $testTypesDb->getActiveTestTypesNamesForScheme('covid19', $countryAdapted);
     }
-    
+
     public function getAllCovid19TestTypeResponseWise($countryAdapted = false)
     {
 
@@ -77,7 +77,7 @@ class Application_Service_Schemes
         }
         return $retval;
     }
-    
+
     public function getRecommededCovid19TestTypes($testTypes = null)
     {
 
@@ -111,13 +111,13 @@ class Application_Service_Schemes
             }
         }
     }
-    
+
     public function setRecommededCovid19TestTypes($recommended)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->delete('covid19_recommended_test_types');
         foreach ($recommended as $testNo => $types) {
-            if(isset($types) && $types != NULL){
+            if (isset($types) && $types != NULL) {
                 foreach ($types as $type) {
                     $data = array(
                         'test_no' => $testNo,
@@ -196,7 +196,7 @@ class Application_Service_Schemes
         }
         return $response;
     }
-    
+
     public function getCovid19CorrectiveActions()
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -245,7 +245,7 @@ class Application_Service_Schemes
             ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
     }
-    
+
     public function getCovid19Samples($sId, $pId)
     {
 
@@ -523,7 +523,9 @@ class Application_Service_Schemes
         }
     }
 
-    public function setVlRange($sId)
+    // $method = legacy is for the old way to calculate the VL Range
+    // $method = iso is for the ISO specific way to calculate the VL Range
+    public function setVlRange($sId, $method = 'legacy')
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -550,7 +552,7 @@ class Application_Service_Schemes
             $response = $db->fetchAll($sql);
             $responseCounter[$vlAssayId] = count($response);
 
-            // If Assay is OTHER then skip to next
+            // If assay is "other" then skip to next
             if ($vlAssayId == 6) {
                 continue;
             }
@@ -762,7 +764,7 @@ class Application_Service_Schemes
             error_log($e->getMessage());
         }
     }
-    
+
     public function updateTestkit($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -803,7 +805,7 @@ class Application_Service_Schemes
             error_log($e->getMessage());
         }
     }
-    
+
     public function updateTestkitStage($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -817,7 +819,7 @@ class Application_Service_Schemes
             error_log($e->getMessage());
         }
     }
-    
+
     public function updateTestTypeStage($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -837,7 +839,7 @@ class Application_Service_Schemes
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getAllTestKitsForAllSchemes($parameters);
     }
-    
+
     public function getAllCovid19TestTypeInGrid($parameters)
     {
         $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
@@ -849,7 +851,7 @@ class Application_Service_Schemes
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getDtsTestkitDetails($testkitId);
     }
-    
+
     public function getCovid19TestType($testtypeId)
     {
         $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
@@ -906,7 +908,7 @@ class Application_Service_Schemes
             ->where('status = ? ', 'active');
         return $db->fetchAll($sql);
     }
-    
+
     public function getCovid19NotTestedReasons()
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

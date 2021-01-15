@@ -34,18 +34,15 @@ class Application_Model_Vl
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
-                $createdOn = new Zend_Date($createdOnUser[0]);
+                $createdOn = new DateTime($createdOnUser[0]);
             } else {
-                //$datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
                 $createdOn = null;
-                // $datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
-                // $createdOn = new Zend_Date($datearray);
             }
 
-            $lastDate = new Zend_Date($shipment['lastdate_response']);
+            $lastDate = new DateTime($shipment['lastdate_response']);
 
             //Zend_Debug::dump($createdOn->isEarlier($lastDate));die;
-            if (!empty($createdOn) && $createdOn->compare($lastDate, Zend_date::DATES) <= 0) {
+            if (!empty($createdOn) && $createdOn <= $lastDate) {
 
                 $results = $schemeService->getVlSamples($shipmentId, $shipment['participant_id']);
                 $totalScore = 0;

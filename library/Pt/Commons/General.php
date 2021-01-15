@@ -53,19 +53,6 @@ class Pt_Commons_General {
         }
     }
 
-    public function getZendDateFormat($date) {
-
-        if ($date == null || $date == "" || $date == "0000-00-00" || Pt_Commons_General::stringContains("0000-00-00", $date)) {
-            return "";
-        } else {
-            $dateArray = explode('-', $date);
-
-            $newDate = new Zend_date(array('year' => $dateArray[0], 'month' => $dateArray[1], 'day' => $dateArray[2]));
-
-            return $newDate;
-        }
-    }
-
     public static function file_download($file, $name, $mime_type) {
 
         if (!is_readable($file))

@@ -73,19 +73,18 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 
 
                 <?php
-                $date = new Zend_Date();
-                $lastDate = new Zend_Date($this->shipment['lastdate_response']);
-                $response = $date->compare($lastDate, Zend_Date::DATES)
+                $date = new DateTime();
+                $lastDate = new DateTime($this->shipment['lastdate_response']);
                 ?>
                 <div>
 
                     <?php
                     if ($this->isEditable) {
-                        if ($response == 1 && $this->shipment['status'] == 'finalized') {
+                        if (($date > $lastDate)  && $this->shipment['status'] == 'finalized') {
                     ?>
                             <h4 align="CENTER" style="color:red">Your response is late and this shipment has been finalized. Your result will not be evaluated </h4>
                         <?php
-                        } else if ($response == 1) {
+                        } else if (($date > $lastDate)) {
                         ?>
                             <h4 align="CENTER" style="color:red">Your response is late.</h4>
                         <?php

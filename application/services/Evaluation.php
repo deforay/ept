@@ -218,14 +218,13 @@ class Application_Service_Evaluation
 				$createdOnUser = explode(" ", $shipment['created_on_user']);
 				if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
-					$createdOn = new Zend_Date($createdOnUser[0]);
+					$createdOn = new DateTime($createdOnUser[0]);
 				} else {
-					$datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
-					$createdOn = new Zend_Date($datearray);
+					$createdOn = new DateTime('1970-01-01');
 				}
 
-				$lastDate = new Zend_Date($shipment['lastdate_response']);
-				if ($createdOn->isEarlier($lastDate)) {
+				$lastDate = new DateTime($shipment['lastdate_response']);
+				if ($createdOn > $lastDate) {
 
 					$results = $schemeService->getDbsSamples($shipmentId, $shipment['participant_id']);
 					$totalScore = 0;
@@ -286,20 +285,20 @@ class Application_Service_Evaluation
 
 					// checking test kit expiry dates
 
-					$testedOn = new Zend_Date($results[0]['shipment_test_date']);
-					$testDate = $testedOn->toString('dd-MMM-YYYY');
+					$testedOn = new DateTime($results[0]['shipment_test_date']);
+					$testDate = $testedOn->format('d-M-Y');
 					$expDate1 = "";
 					if (trim(strtotime($results[0]['exp_date_1'])) != "") {
-						$expDate1 = new Zend_Date($results[0]['exp_date_1']);
+						$expDate1 = new DateTime($results[0]['exp_date_1']);
 					}
 					$expDate2 = "";
 					if (trim(strtotime($results[0]['exp_date_2'])) != "") {
-						$expDate2 = new Zend_Date($results[0]['exp_date_2']);
+						$expDate2 = new DateTime($results[0]['exp_date_2']);
 					}
 
 					$expDate3 = "";
 					if (trim(strtotime($results[0]['exp_date_3'])) != "") {
-						$expDate3 = new Zend_Date($results[0]['exp_date_3']);
+						$expDate3 = new DateTime($results[0]['exp_date_3']);
 					}
 
 
@@ -317,41 +316,30 @@ class Application_Service_Evaluation
 						$testKit3 = $testKitName[0];
 					}
 					if ($expDate1 != "") {
-						if ($testedOn->isLater($expDate1)) {
-							$difference = $testedOn->sub($expDate1);
-
-							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-							$measure->convertTo(Zend_Measure_Time::DAY);
+						if ($testedOn > ($expDate1)) {
+							$difference = $testedOn->diff($expDate1);
 
 							$testKitExpiryResult = 'Fail';
-							$failureReason[]['warning'] = "EIA 1 (<strong>" . $testKit1 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate;
+							$failureReason[]['warning'] = "EIA 1 (<strong>" . $testKit1 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate;
 						}
 					}
-					$testedOn = new Zend_Date($results[0]['shipment_test_date']);
-					$testDate = $testedOn->toString('dd-MMM-YYYY');
+					
 					if ($expDate2 != "") {
-						if ($testedOn->isLater($expDate2)) {
-							$difference = $testedOn->sub($expDate2);
-
-							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-							$measure->convertTo(Zend_Measure_Time::DAY);
+						if ($testedOn > ($expDate2)) {
+							$difference = $testedOn->diff($expDate2);
 
 							$testKitExpiryResult = 'Fail';
-							$failureReason[]['warning'] = "EIA 2 (<strong>" . $testKit2 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate;
+							$failureReason[]['warning'] = "EIA 2 (<strong>" . $testKit2 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate;
 						}
 					}
 
-					$testedOn = new Zend_Date($results[0]['shipment_test_date']);
-					$testDate = $testedOn->toString('dd-MMM-YYYY');
+					
 					if ($expDate3 != "") {
-						if ($testedOn->isLater($expDate3)) {
-							$difference = $testedOn->sub($expDate3);
-
-							$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-							$measure->convertTo(Zend_Measure_Time::DAY);
+						if ($testedOn > ($expDate3)) {
+							$difference = $testedOn->diff($expDate3);
 
 							$testKitExpiryResult = 'Fail';
-							$failureReason[]['warning'] = "EIA 3 (<strong>" . $testKit3 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate;
+							$failureReason[]['warning'] = "EIA 3 (<strong>" . $testKit3 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate;
 						}
 					}
 					//checking if testkits were repeated
@@ -413,8 +401,8 @@ class Application_Service_Evaluation
 		} else if ($shipmentResult[0]['scheme_type'] == 'covid19') {
 			$covid19Model = new Application_Model_Covid19();
 			$shipmentResult = $covid19Model->evaluate($shipmentResult, $shipmentId);
-		} 
-		
+		}
+
 		return $shipmentResult;
 	}
 
@@ -533,7 +521,7 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('covid19');
 			$evalComments = $schemeService->getSchemeEvaluationComments('covid19');
 			$results = $schemeService->getCovid19Samples($shipmentId, $participantId);
-		} 
+		}
 
 
 		$controlRes = array();
@@ -825,7 +813,7 @@ class Application_Service_Evaluation
 					'longterm_line' => $params['longtermLine'][$i],
 					'updated_by' => $admin,
 					'updated_on' => new Zend_Db_Expr('now()')
-                ), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $params['sampleId'][$i]);
+				), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $params['sampleId'][$i]);
 			}
 		}
 
@@ -975,7 +963,7 @@ class Application_Service_Evaluation
 					->join(array('refrecency' => 'reference_result_recency'), 'refrecency.shipment_id=sp.shipment_id and refrecency.sample_id=resrecency.sample_id', array('refrecency.reference_result', 'refControlLine' => 'refrecency.reference_control_line', 'refDiagnosisLine' => 'refrecency.reference_diagnosis_line', 'refLongTermLine' => 'refrecency.reference_longterm_line', 'refrecency.sample_label', 'refrecency.mandatory', 'refrecency.sample_score', 'refrecency.control'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refrecency.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("resrecency.shipment_map_id = ?", $res['map_id']);
-				
+
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				//Zend_Debug::dump($shipmentResult);
 			} else if ($res['scheme_type'] == 'eid') {
@@ -1180,7 +1168,7 @@ class Application_Service_Evaluation
 
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				//Zend_Debug::dump($shipmentResult);
-			} 
+			}
 			//Zend_Debug::dump($shipmentResult);die;
 			$i++;
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
@@ -1355,56 +1343,61 @@ class Application_Service_Evaluation
 				}
 				// DTS Participants Perfomance chart
 				$sQuery = $db->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
-				->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id',array(''))
-				->join(array('sp' => 'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array(
-						"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
-						"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
-						"beforeDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date <= s.lastdate_response)"),
-						"afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date > s.lastdate_response)"),
-						"pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100")
-					)
-				)->where("s.shipment_id = ?", $shipmentId);
+					->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array(''))
+					->join(
+						array('sp' => 'shipment_participant_map'),
+						'sp.shipment_id=s.shipment_id',
+						array(
+							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
+							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+							"beforeDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date <= s.lastdate_response)"),
+							"afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date > s.lastdate_response)"),
+							"pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100")
+						)
+					)->where("s.shipment_id = ?", $shipmentId);
 				$shipmentResult['participantBeforeAfterDueChart'] = $db->fetchRow($sQuery);
-				
+
 				// DTS Aberrant test result chart
 				$sQuery = $db->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
-				->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id',array(''))
-				->joinLeft(
-					array('sp' => 'shipment_participant_map'),'sp.shipment_id=s.shipment_id',array(
-						"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
-						"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
-						"fail_percentage" => new Zend_Db_Expr("((SUM(final_result = 2))/(SUM(final_result = 2) + SUM(final_result = 1)))*100"),
-						"pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100")
+					->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array(''))
+					->joinLeft(
+						array('sp' => 'shipment_participant_map'),
+						'sp.shipment_id=s.shipment_id',
+						array(
+							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
+							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+							"fail_percentage" => new Zend_Db_Expr("((SUM(final_result = 2))/(SUM(final_result = 2) + SUM(final_result = 1)))*100"),
+							"pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100")
+						)
 					)
-				)
-				->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id',array('region'))
-            	->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id',array(''))
-				->where("s.shipment_id = ?", $shipmentId);
+					->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'))
+					->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array(''))
+					->where("s.shipment_id = ?", $shipmentId);
 				$shipmentResult['participantAberrantChart'] = $db->fetchRow($sQuery);
 
 				// DTS Aberrant test result failed chart
 				$sQuery = $db->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
-				->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id',array(''))
-				->joinLeft(
-					array('sp' => 'shipment_participant_map'),
-					'sp.shipment_id=s.shipment_id',
-					array(
-						"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
-						"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
-						"network_id" => new Zend_Db_Expr('count("p.network_tier")'),
-						"beforeDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date <= s.lastdate_response)"),
-						"afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date > s.lastdate_response)"),
-						"fail_percentage" => new Zend_Db_Expr("((SUM(final_result = 2))/(SUM(final_result = 2) + SUM(final_result = 1)))*100"),
+					->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array(''))
+					->joinLeft(
+						array('sp' => 'shipment_participant_map'),
+						'sp.shipment_id=s.shipment_id',
+						array(
+							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
+							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+							"network_id" => new Zend_Db_Expr('count("p.network_tier")'),
+							"beforeDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date <= s.lastdate_response)"),
+							"afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date > s.lastdate_response)"),
+							"fail_percentage" => new Zend_Db_Expr("((SUM(final_result = 2))/(SUM(final_result = 2) + SUM(final_result = 1)))*100"),
+						)
 					)
-				)
-				->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id',array('participant_id','institute_name','region'))
-				->joinLeft(array('rn' => 'r_network_tiers'), 'p.network_tier=rn.network_id',array('network_name'))
-				->where('final_result = 2')->where("s.shipment_id = ?", $shipmentId)
-				->group(array('p.network_tier'));
+					->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('participant_id', 'institute_name', 'region'))
+					->joinLeft(array('rn' => 'r_network_tiers'), 'p.network_tier=rn.network_id', array('network_name'))
+					->where('final_result = 2')->where("s.shipment_id = ?", $shipmentId)
+					->group(array('p.network_tier'));
 				$rResult = $db->fetchAll($sQuery);
 				$row = array();
-				foreach ($rResult as $key=>$aRow) {
-					$row['network_name'][$key]      = $aRow['network_name'] . ' (N : '.round($aRow['network_id'], 2).')';
+				foreach ($rResult as $key => $aRow) {
+					$row['network_name'][$key]      = $aRow['network_name'] . ' (N : ' . round($aRow['network_id'], 2) . ')';
 					$row['totalShipped'][$key]      = $aRow['total_shipped'];
 					$row['beforeDueDate'][$key]     = round($aRow['beforeDueDate'], 2);
 					$row['afterDueDate'][$key]      = round($aRow['afterDueDate'], 2);
@@ -1810,7 +1803,7 @@ class Application_Service_Evaluation
 
 
 				$shipmentResult['participantScores'] = $db->fetchAll($sql);
-			} 
+			}
 
 			$i++;
 		}
@@ -1827,13 +1820,15 @@ class Application_Service_Evaluation
 
 		$sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
 			->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array(
-				'not_responded' => new Zend_Db_Expr("SUM( CASE WHEN (sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL) THEN 1 ELSE 0 END)"), 
-				'excluded' => new Zend_Db_Expr("SUM(CASE WHEN ((sp.shipment_test_date != '0000-00-00' OR sp.shipment_test_date IS NOT NULL) AND sp.is_excluded = 'yes') THEN 1 ELSE 0 END)"), 
-				'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"), 
-				'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"), 
-				'number_late' => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_date > s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"
-			), 
-			array()))
+				'not_responded' => new Zend_Db_Expr("SUM( CASE WHEN (sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL) THEN 1 ELSE 0 END)"),
+				'excluded' => new Zend_Db_Expr("SUM(CASE WHEN ((sp.shipment_test_date != '0000-00-00' OR sp.shipment_test_date IS NOT NULL) AND sp.is_excluded = 'yes') THEN 1 ELSE 0 END)"),
+				'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
+				'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
+				'number_late' => new Zend_Db_Expr(
+					"SUM(CASE WHEN (sp.shipment_test_date > s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"
+				),
+				array()
+			))
 			->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code'))
 			->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
@@ -1844,7 +1839,7 @@ class Application_Service_Evaluation
 		return $dbAdapter->fetchRow($sQuery);
 	}
 
-	
+
 
 	public function addShipmentEvaluationToQueue($shipmentId)
 	{

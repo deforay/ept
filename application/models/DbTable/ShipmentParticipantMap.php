@@ -109,10 +109,12 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
         // changing evaluation status 4th character to 1 = timely response or 2 = delayed response
 
-        $date = new Zend_Date();
-        $lastDate = new Zend_Date($lastDate);
         // only if current date is LATER than last date we make status = 2
-        if ($date->compare($lastDate) == 1) {
+        $date = new DateTime();
+        $lastDate = new DateTime($lastDate);
+
+        // only if current date is LATER than last date we make status = 2
+        if ($date > $lastDate) {
             $params['evaluation_status'][3] = 2;
         } else {
             $params['evaluation_status'][3] = 1;
@@ -278,11 +280,11 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $data['evaluation_status'][4] = 1;
 
         // changing evaluation status 4th character to 1 = timely response or 2 = delayed response
-        $date = new Zend_Date();
-        $lastDate = new Zend_Date($lastDate);
+        $date = new DateTime();
+        $lastDate = new DateTime($lastDate);
 
         // only if current date is LATER than last date we make status = 2
-        if ($date->compare($lastDate) == 1) {
+        if ($date > $lastDate) {
             $data['evaluation_status'][3] = 2;
         } else {
             $data['evaluation_status'][3] = 1;

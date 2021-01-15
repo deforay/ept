@@ -27,10 +27,9 @@ class Application_Model_Dts
 
 			$createdOnUser = explode(" ", $shipment['created_on_user']);
 			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
-				$createdOn = new Zend_Date($createdOnUser[0]);
+				$createdOn = new DateTime($createdOnUser[0]);
 			} else {
-				$datearray = array('year' => 1970, 'month' => 1, 'day' => 01);
-				$createdOn = new Zend_Date($datearray);
+				$createdOn = new DateTime('1970-01-01');
 			}
 
 			$results = $schemeService->getDtsSamples($shipmentId, $shipment['participant_id']);
@@ -57,9 +56,9 @@ class Application_Model_Dts
 
 
 			//Response was submitted after the last response date.
-			$lastDate = new Zend_Date($shipment['lastdate_response']);
-			if ($createdOn->compare($lastDate, Zend_date::DATES) > 0) {
-				//$lastDateResult = 'Fail';
+			$lastDate = new DateTime($shipment['lastdate_response']);
+			if ($createdOn > $lastDate) {
+				$lastDateResult = 'Fail';
 				$failureReason[] = array(
 					'warning' => "Response was submitted after the last response date.",
 					'correctiveAction' => $correctiveActions[1]
@@ -74,24 +73,24 @@ class Application_Model_Dts
 			// 3 tests algo added for Myanmar initally, might be used in other places eventually
 			//$threeTestCorrectResponses = array('NXX','PPP');  
 			
-			$testedOn = new Zend_Date($results[0]['shipment_test_date']);
+			$testedOn = new DateTime($results[0]['shipment_test_date']);
 
 			// Getting the Test Date string to show in Corrective Actions and other sentences
-			$testDate = $testedOn->toString('dd-MMM-YYYY');
+			$testDate = $testedOn->format('d-M-Y');
 
 			// Getting test kit expiry dates as reported
 			$expDate1 = "";
 			//die($results[0]['exp_date_1']);
 			if (isset($results[0]['exp_date_1']) && trim($results[0]['exp_date_1']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_1'])) != "") {
-				$expDate1 = new Zend_Date($results[0]['exp_date_1']);
+				$expDate1 = new DateTime($results[0]['exp_date_1']);
 			}
 			$expDate2 = "";
 			if (isset($results[0]['exp_date_2']) && trim($results[0]['exp_date_2']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_2'])) != "") {
-				$expDate2 = new Zend_Date($results[0]['exp_date_2']);
+				$expDate2 = new DateTime($results[0]['exp_date_2']);
 			}
 			$expDate3 = "";
 			if (isset($results[0]['exp_date_3']) && trim($results[0]['exp_date_3']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_3'])) != "") {
-				$expDate3 = new Zend_Date($results[0]['exp_date_3']);
+				$expDate3 = new DateTime($results[0]['exp_date_3']);
 			}
 
 			// Getting Test Kit Names
@@ -124,13 +123,10 @@ class Application_Model_Dts
 
 			if ($testKit1 != "") {
 				if ($expDate1 != "") {
-					if ($testedOn->isLater($expDate1)) {
-						$difference = $testedOn->sub($expDate1);
-
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
+					if ($testedOn > ($expDate1)) {
+						$difference = $testedOn->diff($expDate1);
 						$failureReason[] = array(
-							'warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
+							'warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) expired " . $difference->format('%a') . " days before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
 						);
 						$correctiveActionList[] = 5;
@@ -163,13 +159,11 @@ class Application_Model_Dts
 
 			if ($testKit2 != "") {
 				if ($expDate2 != "") {
-					if ($testedOn->isLater($expDate2)) {
-						$difference = $testedOn->sub($expDate2);
+					if ($testedOn > ($expDate2)) {
+						$difference = $testedOn->diff($expDate2);
 
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
 						$failureReason[] = array(
-							'warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
+							'warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) expired " . round($difference->format("%a")) . " days before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
 						);
 						$correctiveActionList[] = 5;
@@ -202,13 +196,10 @@ class Application_Model_Dts
 
 			if ($testKit3 != "") {
 				if ($expDate3 != "") {
-					if ($testedOn->isLater($expDate3)) {
-						$difference = $testedOn->sub($expDate3);
-
-						$measure = new Zend_Measure_Time($difference->toValue(), Zend_Measure_Time::SECOND);
-						$measure->convertTo(Zend_Measure_Time::DAY);
+					if ($testedOn > ($expDate3)) {
+						$difference = $testedOn->diff($expDate3);
 						$failureReason[] = array(
-							'warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) expired " . round($measure->getValue()) . " days before the test date " . $testDate,
+							'warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) expired " . round($difference->format("%a")) . " days before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
 						);
 						$correctiveActionList[] = 5;
