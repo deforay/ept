@@ -3198,10 +3198,34 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $covid19['Section2']['status'] = false;
             }
             // Section 2 end // Section 3 start
+            if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
+                $covid19['Section3']['data']['isPtTestNotPerformedRadio'] = 'no';
+            } else {
+                $covid19['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
+            }
+            $allNotTestedReason = $schemeService->getCovid19NotTestedReasons();
+            $allNotTestedArray = array();
+            foreach ($allNotTestedReason as $reason) {
+                $allNotTestedArray[] = array(
+                    'value'     => (string) $reason['covid19_not_tested_reason_id'],
+                    'show'      => ucwords($reason['covid19_not_tested_reason']),
+                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['covid19_not_tested_reason_id']) ? 'selected' : ''
+                );
+            }
+            
+            $covid19['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
+            $covid19['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
+            $covid19['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
+            $covid19['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
+            $covid19['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
+            $covid19['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
+            $covid19['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
+            $covid19['Section3']['status']                              = true;
+            
+            // Section 3 end // Section 4 Start
             $testTypeArray = array();
-            $testTypeKey = 0;
             $allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise(true);
-            foreach ($allTestTypes as $testTypeKey => $testtype) {
+            foreach ($allTestTypes as $testtype) {
                 if ($testtype['test_type_1'] == '1') {
                     $testTypeArray['testTypeDropDown']['Test-1']['status'] = true;
                     $testTypeArray['testTypeDropDown']['Test-1']['data'][] = array(
@@ -3269,7 +3293,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $testTypeArray['typeText'] = array('Test-1', 'Test-2', 'Test-3');
             if (isset($allSamples) && count($allSamples) > 0) {
-                $covid19['Section3']['status'] = true;
+                $covid19['Section4']['status'] = true;
                 $testTypeArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] != "0000-00-00" && $allSamples[0]["exp_date_1"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_1"])) : '';
                 $testTypeArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] != "0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_2"])) : '';
                 $testTypeArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] != "0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_3"])) : '';
@@ -3308,34 +3332,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["test_type_3"]) && 'other' == $allSamples[0]["test_type_3"]) ? 'selected' : ''
                 );
-                $covid19['Section3']['data']    = $testTypeArray;
+                $covid19['Section4']['data']    = $testTypeArray;
             } else {
-                $covid19['Section3']['status']  = false;
+                $covid19['Section4']['status']  = false;
             }
 
-            if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
-                $covid19['Section3']['data']['isPtTestNotPerformedRadio'] = 'no';
-            } else {
-                $covid19['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
-            }
-            $allNotTestedReason = $schemeService->getCovid19NotTestedReasons();
-            $allNotTestedArray = array();
-            foreach ($allNotTestedReason as $reason) {
-                $allNotTestedArray[] = array(
-                    'value'     => (string) $reason['covid19_not_tested_reason_id'],
-                    'show'      => ucwords($reason['covid19_not_tested_reason']),
-                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['covid19_not_tested_reason_id']) ? 'selected' : ''
-                );
-            }
-            
-            $covid19['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
-            $covid19['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
-            $covid19['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
-            $covid19['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
-            $covid19['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
-            $covid19['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
-            $covid19['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
-            // Section 3 end // Section 4 Start
+            // Section 4 end // Section 5 Start
             $covid19PossibleResults = $schemeService->getPossibleResults('covid19');
             $covid19PossibleArray = array();
             $covid19PossibleResponseArray = array();
@@ -3460,12 +3462,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['value']     = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
             }
             if ((isset($allSamples) && count($allSamples) > 0) && (isset($covid19PossibleResults) && count($covid19PossibleResults) > 0)) {
-                $covid19['Section4']['status']  = true;
+                $covid19['Section5']['status']  = true;
             } else {
-                $covid19['Section4']['status']  = false;
+                $covid19['Section5']['status']  = false;
             }
-            $covid19['Section4']['data']        = $allSamplesResult;
-            // Section 4 End // Section 5 Start
+            $covid19['Section5']['data']        = $allSamplesResult;
+            // Section 5 End // Section 6 Start
             $reviewArray = array();
             $commentArray = array('yes', 'no');
             $revieArr = array();
@@ -3477,8 +3479,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $reviewArray['approvalLabel']           = 'Supervisor Name';
             $reviewArray['approvalInputText']       = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '') ? $shipment['participant_supervisor'] : '';
             $reviewArray['comments']                = (isset($shipment['user_comment']) && $shipment['user_comment'] != '') ? $shipment['user_comment'] : '';
-            $covid19['Section5']['status']              = true;
-            $covid19['Section5']['data']                = $reviewArray;
+            $covid19['Section6']['status']              = true;
+            $covid19['Section6']['data']                = $reviewArray;
             // Section 5 End
             $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
             $customField1 = $globalConfigDb->getValue('custom_field_1');
