@@ -15,12 +15,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function getShipmentData($sId, $pId)
     {
-        return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('s' => $this->_name))
+        $sql = $this->getAdapter()->select()->from(array('s' => $this->_name))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->joinLeft(array('r_vl_r' => 'response_vl_not_tested_reason'), 'r_vl_r.vl_not_tested_reason_id=sp.vl_not_tested_reason', array('vlNotTestedReason' => 'vl_not_tested_reason'))
             ->where("s.shipment_id = ?", $sId)
-            ->where("sp.participant_id = ?", $pId));
+            ->where("sp.participant_id = ?", $pId);
+        return $this->getAdapter()->fetchRow($sql);
     }
 
     public function getShipmentRowInfo($sId)
@@ -314,7 +315,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
-            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name'))
+            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state','p.institute_name'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'")
@@ -1950,7 +1951,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $schemeService  = new Application_Service_Schemes();
         $commonService = new Application_Service_Common();
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
-        $date = new DateTime();
+        $date = new Zend_Date();
 
         // Initialte the global functions
         $participant    =   $participantDb->getParticipant($params['participant_id']);
@@ -1976,8 +1977,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $modeOfReceipt = $commonService->getAllModeOfReceipt();
         $globalQcAccess = $commonService->getConfig('qc_access');
         $isEditable = $spMap->isShipmentEditable($params['shipment_id'], $params['participant_id']);
-        $lastDate = new DateTime($shipment['lastdate_response']);
-
+        $lastDate = new Zend_Date($shipment['lastdate_response']);
+        $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
@@ -1989,13 +1990,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $reportAccess = array();
             if ($isEditable && $dm['view_only_access'] != 'yes') {
-                if (($date > $lastDate) && $shipment['status'] == 'finalized') {
+                if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-                } else if (($date > $lastDate) && $params['response_switch'] == 'on') {
+                } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
                     $reportAccess['status'] = 'success';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($date > $lastDate) {
+                } else if ($responseAccess == 1) {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late';
                 } else if ($shipment['status'] == 'finalized') {
@@ -2490,7 +2491,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $section2['data']['testReceiptDate']        = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
                 $section2['data']['sampleRehydrationDate']  = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
                 $section2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment["shipment_test_date"])) : '';
-                $section2['data']['specimenVolume']         = (isset($shipment['attributes']['specimen_volume']) && $shipment['attributes']['specimen_volume'] != "") ? $shipment['attributes']['specimen_volume'] : null;
+                $section2['data']['specimenVolume']         = (isset($shipment['attributes']['specimen_volume']) && $shipment['attributes']['specimen_volume'] != "")?$shipment['attributes']['specimen_volume']:null;
                 $section2['data']['vlAssaySelect']          = $vlAssayArr;
                 $section2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "") ? (string) $shipment['attributes']['vl_assay'] : '';
                 $section2['data']['otherAssay']             = (isset($shipment['attributes']['other_assay']) && $shipment['attributes']['other_assay'] != '') ? $shipment['attributes']['other_assay'] : '';
@@ -2679,7 +2680,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $extractionAssaySelect = array();
                 foreach ($extractionAssay as $eAssayId => $eAssayName) {
-                    if (isset($eAssayName) && $eAssayName != "") {
+                    if(isset($eAssayName) && $eAssayName != ""){
                         $extractionAssaySelect[] = array(
                             'value'     =>  (string) $eAssayId,
                             'show'      =>  $eAssayName,
@@ -2689,7 +2690,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $detectionAssaySelect = array();
                 foreach ($detectionAssay as $dAssayId => $dAssayName) {
-                    if (isset($dAssayName) && $dAssayName != "") {
+                    if(isset($dAssayName) && $dAssayName != ""){
                         $detectionAssaySelect[] = array(
                             'value'     =>  (string) $dAssayId,
                             'show'      =>  $dAssayName,
@@ -3067,17 +3068,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         if ($params['scheme_type'] == 'covid19') {
             $covid19 = array();
-            $testThreeOptional = false;
-            $testTwoOptional = false;
+            $testThreeOptional = false;$testTwoOptional = false;
             $testAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
             if (isset($testAllowed) && ($testAllowed == '1' || $testAllowed == '2')) {
                 $testThreeOptional = true;
             }
-
+            
             if (isset($testAllowed) && $testAllowed != '3' && $testAllowed != '2') {
                 $testTwoOptional = true;
             }
-
+            
             $reportAccess = array();
             if ($isEditable && $dm['view_only_access'] != 'yes') {
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
@@ -3128,7 +3128,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'selected'  => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
                 );
             }
-
+            
             if (isset($participant) && count($participant) > 0) {
                 $covid19['Section2']['status'] = true;
                 $section2 = array(
@@ -3140,7 +3140,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     // 'screeningTest'             => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
                 );
                 // if ((isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != 'serum')) {
-                $section2['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
+                    $section2['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
                 // }
                 $covid19['Section2']['data'] = $section2;
                 if ((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')) {
@@ -3176,13 +3176,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $covid19['Section2']['data']['qcData']  = $qc;
                 }
 
-                if ($testAllowed > 1) {
-                    foreach (range(1, $testAllowed) as $no) {
-                        $default = (isset($testAllowed) && $testAllowed == $no) ? "selected" : "";
+                if($testAllowed > 1){
+                    foreach(range(1,$testAllowed) as $no){
+                        // $default = (isset($testAllowed) && $testAllowed == $no)?"selected":"";
                         $numberOfTestSelect[] = array(
                             'value'     => (int) $no,
                             'show'      => (int) $no,
-                            'selected'  => ($shipment['number_of_tests'] == $no) ? 'selected' : $default
+                            'selected'  => ($shipment['number_of_tests'] == $no) ? 'selected' : ""
                         );
                     }
                 } else {
@@ -3242,7 +3242,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 if (!$testThreeOptional) {
                     // if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
-                    $testTypeArray['testTypeDropDown']['Test-3']['status'] = true;
+                        $testTypeArray['testTypeDropDown']['Test-3']['status'] = true;
                     /* } else {
                         $testTypeArray['testTypeDropDown']['Test-3']['status'] = false;
                     } */
@@ -3327,7 +3327,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'selected'  => ($shipment['vl_not_tested_reason'] == $reason['covid19_not_tested_reason_id']) ? 'selected' : ''
                 );
             }
-
+            
             $covid19['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
             $covid19['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
             $covid19['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
@@ -3442,12 +3442,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         } */
                     }
                 }
-
+               
                 $allSamplesResult['resultsText'] = array('Result-1', 'Result-2', 'Result-3', 'Final-Result');
 
                 if (!$testThreeOptional) {
                     $allSamplesResult['resultStatus'] = array(true, true, true, true);
-                } else if (!$testTwoOptional) {
+                } else if(!$testTwoOptional) {
                     $allSamplesResult['resultStatus'] = array(true, false, false, true);
                 } else {
                     $allSamplesResult['resultStatus'] = array(true, true, false, true);
@@ -4010,24 +4010,23 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 return true;
             }
             if ($params['schemeType'] == 'covid19') {
-                // Zend_Debug::dump($params);die;
+                // Zend_Debug::dump($params['covid19Data']->Section6->data->supervisorReviewSelected);die;
                 $attributes["sample_rehydration_date"] = (isset($params['covid19Data']->Section2->data->sampleRehydrationDate) && $params['covid19Data']->Section2->data->sampleRehydrationDate != '') ? date('Y-m-d', strtotime($params['covid19Data']->Section2->data->sampleRehydrationDate)) : '';
-                // $attributes["algorithm"] = (isset($params['covid19Data']->Section2->data->algorithmUsedSelected) && $params['covid19Data']->Section2->data->algorithmUsedSelected != '') ? $params['covid19Data']->Section2->data->algorithmUsedSelected : '';
                 $attributes = json_encode($attributes);
 
                 $data = array(
                     "shipment_receipt_date"     => date('Y-m-d', strtotime($params['covid19Data']->Section2->data->testReceiptDate)),
                     "shipment_test_date"        => date('Y-m-d', strtotime($params['covid19Data']->Section2->data->testingDate)),
                     "shipment_test_report_date" => (isset($params['covid19Data']->Section2->data->responseDate) && trim($params['covid19Data']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['covid19Data']->Section2->data->responseDate)) : date('Y-m-d'),
-                    // "lastdate_response"         => (isset($params['covid19Data']->Section2->data->respDate) && trim($params['covid19Data']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['covid19Data']->Section2->data->respDate)):date('Y-m-d'),
                     "attributes"                => $attributes,
-                    "supervisor_approval"       => (isset($params['covid19Data']->Section5->data->supervisorReviewSelected) && $params['covid19Data']->Section5->data->supervisorReviewSelected != '') ? $params['covid19Data']->Section5->data->supervisorReviewSelected : '',
-                    "participant_supervisor"    => (isset($params['covid19Data']->Section5->data->approvalInputText) && $params['covid19Data']->Section5->data->approvalInputText != '') ? $params['covid19Data']->Section5->data->approvalInputText : '',
-                    "user_comment"              => (isset($params['covid19Data']->Section5->data->comments) && $params['covid19Data']->Section5->data->comments != '') ? $params['covid19Data']->Section5->data->comments : '',
+                    "supervisor_approval"       => (isset($params['covid19Data']->Section6->data->supervisorReviewSelected) && $params['covid19Data']->Section6->data->supervisorReviewSelected != '') ? $params['covid19Data']->Section6->data->supervisorReviewSelected : '',
+                    "participant_supervisor"    => (isset($params['covid19Data']->Section6->data->approvalInputText) && $params['covid19Data']->Section6->data->approvalInputText != '') ? $params['covid19Data']->Section6->data->approvalInputText : '',
+                    "user_comment"              => (isset($params['covid19Data']->Section6->data->comments) && $params['covid19Data']->Section6->data->comments != '') ? $params['covid19Data']->Section6->data->comments : '',
                     "updated_by_user"           => $dm['dm_id'],
                     "mode_id"                   => (isset($params['covid19Data']->Section2->data->modeOfReceiptSelected) && $params['covid19Data']->Section2->data->modeOfReceiptSelected != '' && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params['covid19Data']->Section2->data->modeOfReceiptSelected : '',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
+
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
                     $data['qc_done'] = $params['covid19Data']->Section2->data->qcData->qcRadioSelected;
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
@@ -4064,7 +4063,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $data['custom_field_2'] = $params['covid19Data']->customFields->data->customField2Val;
                     // }
                 }
-
+                
                 $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data, $dm, $params);
                 $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
                 $eidResponseStatus = $covid19ResponseDb->updateResultsByAPI($params, $dm, $allSamples);
