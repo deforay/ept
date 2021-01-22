@@ -1935,12 +1935,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* This API to get the shipments form using type form and returning the response*/
         if ($type == 'form') {
             if ($checkFormSatatus) {
-                return array('status' => 'success', 'data' => $formData);
+                return array('status' => 'success', 'data' => $formData, 'profileInfo' => $aResult['profileInfo']);
             } else {
-                return array('status' => 'fail', 'message' => "The following shipments doesn't have the shipment forms", 'data' => $getParticipantDetails);
+                return array('status' => 'fail', 'message' => "The following shipments doesn't have the shipment forms", 'data' => $getParticipantDetails, 'profileInfo' => $aResult['profileInfo']);
             }
         }
-        return array('status' => 'success', 'data' => $data);
+        return array('status' => 'success', 'data' => $data, 'profileInfo' => $aResult['profileInfo']);
     }
 
     public function fetchShipmentFormDetails($params, $dm)
@@ -3535,7 +3535,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
         $resultData = $this->getAdapter()->fetchAll($sQuery);
         if (!isset($resultData) && count($resultData) == 0) {
-            return array('status' => 'fail', 'message' => 'Report not ready.');
+            return array('status' => 'fail', 'message' => 'Report not ready.', 'profileInfo' => $aResult['profileInfo']);
         }
         /* Started the API service for individual report */
         $data = array();
@@ -3570,9 +3570,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             );
         }
         if (isset($data) && count($data) > 0) {
-            return array('status' => 'success', 'data' => $data);
+            return array('status' => 'success', 'data' => $data, 'profileInfo' => $aResult['profileInfo']);
         } else {
-            return array('status' => 'fail', 'message' => 'Report not ready');
+            return array('status' => 'fail', 'message' => 'Report not ready', 'profileInfo' => $aResult['profileInfo']);
         }
     }
 
@@ -3606,7 +3606,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
         $resultData = $this->getAdapter()->fetchAll($sQuery);
         if (!isset($resultData) && count($resultData) == 0) {
-            return array('status' => 'fail', 'message' => 'Report not ready.');
+            return array('status' => 'fail', 'message' => 'Report not ready.', 'profileInfo' => $aResult['profileInfo']);
         }
         /* Started the API service for summary report */
         $data = array();
@@ -3633,9 +3633,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             );
         }
         if (isset($data) && count($data) > 0) {
-            return array('status' => 'success', 'data' => $data);
+            return array('status' => 'success', 'data' => $data, 'profileInfo' => $aResult['profileInfo']);
         } else {
-            return array('status' => 'fail', 'message' => 'Report not ready');
+            return array('status' => 'fail', 'message' => 'Report not ready', 'profileInfo' => $aResult['profileInfo']);
         }
     }
 
@@ -3674,23 +3674,23 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $returnResposne[$key]['data']['mapId'] = $row->mapId;
             }
             if ($responseStatus) {
-                return array('status' => 'failure', 'data' => $returnResposne);
+                return array('status' => 'failure', 'data' => $returnResposne, 'profileInfo' => $dm['profileInfo']);
             } else {
-                return array('status' => 'success', 'data' => $returnResposne);
+                return array('status' => 'success', 'data' => $returnResposne, 'profileInfo' => $dm['profileInfo']);
             }
         }
         if (isset($params['syncType']) && $params['syncType'] == 'single') {
             $status = $this->saveShipmentByType((array) $params['data'], $dm);
             // die($status);
             if ($status) {
-                return array('status' => 'success', 'message' => 'Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date.');
+                return array('status' => 'success', 'message' => 'Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date.', 'profileInfo' => $dm['profileInfo']);
             } else {
-                return array('status' => 'fail', 'message' => 'Please check your network connection and try again.');
+                return array('status' => 'fail', 'message' => 'Please check your network connection and try again.', 'profileInfo' => $dm['profileInfo']);
             }
         }
         /* throw the expection if post data type not came */
         if ((isset($params['syncType']) || !isset($params['syncType'])) && (($params['syncType'] == 'single' && $params['syncType'] == 'group') || $params['syncType'] == '')) {
-            return array('status' => 'fail', 'message' => 'Please check your network connection and try again.');
+            return array('status' => 'fail', 'message' => 'Please check your network connection and try again.', 'profileInfo' => $dm['profileInfo']);
         }
     }
 

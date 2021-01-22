@@ -2709,3 +2709,6 @@ ALTER TABLE `shipment_participant_map` ADD `number_of_tests` INT(11) NULL DEFAUL
 -- Amit 1 Jan 2021
 
 ALTER TABLE `shipment_participant_map` CHANGE `shipment_test_date` `shipment_test_date` DATE NULL DEFAULT NULL;
+
+-- Thana 22-Jan-2021
+ALTER TABLE `data_manager` ADD `api_token_generated_datetime` DATETIME NULL DEFAULT NULL AFTER `auth_token`;

@@ -407,7 +407,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $common = new Application_Service_Common();
         $params['authToken'] = $common->getRandomString(6);
         $params['download_link'] = $common->getRandomString(9);
-        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()'), 'push_status' => 'not-send'), "dm_id = " . $result['dm_id']);
+        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()'), 'push_status' => 'not-send'), "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
         /* App version check */
         /* if ($aResult == 'app-version-failed') {
@@ -445,6 +445,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'phone'                         => $result['phone'],
             'appVersion'                    => $aResult['app_version'],
             'pushStatus'                    => $aResult['push_status'],
+            'profileInfo'                   => $aResult['profileInfo'],
             'resendMail'                    => '',
             'fcm'                           => $aResult['fcm'],
             'fcmFileStatus'                 => !empty($reader) ? true : false,
@@ -507,6 +508,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'phone'                         => $result['phone'],
             'appVersion'                    => $aResult['app_version'],
             'pushStatus'                    => $aResult['push_status'],
+            'profileInfo'                   => $aResult['profileInfo'],
             'resendMail'                    => '',
             'fcm'                           => $aResult['fcm'],
             'fcmFileStatus'                 => !empty($reader) ? true : false,
@@ -526,7 +528,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
     }
 
-    public function fetchAuthToken($params)
+public function fetchAuthToken($params)
     {
         $configDb = new Application_Model_DbTable_SystemConfig();
         $appVersion = $configDb->getValue($params['appVersion']);
@@ -536,7 +538,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } */
         /* Check the token  */
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify', 'new_email'))
+        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify', 'new_email'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
             ->where("dm.auth_token=?", $params['authToken']);
@@ -547,6 +549,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* Return the response data */
         $conf = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $fcmData = !empty($conf->fcm) ? $conf->fcm->toArray() : array();
+        
         return  array(
             'dm_id'                             => $aResult['dm_id'],
             'view_only_access'                  => $aResult['view_only_access'],
@@ -563,8 +566,39 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'app_version'                       => (isset($appVersion['value']) && $appVersion['value'] != '')?$appVersion['value']:null,
             'push_status'                       => $aResult['push_status'],
             'marked_push_notify'                => $aResult['marked_push_notify'],
+            'profileInfo'                       => $this->checkTokenExpired($params['authToken']),
             'fcm'                               => $fcmData
         );
+    }
+
+    public function checkTokenExpired($authToken)
+    {
+        /* Check If token got expired and need to update the new one */
+        $db = Zend_Db_Table_Abstract::getAdapter();
+        $sql = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify', 'new_email'))
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
+            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
+            ->where("dm.auth_token=?", $authToken);
+        $result = $db->fetchRow($sql);
+        $response['token-updated'] = false; $response['force-logout'] = false; $response['newAuthToken'] = null;
+        if (($result['api_token_generated_datetime'] < date('Y-m-d H:i:s', strtotime('-1 days'))) || $result['status'] == 'inactive') {
+            if($result['status'] == 'inactive'){
+                $response['force-logout'] = true;
+            } else{
+                $response['force-logout'] = false;
+            }
+            $common = new Application_Service_Common();
+            $response['newAuthToken'] = $common->getRandomString(6);
+            $id = $this->update(array('auth_token' => $response['authToken'], 'api_token_generated_datetime' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
+            if ($id > 0) {
+                $response['token-updated'] = true;
+            } else {
+                $response['token-updated'] = false;
+            }
+        } else{
+
+        }
+        return $response;
     }
 
     public function changePasswordDatamanagerByAPI($params)
@@ -584,15 +618,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $oldPassResult = $this->fetchRow("password='" . $params['oldPassword'] . "' AND auth_token = '" . $params['authToken'] . "'");
         if (!$oldPassResult) {
-            return array('status' => 'fail', 'message' => 'Your old password is incorrect');
+            return array('status' => 'fail', 'message' => 'Your old password is incorrect', 'profileInfo' => $aResult['profileInfo']);
         }
         /* Update the new password to the server */
         $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => (int) $aResult['dm_id']));
         if ($update < 1) {
-            return array('status' => 'fail', 'message' => 'You have entered old password');
+            return array('status' => 'fail', 'message' => 'You have entered old password', 'profileInfo' => $aResult['profileInfo']);
         }
         $this->update(array('updated_on' => new Zend_Db_Expr('now()')), array('dm_id = ?' => $aResult['dm_id']));
-        return array('status' => 'success', 'message' => 'Password Updated Successfully');
+        return array('status' => 'success', 'message' => 'Password Updated Successfully', 'profileInfo' => $aResult['profileInfo']);
     }
 
     public function setForgetPasswordDatamanagerAPI($params)
@@ -668,12 +702,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 'secondaryEmail'    => $result['secondary_email'],
                 'mobile'            => $result['mobile'],
                 'phone'             => $result['phone'],
+                'profileInfo'       => $aResult['profileInfo'],
                 'fcm'               => $conf->fcm->toArray()
             );
             $this->update(array('force_profile_check' => 'no'), 'dm_id = ' . $result['dm_id']);
         } else {
             $response['status'] = 'fail';
             $response['message'] = 'No participant found.';
+            $response['profileInfo'] = $aResult['profileInfo'];
         }
         return $response;
     }
@@ -735,7 +771,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $response['status'] = 'fail';
             $response['message'] = 'Not found any update.';
         }
-
+        $response['profileInfo'] = $aResult['profileInfo'];
         return $response;
     }
 
@@ -770,7 +806,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } else {
             $response['status']     = 'fail';
         }
-
+        $response['profileInfo'] = $aResult['profileInfo'];
         return $response;
     }
 
@@ -822,7 +858,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } else {
             $response['status']     = 'fail';
         }
-
+        $response['profileInfo'] = $aResult['profileInfo'];
         return $response;
     }
 }

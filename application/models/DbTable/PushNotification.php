@@ -282,6 +282,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
             $response['status'] =  'fail';
             $response['message'] =  'No notification found'; 
         }
+        $response['profileInfo'] = $aResult['profileInfo'];
         return $response;
     }
 }

@@ -1345,7 +1345,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         } */
         if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again', 'profileInfo' => $aResult['profileInfo']);
         }
 
         $result = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name))
@@ -1390,6 +1390,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $response['status'] = 'fail';
             $response['message'] = 'There is no participant found.';
         }
+        $response['profileInfo'] = $aResult['profileInfo'];
         return $response;
     }
 }
