@@ -430,7 +430,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $reader = file_get_contents(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json');
         }
 
-
         /* Create a new response to the API service */
         $resultData = array(
             'id'                            => $result['dm_id'],

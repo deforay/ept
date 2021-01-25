@@ -10,6 +10,7 @@ class Api_LoginController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
+            // Zend_Debug::dump('isPost');die;
             $params = json_decode(file_get_contents('php://input'));
             $clientsServices = new Application_Service_DataManagers();
             $result = $clientsServices->loginDatamanagerAPI((array)$params);
