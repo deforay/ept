@@ -575,7 +575,7 @@ public function fetchAuthToken($params)
     {
         /* Check If token got expired and need to update the new one */
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sql = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify', 'new_email'))
+        $sql = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'status', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify', 'new_email'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
             ->where("dm.auth_token=?", $authToken);
@@ -589,7 +589,7 @@ public function fetchAuthToken($params)
             }
             $common = new Application_Service_Common();
             $response['newAuthToken'] = $common->getRandomString(6);
-            $id = $this->update(array('auth_token' => $response['authToken'], 'api_token_generated_datetime' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
+            $id = $this->update(array('auth_token' => $response['newAuthToken'], 'api_token_generated_datetime' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
             if ($id > 0) {
                 $response['token-updated'] = true;
             } else {

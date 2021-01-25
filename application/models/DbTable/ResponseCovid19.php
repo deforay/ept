@@ -104,7 +104,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
             $testTwoOptional = true;
         }
         
-        $sampleIds = $params['covid19Data']->Section4->data->samples->id;
+        $sampleIds = $params['covid19Data']->Section5->data->samples->id;
         foreach ($sampleIds as $key => $sampleId) {
             $testTypeDb = new Application_Model_DbTable_TestTypenameCovid19();
             if (isset($params['covid19Data']->Section3->data->typeValue[0]) && trim($params['covid19Data']->Section3->data->typeValue[0]) == 'other') {
@@ -125,8 +125,8 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
             } else {
                 $params['test_type_3'] = (isset($params['covid19Data']->Section3->data->typeValue[2]) && $params['covid19Data']->Section3->data->typeValue[2] != '') ? $params['covid19Data']->Section3->data->typeValue[2] : '';
             }
-            $result2 = (isset($params['covid19Data']->Section4->data->samples->result2[$key]->value) && $params['covid19Data']->Section4->data->samples->result2[$key]->value != '') ? (string)$params['covid19Data']->Section4->data->samples->result2[$key]->value : '';
-            $result3 = (isset($params['covid19Data']->Section4->data->samples->result3[$key]->value) && $params['covid19Data']->Section4->data->samples->result3[$key]->value != '') ? (string)$params['covid19Data']->Section4->data->samples->result3[$key]->value : '';
+            $result2 = (isset($params['covid19Data']->Section5->data->samples->result2[$key]->value) && $params['covid19Data']->Section5->data->samples->result2[$key]->value != '') ? (string)$params['covid19Data']->Section5->data->samples->result2[$key]->value : '';
+            $result3 = (isset($params['covid19Data']->Section5->data->samples->result3[$key]->value) && $params['covid19Data']->Section5->data->samples->result3[$key]->value != '') ? (string)$params['covid19Data']->Section5->data->samples->result3[$key]->value : '';
 
             if ($testTwoOptional) {
                 $params['test_type_2'] = '';
@@ -145,7 +145,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
             $expDate2       = (isset($params['covid19Data']->Section3->data->expDate[1]) && $params['covid19Data']->Section3->data->expDate[1] != "")?$params['covid19Data']->Section3->data->expDate[1]:null;
             $expDate3       = (isset($params['covid19Data']->Section3->data->expDate[2]) && $params['covid19Data']->Section3->data->expDate[2] != "")?$params['covid19Data']->Section3->data->expDate[2]:null;
             $result1        = (isset($params['covid19Data']->Section3->data->samples->result1[$key]->value) && $params['covid19Data']->Section3->data->samples->result1[$key]->value != "")?$params['covid19Data']->Section3->data->samples->result1[$key]->value:null;
-            $reportedResult = (isset($params['covid19Data']->Section4->data->samples->finalResult[$key]->value) && $params['covid19Data']->Section4->data->samples->finalResult[$key]->value != '') ? $params['covid19Data']->Section4->data->samples->finalResult[$key]->value : '';
+            $reportedResult = (isset($params['covid19Data']->Section5->data->samples->finalResult[$key]->value) && $params['covid19Data']->Section5->data->samples->finalResult[$key]->value != '') ? $params['covid19Data']->Section5->data->samples->finalResult[$key]->value : '';
             
             $data = array(
                 'test_type_1'       => $params['test_type_1'],

@@ -1969,6 +1969,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         if ($params['scheme_type'] == 'covid19') {
             $allSamples =   $schemeService->getCovid19Samples($params['shipment_id'], $params['participant_id']);
+            // Zend_Debug::dump($allSamples);die;
         }
         $shipment = $schemeService->getShipmentData($params['shipment_id'], $params['participant_id']);
         $shipment['attributes'] = json_decode($shipment['attributes'], true);
@@ -3339,46 +3340,55 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             // Section 4 end // Section 5 Start
             $covid19PossibleResults = $schemeService->getPossibleResults('covid19');
-            $covid19PossibleArray = array();
-            $covid19PossibleResponseArray = array();
+            $covid19PossibleResponse['code'] =  array(); $covid19PossibleResponse['result'] = array();
             foreach ($covid19PossibleResults as $row) {
-                $covid19PossibleArray[$row['id']] = $row['result_code'];
+                $covid19PossibleResponse['code'][$row['id']] = $row['result_code'];
+                $covid19PossibleResponse['result'][$row['id']] = $row['response'];
             }
-            foreach ($covid19PossibleResults as $row) {
-                $covid19PossibleResponseArray[$row['id']] = $row['response'];
-            }
+
             $allSamplesResult = array();
             foreach ($allSamples as $sample) {
                 $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
                 $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
+
+                $responseCode1 = (isset($covid19PossibleResponse['code'][$sample['test_result_1']]) && $covid19PossibleResponse['code'][$sample['test_result_1']] != '' && $covid19PossibleResponse['code'][$sample['test_result_1']] != null) ? $covid19PossibleResponse['code'][$sample['test_result_1']] : 'X';
+                $responseCode2 = (isset($covid19PossibleResponse['code'][$sample['test_result_2']]) && $covid19PossibleResponse['code'][$sample['test_result_2']] != '' && $covid19PossibleResponse['code'][$sample['test_result_2']] != null) ? $covid19PossibleResponse['code'][$sample['test_result_2']] : 'X';
+                $responseCode3 = (isset($covid19PossibleResponse['code'][$sample['test_result_3']]) && $covid19PossibleResponse['code'][$sample['test_result_3']] != '' && $covid19PossibleResponse['code'][$sample['test_result_3']] != null) ? $covid19PossibleResponse['code'][$sample['test_result_3']] : 'X';
+                $finalResponseCode = (isset($covid19PossibleResponse['code'][$sample['reported_result']]) && $covid19PossibleResponse['code'][$sample['reported_result']] != '' && $covid19PossibleResponse['code'][$sample['reported_result']] != null) ? $covid19PossibleResponse['code'][$sample['reported_result']] : 'X';
+                
+                $responseResult1 = (isset($covid19PossibleResponse['result'][$sample['test_result_1']]) && $covid19PossibleResponse['result'][$sample['test_result_1']] != '' && $covid19PossibleResponse['result'][$sample['test_result_1']] != null) ? $covid19PossibleResponse['result'][$sample['test_result_1']] : '';
+                $responseResult2 = (isset($covid19PossibleResponse['result'][$sample['test_result_2']]) && $covid19PossibleResponse['result'][$sample['test_result_2']] != '' && $covid19PossibleResponse['result'][$sample['test_result_2']] != null) ? $covid19PossibleResponse['result'][$sample['test_result_2']] : '';
+                $responseResult3 = (isset($covid19PossibleResponse['result'][$sample['test_result_3']]) && $covid19PossibleResponse['result'][$sample['test_result_3']] != '' && $covid19PossibleResponse['result'][$sample['test_result_3']] != null) ? $covid19PossibleResponse['result'][$sample['test_result_3']] : '';
+                $finalResponseResult = (isset($covid19PossibleResponse['result'][$sample['reported_result']]) && $covid19PossibleResponse['result'][$sample['reported_result']] != '' && $covid19PossibleResponse['result'][$sample['reported_result']] != null) ? $covid19PossibleResponse['result'][$sample['reported_result']] : '';
+
                 $allSamplesResult['samples']['result1'][]       = array(
-                    'resultCode'    => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? (isset($covid19PossibleArray[$sample['test_result_1']]) && $covid19PossibleArray[$sample['test_result_1']] != '' && $covid19PossibleArray[$sample['test_result_1']] != null) ? $covid19PossibleArray[$sample['test_result_1']] : 'X' : 'X',
+                    'resultCode'    => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? $responseCode1: 'X',
                     'selected'      => (isset($sample['test_result_1']) && $sample['test_result_1'] != '') ? 'selected' : '',
-                    'show'          => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? (isset($covid19PossibleResponseArray[$sample['test_result_1']]) && $covid19PossibleResponseArray[$sample['test_result_1']] != '' && $covid19PossibleResponseArray[$sample['test_result_1']] != null) ? $covid19PossibleResponseArray[$sample['test_result_1']] : '' : '',
+                    'show'          => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? $responseResult1: '',
                     'value'         => (isset($sample['test_result_1']) && $sample['test_result_1'] != '') ? $sample['test_result_1'] : '',
                 );
                 $allSamplesResult['samples']['result2'][]       = array(
-                    'resultCode'    => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? (isset($covid19PossibleArray[$sample['test_result_2']]) && $covid19PossibleArray[$sample['test_result_2']] != '' && $covid19PossibleArray[$sample['test_result_2']] != null) ? $covid19PossibleArray[$sample['test_result_2']] : 'X' : 'X',
+                    'resultCode'    => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? $responseCode2: 'X',
                     'selected'      => (isset($sample['test_result_2']) && $sample['test_result_2'] != '') ? 'selected' : '',
-                    'show'          => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? (isset($covid19PossibleResponseArray[$sample['test_result_2']]) && $covid19PossibleResponseArray[$sample['test_result_2']] != '' && $covid19PossibleResponseArray[$sample['test_result_2']] != null) ? $covid19PossibleResponseArray[$sample['test_result_2']] : '' : '',
+                    'show'          => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? $responseResult2: '',
                     'value'         => (isset($sample['test_result_2']) && $sample['test_result_2'] != '') ? $sample['test_result_2'] : '',
                 );
                 $allSamplesResult['samples']['result3'][]       = array(
-                    'resultCode'    => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? (isset($covid19PossibleArray[$sample['test_result_3']]) && $covid19PossibleArray[$sample['test_result_3']] != '' && $covid19PossibleArray[$sample['test_result_3']] != null) ? $covid19PossibleArray[$sample['test_result_3']] : 'X' : 'X',
+                    'resultCode'    => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $responseCode3: 'X',
                     'selected'      => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? 'selected' : '',
-                    'show'          => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? (isset($covid19PossibleResponseArray[$sample['test_result_3']]) && $covid19PossibleResponseArray[$sample['test_result_3']] != '' && $covid19PossibleResponseArray[$sample['test_result_3']] != null) ? $covid19PossibleResponseArray[$sample['test_result_3']] : '' : '',
+                    'show'          => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $responseResult3: '',
                     'value'         => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? $sample['test_result_3'] : '',
                 );
                 $allSamplesResult['samples']['finalResult'][]       = array(
-                    'resultCode'    => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? (isset($covid19PossibleArray[$sample['reported_result']]) && $covid19PossibleArray[$sample['reported_result']] != '' && $covid19PossibleArray[$sample['reported_result']] != null) ? $covid19PossibleArray[$sample['reported_result']] : 'X' : 'X',
+                    'resultCode'    => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $finalResponseCode: 'X',
                     'selected'      => (isset($sample['reported_result']) && $sample['reported_result'] != '') ? 'selected' : '',
-                    'show'          => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? (isset($covid19PossibleResponseArray[$sample['reported_result']]) && $covid19PossibleResponseArray[$sample['reported_result']] != '' && $covid19PossibleResponseArray[$sample['reported_result']] != null) ? $covid19PossibleResponseArray[$sample['reported_result']] : '' : '',
+                    'show'          => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $finalResponseResult: '',
                     'value'         => (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '',
                 );
-                $allSamplesResult['samples']['result1Code'][]       = (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? (isset($covid19PossibleArray[$sample['test_result_1']]) && $covid19PossibleArray[$sample['test_result_1']] != '' && $covid19PossibleArray[$sample['test_result_1']] != null) ? $covid19PossibleArray[$sample['test_result_1']] : 'X' : 'X';
-                $allSamplesResult['samples']['result2Code'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? (isset($covid19PossibleArray[$sample['test_result_2']]) && $covid19PossibleArray[$sample['test_result_2']] != '' && $covid19PossibleArray[$sample['test_result_2']] != null) ? $covid19PossibleArray[$sample['test_result_2']] : 'X' : 'X';
-                $allSamplesResult['samples']['result3Code'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? (isset($covid19PossibleArray[$sample['test_result_3']]) && $covid19PossibleArray[$sample['test_result_3']] != '' && $covid19PossibleArray[$sample['test_result_3']] != null) ? $covid19PossibleArray[$sample['test_result_3']] : 'X' : 'X';
-                $allSamplesResult['samples']['finalResultCode'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? (isset($covid19PossibleArray[$sample['reported_result']]) && $covid19PossibleArray[$sample['reported_result']] != '' && $covid19PossibleArray[$sample['reported_result']] != null) ? $covid19PossibleArray[$sample['reported_result']] : 'X' : 'X';
+                $allSamplesResult['samples']['result1Code'][]       = (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? $responseCode1: 'X';
+                $allSamplesResult['samples']['result2Code'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? $responseCode2: 'X';
+                $allSamplesResult['samples']['result3Code'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $responseCode3: 'X';
+                $allSamplesResult['samples']['finalResultCode'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $finalResponseCode: 'X';
                 $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1) ? true : false;
                 foreach (range(1, 3) as $row) {
                     $possibleResults = array();
