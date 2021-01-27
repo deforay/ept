@@ -107,23 +107,23 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
         $sampleIds = $params['covid19Data']->Section5->data->samples->id;
         foreach ($sampleIds as $key => $sampleId) {
             $testTypeDb = new Application_Model_DbTable_TestTypenameCovid19();
-            if (isset($params['covid19Data']->Section3->data->typeValue[0]) && trim($params['covid19Data']->Section3->data->typeValue[0]) == 'other') {
-                $otherTestkitId1 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_1"], $params['covid19Data']->Section3->data->kitOther[0], 'covid19', 1);
+            if (isset($params['covid19Data']->Section4->data->typeValue[0]) && trim($params['covid19Data']->Section4->data->typeValue[0]) == 'other') {
+                $otherTestkitId1 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_1"], $params['covid19Data']->Section4->data->kitOther[0], 'covid19', 1);
                 $params['test_type_1'] = $otherTestkitId1;
             } else {
-                $params['test_type_1'] = (isset($params['covid19Data']->Section3->data->typeValue[0]) && $params['covid19Data']->Section3->data->typeValue[0] != '') ? $params['covid19Data']->Section3->data->typeValue[0] : '';
+                $params['test_type_1'] = (isset($params['covid19Data']->Section4->data->typeValue[0]) && $params['covid19Data']->Section4->data->typeValue[0] != '') ? $params['covid19Data']->Section4->data->typeValue[0] : '';
             }
-            if (isset($params['covid19Data']->Section3->data->typeValue[1]) && trim($params['covid19Data']->Section3->data->typeValue[1]) == 'other') {
-                $otherTestkitId2 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_2"], $params['covid19Data']->Section3->data->kitOther[1], 'covid19', 2);
+            if (isset($params['covid19Data']->Section4->data->typeValue[1]) && trim($params['covid19Data']->Section4->data->typeValue[1]) == 'other') {
+                $otherTestkitId2 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_2"], $params['covid19Data']->Section4->data->kitOther[1], 'covid19', 2);
                 $params['test_type_2'] = $otherTestkitId2;
             } else {
-                $params['test_type_2'] = (isset($params['covid19Data']->Section3->data->typeValue[1]) && $params['covid19Data']->Section3->data->typeValue[1] != '') ? $params['covid19Data']->Section3->data->typeValue[1] : '';
+                $params['test_type_2'] = (isset($params['covid19Data']->Section4->data->typeValue[1]) && $params['covid19Data']->Section4->data->typeValue[1] != '') ? $params['covid19Data']->Section4->data->typeValue[1] : '';
             }
-            if (isset($params['covid19Data']->Section3->data->typeValue[2]) && trim($params['covid19Data']->Section3->data->typeValue[2]) == 'other') {
-                $otherTestkitId3 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_3"], $params['covid19Data']->Section3->data->kitOther[2], 'covid19', 3);
+            if (isset($params['covid19Data']->Section4->data->typeValue[2]) && trim($params['covid19Data']->Section4->data->typeValue[2]) == 'other') {
+                $otherTestkitId3 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_3"], $params['covid19Data']->Section4->data->kitOther[2], 'covid19', 3);
                 $params['test_type_3'] = $otherTestkitId3;
             } else {
-                $params['test_type_3'] = (isset($params['covid19Data']->Section3->data->typeValue[2]) && $params['covid19Data']->Section3->data->typeValue[2] != '') ? $params['covid19Data']->Section3->data->typeValue[2] : '';
+                $params['test_type_3'] = (isset($params['covid19Data']->Section4->data->typeValue[2]) && $params['covid19Data']->Section4->data->typeValue[2] != '') ? $params['covid19Data']->Section4->data->typeValue[2] : '';
             }
             $result2 = (isset($params['covid19Data']->Section5->data->samples->result2[$key]->value) && $params['covid19Data']->Section5->data->samples->result2[$key]->value != '') ? (string)$params['covid19Data']->Section5->data->samples->result2[$key]->value : '';
             $result3 = (isset($params['covid19Data']->Section5->data->samples->result3[$key]->value) && $params['covid19Data']->Section5->data->samples->result3[$key]->value != '') ? (string)$params['covid19Data']->Section5->data->samples->result3[$key]->value : '';
