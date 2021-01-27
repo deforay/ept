@@ -542,6 +542,7 @@ public function fetchAuthToken($params)
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
             ->where("dm.auth_token=?", $params['authToken']);
         $aResult = $db->fetchRow($sQuery);
+        // Zend_Debug::dump($sQuery->assemble());die;
         if (!isset($aResult['dm_id'])) {
             return false;
         }
