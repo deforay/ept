@@ -815,6 +815,52 @@ class Application_Service_Evaluation
 					'updated_on' => new Zend_Db_Expr('now()')
 				), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $params['sampleId'][$i]);
 			}
+		} else if ($params['scheme'] == 'covid19') {
+
+
+			$attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['rehydrationDate']);
+			// $attributes["algorithm"] = $params['algorithm'];
+			$attributes = json_encode($attributes);
+
+			$mapdata = array(
+				"shipment_receipt_date"		=> Pt_Commons_General::dateFormat($params['receivedOn']),
+				"shipment_test_date" 		=> Pt_Commons_General::dateFormat($params['testedOn']),
+				"attributes" 				=> $attributes,
+				"supervisor_approval" 		=> $params['supervisorApproval'],
+				"participant_supervisor" 	=> $params['participantSupervisor'],
+				"number_of_tests" 			=> $params['numberOfParticipantTest'],
+				"user_comment" 				=> $params['userComments'],
+				"updated_by_admin" 			=> $admin,
+				"updated_on_admin" 			=> new Zend_Db_Expr('now()')
+			);
+			if (isset($params['customField1']) && trim($params['customField1']) != "") {
+				$mapdata['custom_field_1'] = $params['customField1'];
+			}
+
+			if (isset($params['customField2']) && trim($params['customField2']) != "") {
+				$mapdata['custom_field_2'] = $params['customField2'];
+			}
+			$db->update('shipment_participant_map', $mapdata, "map_id = " . $params['smid']);
+
+			for ($i = 0; $i < $size; $i++) {
+				$db->update('response_result_covid19', array(
+					'test_type_1' => $params['test_type_1'],
+					'lot_no_1' => $params['lot_no_1'],
+					'exp_date_1' => Pt_Commons_General::dateFormat($params['exp_date_1']),
+					'test_result_1' => $params['test_result_1'][$i],
+					'test_type_2' => $params['test_type_2'],
+					'lot_no_2' => $params['lot_no_2'],
+					'exp_date_2' => Pt_Commons_General::dateFormat($params['exp_date_2']),
+					'test_result_2' => $params['test_result_2'][$i],
+					'test_type_3' => $params['test_type_3'],
+					'lot_no_3' => $params['lot_no_3'],
+					'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
+					'test_result_3' => $params['test_result_3'][$i],
+					'reported_result' => $params['reported_result'][$i],
+					'updated_by' => $admin,
+					'updated_on' => new Zend_Db_Expr('now()')
+				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+			}
 		}
 
 		$params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] != "") ? $params['isFollowUp'] : "no";

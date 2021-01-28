@@ -415,6 +415,7 @@ class Application_Model_Covid19
 
 
 			// if we are excluding this result, then let us not give pass/fail				
+			$shipment['is_excluded'] = 'no';
 			if ($shipment['is_excluded'] == 'yes') {
 				$finalResult = '';
 				$shipment['is_excluded'] == 'yes';
