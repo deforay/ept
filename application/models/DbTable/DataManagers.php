@@ -581,7 +581,7 @@ public function fetchAuthToken($params)
             ->where("dm.auth_token=?", $authToken);
         $result = $db->fetchRow($sql);
         $response['token-updated'] = false; $response['force-logout'] = false; $response['newAuthToken'] = null;
-        if (($result['api_token_generated_datetime'] < date('Y-m-d H:i:s', strtotime('-1 days'))) || $result['status'] == 'inactive') {
+        if (($result['api_token_generated_datetime'] < date('Y-m-d H:i:s', strtotime('-365 days'))) || $result['status'] == 'inactive') {
             if($result['status'] == 'inactive'){
                 $response['force-logout'] = true;
             } else{
