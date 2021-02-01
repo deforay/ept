@@ -7,6 +7,12 @@ Welcome to the Open Source repository of the e-Proficiency Testing (ePT) softwar
 * MySQL 5+
 * PHP 7+
 
+#### Supported PT Schmes
+* HIV Serology
+* HIV Viral Load 
+* Early Infant Diagnosis
+* HIV Recency
+* Covid-19
 
 ### How do I get set up? ###
 

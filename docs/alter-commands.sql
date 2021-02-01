@@ -2712,3 +2712,10 @@ ALTER TABLE `shipment_participant_map` CHANGE `shipment_test_date` `shipment_tes
 
 -- Thana 22-Jan-2021
 ALTER TABLE `data_manager` ADD `api_token_generated_datetime` DATETIME NULL DEFAULT NULL AFTER `auth_token`;
+
+
+-- Amit 01-Feb-2021
+ALTER TABLE `reference_vl_calculation` ADD `standard_uncertainty` DOUBLE(20,10) NULL DEFAULT NULL AFTER `sd`;
+ALTER TABLE `reference_vl_calculation` ADD `is_uncertainty_acceptable` VARCHAR(255) NULL DEFAULT NULL AFTER `standard_uncertainty`;
+
+ALTER TABLE `reference_vl_calculation` ADD `median` DOUBLE(20,10) NULL DEFAULT NULL AFTER `mean`;
