@@ -1511,6 +1511,12 @@ class Application_Service_Shipments
                 ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults('recency');
+        } else if ($shipment['scheme_type'] == 'covid19') {
+            $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
+                ->join(array('ref' => 'reference_result_covid19'), 'ref.shipment_id=s.shipment_id')
+                ->where("s.shipment_id = ?", $sid));
+            $schemeService = new Application_Service_Schemes();
+            $possibleResults = $schemeService->getPossibleResults('covid19');
         } else {
             return false;
         }
@@ -1720,6 +1726,22 @@ class Application_Service_Shipments
                 }
 
                 // ------------------>
+            }
+        } else if ($scheme == 'covid19') {
+            $dbAdapter->delete('reference_result_covid19', 'shipment_id = ' . $params['shipmentId']);
+            for ($i = 0; $i < $size; $i++) {
+                $dbAdapter->insert(
+                    'reference_result_covid19',
+                    array(
+                        'shipment_id' => $params['shipmentId'],
+                        'sample_id' => ($i + 1),
+                        'sample_label' => $params['sampleName'][$i],
+                        'reference_result' => $params['possibleResults'][$i],
+                        'control' => $params['control'][$i],
+                        'mandatory' => $params['mandatory'][$i],
+                        'sample_score' => $params['score'][$i]
+                    )
+                );
             }
         } else if ($scheme == 'dbs') {
             $dbAdapter->delete('reference_result_dbs', 'shipment_id = ' . $params['shipmentId']);
@@ -1974,6 +1996,8 @@ class Application_Service_Shipments
             $code = 'TB' . $month . $year . '-' . $count;
         } else if ($sid == 'recency') {
             $code = 'REC' . $month . $year . '-' . $count;
+        } else if ($sid == 'covid19') {
+            $code = 'COVID19' . $month . $year . '-' . $count;
         }
         $sQuery = $db->select()->from('shipment')->where("shipment_code = ?", $code);
         $resultArray = $db->fetchAll($sQuery);

@@ -161,6 +161,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->eia = $schemeService->getDbsEia();
                     $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts');
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
+                } else if ($response['shipment']['scheme_type'] == 'covid19') {
+                    $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19');
+                    $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
                 } else if ($response['shipment']['scheme_type'] == 'vl') {
 
                     $this->view->vlAssay = $schemeService->getVlAssay();

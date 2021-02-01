@@ -1,6 +1,10 @@
 <?php
 require_once('tcpdf/tcpdf.php');
-require_once('libchart/classes/libchart.php');
+require_once('jpgraph/jpgraph.php');
+require_once('jpgraph/jpgraph_bar.php');
+require_once('jpgraph/jpgraph_pie.php');
+require_once('jpgraph/jpgraph_line.php');
+// require_once('libchart/classes/libchart.php');
 require_once(CRON_PATH . '/General.php');
 $general = new General();
 // Zend_Debug::dump($resultArray);die;
@@ -49,44 +53,6 @@ if ($resultArray['shipment'] != "") {
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------
-
-
-
-    $chart = new PieChart(700, 400);
-
-    $dataSet = new XYDataSet();
-
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA/WB']) != "") {
-        $dataSet->addPoint(new Point("EIA/EIA/EIA/WB", $resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA/WB']));
-    }
-
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA']) != "") {
-        $dataSet->addPoint(new Point("EIA/EIA/EIA", $resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA']));
-    }
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/WB']) != "") {
-        $dataSet->addPoint(new Point("EIA/EIA/WB", $resultArray['shipment']['dbsPieChart']['EIA/EIA/WB']));
-    }
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA/EIA']) != "") {
-        $dataSet->addPoint(new Point("EIA/EIA", $resultArray['shipment']['dbsPieChart']['EIA/EIA']));
-    }
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA/WB']) != "") {
-        $dataSet->addPoint(new Point("EIA/WB", $resultArray['shipment']['dbsPieChart']['EIA/WB']));
-    }
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA']) != "") {
-        $dataSet->addPoint(new Point("EIA", $resultArray['shipment']['dbsPieChart']['EIA']));
-    }
-
-    $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
-    $chart->setDataSet($dataSet);
-
-    $chart->setTitle("HIV Testing Algorithms used for DBS-based PT survey " . $resultArray['shipment']['distribution_code']);
-    $chart->render($piechart);
-
-    $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
-    if (file_exists($piechart)) {
-        unlink($piechart);
-    }
-
 
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', 'B', 12);
@@ -140,7 +106,7 @@ if ($resultArray['shipment'] != "") {
             $scoringPer = round(($maxScore / $partCount) * 100, 2);
         }
 
-        $chart = new VerticalBarChart(700, 400);
+        /* $chart = new VerticalBarChart(700, 400);
         
         $dataSet = new XYSeriesDataSet();
 
@@ -162,7 +128,54 @@ if ($resultArray['shipment'] != "") {
         $chart->getPlot()->setGraphCaptionRatio(0.5);
         $chart->setTitle("Comparison of test performance between participating laboratories");
         $chart->render(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
+ */
+        // JPGraph Charts
+        foreach ($barPoints as $key => $val) {
+            $dataX[] = $val;
+            $dataY[] = $key .' ('.$val.')';
+        }
+        // Create the graph. These two calls are always required
+        $graph = new Graph(700, 400, 'auto');
+        $graph->SetScale("textlin");
 
+        $theme_class = new UniversalTheme;
+        $graph->SetTheme($theme_class);
+
+        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+        $graph->SetBox(false);
+
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($dataY);
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false, false);
+
+        // Create the bar plots
+        $b1plot = new BarPlot($dataX);
+
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+        // ...and add it to the graPH
+        $graph->Add($gbplot);
+
+
+        $b1plot->SetColor("white");
+        // $b1plot->SetFillColor("#cc1111");
+        $b1plot->SetFillColor(array('brown4', 'red', 'yellow', 'darkgreen'));
+
+        // Setup the titles
+        $graph->title->Set("Comparison of test performance between participating laboratories");
+        $graph->yaxis->title->Set('% Score');
+        $graph->xaxis->title->Set('Number of participants','center');
+        
+        $graph->yaxis->SetTitleMargin(32);
+        $graph->xaxis->SetTitleMargin(32);
+        // Turn the tick mark out from the plot area
+        $graph->xaxis->SetTickSide(SIDE_DOWN);
+        $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+        // Display the graph
+        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+        $graph->Stroke($image_file);
         // set font
         $pdf->SetFont('helvetica', 'B', 12);
 
@@ -296,47 +309,59 @@ if ($resultArray['shipment'] != "") {
         //$pdf->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
     }
 
-    //$pdf->AddPage();
+    $pdf->AddPage();
 
-
-    $chart = new PieChart(700, 400);
-
-    $dataSet = new XYDataSet();
-
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA/WB']) != "") {
-        $dataSet->addPoint(new Point("EIA/EIA/EIA/WB", $resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA/WB']));
+    // JPGraph Charts
+    $barPoints = array();
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA/WB']) && trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA/WB']) != "") {
+        $barPoints["EIA/EIA/EIA/WB"] = $resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA/WB'];
     }
 
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA']) != "") {
-        $dataSet->addPoint(new Point("EIA/EIA/EIA", $resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA']));
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA']) &&  trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA']) != "") {
+        $barPoints["EIA/EIA/EIA"] = $resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA'];
     }
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/WB']) != "") {
-        $dataSet->addPoint(new Point("EIA/EIA/WB", $resultArray['shipment']['dbsPieChart']['EIA/EIA/WB']));
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA/EIA/WB']) &&  trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/WB']) != "") {
+        $barPoints["EIA/EIA/WB"] = $resultArray['shipment']['dbsPieChart']['EIA/EIA/WB'];
     }
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA/EIA']) != "") {
-        $dataSet->addPoint(new Point("EIA/EIA", $resultArray['shipment']['dbsPieChart']['EIA/EIA']));
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA/EIA']) &&  trim($resultArray['shipment']['dbsPieChart']['EIA/EIA']) != "") {
+        $barPoints["EIA/EIA"] = $resultArray['shipment']['dbsPieChart']['EIA/EIA'];
     }
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA/WB']) != "") {
-        $dataSet->addPoint(new Point("EIA/WB", $resultArray['shipment']['dbsPieChart']['EIA/WB']));
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA/WB']) &&  trim($resultArray['shipment']['dbsPieChart']['EIA/WB']) != "") {
+        $barPoints["EIA/WB"] = $resultArray['shipment']['dbsPieChart']['EIA/WB'];
     }
-    if (trim($resultArray['shipment']['dbsPieChart']['EIA']) != "") {
-        $dataSet->addPoint(new Point("EIA", $resultArray['shipment']['dbsPieChart']['EIA']));
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA']) &&  trim($resultArray['shipment']['dbsPieChart']['EIA']) != "") {
+        $barPoints["EIA"] = $resultArray['shipment']['dbsPieChart']['EIA'];
     }
+    if(count($barPoints) > 0){
 
-    $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
-    $chart->setDataSet($dataSet);
-
-    $chart->setTitle("HIV Testing Algorithms used for DBS-based PT survey " . $resultArray['shipment']['distribution_code']);
-    $chart->render($piechart);
-
-    $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
-    if (file_exists($piechart)) {
-        unlink($piechart);
+        foreach ($barPoints as $key => $val) {
+            $data[] = $val;
+            $legends[] = $key .' ('.$val.')';
+        }
+    
+        $graph = new PieGraph(700, 400);
+        $graph->SetShadow();
+    
+        // Set A title for the plot
+        $graph->title->Set("HIV Testing Algorithms used for DBS-based PT survey " . $resultArray['shipment']['distribution_code']);
+        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
+    
+        $p1 = new PiePlot($data);
+        $p1->SetLegends($legends);
+        $graph->legend->SetPos(0.5,0.97,'center','bottom');
+        $graph->legend->SetColumns(3);
+        $graph->Add($p1);
+    
+        $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
+    
+        $chart->setTitle("HIV Testing Algorithms used for DBS-based PT survey " . $resultArray['shipment']['distribution_code']);
+        $graph->Stroke($piechart);
+    
+        $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
+        if (file_exists($piechart)) {
+            unlink($piechart);
+        }
     }
-
-
-
-
 
     //Close and output PDF document
     $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
