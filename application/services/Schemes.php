@@ -525,7 +525,7 @@ class Application_Service_Schemes
 
     // $method = legacy is for the old way to calculate the VL Range
     // $method = iso is for the ISO specific way to calculate the VL Range
-    public function setVlRange($sId, $method = 'legacy')
+    public function setVlRange($sId, $method = 'standard')
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -575,39 +575,71 @@ class Application_Service_Schemes
                             ->where('sample_id = ?', $sample)
                             ->where('vl_assay = ?', $vlAssayId)
                     );
+
                     $inputArray = $origArray = $reportedVl;
 
-                    sort($inputArray);
-                    $q1 = $this->getQuartile($inputArray, 0.25);
-                    $q3 = $this->getQuartile($inputArray, 0.75);
-                    $iqr = $q3 - $q1;
-                    $quartileLowLimit = $q1 - ($iqr * 1.5);
-                    $quartileHighLimit = $q3 + ($iqr * 1.5);
+                    $finalHigh = null;
+                    $finalLow = null;
+                    $quartileHighLimit = null;
+                    $quartileLowLimit = null;
+                    $iqr = null;
+                    $cv = null;
+                    $finalLow = null;
+                    $finalHigh = null;
+                    $avg = null;
+                    $median = null;
+                    $standardUncertainty = null;
+                    $isUncertaintyAcceptable = null;
 
-                    $newArray = array();
-                    $removeArray = array();
-                    foreach ($inputArray as $a) {
-                        if ($a >= round($quartileLowLimit, 2) && $a <= round($quartileHighLimit, 2)) {
-                            $newArray[] = $a;
+                    if ('standard' == $method) {
+                        sort($inputArray);
+                        $q1 = $this->getQuartile($inputArray, 0.25);
+                        $q3 = $this->getQuartile($inputArray, 0.75);
+                        $iqr = $q3 - $q1;
+                        $quartileLowLimit = $q1 - ($iqr * 1.5);
+                        $quartileHighLimit = $q3 + ($iqr * 1.5);
+
+                        $newArray = array();
+                        $removeArray = array();
+                        foreach ($inputArray as $a) {
+                            if ($a >= round($quartileLowLimit, 2) && $a <= round($quartileHighLimit, 2)) {
+                                $newArray[] = $a;
+                            } else {
+                                $removeArray[] = $a;
+                            }
+                        }
+
+                        //Zend_Debug::dump("Under Assay $vlAssayId-Sample $sample - COUNT AFTER REMOVING OUTLIERS: ".count($newArray) . " FOLLOWING ARE OUTLIERS");
+                        //Zend_Debug::dump($removeArray);
+
+                        $avg = $this->getAverage($newArray);
+                        $sd = $this->getStdDeviation($newArray);
+
+                        if ($avg == 0) {
+                            $cv = 0;
                         } else {
-                            $removeArray[] = $a;
+                            $cv = $sd / $avg;
+                        }
+
+                        $finalLow = $avg - (3 * $sd);
+                        $finalHigh = $avg + (3 * $sd);
+                    } else if ('iso17043' == $method) {
+
+                        sort($inputArray);
+                        $median = $this->getMedian($inputArray);
+                        $quartileLowLimit = $q1 = $this->getQuartile($inputArray, 0.25);
+                        $quartileHighLimit = $q3 = $this->getQuartile($inputArray, 0.75);
+                        $sd = 0.7413 * ($q3 - $q1);
+                        $standardUncertainty = (1.25 * $sd) / sqrt(count($inputArray));
+                        if ($median == 0) {
+                            $isUncertaintyAcceptable = 'NA';
+                        } else if ($standardUncertainty < (0.3 * $sd)) {
+                            $isUncertaintyAcceptable = 'yes';
+                        } else {
+                            $isUncertaintyAcceptable = 'no';
                         }
                     }
 
-                    //Zend_Debug::dump("Under Assay $vlAssayId-Sample $sample - COUNT AFTER REMOVING OUTLIERS: ".count($newArray) . " FOLLOWING ARE OUTLIERS");
-                    //Zend_Debug::dump($removeArray);
-
-                    $avg = $this->getAverage($newArray);
-                    $sd = $this->getStdDeviation($newArray);
-
-                    if ($avg == 0) {
-                        $cv = 0;
-                    } else {
-                        $cv = $sd / $avg;
-                    }
-
-                    $finalLow = $avg - (3 * $sd);
-                    $finalHigh = $avg + (3 * $sd);
 
                     $data = array(
                         'shipment_id' => $sId,
@@ -619,7 +651,10 @@ class Application_Service_Schemes
                         'quartile_low' => $quartileLowLimit,
                         'quartile_high' => $quartileHighLimit,
                         'mean' => $avg,
+                        'median' => $median,
                         'sd' => $sd,
+                        'standard_uncertainty' => $standardUncertainty,
+                        'is_uncertainty_acceptable' => $isUncertaintyAcceptable,
                         'cv' => $cv,
                         'low_limit' => $finalLow,
                         'high_limit' => $finalHigh,
@@ -681,6 +716,16 @@ class Application_Service_Schemes
         } else {
             return $inputArray[$base];
         }
+    }
+
+    public function getMedian($numbers = array())
+    {
+        if (!is_array($numbers))
+            $numbers = func_get_args();
+
+        rsort($numbers);
+        $mid = (count($numbers) / 2);
+        return ($mid % 2 != 0) ? $numbers[$mid - 1] : (($numbers[$mid - 1]) + $numbers[$mid]) / 2;
     }
 
     public function getAverage($inputArray)
