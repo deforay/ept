@@ -1048,9 +1048,9 @@ class Application_Service_Shipments
         if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
             $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
         }
-        /* iso standards for vl form */
-        if (isset($params['standards']) && !empty($params['standards'])) {
-            $shipmentAttributes['standards'] = $params['standards'];
+        /* Method Of Evaluation for vl form */
+        if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
+            $shipmentAttributes['methodOfEvaluation'] = $params['methodOfEvaluation'];
         }
         if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];
@@ -1847,6 +1847,10 @@ class Application_Service_Shipments
         }
         if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];
+        }
+        /* Method Of Evaluation for vl form */
+        if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
+            $shipmentAttributes['methodOfEvaluation'] = $params['methodOfEvaluation'];
         }
         $dbAdapter->update(
             'shipment',

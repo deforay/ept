@@ -1866,12 +1866,13 @@ $dtFormat =  $vHelper->getDateFormat();
 
 				?>
 					<div class="form-group">
-						<label class="col-lg-3 control-label" for="standards">Method of Evaluation</label>
+						<label class="col-lg-3 control-label" for="methodOfEvaluation">Method of Evaluation</label>
 
 						<div class="col-lg-5">
-							<select id="standards" name="standards" class="isRequired form-control" title="Please select a Method of Evaluation" style=" margin-bottom: 15px; ">
+							<select id="methodOfEvaluation" name="methodOfEvaluation" class="isRequired form-control" title="Please select a Method of Evaluation" style=" margin-bottom: 15px; ">
 								<option value="">--Select--</option>
-								<option value="iso17043" <?php echo (isset($shipmentAttribute['standards']) && $shipmentAttribute['standards'] == 'iso17043')?"selected='selected'":"";?>>ISO/IEC 17043</option>
+								<option value="standard" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'standard')?"selected='selected'":"";?>>Standard</option>
+								<option value="iso17043" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'iso17043')?"selected='selected'":"";?>>ISO/IEC 17043</option>
 							</select>
 						</div>
 					</div>
