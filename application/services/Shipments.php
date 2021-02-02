@@ -1048,6 +1048,10 @@ class Application_Service_Shipments
         if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
             $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
         }
+        /* iso standards for vl form */
+        if (isset($params['standards']) && !empty($params['standards'])) {
+            $shipmentAttributes['standards'] = $params['standards'];
+        }
         if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];
         }
