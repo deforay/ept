@@ -380,7 +380,7 @@ class Application_Service_Schemes
         $sql = $db->select()->from(array('ref' => 'reference_result_vl'))
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on'))
+            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on','z_score' ,'calculated_score'))
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
@@ -435,6 +435,7 @@ class Application_Service_Schemes
                     $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];
                     $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['mean'];
+                    $response[$row['vl_assay']][$row['sample_id']]['median'] = $row['median'];
                     $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['sd'];
                     $response[$row['vl_assay']][$row['sample_id']]['assay_name'] = $row['assay_name'];
                     $response[$row['vl_assay']][$row['sample_id']]['sample_label'] = $row['sample_label'];
@@ -447,6 +448,7 @@ class Application_Service_Schemes
                 $response[$row['vl_assay']][$row['sample_id']]['low'] = $row['low_limit'];
                 $response[$row['vl_assay']][$row['sample_id']]['high'] = $row['high_limit'];
                 $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['mean'];
+                $response[$row['vl_assay']][$row['sample_id']]['mean'] = $row['median'];
                 $response[$row['vl_assay']][$row['sample_id']]['sd'] = $row['sd'];
                 $response[$row['vl_assay']][$row['sample_id']]['assay_name'] = $row['assay_name'];
                 $response[$row['vl_assay']][$row['sample_id']]['sample_label'] = $row['sample_label'];
@@ -530,6 +532,8 @@ class Application_Service_Schemes
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        $db->delete('reference_vl_calculation', "shipment_id=$sId");
+
         $vlAssayArray = $this->getVlAssay();
 
         $skippedAssays = array();
@@ -550,7 +554,7 @@ class Application_Service_Schemes
                 ->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayId . '"%');
             //echo $sql;die;
             $response = $db->fetchAll($sql);
-            $responseCounter[$vlAssayId] = count($response);
+            
 
             // If assay is "other" then skip to next
             if ($vlAssayId == 6) {
@@ -565,9 +569,18 @@ class Application_Service_Schemes
                 continue;
             }
 
+            if ('standard' == $method) {
+                $minimumRequiredSamples = 6;
+            } else if ('iso17043' == $method) {
+                $minimumRequiredSamples = 18;
+            }
+
+            // IMPORTANT: If the reported samples for an Assay are < $minimumRequiredSamples then we use the ranges of the Assay with maximum responses
+
             foreach ($sampleWise[$vlAssayId] as $sample => $reportedVl) {
 
-                if ($reportedVl != "" && $reportedVl != null && count($reportedVl) > 7) {
+                $responseCounter[$vlAssayId] = count($reportedVl);
+                if ($reportedVl != "" && $reportedVl != null && count($reportedVl) > $minimumRequiredSamples) {
 
                     $rvcRow = $db->fetchRow(
                         $db->select()->from('reference_vl_calculation')
@@ -627,8 +640,8 @@ class Application_Service_Schemes
 
                         sort($inputArray);
                         $median = $this->getMedian($inputArray);
-                        $quartileLowLimit = $q1 = $this->getQuartile($inputArray, 0.25);
-                        $quartileHighLimit = $q3 = $this->getQuartile($inputArray, 0.75);
+                        $finalLow = $quartileLowLimit = $q1 = $this->getQuartile($inputArray, 0.25);
+                        $finalHigh = $quartileHighLimit = $q3 = $this->getQuartile($inputArray, 0.75);
                         $sd = 0.7413 * ($q3 - $q1);
                         $standardUncertainty = (1.25 * $sd) / sqrt(count($inputArray));
                         if ($median == 0) {
@@ -644,6 +657,7 @@ class Application_Service_Schemes
                     $data = array(
                         'shipment_id' => $sId,
                         'vl_assay' => $vlAssayId,
+                        'no_of_responses' => count($inputArray),
                         'sample_id' => $sample,
                         'q1' => $q1,
                         'q3' => $q3,
@@ -683,6 +697,8 @@ class Application_Service_Schemes
             }
         }
 
+        // Okay now we are going to take the assay with maximum responses and use its range for assays having < $minimumRequiredSamples
+
         $skippedAssays = array_unique($skippedAssays);
         arsort($responseCounter);
         reset($responseCounter);
@@ -693,11 +709,17 @@ class Application_Service_Schemes
             ->where('rvc.shipment_id = ?', $sId);
         $res = $db->fetchAll($sql);
 
-        foreach ($skippedAssays as $skipRow) {
+        foreach ($skippedAssays as $assay) {
             foreach ($res as $row) {
 
-                $row['vl_assay'] = $skipRow;
-                //Zend_Debug::dump($row);die;
+                $row['vl_assay'] = $assay;
+                $row['no_of_responses'] = $responseCounter[$assay];
+
+                // if there are no responses then continue 
+                // (this is especially put to check and remove vl assay = 6 if no one used "Others")
+                // Why? because we manually inserted "6" into skippedAssays at the top of this function
+                if(empty($row['no_of_responses'])) continue;
+                
                 $db->delete('reference_vl_calculation', "vl_assay = " . $row['vl_assay'] . " and sample_id= " . $row['sample_id'] . " and shipment_id=  " . $row['shipment_id']);
                 $db->insert('reference_vl_calculation', $row);
             }

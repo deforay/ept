@@ -2,214 +2,206 @@
 $evSession = new Zend_Session_Namespace('evalShipmentList');
 $urlListArray = $evSession->editUrlList;
 $this->currentUrl;
-$pos = array_search($this->currentUrl,$urlListArray);
+$pos = array_search($this->currentUrl, $urlListArray);
 
-$prev = $pos-1;
-$next = $pos+1;
+$prev = $pos - 1;
+$next = $pos + 1;
 $previousLink = $nextLink = "";
-if($prev >= 0){
+if ($prev >= 0) {
 	$previousLink = $urlListArray[$prev];
 }
-if($next < count($urlListArray)){
+if ($next < count($urlListArray)) {
 	$nextLink = $urlListArray[$next];
 }
 // Zend_Debug::dump($this->evaluateData);die;
 ?>
-<br/>
+<br />
 <legend>Participant Result Summary</legend>
 <?php
-	$reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report_date'])
+$reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report_date'])
 ?>
-  <h5 style="border-bottom:1px solid #999;padding-bottom:10px;">
-	<strong>Participant/Lab Name :</strong> <?php echo $this->evaluateData['participant']['first_name']. " ".$this->evaluateData['participant']['last_name']; ?>
+<h5 style="border-bottom:1px solid #999;padding-bottom:10px;">
+	<strong>Participant/Lab Name :</strong> <?php echo $this->evaluateData['participant']['first_name'] . " " . $this->evaluateData['participant']['last_name']; ?>
 	<span class="pull-right"><strong>Reported on :</strong> <?php echo $this->dateFormat($reportDate[0]); ?></span>
-  </h5>
+</h5>
 <form name="updateResultsForm" id="updateResultsForm" method="post" action="">
 	<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo $this->evaluateData['shipment']['shipment_id']; ?>" />
 	<input type="hidden" name="participantId" id="participantId" value="<?php echo $this->evaluateData['shipment']['participant_id']; ?>" />
 	<input type="hidden" name="smid" id="smid" value="<?php echo $this->evaluateData['shipment']['map_id']; ?>" />
-	<input type="hidden" name="scheme" id="scheme" value="<?php echo $this->scheme; ?>" />   
-	<input type="hidden" name="whereToGo" id="whereToGo" value="" />   
-<?php
-if($this->scheme == 'eid'){
-	include('edit-eid-evaluation.phtml');
-}
-else if($this->scheme == 'dts'){
-	include('edit-dts-evaluation.phtml');
-}
-else if($this->scheme == 'dbs'){
-	include('edit-dbs-evaluation.phtml');
-}
-else if($this->scheme == 'vl'){
-	include('edit-vl-evaluation.phtml');
-}
-else if($this->scheme == 'recency'){
-	include('edit-recency-evaluation.phtml');
-}
-else if($this->scheme == 'covid19'){
-	include('edit-covid19-evaluation.phtml');
-}
-else{
-	echo "<br/><br/><br/><h4 style='text-align:center;'>Evaluation for this scheme is not yet implemented</h4><br/><br/><br/>";
-}
-
-?>
-
-<?php
-
-$evalComments = array();
-if(isset($this->evaluateData['evalComments'])){
-	foreach($this->evaluateData['evalComments'] as $ec){
-		$evalComments[$ec['comment_id']]= $ec['comment'];
+	<input type="hidden" name="scheme" id="scheme" value="<?php echo $this->scheme; ?>" />
+	<input type="hidden" name="whereToGo" id="whereToGo" value="" />
+	<?php
+	if ($this->scheme == 'eid') {
+		include('edit-eid-evaluation.phtml');
+	} else if ($this->scheme == 'dts') {
+		include('edit-dts-evaluation.phtml');
+	} else if ($this->scheme == 'dbs') {
+		include('edit-dbs-evaluation.phtml');
+	} else if ($this->scheme == 'vl') {
+		include('edit-vl-evaluation.phtml');
+	} else if ($this->scheme == 'recency') {
+		include('edit-recency-evaluation.phtml');
+	} else if ($this->scheme == 'covid19') {
+		include('edit-covid19-evaluation.phtml');
+	} else {
+		echo "<br/><br/><br/><h4 style='text-align:center;'>Evaluation for this scheme is not yet implemented</h4><br/><br/><br/>";
 	}
-}
 
-?>
+	?>
 
-<table class="table table-bordered" style="width:70%;margin:0 auto;">
-	<tr>
-		<td style="width:25%;vertical-align: middle">Notes</td>
-		<td>
-			<?php 
-				if(isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != "[]"){
+	<?php
 
-					$warnings = json_decode($this->evaluateData['shipment']['failure_reason'],true);
-					if($warnings != "" && $warnings != null){
+	$evalComments = array();
+	if (isset($this->evaluateData['evalComments'])) {
+		foreach ($this->evaluateData['evalComments'] as $ec) {
+			$evalComments[$ec['comment_id']] = $ec['comment'];
+		}
+	}
+
+	?>
+
+	<table class="table table-bordered" style="width:70%;margin:0 auto;">
+		<tr>
+			<td style="width:25%;vertical-align: middle">Notes</td>
+			<td>
+				<?php
+				if (isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != "[]") {
+
+					$warnings = json_decode($this->evaluateData['shipment']['failure_reason'], true);
+					if ($warnings != "" && $warnings != null) {
 						echo "<table class='table table-bordered'>";
 						echo "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
-						foreach($warnings as $warning){
-							?>
-							<tr>
-							   <td><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
-							   <td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
-							</tr>
-							<?php
+						foreach ($warnings as $warning) {
+				?>
+		<tr>
+			<td><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
+			<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
+		</tr>
+<?php
 						}
 						echo "</table>";
-					}else{
+					} else {
 						echo " No Warnings or Corrective Actions ";
 					}
-					
-				}else{
+				} else {
 					echo " No Warnings or Corrective Actions ";
 				}
-				?>
-		</td>		
-	</tr>
-	<tr>
-		<td style="width:25%;vertical-align: middle">Evaluation Comment</td>
-		<td><select class="form-control" name="comment" id="comment">
-			<?php echo $this->dropdownSelection($evalComments,$this->evaluateData['shipment']['evaluation_comment'],true); ?>
-			</select>
-		</td>		
-	</tr>
-	<tr>
-		<td style="vertical-align: middle;">
-			Optional Extra Comments
-		</td>
-		<td><textarea class="form-control" name="optionalComments" id="optionalComments"><?php echo $this->evaluateData['shipment']['optional_eval_comment']; ?></textarea></td>
-	</tr>
-	<tr>
-		<td style="vertical-align: middle;" colspan="2">
-			<label>Is the above a follow up comment for corrective action ? </label>
-			<input type="radio" name="isFollowUp" id="followUpYes" <?php echo ((isset($this->evaluateData['shipment']['is_followup']) && $this->evaluateData['shipment']['is_followup'] =="yes") || (isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != "[]")) ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether this is a follow up comment or not"/> Yes
-			<input type="radio" name="isFollowUp" id="followUpNo" <?php echo (isset($this->evaluateData['shipment']['is_followup']) && $this->evaluateData['shipment']['is_followup'] =="no") ? " checked='checked' " : ""; ?> value="no"/> No			
-		</td>
-	</tr>
-	
-</table>
-<table class="table table-bordered table-striped table-hover" style="width:70%;margin:30px auto 0 auto;">
-	<tr>
-		<td style="vertical-align: middle;" colspan="2">
-			<label style="float: left;margin-top:10px;">Do you want to exclude this response from evaluation ? </label>
-			<div style="width:80px;float:left;margin-left:10px;">
-				<select name="isExcluded" id="isExcluded" class="form-control isRequired"  title="Please choose whether this response is excluded from evaluation or not">
-					<option <?php echo (isset($this->evaluateData['shipment']['is_excluded']) && $this->evaluateData['shipment']['is_excluded'] =="no") ? " selected='selected' " : ""; ?> value="no">No</option>
-					<option <?php echo (isset($this->evaluateData['shipment']['is_excluded']) && $this->evaluateData['shipment']['is_excluded'] =="yes") ? " selected='selected' " : ""; ?> value="yes">Yes</option>
-				</select>
-			</div>
-		</td>
-	</tr>
-</table>
+?>
+</td>
+</tr>
+<tr>
+	<td style="width:25%;vertical-align: middle">Evaluation Comment</td>
+	<td><select class="form-control" name="comment" id="comment">
+			<?php echo $this->dropdownSelection($evalComments, $this->evaluateData['shipment']['evaluation_comment'], true); ?>
+		</select>
+	</td>
+</tr>
+<tr>
+	<td style="vertical-align: middle;">
+		Optional Extra Comments
+	</td>
+	<td><textarea class="form-control" name="optionalComments" id="optionalComments"><?php echo $this->evaluateData['shipment']['optional_eval_comment']; ?></textarea></td>
+</tr>
+<tr>
+	<td style="vertical-align: middle;" colspan="2">
+		<label>Is the above a follow up comment for corrective action ? </label>
+		<input type="radio" name="isFollowUp" id="followUpYes" <?php echo ((isset($this->evaluateData['shipment']['is_followup']) && $this->evaluateData['shipment']['is_followup'] == "yes") || (isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != "[]")) ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether this is a follow up comment or not" /> Yes
+		<input type="radio" name="isFollowUp" id="followUpNo" <?php echo (isset($this->evaluateData['shipment']['is_followup']) && $this->evaluateData['shipment']['is_followup'] == "no") ? " checked='checked' " : ""; ?> value="no" /> No
+	</td>
+</tr>
 
-  <?php if(isset($this->haveCustom) && $this->haveCustom == 'yes') { ?>
-  <fieldset>
-	<legend>Custom Fields</legend>
-        <table>
-			
-            <tr>
-                <th style="width:250px;padding:5px;"><?php echo $this->customField1; ?> </th>
-                <td style="padding:5px;"><input name="customField1" id="customField1" type="text" size="80" maxlength="40" value="<?php echo  $this->evaluateData['shipment']['custom_field_1']; ?>"/></td>
-            </tr>
-            <?php if(isset($this->customField2) && $this->customField2 != ""){ ?>
-            <tr>
-                <th style="width:250px;padding:5px;"><?php echo $this->customField2; ?> </th>
-                <td style="padding:5px;"><input name="customField2" id="customField2" type="text" value="<?php echo  $this->evaluateData['shipment']['custom_field_2']; ?>"/></td>
-            </tr>
-            <?php } ?>
-        </table>
-	</fieldset>
-        <?php } ?>
-<br/>
-<div id="respond" style="margin: 10px auto 10px auto; text-align: center;" align="center">
-	<h5>Currently editing result <?php echo $pos+1 . " of ".count($urlListArray); ?> </h5>
-	
-	<?php
-	if(isset($previousLink) && $previousLink != ""){
-		?>	
-		<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $previousLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span><i class="icon-chevron-left"></i> Update and Previous</span></button>					
+	</table>
+	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:30px auto 0 auto;">
+		<tr>
+			<td style="vertical-align: middle;" colspan="2">
+				<label style="float: left;margin-top:10px;">Do you want to exclude this response from evaluation ? </label>
+				<div style="width:80px;float:left;margin-left:10px;">
+					<select name="isExcluded" id="isExcluded" class="form-control isRequired" title="Please choose whether this response is excluded from evaluation or not">
+						<option <?php echo (isset($this->evaluateData['shipment']['is_excluded']) && $this->evaluateData['shipment']['is_excluded'] == "no") ? " selected='selected' " : ""; ?> value="no">No</option>
+						<option <?php echo (isset($this->evaluateData['shipment']['is_excluded']) && $this->evaluateData['shipment']['is_excluded'] == "yes") ? " selected='selected' " : ""; ?> value="yes">Yes</option>
+					</select>
+				</div>
+			</td>
+		</tr>
+	</table>
+
+	<?php if (isset($this->haveCustom) && $this->haveCustom == 'yes') { ?>
+		<fieldset>
+			<legend>Custom Fields</legend>
+			<table>
+
+				<tr>
+					<th style="width:250px;padding:5px;"><?php echo $this->customField1; ?> </th>
+					<td style="padding:5px;"><input name="customField1" id="customField1" type="text" size="80" maxlength="40" value="<?php echo  $this->evaluateData['shipment']['custom_field_1']; ?>" /></td>
+				</tr>
+				<?php if (isset($this->customField2) && $this->customField2 != "") { ?>
+					<tr>
+						<th style="width:250px;padding:5px;"><?php echo $this->customField2; ?> </th>
+						<td style="padding:5px;"><input name="customField2" id="customField2" type="text" value="<?php echo  $this->evaluateData['shipment']['custom_field_2']; ?>" /></td>
+					</tr>
+				<?php } ?>
+			</table>
+		</fieldset>
+	<?php } ?>
+	<br />
+	<div id="respond" style="margin: 10px auto 10px auto; text-align: center;" align="center">
+		<h5>Currently editing result <?php echo $pos + 1 . " of " . count($urlListArray); ?> </h5>
+
 		<?php
-	}
-	?>
-	
-	<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update</span></button>
-	
-	<?php
-	if(isset($nextLink) && $nextLink != ""){
-		?>	
-		<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $nextLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update and Next <i class="icon-chevron-right"></i></span></button>									
+		if (isset($previousLink) && $previousLink != "") {
+		?>
+			<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $previousLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span><i class="icon-chevron-left"></i> Update and Previous</span></button>
 		<?php
-	}
-	?>
+		}
+		?>
+
+		<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update</span></button>
+
+		<?php
+		if (isset($nextLink) && $nextLink != "") {
+		?>
+			<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $nextLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update and Next <i class="icon-chevron-right"></i></span></button>
+		<?php
+		}
+		?>
 
 
-	<input class="btn btn-danger" type="button" onclick="document.location='/admin/evaluate/shipment/sid/<?php echo base64_encode($this->evaluateData['shipment']['shipment_id']); ?>'"
-	       tabindex="8" value="Back to Listing "/>
-</div>
+		<input class="btn btn-danger" type="button" onclick="document.location='/admin/evaluate/shipment/sid/<?php echo base64_encode($this->evaluateData['shipment']['shipment_id']); ?>'" tabindex="8" value="Back to Listing " />
+	</div>
 </form>
 <?php
 $vHelper = $this->getHelper('DateFormat');
-$dtFormat=  $vHelper->getDateFormat();
+$dtFormat =  $vHelper->getDateFormat();
 ?>
 <script type="text/javascript">
-	$(document).ready(function(){
-	  $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+	$(document).ready(function() {
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
 	});
-	
-	var lastValue;
-	
-	$("#isExcluded").on("click", function(e) {
-	    lastValue = $(this).val();
-	}).bind("change", function(e) {
-	    changeConfirmation = confirm("Are you sure you want to change this ?");
-	    if (changeConfirmation) {
-		// Proceed as planned
-	    } else {
-		$(this).val(lastValue);
-	    }
-	});
-         $('#supervisorApproval').change(function () {
 
-            if ($('#supervisorApproval').val() == 'yes')
-            {
-                $('#labSupervisor').show();
-                $('#participantSupervisor').val('');
-                $('#participantSupervisor').show();
-            }
-            else {
-                $('#labSupervisor').hide();
-                $('#participantSupervisor').val('');
-                $('#participantSupervisor').hide();
-            }
-        });
+	var lastValue;
+
+	$("#isExcluded").on("click", function(e) {
+		lastValue = $(this).val();
+	}).bind("change", function(e) {
+		changeConfirmation = confirm("Are you sure you want to change this ?");
+		if (changeConfirmation) {
+			// Proceed as planned
+		} else {
+			$(this).val(lastValue);
+		}
+	});
+	$('#supervisorApproval').change(function() {
+
+		if ($('#supervisorApproval').val() == 'yes') {
+			$('#labSupervisor').show();
+			$('#participantSupervisor').val('');
+			$('#participantSupervisor').show();
+		} else {
+			$('#labSupervisor').hide();
+			$('#participantSupervisor').val('');
+			$('#participantSupervisor').hide();
+		}
+	});
 </script>

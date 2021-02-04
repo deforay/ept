@@ -6,7 +6,6 @@ class Application_Model_Vl
 
     public function __construct()
     {
-        
     }
 
     public function evaluate($shipmentResult, $shipmentId, $reEvaluate)
@@ -18,19 +17,31 @@ class Application_Model_Vl
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+
+
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
         $passPercentage = $config->evaluation->vl->passPercentage;
 
-        $vlRange = $schemeService->getVlRange($shipmentId);
-
-        if ($reEvaluate || $vlRange == null || $vlRange == "" || count($vlRange) == 0) {
-            $schemeService->setVlRange($shipmentId);
+        if ($reEvaluate) {
+            $vlRange = null; // when re-evaluating we will set the range to be null so that it gets regenerated
+        } else {
             $vlRange = $schemeService->getVlRange($shipmentId);
         }
 
+
+
+
         foreach ($shipmentResult as $shipment) {
 
+            $attributes = json_decode($shipment['attributes'], true);
+            $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
+
+            $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
+            if ($vlRange == null || $vlRange == "" || count($vlRange) == 0) {
+                $schemeService->setVlRange($shipmentId, $methodOfEvaluation);
+                $vlRange = $schemeService->getVlRange($shipmentId);
+            }
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
@@ -45,13 +56,15 @@ class Application_Model_Vl
             if (!empty($createdOn) && $createdOn <= $lastDate) {
 
                 $results = $schemeService->getVlSamples($shipmentId, $shipment['participant_id']);
+                
                 $totalScore = 0;
                 $maxScore = 0;
+                $zScore = null;
                 $mandatoryResult = "";
                 $scoreResult = "";
                 $failureReason = array();
 
-                $attributes = json_decode($shipment['attributes'], true);
+
 
                 foreach ($results as $result) {
                     if ($result['control'] == 1) continue;
@@ -59,26 +72,61 @@ class Application_Model_Vl
                     $responseAssay = json_decode($result['attributes'], true);
                     $responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : "";
                     if (isset($vlRange[$responseAssay])) {
-                        // matching reported and low/high limits
-                        if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
-                            if (isset($vlRange[$responseAssay][$result['sample_id']]) && $vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
-                                $totalScore += $result['sample_score'];
-                                $calcResult = "pass";
-                            } else {
-                                if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+
+                        if ($methodOfEvaluation == 'standard') {
+                            // matching reported and low/high limits
+                            if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
+                                if (isset($vlRange[$responseAssay][$result['sample_id']]) && $vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
+                                    $totalScore += $result['sample_score'];
+                                    $calcResult = "pass";
+                                } else {
+                                    if ($result['sample_score'] > 0) {
+                                        $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    }
+                                    $calcResult = "fail";
                                 }
-                                $calcResult = "fail";
+                            }
+                        } else if ($methodOfEvaluation == 'iso17043') {
+                            // matching reported and low/high limits
+                            if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
+                                if (isset($vlRange[$responseAssay][$result['sample_id']])) {
+                                    if ($result['reported_viral_load'] == 0 || $result['reported_viral_load'] == '0.00') {
+                                        $zScore = 0;
+                                    } else {
+                                        $zScore = abs(($vlRange[$responseAssay][$result['sample_id']]['median'] - $result['reported_viral_load']) / $vlRange[$responseAssay][$result['sample_id']]['sd']);
+                                    }
+
+                                    if ($zScore <= 2) {
+                                        //passed
+                                        $totalScore += $result['sample_score'];
+                                        $calcResult = "pass";
+                                    } else if ($zScore > 2 && $zScore <= 3) {
+                                        //passed but with a warning
+                                        $totalScore += $result['sample_score'];
+                                        $calcResult = "pass";
+                                    } else if ($zScore > 3) {
+                                        //failed
+                                        if ($result['sample_score'] > 0) {
+                                            $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        }
+                                        $calcResult = "fail";
+                                    }
+                                } else {
+                                    if ($result['sample_score'] > 0) {
+                                        $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    }
+                                    $calcResult = "fail";
+                                }
                             }
                         }
                     } else {
-                        $totalScore = "N/A";
+                        $totalScore = "N.A.";
                         $calcResult = "excluded";
                     }
 
                     $maxScore += $result['sample_score'];
 
-                    $db->update('response_result_vl', array('calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    $db->update('response_result_vl', array('z_score' => $zScore, 'calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 
                     //// checking if mandatory fields were entered and were entered right
                     //if ($result['mandatory'] == 1) {

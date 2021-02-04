@@ -58,39 +58,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
         }
     }
 
-    public function viewAction()
-    {
-        if ($this->hasParam('sid') && $this->hasParam('pid')  && $this->hasParam('scheme')) {
-            $this->view->currentUrl = "/admin/evaluate/view/sid/" . $this->_getParam('sid') . "/pid/" . $this->_getParam('pid') . "/scheme/" . $this->_getParam('scheme');
-            $sid = (int)base64_decode($this->_getParam('sid'));
-            $pid = (int)base64_decode($this->_getParam('pid'));
-            $this->view->scheme = $scheme = base64_decode($this->_getParam('scheme'));
-            $schemeService = new Application_Service_Schemes();
-            if ($scheme == 'eid') {
-                $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
-                $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
-            } if ($scheme == 'dts') {
-                $this->view->allTestKits = $schemeService->getAllDtsTestKit();
-            } else if ($scheme == 'vl') {
-                $this->view->vlRange = $schemeService->getVlRange($sid);
-                $this->view->vlAssay = $schemeService->getVlAssay();
-            } else if ($scheme == 'recency') {
-                $this->view->recencyAssay = $schemeService->getRecencyAssay();
-            } else if ($scheme == 'covid19') {
-                $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
-            }
-            $evalService = new Application_Service_Evaluation();
-            $this->view->evaluateData = $evalService->viewEvaluation($sid, $pid, $scheme);
-
-            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-            $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
-            $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
-            $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
-        } else {
-            $this->redirect("/admin/evaluate/");
-        }
-    }
-
     public function editAction()
     {
         if ($this->getRequest()->isPost()) {
@@ -102,7 +69,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $participantId = base64_encode($params['participantId']);
             $scheme = base64_encode($params['scheme']);
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $alertMsg->message = "Shipment Results updated successfully";
+            $alertMsg->message = "Shipment Results for this participant updated successfully";
             if (isset($params['whereToGo']) && $params['whereToGo'] != "") {
                 $this->redirect($params['whereToGo']);
             } else {

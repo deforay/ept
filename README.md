@@ -1,6 +1,6 @@
-# README #
+# e-PT #
 
-Welcome to the Open Source repository of the e-Proficiency Testing (ePT) software
+Welcome to the Open Source repository of the e-Proficiency Testing (e-PT) software
 
 #### Pre-requisites
 * Apache2
@@ -16,7 +16,7 @@ Welcome to the Open Source repository of the e-Proficiency Testing (ePT) softwar
 
 ### How do I get set up? ###
 
-* [Download the ePT Source Code](https://github.com/deforay/ept/releases) and put it into your server's root folder (www or htdocs). 
+* [Download the e-PT Source Code](https://github.com/deforay/ept/releases) and put it into your server's root folder (www or htdocs). 
 * Create a blank database and [import the sql file that you can find in the downloads section of this repository](https://github.com/deforay/ept/releases)
 * Rename the config file application/configs/application.dist.ini to application/configs/applicationt.ini and update the database and other settings
 * Next we will set up virtual host for this application. You can find many guides online on this topic. For example to set up on Ubuntu you can follow this guide : https://www.digitalocean.com/community/tutorials/how-to-set-up-apache-virtual-hosts-on-ubuntu-18-04

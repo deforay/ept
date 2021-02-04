@@ -2719,3 +2719,9 @@ ALTER TABLE `reference_vl_calculation` ADD `standard_uncertainty` DOUBLE(20,10) 
 ALTER TABLE `reference_vl_calculation` ADD `is_uncertainty_acceptable` VARCHAR(255) NULL DEFAULT NULL AFTER `standard_uncertainty`;
 
 ALTER TABLE `reference_vl_calculation` ADD `median` DOUBLE(20,10) NULL DEFAULT NULL AFTER `mean`;
+
+-- Amit 05-Feb-2021
+
+ALTER TABLE `response_result_vl` ADD `z_score` DOUBLE(20,10) NULL DEFAULT NULL AFTER `reported_viral_load`;
+ALTER TABLE `reference_vl_calculation` ADD `no_of_responses` INT NULL DEFAULT NULL AFTER `vl_assay`;
+
