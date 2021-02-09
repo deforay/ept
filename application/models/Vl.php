@@ -18,7 +18,6 @@ class Application_Model_Vl
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 
-        $meganda = array();
 
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
@@ -72,10 +71,10 @@ class Application_Model_Vl
                     $calcResult = "";
                     $responseAssay = json_decode($result['attributes'], true);
                     $responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : "";
-                    if (!in_array($result['unique_identifier'], $meganda[$responseAssay]) && $shipment['is_pt_test_not_performed'] != 'yes') {
-                        $meganda[$responseAssay][] = $result['unique_identifier'];
-                        sort($meganda[$responseAssay]);
-                    }
+                    // if (!in_array($result['unique_identifier'], $meganda[$responseAssay]) && $shipment['is_pt_test_not_performed'] != 'yes') {
+                    //     $meganda[$responseAssay][] = $result['unique_identifier'];
+                    //     sort($meganda[$responseAssay]);
+                    // }
 
 
 
@@ -226,10 +225,6 @@ class Application_Model_Vl
         }
         $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
 
-
-        echo "<pre>";
-        var_dump($meganda);
-        echo "</pre>";
 
         return $shipmentResult;
     }
