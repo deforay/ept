@@ -2713,7 +2713,7 @@ class Application_Service_Reports
         $refResult = $db->fetchAll($refQuery);
 
         $colNamesArray = array();
-        $colNamesArray[] = "Lab ID";
+        $colNamesArray[] = "Participant ID";
         //$colNamesArray[] = "Lab Name";
         //$colNamesArray[] = "Department Name";
         //$colNamesArray[] = "Region";
@@ -2726,8 +2726,8 @@ class Application_Service_Reports
         $firstSheet = new PHPExcel_Worksheet($excel, 'Overall Results');
         $excel->addSheet($firstSheet, 0);
 
-        $firstSheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode("Participant Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getCellByColumnAndRow(2, 1)->setValueExplicit(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getCellByColumnAndRow(3, 1)->setValueExplicit(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         //$firstSheet->getCellByColumnAndRow(4, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2751,6 +2751,8 @@ class Application_Service_Reports
         $colNameCount = 4;
         foreach ($refResult as $refRow) {
             $colNamesArray[] = $refRow['sample_label'];
+            $colNamesArray[] = "z Score for ". $refRow['sample_label'];
+            $colNamesArray[] = "Grade for ". $refRow['sample_label'];
             $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
             $colNameCount++;
@@ -2885,6 +2887,17 @@ class Application_Service_Reports
                     // we are also building the data required for other Assay Sheets
                     if ($attributes['vl_assay'] > 0) {
                         $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['reported_viral_load'];
+                        if($methodOfEvaluation == 'iso17043'){
+                            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['z_score'];
+                            if($responseRow['calculated_score'] == 'pass'){
+                                $grade = 'Acceptable';
+                            }else if($responseRow['calculated_score'] == 'fail'){
+                                $grade = 'Unacceptable';
+                            }else{
+                                $grade = 'N.A.';
+                            }
+                            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $grade;
+                        }
                     }
                 }
             } else {
