@@ -18,6 +18,7 @@ class Application_Model_Vl
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 
+        $meganda = array();
 
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
@@ -56,7 +57,7 @@ class Application_Model_Vl
             if (!empty($createdOn) && $createdOn <= $lastDate) {
 
                 $results = $schemeService->getVlSamples($shipmentId, $shipment['participant_id']);
-                
+
                 $totalScore = 0;
                 $maxScore = 0;
                 $zScore = null;
@@ -71,7 +72,16 @@ class Application_Model_Vl
                     $calcResult = "";
                     $responseAssay = json_decode($result['attributes'], true);
                     $responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : "";
+                    if (!in_array($result['unique_identifier'], $meganda[$responseAssay]) && $shipment['is_pt_test_not_performed'] != 'yes') {
+                        $meganda[$responseAssay][] = $result['unique_identifier'];
+                        sort($meganda[$responseAssay]);
+                    }
+
+
+
                     if (isset($vlRange[$responseAssay])) {
+
+
 
                         if ($methodOfEvaluation == 'standard') {
                             // matching reported and low/high limits
@@ -215,6 +225,12 @@ class Application_Model_Vl
             $counter++;
         }
         $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
+
+
+        echo "<pre>";
+        var_dump($meganda);
+        echo "</pre>";
+
         return $shipmentResult;
     }
 }

@@ -380,6 +380,7 @@ class Application_Service_Schemes
         $sql = $db->select()->from(array('ref' => 'reference_result_vl'))
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
+            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('unique_identifier'))
             ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on','z_score' ,'calculated_score'))
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
@@ -532,12 +533,14 @@ class Application_Service_Schemes
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        $db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $sId and is_pt_test_not_performed = 'yes'");
+
         $db->delete('reference_vl_calculation', "shipment_id=$sId");
 
         $vlAssayArray = $this->getVlAssay();
 
         $skippedAssays = array();
-        $skippedAssays[] = 6; // adding "Others" assay
+        $skippedAssays[] = 6; // adding "Others" to skippedAssays as it will always be skipped
 
         $responseCounter = array();
 
@@ -555,12 +558,6 @@ class Application_Service_Schemes
             //echo $sql;die;
             $response = $db->fetchAll($sql);
             
-
-            // If assay is "other" then skip to next
-            if ($vlAssayId == 6) {
-                continue;
-            }
-
             $sampleWise = array();
             foreach ($response as $row) {
                 $sampleWise[$vlAssayId][$row['sample_id']][] = ($row['reported_viral_load']);
@@ -579,8 +576,10 @@ class Application_Service_Schemes
 
             foreach ($sampleWise[$vlAssayId] as $sample => $reportedVl) {
 
-                $responseCounter[$vlAssayId] = count($reportedVl);
-                if ($reportedVl != "" && $reportedVl != null && count($reportedVl) > $minimumRequiredSamples) {
+                
+                if ($vlAssayId != 6  && $reportedVl != "" && $reportedVl != null && count($reportedVl) > $minimumRequiredSamples) {
+
+                    $responseCounter[$vlAssayId] = count($reportedVl);
 
                     $rvcRow = $db->fetchRow(
                         $db->select()->from('reference_vl_calculation')
@@ -693,6 +692,7 @@ class Application_Service_Schemes
                 } else {
                     $db->delete('reference_vl_calculation', "vl_assay = " . $vlAssayId . " and shipment_id=$sId");
                     $skippedAssays[] = $vlAssayId;
+                    $skippedResponseCounter[$vlAssayId] = count($reportedVl);
                 }
             }
         }
@@ -713,7 +713,7 @@ class Application_Service_Schemes
             foreach ($res as $row) {
 
                 $row['vl_assay'] = $assay;
-                $row['no_of_responses'] = $responseCounter[$assay];
+                $row['no_of_responses'] = $skippedResponseCounter[$assay];
 
                 // if there are no responses then continue 
                 // (this is especially put to check and remove vl assay = 6 if no one used "Others")
