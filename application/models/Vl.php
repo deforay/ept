@@ -226,10 +226,10 @@ class Application_Model_Vl
         }
         $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
 
-
+        /* 
         echo "<pre>";
         var_dump($meganda);
-        echo "</pre>";
+        echo "</pre>"; */
 
         return $shipmentResult;
     }

@@ -953,11 +953,11 @@ class Application_Service_Evaluation
 		//error_log($sql);die;
 		$sRes = $shipmentResult = $db->fetchAll($sql);
 
-		//Zend_Debug::dump($shipmentResult);die;
 		$i = 0;
 		//$mapRes="";
-
+		
 		foreach ($sRes as $res) {
+			// Zend_Debug::dump($res['shipment_test_report_date']);die;
 			$dmResult = $db->fetchAll($db->select()->from(array('pmm' => 'participant_manager_map'))
 				->join(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('institute'))
 				->where("pmm.participant_id=" . $res['participant_id']));
@@ -1042,19 +1042,23 @@ class Application_Service_Evaluation
 			} else if ($res['scheme_type'] == 'vl') {
 				$vlAssayResultSet = $schemeService->getVlAssay();
 				$vlAssayList = array();
-
 				$vlRange = $schemeService->getVlRange($shipmentId);
 				$results = $schemeService->getVlSamples($shipmentId, $res['participant_id']);
 				//$assayResults = $schemeService->getShipmentParticipantBassedAssay($shipmentId);
-
 				$attributes = json_decode($res['attributes'], true);
-
+				$shipmentAttributes = json_decode($res['shipment_attributes'], true);
+				
+				$methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
+				if ($vlRange == null || $vlRange == "" || count($vlRange) == 0) {
+					$schemeService->setVlRange($shipmentId, $methodOfEvaluation);
+					$vlRange = $schemeService->getVlRange($shipmentId);
+				}
 
 				$sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('sample_id', 'ref.sample_label'))
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('*'))
 					->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded'))
 					->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier'))
-					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
 					//->where("sp.is_pt_test_not_performed is NULL")
 					//->where("sp.is_excluded ='no'")
 					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like '0000-00-00'")
@@ -1097,7 +1101,7 @@ class Application_Service_Evaluation
 				$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'), array('sample_id', 'ref.sample_label'))
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('s.*'))
 					->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded'))
-					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
+					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
 					->where("sp.is_pt_test_not_performed is NULL")
 					//->where("sp.is_excluded ='no'")
 					->where('sp.shipment_id = ? ', $shipmentId);
@@ -1130,7 +1134,7 @@ class Application_Service_Evaluation
 
 				// Zend_Debug::dump($labResult);
 				// die;
-				$counter = 0;
+				$counter = 0;$zScore = null;
 				$toReturn = array();
 				foreach ($results as $result) {
 					//$toReturn = array();
@@ -1181,23 +1185,42 @@ class Application_Service_Evaluation
 						} else {
 							$grade = 'Not Acceptable';
 						}
-
 						$toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['low'];
 						$toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['high'];
 						$toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
 						$toReturn[$counter]['mean'] = $vlRange[$responseAssay][$result['sample_id']]['mean'];
+						$toReturn[$counter]['zscore'] = $result['z_score'];
+						
+						// Zend_Debug::dump($result);die;
+						/* $zScore = 0 ;
+						if ($methodOfEvaluation == 'iso17043') {
+                            // matching reported and low/high limits
+                            if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
+                                if (isset($vlRange[$responseAssay][$result['sample_id']])) {
+                                    if ($result['reported_viral_load'] == 0 || $result['reported_viral_load'] == '0.00') {
+                                        $zScore = 0;
+                                    } else {
+                                        $zScore = abs(($vlRange[$responseAssay][$result['sample_id']]['median'] - $result['reported_viral_load']) / $vlRange[$responseAssay][$result['sample_id']]['sd']);
+                                    }
+                                }
+                            }
+							$toReturn[$counter]['zscore'] = $zScore;
+                        } */
+
 					} else {
 						$toReturn[$counter]['low'] = 'Not Applicable';
 						$toReturn[$counter]['high'] = 'Not Applicable';
 						$toReturn[$counter]['sd'] = 'Not Applicable';
 						$toReturn[$counter]['mean'] = 'Not Applicable';
 						$grade = 'Not Applicable';
+						$toReturn[$counter]['zscore'] = 0;
 					}
 					$toReturn[$counter]['grade'] = $grade;
 
 					$counter++;
 				}
 
+				$shipmentResult[$i]['responseResult']['shipment_test_report_date'] = $res['shipment_test_report_date'];
 				$shipmentResult[$i]['responseResult'] = $toReturn;
 			} else if ($res['scheme_type'] == 'covid19') {
 
