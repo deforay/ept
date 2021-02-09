@@ -122,7 +122,7 @@ unset($this->result['use_range']);
         <td colspan="10" style="text-align: center;">
           <input type="hidden" name="sid" value="<?php echo base64_encode($this->shipmentId); ?>">
           <input type="submit" value="Update Changes" class="btn btn-primary">
-          <input type="button" value="Re-Calculate" class="btn btn-danger" onclick="recalculate(<?php echo (int) $this->shipmentId; ?>);">
+          <input type="button" value="Re-Calculate" class="btn btn-danger" onclick="recalculate(<?php echo (int) $this->shipmentId; ?>, '<?php echo $methodOfEvaluation; ?>');">
         </td>
         <td></td>
       </tr>
@@ -131,8 +131,8 @@ unset($this->result['use_range']);
 </form>
 
 <script>
-  function recalculate(sid) {
-    document.location.href = "/admin/evaluate/recalculate-vl-range/sid/" + sid;
+  function recalculate(sid, method) {
+    document.location.href = "/admin/evaluate/recalculate-vl-range/sid/" + sid + "/method/" + method;
   }
 
   function checkManualRes(obj) {

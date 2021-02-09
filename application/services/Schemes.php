@@ -473,7 +473,7 @@ class Application_Service_Schemes
             ->join(array('a' => 'r_vl_assay'), 'a.id = rvc.vl_assay', array('assay_name' => 'name'))
             ->join(array('s' => 'shipment'), 'rvc.shipment_id = s.shipment_id')
             ->where('rvc.shipment_id = ?', $sId)
-            ->order(array('assay_name'));
+            ->order(array('sample_label','assay_name'));
 
         if ($sampleId != null) {
             $sql = $sql->where('rvc.sample_id = ?', $sampleId);
