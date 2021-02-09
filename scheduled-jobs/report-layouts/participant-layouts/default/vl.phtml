@@ -167,7 +167,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Platform/Assay Name</strong> <br>' . $machine . '</td>';
-        $labInfo .= '	<td><strong>Results Submitted Date</strong> <br>' . date('d-M-Y',strtotime($result['responseResult']['shipment_test_report_date'])) . '</td>';
+        $labInfo .= '	<td></td>';
+        // $labInfo .= '	<td><strong>Results Submitted Date</strong> <br>' . date('d-M-Y',strtotime($result['responseResult']['shipment_test_report_date'])) . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';

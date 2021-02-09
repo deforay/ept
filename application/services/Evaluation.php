@@ -1191,7 +1191,6 @@ class Application_Service_Evaluation
 						$toReturn[$counter]['mean'] = $vlRange[$responseAssay][$result['sample_id']]['mean'];
 						$toReturn[$counter]['zscore'] = $result['z_score'];
 						
-						// Zend_Debug::dump($result);die;
 						/* $zScore = 0 ;
 						if ($methodOfEvaluation == 'iso17043') {
                             // matching reported and low/high limits
@@ -1220,7 +1219,6 @@ class Application_Service_Evaluation
 					$counter++;
 				}
 
-				$shipmentResult[$i]['responseResult']['shipment_test_report_date'] = $res['shipment_test_report_date'];
 				$shipmentResult[$i]['responseResult'] = $toReturn;
 			} else if ($res['scheme_type'] == 'covid19') {
 
