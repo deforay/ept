@@ -304,7 +304,7 @@ try {
             } else if ($evalRow['report_type'] == 'finalized') {
                 $reportTypeStatus = 'not-finalized';
             }
-            // $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
             //$r = $evalService->getShipmentToEvaluate($evalRow['shipment_id'], true);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -328,7 +328,7 @@ try {
             /*  for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset = $offset + 50) {
                  $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 50, $offset); */
             //$offset = 0;
-            /* $limit = 50;
+            $limit = 50;
             for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                 $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], $limit, $offset);
                 $endValue = $offset + ($limit - 1);
@@ -351,7 +351,7 @@ try {
                     }
                     include($participantLayoutFile);
                 }
-            } */
+            }
 
             // SUMMARY REPORT
             $resultArray = $evalService->getSummaryReportsInPdf($evalRow['shipment_id']);
@@ -391,8 +391,8 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            // $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
-            // $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
+            $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+            $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
             $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
             /* New report push notification start */
             $pushContent = $commonService->getPushTemplateByPurpose('report');
