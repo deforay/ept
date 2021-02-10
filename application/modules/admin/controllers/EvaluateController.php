@@ -192,8 +192,9 @@ class Admin_EvaluateController extends Zend_Controller_Action
     {
         if ($this->hasParam('sid')) {
             $shipmentId = (int)($this->_getParam('sid'));
+            $methodOfEvaluation = ($this->_getParam('method'));
             $schemeService = new Application_Service_Schemes();
-            $this->view->result = $schemeService->setVlRange($shipmentId);
+            $this->view->result = $schemeService->setVlRange($shipmentId, $methodOfEvaluation);
             $this->redirect("/admin/evaluate/index/scheme/vl/showcalc/" . base64_encode($shipmentId));
         } else {
             $this->redirect("/admin/evaluate/");

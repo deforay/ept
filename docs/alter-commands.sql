@@ -2725,3 +2725,9 @@ ALTER TABLE `reference_vl_calculation` ADD `median` DOUBLE(20,10) NULL DEFAULT N
 ALTER TABLE `response_result_vl` ADD `z_score` DOUBLE(20,10) NULL DEFAULT NULL AFTER `reported_viral_load`;
 ALTER TABLE `reference_vl_calculation` ADD `no_of_responses` INT NULL DEFAULT NULL AFTER `vl_assay`;
 
+-- Amit 09-Feb-2021
+
+ALTER TABLE `reference_vl_calculation` ADD `manual_standard_uncertainty` DOUBLE(20,10) NULL DEFAULT NULL AFTER `manual_sd`;
+ALTER TABLE `reference_vl_calculation` ADD `manual_is_uncertainty_acceptable` VARCHAR(255) NULL DEFAULT NULL AFTER `manual_standard_uncertainty`;
+ALTER TABLE `reference_vl_calculation` ADD `manual_median` DOUBLE(20,10) NULL DEFAULT NULL AFTER `manual_mean`;
+
