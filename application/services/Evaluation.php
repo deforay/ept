@@ -1255,7 +1255,7 @@ class Application_Service_Evaluation
 		$penResult = array();
 		$shipmentResult = array();
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score'))
+		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 'shipment_attributes'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_code'))
 			->where("s.shipment_id = ?", $shipmentId);
@@ -1746,9 +1746,17 @@ class Application_Service_Evaluation
 				$vlCalculation = array();
 				$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
 				foreach ($vlAssayResultSet as $vlAssayRow) {
-					$vlCalRes = $db->fetchAll($db->select()->from(array('vlCal' => 'reference_vl_calculation'))
-						->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
-						->where("vlCal.shipment_id=?", $shipmentId)->where("vlCal.vl_assay=?", $vlAssayRow['id'])->where("refVl.control!=1"));
+					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'))
+					->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
+					->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))
+					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
+						'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' THEN 1 ELSE 0 END)"),
+						'reported_viral_load',
+						'z_score','calculated_score'))
+					->where("vlCal.shipment_id=?", $shipmentId)->where("vlCal.vl_assay=?", $vlAssayRow['id'])->where("refVl.control!=1")
+					->group('refVl.sample_id');
+					die($vlQuery);
+					$vlCalRes = $db->fetchAll($vlQuery);
 
 					$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'), array('ref.sample_id', 'ref.sample_label'))
 						->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('s.shipment_id'))
@@ -1795,8 +1803,6 @@ class Application_Service_Evaluation
 
 				array_multisort(array_column($vlCalculation, 'participant-count'), SORT_DESC, $vlCalculation);
 
-				//Zend_Debug::dump($vlCalculation);
-				//die;
 			} else if ($shipmentResult['scheme_type'] == 'covid19') {
 				$sql = $db->select()->from(array('refcovid19' => 'reference_result_covid19'), array('refcovid19.reference_result', 'refcovid19.sample_label', 'refcovid19.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refcovid19.reference_result', array('referenceResult' => 'refpr.response'))
