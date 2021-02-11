@@ -9,8 +9,8 @@
 $methodOfEvaluation = $this->result['method_of_evaluation'];
 
 
-$updatedOn = "Manually Entered Range";
-$calculatedOn = "System Calculated Range";
+$updatedOn = "Manually Entered";
+$calculatedOn = "System Calculated";
 $useRange = 'calculated';
 if (isset($this->result['updated_on']) && $this->result['updated_on'] != "") {
   $updatedOnArray = explode(" ", $this->result['updated_on']);
@@ -18,7 +18,7 @@ if (isset($this->result['updated_on']) && $this->result['updated_on'] != "") {
 }
 if (isset($this->result['calculated_on']) && $this->result['calculated_on'] != "") {
   $calculatedOnArray = explode(" ", $this->result['calculated_on']);
-  $calculatedOn = "Calculated automatically on " . $this->dateFormat($calculatedOnArray[0]) . " " . $calculatedOnArray[1];
+  $calculatedOn = "Syetem Generated on " . $this->dateFormat($calculatedOnArray[0]) . " " . $calculatedOnArray[1];
 }
 if (isset($this->result['use_range']) && $this->result['use_range'] != "") {
   $useRange = $this->result['use_range'];
