@@ -1,4 +1,5 @@
 <?php
+
 require_once('tcpdf/tcpdf.php');
 require_once('jpgraph/jpgraph.php');
 require_once('jpgraph/jpgraph_bar.php');
@@ -112,11 +113,11 @@ if ($resultArray['shipment'] != "") {
                             // }
     
                             $calRes .= '<td>' . $vlCal[$c]['sample_label'] . '</td>
-                                    <td>' . number_format(round($vlCal[$c]['mean'], 2), 2, '.', '') . '</td>
-                                    <td>' . number_format(round($vlCal[$c]['sd'], 2), 2, '.', '') . '</td>
-                                    <td>' . number_format(round($vlCal[$c]['low_limit'], 2), 2, '.', '') . '</td>
-                                    <td>' . number_format(round($vlCal[$c]['high_limit'], 2), 2, '.', '') . '</td>
-                                    <td>' . number_format(round($vlCal[$c]['cv'], 2), 2, '.', '') . '</td>
+                                    <td style="text-align:center;">' . number_format(round($vlCal[$c]['mean'], 2), 2, '.', '') . '</td>
+                                    <td style="text-align:center;">' . number_format(round($vlCal[$c]['sd'], 2), 2, '.', '') . '</td>
+                                    <td style="text-align:center;">' . number_format(round($vlCal[$c]['low_limit'], 2), 2, '.', '') . '</td>
+                                    <td style="text-align:center;">' . number_format(round($vlCal[$c]['high_limit'], 2), 2, '.', '') . '</td>
+                                    <td style="text-align:center;">' . number_format(round($vlCal[$c]['cv'], 2), 2, '.', '') . '</td>
                                 </tr>';
                         }
                     }
@@ -163,14 +164,14 @@ if ($resultArray['shipment'] != "") {
 
                             $calRes .= '<tr>';
                             $calRes .= '
-                                    <td style="font-weight:normal;">' . $val['sample_label'] . '</td>
-                                    <td style="font-weight:normal;">' . $val['no_of_responses'] . '</td>
-                                    <td style="font-weight:normal;">' . number_format(round($val['median'], 2), 2, '.', '') . '</td>
-                                    <td style="font-weight:normal;">' . number_format(round($val['low_limit'], 2), 2, '.', '') . '</td>
-                                    <td style="font-weight:normal;">' . number_format(round($val['high_limit'], 2), 2, '.', '') . '</td>
-                                    <td style="font-weight:normal;">' . number_format(round($val['sd'], 2), 2, '.', '') . '</td>
-                                    <td style="font-weight:normal;">' . $val['NumberPassed'] . '</td>
-                                    <td style="font-weight:normal;">' . $score . '%</td>
+                                    <td style="font-weight:normal;text-align:center;">' . $val['sample_label'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . $val['no_of_responses'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['median'], 2), 2, '.', '') . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['low_limit'], 2), 2, '.', '') . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['high_limit'], 2), 2, '.', '') . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['sd'], 2), 2, '.', '') . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                                 </tr>';
                             $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses']; 
                             $chart[$vlCal['vlAssay']]['NumberPassed'] =  $score; 
@@ -198,6 +199,10 @@ if ($resultArray['shipment'] != "") {
                             $t++;
                         }
                         $responseTxt = $val['no_of_responses'];
+                        if($vlCal['vlAssay'] == "Other"){
+                            $decode = json_decode($val['attributes'], true);
+                            $vlCal['vlAssay'] = $decode['other_assay'];
+                        }
                     }
                     $assayNameTxt .= $vlCal['vlAssay'] .'(n='.$vlCal[0]['no_of_responses'].'), ';
                 }
@@ -222,14 +227,14 @@ if ($resultArray['shipment'] != "") {
                     $score = round((($label['NumberPassed']/$label['response'])*100));
                     $calRes .= '<tr>';
                     $calRes .= '
-                            <td style="font-weight:normal;">' . $label['label'] . '</td>
-                            <td style="font-weight:normal;">' . $label['response'] . '</td>
-                            <td style="font-weight:normal;">' . number_format(round($label['median'], 2), 2, '.', '') . '</td>
-                            <td style="font-weight:normal;">' . number_format(round($label['lowLimit'], 2), 2, '.', '') . '</td>
-                            <td style="font-weight:normal;">' . number_format(round($label['highLimit'], 2), 2, '.', '') . '</td>
-                            <td style="font-weight:normal;">' . number_format(round($label['sd'], 2), 2, '.', '') . '</td>
-                            <td style="font-weight:normal;">' . $label['NumberPassed'] . '</td>
-                            <td style="font-weight:normal;">' . $score . '%</td>
+                            <td style="font-weight:normal;text-align:center;">' . $label['label'] . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . $label['response'] . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($label['median'], 2), 2, '.', '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($label['lowLimit'], 2), 2, '.', '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($label['highLimit'], 2), 2, '.', '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($label['sd'], 2), 2, '.', '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . $label['NumberPassed'] . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                         </tr>';
                     $noOfPaResponseTxt = $label['response'];
                     $chart[$platform]['response'] =  $label['response']; 
