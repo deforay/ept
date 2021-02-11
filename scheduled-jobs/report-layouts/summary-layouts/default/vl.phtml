@@ -4,6 +4,7 @@ require_once('jpgraph/jpgraph.php');
 require_once('jpgraph/jpgraph_bar.php');
 require_once('jpgraph/jpgraph_pie.php');
 require_once('jpgraph/jpgraph_line.php');
+require_once('jpgraph/jpgraph_scatter.php');
 require_once(CRON_PATH . '/General.php');
 $general = new General();
 // Zend_Debug::dump($resultArray);die;
@@ -140,9 +141,9 @@ if ($resultArray['shipment'] != "") {
             $referenceRes .= '</table>';
             $pdf->writeHTML($referenceRes, true, false, true, false, '');
             
+            $sample = array();
             foreach ($resultArray['vlCalculation'] as $vlCal) {
-    
-                if (isset($vlCal['participant-count']) && $vlCal['participant-count'] > 0) {
+                if (isset($vlCal['participant-count']) && $vlCal['participant-count'] > 18 && $vlCal['vlAssay'] != "Other") {
                     $calRes = '<table border="1" style="font-weight:bold;width:650px;">
                                     <tr>
                                         <th colspan="8" style="font-size:12px;"><strong>Platform/Assay Name:</strong>'.$vlCal['vlAssay'].'</th>
@@ -157,27 +158,90 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Pass Result <br/>(z < ± 3.0)</th>
                                     </tr>';
                     foreach($vlCal as $key=>$val){
-                        if (isset($val['mean'])) {
+                        if (isset($val['median'])) {
+                            $score = round((($val['NumberPassed']/$val['no_of_responses'])*100));
+
                             $calRes .= '<tr>';
                             $calRes .= '
                                     <td>' . $val['sample_label'] . '</td>
                                     <td>' . $val['no_of_responses'] . '</td>
-                                    <td>' . number_format(round($val['mean'], 2), 2, '.', '') . '</td>
+                                    <td>' . number_format(round($val['median'], 2), 2, '.', '') . '</td>
                                     <td>' . number_format(round($val['low_limit'], 2), 2, '.', '') . '</td>
                                     <td>' . number_format(round($val['high_limit'], 2), 2, '.', '') . '</td>
                                     <td>' . number_format(round($val['sd'], 2), 2, '.', '') . '</td>
                                     <td>' . $val['NumberPassed'] . '</td>
-                                    <td>' . round((($val['NumberPassed']/$val['no_of_responses'])*100)) . '%</td>
+                                    <td>' . $score . '%</td>
                                 </tr>';
+                            $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses']; 
+                            $chart[$vlCal['vlAssay']]['NumberPassed'] =  $score; 
+                            $chart[$vlCal['vlAssay']]['score'] =  $score; 
+                            $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2); 
                         }
                     }
-    
+                    $assayName[] = substr($vlCal['vlAssay'], 0, 15). '...';
                     $calRes .= '</table>';
     
                     $pdf->writeHTML($calRes, true, false, true, false, '');
+                } else{
+                    $t = 0;
+                    foreach($vlCal as $k=>$val){
+                        
+                        if (isset($val['median'])) {
+                            
+                            $sample[$k]['response']       += $val['no_of_responses'];
+                            $sample[$k]['median']         += $val['median'];
+                            $sample[$k]['lowLimit']       += $val['low_limit'];
+                            $sample[$k]['highLimit']      += $val['high_limit'];
+                            $sample[$k]['sd']             += $val['sd'];
+                            $sample[$k]['NumberPassed']   += $val['NumberPassed'];
+                            $sample[$t]['label']          = $val['sample_label'];
+                            $t++;
+                        }
+                    }
                 }
+
+            }
+            if(isset($sample) && count($sample) > 0){
+                $platform = 'VL platforms with < 18 participants';
+                $calRes = '<table border="1" style="font-weight:bold;width:650px;">
+                                    <tr>
+                                        <th colspan="8" style="font-size:12px;"><strong>Platform/Assay Name:</strong> VL platforms with < 18 participants</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/ml)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Pass Result <br/>(z < ± 3.0)</th>
+                                    </tr>';
+                foreach($sample as $point=>$label){
+                    $score = round((($label['NumberPassed']/$label['response'])*100));
+                    $calRes .= '<tr>';
+                    $calRes .= '
+                            <td>' . $label['label'] . '</td>
+                            <td>' . $label['response'] . '</td>
+                            <td>' . number_format(round($label['median'], 2), 2, '.', '') . '</td>
+                            <td>' . number_format(round($label['lowLimit'], 2), 2, '.', '') . '</td>
+                            <td>' . number_format(round($label['highLimit'], 2), 2, '.', '') . '</td>
+                            <td>' . number_format(round($label['sd'], 2), 2, '.', '') . '</td>
+                            <td>' . $label['NumberPassed'] . '</td>
+                            <td>' . $score . '%</td>
+                        </tr>';
+                        
+                    $chart[$platform]['response'] =  $label['response']; 
+                    $chart[$platform]['NumberPassed'] =  $score; 
+                    $chart[$platform]['score'] =  $score; 
+                    $chart[$platform]['avg'] =  round($label['NumberPassed'] / $label['response'], 2); 
+                }
+                $assayName[] = substr('VL platforms with < 18 participants', 0, 15) . '...';
+                $calRes .= '</table>';
+                $pdf->writeHTML($calRes, true, false, true, false, '');
             }
         }
+        // Zend_Debug::dump($assayName);die;
+
         $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total 41):</h5>';
         $note .= '<span style="text-align:justify;font-size:8;font-weight:normal;">Biocentric - Generic HIV Charge Virale (n=4), Biomerieux - NucliSENS (n=2), Roche cobas 4800/6800/880 (n=16), Other - Amplisens HIV (n=4), Other - GeneXpert (n=2), Other - Bioneer (n=2), Other - In house (n=1),Other - Real Best HIV  (n=4), Other - Rotor-Gene Q (n=4), Other - VERSANT HIV-1 RNA  (n=1), and Other  (n=1)</span>';
         
@@ -191,30 +255,33 @@ if ($resultArray['shipment'] != "") {
         $note .= '<span style="text-align:justify;font-size:8;font-weight:normal;">Only the transport of PT items is subcontracted.<br/> The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
         $pdf->writeHTML($note, true, false, true, false, '');
 
-        $pdf->AddPage();
-        $datay1=array(35,160,0,0,0,0);
-        $datay2=array(35,190,190,190,190,190);
-        $datay3=array(20,70,70,140,230,260);
+        // $pdf->AddPage();
         
         $graph = new Graph(700,400,'auto');    
         $graph->SetScale("textlin");
         $graph->SetShadow();
         $graph->img->SetMargin(40,30,40,40);
-        $graph->xaxis->SetTickLabels($gDateLocale->GetShortMonth());
+        // $graph->xaxis->SetTickLabels($gDateLocale->GetShortMonth());
+        $graph->xaxis->SetTickLabels($assayName);
         
         $graph->xaxis->title->Set('Year 2002');
         // $graph->xaxis->title->SetFont(FF_FONT1,FS_BOLD);
         
         $graph->title->Set('Group bar plot');
         // $graph->title->SetFont(FF_FONT1,FS_BOLD);
+        foreach($chart as $data){
+            $noOfPaResponse[] = $data['response'];
+            $participantScore[] = $data['NumberPassed'];
+            $scoreBelow[] = $data['score'];
+        }
+        $bplot1 = new BarPlot($noOfPaResponse);
+        $bplot2 = new BarPlot($participantScore);
+        $bplot3 = new BarPlot($scoreBelow);
+        // $bplot3->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Late Response (N=$late)", "Excluded (N=$excluded)"));
         
-        $bplot1 = new BarPlot($datay1);
-        $bplot2 = new BarPlot($datay2);
-        $bplot3 = new BarPlot($datay3);
-        
-        $bplot1->SetFillColor("orange");
-        $bplot2->SetFillColor("brown");
-        $bplot3->SetFillColor("darkgreen");
+        $bplot1->SetFillColor("dodgerblue");
+        $bplot2->SetFillColor("darkolivegreen");
+        $bplot3->SetFillColor("gold");
         
         $bplot1->SetShadow();
         $bplot2->SetShadow();
@@ -239,6 +306,9 @@ if ($resultArray['shipment'] != "") {
         $graph->xaxis->SetTickSide(SIDE_DOWN);
         $graph->yaxis->SetTickSide(SIDE_LEFT);
 
+        /* $sp1 = new ScatterPlot($avg);
+        $sp1->mark->SetType(MARK_SQUARE);
+        $sp1->SetImpuls(); */
         // Display the graph
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         $graph->Stroke($image_file);

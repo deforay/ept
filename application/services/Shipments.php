@@ -950,12 +950,12 @@ class Application_Service_Shipments
                 $params['assayExpirationDate'] = Pt_Commons_General::dateFormat($params['assayExpirationDate']);
             }
             $attributes = array(
-                "sample_rehydration_date" => $params['sampleRehydrationDate'],
-                "vl_assay" => $params['vlAssay'],
-                "assay_lot_number" => $params['assayLotNumber'],
-                "assay_expiration_date" => $params['assayExpirationDate'],
-                "specimen_volume" => $params['specimenVolume'],
-                "uploaded_file" => $params['uploadedFilePath']
+                "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])),
+                "vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])),
+                "assay_lot_number" => (isset($params['assayLotNumber']) && !empty($params['assayLotNumber'])),
+                "assay_expiration_date" => (isset($params['assayExpirationDate']) && !empty($params['assayExpirationDate'])),
+                "specimen_volume" => (isset($params['specimenVolume']) && !empty($params['specimenVolume'])),
+                "uploaded_file" => (isset($params['uploadedFilePath']) && !empty($params['uploadedFilePath'])),
             );
 
             if (isset($params['otherAssay']) && $params['otherAssay'] != "") {

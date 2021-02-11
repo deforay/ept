@@ -1746,18 +1746,21 @@ class Application_Service_Evaluation
 				$vlCalculation = array();
 				$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
 				foreach ($vlAssayResultSet as $vlAssayRow) {
-					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'))
+					$json = json_encode(array('vl_assay'=>$vlAssayRow['id']));
+					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('no_of_responses', 'median', 'low_limit', 'high_limit', 'sd'))
 					->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
 					->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))
-					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
-						'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' THEN 1 ELSE 0 END)"),
-						'reported_viral_load',
-						'z_score','calculated_score'))
-					->where("vlCal.shipment_id=?", $shipmentId)->where("vlCal.vl_assay=?", $vlAssayRow['id'])->where("refVl.control!=1")
+					->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id and res.vl_assay = vlCal.vl_assay ', array(
+						'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' THEN 1 ELSE 0 END)"),'z_score','calculated_score'
+						))
+					->where("vlCal.shipment_id=?", $shipmentId)
+					->where("vlCal.vl_assay=?", $vlAssayRow['id'])
+					->where("refVl.control!=1")
+					->where("sp.attributes like '%".str_replace("}",'',str_replace("{",'', $json))."%'")
+					->where("sp.is_excluded not like 'yes'")
 					->group('refVl.sample_id');
-					die($vlQuery);
 					$vlCalRes = $db->fetchAll($vlQuery);
-
+					// Zend_Debug::dump($vlCalRes);die;
 					$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'), array('ref.sample_id', 'ref.sample_label'))
 						->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('s.shipment_id'))
 						->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))

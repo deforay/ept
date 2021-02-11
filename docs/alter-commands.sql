@@ -2731,3 +2731,5 @@ ALTER TABLE `reference_vl_calculation` ADD `manual_standard_uncertainty` DOUBLE(
 ALTER TABLE `reference_vl_calculation` ADD `manual_is_uncertainty_acceptable` VARCHAR(255) NULL DEFAULT NULL AFTER `manual_standard_uncertainty`;
 ALTER TABLE `reference_vl_calculation` ADD `manual_median` DOUBLE(20,10) NULL DEFAULT NULL AFTER `manual_mean`;
 
+Thana 11-Feb-2021
+ALTER TABLE `response_result_vl` ADD `vl_assay` VARCHAR(255) NULL DEFAULT NULL AFTER `calculated_score`;
