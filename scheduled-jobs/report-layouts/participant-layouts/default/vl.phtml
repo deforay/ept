@@ -23,7 +23,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
     foreach ($resultArray['shipment'] as $result) {
 
-
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
