@@ -22,6 +22,9 @@ if (sizeof($resultArray['shipment']) > 0) {
     // Zend_Debug::dump($recencyAssay[1]);die;
 
     foreach ($resultArray['shipment'] as $result) {
+        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+
+        $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
@@ -186,13 +189,22 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (sizeof($result['responseResult']) > 0) {
 
             $n = count($result['responseResult']);
-            $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
+            if($methodOfEvaluation == 'standard'){
+                $labRes = '<span style="font-weight: bold;font-size:13px;text-align:center;">Your laboratory test results : <br/></span>';
+            } else if($methodOfEvaluation == 'iso17043'){
+                $labRes = '<span style="font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
+            }
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3">';
-            $labRes .= '<tr style="background-color:#dbe4ee;">';
-            $labRes .= '<td colspan="' . ($n + 2) . '" style="text-align:center;font-weight:bold;">Sample ID</td>';
-            $labRes .= '</tr>';
-            $labRes .= '<tr style="background-color:#dbe4ee;">';
-            $labRes .= '<td></td>';
+            if($methodOfEvaluation == 'standard'){
+                $labRes .= '<tr style="background-color:#dbe4ee;">';
+                $labRes .= '<td colspan="' . ($n + 2) . '" style="text-align:center;font-weight:bold;">Sample ID</td>';
+                $labRes .= '</tr>';
+                $labRes .= '<tr style="background-color:#dbe4ee;">';
+                $labRes .= '<td></td>';
+            } else if($methodOfEvaluation == 'iso17043'){
+                $labRes .= '<tr style="background-color:#dbe4ee;">';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
+            }
             //Sample codes
             foreach ($result['responseResult'] as $response) {
                 $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
@@ -256,15 +268,33 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
+        if($methodOfEvaluation == 'standard'){
+            $html = '<p>Thank you for participating in HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot.</p>';
+            if (!empty($reportComment)) {
+                $html .= '<br>' . $reportComment;
+            }
+        } else if($methodOfEvaluation == 'iso17043'){
+            $html = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods.  Samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+            
+            $html .= '<h5>Procedures used to establish the assigned value:</h5>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Team using COBAS Ampliprep/Taqman HIV-1 Qualitative Test.</span>';
+            
+            $html .= '<h5>Procedures used to establish the assigned value:</h5>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
+            
+            $html .= '<h5>Subcontracting:</h5>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the Proficiency Testing Program.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
 
-        $html = '<p>Thank you for participating in HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot.</p>';
-        if (!empty($reportComment)) {
-            $html .= '<br>' . $reportComment;
+            if(isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != ""){
+                $html .= '<br/><hr>';
+                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$resultArray['shipment'][0]['pt_co_ordinator_name'].'</small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: '.date('d M Y').'</small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
+            }
+            $pdf->writeHTML($html, true, false, true, false, '');
         }
-
-
-
-        $pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {
             ob_end_clean();

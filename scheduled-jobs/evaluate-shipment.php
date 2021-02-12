@@ -357,6 +357,7 @@ try {
                             $shipmentCodePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
                             if (file_exists($shipmentCodePath)){
                                 rmdir_recursive($shipmentCodePath);
+                                mkdir($shipmentCodePath);
                             }
                             $participantLayoutFile = $customLayoutFileLocation;
                         }

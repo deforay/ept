@@ -174,7 +174,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // Zend_Debug::dump($result['responseResult']);die;
         //shipment_test_date
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-        if($methodOfEvaluation != 'standard'){
+        if($methodOfEvaluation == 'iso17043'){
 
             if (sizeof($result['responseResult']) > 0) {
                 $labRes = "";
