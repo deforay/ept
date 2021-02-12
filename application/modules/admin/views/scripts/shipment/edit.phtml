@@ -51,9 +51,12 @@ $dtFormat =  $vHelper->getDateFormat();
 				<div class="col-lg-5">
 					<input type='text' readonly='readonly' name="lastDate" id="lastDate" class='form-control datepicker isRequired' value='<?php echo $this->dateFormat($shipmentData['shipment']['lastdate_response']); ?>' title="Please choose the last response date" />
 				</div>
-
-
 			</div>
+			<div class="form-group">
+                <label class="col-lg-3 control-label" for="PtCoOrdinatorName">PT Co-ordinator Name</label>
+
+                <div class="col-lg-5"><input type="text" value='<?php echo $shipmentData['shipment']['pt_co_ordinator_name']; ?>' id="PtCoOrdinatorName" name="PtCoOrdinatorName" class="form-control input-sm" title="Please enter the PT Co-ordinator Name" placeholder="Enter the PT Co-ordinator Name" /></div>
+            </div>
 			<div class="form-group" id="sampleFormFragment">
 
 

@@ -1055,19 +1055,20 @@ class Application_Service_Shipments
         if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];
         }
-
         $data = array(
-            'shipment_code' => $params['shipmentCode'],
-            'shipment_attributes' => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
-            'distribution_id' => $params['distribution'],
-            'scheme_type' => $scheme,
-            'shipment_date' => $distro['distribution_date'],
-            'number_of_samples' => count($params['sampleName']) - $controlCount,
-            'number_of_controls' => $controlCount,
-            'lastdate_response' => Pt_Commons_General::dateFormat($params['lastDate']),
-            'created_on_admin' => new Zend_Db_Expr('now()'),
-            'created_by_admin' => $authNameSpace->primary_email
+            'shipment_code'         => $params['shipmentCode'],
+            'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
+            'distribution_id'       => $params['distribution'],
+            'scheme_type'           => $scheme,
+            'shipment_date'         => $distro['distribution_date'],
+            'number_of_samples'     => count($params['sampleName']) - $controlCount,
+            'number_of_controls'    => $controlCount,
+            'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
+            'lastdate_response'     => Pt_Commons_General::dateFormat($params['lastDate']),
+            'created_on_admin'      => new Zend_Db_Expr('now()'),
+            'created_by_admin'      => $authNameSpace->primary_email
         );
+        
         $lastId = $db->insert($data);
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1455,9 +1456,11 @@ class Application_Service_Shipments
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $shipment = $db->fetchRow($db->select()->from(array('s' => 'shipment'))
-            ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->where("s.shipment_id = ?", $sid));
+        $query = $db->select()->from(array('s' => 'shipment'))
+        ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+        ->where("s.shipment_id = ?", $sid);
+        // die($query);
+        $shipment = $db->fetchRow($query);
 
 
         $eia = '';
@@ -1859,6 +1862,7 @@ class Application_Service_Shipments
                 'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
                 'number_of_controls'    => $controlCount,
                 'shipment_code'         => $params['shipmentCode'],
+                'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
                 'lastdate_response'     => Pt_Commons_General::dateFormat($params['lastDate'])
             ),
             'shipment_id = ' . $params['shipmentId']
