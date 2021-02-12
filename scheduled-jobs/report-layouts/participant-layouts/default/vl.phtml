@@ -256,7 +256,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
     
-                $footerHead = '<h5>0.00 = Target Not Detected or less than lower limit of detection</h5><br/>';
+                $footerHead = '<h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
                 $pdf->writeHTML($footerHead, true, false, true, false, '');
     
                 $zscorehtml = '<h5>Results Interpretation and Recommended Actions</h5><br/>';
@@ -338,13 +338,14 @@ if (sizeof($resultArray['shipment']) > 0) {
     
             $html = '</br><p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
             $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
-    
-            /* $html .= '<br/><hr>';
-            $html .= '<span style="text-align:center;"><small>Report approved by Shon Nguyen- PT Coordinator, VL and EID Team</small></span>';
-            $html .= '<br/><span style="text-align:center;"><small>Date of approval: 4 Jan 2021</small></span>';
-            $html .= '<br/><span style="text-align:center;"><small><i>This is a system generated report. No signature required</i></small></span>';
-            $html .= '<br/><span style="text-align:center;"><small>– End of final report –</small></span>'; */
-            $pdf->writeHTML($html, true, false, true, false, '');
+            if(isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != ""){
+                $html .= '<br/><hr>';
+                $html .= '<span style="text-align:center;"><small>Report approved by '.$resultArray['shipment'][0]['pt_co_ordinator_name'].'</small></span>';
+                $html .= '<br/><span style="text-align:center;"><small>Date of approval: '.date('d M Y').'</small></span>';
+                $html .= '<br/><span style="text-align:center;"><small><i>This is a system generated report. No signature required</i></small></span>';
+                $html .= '<br/><span style="text-align:center;"><small>– End of final report –</small></span>';
+                $pdf->writeHTML($html, true, false, true, false, '');
+            }
         } else if($methodOfEvaluation == 'standard'){
             if (sizeof($result['responseResult']) > 0) {
 
@@ -510,6 +511,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $shipmentCode = $result['shipment_code'];
         $j++;
+        break;
     }
 
     $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
