@@ -227,6 +227,14 @@ class SummaryPDF extends TCPDF
     }
 }
 
+function rmdir_recursive($dir) {
+    foreach(scandir($dir) as $file) {
+        if ('.' === $file || '..' === $file) continue;
+        if (is_dir("$dir/$file")) rmdir_recursive("$dir/$file");
+        else unlink("$dir/$file");
+    }
+    rmdir($dir);
+}
 
 function dateFormat($dateIn)
 {
@@ -346,6 +354,10 @@ try {
                     if (!empty($layout)) {
                         $customLayoutFileLocation = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['scheme_type'] . '.phtml';
                         if (file_exists($customLayoutFileLocation)) {
+                            $shipmentCodePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
+                            if (file_exists($shipmentCodePath)){
+                                rmdir_recursive($shipmentCodePath);
+                            }
                             $participantLayoutFile = $customLayoutFileLocation;
                         }
                     }
