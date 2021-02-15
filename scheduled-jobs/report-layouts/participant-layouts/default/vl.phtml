@@ -11,7 +11,7 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
-
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (sizeof($resultArray['shipment']) > 0) {
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
@@ -111,7 +111,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['lastdate_response'] = $general->humanDateFormat($result['lastdate_response']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentScore = 0;
@@ -163,7 +162,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td><strong>Date PT Panel Tested</strong> <br>' . $shipmentTestDate . '</td>';
         $labInfo .= '</tr>';
         if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
-            $machine = $attributes['vl_assay'];
+            // $machine = $attributes['vl_assay'];
+            $machine = 'Other';
         } else{
             $machine = $result['responseResult'][0]['vl_assay'];
         }
@@ -339,7 +339,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $pdf->writeHTML($comment, true, false, true, false, '');
             }
     
-            $html = '</br><p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
+            $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
             $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
             if(isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != ""){
                 $html .= '<br/><hr>';
