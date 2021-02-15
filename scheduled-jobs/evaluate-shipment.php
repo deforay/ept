@@ -13,7 +13,7 @@ class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -23,6 +23,7 @@ class IndividualPDF extends TCPDF
         $this->schemeType = $schemeType;
         $this->layout = $layout;
         $this->dateTime = $datetime;
+        $this->config = $conf;
     }
 
     public function humanDateTimeFormat($date)
@@ -70,7 +71,7 @@ class IndividualPDF extends TCPDF
         } else if ($this->schemeType == 'eid') {
             $this->SetFont('helvetica', '', 10);
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using Dried Blood Spot</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
-            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using <br/>' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
         } else if ($this->schemeType == 'recency') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
@@ -112,10 +113,18 @@ class IndividualPDF extends TCPDF
         //$this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         $this->writeHTML("<hr>", true, false, true, false, '');
-        if (isset($this->layout) && $this->layout == 'zimbabwe') {
-            $this->Cell(0, 05,  strtoupper($this->header), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-        } else {
-            $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
+        if ($this->schemeType == 'eid' && isset($this->config) && $this->config != "") {
+            // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            // $this->Ln();
+            $this->SetFont('helvetica', '', 10);
+            $this->Cell(0, 10, 'Effective Date:'.date('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().' | '.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        } else{
+            if (isset($this->layout) && $this->layout == 'zimbabwe') {
+                $this->Cell(0, 05,  strtoupper($this->header), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            } else {
+                $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
+            }
         }
     }
 }
@@ -124,7 +133,7 @@ class IndividualPDF extends TCPDF
 class SummaryPDF extends TCPDF
 {
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -133,6 +142,7 @@ class SummaryPDF extends TCPDF
         $this->resultStatus = $resultStatus;
         $this->schemeType = $schemeType;
         $this->dateTime = $datetime;
+        $this->config = $conf;
     }
 
     public function humanDateTimeFormat($date)
@@ -178,9 +188,14 @@ class SummaryPDF extends TCPDF
 
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
         } else if ($this->schemeType == 'eid') {
-            $this->SetFont('helvetica', '', 10);
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using Dried Blood Spot</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
-            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
+            $this->SetFont('helvetica', '', 10);
+            if(isset($this->config) && $this->config != ""){
+                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;font-size:12;">' . $this->header . '</span><br/><br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:13;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
+            } else{
+                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
+            }
         } else if ($this->schemeType == 'recency') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Recency using - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
@@ -196,10 +211,16 @@ class SummaryPDF extends TCPDF
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
         }
-
-        $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
-        $html = '<hr/>';
-        $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
+        if ($this->schemeType == 'eid' && isset($this->config) && $this->config != "") {
+            $this->writeHTMLCell(0, 0, 45, 10, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 56, $html, 0, 0, 0, true, 'J', true);
+        } else{
+            $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
+        }
     }
 
     // Page footer
@@ -222,8 +243,15 @@ class SummaryPDF extends TCPDF
         $this->SetFont('helvetica', '', 7);
         // Page number
         //$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
-
-        $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        if ($this->schemeType == 'eid' && isset($this->config) && $this->config != "") {
+            // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            // $this->Ln();
+            $this->SetFont('helvetica', '', 10);
+            $this->Cell(0, 10, 'Effective Date:'.date('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().' | '.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        } else{
+            $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        }
     }
 }
 
