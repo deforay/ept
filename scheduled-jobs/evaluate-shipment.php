@@ -387,10 +387,10 @@ try {
                         $customLayoutFileLocation = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['scheme_type'] . '.phtml';
                         if (file_exists($customLayoutFileLocation)) {
                             $shipmentCodePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
-                            if (file_exists($shipmentCodePath)){
-                                rmdir_recursive($shipmentCodePath);
-                                mkdir($shipmentCodePath);
-                            }
+                            // if (file_exists($shipmentCodePath)){
+                            //     rmdir_recursive($shipmentCodePath);
+                            //     mkdir($shipmentCodePath);
+                            // }
                             $participantLayoutFile = $customLayoutFileLocation;
                         }
                     }

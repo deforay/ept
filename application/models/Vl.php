@@ -99,10 +99,10 @@ class Application_Model_Vl
                             // matching reported and low/high limits
                             if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
                                 if (isset($vlRange[$responseAssay][$result['sample_id']])) {
-                                    if ($result['reported_viral_load'] == 0 || $result['reported_viral_load'] == '0.00') {
+                                    if ($result['reported_viral_load'] == 0 || $result['reported_viral_load'] == '0.00' || $vlRange[$responseAssay][$result['sample_id']]['sd'] == 0) {
                                         $zScore = 0;
                                     } else {
-                                        $zScore = abs(($vlRange[$responseAssay][$result['sample_id']]['median'] - $result['reported_viral_load']) / $vlRange[$responseAssay][$result['sample_id']]['sd']);
+                                        $zScore = (float) abs(($vlRange[$responseAssay][$result['sample_id']]['median'] - $result['reported_viral_load']) / $vlRange[$responseAssay][$result['sample_id']]['sd']);
                                     }
 
                                     if ($zScore <= 2) {

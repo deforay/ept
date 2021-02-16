@@ -1163,54 +1163,59 @@ class Application_Service_Evaluation
 					$toReturn[$counter]['reported_viral_load'] = $result['reported_viral_load'];
 					$toReturn[$counter]['no_of_participants'] = $labResult[$assayName][$result['sample_label']];
 					if (isset($vlRange[$responseAssay])) {
-						// matching reported and low/high limits
-						if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
-							if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
-								$grade = 'Acceptable';
+						
+
+						if($methodOfEvaluation == 'standard'){
+							// matching reported and low/high limits
+							if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
+								if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
+									$grade = 'Acceptable';
+								} else {
+									$grade = 'Not Acceptable';
+								}
+							}
+
+							if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null && trim($result['reported_viral_load']) != null) {
+								if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
+									$grade = 'Acceptable';
+								} else {
+									if ($result['sample_score'] > 0) {
+										$grade = 'Not Acceptable';
+									} else {
+										$grade = '-';
+									}
+								}
 							} else {
 								$grade = 'Not Acceptable';
 							}
-						}
-
-						if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null && trim($result['reported_viral_load']) != null) {
-							if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
+							$toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['low'];
+							$toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['high'];
+							$toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
+							$toReturn[$counter]['mean'] = $vlRange[$responseAssay][$result['sample_id']]['mean'];
+							$toReturn[$counter]['median'] = $vlRange[$responseAssay][$result['sample_id']]['median'];
+							$toReturn[$counter]['zscore'] = $result['z_score'];
+						}else if ($methodOfEvaluation == 'iso17043') {
+							// matching reported and low/high limits
+							if (isset($result['calculated_score']) && $result['calculated_score'] == 'pass') {
 								$grade = 'Acceptable';
-							} else {
-								if ($result['sample_score'] > 0) {
-									$grade = 'Not Acceptable';
-								} else {
-									$grade = '-';
-								}
+							}else if (isset($result['calculated_score']) && $result['calculated_score'] == 'fail') {
+								$grade = 'Not Acceptable';
 							}
-						} else {
-							$grade = 'Not Acceptable';
+
+							$toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['q1'];
+							$toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['q3'];
+							$toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
+							$toReturn[$counter]['median'] = $vlRange[$responseAssay][$result['sample_id']]['median'];
+							$toReturn[$counter]['zscore'] = $result['z_score'];							
 						}
-						$toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['low'];
-						$toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['high'];
-						$toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
-						$toReturn[$counter]['mean'] = $vlRange[$responseAssay][$result['sample_id']]['mean'];
-						$toReturn[$counter]['zscore'] = $result['z_score'];
 						
-						/* $zScore = 0 ;
-						if ($methodOfEvaluation == 'iso17043') {
-                            // matching reported and low/high limits
-                            if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
-                                if (isset($vlRange[$responseAssay][$result['sample_id']])) {
-                                    if ($result['reported_viral_load'] == 0 || $result['reported_viral_load'] == '0.00') {
-                                        $zScore = 0;
-                                    } else {
-                                        $zScore = abs(($vlRange[$responseAssay][$result['sample_id']]['median'] - $result['reported_viral_load']) / $vlRange[$responseAssay][$result['sample_id']]['sd']);
-                                    }
-                                }
-                            }
-							$toReturn[$counter]['zscore'] = $zScore;
-                        } */
 
 					} else {
 						$toReturn[$counter]['low'] = 'Not Applicable';
 						$toReturn[$counter]['high'] = 'Not Applicable';
 						$toReturn[$counter]['sd'] = 'Not Applicable';
 						$toReturn[$counter]['mean'] = 'Not Applicable';
+						$toReturn[$counter]['median'] = 'Not Applicable';
 						$grade = 'Not Applicable';
 						$toReturn[$counter]['zscore'] = 0;
 					}
@@ -1756,7 +1761,8 @@ class Application_Service_Evaluation
 					->where("vlCal.shipment_id=?", $shipmentId)
 					->where("vlCal.vl_assay=?", $vlAssayRow['id'])
 					->where("refVl.control!=1")
-					->where("sp.attributes like '%".str_replace("}",'',str_replace("{",'', $json))."%'")
+					//->where("sp.attributes like '%".str_replace("}",'',str_replace("{",'', $json))."%'")
+					->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayRow['id'] . '"%')
 					->where("sp.is_excluded not like 'yes'")
 					->group('refVl.sample_id');
 					$vlCalRes = $db->fetchAll($vlQuery);
@@ -1766,7 +1772,7 @@ class Application_Service_Evaluation
 						->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))
 						->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 						->where('ref.control!=1')
-						->where("sp.is_excluded!='yes' AND sp.is_pt_test_not_performed is NULL")
+						->where("sp.is_excluded not like 'yes' AND sp.is_pt_test_not_performed not like 'yes'")
 						->where('sp.shipment_id = ? ', $shipmentId);
 
 					$cResult = $db->fetchAll($cQuery);
