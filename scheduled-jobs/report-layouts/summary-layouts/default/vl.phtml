@@ -278,10 +278,15 @@ if ($resultArray['shipment'] != "") {
         
         $graph->title->Set('Group bar plot');
         // $graph->title->SetFont(FF_FONT1,FS_BOLD);
-        foreach($chart as $data){
-            $noOfPaResponse[] = $data['response'];
-            $participantScore[] = $data['NumberPassed'];
-            $scoreBelow[] = $data['score'];
+        $noOfPaResponse = array(0);
+        $participantScore = array(0);
+        $scoreBelow = array(0);
+        if(isset($chart) && count($chart) > 0){
+            foreach($chart as $data){
+                $noOfPaResponse[] = $data['response'];
+                $participantScore[] = $data['NumberPassed'];
+                $scoreBelow[] = $data['score'];
+            }
         }
         $bplot1 = new BarPlot($noOfPaResponse);
         $bplot2 = new BarPlot($participantScore);
