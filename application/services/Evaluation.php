@@ -573,9 +573,8 @@ class Application_Service_Evaluation
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$authNameSpace = new Zend_Session_Namespace('administrators');
-		$admin = $authNameSpace->primary_email;
+		$admin = $authNameSpace->admin_id;
 		$size = count($params['sampleId']);
-
 
 		if ($params['scheme'] == 'eid') {
 
@@ -729,14 +728,32 @@ class Application_Service_Evaluation
 			}
 
 			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
+			
+			$shipmentOverall = $db->fetchRow($db->select()->from('response_result_vl')
+			->where("shipment_map_id = ?", $params['smid']));
+			$resVlDb = new Application_Model_DbTable_ResponseVl();
 
 			for ($i = 0; $i < $size; $i++) {
-
-				$db->update('response_result_vl', array(
-					'reported_viral_load' => $params['reported'][$i],
-					'updated_by' => $admin,
-					'updated_on' => new Zend_Db_Expr('now()')
-				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+				if(!$shipmentOverall){
+					$resData = array(
+						'shipment_map_id' 		=> $params['smid'],
+						'vl_assay' 				=> $params['vlAssay'],
+						'sample_id' 			=> $params['sampleId'][$i],
+						'reported_viral_load' 	=> $params['reported'][$i],
+						'created_by' 			=> $admin,
+                    	'created_on' 			=> new Zend_Db_Expr('now()'),
+						'updated_by' 			=> $admin,
+						'updated_on' 			=> new Zend_Db_Expr('now()')
+					);
+					$id = $resVlDb->insert($resData);
+				} else{
+					$resData = array(
+						'reported_viral_load'	=> $params['reported'][$i],
+						'updated_by' 			=> $admin,
+						'updated_on' 			=> new Zend_Db_Expr('now()')
+					);
+					$id = $resVlDb->update($resData, "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+				}
 			}
 		} else if ($params['scheme'] == 'dbs') {
 			for ($i = 0; $i < $size; $i++) {
@@ -877,7 +894,7 @@ class Application_Service_Evaluation
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$authNameSpace = new Zend_Session_Namespace('administrators');
-		$admin = $authNameSpace->primary_email;
+		$admin = $authNameSpace->admin_id;
 		$noOfRows = $db->update('shipment', array('shipment_comment' => $comment, 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $shipmentId);
 		if ($noOfRows > 0) {
 			return "Comment updated";
@@ -890,7 +907,7 @@ class Application_Service_Evaluation
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$authNameSpace = new Zend_Session_Namespace('administrators');
-		$admin = $authNameSpace->primary_email;
+		$admin = $authNameSpace->admin_id;
 		$noOfRows = $db->update('shipment', array('status' => $status, 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $shipmentId);
 		if ($noOfRows > 0) {
 			return "Status updated";
