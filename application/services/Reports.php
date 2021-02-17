@@ -2757,10 +2757,16 @@ class Application_Service_Reports
             $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
             $colNameCount++;
         }
+        
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $colNamesArray[] = "Final Score";
+
+
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-
         $colNamesArray[] = "Date Received";
+
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
@@ -2908,6 +2914,8 @@ class Application_Service_Reports
             }
 
 
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit($rowOverAll['shipment_score'], PHPExcel_Cell_DataType::TYPE_STRING);
+
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_receipt_date']) : "";
             $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_test_date']) : "";
             $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2915,6 +2923,7 @@ class Application_Service_Reports
 
             // we are also building the data required for other Assay Sheets
             if ($attributes['vl_assay'] > 0) {
+                $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['shipment_score'];
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $receiptDate;
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $testDate;
             }
