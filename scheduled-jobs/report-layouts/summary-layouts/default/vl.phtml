@@ -143,10 +143,31 @@ if ($resultArray['shipment'] != "") {
                 $referenceRes .= '</tr>';
             $referenceRes .= '</table>';
             $pdf->writeHTML($referenceRes, true, false, true, false, '');
-            
-            $sample = array();
+            $sample = array();$assayNameTxt = "";$noOfPaResponseTxt = "";
             foreach ($resultArray['vlCalculation'] as $vlCal) {
-                if (isset($vlCal['participant-count']) && $vlCal['participant-count'] > 18 && $vlCal['vlAssay'] != "Other") {
+                if (isset($vlCal['participant-count']) && $vlCal['participant-count'] < 18 || $vlCal['vlAssay'] == "Other") {
+                    $t = 0;
+                    foreach($vlCal as $k=>$val){
+                        
+                        if (isset($val['median'])) {
+                            
+                            $sample[$k]['response']       += $val['no_of_responses'];
+                            $sample[$k]['median']         += $val['median'];
+                            $sample[$k]['lowLimit']       += $val['low_limit'];
+                            $sample[$k]['highLimit']      += $val['high_limit'];
+                            $sample[$k]['sd']             += $val['sd'];
+                            $sample[$k]['NumberPassed']   += $val['NumberPassed'];
+                            $sample[$t]['label']          = $val['sample_label'];
+                            $t++;
+                        }
+                        // $responseTxt = $val['no_of_responses'];
+                        if($vlCal['vlAssay'] == "Other"){
+                            $decode = json_decode($val['attributes'], true);
+                            $vlCal['vlAssay'] = $decode['other_assay'];
+                        }
+                    }
+                    $assayNameTxt .= $vlCal['vlAssay'] .'(n='.$vlCal[0]['no_of_responses'].'), ';
+                } else{
                     $calRes = '<table border="1" style="font-weight:bold;width:650px;">
                                     <tr>
                                         <th colspan="8" style="font-size:12px;"><strong>Platform/Assay Name: </strong><span style="font-weight:normal;">'.$vlCal['vlAssay'].'</span></th>
@@ -185,28 +206,6 @@ if ($resultArray['shipment'] != "") {
                     $calRes .= '</table>';
     
                     $pdf->writeHTML($calRes, true, false, true, false, '');
-                } else{
-                    $t = 0;
-                    foreach($vlCal as $k=>$val){
-                        
-                        if (isset($val['median'])) {
-                            
-                            $sample[$k]['response']       += $val['no_of_responses'];
-                            $sample[$k]['median']         += $val['median'];
-                            $sample[$k]['lowLimit']       += $val['low_limit'];
-                            $sample[$k]['highLimit']      += $val['high_limit'];
-                            $sample[$k]['sd']             += $val['sd'];
-                            $sample[$k]['NumberPassed']   += $val['NumberPassed'];
-                            $sample[$t]['label']          = $val['sample_label'];
-                            $t++;
-                        }
-                        $responseTxt = $val['no_of_responses'];
-                        if($vlCal['vlAssay'] == "Other"){
-                            $decode = json_decode($val['attributes'], true);
-                            $vlCal['vlAssay'] = $decode['other_assay'];
-                        }
-                    }
-                    $assayNameTxt .= $vlCal['vlAssay'] .'(n='.$vlCal[0]['no_of_responses'].'), ';
                 }
 
             }

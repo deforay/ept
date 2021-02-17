@@ -1775,7 +1775,7 @@ class Application_Service_Evaluation
 						->where('ref.control!=1')
 						->where("sp.is_excluded not like 'yes' AND sp.is_pt_test_not_performed not like 'yes'")
 						->where('sp.shipment_id = ? ', $shipmentId);
-
+					// die($cQuery);
 					$cResult = $db->fetchAll($cQuery);
 
 					$labResult = array();
@@ -1799,12 +1799,14 @@ class Application_Service_Evaluation
 							}
 						}
 					}
-
+					// Zend_Debug::dump($vlCalRes);
+					// die;
 					if (count($vlCalRes) > 0) {
 						$vlCalculation[$vlAssayRow['id']] = $vlCalRes;
 						$vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
 						$vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];
-						$vlCalculation[$vlAssayRow['id']]['participant-count'] = $labResult[$vlCalRes[0]['sample_label']];
+						$vlCalculation[$vlAssayRow['id']]['participant-count'] = $vlCalRes[0]['no_of_responses'];
+						// $labResult[$vlCalRes[0]['no_of_responses']];
 						if ($vlAssayRow['id'] == 6) {
 							$vlCalculation[$vlAssayRow['id']]['otherAssayName'] = array_unique($otherAssayName);
 						}
