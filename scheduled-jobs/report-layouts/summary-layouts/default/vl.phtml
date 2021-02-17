@@ -261,6 +261,13 @@ if ($resultArray['shipment'] != "") {
         
         $note .= '<h5>Subcontracting:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted.<br/> The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
+        if(isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != ""){
+            $html .= '<br/><hr>';
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$resultArray['shipment']['pt_co_ordinator_name'].'</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: '.date('d M Y').'</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
+        }
         $pdf->writeHTML($note, true, false, true, false, '');
 
         // $pdf->AddPage();
