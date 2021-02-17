@@ -99,21 +99,22 @@ class Application_Model_Vl
                             // matching reported and low/high limits
                             if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
                                 if (isset($vlRange[$responseAssay][$result['sample_id']])) {
-                                    if ($vlRange[$responseAssay][$result['sample_id']]['sd'] == 0) {
-                                        $zScore = 0;
-                                    } else {
-                                            $zScore = (float) abs(($vlRange[$responseAssay][$result['sample_id']]['median'] - $result['reported_viral_load']) / $vlRange[$responseAssay][$result['sample_id']]['sd']);
+                                    $zScore = 0;
+                                    if ($vlRange[$responseAssay][$result['sample_id']]['sd'] > 0) {
+                                        $zScore = (float) (($result['reported_viral_load'] - $vlRange[$responseAssay][$result['sample_id']]['median']) / $vlRange[$responseAssay][$result['sample_id']]['sd']);
                                     }
 
-                                    if ($zScore <= 2) {
+                                    $absZScore = abs($zScore);
+
+                                    if ($absZScore <= 2) {
                                         //passed
                                         $totalScore += $result['sample_score'];
                                         $calcResult = "pass";
-                                    } else if ($zScore > 2 && $zScore <= 3) {
+                                    } else if ($absZScore > 2 && $absZScore <= 3) {
                                         //passed but with a warning
                                         $totalScore += $result['sample_score'];
                                         $calcResult = "pass";
-                                    } else if ($zScore > 3) {
+                                    } else if ($absZScore > 3) {
                                         //failed
                                         if ($result['sample_score'] > 0) {
                                             $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
