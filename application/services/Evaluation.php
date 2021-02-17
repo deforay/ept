@@ -1751,11 +1751,11 @@ class Application_Service_Evaluation
 				$vlCalculation = array();
 				$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
 				foreach ($vlAssayResultSet as $vlAssayRow) {
-					$json = json_encode(array('vl_assay'=>$vlAssayRow['id']));
+					// $json = json_encode(array('vl_assay'=>$vlAssayRow['id']));
 					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('no_of_responses', 'median', 'low_limit', 'high_limit', 'sd'))
 					->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
 					->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))
-					->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id and res.vl_assay = vlCal.vl_assay ', array(
+					->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
 						'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' THEN 1 ELSE 0 END)"),'z_score','calculated_score'
 						))
 					->where("vlCal.shipment_id=?", $shipmentId)
@@ -1765,6 +1765,7 @@ class Application_Service_Evaluation
 					->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayRow['id'] . '"%')
 					->where("sp.is_excluded not like 'yes'")
 					->group('refVl.sample_id');
+					// die($vlQuery);
 					$vlCalRes = $db->fetchAll($vlQuery);
 					// Zend_Debug::dump($vlCalRes);die;
 					$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'), array('ref.sample_id', 'ref.sample_label'))
