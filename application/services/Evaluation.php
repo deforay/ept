@@ -323,7 +323,7 @@ class Application_Service_Evaluation
 							$failureReason[]['warning'] = "EIA 1 (<strong>" . $testKit1 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate;
 						}
 					}
-					
+
 					if ($expDate2 != "") {
 						if ($testedOn > ($expDate2)) {
 							$difference = $testedOn->diff($expDate2);
@@ -333,7 +333,7 @@ class Application_Service_Evaluation
 						}
 					}
 
-					
+
 					if ($expDate3 != "") {
 						if ($testedOn > ($expDate3)) {
 							$difference = $testedOn->diff($expDate3);
@@ -728,25 +728,25 @@ class Application_Service_Evaluation
 			}
 
 			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
-			
+
 			$shipmentOverall = $db->fetchRow($db->select()->from('response_result_vl')
-			->where("shipment_map_id = ?", $params['smid']));
+				->where("shipment_map_id = ?", $params['smid']));
 			$resVlDb = new Application_Model_DbTable_ResponseVl();
 
 			for ($i = 0; $i < $size; $i++) {
-				if(!$shipmentOverall){
+				if (!$shipmentOverall) {
 					$resData = array(
 						'shipment_map_id' 		=> $params['smid'],
 						'vl_assay' 				=> $params['vlAssay'],
 						'sample_id' 			=> $params['sampleId'][$i],
 						'reported_viral_load' 	=> $params['reported'][$i],
 						'created_by' 			=> $admin,
-                    	'created_on' 			=> new Zend_Db_Expr('now()'),
+						'created_on' 			=> new Zend_Db_Expr('now()'),
 						'updated_by' 			=> $admin,
 						'updated_on' 			=> new Zend_Db_Expr('now()')
 					);
 					$id = $resVlDb->insert($resData);
-				} else{
+				} else {
 					$resData = array(
 						'reported_viral_load'	=> $params['reported'][$i],
 						'updated_by' 			=> $admin,
@@ -972,7 +972,7 @@ class Application_Service_Evaluation
 
 		$i = 0;
 		//$mapRes="";
-		
+
 		foreach ($sRes as $res) {
 			// Zend_Debug::dump($res['shipment_test_report_date']);die;
 			$dmResult = $db->fetchAll($db->select()->from(array('pmm' => 'participant_manager_map'))
@@ -1064,7 +1064,7 @@ class Application_Service_Evaluation
 				//$assayResults = $schemeService->getShipmentParticipantBassedAssay($shipmentId);
 				$attributes = json_decode($res['attributes'], true);
 				$shipmentAttributes = json_decode($res['shipment_attributes'], true);
-				
+
 				$methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 				if ($vlRange == null || $vlRange == "" || count($vlRange) == 0) {
 					$schemeService->setVlRange($shipmentId, $methodOfEvaluation);
@@ -1151,7 +1151,8 @@ class Application_Service_Evaluation
 
 				// Zend_Debug::dump($labResult);
 				// die;
-				$counter = 0;$zScore = null;
+				$counter = 0;
+				$zScore = null;
 				$toReturn = array();
 				foreach ($results as $result) {
 					//$toReturn = array();
@@ -1180,9 +1181,9 @@ class Application_Service_Evaluation
 					$toReturn[$counter]['reported_viral_load'] = $result['reported_viral_load'];
 					$toReturn[$counter]['no_of_participants'] = $labResult[$assayName][$result['sample_label']];
 					if (isset($vlRange[$responseAssay])) {
-						
 
-						if($methodOfEvaluation == 'standard'){
+
+						if ($methodOfEvaluation == 'standard') {
 							// matching reported and low/high limits
 							if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
 								if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
@@ -1211,22 +1212,22 @@ class Application_Service_Evaluation
 							$toReturn[$counter]['mean'] = $vlRange[$responseAssay][$result['sample_id']]['mean'];
 							$toReturn[$counter]['median'] = $vlRange[$responseAssay][$result['sample_id']]['median'];
 							$toReturn[$counter]['zscore'] = $result['z_score'];
-						}else if ($methodOfEvaluation == 'iso17043') {
+						} else if ($methodOfEvaluation == 'iso17043') {
 							// matching reported and low/high limits
 							if (isset($result['calculated_score']) && $result['calculated_score'] == 'pass') {
 								$grade = 'Acceptable';
-							}else if (isset($result['calculated_score']) && $result['calculated_score'] == 'fail') {
+							} else if (isset($result['calculated_score']) && $result['calculated_score'] == 'fail') {
 								$grade = 'Not Acceptable';
+							} else if (isset($result['calculated_score']) && $result['calculated_score'] == 'warn') {
+								$grade = 'Warning';
 							}
 
 							$toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['q1'];
 							$toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['q3'];
 							$toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
 							$toReturn[$counter]['median'] = $vlRange[$responseAssay][$result['sample_id']]['median'];
-							$toReturn[$counter]['zscore'] = $result['z_score'];							
+							$toReturn[$counter]['zscore'] = $result['z_score'];
 						}
-						
-
 					} else {
 						$toReturn[$counter]['low'] = 'Not Applicable';
 						$toReturn[$counter]['high'] = 'Not Applicable';
@@ -1770,18 +1771,18 @@ class Application_Service_Evaluation
 				foreach ($vlAssayResultSet as $vlAssayRow) {
 					// $json = json_encode(array('vl_assay'=>$vlAssayRow['id']));
 					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('no_of_responses', 'median', 'low_limit', 'high_limit', 'sd'))
-					->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
-					->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))
-					->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
-						'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' THEN 1 ELSE 0 END)"),'z_score','calculated_score'
+						->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
+						->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))
+						->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
+							'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' THEN 1 ELSE 0 END)"), 'z_score', 'calculated_score'
 						))
-					->where("vlCal.shipment_id=?", $shipmentId)
-					->where("vlCal.vl_assay=?", $vlAssayRow['id'])
-					->where("refVl.control!=1")
-					//->where("sp.attributes like '%".str_replace("}",'',str_replace("{",'', $json))."%'")
-					->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayRow['id'] . '"%')
-					->where("sp.is_excluded not like 'yes'")
-					->group('refVl.sample_id');
+						->where("vlCal.shipment_id=?", $shipmentId)
+						->where("vlCal.vl_assay=?", $vlAssayRow['id'])
+						->where("refVl.control!=1")
+						//->where("sp.attributes like '%".str_replace("}",'',str_replace("{",'', $json))."%'")
+						->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayRow['id'] . '"%')
+						->where("sp.is_excluded not like 'yes'")
+						->group('refVl.sample_id');
 					// die($vlQuery);
 					$vlCalRes = $db->fetchAll($vlQuery);
 					// Zend_Debug::dump($vlCalRes);die;
@@ -1831,7 +1832,6 @@ class Application_Service_Evaluation
 				}
 
 				array_multisort(array_column($vlCalculation, 'participant-count'), SORT_DESC, $vlCalculation);
-
 			} else if ($shipmentResult['scheme_type'] == 'covid19') {
 				$sql = $db->select()->from(array('refcovid19' => 'reference_result_covid19'), array('refcovid19.reference_result', 'refcovid19.sample_label', 'refcovid19.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refcovid19.reference_result', array('referenceResult' => 'refpr.response'))

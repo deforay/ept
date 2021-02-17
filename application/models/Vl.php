@@ -113,7 +113,7 @@ class Application_Model_Vl
                                     } else if ($absZScore > 2 && $absZScore <= 3) {
                                         //passed but with a warning
                                         $totalScore += $result['sample_score'];
-                                        $calcResult = "pass";
+                                        $calcResult = "warn";
                                     } else if ($absZScore > 3) {
                                         //failed
                                         if ($result['sample_score'] > 0) {

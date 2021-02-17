@@ -2889,11 +2889,13 @@ class Application_Service_Reports
                         $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['reported_viral_load'];
                         if($methodOfEvaluation == 'iso17043'){
                             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['z_score'];
-                            if($responseRow['calculated_score'] == 'pass'){
+                            if(isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'pass'){
                                 $grade = 'Acceptable';
-                            }else if($responseRow['calculated_score'] == 'fail'){
+                            }else if(isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'fail'){
                                 $grade = 'Unacceptable';
-                            }else{
+                            } else if (isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'warn') {
+								$grade = 'Warning';
+							} else{
                                 $grade = 'N.A.';
                             }
                             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $grade;
