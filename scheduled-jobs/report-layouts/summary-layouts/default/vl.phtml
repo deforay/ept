@@ -147,6 +147,7 @@ if ($resultArray['shipment'] != "") {
             foreach ($resultArray['vlCalculation'] as $vlCal) {
                 if (isset($vlCal['participant-count']) && $vlCal['participant-count'] < 18 || $vlCal['vlAssay'] == "Other") {
                     $t = 0;
+                    // Zend_Debug::dump($vlCal);die;
                     foreach($vlCal as $k=>$val){
                         
                         if (isset($val['median'])) {
@@ -163,7 +164,7 @@ if ($resultArray['shipment'] != "") {
                         // $responseTxt = $val['no_of_responses'];
                         if($vlCal['vlAssay'] == "Other"){
                             $decode = json_decode($val['attributes'], true);
-                            $vlCal['vlAssay'] = $decode['other_assay'];
+                            $vlCal['vlAssay'] = 'Other' . " - ".$decode['other_assay'];
                         }
                     }
                     $assayNameTxt .= $vlCal['vlAssay'] .'(n='.$vlCal[0]['no_of_responses'].'), ';

@@ -1791,20 +1791,26 @@ class Application_Service_Evaluation
 						->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))
 						->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
 						->where('ref.control!=1')
-						->where("sp.is_excluded not like 'yes' AND sp.is_pt_test_not_performed not like 'yes'")
+						// ->where("sp.is_excluded not like 'yes' AND sp.is_pt_test_not_performed not like 'yes'")
 						->where('sp.shipment_id = ? ', $shipmentId);
 					// die($cQuery);
 					$cResult = $db->fetchAll($cQuery);
 
 					$labResult = array();
 					$otherAssayName = array();
-
+					$assayNames = array();$assayNamesMap = array();
 					foreach ($cResult as $val) {
 						$valAttributes = json_decode($val['attributes'], true);
 						if ((isset($vlAssayRow['id']) && isset($valAttributes['vl_assay'])) && ($vlAssayRow['id'] == $valAttributes['vl_assay'])) {
 							if ($vlAssayRow['id'] == 6) {
 								if (isset($valAttributes['other_assay'])) {
 									$otherAssayName[] = $valAttributes['other_assay'];
+									if(in_array($val['map_id'], $assayNamesMap)){
+										$assayNames[$valAttributes['other_assay']] += 1;
+									} else{
+										$assayNamesMap[] = $val['map_id'];
+										$assayNames[$valAttributes['other_assay']] = 1;
+									}
 								} else {
 									$otherAssayName[] = "";
 								}
@@ -1817,13 +1823,14 @@ class Application_Service_Evaluation
 							}
 						}
 					}
-					// Zend_Debug::dump($vlCalRes);
+					// Zend_Debug::dump($vlAssayRow['id']);
 					// die;
 					if (count($vlCalRes) > 0) {
 						$vlCalculation[$vlAssayRow['id']] = $vlCalRes;
 						$vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
 						$vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];
 						$vlCalculation[$vlAssayRow['id']]['participant-count'] = $vlCalRes[0]['no_of_responses'];
+						$vlCalculation[$vlAssayRow['id']]['participant-count-otherassay'] = $assayNames;
 						// $labResult[$vlCalRes[0]['no_of_responses']];
 						if ($vlAssayRow['id'] == 6) {
 							$vlCalculation[$vlAssayRow['id']]['otherAssayName'] = array_unique($otherAssayName);
