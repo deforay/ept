@@ -2009,7 +2009,7 @@ class Application_Service_Shipments
         } else if ($sid == 'recency') {
             $code = 'REC' . $month . $year . '-' . $count;
         } else if ($sid == 'covid19') {
-            $code = 'COVID19' . $month . $year . '-' . $count;
+            $code = 'C19' . $month . $year . '-' . $count;
         }
         $sQuery = $db->select()->from('shipment')->where("shipment_code = ?", $code);
         $resultArray = $db->fetchAll($sQuery);

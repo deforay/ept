@@ -53,9 +53,9 @@ if ($resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
-    if($methodOfEvaluation == 'iso17043'){
+    if ($methodOfEvaluation == 'iso17043') {
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config);
-    } else{
+    } else {
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised']);
     }
     // add a page
@@ -65,7 +65,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', 'B', 11);
 
-    if($methodOfEvaluation == 'standard'){
+    if ($methodOfEvaluation == 'standard') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
         $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
@@ -77,17 +77,16 @@ if ($resultArray['shipment'] != "") {
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
 
         if (count($resultArray['vlCalculation']) > 0) {
-    
+
             foreach ($resultArray['vlCalculation'] as $vlCal) {
-    
+
                 if (isset($vlCal['participant-count']) && $vlCal['participant-count'] > 6) {
                     if (isset($vlCal['otherAssayName']) && count($vlCal['otherAssayName']) > 0) {
                         continue;
-                        $calRes = '<h5>Summary of ' . implode(", ", $vlCal['otherAssayName']) . ' | No. of Labs : ' . $vlCal['participant-count'] . ' </h5>';
                     } else {
                         $calRes = '<h5>Summary of ' . $vlCal['vlAssay'] . ' Results | No. of Labs : ' . $vlCal['participant-count'] . ' </h5>';
                     }
-    
+
                     $calRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;height:500px;">
                         <tr>
                             <!-- <td style="background-color:#8ECF64;text-align:center;"><br><br>Platform </td> -->
@@ -98,22 +97,13 @@ if ($resultArray['shipment'] != "") {
                             <td style="background-color:#8ECF64;text-align:center;">Highest Acceptable Limit</td>
                             <td style="background-color:#8ECF64;text-align:center;"><br><br>CV</td>
                         </tr>';
-    
+
                     $countCal = count($vlCal) - 1;
                     $otherList = "";
-    
+
                     for ($c = 0; $c < $countCal; $c++) {
                         if (isset($vlCal[$c]['mean'])) {
                             $calRes .= '<tr>';
-                            // if($c==0){
-                            //     //if($vlCal[$c]['vl_assay']==6){
-                            //         //$calRes.='<td style="text-align:center;" rowspan="'.$countCal.'"><br><br>'.implode(", ",$vlCal['otherAssayName']).'</td>';
-                            //         //////$otherList = implode(", ",$vlCal['otherAssayName']);
-                            //     //}else{
-                            //         $calRes.='<td style="text-align:center;" rowspan="'.$countCal.'"><br><br>'.$vlCal['shortName'].'</td>';
-                            //     //}
-                            // }
-    
                             $calRes .= '<td>' . $vlCal[$c]['sample_label'] . '</td>
                                     <td style="text-align:center;">' . number_format(round($vlCal[$c]['mean'], 2), 2, '.', '') . '</td>
                                     <td style="text-align:center;">' . number_format(round($vlCal[$c]['sd'], 2), 2, '.', '') . '</td>
@@ -123,9 +113,9 @@ if ($resultArray['shipment'] != "") {
                                 </tr>';
                         }
                     }
-    
+
                     $calRes .= '</table>';
-    
+
                     $pdf->writeHTML($calRes, true, false, true, false, '');
                 }
             }
@@ -134,24 +124,26 @@ if ($resultArray['shipment'] != "") {
         $footerHead = '<h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
         $footerHead .= '<small>Notes:<ol><li>Results from participants using Biocentric and "Other" Platforms were not used for results evaluation due to less than 6 participating labs in this PT event.</li><li>A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</li></ol></small>';
         $pdf->writeHTML($footerHead, true, false, true, false, '');
-    } else if($methodOfEvaluation == 'iso17043'){
+    } else if ($methodOfEvaluation == 'iso17043') {
         if (count($resultArray['vlCalculation']) > 0) {
 
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
-                $referenceRes .= '<tr>';
-                    $referenceRes .= '<td style="font-weight:bold;">PT Panel Name and Results Due Date : <span style="font-weight:normal;">'. $resultArray['shipment']['distribution_code'] . '('.$general->humanDateFormat($resultArray['shipment']['lastdate_response']).')</span></td>';
-                $referenceRes .= '</tr>';
+            $referenceRes .= '<tr>';
+            $referenceRes .= '<td style="font-weight:bold;">PT Panel Name and Results Due Date : <span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . '(' . $general->humanDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
+            $referenceRes .= '</tr>';
             $referenceRes .= '</table>';
             $pdf->writeHTML($referenceRes, true, false, true, false, '');
-            $sample = array();$assayNameTxt = "";$noOfPaResponseTxt = "";
+            $sample = array();
+            $assayNameTxt = "";
+            $noOfPaResponseTxt = "";
             foreach ($resultArray['vlCalculation'] as $vlCal) {
                 if (isset($vlCal['participant-count']) && $vlCal['participant-count'] < 18 || $vlCal['vlAssay'] == "Other") {
                     $t = 0;
-                    // Zend_Debug::dump($vlCal);die;
-                    foreach($vlCal as $k=>$val){
-                        
+
+                    foreach ($vlCal as $k => $val) {
+
                         if (isset($val['median'])) {
-                            
+
                             $sample[$k]['response']       += $val['no_of_responses'];
                             $sample[$k]['median']         += $val['median'];
                             $sample[$k]['lowLimit']       += $val['low_limit'];
@@ -161,17 +153,19 @@ if ($resultArray['shipment'] != "") {
                             $sample[$t]['label']          = $val['sample_label'];
                             $t++;
                         }
-                        // $responseTxt = $val['no_of_responses'];
-                        if($vlCal['vlAssay'] == "Other"){
-                            $decode = json_decode($val['attributes'], true);
-                            $vlCal['vlAssay'] = 'Other' . " - ".$decode['other_assay'];
-                        }
                     }
-                    $assayNameTxt .= $vlCal['vlAssay'] .'(n='.$vlCal[0]['no_of_responses'].'), ';
-                } else{
+                    // $responseTxt = $val['no_of_responses'];
+                    if ($vlCal['vlAssay'] == "Other") {
+                        foreach ($vlCal['otherAssayName'] as $otherAssayName => $otherAssayCount) {
+                            $assayNameTxt .= 'Other - '. $otherAssayName . '(n=' . $otherAssayCount . '), ';
+                        }
+                    } else {
+                        $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
+                    }
+                } else {
                     $calRes = '<table border="1" style="font-weight:bold;width:650px;">
                                     <tr>
-                                        <th colspan="8" style="font-size:12px;"><strong>Platform/Assay Name: </strong><span style="font-weight:normal;">'.$vlCal['vlAssay'].'</span></th>
+                                        <th colspan="8" style="font-size:12px;"><strong>Platform/Assay Name: </strong><span style="font-weight:normal;">' . $vlCal['vlAssay'] . '</span></th>
                                     </tr>
                                     <tr>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
@@ -182,9 +176,9 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Pass Result <br/>(z < ± 3.0)</th>
                                     </tr>';
-                    foreach($vlCal as $key=>$val){
+                    foreach ($vlCal as $key => $val) {
                         if (isset($val['median'])) {
-                            $score = round((($val['NumberPassed']/$val['no_of_responses'])*100));
+                            $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
 
                             $calRes .= '<tr>';
                             $calRes .= '
@@ -197,20 +191,19 @@ if ($resultArray['shipment'] != "") {
                                     <td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                                 </tr>';
-                            $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses']; 
-                            $chart[$vlCal['vlAssay']]['NumberPassed'] =  $score; 
-                            $chart[$vlCal['vlAssay']]['score'] =  $score; 
-                            $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2); 
+                            $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses'];
+                            $chart[$vlCal['vlAssay']]['NumberPassed'] =  $score;
+                            $chart[$vlCal['vlAssay']]['score'] =  $score;
+                            $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2);
                         }
                     }
-                    $assayName[] = substr($vlCal['vlAssay'], 0, 15). '...';
+                    $assayName[] = substr($vlCal['vlAssay'], 0, 15) . '...';
                     $calRes .= '</table>';
-    
+
                     $pdf->writeHTML($calRes, true, false, true, false, '');
                 }
-
             }
-            if(isset($sample) && count($sample) > 0){
+            if (isset($sample) && count($sample) > 0) {
                 $platform = 'VL platforms with < 18 participants';
                 $calRes = '<table border="1" style="font-weight:bold;width:650px;">
                                     <tr>
@@ -225,8 +218,8 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Pass Result <br/>(z < ± 3.0)</th>
                                     </tr>';
-                foreach($sample as $point=>$label){
-                    $score = round((($label['NumberPassed']/$label['response'])*100));
+                foreach ($sample as $point => $label) {
+                    $score = round((($label['NumberPassed'] / $label['response']) * 100));
                     $calRes .= '<tr>';
                     $calRes .= '
                             <td style="font-weight:normal;text-align:center;">' . $label['label'] . '</td>
@@ -239,10 +232,10 @@ if ($resultArray['shipment'] != "") {
                             <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                         </tr>';
                     $noOfPaResponseTxt = $label['response'];
-                    $chart[$platform]['response'] =  $label['response']; 
-                    $chart[$platform]['NumberPassed'] =  $score; 
-                    $chart[$platform]['score'] =  $score; 
-                    $chart[$platform]['avg'] =  round($label['NumberPassed'] / $label['response'], 2); 
+                    $chart[$platform]['response'] =  $label['response'];
+                    $chart[$platform]['NumberPassed'] =  $score;
+                    $chart[$platform]['score'] =  $score;
+                    $chart[$platform]['avg'] =  round($label['NumberPassed'] / $label['response'], 2);
                 }
                 $assayName[] = substr('VL platforms with < 18 participants', 0, 15) . '...';
                 $calRes .= '</table>';
@@ -251,47 +244,47 @@ if ($resultArray['shipment'] != "") {
         }
         // Zend_Debug::dump($assayName);die;
 
-        $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total '.$noOfPaResponseTxt.'):</h5>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">'.$assayNameTxt.'</span>';
-        
+        $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">' . $assayNameTxt . '</span>';
+
         $note .= '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by the trained staff of CDC-ILB using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
-        
+
         $note .= '<h5>Procedures used to establish the assigned value:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
-        
+
         $note .= '<h5>Subcontracting:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted.<br/> The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
-        if(isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != ""){
+        if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
             $html .= '<br/><hr>';
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$resultArray['shipment']['pt_co_ordinator_name'].'</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: '.date('d M Y').'</small></span>';
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
         }
         $pdf->writeHTML($note, true, false, true, false, '');
 
         // $pdf->AddPage();
-        
-        $graph = new Graph(700,400,'auto');    
+
+        $graph = new Graph(700, 400, 'auto');
         $graph->SetScale("textlin");
         $graph->SetShadow();
-        $graph->img->SetMargin(40,30,40,40);
+        $graph->img->SetMargin(40, 30, 40, 40);
         // $graph->xaxis->SetTickLabels($gDateLocale->GetShortMonth());
         $graph->xaxis->SetTickLabels($assayName);
-        
+
         $graph->xaxis->title->Set('Year 2002');
         // $graph->xaxis->title->SetFont(FF_FONT1,FS_BOLD);
-        
+
         $graph->title->Set('Group bar plot');
         // $graph->title->SetFont(FF_FONT1,FS_BOLD);
-        if(isset($chart) && count($chart) == 0){
+        if (isset($chart) && count($chart) == 0) {
             $noOfPaResponse = array(0);
             $participantScore = array(0);
             $scoreBelow = array(0);
         }
-        if(isset($chart) && count($chart) > 0){
-            foreach($chart as $data){
+        if (isset($chart) && count($chart) > 0) {
+            foreach ($chart as $data) {
                 $noOfPaResponse[] = $data['response'];
                 $participantScore[] = $data['NumberPassed'];
                 $scoreBelow[] = $data['score'];
@@ -301,28 +294,28 @@ if ($resultArray['shipment'] != "") {
         $bplot2 = new BarPlot($participantScore);
         $bplot3 = new BarPlot($scoreBelow);
         // $bplot3->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Late Response (N=$late)", "Excluded (N=$excluded)"));
-        
+
         $bplot1->SetFillColor("dodgerblue");
         $bplot2->SetFillColor("darkolivegreen");
         $bplot3->SetFillColor("gold");
-        
+
         $bplot1->SetShadow();
         $bplot2->SetShadow();
         $bplot3->SetShadow();
-        
+
         $bplot1->SetShadow();
         $bplot2->SetShadow();
         $bplot3->SetShadow();
-        
-        $gbarplot = new GroupBarPlot(array($bplot1,$bplot2,$bplot3));
+
+        $gbarplot = new GroupBarPlot(array($bplot1, $bplot2, $bplot3));
         $gbarplot->SetWidth(0.6);
         $graph->Add($gbarplot);
 
         // Setup the titles
         $graph->title->Set("All Participants Results Summary");
         $graph->xaxis->title->Set('% Score');
-        $graph->yaxis->title->Set('Number of participants','center');
-        
+        $graph->yaxis->title->Set('Number of participants', 'center');
+
         $graph->yaxis->SetTitleMargin(30);
         $graph->xaxis->SetTitleMargin(15);
         // Turn the tick mark out from the plot area
@@ -339,10 +332,10 @@ if ($resultArray['shipment'] != "") {
         if (file_exists($image_file)) {
             unlink($image_file);
         }
-        if(isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != ""){
+        if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
             $html = '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><hr>';
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$resultArray['shipment']['pt_co_ordinator_name'].'</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: '.date('d M Y').'</small></span>';
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
             $pdf->writeHTML($html, true, false, true, false, '');
@@ -363,7 +356,7 @@ if ($resultArray['shipment'] != "") {
     //     $pdf->writeHTML($unCalRes, true, false, true, false, '');            
 
     // }
-    
+
 
     //Close and output PDF document
     $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";

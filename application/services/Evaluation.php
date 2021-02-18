@@ -1768,6 +1768,7 @@ class Application_Service_Evaluation
 
 				$vlCalculation = array();
 				$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
+				$otherAssayCounter = array();
 				foreach ($vlAssayResultSet as $vlAssayRow) {
 					// $json = json_encode(array('vl_assay'=>$vlAssayRow['id']));
 					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('no_of_responses', 'median', 'low_limit', 'high_limit', 'sd'))
@@ -1786,54 +1787,38 @@ class Application_Service_Evaluation
 					// die($vlQuery);
 					$vlCalRes = $db->fetchAll($vlQuery);
 					// Zend_Debug::dump($vlCalRes);die;
-					$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'), array('ref.sample_id', 'ref.sample_label'))
-						->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('s.shipment_id'))
-						->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))
-						->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load'))
-						->where('ref.control!=1')
-						// ->where("sp.is_excluded not like 'yes' AND sp.is_pt_test_not_performed not like 'yes'")
-						->where('sp.shipment_id = ? ', $shipmentId);
-					// die($cQuery);
-					$cResult = $db->fetchAll($cQuery);
 
-					$labResult = array();
-					$otherAssayName = array();
-					$assayNames = array();$assayNamesMap = array();
-					foreach ($cResult as $val) {
-						$valAttributes = json_decode($val['attributes'], true);
-						if ((isset($vlAssayRow['id']) && isset($valAttributes['vl_assay'])) && ($vlAssayRow['id'] == $valAttributes['vl_assay'])) {
-							if ($vlAssayRow['id'] == 6) {
-								if (isset($valAttributes['other_assay'])) {
-									$otherAssayName[] = $valAttributes['other_assay'];
-									if(in_array($val['map_id'], $assayNamesMap)){
-										$assayNames[$valAttributes['other_assay']] += 1;
-									} else{
-										$assayNamesMap[] = $val['map_id'];
-										$assayNames[$valAttributes['other_assay']] = 1;
-									}
-								} else {
-									$otherAssayName[] = "";
+					if ($vlAssayRow['id'] == 6) {
+						$cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
+							->where("sp.is_excluded not like 'yes'")
+							->where('sp.attributes like ? ', '%"vl_assay":"6"%')
+							->where('sp.shipment_id = ? ', $shipmentId);
+						$cResult = $db->fetchAll($cQuery);
+
+
+						foreach ($cResult as $val) {
+							$valAttributes = json_decode($val['attributes'], true);
+							if (isset($valAttributes['other_assay'])) {
+								if(!empty($otherAssayCounter[$valAttributes['other_assay']])){
+									$otherAssayCounter[$valAttributes['other_assay']]++;
+								}else{
+									$otherAssayCounter[$valAttributes['other_assay']] = 1;
 								}
-							}
-							if (array_key_exists($val['sample_label'], $labResult)) {
-								$labResult[$val['sample_label']] += 1;
-							} else {
-								$labResult[$val['sample_label']] = array();
-								$labResult[$val['sample_label']] = 1;
+								
 							}
 						}
+						//var_dump($otherAssayCounter);
+						// Zend_Debug::dump($vlAssayRow['id']);
+						// die;
 					}
-					// Zend_Debug::dump($vlAssayRow['id']);
-					// die;
 					if (count($vlCalRes) > 0) {
 						$vlCalculation[$vlAssayRow['id']] = $vlCalRes;
 						$vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
 						$vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];
 						$vlCalculation[$vlAssayRow['id']]['participant-count'] = $vlCalRes[0]['no_of_responses'];
-						$vlCalculation[$vlAssayRow['id']]['participant-count-otherassay'] = $assayNames;
 						// $labResult[$vlCalRes[0]['no_of_responses']];
 						if ($vlAssayRow['id'] == 6) {
-							$vlCalculation[$vlAssayRow['id']]['otherAssayName'] = array_unique($otherAssayName);
+							$vlCalculation[$vlAssayRow['id']]['otherAssayName'] = $otherAssayCounter;
 						}
 					}
 				}
