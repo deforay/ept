@@ -3,9 +3,7 @@
 require_once('tcpdf/tcpdf.php');
 require_once('jpgraph/jpgraph.php');
 require_once('jpgraph/jpgraph_bar.php');
-require_once('jpgraph/jpgraph_pie.php');
 require_once('jpgraph/jpgraph_line.php');
-require_once('jpgraph/jpgraph_scatter.php');
 require_once(CRON_PATH . '/General.php');
 $general = new General();
 // Zend_Debug::dump($resultArray);die;
@@ -34,8 +32,11 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
     // set margins
-
-    $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+    // if ($methodOfEvaluation == 'iso17043') {
+        // $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
+    // }else{
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+    // }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -137,6 +138,7 @@ if ($resultArray['shipment'] != "") {
             $assayNameTxt = "";
             $noOfPaResponseTxt = "";
             foreach ($resultArray['vlCalculation'] as $vlCal) {
+                // Zend_Debug::dump($vlCal);die;
                 if (isset($vlCal['participant-count']) && $vlCal['participant-count'] < 18 || $vlCal['vlAssay'] == "Other") {
                     $t = 0;
 
@@ -197,7 +199,7 @@ if ($resultArray['shipment'] != "") {
                             $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2);
                         }
                     }
-                    $assayName[] = substr($vlCal['vlAssay'], 0, 15) . '...';
+                    $assayName[] = $vlCal['vlAssay'];
                     $calRes .= '</table>';
 
                     $pdf->writeHTML($calRes, true, false, true, false, '');
@@ -237,7 +239,7 @@ if ($resultArray['shipment'] != "") {
                     $chart[$platform]['score'] =  $score;
                     $chart[$platform]['avg'] =  round($label['NumberPassed'] / $label['response'], 2);
                 }
-                $assayName[] = substr('VL platforms with < 18 participants', 0, 15) . '...';
+                $assayName[] = 'VL platforms with < 18 participants';
                 $calRes .= '</table>';
                 $pdf->writeHTML($calRes, true, false, true, false, '');
             }
@@ -248,70 +250,90 @@ if ($resultArray['shipment'] != "") {
         $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">' . $assayNameTxt . '</span>';
         /* JPGraph start */
-        $graph = new Graph(700, 400, 'auto');
-        $graph->SetScale("textlin");
-        $graph->SetShadow();
-        $graph->img->SetMargin(40, 30, 40, 40);
-        // $graph->xaxis->SetTickLabels($gDateLocale->GetShortMonth());
-        $graph->xaxis->SetTickLabels($assayName);
-
-        $graph->xaxis->title->Set('Year 2002');
-        // $graph->xaxis->title->SetFont(FF_FONT1,FS_BOLD);
-
-        $graph->title->Set('Group bar plot');
-        // $graph->title->SetFont(FF_FONT1,FS_BOLD);
-        if (isset($chart) && count($chart) == 0) {
-            $noOfPaResponse = array(0);
-            $participantScore = array(0);
-            $scoreBelow = array(0);
-        }
         if (isset($chart) && count($chart) > 0) {
             foreach ($chart as $data) {
                 $noOfPaResponse[] = $data['response'];
                 $participantScore[] = $data['NumberPassed'];
                 $scoreBelow[] = $data['score'];
+                $totalNo = $data['response'];
+                $data6y[] = ($data['NumberPassed'] / 100) * $data['response'];
             }
+        } else{
+            $noOfPaResponse = array(0);
+            $participantScore = array(0);
+            $scoreBelow = array(0);
+            $data6y=array(0,0,0);
         }
-        $bplot1 = new BarPlot($noOfPaResponse);
-        $bplot2 = new BarPlot($participantScore);
-        $bplot3 = new BarPlot($scoreBelow);
-        // $bplot3->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Late Response (N=$late)", "Excluded (N=$excluded)"));
+        // Zend_Debug::dump($data6y);die;
+        // Display the graph
+        $graph = new Graph(700,450,'auto');
+        $graph->SetScale("textlin");
+        $graph->SetY2Scale("lin",0,90);
+        $graph->SetY2OrderBack(false);
 
-        $bplot1->SetFillColor("dodgerblue");
-        $bplot2->SetFillColor("darkolivegreen");
-        $bplot3->SetFillColor("gold");
+        $theme_class = new UniversalTheme;
+        $graph->SetTheme($theme_class);
 
-        $bplot1->SetShadow();
-        $bplot2->SetShadow();
-        $bplot3->SetShadow();
+        $graph->SetMargin(40,20,46,80);
 
-        $bplot1->SetShadow();
-        $bplot2->SetShadow();
-        $bplot3->SetShadow();
+        $graph->SetBox(false);
 
-        $gbarplot = new GroupBarPlot(array($bplot1, $bplot2, $bplot3));
-        $gbarplot->SetWidth(0.6);
-        $graph->Add($gbarplot);
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($assayName);
 
-        // Setup the titles
+        // Create the bar plots
+        $b1plot = new BarPlot($noOfPaResponse);
+        $b2plot = new BarPlot($participantScore);
+        $b3plot = new BarPlot($scoreBelow);
+        
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot,$b2plot,$b3plot));
+        // ...and add it to the graPH
+        $graph->Add($gbplot);
+        
+        $b1plot->SetColor("#00688b");
+        $b1plot->SetFillColor("#00688b");
+        $b1plot->SetLegend("Number of Participants Submitted Results");
+
+        $b2plot->SetColor("#a2cd5a");
+        $b2plot->SetFillColor("#a2cd5a");
+        $b2plot->SetLegend('Number of Participants Scoring "100%"');
+
+        $b3plot->SetColor("#ffec8b");
+        $b3plot->SetFillColor("#ffec8b");
+        $b3plot->SetLegend('Number of Participants Scoring Below "100%"');
+
+        
+        $lplot = new LinePlot($data6y);
+        $graph->y2axis->title->Set('Percent of Participants Scoring "100%"', 'center');
+        $graph->AddY2($lplot);
+
+        $lplot->SetBarCenter();
+        $lplot->SetColor("#ff1493");
+        $lplot->SetLegend('Percent of Participants Scoring "100%"');
+        $lplot->mark->SetType(MARK_X,'',1.0);
+        $lplot->mark->SetWeight(2);
+        $lplot->mark->SetWidth(8);
+        $lplot->mark->setColor("yellow");
+        $lplot->mark->setFillColor("yellow");
+
+        $graph->legend->SetFrameWeight(1);
+        $graph->legend->SetColumns(2);
+        $graph->legend->SetColor('#4E4E4E','#00A78A');
+        $graph->legend->SetPos(0.5,0.99,'center','bottom');
+
+        $band = new PlotBand(VERTICAL,BAND_RDIAG,11,"max",'khaki4');
+        $band->ShowFrame(true);
+        $band->SetOrder(DEPTH_BACK);
+        $graph->Add($band);
+
         $graph->title->Set("All Participants Results Summary");
-        $graph->xaxis->title->Set('% Score');
         $graph->yaxis->title->Set('Number of participants', 'center');
 
-        $graph->yaxis->SetTitleMargin(30);
-        $graph->xaxis->SetTitleMargin(15);
-        // Turn the tick mark out from the plot area
-        $graph->xaxis->SetTickSide(SIDE_DOWN);
-        $graph->yaxis->SetTickSide(SIDE_LEFT);
-
-        /* $sp1 = new ScatterPlot($avg);
-        $sp1->mark->SetType(MARK_SQUARE);
-        $sp1->SetImpuls(); */
-        // Display the graph
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         $graph->Stroke($image_file);
 
-        $pdf->Image($image_file, 5, $pdf->getY()+76, '', '', '', '', '', false, 300);
+        $pdf->Image($image_file, 5, $pdf->getY()+60, '', '', '', '', '', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
