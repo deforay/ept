@@ -243,29 +243,11 @@ if ($resultArray['shipment'] != "") {
             }
         }
         // Zend_Debug::dump($assayName);die;
+        $pdf->AddPage();
 
         $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">' . $assayNameTxt . '</span>';
-
-        $note .= '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by the trained staff of CDC-ILB using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
-
-        $note .= '<h5>Procedures used to establish the assigned value:</h5>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
-
-        $note .= '<h5>Subcontracting:</h5>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted.<br/> The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
-        if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
-            $html .= '<br/><hr>';
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
-        }
-        $pdf->writeHTML($note, true, false, true, false, '');
-
-        // $pdf->AddPage();
-
+        /* JPGraph start */
         $graph = new Graph(700, 400, 'auto');
         $graph->SetScale("textlin");
         $graph->SetShadow();
@@ -328,12 +310,32 @@ if ($resultArray['shipment'] != "") {
         // Display the graph
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         $graph->Stroke($image_file);
-        $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+
+        $pdf->Image($image_file, 5, $pdf->getY()+76, '', '', '', '', '', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
+        /* JPGraph end */
+        $note .= '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                <h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by the trained staff of CDC-ILB using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+
+        $note .= '<h5>Procedures used to establish the assigned value:</h5>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
+
+        $note .= '<h5>Subcontracting:</h5>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted.<br/> The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
         if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
-            $html = '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><hr>';
+            $html .= '<br/><hr>';
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
+        }
+        $pdf->writeHTML($note, true, false, true, false, '');
+
+        if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
+            $html = '<br/><hr>';
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
