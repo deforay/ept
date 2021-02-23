@@ -1396,40 +1396,22 @@ class Application_Service_Evaluation
 					$shipmentResult['summaryResult'][] = $sQueryRes;
 					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
 
-					$kitNameRes = $db->fetchAll($db->select()->from('r_testkitname_dts')->where("scheme_type='dts'"));
+					$kitNameRes = $db->fetchAll($db->select()->from(array('rtdts'=>'r_testkitname_dts'))
+					->where("scheme_type='dts'"));
 
-					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id'))
-						->join(array('resdts' => 'response_result_dts'), 'resdts.shipment_map_id=spm.map_id', array('resdts.test_kit_name_1', 'resdts.test_kit_name_2', 'resdts.test_kit_name_3'))
+					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(''))
+						->join(array('resdts' => 'response_result_dts'), 'resdts.shipment_map_id=spm.map_id', array(
+							'testkit1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resdts.test_kit_name_1,resdts.shipment_map_id)))')
+						))
+						->join(array('rtdts' => 'r_testkitname_dts'), 'rtdts.TestKitName_ID=resdts.test_kit_name_1', array('TestKit_Name'))
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
-						//->where("substring(spm.evaluation_status,4,1) != '0'")
 						->where("spm.shipment_id = ?", $shipmentId)
-						->group('spm.map_id')
-						->limit(10);
+						->group('resdts.test_kit_name_1')
+						->order('testkit1Total DESC');
 					// die($rQuery);
 					$rQueryRes = $db->fetchAll($rQuery);
-					$p = 0;
-					$kitName = array();
-					foreach ($kitNameRes as $res) {
-						$k = 1;
-						foreach ($rQueryRes as $rVal) {
-							if ($res['TestKitName_ID'] == $rVal['test_kit_name_1']) {
-								$kitName[$p]['kit_name'] = $res['TestKit_Name'];
-								$kitName[$p]['count'] = $k++;
-							}
-							if ($res['TestKitName_ID'] == $rVal['test_kit_name_2']) {
-								$kitName[$p]['kit_name'] = $res['TestKit_Name'];
-								$kitName[$p]['count'] = $k++;
-							}
-							if ($res['TestKitName_ID'] == $rVal['test_kit_name_3']) {
-								$kitName[$p]['kit_name'] = $res['TestKit_Name'];
-								$kitName[$p]['count'] = $k++;
-							}
-						}
-
-						$p++;
-					}
-					$shipmentResult['pieChart'] = $kitName;
+					$shipmentResult['pieChart'] = $rQueryRes;
 				}
 				// DTS Participants Perfomance chart
 				$sQuery = $db->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
