@@ -1441,10 +1441,11 @@ class Application_Service_Evaluation
 							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
 							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
 							"beforeDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date <= s.lastdate_response)"),
-							"afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date > s.lastdate_response)"),
+							"afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date >= s.lastdate_response)"),
 							"pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100")
 						)
 					)->where("s.shipment_id = ?", $shipmentId);
+					// die($sQuery);
 				$shipmentResult['participantBeforeAfterDueChart'] = $db->fetchRow($sQuery);
 
 				// DTS Aberrant test result chart
@@ -1467,34 +1468,34 @@ class Application_Service_Evaluation
 
 				// DTS Aberrant test result failed chart
 				$sQuery = $db->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
-					->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array(''))
 					->joinLeft(
 						array('sp' => 'shipment_participant_map'),
 						'sp.shipment_id=s.shipment_id',
 						array(
 							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
 							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
-							"network_id" => new Zend_Db_Expr('count("p.network_tier")'),
+							"departmentCount" => new Zend_Db_Expr('count("p.department_name")'),
 							"beforeDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date <= s.lastdate_response)"),
 							"afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date > s.lastdate_response)"),
 							"fail_percentage" => new Zend_Db_Expr("((SUM(final_result = 2))/(SUM(final_result = 2) + SUM(final_result = 1)))*100"),
 						)
 					)
-					->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('participant_id', 'institute_name', 'region'))
-					->joinLeft(array('rn' => 'r_network_tiers'), 'p.network_tier=rn.network_id', array('network_name'))
+					->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('participant_id', 'institute_name', 'region', 'department_name'))
 					->where('final_result = 2')->where("s.shipment_id = ?", $shipmentId)
-					->group(array('p.network_tier'));
+					// ->group(array('p.network_tier'));
+					->group(array('p.department_name'));
+					// die($sQuery);
 				$rResult = $db->fetchAll($sQuery);
 				$row = array();
 				foreach ($rResult as $key => $aRow) {
-					$row['network_name'][$key]      = $aRow['network_name'] . ' (N : ' . round($aRow['network_id'], 2) . ')';
+					$row['department_name'][$key]      = $aRow['department_name'] . ' (N : ' . round($aRow['departmentCount'], 2) . ')';
 					$row['totalShipped'][$key]      = $aRow['total_shipped'];
 					$row['beforeDueDate'][$key]     = round($aRow['beforeDueDate'], 2);
 					$row['afterDueDate'][$key]      = round($aRow['afterDueDate'], 2);
 					$row['fail_percentage'][$key]   = round($aRow['fail_percentage'], 2);
-					$row['network_id'][$key]        = round($aRow['network_id'], 2);
+					$row['departmentCount'][$key]        = round($aRow['departmentCount'], 2);
 				}
-				$shipmentResult['participantAberrantNetworkChart'] = $row;
+				$shipmentResult['participantAberrantDepartmentChart'] = $row;
 
 				$sql = $db->select()->from(array('p' => 'participant'))
 					->join(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id')

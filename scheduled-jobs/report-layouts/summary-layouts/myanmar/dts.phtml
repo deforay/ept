@@ -358,28 +358,14 @@ if ($resultArray['shipment'] != "") {
         $y = $pdf->getY() + 5;
         $val = $resultArray['shipment']['participantBeforeAfterDueChart'];
         // JPGraph Charts
-        if($val['total_shipped'] > $val['afterDueDate'] && $val['afterDueDate'] > 0){
-            $after = round($val['total_shipped']%$val['afterDueDate'],2);
-        } else if($val['afterDueDate'] > 0){ 
-            $after = round($val['total_shipped']/$val['afterDueDate']*100,2);
-        } else {
-            $after = 0;
-        }
-        
-        if($val['total_shipped'] > $val['beforeDueDate'] && $val['beforeDueDate'] > 0){
-            $before = round($val['total_shipped']%$val['beforeDueDate'],2);
-        } else if($val['beforeDueDate'] > 0){ 
-            $before = round($val['total_shipped']/$val['beforeDueDate']*100,2);
-        } else {
-            $before = 0;
-        }
-
-        if($after == 0 && $before == 0){
-            $others = 100;
-        } else{
-            $other = ($after + $before);
-            $others = (100 - $other);
-        }
+        /* To find the count of not responded participants */
+        $ntr = round($val['total_shipped'] - $val['beforeDueDate'] - $val['afterDueDate'], 2);
+        /* Find by percentage */
+        $ntrs = round(($ntr/$val['total_shipped']) * 100, 2);
+        /* To find the percentage of before due date score */
+        $before = round(($val['beforeDueDate']/$val['total_shipped']) * 100, 2);
+        /* To find the percentage of after due date score */
+        $after = round(($val['afterDueDate']/$val['total_shipped']) * 100, 2);
 
         // Create the graph. These two calls are always required
         $graph = new Graph(750,320,'auto');
@@ -395,12 +381,12 @@ if ($resultArray['shipment'] != "") {
         $graph->SetBox(false);
         $graph->ygrid->SetFill(false);
         $graph->yaxis->HideLine(false);
-        $graph->xaxis->SetTickLabels(array('Before Due Date '.$before.'%','After Due Date '.$after.'%', 'Not Tested '. $others .'%'));
+        $graph->xaxis->SetTickLabels(array('Before Due Date '.$before.'% (n='.$val['beforeDueDate'].')','After Due Date '.$after.'% (n='.$val['afterDueDate'].')', 'Not Tested '. $ntrs .'% (n='.$ntr.')'));
         $graph->yaxis->title->Set('Percentage');
         $graph->yaxis->HideTicks(false,false);
 
         // Create the bar plots
-        $b1plot = new BarPlot(array($before,$after,$others));
+        $b1plot = new BarPlot(array($before,$after,$ntrs));
 
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot));
@@ -427,7 +413,7 @@ if ($resultArray['shipment'] != "") {
             unlink($performanceBeforeAfterChart);
         }
     }
-    if ((isset($resultArray['shipment']['participantAberrantNetworkChart']) && count($resultArray['shipment']['participantAberrantNetworkChart']) > 0  && $resultArray['shipment']['participantAberrantNetworkChart'] != '') || (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '')) {
+    if ((isset($resultArray['shipment']['participantAberrantDepartmentChart']) && count($resultArray['shipment']['participantAberrantDepartmentChart']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart'] != '') || (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '')) {
         $pdf->AddPage();
     }
 
@@ -442,7 +428,6 @@ if ($resultArray['shipment'] != "") {
         
         $p1 = new PiePlot(array($val['pass_percentage'], $val['fail_percentage']));
         $p1->SetLegends(array('Passed', 'Failed'));
-        
         $graph->legend->SetPos(0.5,0.97,'center','bottom');
         $graph->legend->SetColumns(3);
         $graph->Add($p1);
@@ -458,9 +443,10 @@ if ($resultArray['shipment'] != "") {
         }
     }
 
-    if (isset($resultArray['shipment']['participantAberrantNetworkChart']) && count($resultArray['shipment']['participantAberrantNetworkChart']) > 0  && $resultArray['shipment']['participantAberrantNetworkChart'] != '') {
-        $val = $resultArray['shipment']['participantAberrantNetworkChart'];
+    if (isset($resultArray['shipment']['participantAberrantDepartmentChart']) && count($resultArray['shipment']['participantAberrantDepartmentChart']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart'] != '') {
+        $val = $resultArray['shipment']['participantAberrantDepartmentChart'];
         $y = $pdf->getY() + 5;
+        // Zend_Debug::dump($val);die;
         // JPGraph Charts
         // Create the graph. These two calls are always required
         $graph = new Graph(750,320,'auto');
@@ -476,12 +462,12 @@ if ($resultArray['shipment'] != "") {
         $graph->SetBox(false);
         $graph->ygrid->SetFill(false);
         $graph->yaxis->HideLine(false);
-        $graph->xaxis->SetTickLabels($val['network_name']);
+        $graph->xaxis->SetTickLabels($val['department_name']);
         $graph->yaxis->title->Set('Number of Participants');
         $graph->yaxis->HideTicks(false,false);
 
         // Create the bar plots
-        $b1plot = new BarPlot($val['network_id']);
+        $b1plot = new BarPlot($val['departmentCount']);
 
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot));
@@ -496,15 +482,15 @@ if ($resultArray['shipment'] != "") {
         $graph->legend->SetColumns(6);
         $graph->legend->SetColor('#4E4E4E','#00A78A');
 
-        $graph->title->Set('Aberrent Test Results');
+        $graph->title->Set('Aberrant Test Results');
 
         // Display the graph
-        $aberrentResultChart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'aberrnt_result_bar_chart.png';
-        $graph->Stroke($aberrentResultChart);
+        $aberrantResultChart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'aberrnt_result_bar_chart.png';
+        $graph->Stroke($aberrantResultChart);
        
-        $pdf->Image($aberrentResultChart, 5, ($y+100), '', '', '', '', '', false, 300);
-        if (file_exists($aberrentResultChart)) {
-            unlink($aberrentResultChart);
+        $pdf->Image($aberrantResultChart, 5, ($y+100), '', '', '', '', '', false, 300);
+        if (file_exists($aberrantResultChart)) {
+            unlink($aberrantResultChart);
         }
     }
 
