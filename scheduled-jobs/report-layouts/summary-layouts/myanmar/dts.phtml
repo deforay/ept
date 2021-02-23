@@ -107,7 +107,7 @@ if ($resultArray['shipment'] != "") {
         // JPGraph Charts
         foreach ($barPoints as $key => $val) {
             $dataX[] = $val;
-            $dataY[] = $key .' ('.$val.')';
+            $dataY[] = $key .' (n='.$val.')';
         }
 
         // Create the graph. These two calls are always required
