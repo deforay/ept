@@ -64,7 +64,11 @@ if ($resultArray['shipment'] != "") {
     // ---------------------------------------------------------
 
     $pdf->AddPage('P', 'A4');
-    $pdf->SetFont('helvetica', 'B', 11);
+    $pdf->SetFont('freesans', 'B', 11);
+
+
+    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
+    $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
 
     if ($methodOfEvaluation == 'standard') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
@@ -244,11 +248,16 @@ if ($resultArray['shipment'] != "") {
                 $pdf->writeHTML($calRes, true, false, true, false, '');
             }
         }
-        // Zend_Debug::dump($assayName);die;
-        $pdf->AddPage();
+        // // Zend_Debug::dump($assayName);die;
+        // 
 
         $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">' . $assayNameTxt . '</span>';
+        $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">' . $assayNameTxt . '</span>';
+
+        $pdf->writeHTML($note, true, false, true, false, '');
+
+
+        $pdf->AddPage();
         /* JPGraph start */
         if (isset($chart) && count($chart) > 0) {
             foreach ($chart as $data) {
@@ -337,9 +346,9 @@ if ($resultArray['shipment'] != "") {
         if (file_exists($image_file)) {
             unlink($image_file);
         }
+        $pdf->AddPage();
         /* JPGraph end */
-        $note .= '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-                <h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
+        $note = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by the trained staff of CDC-ILB using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
         $note .= '<h5>Procedures used to establish the assigned value:</h5>';
@@ -350,16 +359,16 @@ if ($resultArray['shipment'] != "") {
         if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
             $html .= '<br/><hr>';
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of Final Report –</small></span>';
         }
         $pdf->writeHTML($note, true, false, true, false, '');
 
         if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
             $html = '<br/><hr>';
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
             $pdf->writeHTML($html, true, false, true, false, '');

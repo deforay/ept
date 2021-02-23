@@ -959,7 +959,7 @@ class Application_Service_Shipments
             );
 
             if (isset($params['otherAssay']) && $params['otherAssay'] != "") {
-                $attributes['other_assay'] = $params['otherAssay'];
+                $attributes['other_assay'] = htmlentities($params['otherAssay']);
             }
 
             if (!isset($params['modeOfReceipt'])) {

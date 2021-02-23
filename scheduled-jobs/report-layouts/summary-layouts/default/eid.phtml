@@ -30,9 +30,9 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
     // set margins
-    if($methodOfEvaluation == 'iso17043'){
+    if ($methodOfEvaluation == 'iso17043') {
         $pdf->SetMargins(PDF_MARGIN_LEFT, 60, PDF_MARGIN_RIGHT);
-    } else{
+    } else {
         $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
     }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -50,19 +50,23 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    if($methodOfEvaluation == 'iso17043'){
+    if ($methodOfEvaluation == 'iso17043') {
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config);
-    } else{
+    } else {
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised']);
     }
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------
-// Zend_Debug::dump($resultArray['shipment']['correctRes']);die;
+    // Zend_Debug::dump($resultArray['shipment']['correctRes']);die;
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', 'B', 11);
 
-    if($methodOfEvaluation == 'standard'){
+
+    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br><br><span style="font-weight: bold; font-size:10;text-align:center;">All Participants Summary Report</span>';
+    $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
+
+    if ($methodOfEvaluation == 'standard') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
         $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
@@ -71,10 +75,10 @@ if ($resultArray['shipment'] != "") {
         $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . $general->humanDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
-    } else if($methodOfEvaluation == 'iso17043'){
-        $referenceRes .= '<table style="text-align:center;width:100%" align="left">';
+    } else if ($methodOfEvaluation == 'iso17043') {
+        $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name and Due Date:</strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' ( '.$general->humanDateFormat($resultArray['shipment']['lastdate_response']).')</span></td>';
+        $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name and Due Date:</strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' ( ' . $general->humanDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
     }
@@ -103,10 +107,10 @@ if ($resultArray['shipment'] != "") {
         }
         $scoringPer = round(($overAllMaxScore / $partCount) * 100, 2);
 
-        if($methodOfEvaluation == 'standard'){
+        if ($methodOfEvaluation == 'standard') {
 
             // set font
-            $pdf->SetFont('helvetica', 'B', 10);
+            $pdf->SetFont('freesans', 'B', 10);
             $overAllCorrectRes = '<div style="border:1px solid #333;">';
             $overAllCorrectRes .= '<h3>&nbsp;Summary of All Participants Scores*</h3>';
             $overAllCorrectRes .= '<table border="1" cellpadding="3">';
@@ -117,7 +121,7 @@ if ($resultArray['shipment'] != "") {
             $overAllCorrectRes .= '<td style="text-align:center;">Number of participants scoring below "' . $resultArray['shipment']['max_score'] . '"</td>';
             $overAllCorrectRes .= '<td style="text-align:center;">Percentage of participants scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
             $overAllCorrectRes .= '</tr>';
-    
+
             $overAllCorrectRes .= '<tr>';
             $overAllCorrectRes .= '<td style="text-align:center;">' . $participantCount . '</td>';
             $overAllCorrectRes .= '<td style="text-align:center;">' . $partCount . '</td>';
@@ -125,22 +129,22 @@ if ($resultArray['shipment'] != "") {
             $overAllCorrectRes .= '<td style="text-align:center;">' . $overAllBelowScore . '</td>';
             $overAllCorrectRes .= '<td style="text-align:center;">' . $scoringPer . '%</td>';
             $overAllCorrectRes .= '</tr>';
-    
+
             $overAllCorrectRes .= '</table>';
-    
+
             //$pdf->writeHTML($overAllSumRes, true, false, true, false, '');
-    
+
             $n = count($resultArray['shipment']['correctRes']);
             if ($n > 0) {
                 $overAllCorrectRes .= '<br><h3>&nbsp;Percentage of participants reporting correctly*</h3>';
                 $overAllCorrectRes .= '<table border="1" cellpadding="4">';
-    
+
                 $overAllCorrectRes .= '<tr style="background-color:#BCD7EC;">';
                 $overAllCorrectRes .= '<td  style=""></td>';
                 $overAllCorrectRes .= '<td style="text-align:center;font-weight:bold;" colspan="' . ($n) . '">Sample ID</td>';
                 $overAllCorrectRes .= '<td></td>';
                 $overAllCorrectRes .= '</tr>';
-    
+
                 $overAllCorrectRes .= '<tr style="background-color:#BCD7EC;">';
                 $overAllCorrectRes .= '<td></td>';
                 foreach ($resultArray['shipment']['correctRes'] as $cKey => $cVal) {
@@ -148,11 +152,11 @@ if ($resultArray['shipment'] != "") {
                 }
                 $overAllCorrectRes .= '<td style="text-align:center;">Average</td>';
                 $overAllCorrectRes .= '</tr>';
-    
+
                 $avg = 0;
                 $overAllCorrectRes .= '<tr>';
                 $overAllCorrectRes .= '<td rowspan="2"  style="text-align:center;">Correctly Reported</td>';
-    
+
                 $tot = 0;
                 foreach ($resultArray['shipment']['correctRes'] as $cKey => $cVal) {
                     $avg += $cVal;
@@ -161,7 +165,7 @@ if ($resultArray['shipment'] != "") {
                 $overAllCorrectRes .= '<td style="text-align:center;">' . round(($avg / $n), 2) . '</td>';
                 $overAllCorrectRes .= '</tr>';
                 $overAllCorrectRes .= '<tr>';
-    
+
                 $avg = 0;
                 foreach ($resultArray['shipment']['correctRes'] as $cKey => $cVal) {
                     $avg += round(($cVal / $partCount) * 100, 2);
@@ -172,36 +176,36 @@ if ($resultArray['shipment'] != "") {
                 $overAllCorrectRes .= '</table>';
                 $overAllCorrectRes .= '&nbsp;* Includes In-house and Other assays<br>';
                 $overAllCorrectRes .= '<br></div>';
-    
+
                 $pdf->writeHTML($overAllCorrectRes, true, false, true, false, '');
             }
-    
+
             $k = count($resultArray['shipment']['avgAssayResult']);
-    
+
             //Zend_Debug::dump($resultArray['shipment']['avgAssayResult']);die;
-    
+
             $avgAssay = "";
             if ($k > 0) {
                 foreach ($resultArray['shipment']['avgAssayResult'] as $assayResult) {
                     $avgAssay = '';
                     $avgAssay .= '<br><div style="border: 1px solid #000000;">';
-    
-    
+
+
                     $avgAssay .= '<table border="1" cellpadding="4">';
-    
+
                     $avgAssay .= '<tr style="background-color:#fff;">';
                     $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . $assayResult['vlAssay'] . '</span></td>';
                     $avgAssay .= '</tr>';
-    
-    
-    
+
+
+
                     $avgAssay .= '<tr style="background-color:#BCD7EC;">';
                     $avgAssay .= '<td style="text-align:center;">Number of Participants</td>';
                     $avgAssay .= '<td style="text-align:center;">Number of Participants Scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
                     $avgAssay .= '<td style="text-align:center;">Number of Participants Scoring Below "' . $resultArray['shipment']['max_score'] . '"</td>';
                     $avgAssay .= '<td style="text-align:center;">Percentage of Participants Scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
                     $avgAssay .= '</tr>';
-    
+
                     $avgAssay .= '<tr>';
                     $avgAssay .= '<td style="text-align:center;">' . $assayResult['participantCount'] . '</td>';
                     $avgAssay .= '<td style="text-align:center;">';
@@ -217,8 +221,8 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay .= '</td>';
                     $avgAssay .= '</tr>';
                     $avgAssay .= '</table>';
-    
-    
+
+
                     $m = count($assayResult['specimen']);
                     $avgAssay .= '<br/><br/><table border="1" cellpadding="3">';
                     $avgAssay .= '<tr style="background-color:#BCD7EC;">';
@@ -226,7 +230,7 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay .= '<td style="text-align:center;" colspan="' . ($m) . '">Sample ID</td>';
                     $avgAssay .= '<td></td>';
                     $avgAssay .= '</tr>';
-    
+
                     $avgAssay .= '<tr style="background-color:#BCD7EC;">';
                     $avgAssay .= '<td></td>';
                     foreach ($assayResult['specimen'] as $sKey => $sample) {
@@ -245,7 +249,7 @@ if ($resultArray['shipment'] != "") {
                     $avg = round(($sampleAvg / $sCount), 2);
                     $avgAssay .= '<td style="text-align:center;">' . $avg . '</td>';
                     $avgAssay .= '</tr>';
-    
+
                     $sampleAvgInPer = 0;
                     $avgAssay .= '<tr>';
                     foreach ($assayResult['specimen'] as $sKey => $sample) {
@@ -255,7 +259,7 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay .= '<td style="text-align:center;">' . round(($avg / $assayResult['participantCount']) * 100, 2) . '%</td>';
                     $avgAssay .= '</tr>';
                     $avgAssay .= '</table>';
-    
+
                     $avgAssay .= '</div><br/>';
                     $pdf->writeHTML($avgAssay, true, false, true, false, '');
                     if ($pdf->getY() >= 250) {
@@ -263,7 +267,7 @@ if ($resultArray['shipment'] != "") {
                     }
                 }
             }
-        } else if($methodOfEvaluation == 'iso17043'){
+        } else if ($methodOfEvaluation == 'iso17043') {
             // set font
             $pdf->SetFont('helvetica', 'B', 10);
             $overAllCorrectRes = '<div style="border:1px solid #333;">';
@@ -278,7 +282,7 @@ if ($resultArray['shipment'] != "") {
             $overAllCorrectRes .= '<td style="text-align:center;">Number of participants scoring below "' . $resultArray['shipment']['max_score'] . '"</td>';
             $overAllCorrectRes .= '<td style="text-align:center;">Percentage of participants scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
             $overAllCorrectRes .= '</tr>';
-    
+
             $overAllCorrectRes .= '<tr>';
             $overAllCorrectRes .= '<td style="text-align:center;">' . $participantCount . '</td>';
             $overAllCorrectRes .= '<td style="text-align:center;">' . $partCount . '</td>';
@@ -286,11 +290,11 @@ if ($resultArray['shipment'] != "") {
             $overAllCorrectRes .= '<td style="text-align:center;">' . $overAllBelowScore . '</td>';
             $overAllCorrectRes .= '<td style="text-align:center;">' . $scoringPer . '%</td>';
             $overAllCorrectRes .= '</tr>';
-    
+
             $overAllCorrectRes .= '</table>';
-    
+
             //$pdf->writeHTML($overAllSumRes, true, false, true, false, '');
-    
+
             $n = count($resultArray['shipment']['correctRes']);
             if ($n > 0) {
                 // $overAllCorrectRes .= '<br><h3>&nbsp;Percentage of participants reporting correctly*</h3>';
@@ -302,11 +306,11 @@ if ($resultArray['shipment'] != "") {
                 }
                 $overAllCorrectRes .= '<td style="text-align:center;">Average</td>';
                 $overAllCorrectRes .= '</tr>';
-    
+
                 $avg = 0;
                 $overAllCorrectRes .= '<tr>';
                 $overAllCorrectRes .= '<td rowspan="2"  style="text-align:center;">Correctly Reported</td>';
-    
+
                 $tot = 0;
                 foreach ($resultArray['shipment']['correctRes'] as $cKey => $cVal) {
                     $avg += $cVal;
@@ -315,7 +319,7 @@ if ($resultArray['shipment'] != "") {
                 $overAllCorrectRes .= '<td style="text-align:center;">' . round(($avg / $n), 2) . '</td>';
                 $overAllCorrectRes .= '</tr>';
                 $overAllCorrectRes .= '<tr>';
-    
+
                 $avg = 0;
                 foreach ($resultArray['shipment']['correctRes'] as $cKey => $cVal) {
                     $avg += round(($cVal / $partCount) * 100, 2);
@@ -324,36 +328,36 @@ if ($resultArray['shipment'] != "") {
                 $overAllCorrectRes .= '<td style="text-align:center;">' . round(($avg / $n), 2) . '%</td>';
                 $overAllCorrectRes .= '</tr>';
                 $overAllCorrectRes .= '</table>';
-    
+
                 $pdf->writeHTML($overAllCorrectRes, true, false, true, false, '');
             }
-    
+
             $k = count($resultArray['shipment']['avgAssayResult']);
-    
+
             //Zend_Debug::dump($resultArray['shipment']['avgAssayResult']);die;
-    
+
             $avgAssay = "";
             if ($k > 0) {
                 foreach ($resultArray['shipment']['avgAssayResult'] as $assayResult) {
                     $avgAssay = '';
-                    $avgAssay .= '<br><div style="border: 1px solid #000000;">';
-    
-    
+                    $avgAssay .= '<div style="border: 1px solid #000000;">';
+
+
                     $avgAssay .= '<table border="1" cellpadding="4">';
-    
+
                     $avgAssay .= '<tr style="background-color:#fff;">';
                     $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . $assayResult['vlAssay'] . '</span></td>';
                     $avgAssay .= '</tr>';
-    
-    
-    
+
+
+
                     $avgAssay .= '<tr style="background-color:#BCD7EC;">';
                     $avgAssay .= '<td style="text-align:center;">Number of participants submitted results</td>';
                     $avgAssay .= '<td style="text-align:center;">Number of Participants Scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
                     $avgAssay .= '<td style="text-align:center;">Number of Participants Scoring Below "' . $resultArray['shipment']['max_score'] . '"</td>';
                     $avgAssay .= '<td style="text-align:center;">Percentage of Participants Scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
                     $avgAssay .= '</tr>';
-    
+
                     $avgAssay .= '<tr>';
                     $avgAssay .= '<td style="text-align:center;">' . $assayResult['participantCount'] . '</td>';
                     $avgAssay .= '<td style="text-align:center;">';
@@ -369,7 +373,7 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay .= '</td>';
                     $avgAssay .= '</tr>';
                     $avgAssay .= '</table>';
-    
+
                     $m = count($assayResult['specimen']);
                     $avgAssay .= '<br/><br/><table border="1" cellpadding="3">';
                     $avgAssay .= '<tr style="background-color:#BCD7EC;">';
@@ -390,7 +394,7 @@ if ($resultArray['shipment'] != "") {
                     $avg = round(($sampleAvg / $sCount), 2);
                     $avgAssay .= '<td style="text-align:center;">' . $avg . '</td>';
                     $avgAssay .= '</tr>';
-    
+
                     $sampleAvgInPer = 0;
                     $avgAssay .= '<tr>';
                     foreach ($assayResult['specimen'] as $sKey => $sample) {
@@ -400,9 +404,9 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay .= '<td style="text-align:center;">' . round(($avg / $assayResult['participantCount']) * 100, 2) . '%</td>';
                     $avgAssay .= '</tr>';
                     $avgAssay .= '</table>';
-    
+
                     $avgAssay .= '</div><br/>';
-                    
+
                     $pdf->writeHTML($avgAssay, true, false, true, false, '');
                     if ($pdf->getY() >= 250) {
                         $pdf->AddPage();
@@ -411,17 +415,17 @@ if ($resultArray['shipment'] != "") {
             }
             $html = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods.  Samples were tested for homogeneity prior to shipment and met program requirements.</span>';
-            
+
             $html .= '<h5>Procedures used to establish the assigned value:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Team using COBAS Ampliprep/Taqman HIV-1 Qualitative Test.</span>';
-            
+
             $html .= '<h5>Subcontracting:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing. In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
 
-            if(isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != ""){
+            if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
                 $html .= '<br/><hr>';
-                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$resultArray['shipment']['pt_co_ordinator_name'].'</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: '.date('d M Y').'</small></span>';
+                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
             }

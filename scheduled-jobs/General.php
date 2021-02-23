@@ -7,11 +7,8 @@
  */
 class General {
 
-    /**
-     * Used to format date from dd-mmm-yyyy to yyyy-mm-dd for storing in database
-     *
-     */
-    function humanDateFormat($dateIn)
+
+    function humanDateFormat($dateIn, $showDateAndTime = false)
     {
 
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
@@ -25,15 +22,20 @@ class General {
             return '';
         } else {
 
-            $dateArray = explode('-', $dateIn);
-            $newDate = $dateArray[2] . "-";
+            $dateInArray = explode(' ', $dateIn);
+            $dateOutArray = explode('-', $dateInArray[0]);
+            $newDate = $dateOutArray[2] . "-";
 
             $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-            $mon = $monthsArray[$dateArray[1] - 1];
+            $mon = $monthsArray[$dateOutArray[1] - 1];
+            $time = "";
+            if($showDateAndTime){
+                $time = " ".$dateInArray[1];
+            }
             if ($formatDate == 'dd-M-yy')
-                return  $newDate . $mon . "-" . $dateArray[0];
+                return  $newDate . $mon . "-" . $dateOutArray[0].$time;
             else
-                return   $mon . "-" . $newDate  . $dateArray[0];
+                return   $mon . "-" . $newDate  . $dateOutArray[0].$time;
         }
     }
 }

@@ -147,7 +147,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 							</td>
 							<td class="hideOtherAssay"><label>Please specify Other Assay Name <span class="mandatory">*</span></label></td>
 							<td class="hideOtherAssay">
-								<input type="text" name="otherAssay" id="otherAssay" class="form-control" value="<?php echo (isset($this->shipment['attributes']['other_assay']) && ($this->shipment['attributes']['other_assay'] != "")) ? $this->shipment['attributes']['other_assay'] : ""; ?>" title="Please specify Other Assay Name" />
+								<input type="text" name="otherAssay" id="otherAssay" class="form-control" value="<?php echo html_entity_decode(isset($this->shipment['attributes']['other_assay']) && ($this->shipment['attributes']['other_assay'] != "")) ? $this->shipment['attributes']['other_assay'] : ""; ?>" title="Please specify Other Assay Name" />
 							</td>
 
 						</tr>

@@ -86,22 +86,10 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // ---------------------------------------------------------
 
-        // set font
-        $pdf->SetFont('helvetica', '', 11);
-
-        // add a page
-        $pdf->AddPage();
-
-        // set some text to print
-        //$txt = <<<EOD
-        //International Laboratory Branch
-        //
-        //Custom page header and footer are defined by extending the TCPDF class and overriding the Header() and Footer() methods.
-        //EOD;
-        //
-        //// print a block of text using Write()
-        //$pdf->Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
-
+        $pdf->AddPage('P', 'A4');
+        $pdf->SetFont('freesans', 'B', 11);
+    
+    
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
@@ -148,7 +136,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         //Comment Details
 
 
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
+ 
         $labInfo = '<table cellpadding="2" style="font-size:12px;width:830px;">';
 
         $labInfo .= '<tr>';
@@ -177,6 +168,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         // Zend_Debug::dump($result['responseResult']);die;
         //shipment_test_date
         $pdf->writeHTML($labInfo, true, false, true, false, '');
+
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+
         if ($methodOfEvaluation == 'iso17043') {
 
             if (sizeof($result['responseResult']) > 0) {
@@ -297,8 +292,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
 
                 $zscorehtml .= '<h5>Subcontracting:</h5>';
-                $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;">Only the transport of PT items is subcontracted.</span>';
-                $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
+                $zscorehtml .= '<span style="text-align:justify;font-size:8;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
                 $pdf->writeHTML($zscorehtml, true, false, true, false, '');
             }
 
@@ -339,12 +333,13 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $pdf->writeHTML($comment, true, false, true, false, '');
             }
 
-            $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
-            $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
+            // $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
+            // $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
+            $html = '';
             if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
                 $html .= '<br/><hr>';
                 $html .= '<span style="text-align:center;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
-                $html .= '<br/><span style="text-align:center;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+                $html .= '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
                 $html .= '<br/><span style="text-align:center;"><small><i>This is a system generated report. No signature required</i></small></span>';
                 $html .= '<br/><span style="text-align:center;"><small>– End of final report –</small></span>';
                 $pdf->writeHTML($html, true, false, true, false, '');

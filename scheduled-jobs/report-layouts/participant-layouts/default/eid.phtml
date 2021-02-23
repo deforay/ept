@@ -42,9 +42,9 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        if($methodOfEvaluation == 'iso17043'){
+        if ($methodOfEvaluation == 'iso17043') {
             $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config);
-        } else{
+        } else {
             $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised']);
         }
         // set document information
@@ -85,7 +85,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // ---------------------------------------------------------
 
         // set font
-        $pdf->SetFont('helvetica', '', 11);
+        $pdf->SetFont('freesans', '', 11);
 
         // add a page
         $pdf->AddPage();
@@ -121,8 +121,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         /* for Shipment attributes functionality start */
         //$shipmentAttributes = json_decode($result['shipment_attributes'], true);
-        
-        
+
+
         /* for Shipment attributes functionality end */
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
@@ -133,7 +133,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['attributes'])) {
             $attributes = json_decode($result['attributes'], true);
         }
-        
+
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
             $shipmentReceiptDate = $general->humanDateFormat($result['responseResult'][0]['shipment_receipt_date']);
@@ -161,6 +161,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (sizeof($result['responseResult']) == 0) {
             continue;
         }
+
+
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
         $labInfo .= '<tr>';
@@ -191,19 +195,19 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (sizeof($result['responseResult']) > 0) {
 
             $n = count($result['responseResult']);
-            if($methodOfEvaluation == 'standard'){
+            if ($methodOfEvaluation == 'standard') {
                 $labRes = '<span style="font-weight: bold;font-size:13px;text-align:center;">Your laboratory test results : <br/></span>';
-            } else if($methodOfEvaluation == 'iso17043'){
+            } else if ($methodOfEvaluation == 'iso17043') {
                 $labRes = '<span style="font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
             }
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3">';
-            if($methodOfEvaluation == 'standard'){
+            if ($methodOfEvaluation == 'standard') {
                 $labRes .= '<tr style="background-color:#dbe4ee;">';
                 $labRes .= '<td colspan="' . ($n + 2) . '" style="text-align:center;font-weight:bold;">Sample ID</td>';
                 $labRes .= '</tr>';
                 $labRes .= '<tr style="background-color:#dbe4ee;">';
                 $labRes .= '<td></td>';
-            } else if($methodOfEvaluation == 'iso17043'){
+            } else if ($methodOfEvaluation == 'iso17043') {
                 $labRes .= '<tr style="background-color:#dbe4ee;">';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
             }
@@ -270,28 +274,28 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        if($methodOfEvaluation == 'standard'){
+        if ($methodOfEvaluation == 'standard') {
             $html = '<p>Thank you for participating in HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot.</p>';
             if (!empty($reportComment)) {
                 $html .= '<br>' . $reportComment;
             }
-        } else if($methodOfEvaluation == 'iso17043'){
+        } else if ($methodOfEvaluation == 'iso17043') {
             $html = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods.  Samples were tested for homogeneity prior to shipment and met program requirements.</span>';
-            
+
             $html .= '<h5>Procedures used to establish the assigned value:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Team using COBAS Ampliprep/Taqman HIV-1 Qualitative Test.</span>';
-            
+
             $html .= '<h5>Procedures used to establish the assigned value:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
-            
+
             $html .= '<h5>Subcontracting:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the Proficiency Testing Program.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
 
-            if(isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != ""){
+            if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
                 $html .= '<br/><hr>';
-                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$resultArray['shipment'][0]['pt_co_ordinator_name'].'</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: '.date('d M Y').'</small></span>';
+                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
             }
@@ -330,39 +334,39 @@ if (sizeof($resultArray['shipment']) > 0) {
         $j++;
     }
 
-    $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
-    $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    $pdfNew->save($mergeFilePath);
+    // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
+    // $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
+    // $pdfNew->save($mergeFilePath);
 
-    foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
-        $pdfNew->pages = array();
-        $expRes = explode(",", $dmRes);
-        $resCount = count($expRes);
-        if ($resCount > 0) {
-            foreach ($expRes as $res) {
-                $expStrRes = explode("#", $res);
-                $dmFileName = $dmID . ".pdf";
-                $participantFileName = $expStrRes[1] . ".pdf";
-                $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
-                $participantFileName = str_replace(" ", "-", $participantFileName);
-                $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
-                if (file_exists($filePath)) {
-                    $loadpdf = Zend_Pdf::load($filePath);
-                    foreach ($loadpdf->pages as $page) {
-                        $pdfExtract = $extractor->clonePage($page);
-                        $pdfNew->pages[] = $pdfExtract;
-                    }
-                }
-            }
-        }
+    // foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
+    //     $pdfNew->pages = array();
+    //     $expRes = explode(",", $dmRes);
+    //     $resCount = count($expRes);
+    //     if ($resCount > 0) {
+    //         foreach ($expRes as $res) {
+    //             $expStrRes = explode("#", $res);
+    //             $dmFileName = $dmID . ".pdf";
+    //             $participantFileName = $expStrRes[1] . ".pdf";
+    //             $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
+    //             $participantFileName = str_replace(" ", "-", $participantFileName);
+    //             $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
+    //             if (file_exists($filePath)) {
+    //                 $loadpdf = Zend_Pdf::load($filePath);
+    //                 foreach ($loadpdf->pages as $page) {
+    //                     $pdfExtract = $extractor->clonePage($page);
+    //                     $pdfNew->pages[] = $pdfExtract;
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
-        $dmFileName = str_replace(" ", "-", $dmFileName);
+    //     $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
+    //     $dmFileName = str_replace(" ", "-", $dmFileName);
 
-        $mergePdf = $shipmentCode . "-" . $dmFileName;
-        $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-        $pdfNew->save($mergeFilePath);
-    }
+    //     $mergePdf = $shipmentCode . "-" . $dmFileName;
+    //     $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
+    //     $pdfNew->save($mergeFilePath);
+    // }
     //============================================================+
     // END OF FILE
     //============================================================+
