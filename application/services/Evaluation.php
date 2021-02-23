@@ -1483,6 +1483,14 @@ class Application_Service_Evaluation
 					->join(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id')
 					->where("spm.shipment_id = ?", $shipmentId);
 				$shipmentResult['participantScores'] = $db->fetchAll($sql);
+
+				$sitesSql = $db->select()->from(array('p' => 'participant'), array('department_name','totalSites' => new Zend_Db_Expr('COUNT(department_name)')))
+					->join(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id', array(''))
+					->where("spm.shipment_id = ?", $shipmentId)
+					->group('p.department_name')
+					->order('totalSites DESC');
+				$shipmentResult['siteChart'] = $db->fetchAll($sitesSql);
+
 			} else if ($shipmentResult['scheme_type'] == 'recency') {
 				$sql = $db->select()->from(array('refrecency' => 'reference_result_recency'), array('refrecency.reference_result', 'refrecency.sample_label', 'refrecency.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refrecency.reference_result', array('referenceResult' => 'refpr.response'))

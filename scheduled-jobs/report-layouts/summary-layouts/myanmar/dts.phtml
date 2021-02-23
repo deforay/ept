@@ -111,7 +111,7 @@ if ($resultArray['shipment'] != "") {
         }
 
         // Create the graph. These two calls are always required
-        $graph = new Graph(680, 400, 'auto');
+        $graph = new Graph(700, 400, 'auto');
         $graph->SetScale("textlin");
 
         $theme_class = new UniversalTheme;
@@ -144,7 +144,7 @@ if ($resultArray['shipment'] != "") {
         $graph->yaxis->title->Set('Number of participants','center');
         
         $graph->yaxis->SetTitleMargin(28);
-        $graph->xaxis->SetTitleMargin(32);
+        $graph->xaxis->SetTitleMargin(35);
         // Turn the tick mark out from the plot area
         $graph->xaxis->SetTickSide(SIDE_DOWN);
         $graph->yaxis->SetTickSide(SIDE_LEFT);
@@ -274,9 +274,66 @@ if ($resultArray['shipment'] != "") {
 
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
         }
+
+        if($resultArray['shipment']['siteChart'] && count($resultArray['shipment']['siteChart']) > 0){
+            $lab = 0;
+            $dataX = array();
+            $dataY = array();
+            foreach ($resultArray['shipment']['siteChart'] as $key => $val) {
+                $dataX[] = $val['totalSites'];
+                $dataY[] = $val['department_name'] .' (n='.$val['totalSites'].')';
+                $lab += $val['totalSites'];
+            }
+    
+            // Create the graph. These two calls are always required
+            $graph = new Graph(680, 400, 'auto');
+            $graph->SetScale("textlin");
+    
+            $theme_class = new UniversalTheme;
+            $graph->SetTheme($theme_class);
+    
+            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+            $graph->SetBox(false);
+    
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($dataY);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+    
+            // Create the bar plots
+            $b1plot = new BarPlot($dataX);
+    
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
+    
+    
+            $b1plot->SetColor("white");
+            // $b1plot->SetFillGradient("#4B0082","white",GRAD_LEFT_REFLECTION);
+            // $b1plot->SetWidth(45);
+            $graph->title->Set("Participating laboratores in NEQAS for HIV antibody testing Panel 30 (".date('m',strtotime($resultArray['shipment']['shipment_date']))."/".date('y',strtotime($resultArray['shipment']['shipment_date'])).") N = ".$lab);
+            // $graph->xaxis->title->Set('% Score');
+            // $graph->yaxis->title->Set('Number of participants','center');
+            
+            $graph->yaxis->SetTitleMargin(28);
+            $graph->xaxis->SetTitleMargin(32);
+            // Turn the tick mark out from the plot area
+            $graph->xaxis->SetTickSide(SIDE_DOWN);
+            $graph->yaxis->SetTickSide(SIDE_LEFT);
+    
+            // Display the graph
+            $sitefile = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'site_chart.png';
+            $graph->Stroke($sitefile);
+            
+            $pdf->Image($sitefile, 10, $pdf->getY(), '', '', '', '', 'C', false, 300);
+            if (file_exists($sitefile)) {
+                unlink($sitefile);
+            }
+        }
         
         // $y = $pdf->getY() + 5;
-        $pdf->Image($image_file, 10, $pdf->getY(), '', '', '', '', 'C', false, 300);
+        $pdf->Image($image_file, 10, $pdf->getY()+105, '', '', '', '', 'C', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
