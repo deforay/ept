@@ -146,7 +146,7 @@ if ($resultArray['shipment'] != "") {
         $graph->yaxis->title->Set('Number of participants','center');
         
         $graph->yaxis->SetTitleMargin(28);
-        $graph->xaxis->SetTitleMargin(35);
+        $graph->xaxis->SetTitleMargin(15);
         // Turn the tick mark out from the plot area
         $graph->xaxis->SetTickSide(SIDE_DOWN);
         $graph->yaxis->SetTickSide(SIDE_LEFT);
@@ -276,6 +276,11 @@ if ($resultArray['shipment'] != "") {
 
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
         }
+        // $y = $pdf->getY() + 5;
+        $pdf->Image($image_file, 10, $pdf->getY()-40, '', '', '', '', 'C', false, 300);
+        if (file_exists($image_file)) {
+            unlink($image_file);
+        }
 
         if($resultArray['shipment']['siteChart'] && count($resultArray['shipment']['siteChart']) > 0){
             $lab = 0;
@@ -320,7 +325,7 @@ if ($resultArray['shipment'] != "") {
             $graph->yaxis->title->Set('Number of participants','center');
             
             $graph->yaxis->SetTitleMargin(28);
-            $graph->xaxis->SetTitleMargin(15);
+            $graph->xaxis->SetTitleMargin(35);
             // Turn the tick mark out from the plot area
             $graph->xaxis->SetTickSide(SIDE_DOWN);
             $graph->yaxis->SetTickSide(SIDE_LEFT);
@@ -329,17 +334,13 @@ if ($resultArray['shipment'] != "") {
             $sitefile = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'site_chart.png';
             $graph->Stroke($sitefile);
             
-            $pdf->Image($sitefile, 10, $pdf->getY()-40, '', '', '', '', 'C', false, 300);
+            $pdf->Image($sitefile, 10, $pdf->getY()+105, '', '', '', '', 'C', false, 300);
             if (file_exists($sitefile)) {
                 unlink($sitefile);
             }
         }
         
-        // $y = $pdf->getY() + 5;
-        $pdf->Image($image_file, 10, $pdf->getY()+105, '', '', '', '', 'C', false, 300);
-        if (file_exists($image_file)) {
-            unlink($image_file);
-        }
+        
 
     }
     // Zend_Debug::dump($resultArray['shipment']['pieChart']);

@@ -1472,6 +1472,7 @@ class Application_Service_Evaluation
 					// die($sQuery);
 				$rResult = $db->fetchAll($sQuery);
 				$row = array();
+				$row['totalN'] = 0;
 				foreach ($rResult as $key => $aRow) {
 					$row['department_name'][$key]      = $aRow['department_name'] . ' (N : ' . round($aRow['departmentCount'], 2) . ')';
 					$row['totalShipped'][$key]      = $aRow['total_shipped'];
