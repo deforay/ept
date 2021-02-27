@@ -2751,8 +2751,11 @@ class Application_Service_Reports
         $colNameCount = 4;
         foreach ($refResult as $refRow) {
             $colNamesArray[] = $refRow['sample_label'];
-            $colNamesArray[] = "z Score for " . $refRow['sample_label'];
+            if ($methodOfEvaluation == 'iso17043') {
+                $colNamesArray[] = "z Score for " . $refRow['sample_label'];
+            
             $colNamesArray[] = "Grade for " . $refRow['sample_label'];
+        }
             $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
             $colNameCount++;

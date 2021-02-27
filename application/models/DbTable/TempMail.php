@@ -7,6 +7,9 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
     protected $_primary = 'temp_id';
     
     public function insertTempMailDetails($to, $cc,$bcc, $subject, $message, $fromMail, $fromName) {
+
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $fromMail = $conf->email->config->username;
         
         $result = $this->insert(array(
             //'message' => strip_tags(html_entity_decode(stripslashes($message),ENT_QUOTES,'UTF-8')),

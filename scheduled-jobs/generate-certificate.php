@@ -48,7 +48,7 @@ try {
 
 		//$assay = $vlAssayArray[$attribs]
 		//Zend_Debug::dump($attribs);die;
-        //count($participants);
+        //echo count($participants);
 
 		$participants[$shipment['unique_identifier']]['labName']=$shipment['first_name']." ".$shipment['last_name'];
 		//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
@@ -90,7 +90,7 @@ try {
 						if($schemeKey == 'eid'){
 							$doc = new DOCx("certificate-template/eid-e.docx");
 							$doc->setValue("LABNAME",$arrayVal['labName']);
-							$doc->setValue("DATE","23 December 2018");
+							//$doc->setValue("DATE","23 December 2018");
 							//$doc->save("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '_', $participantUID).".docx");					
 							$doc->save("certificate/eid/".str_replace('/', '_', $participantUID)."-".$va.".docx");
 						}else if($schemeKey=='vl'){

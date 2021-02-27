@@ -18,7 +18,7 @@ if (isset($this->result['updated_on']) && $this->result['updated_on'] != "") {
 }
 if (isset($this->result['calculated_on']) && $this->result['calculated_on'] != "") {
   $calculatedOnArray = explode(" ", $this->result['calculated_on']);
-  $calculatedOn = "Syetem Generated on " . $this->dateFormat($calculatedOnArray[0]) . " " . $calculatedOnArray[1];
+  $calculatedOn = "System Generated on " . $this->dateFormat($calculatedOnArray[0]) . " " . $calculatedOnArray[1];
 }
 if (isset($this->result['use_range']) && $this->result['use_range'] != "") {
   $useRange = $this->result['use_range'];

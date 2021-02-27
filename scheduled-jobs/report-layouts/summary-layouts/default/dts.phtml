@@ -66,7 +66,7 @@ if ($resultArray['shipment'] != "") {
         $chart->setDataSet($dataSet);
 
         $chart->getPlot()->setGraphCaptionRatio(0.5);
-        $chart->setTitle("Test kits used for DTS-based PT survey " . $resultArray['shipment']['distribution_code']);
+        $chart->setTitle("Test kits used for PT survey " . $resultArray['shipment']['distribution_code']);
         $chart->render($piechart);
 
         $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
@@ -133,7 +133,7 @@ if ($resultArray['shipment'] != "") {
         // JPGraph Charts
         foreach ($barPoints as $key => $val) {
             $dataX[] = $val;
-            $dataY[] = $key .' ('.$val.')';
+            $dataY[] = $key . ' (' . $val . ')';
         }
 
         // Create the graph. These two calls are always required
@@ -167,8 +167,8 @@ if ($resultArray['shipment'] != "") {
         // Setup the titles
         $graph->title->Set("Comparison of test performance between participating laboratories");
         $graph->yaxis->title->Set('% Score');
-        $graph->xaxis->title->Set('Number of participants','center');
-        
+        $graph->xaxis->title->Set('Number of participants', 'center');
+
         $graph->yaxis->SetTitleMargin(32);
         $graph->xaxis->SetTitleMargin(32);
         // Turn the tick mark out from the plot area
@@ -323,12 +323,12 @@ if ($resultArray['shipment'] != "") {
         $graph->SetShadow();
 
         // Set A title for the plot
-        $graph->title->Set("Test kits used for DTS-based PT survey " . $resultArray['shipment']['distribution_code']);
+        $graph->title->Set("Test kits used for PT survey " . $resultArray['shipment']['distribution_code']);
         // $graph->title->SetFont(FF_FONT2,FS_BOLD);
 
         $p1 = new PiePlot($data);
         $p1->SetLegends($legends);
-        $graph->legend->SetPos(0.5,0.97,'center','bottom');
+        $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
         $graph->legend->SetColumns(3);
         $graph->Add($p1);
 
@@ -364,7 +364,7 @@ if ($resultArray['shipment'] != "") {
 
         $p1 = new PiePlot($data);
         $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Late Response (N=$late)", "Excluded (N=$excluded)"));
-        $graph->legend->SetPos(0.5,0.97,'center','bottom');
+        $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
         $graph->legend->SetColumns(3);
 
 
@@ -374,7 +374,7 @@ if ($resultArray['shipment'] != "") {
 
         $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
         $graph->Stroke($performancePiechart);
-       
+
         $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 300);
         if (file_exists($performancePiechart)) {
             unlink($performancePiechart);
