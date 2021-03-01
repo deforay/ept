@@ -1371,7 +1371,10 @@ class Application_Service_Evaluation
 
 				$shipmentResult['referenceResult'] = $sqlRes;
 
-				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes', 'spm.is_excluded'))
+				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes', 'spm.is_excluded',
+					'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
+					'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)")))
+					->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array(''))
 					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
 					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
 					->where("spm.shipment_id = ?", $shipmentId)
@@ -1380,14 +1383,17 @@ class Application_Service_Evaluation
 					// ->where("spm.final_result = ?",'2')
 					//->where("substring(spm.evaluation_status,4,1) != '0'")
 					->group('spm.map_id');
-
 				$sQueryRes = $db->fetchAll($sQuery);
 				//error_log($sQuery);
 				if (count($sQueryRes) > 0) {
 
 					$tQuery = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.sample_id', 'refdts.sample_label'))
+						->join(array('s' => 'shipment'), 's.shipment_id=refdts.shipment_id', array(''))
 						->join(array('resdts' => 'response_result_dts'), 'resdts.sample_id=refdts.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN (resdts.reported_result=refdts.reference_result AND spm.is_excluded='no') THEN 1 ELSE 0 END)")))
-						->join(array('spm' => 'shipment_participant_map'), 'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id', array())
+						->join(array('spm' => 'shipment_participant_map'), 'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id', array(
+							'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
+							'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
+						))
 						->where("spm.shipment_id = ?", $shipmentId)
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
@@ -1466,7 +1472,9 @@ class Application_Service_Evaluation
 						)
 					)
 					->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('participant_id', 'institute_name', 'region', 'department_name'))
-					->where('final_result = 2')->where("s.shipment_id = ?", $shipmentId)
+					->where('final_result = 2')
+					->where("sp.shipment_test_date <= s.lastdate_response")
+					->where("s.shipment_id = ?", $shipmentId)
 					// ->group(array('p.network_tier'));
 					->group(array('p.department_name'));
 					// die($sQuery);

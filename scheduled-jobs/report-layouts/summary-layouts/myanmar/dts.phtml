@@ -64,6 +64,7 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
     }
+    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
     if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
         // die($pdf->getY());
         $labCounter = 1;
@@ -93,11 +94,13 @@ if ($resultArray['shipment'] != "") {
                     $barPoints[$abovePass]++;
                 } else {
                 }
-                if (($totalScore) >= $config->evaluation->dts->passPercentage) {
+                /* if (($totalScore) >= $config->evaluation->dts->passPercentage) {
                     $maxScore++;
                 } else {
                     $belowScore++;
-                }
+                } */
+                $maxScore += $result[$i]['number_passed'];
+                $belowScore+= $result[$i]['number_failed'];
                 $labCounter++;
             }
 
