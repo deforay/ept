@@ -31,7 +31,7 @@ if ($resultArray['shipment'] != "") {
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-    // set margins
+    // set margins    
 
     $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -68,9 +68,6 @@ if ($resultArray['shipment'] != "") {
         // die($pdf->getY());
         $labCounter = 1;
         $pass = $config->evaluation->dts->passPercentage;
-        $barPoints = array();
-        $dataX = array();
-        $dataY = array();
         $barPoints["0 - 59"] = 0;
         $barPoints["60 - 69"] = 0;
         $barPoints["70 - $pass"] = 0;
@@ -147,10 +144,10 @@ if ($resultArray['shipment'] != "") {
         // Setup the titles
         $graph->title->Set("Comparison of test performance between participating laboratories (N=".$total.")");
         $graph->xaxis->title->Set('% Score');
-        $graph->yaxis->title->Set('Number of Participants','center');
+        $graph->yaxis->title->Set('Number of participants','center');
         
         $graph->yaxis->SetTitleMargin(28);
-        $graph->xaxis->SetTitleMargin(20);
+        $graph->xaxis->SetTitleMargin(35);
         // Turn the tick mark out from the plot area
         $graph->xaxis->SetTickSide(SIDE_DOWN);
         $graph->yaxis->SetTickSide(SIDE_LEFT);
@@ -322,11 +319,11 @@ if ($resultArray['shipment'] != "") {
             // $b1plot->SetFillGradient("#4B0082","white",GRAD_LEFT_REFLECTION);
             // $b1plot->SetWidth(45);
             $graph->title->Set("Participating laboratores in NEQAS for HIV antibody testing Panel 30 (".date('m',strtotime($resultArray['shipment']['shipment_date']))."/".date('y',strtotime($resultArray['shipment']['shipment_date'])).") (N=".$lab.")");
-            $graph->xaxis->title->Set('% Score');
-            $graph->yaxis->title->Set('Number of Participants','center');
+            // $graph->xaxis->title->Set('% Score');
+            $graph->yaxis->title->Set('Number of participants','center');
             
             $graph->yaxis->SetTitleMargin(28);
-            $graph->xaxis->SetTitleMargin(20);
+            $graph->xaxis->SetTitleMargin(60);
             // Turn the tick mark out from the plot area
             $graph->xaxis->SetTickSide(SIDE_DOWN);
             $graph->yaxis->SetTickSide(SIDE_LEFT);
@@ -384,7 +381,7 @@ if ($resultArray['shipment'] != "") {
         $b1plot->SetColor("white");
         $graph->title->Set("Test kits used for PT survey " . $resultArray['shipment']['distribution_code'] . "(N=".$total.")");
         $graph->yaxis->title->Set('Number of Participants');
-        //$graph->xaxis->title->Set('Testkit-1 Name');
+        $graph->xaxis->title->Set('Testkit-1 Name');
         $graph->yaxis->SetTitleMargin(35);
         $graph->xaxis->SetTitleMargin(280);
         // Turn the tick mark out from the plot area
