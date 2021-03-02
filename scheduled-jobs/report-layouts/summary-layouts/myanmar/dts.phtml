@@ -282,7 +282,7 @@ if ($resultArray['shipment'] != "") {
         }
         // $y = $pdf->getY() + 5;
         
-
+        $pdf->AddPage();
         if($resultArray['shipment']['siteChart'] && count($resultArray['shipment']['siteChart']) > 0){
             $lab = 0;
             $dataX = array();
@@ -404,9 +404,8 @@ if ($resultArray['shipment'] != "") {
 
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;
-
         $passed = $responseResult["number_passed"];
-        $failed = $responseResult["number_failed"];
+        $failed = $responseResult["number_failed"] - $responseResult["number_late"];
         $notResponded = $responseResult["not_responded"];
         $late = $responseResult["number_late"];
         $excluded = ($responseResult["excluded"] - $responseResult["not_responded"]);
@@ -422,7 +421,7 @@ if ($resultArray['shipment'] != "") {
         // $graph->title->SetFont(FF_FONT2,FS_BOLD);
 
         $p1 = new PiePlot($data);
-        $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Late Response (N=$late)", "Excluded (N=$excluded)"));
+        $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Late Response (Failed) (N=$late)", "Excluded (N=$excluded)"));
         $graph->legend->SetPos(0.5,0.97,'center','bottom');
         $graph->legend->SetColumns(3);
 
