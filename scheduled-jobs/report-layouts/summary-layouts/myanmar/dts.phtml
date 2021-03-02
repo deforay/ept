@@ -322,7 +322,7 @@ if ($resultArray['shipment'] != "") {
             // $b1plot->SetFillGradient("#4B0082","white",GRAD_LEFT_REFLECTION);
             // $b1plot->SetWidth(45);
             $graph->title->Set("Participating laboratores in NEQAS for HIV antibody testing Panel 30 (".date('m',strtotime($resultArray['shipment']['shipment_date']))."/".date('y',strtotime($resultArray['shipment']['shipment_date'])).") (N=".$lab.")");
-            // $graph->xaxis->title->Set('% Score');
+            $graph->xaxis->title->Set('Department');
             $graph->yaxis->title->Set('Number of participants','center');
             
             $graph->yaxis->SetTitleMargin(28);
@@ -335,7 +335,7 @@ if ($resultArray['shipment'] != "") {
             $sitefile = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'site_chart.png';
             $graph->Stroke($sitefile);
             
-            $pdf->Image($sitefile, 10, $pdf->getY()-40, '', '', '', '', 'C', false, 300);
+            $pdf->Image($sitefile, 10, $pdf->getY(), '', '', '', '', 'C', false, 300);
             if (file_exists($sitefile)) {
                 unlink($sitefile);
             }

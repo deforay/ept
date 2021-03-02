@@ -142,10 +142,10 @@ if ($resultArray['shipment'] != "") {
 
         // Setup the titles
         $graph->title->Set("Comparison of test performance between participating laboratories");
-        $graph->yaxis->title->Set('% Score');
-        $graph->xaxis->title->Set('Department','center');
+        $graph->xaxis->title->Set('% Score');
+        $graph->yaxis->title->Set('Number of Participants','center');
         
-        $graph->yaxis->SetTitleMargin(32);
+        $graph->yaxis->SetTitleMargin(30);
         $graph->xaxis->SetTitleMargin(32);
         // Turn the tick mark out from the plot area
         $graph->xaxis->SetTickSide(SIDE_DOWN);
