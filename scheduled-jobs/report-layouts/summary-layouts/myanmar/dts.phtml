@@ -6,7 +6,6 @@ require_once('jpgraph/jpgraph_pie.php');
 require_once('jpgraph/jpgraph_line.php');
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'General.php');
 $general = new General();
-// Zend_Debug::dump($resultArray);die;
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
@@ -52,6 +51,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised']);
     // add a page
     $pdf->AddPage('P', 'A4');
+    /* Set Font */
     $pdf->SetFont('helvetica', 'B', 12);
     if (count($resultArray['shipment']['referenceResult']) > 0) {
 
@@ -64,49 +64,32 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
     }
-    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
+
     if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
-        // die($pdf->getY());
-        $labCounter = 1;
         $pass = $config->evaluation->dts->passPercentage;
+        $abovePass = sprintf("above $pass");
+        /* declare variables */
         $barPoints["0 - 59"] = 0;
         $barPoints["60 - 69"] = 0;
         $barPoints["70 - $pass"] = 0;
-        $abovePass = sprintf("above $pass");
         $barPoints[$abovePass] = 0;
+        
         foreach ($resultArray['shipment']['summaryResult'] as $result) {
             $maxScore = 0;
             $belowScore = 0;
             $partCount = count($result) - 1;
-            //Zend_Debug::dump($result['correctCount']);
             for ($i = 0; $i < $partCount; $i++) {
                 if ($result[$i]['is_excluded'] == 'yes') {
                     continue;
                 }
-                $totalScore = $result[$i]['shipment_score'] + $result[$i]['documentation_score'];
-                if ($totalScore > 0 && $totalScore < 60) {
-                    $barPoints["0 - 59"]++;
-                } else if ($totalScore > 59 && $totalScore < 70) {
-                    $barPoints["60 - 69"]++;
-                } else if ($totalScore > 69 && $totalScore <= $pass) {
-                    $barPoints["70 - $pass"]++;
-                } else if ($totalScore > $config->evaluation->dts->passPercentage) {
-                    $barPoints[$abovePass]++;
-                } else {
-                }
-                /* if (($totalScore) >= $config->evaluation->dts->passPercentage) {
-                    $maxScore++;
-                } else {
-                    $belowScore++;
-                } */
+                $barPoints["0 - 59"] += $result[$i]['0-59'];
+                $barPoints["60 - 69"] += $result[$i]['60-69'];
+                $barPoints["70 - $pass"] += $result[$i]["70-$pass"];
+                $barPoints[$abovePass] += $result[$i][$abovePass];
                 $maxScore += $result[$i]['number_passed'];
                 $belowScore+= $result[$i]['number_failed'];
-                $labCounter++;
             }
-
-            $scoringPer = round(($maxScore / $partCount) * 100, 2);
         }
-        // Zend_Debug::dump($barPoints);die;
         // JPGraph Charts
         $total = 0;
         foreach ($barPoints as $key => $val) {
@@ -121,10 +104,7 @@ if ($resultArray['shipment'] != "") {
 
         $theme_class = new UniversalTheme;
         $graph->SetTheme($theme_class);
-
-        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
         $graph->SetBox(false);
-        // $graph->SetMargin(40,30,10,10);
 
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($dataY);
@@ -141,24 +121,24 @@ if ($resultArray['shipment'] != "") {
 
 
         $b1plot->SetColor("white");
-        // $b1plot->SetFillColor("#cc1111");
-        $b1plot->SetFillColor(array('brown4', 'red', 'yellow', 'darkgreen'));
+        $b1plot->SetFillColor(array('brown4', 'hotpink', 'yellow', 'darkgreen'));
 
         // Setup the titles
         $graph->title->Set("Comparison of test performance between participating laboratories (N=".$total.")");
+
         $graph->xaxis->title->Set('% Score');
-        $graph->yaxis->title->Set('Number of participants','center');
-        
-        $graph->yaxis->SetTitleMargin(28);
         $graph->xaxis->SetTitleMargin(35);
         // Turn the tick mark out from the plot area
         $graph->xaxis->SetTickSide(SIDE_DOWN);
+        
+        $graph->yaxis->title->Set('Number of participants','center');
+        $graph->yaxis->SetTitleMargin(28);
+        // Turn the tick mark out from the plot area
         $graph->yaxis->SetTickSide(SIDE_LEFT);
 
         // Display the graph
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         $graph->Stroke($image_file);
-
 
         // set font
         $pdf->SetFont('helvetica', 'B', 12);
@@ -405,13 +385,12 @@ if ($resultArray['shipment'] != "") {
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;
         $passed = $responseResult["number_passed"];
-        $failed = $responseResult["number_failed"] - $responseResult["number_late"];
+        $failed = abs($responseResult["number_failed"]);
         $notResponded = $responseResult["not_responded"];
-        $late = $responseResult["number_late"];
         $excluded = ($responseResult["excluded"] - $responseResult["not_responded"]);
-        $total = $passed + $failed + $notResponded + $late + $excluded;
+        $total = $passed + $failed + $notResponded + $excluded;
         // Some data
-        $data = array($passed, $failed, $notResponded, $late, $excluded);
+        $data = array($passed, $failed, $notResponded, $excluded);
         // Create the Pie Graph.
         $graph = new PieGraph(700, 400);
         $graph->SetShadow();
@@ -421,14 +400,14 @@ if ($resultArray['shipment'] != "") {
         // $graph->title->SetFont(FF_FONT2,FS_BOLD);
 
         $p1 = new PiePlot($data);
-        $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Late Response (Failed) (N=$late)", "Excluded (N=$excluded)"));
+        $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Excluded (N=$excluded)"));
         $graph->legend->SetPos(0.5,0.97,'center','bottom');
         $graph->legend->SetColumns(3);
 
 
         $graph->Add($p1);
 
-        $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'orange', 'yellow'));
+        $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'yellow'));
 
         $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
         $graph->Stroke($performancePiechart);
@@ -446,7 +425,7 @@ if ($resultArray['shipment'] != "") {
         $val = $resultArray['shipment']['participantBeforeAfterDueChart'];
         // JPGraph Charts
         /* To find the count of not responded participants */
-        $ntr = round($val['total_shipped'] - $val['beforeDueDate'] - $val['afterDueDate'], 2);
+        $ntr = round(abs($val['total_shipped'] - $val['beforeDueDate'] - $val['afterDueDate']), 2);
         /* Find by percentage */
         $ntrs = round(($ntr/$val['total_shipped']) * 100, 2);
         /* To find the percentage of before due date score */
@@ -533,7 +512,6 @@ if ($resultArray['shipment'] != "") {
     if (isset($resultArray['shipment']['participantAberrantDepartmentChart']) && count($resultArray['shipment']['participantAberrantDepartmentChart']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart'] != '') {
         $val = $resultArray['shipment']['participantAberrantDepartmentChart'];
         $y = $pdf->getY() + 5;
-        // Zend_Debug::dump($val);die;
         // JPGraph Charts
         // Create the graph. These two calls are always required
         $graph = new Graph(750,320,'auto');

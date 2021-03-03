@@ -1277,6 +1277,9 @@ class Application_Service_Evaluation
 		$vlCalculation = array();
 		$penResult = array();
 		$shipmentResult = array();
+		$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+		$pass = $config->evaluation->dts->passPercentage;
+
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 'shipment_attributes', 'pt_co_ordinator_name'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
@@ -1373,18 +1376,23 @@ class Application_Service_Evaluation
 
 				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes', 'spm.is_excluded',
 					'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2 AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
-					'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)")))
-					->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array(''))
-					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
-					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
-					->where("spm.shipment_id = ?", $shipmentId)
-					->where("spm.final_result IS NOT NULL")
-					->where("spm.final_result!=''")
-					// ->where("spm.final_result = ?",'2')
-					//->where("substring(spm.evaluation_status,4,1) != '0'")
-					->group('spm.map_id');
+					'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
+					'totalScore' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score)"),
+					'0-59' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 0 AND SUM(spm.documentation_score+spm.shipment_score) <= 59"),
+					'60-69' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 60 AND SUM(spm.documentation_score+spm.shipment_score) <= 69"),
+					'70-'.$pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 70 AND SUM(spm.documentation_score+spm.shipment_score) <= $pass"),
+					'above '.$pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass"),
+					'failed' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass AND spm.final_result = 2"),
+				))
+				->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array(''))
+				->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
+				->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
+				->where("spm.shipment_id = ?", $shipmentId)
+				->where("spm.final_result IS NOT NULL")
+				->where("spm.final_result !=''")
+				->group('spm.map_id');
+				// die($sQuery);
 				$sQueryRes = $db->fetchAll($sQuery);
-				//error_log($sQuery);
 				if (count($sQueryRes) > 0) {
 
 					$tQuery = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.sample_id', 'refdts.sample_label'))
@@ -1404,7 +1412,7 @@ class Application_Service_Evaluation
 
 					$kitNameRes = $db->fetchAll($db->select()->from(array('rtdts'=>'r_testkitname_dts'))
 					->where("scheme_type='dts'"));
-
+					
 					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(''))
 						->join(array('resdts' => 'response_result_dts'), 'resdts.shipment_map_id=spm.map_id', array(
 							'testkit1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resdts.test_kit_name_1,resdts.shipment_map_id)))')
@@ -1416,7 +1424,6 @@ class Application_Service_Evaluation
 						->where("spm.shipment_id = ?", $shipmentId)
 						->group('resdts.test_kit_name_1')
 						->order('testkit1Total DESC');
-					// die($rQuery);
 					$rQueryRes = $db->fetchAll($rQuery);
 					$shipmentResult['pieChart'] = $rQueryRes;
 				}
@@ -1430,7 +1437,7 @@ class Application_Service_Evaluation
 							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
 							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
 							"beforeDueDate" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
-							"afterDueDate" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_date >= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
+							"afterDueDate" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_report_date > s.lastdate_response) THEN 1 ELSE 0 END)"),
 							"pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
 						)
 					)->where("s.shipment_id = ?", $shipmentId);
@@ -1924,7 +1931,7 @@ class Application_Service_Evaluation
 				'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
 				'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
 				'number_late' => new Zend_Db_Expr(
-					"SUM(CASE WHEN (sp.shipment_test_date >= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"
+					"SUM(CASE WHEN (sp.shipment_test_report_date > s.lastdate_response) THEN 1 ELSE 0 END)"
 				)
 			))
 			->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code'))

@@ -346,7 +346,6 @@ try {
         }
         foreach ($evalResult as $evalRow) {
 
-            //var_dump($evalRow);die;
             //$alertMail = new Zend_Mail();
             ini_set('memory_limit', '-1');
 
@@ -384,7 +383,6 @@ try {
             for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                 $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], $limit, $offset);
                 $endValue = $offset + ($limit - 1);
-                // Zend_Debug::dump($resultArray);die;
                 // $endValue = $offset + 49;
                 if ($endValue > $totParticipantsRes['reported_count']) {
                     $endValue = $totParticipantsRes['reported_count'];
@@ -470,7 +468,6 @@ try {
                 ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
                 ->where("s.shipment_id=?", $evalRow['shipment_id'])
                 ->group('dm.dm_id');
-            // die($subQuery);
             $subResult = $db->fetchAll($subQuery);
             foreach ($subResult as $row) {
                 $db->update('data_manager', array('push_status' => 'pending'), 'dm_id = ' . $row['dm_id']);
