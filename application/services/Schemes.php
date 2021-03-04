@@ -884,7 +884,7 @@ class Application_Service_Schemes
             error_log($e->getMessage());
         }
     }
-
+    
     public function updateTestType($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1012,5 +1012,65 @@ class Application_Service_Schemes
         $sql = $db->select()->from(array('response_covid19_not_tested_reason'))
             ->where('status = ? ', 'active');
         return $db->fetchAll($sql);
+    }
+
+    public function getAllCovid19GeneTypeInGrid($parameters)
+    {
+        $geneTypesDb = new Application_Model_DbTable_RCovid19GeneTypes();
+        return $geneTypesDb->fetchAllCovid19GeneTypeInGrid($parameters);
+    }
+
+    public function addGeneType($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->beginTransaction();
+        try {
+            $geneTypesDb = new Application_Model_DbTable_RCovid19GeneTypes();
+            $geneTypesDb->addGeneTypeDetails($params);
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log($e->getMessage());
+        }
+    }
+
+    public function updateGeneType($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->beginTransaction();
+        try {
+            $geneTypesDb = new Application_Model_DbTable_RCovid19GeneTypes();
+            $geneTypesDb->updateGeneTypeDetails($params);
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log($e->getMessage());
+        }
+    }
+
+    public function getCovid19GeneType($testtypeId)
+    {
+        $geneTypesDb = new Application_Model_DbTable_RCovid19GeneTypes();
+        return $geneTypesDb->getCovid19GeneTypeDetails($testtypeId);
+    }
+
+    public function getAllCovid19GeneTypeList()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('r_covid19_gene_types'), array('gene_id', 'gene_name'))
+            ->where("scheme_type = 'covid19'");
+        return $db->fetchAll($sql);
+    }
+
+    public function getAllCovid19GeneTypeResponseWise()
+    {
+        $geneTypesDb = new Application_Model_DbTable_RCovid19GeneTypes();
+        return $geneTypesDb->fetchAllCovid19GeneTypeResponseWise('covid19');
+    }
+    
+    public function getAllCovid19IdentifiedGeneTypeResponseWise($mapId)
+    {
+        $geneIdentifiedTypesDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
+        return $geneIdentifiedTypesDb->getAllCovid19IdentifiedGeneTypeResponseWise($mapId);
     }
 }

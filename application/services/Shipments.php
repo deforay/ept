@@ -505,7 +505,6 @@ class Application_Service_Shipments
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-
         $db->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
@@ -513,7 +512,7 @@ class Application_Service_Shipments
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes["algorithm"] = $params['algorithm'];
             $attributes = json_encode($attributes);
-
+            
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
@@ -527,13 +526,13 @@ class Application_Service_Shipments
                 "number_of_tests" => $params['numberOfParticipantTest'],
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
-
+            
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
-
+            
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
                 $data['qc_done'] = $params['qcDone'];
                 if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
@@ -546,7 +545,7 @@ class Application_Service_Shipments
                     $data['qc_created_on'] = null;
                 }
             }
-
+            
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
@@ -558,16 +557,19 @@ class Application_Service_Shipments
                 $data['pt_test_not_performed_comments'] = NULL;
                 $data['pt_support_comments'] = NULL;
             }
-
+            
             if (isset($params['customField1']) && !empty(trim($params['customField1']))) {
                 $data['custom_field_1'] = trim($params['customField1']);
             }
-
+            
             if (isset($params['customField2']) && !empty(trim($params['customField2']))) {
                 $data['custom_field_2'] = trim($params['customField2']);
             }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
-
+            /* Save Gene Type */
+            $geneIdentifyTypesDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
+            $geneIdentifyTypesDb->saveCovid19IdentifiedGenesResults($params);
+            
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->updateResults($params);
             $db->commit();

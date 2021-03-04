@@ -2734,5 +2734,29 @@ ALTER TABLE `reference_vl_calculation` ADD `manual_median` DOUBLE(20,10) NULL DE
 -- Thana 11-Feb-2021
 ALTER TABLE `response_result_vl` ADD `vl_assay` VARCHAR(255) NULL DEFAULT NULL AFTER `calculated_score`;
 
--- Thana 12-Feb-2020
+-- Thana 12-Feb-2021
 ALTER TABLE `shipment` ADD `pt_co_ordinator_name` TEXT NULL DEFAULT NULL AFTER `shipment_comment`;
+
+-- Thana 04-Mar-2021
+CREATE TABLE `r_covid19_gene_types` (
+ `gene_id` int NOT NULL AUTO_INCREMENT,
+ `gene_name` varchar(255) DEFAULT NULL,
+ `gene_status` varchar(55) DEFAULT NULL,
+ `created_by` int DEFAULT NULL,
+ `created_on` datetime DEFAULT NULL,
+ PRIMARY KEY (`gene_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ALTER TABLE `r_covid19_gene_types` ADD `scheme_type` varchar(255) NULL DEFAULT NULL AFTER `gene_name`;
+
+CREATE TABLE `covid19_identified_genes` (
+ `map_id` int NOT NULL,
+ `shipment_id` int NOT NULL,
+ `sample_id` int NOT NULL,
+ `gene_id` int DEFAULT NULL,
+ `ct_value` varchar(255) DEFAULT NULL,
+ `remarks` text,
+ KEY `map_id` (`map_id`),
+ KEY `shipment_id` (`shipment_id`),
+ CONSTRAINT `covid19_identified_genes_ibfk_1` FOREIGN KEY (`map_id`) REFERENCES `shipment_participant_map` (`map_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+ CONSTRAINT `covid19_identified_genes_ibfk_2` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -2,7 +2,7 @@
 
 // Zend_Debug::dump($this->shipmentData);die;
 $shipmentData = $this->shipmentData;
-$shipmentAttribute = json_decode($shipmentData['shipment']['shipment_attributes'],true);
+$shipmentAttribute = json_decode($shipmentData['shipment']['shipment_attributes'], true);
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat =  $vHelper->getDateFormat();
 ?>
@@ -53,10 +53,10 @@ $dtFormat =  $vHelper->getDateFormat();
 				</div>
 			</div>
 			<div class="form-group">
-                <label class="col-lg-3 control-label" for="PtCoOrdinatorName">PT Co-ordinator Name</label>
+				<label class="col-lg-3 control-label" for="PtCoOrdinatorName">PT Co-ordinator Name</label>
 
-                <div class="col-lg-5"><input type="text" value='<?php echo $shipmentData['shipment']['pt_co_ordinator_name']; ?>' id="PtCoOrdinatorName" name="PtCoOrdinatorName" class="form-control input-sm" title="Please enter the PT Co-ordinator Name" placeholder="Enter the PT Co-ordinator Name" /></div>
-            </div>
+				<div class="col-lg-5"><input type="text" value='<?php echo $shipmentData['shipment']['pt_co_ordinator_name']; ?>' id="PtCoOrdinatorName" name="PtCoOrdinatorName" class="form-control input-sm" title="Please enter the PT Co-ordinator Name" placeholder="Enter the PT Co-ordinator Name" /></div>
+			</div>
 			<div class="form-group" id="sampleFormFragment">
 
 
@@ -113,8 +113,8 @@ $dtFormat =  $vHelper->getDateFormat();
 						<div class="col-lg-5">
 							<select id="dtsSampleType" name="dtsSampleType" class="isRequired form-control" title="Please select a Sample Type">
 								<option value="">--Select--</option>
-								<option value="dried" <?php echo (isset($shipmentAttribute['sampleType']) && $shipmentAttribute['sampleType'] == 'dried')?"selected='selected'":"";?>>Dried Test Tube</option>
-								<option value="serum" <?php echo (isset($shipmentAttribute['sampleType']) && $shipmentAttribute['sampleType'] == 'serum')?"selected='selected'":"";?>>Serum</option>
+								<option value="dried" <?php echo (isset($shipmentAttribute['sampleType']) && $shipmentAttribute['sampleType'] == 'dried') ? "selected='selected'" : ""; ?>>Dried Test Tube</option>
+								<option value="serum" <?php echo (isset($shipmentAttribute['sampleType']) && $shipmentAttribute['sampleType'] == 'serum') ? "selected='selected'" : ""; ?>>Serum</option>
 							</select>
 						</div>
 					</div>
@@ -124,8 +124,8 @@ $dtFormat =  $vHelper->getDateFormat();
 						<div class="col-lg-5">
 							<select id="screeningTest" name="screeningTest" class="isRequired form-control" title="Please select if this is a Screening Test">
 								<option value="">--Select--</option>
-								<option value="yes" <?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'yes')?"selected='selected'":"";?>>Yes</option>
-								<option value="no" <?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'no')?"selected='selected'":"";?>>No</option>
+								<option value="yes" <?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'yes') ? "selected='selected'" : ""; ?>>Yes</option>
+								<option value="no" <?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'no') ? "selected='selected'" : ""; ?>>No</option>
 							</select>
 						</div>
 					</div>
@@ -565,6 +565,7 @@ $dtFormat =  $vHelper->getDateFormat();
 								foreach ($shipmentData['reference'] as $reference) {
 							?>
 
+									addNewTypeNameBlock('<?php echo $i; ?>');
 									addNewEiaBlock('<?php echo $i; ?>');
 									addNewWbBlock('<?php echo $i; ?>');
 
@@ -572,6 +573,7 @@ $dtFormat =  $vHelper->getDateFormat();
 									$i++;
 								}
 							} else { ?>
+								addNewTypeNameBlock(sampleCounter);
 								addNewEiaBlock(sampleCounter);
 								addNewWbBlock(sampleCounter);
 							<?php } ?>
@@ -923,7 +925,7 @@ $dtFormat =  $vHelper->getDateFormat();
 					}
 
 				?>
-					<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+					<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="covid19SampleTable">
 						<thead>
 							<tr align="center">
 								<th style="width:25%;text-align: center;">Sample</th>
@@ -979,7 +981,7 @@ $dtFormat =  $vHelper->getDateFormat();
 											<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score" title="Please enter the score for this control/sample" value="<?php echo $reference['sample_score']; ?>" />
 										</td>
 										<td>
-											<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleEia<?php echo $reference['sample_id']; ?>', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a>
+											<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('typeName<?php echo $reference['sample_id']; ?>', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a>
 											<a href="javascript:void(0);" onclick="addCovid19Row(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a>
 											<?php
 											if ($counter > 1) {
@@ -1037,8 +1039,15 @@ $dtFormat =  $vHelper->getDateFormat();
 
 					</div> <!-- wbBlockHolder -->
 					<script type="text/javascript">
-						var sampleCounter = 1;
+						var sampleCounter = $("#covid19SampleTable tbody tr").length;
 						$(document).ready(function() {
+							$(".datepicker").on("click", function() {
+								//$(this).val('');
+
+								$(this).datepicker({
+									dateFormat: '<?php echo $dtFormat; ?>'
+								})
+							});
 							
 						});
 
@@ -1046,36 +1055,96 @@ $dtFormat =  $vHelper->getDateFormat();
 							sampleCounter++;
 							//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
 							$(obj.parentNode.parentNode).after('<tr align="center"> \
-				<td style="text-align: center"> \
-					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
-				</td>  \
-				<td> \
-					<?php echo $possibleResults; ?> \
-				</td>\
-				<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
-						<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
-					</select> \
-				</td> \
-				<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
-						<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
-					</select> \
-				</td> \
-				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
-				<td> \
-					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia' + sampleCounter + '\', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a> \
-					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
-					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
-				</td> \
-			</tr>');
-							addNewEiaBlock(sampleCounter);
+								<td style="text-align: center"> \
+									<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
+								</td>  \
+								<td> \
+									<?php echo $possibleResults; ?> \
+								</td>\
+								<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
+										<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+									</select> \
+								</td> \
+								<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+										<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+									</select> \
+								</td> \
+								<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
+								<td> \
+									<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'typeName' + sampleCounter + '\', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a> \
+									<a href="javascript:void(0);" onclick="addCovid19Row(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
+									<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+								</td> \
+							</tr>');
+							addNewTypeNameBlock(sampleCounter);
+						}
 
-
+						function addNewTypeNameBlock(sampleId) {
+							$("#eiaBlockHolder").after('<div id="typeName' + sampleId + '" class="dialog">\
+							<span onClick="hidedefModal()" class="closeModal"></span>\
+							<div class="modal-header">\
+								<h4 class="modal-title"> COVID-19 TYPE OF TESTING</h4>\
+							</div>\
+							<div class="modal-body">\
+								<div class="row">\
+								<div >\
+									<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
+										<thead>\
+											<tr align="center">\
+												<th style="width:20%;text-align: center;">Type Name</th>\
+												<th style="width:10%;text-align: center;">Lot</th>\
+												<th style="width:12%;text-align: center;">Expiry</th>\
+												<th style="width:15%;text-align: center;">Result</th>\
+												<th style="width: 5%;text-align: center;">Options</th>\
+											</tr>\
+										</thead>\
+										<tbody>\
+											<tr>\
+												<td><select class="form-control" name="rtype[' + sampleId + '][type][]"><?php echo $covid19type; ?></select></td>\
+												<td><input type="text" name="rtype[' + sampleId + '][lot][]" class="form-control"/></td>\
+												<td><input type="text" name="rtype[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
+												<td><select class="form-control" name="rtype[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
+												<td>\
+													<a href="javascript:void(0);" onclick="addCovid19Row(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+												</td>\
+											</tr>\
+										</tbody>\
+									</table>\
+								</div>\
+								</div>\
+							</div>\
+												<div class="modal-footer">\
+								<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleEia' + sampleId + '\')">OK</button>\
+							</div>\
+							</div>');
 						}
 
 						function removeRow(obj) {
 							$(obj.parentNode.parentNode).fadeOut("normal", function() {
 								$(this).remove();
 							});
+						}
+
+						function removeCovid19Row(obj, sampleId) {
+							$(obj.parentNode.parentNode).fadeOut("normal", function() {
+								$(this).remove();
+								$('#typeName' + sampleId).remove();
+							});
+							<?php
+							$i = 1;
+							if (count($shipmentData['reference']) > 0) {
+								foreach ($shipmentData['reference'] as $reference) {
+							?>
+									addNewTypeNameBlock('<?php echo $i; ?>');
+								<?php
+									$i++;
+								}
+							} else {
+								?>
+								addNewTypeNameBlock(sampleCounter);
+							<?php
+							}
+							?>
 						}
 
 						$(document).ready(function() {
@@ -1612,7 +1681,6 @@ $dtFormat =  $vHelper->getDateFormat();
 				</div>');
 
 						}
-
 						function removeRow(obj) {
 							$(obj.parentNode.parentNode).fadeOut("normal", function() {
 								$(this).remove();
@@ -1740,8 +1808,8 @@ $dtFormat =  $vHelper->getDateFormat();
 						<div class="col-lg-5">
 							<select id="methodOfEvaluation" name="methodOfEvaluation" class="isRequired form-control" title="Please select a Method of Evaluation" style=" margin-bottom: 15px; ">
 								<option value="">--Select--</option>
-								<option value="standard" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'standard')?"selected='selected'":"";?>>Standard</option>
-								<option value="iso17043" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'iso17043')?"selected='selected'":"";?>>ISO/IEC 17043</option>
+								<option value="standard" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'standard') ? "selected='selected'" : ""; ?>>Standard</option>
+								<option value="iso17043" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'iso17043') ? "selected='selected'" : ""; ?>>ISO/IEC 17043</option>
 							</select>
 						</div>
 					</div>
@@ -1884,8 +1952,8 @@ $dtFormat =  $vHelper->getDateFormat();
 						<div class="col-lg-5">
 							<select id="methodOfEvaluation" name="methodOfEvaluation" class="isRequired form-control" title="Please select a Method of Evaluation" style=" margin-bottom: 15px; ">
 								<option value="">--Select--</option>
-								<option value="standard" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'standard')?"selected='selected'":"";?>>Standard</option>
-								<option value="iso17043" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'iso17043')?"selected='selected'":"";?>>ISO/IEC 17043</option>
+								<option value="standard" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'standard') ? "selected='selected'" : ""; ?>>Standard</option>
+								<option value="iso17043" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'iso17043') ? "selected='selected'" : ""; ?>>ISO/IEC 17043</option>
 							</select>
 						</div>
 					</div>
@@ -2317,10 +2385,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						</thead>
 						<tbody>
 							<?php $counter = 1;
-
-							foreach ($shipmentData['reference'] as $reference) {
-
-							?>
+							foreach ($shipmentData['reference'] as $reference) { ?>
 
 								<tr align="center">
 									<td style="text-align: center">
@@ -2378,18 +2443,11 @@ $dtFormat =  $vHelper->getDateFormat();
 									</td>
 									<td>
 										<a href="javascript:void(0);" onclick="addRecencyRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
-										<?php
-										if ($counter > 1) {
-
-										?>
+										<?php if ($counter > 1) { ?>
 											<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
-										<?php
-										}
-										?>
+										<?php } ?>
 									</td>
 								</tr>
-
-
 							<?php
 								$counter++;
 							} ?>
@@ -2401,61 +2459,57 @@ $dtFormat =  $vHelper->getDateFormat();
 						function addRecencyRow(obj) {
 							//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
 							$(obj.parentNode.parentNode).after('<tr align="center"> \
-				<td style="text-align: center"> \
-					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
-				</td>  \
-				<td> \
-					<?php echo $possibleResults; ?> \
-				</td> \
-				<td>\
-										<select name="controlLine[]" class="isRequired form-control input-sm" title="Please choose control line">\
-											<option value="">--Select--</option>\
-											<option value="present">Present</option>\
-											<option value="absent">Absent</option>\
-										</select>\
-									</td>\
-									<td>\
-										<select name="verificationLine[]" class="isRequired form-control input-sm" title="Please choose verification line">\
-											<option value="">--Select--</option>\
-											<option value="present">Present</option>\
-											<option value="absent">Absent</option>\
-										</select>\
-									</td>\
-									<td>\
-										<select name="longtermLine[]" class="isRequired form-control input-sm" title="Please choose Longterm line">\
-											<option value="">--Select--</option>\
-											<option value="present">Present</option>\
-											<option value="absent">Absent</option>\
-										</select>\
-									</td>\
-				<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
-						<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
-					</select> \
-				</td> \
-				<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
-						<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
-					</select> \
-				</td> \
-				<td> \
-					<a href="javascript:void(0);" onclick="addRecencyRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a> \
-					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
-				</td> \
-			</tr>');
-						}
+								<td style="text-align: center"> \
+									<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
+								</td>  \
+								<td> \
+									<?php echo $possibleResults; ?> \
+								</td> \
+								<td>\
+									<select name="controlLine[]" class="isRequired form-control input-sm" title="Please choose control line">\
+										<option value="">--Select--</option>\
+										<option value="present">Present</option>\
+										<option value="absent">Absent</option>\
+									</select>\
+								</td>\
+								<td>\
+									<select name="verificationLine[]" class="isRequired form-control input-sm" title="Please choose verification line">\
+										<option value="">--Select--</option>\
+										<option value="present">Present</option>\
+										<option value="absent">Absent</option>\
+									</select>\
+								</td>\
+								<td>\
+									<select name="longtermLine[]" class="isRequired form-control input-sm" title="Please choose Longterm line">\
+										<option value="">--Select--</option>\
+										<option value="present">Present</option>\
+										<option value="absent">Absent</option>\
+									</select>\
+								</td>\
+								<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
+										<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+									</select> \
+								</td> \
+								<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+										<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+									</select> \
+								</td> \
+								<td> \
+									<a href="javascript:void(0);" onclick="addRecencyRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a> \
+									<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+								</td> \
+							</tr>');
+					}
 
-						function removeRow(obj) {
-							$(obj.parentNode.parentNode).fadeOut("normal", function() {
-								$(this).remove();
-							});
-						}
-					</script>
-
-
-				<?php
-				}
+					function removeRow(obj) {
+						$(obj.parentNode.parentNode).fadeOut("normal", function() {
+							$(this).remove();
+						});
+					}
+				</script>
 
 
-				?>
+			<?php } ?>
 
 			</div>
 
@@ -2503,8 +2557,8 @@ $dtFormat =  $vHelper->getDateFormat();
 		});
 
 		$('#shipmentCode').on('input', function(event) {
-            allowOnlyAlphaNumericAndHyphen('#shipmentCode');
-        });		
+			allowOnlyAlphaNumericAndHyphen('#shipmentCode');
+		});
 		$("body").on("change", 'select.controlOrNot', function() {
 			var scoreElem = $(this).parent().parent().find('.score');
 			if ($(this).val() == 1) {

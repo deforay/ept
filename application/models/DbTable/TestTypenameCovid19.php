@@ -328,5 +328,4 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
             }
         }
     }
-
 }

@@ -463,4 +463,29 @@ class Application_Service_Common
         $db = new Application_Model_DbTable_PushNotification();
         return $db->fetchNotificationByAPI($params);
     }
+
+    public function generateSelectOptions($optionList, $selectedOptions = array(), $emptySelectText = false)
+    {
+
+        if(empty($optionList)){
+            return '';
+        }
+        $response = '';
+        if ($emptySelectText !== false) {
+            $response .= '<option value="">'.$emptySelectText.'</option>';
+        }
+        
+        foreach ($optionList as $optId => $optName) {
+            $selectedText = '';
+            if (!empty($selectedOptions)) {
+                if (is_array($selectedOptions) && in_array($optId, $selectedOptions)) {
+                    $selectedText = 'selected="selected"';
+                } else if ($optId == $selectedOptions) {
+                    $selectedText = 'selected="selected"';
+                }
+            }
+            $response .= '<option value="' . addslashes($optId) . '" '.$selectedText.'>' . addslashes($optName) . '</option>';
+        }
+        return $response;
+    }
 }
