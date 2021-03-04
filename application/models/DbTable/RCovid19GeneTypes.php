@@ -231,6 +231,11 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
 		
 		
         $sql = $this->getAdapter()->select()->from(array($this->_name), array('gene_id', 'gene_name'))->where("scheme_type = '$scheme'");
-        return $this->getAdapter()->fetchAll($sql);
+        $result = $this->getAdapter()->fetchAll($sql);
+        $geneTypeOptions = array();
+        foreach ($result as $geneType) {
+            $geneTypeOptions[$geneType['gene_id']] = $geneType['gene_name'];
+        }
+        return $geneTypeOptions;
 	}
 }

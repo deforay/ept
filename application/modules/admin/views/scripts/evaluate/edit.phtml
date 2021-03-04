@@ -1,4 +1,5 @@
 <?php
+$commonService = new Application_Service_Common();
 $evSession = new Zend_Session_Namespace('evalShipmentList');
 $urlListArray = $evSession->editUrlList;
 $this->currentUrl;
@@ -168,6 +169,7 @@ $reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report
 
 		<input class="btn btn-danger" type="button" onclick="document.location='/admin/evaluate/shipment/sid/<?php echo base64_encode($this->evaluateData['shipment']['shipment_id']); ?>'" tabindex="8" value="Back to Listing " />
 	</div>
+	<div id="geneBlockHolder"></div> <!-- gene type block -->
 </form>
 <?php
 $vHelper = $this->getHelper('DateFormat');

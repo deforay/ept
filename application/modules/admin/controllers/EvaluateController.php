@@ -86,6 +86,9 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                 $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+               
+                $evalService = new Application_Service_Evaluation();
+                $this->view->evaluateData = $evaluateData = $evalService->editEvaluation($sid, $pid, $scheme);
 
                 $schemeService = new Application_Service_Schemes();
                 if ($scheme == 'eid') {
@@ -103,10 +106,9 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->recencyAssay = $schemeService->getRecencyAssay();
                 } else if ($scheme == 'covid19') {
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
+                    $this->view->allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
+			        $this->view->geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($evaluateData['shipment']['map_id']);
                 }
-                $evalService = new Application_Service_Evaluation();
-                $this->view->evaluateData = $evalService->editEvaluation($sid, $pid, $scheme);
-
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
                 $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');

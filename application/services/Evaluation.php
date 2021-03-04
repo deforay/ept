@@ -834,7 +834,6 @@ class Application_Service_Evaluation
 			}
 		} else if ($params['scheme'] == 'covid19') {
 
-
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['rehydrationDate']);
 			// $attributes["algorithm"] = $params['algorithm'];
 			$attributes = json_encode($attributes);
@@ -878,6 +877,10 @@ class Application_Service_Evaluation
 					'updated_on' => new Zend_Db_Expr('now()')
 				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
 			}
+
+			/* Save Gene Type */
+            $geneIdentifyTypesDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
+            $geneIdentifyTypesDb->saveCovid19IdentifiedGenesResults($params);
 		}
 
 		$params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] != "") ? $params['isFollowUp'] : "no";

@@ -1,12 +1,7 @@
 <?php
 $commonService = new Application_Service_Common();
 //date_default_timezone_set('America/New_York');
-$geneTypeOptions = array();
-foreach ($this->allGeneTypes as $key => $geneType) {
-    $geneTypeOptions[$geneType['gene_id']] = $geneType['gene_name'];
-}
-
-// Zend_Debug::dump($this->allGeneIdentifiedTypes);die;
+// Zend_Debug::dump($this->geneIdentifiedTypes);die;
 
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
 
@@ -758,13 +753,13 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         var sampleCounter = $("#geneTypeTable" + sampleId + " tbody tr").length;
 
         var strTxt = [];
-        <?php if(count($this->allGeneIdentifiedTypes) > 0){
-            foreach($this->allGeneIdentifiedTypes as $gene){ 
+        <?php if(count($this->geneIdentifiedTypes) > 0){
+            foreach($this->geneIdentifiedTypes as $gene){ 
                 if($gene['shipment_id'] == $this->shipId && $gene['map_id'] == $this->shipment['map_id']){?>
                     var sample = <?php echo $gene['sample_id'];?>;
                     if(sample == sampleId){
                         strTxt.push('<tr>\
-                            <td><select onChange="geneTypeInputChange(this,' + sampleCounter +')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($geneTypeOptions, $gene['gene_id'], '-- Select --'); ?></select></td>\
+                            <td><select onChange="geneTypeInputChange(this,' + sampleCounter +')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, $gene['gene_id'], '-- Select --'); ?></select></td>\
                             <td><input value="<?php echo $gene['ct_value'];?>" onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleId + '" class="form-control cTValue' + sampleId  + sampleCounter + '"/></td>\
                             <td><textarea onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
                             <td>\
@@ -773,13 +768,16 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             </td>\
                         </tr>');
                         sampleCounter++;
+                        $('#geneTypeAnchor'+sample).html('<i class="icon-beaker"></i> Edit Gene Types')
+                        $('#geneTypeAnchor'+sample).removeClass('btn-primary')
+                        $('#geneTypeAnchor'+sample).addClass('btn-danger')
                     }
                     <?php 
                 } 
             }
         }else {?>
         strTxt.push('<tr>\
-            <td><select onChange="geneTypeInputChange(this,' + sampleCounter +')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($geneTypeOptions, null, '-- Select --'); ?></select></td>\
+            <td><select onChange="geneTypeInputChange(this,' + sampleCounter +')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select></td>\
             <td><input value="<?php echo $gene['ct_value'];?>" onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleId + '" class="form-control cTValue' + sampleId  + sampleCounter + '"/></td>\
             <td><textarea onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
             <td>\
@@ -819,7 +817,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     function addNewGeneTypeRow(obj, sampleId) {
         sampleCounter = $("#geneTypeTable" + sampleId + " tbody tr").length;
 		$(obj.parentNode.parentNode).after('<tr> \
-            <td><select onChange="geneTypeInputChange(this,' + sampleCounter +')" class="form-control geneTypeInput' + sampleId  + sampleCounter + '"  id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $geneTypeOptions; ?></select></td> \
+            <td><select onChange="geneTypeInputChange(this,' + sampleCounter +')" class="form-control geneTypeInput' + sampleId  + sampleCounter + '"  id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select></td> \
             <td><input onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleId + '" class="form-control cTValue' + sampleId  + sampleCounter + '"/></td> \
             <td><input onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"/></td> \
             <td> \
