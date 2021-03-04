@@ -36,7 +36,7 @@ class Admin_TestTypeController extends Zend_Controller_Action {
             $params = $this->getRequest()->getPost();
             $schemeService->updateTestType($params);
             $this->redirect("/admin/test-type");
-        } else if ($this->_hasParam('53s5k85_8d')) {
+        } else if ($this->hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
             $this->view->result = $schemeService->getCovid19TestType($id);
         } else {
@@ -54,7 +54,7 @@ class Admin_TestTypeController extends Zend_Controller_Action {
     }
 
     public function getTestTypeAction() {
-        if ($this->_hasParam('stage')) {
+        if ($this->hasParam('stage')) {
             $stage = $this->_getParam('stage');
             $schemeService = new Application_Service_Schemes();
             $this->view->testTypeList = $schemeService->getAllCovid19TestTypeList(true);

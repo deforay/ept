@@ -19,7 +19,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
             $params = $this->getAllParams();            
             $distributionService = new Application_Service_Distribution();
             $distributionService->getAllDistributions($params);
-        }else if($this->_hasParam('searchString')){
+        }else if($this->hasParam('searchString')){
            $this->view->searchData= $this->_getParam('searchString');
         }
     }
@@ -41,7 +41,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
     public function viewShipmentAction()
     {
         $this->_helper->layout()->disableLayout();
-        if($this->_hasParam('id')){
+        if($this->hasParam('id')){
             
             $id = (int)$this->_getParam('id');
             $distributionService = new Application_Service_Distribution();
@@ -54,7 +54,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
 
     public function shipDistributionAction()
     {
-        if($this->_hasParam('did')){
+        if($this->hasParam('did')){
             $id = (int)base64_decode($this->_getParam('did'));
             $distributionService = new Application_Service_Distribution();
             $this->view->message = $distributionService->shipDistribution($id);
@@ -72,11 +72,11 @@ class Admin_DistributionsController extends Zend_Controller_Action
             $distributionService->updateDistribution($params);
             $this->redirect("/admin/distributions");
         }
-        else if($this->_hasParam('d8s5_8d')){
+        else if($this->hasParam('d8s5_8d')){
             $id = (int)base64_decode($this->_getParam('d8s5_8d'));
             $this->view->result = $distributionService->getDistribution($id);
             $this->view->distributionDates = $distributionService->getDistributionDates();
-            if($this->_hasParam('5h8pp3t')){
+            if($this->hasParam('5h8pp3t')){
              
                 $this->view->fromStatus = 'shipped';
             }

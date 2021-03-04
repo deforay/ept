@@ -1,33 +1,28 @@
 <?php
 //Zend_Debug::dump($this->result);die;
-if($this->result!=""){
-    $file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . "-summary.pdf";
-	if(!file_exists($file)){
+if ($this->result != "") {
+	$file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . "-summary.pdf";
+	if (!file_exists($file)) {
 		// Search this file name using the map id
-		$files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . "*".$this->result['shipment_code'] . "-summary.pdf");
-		$file = (isset($files[0]) && trim($files[0]) != '')?$files[0]:'';
+		$files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $this->result['shipment_code'] . "-summary.pdf");
+		$file = (isset($files[0]) && trim($files[0]) != '') ? $files[0] : '';
 	}
 
 	if (file_exists($file)) {
-	    /* header('Content-Type: application/octet-stream');
-	    header('Content-Disposition: attachment; filename='.basename($file));
-	    header('Expires: 0');
-		readfile($file); */
-		
+
 		header('Content-Description: File Transfer');
 		header('Content-type: application/pdf');
 		header('Content-Disposition: inline; filename="' . basename($file) . '"');
 		header('Content-Transfer-Encoding: binary');
 		header('Content-Length: ' . filesize($file));
-	    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	    header('Pragma: public');
+		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+		header('Pragma: public');
 		header('Accept-Ranges: bytes');
 		ob_clean();
-	    flush();
+		flush();
 		@readfile($file);
-	    exit;
-	}else{
-	    echo "<h2 align='center' style='margin-top:100px;font-family:arial;'>Requested file does not exist</h2>";
+		exit;
+	} else {
+		echo "<h2 align='center' style='margin-top:100px;font-family:arial;'>Requested file does not exist</h2>";
 	}
 }
-?>

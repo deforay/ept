@@ -35,7 +35,7 @@ class Admin_PartnersController extends Zend_Controller_Action
             $partnerService->updatePartner($params);
             $this->redirect("/admin/partners");
         }
-        if($this->_hasParam('id')){
+        if($this->hasParam('id')){
             $partnerId = (int)$this->_getParam('id');
             $this->view->partner = $partnerService->getPartner($partnerId);
         }else{

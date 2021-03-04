@@ -36,7 +36,7 @@ class Reports_ShipmentsController extends Zend_Controller_Action
 
     public function responseChartAction()
     {
-        if($this->_hasParam('id')){
+        if($this->hasParam('id')){
             //Zend_Debug::dump(base64_decode($this->_getParam('shipmentCode')));die;
                $shipmentId = (int) base64_decode($this->_getParam('id'));
                $reportService = new Application_Service_Reports();
@@ -52,7 +52,7 @@ class Reports_ShipmentsController extends Zend_Controller_Action
     public function getShipmentParticipantListAction()
     {
         $reportService = new Application_Service_Reports();
-        if($this->_hasParam('shipmentId')){
+        if($this->hasParam('shipmentId')){
             $shipmentId = base64_decode($this->_getParam('shipmentId'));
             $schemeType = ($this->_getParam('schemeType'));
             $this->view->result=$reportService->getShipmentParticipant($shipmentId,$schemeType);

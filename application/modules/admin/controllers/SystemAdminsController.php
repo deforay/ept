@@ -39,7 +39,7 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
             $adminService->updateSystemAdmin($params);
             $this->redirect("/admin/system-admins");
         }else{
-            if($this->_hasParam('id')){
+            if($this->hasParam('id')){
                 $adminId = (int)$this->_getParam('id');
                 $this->view->admin = $adminService->getSystemAdminDetails($adminId);
             }

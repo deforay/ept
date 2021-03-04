@@ -21,7 +21,7 @@ class Admin_EidAssayController extends Zend_Controller_Action{
             }
         }else{
             $this->view->source = "";
-            if($this->_hasParam('fromSource')){
+            if($this->hasParam('fromSource')){
               $this->view->source = $this->_getParam('fromSource');
             } 
         }
@@ -41,7 +41,7 @@ class Admin_EidAssayController extends Zend_Controller_Action{
             $this->redirect("/admin/eid-assay/");
         }else{
             $this->view->source = "";
-            if($this->_hasParam('source')){
+            if($this->hasParam('source')){
               $this->view->source = $this->_getParam('source');
             }
         }

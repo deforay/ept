@@ -19,7 +19,7 @@ class AuthController extends Zend_Controller_Action
 		$userService = new Application_Service_DataManagers();
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		$authNameSpace->force_profile_check_primary = 'no';
-		if ($this->_hasParam('email')) {
+		if ($this->hasParam('email')) {
 			$email = $this->_getParam('email');
 			$result = $userService->verifyEmailById($email);
 			if ($result) {
@@ -51,7 +51,7 @@ class AuthController extends Zend_Controller_Action
 			// $sessionAlert->message = "Thank you. Please check your email for further instructions. ";
 			$this->redirect('/');
 		}
-		if ($this->_hasParam('t')) {
+		if ($this->hasParam('t')) {
 			$link = $this->_getParam('t');
 			$result = $userService->checkForceProfileEmail($link);
 			if ($result) {
@@ -193,7 +193,7 @@ class AuthController extends Zend_Controller_Action
 			$params = $this->getRequest()->getPost();
 			$this->redirect($userService->newPassword($params));
 		} else {
-			if ($this->_hasParam('email')) {
+			if ($this->hasParam('email')) {
 				$email = $this->_getParam('email');
 				$result = $userService->checkEmail($email);
 				if ($result) {

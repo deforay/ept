@@ -76,7 +76,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $participantService->updateParticipant($params);
             $this->redirect("/admin/participants");
         } else {
-            if ($this->_hasParam('id')) {
+            if ($this->hasParam('id')) {
                 $userId = (int) $this->_getParam('id');
                 $this->view->participant = $participantService->getParticipantDetails($userId);
             }
@@ -102,7 +102,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     {
         $this->_helper->layout()->setLayout('modal');
         $participantService = new Application_Service_Participants();
-        if ($this->_hasParam('id')) {
+        if ($this->hasParam('id')) {
             $dmId = (int) $this->_getParam('id');
             $this->view->participant = $participantService->getAllParticipantDetails($dmId);
         }
@@ -124,7 +124,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     public function getDatamanagerAction()
     {
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->_hasParam('participantId')) {
+        if ($this->hasParam('participantId')) {
             $participantId = $this->_getParam('participantId');
             $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerList($participantId);
         }
@@ -135,7 +135,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     {
         $this->_helper->layout()->disableLayout();
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->_hasParam('search')) {
+        if ($this->hasParam('search')) {
             $participant = $this->_getParam('search');
             $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerSearch($participant);
         }
@@ -145,7 +145,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     {
         $participantService = new Application_Service_Participants();
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->_hasParam('datamanagerId')) {
+        if ($this->hasParam('datamanagerId')) {
             $datamanagerId = $this->_getParam('datamanagerId');
             $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantList($datamanagerId);
         }

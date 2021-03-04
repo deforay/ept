@@ -33,7 +33,7 @@ class Admin_VlAssayController extends Zend_Controller_Action{
             $vlAssayService->updateVlAssay($params);
             $this->redirect("/admin/vl-assay");
         }
-        if($this->_hasParam('id')){
+        if($this->hasParam('id')){
             $id = (int)$this->_getParam('id');
             $this->view->vlAssay = $vlAssayService->getVlAssay($id);
         }else{
