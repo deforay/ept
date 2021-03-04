@@ -35,7 +35,7 @@ class Admin_PublicationsController extends Zend_Controller_Action
             $publicationService->updatePublication($params);
             $this->redirect("/admin/publications");
         }
-        if($this->_hasParam('id')){
+        if($this->hasParam('id')){
             $publicationId = (int)$this->_getParam('id');
             $this->view->publication = $publicationService->getPublication($publicationId);
         }else{

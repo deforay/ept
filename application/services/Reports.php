@@ -1471,7 +1471,7 @@ class Application_Service_Reports
         $sheet->setTitle('Participant List');
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score','sp.final_result', 'sp.is_excluded', 'sp.failure_reason','sp.user_comment'))
             ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
@@ -1537,7 +1537,7 @@ class Application_Service_Reports
 
         //------------- Participant List Details End ------>
         //<-------- Second sheet start
-        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Kit Lot #', 'Exp Date');
+        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Reported on ePT', 'Test#1 Name', 'Kit Lot #', 'Exp Date');
 
         if ($result['scheme_type'] == 'dts') {
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
@@ -1659,7 +1659,7 @@ class Application_Service_Reports
         //$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
         $docScoreSheet->getDefaultRowDimension('G')->setRowHeight(25);
 
-        $docScoreHeadings = array('Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date', 'Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
+        $docScoreHeadings = array('Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date', 'Sample Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
 
         $docScoreSheetCol = 0;
         $docScoreRow = 1;
@@ -1699,7 +1699,7 @@ class Application_Service_Reports
         $totalScoreSheet->setTitle('Total Score');
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension(1)->setRowHeight(30);
-        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance', 'Comments', 'Comments2', 'Comments3', 'Corrective Action');
+        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance', 'Warnings OR Reasons for Failure');
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
@@ -1785,7 +1785,9 @@ class Application_Service_Reports
                 $sheetThreeCol = 0;
                 $docScoreCol = 0;
                 $totScoreCol = 0;
-                $countCorrectResult = 0;
+                $countCorrectResult = $totPer = 0;
+
+                $finalResult = array(1 => 'Pass',2 => 'Fail',3 => 'Excluded',4 => 'Not Evaluated');
 
                 $colCellObj = $sheet->getCellByColumnAndRow($r++, $currentRow);
                 $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -1799,6 +1801,10 @@ class Application_Service_Reports
                 if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
                     $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
                 }
+                $shipmentReportDate = "";
+                if (isset($aRow['shipment_test_report_date']) && trim($aRow['shipment_test_report_date']) != "") {
+                    $shipmentReportDate = $aRow['shipment_test_report_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_report_date']);
+                }
 
                 if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
@@ -1810,9 +1816,10 @@ class Application_Service_Reports
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
                 }
 
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['shipment_receipt_date'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReceiptDate, PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReportDate, PHPExcel_Cell_DataType::TYPE_STRING);
 
 
 
@@ -1940,14 +1947,27 @@ class Application_Service_Reports
                     $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_STRING);
 
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_STRING);
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_STRING);
-
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), PHPExcel_Cell_DataType::TYPE_STRING);
+                    
                 }
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), PHPExcel_Cell_DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], PHPExcel_Cell_DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResult[$aRow['final_result']], PHPExcel_Cell_DataType::TYPE_STRING);
+                if(!empty($aRow['failure_reason'])){
+                    $failureReasonJson = $aRow['failure_reason'];
+                    $warningsArray = json_decode($failureReasonJson, true);
+                    $warnings = array();
+                    foreach($warningsArray as $w){
+                        $warnings[] = strip_tags($w['warning']);
+                    }
+                    $warnings = implode(", ",$warnings);
+                }else{
+                    $warnings = "";
+                }
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($warnings, PHPExcel_Cell_DataType::TYPE_STRING);
 
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
                     $cellName = $sheetThree->getCellByColumnAndRow($i, $sheetThreeRow)->getColumn();
@@ -1967,6 +1987,7 @@ class Application_Service_Reports
                 for ($i = 0; $i < $totScoreHeadingsCount; $i++) {
                     $cellName = $totalScoreSheet->getCellByColumnAndRow($i, $totScoreRow)->getColumn();
                     $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle);
+                    $totalScoreSheet->getStyleByColumnAndRow($i, $totScoreRow)->getAlignment()->setWrapText(true);
                 }
 
                 $currentRow++;
@@ -2353,7 +2374,7 @@ class Application_Service_Reports
         $totalScoreSheet->setTitle('Total Score');
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension(1)->setRowHeight(30);
-        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance', 'Comments', 'Comments2', 'Comments3', 'Corrective Action');
+        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance');
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
@@ -2753,14 +2774,14 @@ class Application_Service_Reports
             $colNamesArray[] = $refRow['sample_label'];
             if ($methodOfEvaluation == 'iso17043') {
                 $colNamesArray[] = "z Score for " . $refRow['sample_label'];
-            
-            $colNamesArray[] = "Grade for " . $refRow['sample_label'];
-        }
+
+                $colNamesArray[] = "Grade for " . $refRow['sample_label'];
+            }
             $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
             $colNameCount++;
         }
-        
+
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $colNamesArray[] = "Final Score";
@@ -3850,7 +3871,7 @@ class Application_Service_Reports
         $totalScoreSheet->setTitle('Total Score');
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension(1)->setRowHeight(30);
-        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance', 'Comments', 'Comments2', 'Comments3', 'Corrective Action');
+        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance');
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;

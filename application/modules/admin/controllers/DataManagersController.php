@@ -32,7 +32,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         }else{
             $this->view->participants = $participantService->getAllActiveParticipants();
         }
-        if ($this->_hasParam('contact')) {
+        if ($this->hasParam('contact')) {
             $contact = new Application_Model_DbTable_ContactUs();
             $this->view->contact = $contact->getContact($this->_getParam('contact'));
         }
@@ -47,7 +47,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $userService->updateUser($params);
             $this->redirect("/admin/data-managers");
         } else {
-            if ($this->_hasParam('id')) {
+            if ($this->hasParam('id')) {
                 $userId = (int) $this->_getParam('id');
                 $this->view->rsUser = $userService->getUserInfoBySystemId($userId);
                 $this->view->participants = $participantService->getAllActiveParticipants();
@@ -60,7 +60,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
     {
         $this->_helper->layout()->disableLayout();
         $participantService = new Application_Service_Participants();
-        if ($this->_hasParam('search')) {
+        if ($this->hasParam('search')) {
             $search = $this->_getParam('search');
             $this->view->participants = $participantService->getParticipantSearch($search);
         }

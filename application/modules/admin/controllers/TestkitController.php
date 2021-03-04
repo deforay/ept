@@ -36,7 +36,7 @@ class Admin_TestkitController extends Zend_Controller_Action {
             $params = $this->getRequest()->getPost();
             $schemeService->updateTestkit($params);
             $this->redirect("/admin/testkit");
-        } else if ($this->_hasParam('53s5k85_8d')) {
+        } else if ($this->hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
             $this->view->result = $schemeService->getDtsTestkit($id);
         } else {
@@ -54,7 +54,7 @@ class Admin_TestkitController extends Zend_Controller_Action {
     }
 
     public function getTestkitAction() {
-        if ($this->_hasParam('stage')) {
+        if ($this->hasParam('stage')) {
             $stage = $this->_getParam('stage');
             $schemeService = new Application_Service_Schemes();
             $this->view->testkitList = $schemeService->getAllDtsTestKitList(true);

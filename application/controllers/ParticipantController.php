@@ -226,7 +226,7 @@ class ParticipantController extends Zend_Controller_Action
     public function downloadAction()
     {
         $this->_helper->layout()->disableLayout();
-        if ($this->_hasParam('d92nl9d8d')) {
+        if ($this->hasParam('d92nl9d8d')) {
             $id = (int) base64_decode($this->_getParam('d92nl9d8d'));
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $this->view->result = $db->fetchRow($db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id'))
@@ -305,7 +305,7 @@ class ParticipantController extends Zend_Controller_Action
         $participantService = new Application_Service_Participants();
         $commonService = new Application_Service_Common();
 
-        if ($this->_hasParam('pid')) {
+        if ($this->hasParam('pid')) {
             $pId = $this->_getParam('pid');
             $shipmentService = new Application_Service_Shipments();
             $this->view->certificate = $shipmentService->getParticipantShipments($pId);
@@ -324,7 +324,7 @@ class ParticipantController extends Zend_Controller_Action
 
     public function downloadFileDetailsAction()
     {
-        if ($this->_hasParam('fileName')) {
+        if ($this->hasParam('fileName')) {
             $params = $this->getAllParams();
             $this->view->parameters = $params;
         } else {

@@ -32,7 +32,7 @@ class ShipmentFormController extends Zend_Controller_Action
     public function downloadAction()
     {
          $this->_helper->layout()->disableLayout();
-        if($this->_hasParam('sId')){
+        if($this->hasParam('sId')){
             $id = (int)base64_decode($this->_getParam('sId'));
             $reportService = new Application_Service_Reports();
             //$schemeService = new Application_Service_Schemes();

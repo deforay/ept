@@ -201,9 +201,11 @@ class Pt_Commons_General {
         if ($date == null || $date == "" || $date == "0000-00-00") {
             return "";
         } else {
-            $dateArray = explode('-', $date);
+            $dateTimeArray = explode(' ', $date);
+            $time = isset($dateTimeArray[1]) ? " " . $dateTimeArray[1] : '';
+            $dateArray = explode('-', $dateTimeArray[0]);
             $newDate = $dateArray[2] . "/";
-            return $newDate .= $dateArray[1] . "/" . $dateArray[0];
+            return $newDate .= $dateArray[1] . "/" . $dateArray[0].$time;
         }
     }
 

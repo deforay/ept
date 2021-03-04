@@ -25,7 +25,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
 
     public function getShipmentsAction()
     {
-        if ($this->_hasParam('did')) {
+        if ($this->hasParam('did')) {
             $id = (int)($this->_getParam('did'));
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipments = $shipmentService->getShipmentInReports($id);
@@ -45,7 +45,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
 
     public function getFinalizedShipmentsAction()
     {
-        if ($this->_hasParam('did')) {
+        if ($this->hasParam('did')) {
             $id = (int)($this->_getParam('did'));
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipments = $shipmentService->getFinalizedShipmentInReports($id);
@@ -57,7 +57,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
     public function viewFinalizedShipmentAction()
     {
         $shipmentService = new Application_Service_Shipments();
-        if ($this->_hasParam('sid')) {
+        if ($this->hasParam('sid')) {
             $id = (int)base64_decode($this->_getParam('sid'));
             $reEvaluate = false;
             $evalService = new Application_Service_Evaluation();

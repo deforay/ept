@@ -33,12 +33,12 @@ class Admin_ShipmentController extends Zend_Controller_Action
             //Zend_Debug::dump($params);die;
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getAllShipments($params);
-        } else if ($this->_hasParam('searchString')) {
+        } else if ($this->hasParam('searchString')) {
             $this->view->searchData = $this->_getParam('searchString');
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
-        if ($this->_hasParam('did')) {
+        if ($this->hasParam('did')) {
             $this->view->selectedDistribution = (int) base64_decode($this->_getParam('did'));
         } else {
             $this->view->selectedDistribution = "";
@@ -111,7 +111,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $shipmentService->shipItNow($params);
             $this->redirect("/admin/shipment");
         } else {
-            if ($this->_hasParam('sid')) {
+            if ($this->hasParam('sid')) {
                 $participantService = new Application_Service_Participants();
                 $sid = (int) base64_decode($this->_getParam('sid'));
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
@@ -132,7 +132,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function removeAction()
     {
-        if ($this->_hasParam('sid')) {
+        if ($this->hasParam('sid')) {
             $sid = (int) base64_decode($this->_getParam('sid'));
             $shipmentService = new Application_Service_Shipments();
             $this->view->message = $shipmentService->removeShipment($sid);
@@ -150,7 +150,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $shipmentService->updateShipment($params);
             $this->redirect("/admin/shipment");
         } else {
-            if ($this->_hasParam('sid')) {
+            if ($this->hasParam('sid')) {
                 $sid = (int) base64_decode($this->_getParam('sid'));
                 $shipmentService = new Application_Service_Shipments();
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
@@ -187,7 +187,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $participantService->getShipmentEnrollement($params);
         }
-        if ($this->_hasParam('id')) {
+        if ($this->hasParam('id')) {
             $shipmentId = (int) base64_decode($this->_getParam('id'));
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipment = $shipmentService->getShipment($shipmentId);
@@ -199,7 +199,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function deleteShipmentParticipantAction()
     {
-        if ($this->_hasParam('mid')) {
+        if ($this->hasParam('mid')) {
             if ($this->getRequest()->isPost()) {
                 $mapId = (int) base64_decode($this->_getParam('mid'));
                 $sId = (int) base64_decode($this->_getParam('sid'));
@@ -260,7 +260,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function manageEnrollAction()
     {
-        if ($this->_hasParam('sid')) {
+        if ($this->hasParam('sid')) {
             $shipmentId = (int) base64_decode($this->_getParam('sid'));
             $schemeType = base64_decode($this->_getParam('sctype'));
             $shipmentService = new Application_Service_Shipments();
@@ -299,7 +299,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function enrollShipmentParticipantAction()
     {
-        if ($this->_hasParam('sid') && $this->_hasParam('pid')) {
+        if ($this->hasParam('sid') && $this->hasParam('pid')) {
             if ($this->getRequest()->isPost()) {
                 $shipmentId = (int) base64_decode($this->_getParam('sid'));
                 $participantId = $this->_getParam('pid');
@@ -313,7 +313,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function responseSwitchAction()
     {
-        if ($this->_hasParam('sid') && $this->_hasParam('switchStatus')) {
+        if ($this->hasParam('sid') && $this->hasParam('switchStatus')) {
             if ($this->getRequest()->isPost()) {
                 $shipmentId = (int) ($this->_getParam('sid'));
                 $switchStatus = strtolower($this->_getParam('switchStatus'));

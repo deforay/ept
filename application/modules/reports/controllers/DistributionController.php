@@ -25,7 +25,7 @@ class Reports_DistributionController extends Zend_Controller_Action
 
     public function getShipmentsAction()
     {
-        if ($this->_hasParam('did')) {
+        if ($this->hasParam('did')) {
             $id = (int) ($this->_getParam('did'));
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipments = $shipmentService->getShipmentInReports($id);
@@ -37,7 +37,7 @@ class Reports_DistributionController extends Zend_Controller_Action
     public function shipmentAction()
     {
         $shipmentService = new Application_Service_Shipments();
-        if ($this->_hasParam('sid')) {
+        if ($this->hasParam('sid')) {
             $id = (int) base64_decode($this->_getParam('sid'));
             $reEvaluate = false;
             $evalService = new Application_Service_Evaluation();
@@ -56,7 +56,7 @@ class Reports_DistributionController extends Zend_Controller_Action
     public function generateReportsAction()
     {
         $this->_helper->layout()->disableLayout();
-        if ($this->_hasParam('sId')) {
+        if ($this->hasParam('sId')) {
             ini_set('memory_limit', '-1');
             $id = (int) base64_decode($this->_getParam('sId'));
             $sLimit = (int) $this->_getParam('limitVal');
@@ -89,7 +89,7 @@ class Reports_DistributionController extends Zend_Controller_Action
     public function generateSummaryReportsAction()
     {
         $this->_helper->layout()->disableLayout();
-        if ($this->_hasParam('sId')) {
+        if ($this->hasParam('sId')) {
             $id = (int) base64_decode($this->_getParam('sId'));
             $comingFrom = $this->_getParam('comingFrom');
             $reportService = new Application_Service_Reports();
@@ -108,7 +108,7 @@ class Reports_DistributionController extends Zend_Controller_Action
     public function finalizeAction()
     {
         $shipmentService = new Application_Service_Shipments();
-        if ($this->_hasParam('sid')) {
+        if ($this->hasParam('sid')) {
             $id = (int) base64_decode($this->_getParam('sid'));
             $reEvaluate = true;
             $evalService = new Application_Service_Evaluation();
@@ -124,7 +124,7 @@ class Reports_DistributionController extends Zend_Controller_Action
     public function bulkGenerateReportAction()
     {
         $this->_helper->layout()->disableLayout();
-        if ($this->_hasParam('sid')) {
+        if ($this->hasParam('sid')) {
             $params = $this->getAllParams();
             $evalService = new Application_Service_Evaluation();
             $this->view->result = $evalService->saveBulkGenerateReports($params);

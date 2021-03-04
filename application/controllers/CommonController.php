@@ -24,7 +24,7 @@ class CommonController extends Zend_Controller_Action
 
     public function checkDuplicateAction()
     {
-        if (!$this->_hasParam('tableName')) {
+        if (!$this->hasParam('tableName')) {
             $this->view->data = "";
         } else {
             $params = $this->getAllParams();
@@ -40,7 +40,7 @@ class CommonController extends Zend_Controller_Action
 
     public function deleteResponseAction()
     {
-        if($this->_hasParam('mid')){
+        if($this->hasParam('mid')){
             if ($this->getRequest()->isPost()) {
                 $mapId = (int)base64_decode($this->_getParam('mid'));
                 $schemeType = ($this->_getParam('schemeType'));
