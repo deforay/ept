@@ -47,8 +47,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         font-size: smaller;
     }
     ul.showlist li {
-        display: inherit;
-        border-bottom: 1px solid #80808070;
+        display: contents;
     }
     
     ul.showlist li:last-child {
@@ -796,9 +795,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
                             </td>\
                         </tr>');
-                        <?php if($gene['gene_id'] != ""){ ?>
-                        geneDetails.push("<li>Row-"+sampleCounter+" <b>(Gene Type-<?php echo $this->allGeneTypes[$gene['gene_id']];?>)(CT Value-<?php echo $gene['ct_value'];?>)</b></li>");
                         sampleCounter++;
+                        <?php if($gene['gene_id'] != ""){ ?>
+                        geneDetails.push("<li><?php echo $this->allGeneTypes[$gene['gene_id']];?>=<?php echo $gene['ct_value'];?></li>");
                             $('#geneTypeAnchor'+sample).html('<i class="icon-beaker"></i> Edit Gene Types');
                             $('#geneTypeAnchor'+sample).removeClass('btn-primary');
                             $('#geneTypeAnchor'+sample).addClass('btn-danger');
@@ -808,7 +807,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                 } 
             }?>
         $('#showDetails'+sampleId).html('');
-        $('#showDetails'+sampleId).html(geneDetails.join(""));
+        $('#showDetails'+sampleId).html(geneDetails.join());
         <?php }else {?>
 
         strTxt.push('<tr>\
@@ -891,13 +890,17 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         flag = false;
         let geneDetails = [];
         for(i=1;i<=counter;i++){
-            if($(".geneTypeInput"+id+i).val() != "" || $(".cTValue"+id+i).val() != "" || $(".remarks"+id+i).val() != ""){
+            if(($(".geneTypeInput"+id+i).val() != "" || $(".cTValue"+id+i).val() != "" || $(".remarks"+id+i).val() != "") && ($(".geneTypeInput"+id+i).val() != undefined && $(".cTValue"+id+i).val() != undefined && $(".remarks"+id+i).val() != undefined)){
                 flag = true;
-                geneDetails.push("<li>Row-"+i+" <b>(Gene Type-"+$(".geneTypeInput"+id+i+" option:selected").text()+")(CT Value-"+$(".cTValue"+id+i).val()+")</b></li>");
+                var selectedType = "";
+                if($(".geneTypeInput"+id+i).val() != "" && $(".geneTypeInput"+id+i).val() != undefined){
+                    var selectedType = $(".geneTypeInput"+id+i+" option:selected").text();
+                }
+                geneDetails.push("<li>"+selectedType.replace('-- Select --','')+"="+$(".cTValue"+id+i).val()+"</li>");
             }
         }
         $('#showDetails'+id).html('');
-        $('#showDetails'+id).html(geneDetails.join(""));
+        $('#showDetails'+id).html(geneDetails.join());
         if(flag){
             $('#geneTypeAnchor'+id).html('<i class="icon-beaker"></i> Edit Gene Types')
             $('#geneTypeAnchor'+id).removeClass('btn-primary')

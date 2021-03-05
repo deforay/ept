@@ -16,6 +16,23 @@ if ($next < count($urlListArray)) {
 }
 // Zend_Debug::dump($this->evaluateData);die;
 ?>
+<style>
+	ul.showlist {
+        list-style: none;
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+        font-size: smaller;
+    }
+    ul.showlist li {
+        display: contents;
+    }
+    
+    ul.showlist li:last-child {
+        display: inherit;
+        border-bottom: none !important;
+    }
+</style>
 <br />
 <legend>Participant Result Summary</legend>
 <?php
