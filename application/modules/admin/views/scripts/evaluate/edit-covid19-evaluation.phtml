@@ -401,6 +401,11 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                             </td>\
                         </tr>');
                         sampleCounter++;
+                        <?php if($gene['gene_id'] != ""){ ?>
+                            $('#geneTypeAnchor'+sample).html('<i class="icon-beaker"></i> Edit Gene Types');
+                            $('#geneTypeAnchor'+sample).removeClass('btn-primary');
+                            $('#geneTypeAnchor'+sample).addClass('btn-danger');
+                        <?php } ?>
                     }
                     <?php 
                 } 
