@@ -13,10 +13,6 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
 		
 		
         $sql = $this->getAdapter()->select()->from(array($this->_name), array('gene_id', 'gene_name'))->where("scheme_type = '$scheme'");
-
-        if ($countryAdapted) {
-            $sql = $sql->where('country_adapted = 1');
-        }
         $stmt = $this->getAdapter()->fetchAll($sql);
 
         foreach ($stmt as $type) {

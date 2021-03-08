@@ -413,11 +413,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             </tr>
                             <thead>
                                 <tr align="CENTER" class="dark">
-                                    <th></th>
+                                    <th>Sample Number</th>
                                     <th class='resultOne'>Result-1</th>
                                     <th class='testTwo'>Result-2</th>
                                     <th class='testThree'>Result-3</th>
-                                    <th>Final Result</th>
+                                    <th>Final Interpretation</th>
                                     <th>Gene Types</th>
                                 </tr>
                             </thead>
@@ -788,11 +788,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                     if(sample == sampleId){
                         strTxt.push('<tr>\
                             <td><select onChange="geneTypeInputChange(this,' + sampleCounter +')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, $gene['gene_id'], '-- Select --'); ?></select></td>\
-                            <td><input value="<?php echo $gene['ct_value'];?>" onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleId + '" class="form-control cTValue' + sampleId  + sampleCounter + '"/></td>\
-                            <td><textarea onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
+                            <td><input placeholder="Enter CT Value" value="<?php echo $gene['ct_value'];?>" onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleId + '" class="form-control cTValue' + sampleId  + sampleCounter + '"/></td>\
+                            <td><textarea placeholder="Enter Remarks" onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
                             <td>\
-                                <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
-                                <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+                                <a href="javascript:void(0);" id="removeNode' + sampleId + '" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+                                <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
                             </td>\
                         </tr>');
                         sampleCounter++;
@@ -812,11 +812,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 
         strTxt.push('<tr>\
             <td><select onChange="geneTypeInputChange(this,' + sampleCounter +')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select></td>\
-            <td><input value="<?php echo $gene['ct_value'];?>" onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleId + '" class="form-control cTValue' + sampleId  + sampleCounter + '"/></td>\
-            <td><textarea onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
+            <td><input placeholder="Enter CT Value" value="<?php echo $gene['ct_value'];?>" onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleId + '" class="form-control cTValue' + sampleId  + sampleCounter + '"/></td>\
+            <td><textarea placeholder="Enter Remarks" onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
             <td>\
-                <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
-                <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+                <a href="javascript:void(0);" id="removeNode' + sampleId + '" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+                <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
             </td>\
         </tr>');
         <?php } ?>
@@ -826,7 +826,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         <div class="modal-header">\
         <h4 class="modal-title"> Gene Types (Shipment <?php echo $this->shipment["shipment_code"];?>)</h4>\
         </div>\
-        <div class="modal-body"><span style="font-weight:700;">Gene details for - '+sampleLabel+'</span> \
+        <div class="modal-body"><span style="font-weight:700;font-size: medium;">Identified Gene Types for - '+sampleLabel+'</span> \
         <div class="row">\
             <div >\
             <table style="width: 100%;margin: 0 auto;" id="geneTypeTable' + sampleId + '" class="table table-bordered table-striped clearfix">\
@@ -844,7 +844,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         </div>\
         </div>\
         <div class="modal-footer">\
-        <button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'geneTypes' + sampleId + '\')">OK</button>\
+        <button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'geneTypes' + sampleId + '\','+sampleId+')">OK</button>\
         </div>\
     </div>');
 
@@ -853,11 +853,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         sampleCounter = $("#geneTypeTable" + sampleId + " tbody tr").length;
 		$(obj.parentNode.parentNode).after('<tr> \
             <td><select onChange="geneTypeInputChange(this,' + sampleCounter +')" class="form-control geneTypeInput' + sampleId  + sampleCounter + '"  id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select></td> \
-            <td><input onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleId + '" class="form-control cTValue' + sampleId  + sampleCounter + '"/></td> \
-            <td><textarea onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"></textarea></td> \
+            <td><input placeholder="Enter CT Value" onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleId + '" class="form-control cTValue' + sampleId  + sampleCounter + '"/></td> \
+            <td><textarea placeholder="Enter Remarks" onChange="geneTypeInputChange(this,' + sampleCounter +')" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"></textarea></td> \
             <td> \
-                <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
-                <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+                <a href="javascript:void(0);" id="removeNode' + sampleId + '" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
+                <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
             </td> \
     </tr>');
 		$(".datepicker").datepicker({
@@ -865,27 +865,53 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 		});
 	}
 
-    function removeGeneTypeRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal", function() {
-			$(this).remove();
+    function removeGeneTypeRow(obj, sampleId, count) {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+            $.when($(this).remove()).then( 
+                // geneTypeInputChange("", sampleId)
+            );
 		});
+        rl = document.getElementById("geneTypeTable" + sampleId).rows.length-1;
+        if (rl == 0) {
+            addNewGeneTypeRow(obj, sampleId);
+        }
 	}
 
-    function closeShipmentModal(divId) {
-		document.getElementById(divId).innerHTML = getEl("mbd").innerHTML;
-
-		$("#mbd input:text").each(function(i, obj) {
-			$("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
-		});
-		$("#mbd select").each(function(i, obj) {
-			$("#" + divId + " select:eq(" + i + ")").val($(this).val());
-		});
-
-		hidedefModal();
+    function closeShipmentModal(divId, sampleId) {
+        let counter = $("#geneTypeTable" + sampleId + " tbody tr").length-1;
+        let modelFlag = true;
+        
+        for(i=1;i<=counter;i++){
+            if($(".geneTypeInput"+sampleId+i).val() != ""){
+                if($(".cTValue"+sampleId+i).val() == ""){
+                    alert('Please enter the CT Value');
+                    $(".cTValue"+sampleId+i).focus();
+                    $(".cTValue"+sampleId+i).css('border','1px solid red')
+                    modelFlag = false;
+                } 
+            }
+        }
+        console.log("came");
+        if(modelFlag){
+            document.getElementById(divId).innerHTML = getEl("mbd").innerHTML;
+    
+            $("#mbd input:text").each(function(i, obj) {
+                $("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
+            });
+            $("#mbd select").each(function(i, obj) {
+                $("#" + divId + " select:eq(" + i + ")").val($(this).val());
+            });
+    
+            hidedefModal();
+        }
 	}
     
-    function geneTypeInputChange(obj){
-        let id = $(obj).attr('id');
+    function geneTypeInputChange(obj, sampleId = ""){
+        if(sampleId > 0 && sampleId != "" && sampleId != undefined){
+            var id = sampleId;
+        }else{
+            var id = $(obj).attr('id');
+        }
         let counter = $("#geneTypeTable" + id + " tbody tr").length-1;
         flag = false;
         let geneDetails = [];
