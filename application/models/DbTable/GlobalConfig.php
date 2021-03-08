@@ -44,8 +44,13 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         }
     }
 
-    public function getTextUnderLogoContent()
+    public function getPTProgramName()
     {
-        return $this->fetchRow('name = "text_under_logo"');
+        return $this->fetchRow('name = "pt_program_name"');
+    }
+    
+    public function getPTProgramShortName()
+    {
+        return $this->fetchRow('name = "pt_program_short_name"');
     }
 }

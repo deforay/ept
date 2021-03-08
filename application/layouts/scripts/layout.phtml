@@ -4,6 +4,11 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $activeMenu = isset($this->layout()->activeMenu) ? $this->layout()->activeMenu : "";
 $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->activeSubMenu : "";
 
+$text = $this->PTProgramShortName();
+$shortName = "";
+if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
+	$shortName = ucwords($text['value']);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -81,7 +86,7 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
               </li>
 			  <?php } else{ ?>
 			  <li>
-				  <a href="<?php echo $this->url(array("controller"=>"contact-us","action"=>"index"),null,true) ?>"><i class="icon icon-group"></i> <span>Request for PT Enrollment</span></a>
+				  <a href="<?php echo $this->url(array("controller"=>"contact-us","action"=>"index"),null,true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName;?> Enrollment</span></a>
 				</li>
 				 <li>
 				  <a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>"><i class="icon icon-lock"></i> <span>Participant Login</span></a>
@@ -151,7 +156,7 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
 
 <?php if(!isset($authNameSpace->dm_id)){ ?>
 				<li>
-				  <a href="<?php echo $this->url(array("controller"=>"contact-us","action"=>"index"),null,true) ?>"><i class="icon icon-group"></i> <span>Request for PT Enrollment</span></a>
+				  <a href="<?php echo $this->url(array("controller"=>"contact-us","action"=>"index"),null,true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName;?> Enrollment</span></a>
 				</li>
 				 <li>
 				  <a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>"><i class="icon icon-lock"></i> <span>Participant Login</span></a>

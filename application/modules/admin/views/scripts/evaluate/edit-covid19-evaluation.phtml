@@ -252,7 +252,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         <tr style="text-align:center">
 
             <th style="white-space: nowrap;vertical-align: middle;">
-                <?php echo ($sample['sample_label']); ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+                <span id="sampleLabel<?php echo $sample['sample_id']; ?>"><?php echo ($sample['sample_label']); ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?></span>
                 <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
             </th>
 
@@ -426,13 +426,13 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
             </td>\
         </tr>');
         <?php } ?>
-        
+        var sampleLabel = $('#sampleLabel'+sampleId).html();
 		$("#geneBlockHolder").after('<div id="geneTypes' + sampleId + '" class="dialog">\
         <span onClick="hidedefModal()" class="closeModal"></span>\
         <div class="modal-header">\
         <h4 class="modal-title"> Gene Types for (Shipment <?php echo $this->shipment["shipment_code"];?>)</h4>\
         </div>\
-        <div class="modal-body">\
+        <div class="modal-body"><span style="font-weight:700;font-size: medium;">Identified Gene Types for - '+sampleLabel+'</span> \
         <div class="row">\
             <div >\
             <table style="width: 100%;margin: 0 auto;" id="geneTypeTable' + sampleId + '" class="table table-bordered table-striped clearfix">\

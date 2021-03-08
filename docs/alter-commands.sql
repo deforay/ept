@@ -2760,3 +2760,7 @@ CREATE TABLE `covid19_identified_genes` (
  CONSTRAINT `covid19_identified_genes_ibfk_1` FOREIGN KEY (`map_id`) REFERENCES `shipment_participant_map` (`map_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
  CONSTRAINT `covid19_identified_genes_ibfk_2` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- Thana 08-Mar-2021
+UPDATE `global_config` SET `name` = 'pt_program_name' WHERE `global_config`.`name` = 'text_under_logo';
+UPDATE `global_config` SET `value` = 'EQA Proficiency Testing' WHERE `global_config`.`name` = 'pt_program_name';
+INSERT INTO `global_config` (`name`, `value`) VALUES ('pt_program_short_name', 'EQA PT');

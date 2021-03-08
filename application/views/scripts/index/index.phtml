@@ -1,5 +1,12 @@
 <?php
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
+
+
+$text = $this->PTProgramShortName();
+$shortName = "";
+if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
+	$shortName = ucwords($text['value']);
+}
 ?>
 <div class="col-lg-12">
     <?php
@@ -12,7 +19,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
     <div class="col-lg-12" style="margin-top:30px;">
         <a class="btn btn-success btn-lg col-lg-6" style="color:#fff;" href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span>Click here for Participant Login</span></a>
         <span class="col-lg-1"></span>
-        <a class="btn btn-success btn-lg  col-lg-5" style="color:#fff;" href="<?php echo $this->url(array("controller" => "pt-request-enrollment", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for PT Enrollment</span></a>
+        <a class="btn btn-success btn-lg  col-lg-5" style="color:#fff;" href="<?php echo $this->url(array("controller" => "pt-request-enrollment", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName;?> Enrollment</span></a>
         <br>
     </div>
 <?php } ?>
