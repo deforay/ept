@@ -2428,7 +2428,7 @@ CREATE TABLE `notify` (
  `status` varchar(50) NOT NULL DEFAULT 'read' COMMENT 'read, readed for notify status',
  `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'current insertion date time',
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- Thanaseelan 15 May, 2020
 ALTER TABLE `data_manager` ADD `force_profile_check` VARCHAR(20) NULL DEFAULT 'no' AFTER `force_password_reset`;
 -- Thanaseelan 22 May, 2020
@@ -2512,7 +2512,7 @@ CREATE TABLE `push_notification` (
  `token_identify_id` int DEFAULT NULL,
  `identify_type` varchar(50) DEFAULT NULL,
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ALTER TABLE `push_notification` CHANGE `notification_json` `notification_json` TEXT NULL DEFAULT NULL COMMENT 'create notify message (title body and icon) and convert into json and store here', CHANGE `data_json` `data_json` TEXT NULL DEFAULT NULL COMMENT 'create notify data message and convert into Json then store here', CHANGE `push_status` `push_status` VARCHAR(50) NULL DEFAULT NULL COMMENT 'refuse, pending, send, not-send', CHANGE `token_identify_id` `token_identify_id` INT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM', CHANGE `identify_type` `identify_type` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Type of identify id either shipment, people(DM), General and not-responded people.';
 ALTER TABLE `push_notification` ADD `notification_type` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Reports, Shipment, General' AFTER `identify_type`;
 ALTER TABLE `push_notification` CHANGE `token_identify_id` `token_identify_id` TEXT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM';
@@ -2527,7 +2527,7 @@ CREATE TABLE `push_notification_template` (
  `data_msg` text,
  `icon` varchar(255) DEFAULT NULL,
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `push_notification_template` (`id`, `purpose`, `notify_title`, `notify_body`, `data_msg`, `icon`) VALUES (NULL, 'announcement', 'Announcement', 'Announcement Body', 'Announcement message', 'ic_launcher'), (NULL, 'report', 'Report', 'Report Body', 'Report Data Message', 'ic_launcher'), (NULL, 'not_participated', 'Not Participated', 'Not Participated Body', 'Not Participated Data Message', 'ic_launcher'), (NULL, 'new_shipment', 'New Shipment', 'New Shipment Body', 'New Shipment Data Message', 'ic_launcher');
 -- Thana 9 Jul, 2020
@@ -2539,7 +2539,7 @@ CREATE TABLE `announcements_notification` (
  `created_on` datetime DEFAULT NULL,
  `created_by` int DEFAULT NULL,
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- Thana 13 Jul, 2020
 ALTER TABLE `evaluation_queue` ADD `date_finalised` DATETIME NULL DEFAULT NULL AFTER `last_updated_on`;
 -- Version 6.0 14-July-2020
@@ -2564,7 +2564,7 @@ UPDATE `shipment` SET `shipment_attributes` = '{\r\n \"sampleType\": \"dried\",\
 ALTER TABLE `countries` CHANGE `iso_name` `iso_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE `data_manager` CHANGE `dm_id` `dm_id` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `password` `password` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `institute` `institute` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL, CHANGE `first_name` `first_name` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `last_name` `last_name` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `phone` `phone` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `secondary_email` `secondary_email` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `UserFld1` `UserFld1` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `UserFld2` `UserFld2` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `UserFld3` `UserFld3` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `mobile` `mobile` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `force_profile_check` `force_profile_check` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT 'no', CHANGE `qc_access` `qc_access` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `enable_adding_test_response_date` `enable_adding_test_response_date` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `enable_choosing_mode_of_receipt` `enable_choosing_mode_of_receipt` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `view_only_access` `view_only_access` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `created_on` `created_on` DATETIME NULL DEFAULT NULL, CHANGE `created_by` `created_by` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `updated_on` `updated_on` DATETIME NULL DEFAULT NULL, CHANGE `updated_by` `updated_by` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `last_login` `last_login` DATETIME NULL DEFAULT NULL, CHANGE `auth_token` `auth_token` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `download_link` `download_link` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `push_notify_token` `push_notify_token` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `push_status` `push_status` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT 'not-send', CHANGE `marked_push_notify` `marked_push_notify` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
 -- Thana 16 Sep 2020
-ALTER TABLE `notify` CHANGE `status` `status` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'unread' COMMENT 'read, readed for notify status';
+ALTER TABLE `notify` CHANGE `status` `status` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'unread' COMMENT 'read, readed for notify status';
 
 -- Amit 09 Oct 2020
 ALTER TABLE `shipment_participant_map` CHANGE `user_comment` `user_comment` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
@@ -2745,7 +2745,7 @@ CREATE TABLE `r_covid19_gene_types` (
  `created_by` int DEFAULT NULL,
  `created_on` datetime DEFAULT NULL,
  PRIMARY KEY (`gene_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ALTER TABLE `r_covid19_gene_types` ADD `scheme_type` varchar(255) NULL DEFAULT NULL AFTER `gene_name`;
 
 CREATE TABLE `covid19_identified_genes` (
@@ -2759,7 +2759,8 @@ CREATE TABLE `covid19_identified_genes` (
  KEY `shipment_id` (`shipment_id`),
  CONSTRAINT `covid19_identified_genes_ibfk_1` FOREIGN KEY (`map_id`) REFERENCES `shipment_participant_map` (`map_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
  CONSTRAINT `covid19_identified_genes_ibfk_2` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Thana 08-Mar-2021
 UPDATE `global_config` SET `name` = 'pt_program_name' WHERE `global_config`.`name` = 'text_under_logo';
 UPDATE `global_config` SET `value` = 'EQA Proficiency Testing' WHERE `global_config`.`name` = 'pt_program_name';
