@@ -2764,3 +2764,5 @@ CREATE TABLE `covid19_identified_genes` (
 UPDATE `global_config` SET `name` = 'pt_program_name' WHERE `global_config`.`name` = 'text_under_logo';
 UPDATE `global_config` SET `value` = 'EQA Proficiency Testing' WHERE `global_config`.`name` = 'pt_program_name';
 INSERT INTO `global_config` (`name`, `value`) VALUES ('pt_program_short_name', 'EQA PT');
+-- Thana 09-Mar-2021
+ALTER TABLE `shipment_participant_map` ADD `specimen_volume` VARCHAR(255) NULL DEFAULT NULL AFTER `number_of_tests`;

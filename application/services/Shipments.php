@@ -524,6 +524,7 @@ class Application_Service_Shipments
                 "updated_by_user" => $authNameSpace->dm_id,
                 "mode_id" => $params['modeOfReceipt'],
                 "number_of_tests" => $params['numberOfParticipantTest'],
+                "specimen_volume" => $params['specimenVolume'],
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
             
