@@ -824,27 +824,25 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 		$("#geneBlockHolder").after('<div id="geneTypes' + sampleId + '" class="dialog">\
         <span onClick="hidedefModal()" class="closeModal"></span>\
         <div class="modal-header">\
-        <h4 class="modal-title"> Gene Types (Shipment <?php echo $this->shipment["shipment_code"];?>)</h4>\
+            <h4 class="modal-title"> Gene Types (Shipment <?php echo $this->shipment["shipment_code"];?>)</h4>\
         </div>\
         <div class="modal-body"><span style="font-weight:700;font-size: medium;">Identified Gene Types for - '+sampleLabel+'</span> \
-        <div class="row">\
-            <div >\
-            <table style="width: 100%;margin: 0 auto;" id="geneTypeTable' + sampleId + '" class="table table-bordered table-striped clearfix">\
-                <thead>\
-                    <tr align="center">\
-                        <th style="text-align: center;">Gene Type</th>\
-                        <th style="text-align: center;">CT Value</th>\
-                        <th style="text-align: center;">Remarks</th>\
-                        <th style="text-align: center;">Action</th>\
-                    </tr>\
-                </thead>\
-                <tbody>'+strTxt.join()+'</tbody>\
-            </table>\
+            <div class="row">\
+                <table style="width: 100%;margin: 0 auto;" id="geneTypeTable' + sampleId + '" class="table table-bordered table-striped clearfix">\
+                    <thead>\
+                        <tr align="center">\
+                            <th style="text-align: center;">Gene Type</th>\
+                            <th style="text-align: center;">CT Value</th>\
+                            <th style="text-align: center;">Remarks</th>\
+                            <th style="text-align: center;">Action</th>\
+                        </tr>\
+                    </thead>\
+                    <tbody>'+strTxt.join("")+'</tbody>\
+                </table>\
             </div>\
         </div>\
-        </div>\
         <div class="modal-footer">\
-        <button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'geneTypes' + sampleId + '\','+sampleId+')">OK</button>\
+            <button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'geneTypes' + sampleId + '\','+sampleId+')">OK</button>\
         </div>\
     </div>');
 
@@ -866,13 +864,14 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 	}
 
     function removeGeneTypeRow(obj, sampleId, count) {
+        $(".geneTypeInput"+sampleId+count).val('');$(".cTValue"+sampleId+count).val('');$(".remarks"+sampleId+count).val('');
         $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $.when($(this).remove()).then( 
-                // geneTypeInputChange("", sampleId)
+                geneTypeInputChange("", sampleId)
             );
 		});
         rl = document.getElementById("geneTypeTable" + sampleId).rows.length-1;
-        if (rl == 0) {
+        if (rl == 1) {
             addNewGeneTypeRow(obj, sampleId);
         }
 	}
@@ -891,7 +890,6 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                 } 
             }
         }
-        console.log("came");
         if(modelFlag){
             document.getElementById(divId).innerHTML = getEl("mbd").innerHTML;
     

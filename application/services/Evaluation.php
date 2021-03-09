@@ -845,6 +845,7 @@ class Application_Service_Evaluation
 				"supervisor_approval" 		=> $params['supervisorApproval'],
 				"participant_supervisor" 	=> $params['participantSupervisor'],
 				"number_of_tests" 			=> $params['numberOfParticipantTest'],
+				"specimen_volume" 			=> $params['specimenVolume'],
 				"user_comment" 				=> $params['userComments'],
 				"updated_by_admin" 			=> $admin,
 				"updated_on_admin" 			=> new Zend_Db_Expr('now()')
