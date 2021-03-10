@@ -178,7 +178,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     </tr>
     <thead>
         <tr align="CENTER" class="dark">
-            <th></th>
+            <th style="text-align: center;">Sample Number</th>
             <th style="text-align: center;width:14.2%;">Result-1</th>
             <th style="text-align: center;width:14.2%;" class='testTwo'>Result-2</th>
             <th style="text-align: center;width:14.2%;" class='testThree'>Result-3</th>
@@ -405,7 +405,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                             <td><input type="hidden" value="<?php echo $this->allGeneTypes[$gene['gene_id']];?>" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control gene-input' + sampleId +' geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, $gene['gene_id'], '-- Select --'); ?></select></td>\
                             <td><input placeholder="Enter CT Value" value="<?php echo $gene['ct_value'];?>" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td>\
                             <td><textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
-                            <td>\
+                            <td style="text-align:center">\
                                 <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
                                 <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
                             </td>\
@@ -429,7 +429,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                 <td><input type="hidden" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select></td>\
                 <td><input placeholder="Enter CT Value" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td>\
                 <td><textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
-                <td>\
+                <td style="text-align:center">\
                     <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
                     <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
                 </td>\
@@ -463,22 +463,23 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 
 	}
     function addNewGeneTypeRow(obj, sampleId) {
-        sampleCounter = document.getElementById("geneTypeTable" + sampleId).rows.length+1;
-        var row = '<tr> \
-                <td><input type="hidden" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId  + sampleCounter + '"  id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select></td> \
-                <td><input placeholder="Enter CT Value" id="'+ sampleCounter + '" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td> \
-                <td><textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"></textarea></td> \
-                <td> \
-                    <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
-                    <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
-                </td> \
-        </tr>';
-        $(row).insertAfter( $(obj.parentNode.parentNode).closest( "tr" ) );
-		// $(obj.parentNode.parentNode).append(row);
-		$(".datepicker").datepicker({
-			dateFormat: '<?php echo $dtFormat; ?>'
-		});
-	}
+        sampleCounter = $("#geneTypeTable" + sampleId + " tbody tr").length;
+        rl = document.getElementById("geneTypeTable"+ sampleId).rows.length;
+        var a = document.getElementById("geneTypeTable"+ sampleId).insertRow(rl);
+        a.setAttribute("style", "display:none");
+        var b = a.insertCell(0);
+        var c = a.insertCell(1);
+        var d = a.insertCell(2);
+        var e = a.insertCell(3);
+        e.setAttribute("align", "center");
+
+        b.innerHTML = '<input type="hidden" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId  + sampleCounter + '"  id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select>';
+        c.innerHTML = '<input placeholder="Enter CT Value" id="'+ sampleCounter + '" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/>';
+        d.innerHTML = '<textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"></textarea>';
+        e.innerHTML = '<a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>&nbsp;<a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>';
+        // $("#agentName" + payTableRowId + " option").hide();
+        $(a).fadeIn(800);
+    }
 
     function changeGeneType(obj, sampleId, count){
         let text = $(obj).find(":selected").text();

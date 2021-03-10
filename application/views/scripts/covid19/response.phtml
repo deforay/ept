@@ -789,7 +789,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             <td><input type="hidden" value="<?php echo $this->allGeneTypes[$gene['gene_id']];?>" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, $gene['gene_id'], '-- Select --'); ?></select></td>\
                             <td><input placeholder="Enter CT Value" value="<?php echo $gene['ct_value'];?>" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td>\
                             <td><textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
-                            <td>\
+                            <td style="text-align:center">\
                                 <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
                                 <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
                             </td>\
@@ -811,9 +811,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         if(strTxt.length === 0){
             strTxt.push('<tr>\
                 <td><input type="hidden" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select></td>\
-                <td><input placeholder="Enter CT Value" value="<?php echo $gene['ct_value'];?>" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td>\
+                <td><input placeholder="Enter CT Value" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td>\
                 <td><textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
-                <td>\
+                <td style="text-align:center">\
                     <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
                     <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
                 </td>\
@@ -846,23 +846,62 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     </div>');
 
 	}
+
     function addNewGeneTypeRow(obj, sampleId) {
         sampleCounter = $("#geneTypeTable" + sampleId + " tbody tr").length;
-        let row = '<tr> \
-                <td><input type="hidden" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId  + sampleCounter + '"  id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select></td> \
-                <td><input placeholder="Enter CT Value" id="'+ sampleCounter + '" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td> \
-                <td><textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"></textarea></td> \
-                <td> \
-                    <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
-                    <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
-                </td> \
-        </tr>';
-		$(obj.parentNode.parentNode).after(row);
+        rl = document.getElementById("geneTypeTable"+ sampleId).rows.length;
+        var a = document.getElementById("geneTypeTable"+ sampleId).insertRow(rl);
+        a.setAttribute("style", "display:none");
+        var b = a.insertCell(0);
+        var c = a.insertCell(1);
+        var d = a.insertCell(2);
+        var e = a.insertCell(3);
+        e.setAttribute("align", "center");
 
-		$(".datepicker").datepicker({
-			dateFormat: '<?php echo $dtFormat; ?>'
-		});
-	}
+        b.innerHTML = '<input type="hidden" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId  + sampleCounter + '"  id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select>';
+        c.innerHTML = '<input placeholder="Enter CT Value" id="'+ sampleCounter + '" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/>';
+        d.innerHTML = '<textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"></textarea>';
+        e.innerHTML = '<a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>&nbsp;<a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>';
+        // $("#agentName" + payTableRowId + " option").hide();
+        $(a).fadeIn(800);
+    }
+
+    function insPayRow() {
+        rl = document.getElementById("payTable").rows.length;
+        var a = document.getElementById("payTable").insertRow(rl);
+        a.setAttribute("style", "display:none");
+        var b = a.insertCell(0);
+        var c = a.insertCell(1);
+        var d = a.insertCell(2);
+        var e = a.insertCell(3);
+        var f = a.insertCell(4);
+        f.setAttribute("align", "center");
+        f.setAttribute("style", "vertical-align:middle");
+        f.setAttribute("style", "display: inline-flex;");
+
+        b.innerHTML = '<select name="payOption[]" id="payOption' + payTableRowId + '" class="form-control " title="Choose option"  onchange="showHideEmi(this,' + payTableRowId + ')">\
+                                            <option value="">-- Select --</option>\
+                                            <option value="cash">Cash</option>\
+                                            <option value="cheque">Cheque</option>\
+                                            <option value="online">Online</option>\
+                                        </select>';
+        c.innerHTML = '<input type="text" class="form-control isRequired" id="paidOn' + payTableRowId + '" name="paidOn[]" placeholder="Paid Date" title="Please choose date" readonly/>';
+        d.innerHTML = '<textarea name="payDetails[]" id="payDetails' + payTableRowId + '" class="form-control" placeholder="Enter Details"></textarea>';
+        e.innerHTML = '<input type="text" name="payAmt[]" id="payAmt' + payTableRowId + '" class="form-control" placeholder="Amount" onkeyup="updatepayTotal()"/>';
+        f.innerHTML = '<a class="btn btn-xs btn-primary" href="javascript:void(0);" onclick="insPayRow();"><i class="fa fa-plus"></i></a>&nbsp;<a class="btn btn-xs btn-default" href="javascript:void(0);" onclick="removeAttributePayRow(this.parentNode.parentNode);"><i class="fa fa-minus"></i></a>';
+        // $("#agentName" + payTableRowId + " option").hide();
+        $('#paidOn' + payTableRowId).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'dd-M-yy',
+            minDate: "Today",
+            yearRange: <?php echo (date('Y') - 100); ?> + ":" + "<?php echo (date('Y')) ?>"
+        }).click(function() {
+            $('.ui-datepicker-calendar').show();
+        });
+        $(a).fadeIn(800);
+        payTableRowId++;
+    }
 
     function changeGeneType(obj, sampleId, count){
         let text = $(obj).find(":selected").text();
