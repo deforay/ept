@@ -35,9 +35,11 @@ defined('SUMMARY_REPORT_LAYOUT')
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
     realpath(APPLICATION_PATH . '/../library'),
+    realpath(APPLICATION_PATH . '/../vendor'),
     get_include_path(),
 )));
 
+require_once('vendor/autoload.php');
 
 /** Zend_Application */
 require_once 'Zend/Application.php';

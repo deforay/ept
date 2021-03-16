@@ -1,6 +1,7 @@
 {
     "require": {
-        "phpoffice/phpspreadsheet": "^1.14"
+        "phpoffice/phpspreadsheet": "^1.14",
+        "setasign/fpdi-tcpdf": "2.3"
     },
     "require-dev": {
     }

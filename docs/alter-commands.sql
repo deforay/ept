@@ -2767,3 +2767,5 @@ UPDATE `global_config` SET `value` = 'EQA Proficiency Testing' WHERE `global_con
 INSERT INTO `global_config` (`name`, `value`) VALUES ('pt_program_short_name', 'EQA PT');
 -- Thana 09-Mar-2021
 ALTER TABLE `shipment_participant_map` ADD `specimen_volume` VARCHAR(255) NULL DEFAULT NULL AFTER `number_of_tests`;
+-- Thana 16-Mar-2021
+INSERT INTO `global_config` (`name`, `value`) VALUES ('training_instance', 'yes'), ('training_instance_text', 'Training');

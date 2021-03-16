@@ -46,11 +46,11 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised']);
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'],"",$trainingInstanceText);
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------
-
+    $y = 0;
 
 
     if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
@@ -312,7 +312,7 @@ if ($resultArray['shipment'] != "") {
 
         $passed = $responseResult["number_passed"];
         $failed = $responseResult["number_failed"];
-        $notResponded = $responseResult["others"];
+        $notResponded = (isset($responseResult["others"]) && $responseResult["others"] > 0)?$responseResult["others"]:0;
         $late = $responseResult["number_late"];
         $excluded = $responseResult["excluded"];
 
@@ -332,12 +332,16 @@ if ($resultArray['shipment'] != "") {
             unlink($performancePiechart);
         }
     }
-
     //Close and output PDF document
     $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
     $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
+    
+    if($trainingInstance == "yes"){
+        //Watermark section
+        $pdf= new PDF_Rotate();
+    }
     //============================================================+
     // END OF FILE
     //============================================================+

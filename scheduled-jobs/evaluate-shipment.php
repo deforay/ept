@@ -1,7 +1,8 @@
 <?php
 include_once('CronInit.php');
-
 require_once('tcpdf/tcpdf.php');
+
+use setasign\Fpdi\Tcpdf\Fpdi;
 
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
@@ -13,7 +14,7 @@ class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark="")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -24,6 +25,7 @@ class IndividualPDF extends TCPDF
         $this->layout = $layout;
         $this->dateTime = $datetime;
         $this->config = $conf;
+        $this->watermark = $watermark;
     }
 
     public function humanDateTimeFormat($date)
@@ -89,7 +91,49 @@ class IndividualPDF extends TCPDF
         $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
         $html = '<hr/>';
         $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
+        //Put the watermark
+        $this->SetFont('','B',60);
+        $this->SetTextColor( 165, 203, 73 );
+        $this->RotatedText(70,190,$this->watermark,45);
     }
+
+    function Rotate($angle,$x=-1,$y=-1)
+	{
+		if($x==-1)
+			$x=$this->x;
+		if($y==-1)
+			$y=$this->y;
+		if($this->angle!=0)
+			$this->_out('Q');
+		$this->angle=$angle;
+		if($angle!=0)
+		{
+			$angle*=M_PI/180;
+			$c=cos($angle);
+			$s=sin($angle);
+			$cx=$x*$this->k;
+			$cy=($this->h-$y)*$this->k;
+			$this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',$c,$s,-$s,$c,$cx,$cy,-$cx,-$cy));
+		}
+	}
+
+	function RotatedText($x, $y, $txt, $angle)
+	{
+		//Text rotated around its origin
+		$this->Rotate($angle,$x,$y);
+		$this->Text($x,$y,$txt);
+		$this->Rotate(0);
+	}
+
+	function _endpage()
+	{
+		if($this->angle!=0)
+		{
+			$this->angle=0;
+			$this->_out('Q');
+		}
+		parent::_endpage();
+	}
 
     // Page footer
     public function Footer()
@@ -133,7 +177,7 @@ class IndividualPDF extends TCPDF
 class SummaryPDF extends TCPDF
 {
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -143,6 +187,7 @@ class SummaryPDF extends TCPDF
         $this->schemeType = $schemeType;
         $this->dateTime = $datetime;
         $this->config = $conf;
+        $this->watermark = $watermark;
     }
 
     public function humanDateTimeFormat($date)
@@ -231,8 +276,51 @@ class SummaryPDF extends TCPDF
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
         }
+
+        //Put the watermark
+        $this->SetFont('','B',120);
+        $this->SetTextColor( 230, 228, 198 );
+        $this->RotatedText(25,190,$this->watermark,45);
     }
 
+    function Rotate($angle,$x=-1,$y=-1)
+	{
+		if($x==-1)
+			$x=$this->x;
+		if($y==-1)
+			$y=$this->y;
+		if($this->angle!=0)
+			$this->_out('Q');
+		$this->angle=$angle;
+		if($angle!=0)
+		{
+			$angle*=M_PI/180;
+			$c=cos($angle);
+			$s=sin($angle);
+			$cx=$x*$this->k;
+			$cy=($this->h-$y)*$this->k;
+			$this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',$c,$s,-$s,$c,$cx,$cy,-$cx,-$cy));
+		}
+	}
+
+	function RotatedText($x, $y, $txt, $angle)
+	{
+		//Text rotated around its origin
+		$this->Rotate($angle,$x,$y);
+		$this->Text($x,$y,$txt);
+		$this->Rotate(0);
+	}
+
+	function _endpage()
+	{
+		if($this->angle!=0)
+		{
+			$this->angle=0;
+			$this->_out('Q');
+		}
+		parent::_endpage();
+	}
+    
     // Page footer
     public function Footer()
     {
@@ -263,43 +351,128 @@ class SummaryPDF extends TCPDF
             $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }
     }
-}
+	
+    function dateFormat($dateIn)
+	{
 
+		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+
+		// $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications'=>true, 'nestSeparator'=>"#"));
+		$config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications' => false));
+
+		$formatDate = $config->participant->dateformat;
+
+		if (empty($dateIn) && $dateIn == null || $dateIn == "" || $dateIn == "0000-00-00") {
+			return '';
+		} else {
+
+			$dateArray = explode('-', $dateIn);
+			$newDate = $dateArray[2] . "-";
+
+			$monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+			$mon = $monthsArray[$dateArray[1] - 1];
+			if ($formatDate == 'dd-M-yy')
+				return  $newDate . $mon . "-" . $dateArray[0];
+			else
+				return   $mon . "-" . $newDate  . $dateArray[0];
+		}
+	}
+}
+class PDF_Rotate extends FPDI{
+    
+	var $angle = 0;
+	function Rotate($angle, $x = -1, $y = -1){
+        if ($x == -1)
+			$x = $this->x;
+        if ($y == -1)
+			$y = $this->y;
+        if ($this->angle != 0)
+			$this->_out('Q');
+        $this->angle = $angle;
+        if ($angle != 0) {
+			$angle *= M_PI / 180;
+			$c = cos($angle);
+			$s = sin($angle);
+			$cx = $x * $this->k;
+			$cy = ($this->h - $y) * $this->k;
+			$this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm', $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy));
+        }
+	}
+    
+	function _endpage(){
+        if ($this->angle != 0) {
+          $this->angle = 0;
+          $this->_out('Q');
+        }
+        parent::_endpage();
+	}
+}
+    
+class Watermark extends PDF_Rotate{
+    private $waterMarkText = null;
+	var $_tplIdx;
+    
+	public function __construct($waterMarkText){
+        $this->waterMarkText = $waterMarkText;
+	}
+    
+	function Header()
+	{
+        global $fullPathToFile;
+        Zend_Debug::dump($fullPathToFile);die;
+		//Put the watermark
+		$this->SetFont('helvetica', 'B', 50);
+		$this->SetTextColor(148, 162, 204);
+		$this->RotatedText(67, 109, $this->waterMarkText, 45);
+
+		if (is_null($this->_tplIdx)) {
+			// THIS IS WHERE YOU GET THE NUMBER OF PAGES
+			$this->numPages = $this->setSourceFile($fullPathToFile);
+			$this->_tplIdx = $this->importPage(1);
+		}
+		$this->useTemplate($this->_tplIdx, 0, 0, 200);
+	}
+
+	function RotatedText($x, $y, $txt, $angle)
+	{
+		//Text rotated around its origin
+		$this->Rotate($angle, $x, $y);
+		$this->Text($x, $y, $txt);
+		$this->Rotate(0);
+		//$this->SetAlpha(0.7);
+	}
+}
+class Pdf_concat extends FPDI{
+	var $files = array();
+	function setFiles($files)
+	{
+		$this->files = $files;
+	}
+	function concat(){
+		foreach ($this->files as $file) {
+			$pagecount = $this->setSourceFile($file);
+			for ($i = 1; $i <= $pagecount; $i++) {
+                $tplidx = $this->ImportPage($i);
+                $s = $this->getTemplatesize($tplidx);
+                $this->AddPage('P', array($s['w'], $s['h']));
+                $this->useTemplate($tplidx);
+			}
+        }
+	}
+}
 function rmdir_recursive($dir) {
     foreach(scandir($dir) as $file) {
         if ('.' === $file || '..' === $file) continue;
-        if (is_dir("$dir/$file")) rmdir_recursive("$dir/$file");
-        else unlink("$dir/$file");
+        if (is_dir("$dir/$file")){
+            rmdir_recursive("$dir/$file");
+        }
+        else{
+            unlink("$dir/$file");
+        } 
+            
     }
     rmdir($dir);
 }
-
-function dateFormat($dateIn)
-{
-
-    $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-
-    // $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications'=>true, 'nestSeparator'=>"#"));
-    $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications' => false));
-
-    $formatDate = $config->participant->dateformat;
-
-    if (empty($dateIn) && $dateIn == null || $dateIn == "" || $dateIn == "0000-00-00") {
-        return '';
-    } else {
-
-        $dateArray = explode('-', $dateIn);
-        $newDate = $dateArray[2] . "-";
-
-        $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-        $mon = $monthsArray[$dateArray[1] - 1];
-        if ($formatDate == 'dd-M-yy')
-            return  $newDate . $mon . "-" . $dateArray[0];
-        else
-            return   $mon . "-" . $newDate  . $dateArray[0];
-    }
-}
-
 try {
 
     $db = Zend_Db::factory($conf->resources->db);
@@ -332,6 +505,8 @@ try {
         $possibleDtsResults = $schemeService->getPossibleResults('dts');
         $recencyPossibleResults = $schemeService->getPossibleResults('recency');
         $passPercentage = $commonService->getConfig('pass_percentage');
+        $trainingInstance = $commonService->getConfig('training_instance');
+        $trainingInstanceText = $commonService->getConfig('training_instance_text');
 
         $customField1 = $commonService->getConfig('custom_field_1');
         $customField2 = $commonService->getConfig('custom_field_2');
