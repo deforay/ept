@@ -2578,7 +2578,7 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('disable_push_notification
 
 -- Thana 24-Dec-2020
 INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) 
-      VALUES ('covid19', 'SARS-Cov-2', 'response_result_covid19', 'reference_result_covid19', NULL, 'inactive');
+      VALUES ('covid19', 'SARS-CoV-2', 'response_result_covid19', 'reference_result_covid19', NULL, 'inactive');
 
 CREATE TABLE `r_test_type_covid19` (
  `test_type_id` varchar(50) NOT NULL,

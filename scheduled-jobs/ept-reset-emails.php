@@ -72,6 +72,7 @@ try {
                         </thead>
                         <tbody>';
         $sno = 1;
+        $conf->domain = rtrim($conf->domain, "/");
         foreach($participants as $prow){
             
             $message .= '<tr>

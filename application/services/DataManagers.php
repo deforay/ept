@@ -17,8 +17,9 @@ class Application_Service_DataManagers
 
         if($params['oldpemail'] != $params['pemail']){
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $conf->domain = rtrim($conf->domain, "/");
             $common = new Application_Service_Common();
-            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldpemail']." to ".$params['pemail'].". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['pemail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['pemail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
+            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldpemail']." to ".$params['pemail'].". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "/auth/verify/email/" . base64_encode($params['pemail']) . "'>" . $conf->domain . "/auth/verify/email/" . base64_encode($params['pemail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
             $common->insertTempMail($params['pemail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
@@ -43,7 +44,8 @@ class Application_Service_DataManagers
         if($params['oldEmail'] != $params['registeredEmail']){
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
-            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldEmail']." to ".$params['registeredEmail'].". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
+            $conf->domain = rtrim($conf->domain, "/");
+            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldEmail']." to ".$params['registeredEmail'].". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "/auth/verify/email/" . base64_encode($params['registeredEmail']) . "'>" . $conf->domain . "/auth/verify/email/" . base64_encode($params['registeredEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
             $common->insertTempMail($params['registeredEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
@@ -61,7 +63,8 @@ class Application_Service_DataManagers
         if($row){
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
-            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldEmail']." to ".$params['registeredEmail'].". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "'>" . $conf->domain . "auth/verify/email/" . base64_encode($params['registeredEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
+            $conf->domain = rtrim($conf->domain, "/");
+            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ".$params['oldEmail']." to ".$params['registeredEmail'].". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $conf->domain . "/auth/verify/email/" . base64_encode($params['registeredEmail']) . "'>" . $conf->domain . "/auth/verify/email/" . base64_encode($params['registeredEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
             $send = $common->insertTempMail($params['registeredEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
@@ -119,9 +122,11 @@ class Application_Service_DataManagers
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
+        $conf->domain = rtrim($conf->domain, "/");
+
         if ($newPassword != false) {
             $common = new Application_Service_Common();
-            $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email ".$email.". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $conf->domain . "auth/new-password/email/" . base64_encode($email) . "'>" . $conf->domain . "auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
+            $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email ".$email.". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $conf->domain . "/auth/new-password/email/" . base64_encode($email) . "'>" . $conf->domain . "/auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
             $common->sendMail($email, null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
