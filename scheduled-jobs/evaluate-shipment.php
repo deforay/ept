@@ -92,9 +92,9 @@ class IndividualPDF extends TCPDF
         $html = '<hr/>';
         $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
         //Put the watermark
-        $this->SetFont('','B',60);
-        $this->SetTextColor( 165, 203, 73 );
-        $this->RotatedText(70,190,$this->watermark,45);
+        $this->SetFont('','B',120);
+        $this->SetTextColor( 230, 228, 198 );
+        $this->RotatedText(25,190,$this->watermark,45);
     }
 
     function Rotate($angle,$x=-1,$y=-1)
@@ -422,7 +422,7 @@ class Watermark extends PDF_Rotate{
         Zend_Debug::dump($fullPathToFile);die;
 		//Put the watermark
 		$this->SetFont('helvetica', 'B', 50);
-		$this->SetTextColor(148, 162, 204);
+		$this->SetTextColor( 230, 228, 198 );
 		$this->RotatedText(67, 109, $this->waterMarkText, 45);
 
 		if (is_null($this->_tplIdx)) {
@@ -577,7 +577,6 @@ try {
                     include($participantLayoutFile);
                 }
             }
-
             // SUMMARY REPORT
             $resultArray = $evalService->getSummaryReportsInPdf($evalRow['shipment_id']);
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);

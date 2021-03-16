@@ -1,6 +1,10 @@
 <?php
 require_once('tcpdf/tcpdf.php');
-require_once('libchart/classes/libchart.php');
+require_once('jpgraph/jpgraph.php');
+require_once('jpgraph/jpgraph_bar.php');
+require_once('jpgraph/jpgraph_pie.php');
+require_once('jpgraph/jpgraph_line.php');
+// require_once('libchart/classes/libchart.php');
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'General.php');
 $general = new General();
 // Zend_Debug::dump($resultArray);die;
@@ -51,28 +55,53 @@ if ($resultArray['shipment'] != "") {
     //$pdf->AddPage();
     // ---------------------------------------------------------
     $y = 0;
-
-
+    
     if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
-        $chart = new PieChart(700, 400);
-        $dataSet = new XYDataSet();
+        $dataX = array();
+        $dataY = array();
+        $total = 0;
         foreach ($resultArray['shipment']['pieChart'] as $piechart) {
-            $dataSet->addPoint(new Point($piechart['type_name'] . " (N=" . $piechart['count'] . ")", $piechart['count']));
+            $dataX[] = $piechart['testType1Total'];
+            $dataY[] = $piechart['test_type_name'] .' (n='.$piechart['testType1Total'].')';
+            $total +=$piechart['testType1Total'];
         }
-        $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
-        $chart->setDataSet($dataSet);
+        // Create the graph. These two calls are always required
+        $graph = new Graph(680, 600, 'auto');
+        $graph->SetScale("textlin");
 
-        $chart->getPlot()->setGraphCaptionRatio(0.5);
-        $chart->setTitle("Test types used for Covid19-based PT survey " . $resultArray['shipment']['distribution_code']);
-        $chart->render($piechart);
+        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+        $graph->SetBox(false);
+        $graph->SetMargin(80,30,20,400);
 
-        $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
-        if (file_exists($piechart)) {
-            unlink($piechart);
-        }
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($dataY);
+        $graph->xaxis->SetLabelAngle(90);
+        $graph->xaxis->SetLabelMargin(0);
+        $graph->xaxis->SetPos(0.5,0.97,'center','bottom');
+
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false, false);
+
+        // Create the bar plots
+        $b1plot = new BarPlot($dataX);
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+        // ...and add it to the graPH
+        $graph->Add($gbplot);
+        
+        $b1plot->SetColor("white");
+        $graph->title->Set("Test types used for Covid19-based PT survey " . $resultArray['shipment']['distribution_code'] . "(N=".$total.")");
+        $graph->yaxis->title->Set('Number of Participants');
+        $graph->xaxis->title->Set('Test Type-1 Name');
+        $graph->yaxis->SetTitleMargin(35);
+        $graph->xaxis->SetTitleMargin(180);
+        // Turn the tick mark out from the plot area
+        $graph->xaxis->SetTickSide(SIDE_DOWN);
+        $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+        $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'pieChart.png';
+        $graph->Stroke($piechart);
     }
-
-
 
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', 'B', 12);
@@ -87,6 +116,7 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
     }
+   
     if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
         $labCounter = 1;
         $pass = $config->evaluation->covid19->passPercentage;
@@ -125,29 +155,57 @@ if ($resultArray['shipment'] != "") {
 
             $scoringPer = round(($maxScore / $partCount) * 100, 2);
         }
-
-        $chart = new VerticalBarChart(700, 400);
-        $dataSet = new XYSeriesDataSet();
-
-        $chart->getPlot()->getPalette()->setBarColor(array(
-            new Color(128, 0, 0),
-            new Color(255, 0, 0),
-            new Color(255, 255, 0),
-            new Color(0, 128, 0)
-        ));
-        foreach ($barPoints as $key => $val) {
-            $serie = new XYDataSet();
-            $serie->addPoint(new Point("", $val));
-            $dataSet->addSerie($key, $serie);
-        }
-
-        $chart->setDataSet($dataSet);
-
-        //Bound::setUpperBound(50);
-        $chart->getPlot()->setGraphCaptionRatio(0.5);
-        $chart->setTitle("Comparison of test performance between participating laboratories");
-        $chart->render(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
-
+         // JPGraph Charts
+        $dataX = array();
+        $dataY = array();
+        $total = 0;
+         foreach ($barPoints as $key => $val) {
+             $dataX[] = $val;
+             $dataY[] = $key .' (n='.$val.')';
+             $total+=$val;
+         }
+ 
+         // Create the graph. These two calls are always required
+         $graph = new Graph(700, 400, 'auto');
+         $graph->SetScale("textlin");
+ 
+         $theme_class = new UniversalTheme;
+         $graph->SetTheme($theme_class);
+         $graph->SetBox(false);
+ 
+         $graph->ygrid->SetFill(false);
+         $graph->xaxis->SetTickLabels($dataY);
+         $graph->yaxis->HideLine(false);
+         $graph->yaxis->HideTicks(false, false);
+ 
+         // Create the bar plots
+         $b1plot = new BarPlot($dataX);
+ 
+         // Create the grouped bar plot
+         $gbplot = new GroupBarPlot(array($b1plot));
+         // ...and add it to the graPH
+         $graph->Add($gbplot);
+ 
+ 
+         $b1plot->SetColor("white");
+         $b1plot->SetFillColor(array('brown4', 'hotpink', 'yellow', 'darkgreen'));
+ 
+         // Setup the titles
+         $graph->title->Set("Comparison of test performance between participating laboratories (N=".$total.")");
+ 
+         $graph->xaxis->title->Set('% Score');
+         $graph->xaxis->SetTitleMargin(35);
+         // Turn the tick mark out from the plot area
+         $graph->xaxis->SetTickSide(SIDE_DOWN);
+         
+         $graph->yaxis->title->Set('Number of participants','center');
+         $graph->yaxis->SetTitleMargin(28);
+         // Turn the tick mark out from the plot area
+         $graph->yaxis->SetTickSide(SIDE_LEFT);
+ 
+         // Display the graph
+         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+         $graph->Stroke($image_file);
         // set font
         $pdf->SetFont('helvetica', 'B', 12);
 
@@ -270,8 +328,6 @@ if ($resultArray['shipment'] != "") {
         }
 
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
-        //$image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
-        //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
         $y = $pdf->getY() + 5;
         $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
         if (file_exists($image_file)) {
@@ -281,55 +337,50 @@ if ($resultArray['shipment'] != "") {
         //$pdf->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
     }
 
-    //$pdf->AddPage();
-
-    if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
-        $dataSet = new XYDataSet();
-        $chart = new PieChart(700, 400);
-        
-        foreach ($resultArray['shipment']['pieChart'] as $piechart) {
-            $dataSet->addPoint(new Point($piechart['type_name'] . " (N=" . $piechart['count'] . ")", $piechart['count']));
-        }
-        $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
-        $chart->setDataSet($dataSet);
-
-        $chart->getPlot()->setGraphCaptionRatio(0.5);
-        $chart->setTitle("Test typess used for Covid-19-based PT survey " . $resultArray['shipment']['distribution_code']);
-        $chart->render($piechart);
-
-        $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
-        if (file_exists($piechart)) {
-            unlink($piechart);
-        }
-    }
-
-
+    $pdf->AddPage();
 
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;
-        $chart1 = new PieChart(700, 400);
-        $dataSet = new XYDataSet();
 
-        $passed = $responseResult["number_passed"];
-        $failed = $responseResult["number_failed"];
+        $passed = (isset($responseResult["number_passed"]) && $responseResult["number_passed"] > 0)?$responseResult["number_passed"]:0;
+        $failed = (isset($responseResult["number_failed"]) && $responseResult["number_failed"]>0)?$responseResult["number_failed"]:0;
         $notResponded = (isset($responseResult["others"]) && $responseResult["others"] > 0)?$responseResult["others"]:0;
-        $late = $responseResult["number_late"];
-        $excluded = $responseResult["excluded"];
+        $excluded = (isset($responseResult["excluded"]) && $responseResult["excluded"] >0)?$responseResult["excluded"]:0;
 
-        $dataSet->addPoint(new Point("Passed (N=$passed)", $passed));
-        $dataSet->addPoint(new Point("Failed (N=$failed)", $failed));
-        $dataSet->addPoint(new Point("Not Responded (N=$notResponded)", $notResponded));
-        $dataSet->addPoint(new Point("Late Response (N=$late)", $late));
-        $dataSet->addPoint(new Point("Excluded (N=$excluded)", $excluded));
+        $total = $passed + $failed + $notResponded + $excluded;
+        // Some data
+        $data = array($passed, $failed, $notResponded, $excluded);
+        // Create the Pie Graph.
+        $graph = new PieGraph(700, 400);
+        $graph->SetShadow();
+        $graph->SetMargin(80,30,20,30);
+
+        // Set A title for the plot
+        $graph->title->Set("Shipment Participant Result Report (N=".$total.")");
+        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
+
+        $p1 = new PiePlot($data);
+        $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Excluded (N=$excluded)"));
+        $graph->legend->SetPos(0.5,0.97,'center','bottom');
+        $graph->legend->SetColumns(3);
+
+        $graph->Add($p1);
+
+        $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'yellow'));
 
         $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
-
-        $chart1->setDataSet($dataSet);
-        $chart1->setTitle("Shipment Participant Result Report");
-        $chart1->render($performancePiechart);
+        $graph->Stroke($performancePiechart);
+       
         $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 300);
         if (file_exists($performancePiechart)) {
             unlink($performancePiechart);
+        }
+    }
+
+    if(isset($piechart) && $piechart != ""){
+        $pdf->Image($piechart, 5, $y+110, '', '', '', '', '', false, 300);
+        if (file_exists($piechart)) {
+            unlink($piechart);
         }
     }
     //Close and output PDF document

@@ -1874,7 +1874,7 @@ class Application_Service_Evaluation
 
 					$typeNameRes = $db->fetchAll($db->select()->from('r_test_type_covid19')->where("scheme_type='covid19'"));
 
-					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id'))
+					/* $rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id'))
 						->join(array('rescovid19' => 'response_result_covid19'), 'rescovid19.shipment_map_id=spm.map_id', array('rescovid19.test_type_1', 'rescovid19.test_type_2', 'rescovid19.test_type_3'))
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
@@ -1902,8 +1902,22 @@ class Application_Service_Evaluation
 						}
 
 						$p++;
-					}
-					$shipmentResult['pieChart'] = $typeName;
+					} */
+					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(''))
+						->join(array('resC19' => 'response_result_covid19'), 'resC19.shipment_map_id=spm.map_id', array(
+							'testType1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resC19.test_type_1,resC19.shipment_map_id)))')
+						))
+						->join(array('testTypeC19' => 'r_test_type_covid19'), 'testTypeC19.test_type_id=resC19.test_type_1', array('test_type_name'))
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
+						->where("spm.is_excluded!='yes'")
+						->where("spm.shipment_id = ?", $shipmentId)
+						->group('testTypeC19.test_type_name')
+						->order('testType1Total DESC');
+					// die($rQuery);
+					$rQueryRes = $db->fetchAll($rQuery);
+					$shipmentResult['pieChart'] = $rQueryRes;
+					// $shipmentResult['pieChart'] = $typeName;
 				}
 
 				$sql = $db->select()->from(array('p' => 'participant'))
