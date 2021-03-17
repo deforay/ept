@@ -13,7 +13,7 @@ class Application_Model_DbTable_Covid19IdentifiedGenes extends Zend_Db_Table_Abs
             $db->delete('covid19_identified_genes', "map_id = " . $params['smid']);
             foreach($params['sampleId'] as $sample){
                 foreach($params['geneType'][$sample] as $key=>$gene){
-                    if(isset($gene) && $gene > 0 && $params['cTValue'][$sample][$key] != ""){
+                    // if(isset($params['cTValue'][$sample][$key]) && $params['cTValue'][$sample][$key] > 0 && isset($params['cTValue'][$sample][$key]) && $params['cTValue'][$sample][$key] != ""){
                         $data = array(
                             'map_id'        => $params['smid'],
                             'shipment_id'   => $params['shipmentId'],
@@ -23,7 +23,7 @@ class Application_Model_DbTable_Covid19IdentifiedGenes extends Zend_Db_Table_Abs
                             'remarks'       => $params['remarks'][$sample][$key]
                         );
                         $this->insert($data);
-                    }
+                    // }
                 }
             }
         }
