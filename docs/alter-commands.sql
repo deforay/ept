@@ -2769,3 +2769,6 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('pt_program_short_name', '
 ALTER TABLE `shipment_participant_map` ADD `specimen_volume` VARCHAR(255) NULL DEFAULT NULL AFTER `number_of_tests`;
 -- Thana 16-Mar-2021
 INSERT INTO `global_config` (`name`, `value`) VALUES ('training_instance', 'yes'), ('training_instance_text', 'Training');
+-- Thana 17-Mar-2021
+ALTER TABLE `covid19_identified_genes` ADD FOREIGN KEY (`gene_id`) REFERENCES `r_covid19_gene_types`(`gene_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `covid19_identified_genes` ADD `gene_map_id` INT(11) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`gene_map_id`);
