@@ -7,17 +7,17 @@ class Application_Model_DbTable_Covid19IdentifiedGenes extends Zend_Db_Table_Abs
     protected $_primary = 'gene_id';
 
 	public function saveCovid19IdentifiedGenesResults($params) {
-        $db = Zend_Db_Table_Abstract::getAdapter();
+        // Zend_Debug::dump($params);die;
         if(count($params['sampleId']) > 0){
-            $db->delete('covid19_identified_genes', "map_id = " . $params['smid']);
+            $this->delete(array('map_id' => $params['smid']));
             foreach($params['sampleId'] as $sample){
                 foreach($params['geneType'][$sample] as $key=>$gene){
-                    if(isset($params['geneType'][$sample][$key]) && $params['geneType'][$sample][$key] > 0 && isset($params['cTValue'][$sample][$key]) && $params['cTValue'][$sample][$key] != ""){
+                    if(isset($params['geneType'][$sample][$key]) && $params['geneType'][$sample][$key] != "" && isset($params['cTValue'][$sample][$key]) && $params['cTValue'][$sample][$key] != ""){
                         $data = array(
                             'map_id'        => $params['smid'],
                             'shipment_id'   => $params['shipmentId'],
                             'sample_id'     => $sample,
-                            'gene_id'       => $params['geneType'][$sample][$key],
+                            'gene_id'       => $gene,
                             'ct_value'      => $params['cTValue'][$sample][$key],
                             'remarks'       => $params['remarks'][$sample][$key]
                         );
