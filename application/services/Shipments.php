@@ -639,6 +639,7 @@ class Application_Service_Shipments
             $data = array(
                 "shipment_receipt_date" => null,
                 "shipment_test_date" => null,
+                "specimen_volume" => null,
                 "attributes" => null,
                 "shipment_test_report_date" => null,
                 "supervisor_approval" => null,
@@ -666,6 +667,9 @@ class Application_Service_Shipments
                 "synced_on" => null
             );
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+
+            $geneTypeDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
+            $geneTypeDb->deleteCovid19IdentifiedGenesResults($mapId);
 
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->removeShipmentResults($mapId);
