@@ -640,7 +640,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         
     }); 
     $(function() {
-        showHideTest($('#numberOfParticipantTest').val());
+        <?php if($maximumAllowed > 1){ ?>
+            showHideTest($('#numberOfParticipantTest').val());
+        <?php } else{ ?>
+            showHideTest(1);
+        <?php }?>
         showHideTest2();
         showHideTest3();
         //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
