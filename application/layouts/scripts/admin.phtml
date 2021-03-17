@@ -6,7 +6,8 @@ $actionName = Zend_Controller_Front::getInstance()->getRequest()->getActionName(
 $notifyData = $this->getNotification();
 $configData = $this->getGlobalConfig();
 // $activeSchemes = $this->getActiveSchemes();
-// Zend_Debug::dump($configData);die;
+// Zend_Debug::dump($configData['training_instance']);
+// Zend_Debug::dump($configData['training_instance_text']);die;
 $notifyCount = (count($notifyData) > 0) ? count($notifyData) : 0;
 $scrollHeight = '';
 if ($notifyCount >= 5) {
@@ -65,6 +66,7 @@ if ($adminSession->privileges != "") {
 	<!--<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" type="text/css" media="all">-->
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery_ui_min.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/admin.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/common.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/DT_bootstrap.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
@@ -133,11 +135,17 @@ if ($adminSession->privileges != "") {
 			float: right;
 			color: #8080809c;
 		}
+
 	</style>
 </head>
 
 <body>
 	<!-- Fixed navbar -->
+	<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
+        <div class="marquee">
+          <p><?php echo ($configData['training_instance_text']); ?></p>
+        </div>
+	<?php } ?>
 	<div class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">

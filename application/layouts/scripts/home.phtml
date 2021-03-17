@@ -12,7 +12,7 @@ $shortName = "";
 if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 	$shortName = ucwords($text['value']);
 }
-
+$configData = $this->getGlobalConfig();
 ?>
 <!DOCTYPE html>
 <html>
@@ -42,7 +42,7 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 	<!-- AdminLTE Skins. Choose a skin from the css/skins
          folder instead of downloading all of them to reduce the load. -->
 	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/skins/_all-skins.min.css'); ?>">
-
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/common.css"); ?>" type="text/css" media="all">
 	<style>
 		.layout-boxed,
 		.skin-blue .wrapper,
@@ -97,7 +97,11 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 
 <body class="hold-transition skin-blue layout-top-nav layout-boxed">
 	<div class="wrapper">
-
+	<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
+        <div class="marquee">
+          <p><?php echo ($configData['training_instance_text']); ?></p>
+        </div>
+	<?php } ?>
 		<header class="main-header">
 			<nav class="navbar navbar-static-top">
 				<div class="container">
