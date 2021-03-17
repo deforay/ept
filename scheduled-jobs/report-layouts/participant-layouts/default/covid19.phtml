@@ -25,6 +25,10 @@ if (sizeof($resultArray['shipment']) > 0) {
     //$resultArray['dmResult'];
 
     foreach ($resultArray['shipment'] as $result) {
+        $geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($result['map_id']);
+        foreach($geneIdentifiedTypes as $gene){
+            $geneDetails[] = $allGeneTypes[$gene['gene_id']]." = ".$gene['ct_value'];
+        }
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
@@ -191,62 +195,71 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results : <br/></span><table border="1" style="font-size:12px;">';
             $labRes .= '<tr style="background-color:#dbe4ee;">
-                                <td></td>
-                                <th style="text-align:center;font-weight:bold;">Test-1</th>';
-            if ($testTwoDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testTwoDisplay . '">Test-2</th>';
-            }
-            if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . '">Test-3</th>';
-            }
-            $labRes .= '<th colspan="4" style="border:none;"></th>
-                            </tr>';
+                            <td></td>';
+                            if ($testTwoDisplay == "" && $testThreeOptionalDisplay == "") {
+                                $labRes .= '<th style="text-align:center;font-weight:bold;">Test</th>';
+                            } else{
+                                $labRes .= '<th style="text-align:center;font-weight:bold;">Test-1</th>';
+                            }
+                            if ($testTwoDisplay != "") {
+                                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testTwoDisplay . '">Test-2</th>';
+                            }
+                            if ($testThreeOptionalDisplay != "") {
+                                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . '">Test-3</th>';
+                            }
+                            $labRes .= '<th colspan="5" style="border:none;"></th>
+                        </tr>';
             $labRes .= '<tr>
-                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Test Type</td>
-                                <td>' . $result['responseResult'][0]['testType1'] . '</td>';
-            if ($testTwoDisplay == "") {
-                $labRes .= '<td style="' . $testTwoDisplay . '">' . $result['responseResult'][0]['testType2'] . '</td>';
-            }
-            if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['testType3'] . '</td>';
-            }
-            $labRes .= '<td colspan="4"></td>
-                            </tr>';
+                            <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Test Type</td>
+                            <td>' . $result['responseResult'][0]['testType1'] . '</td>';
+                            if ($testTwoDisplay != "") {
+                                $labRes .= '<td style="' . $testTwoDisplay . '">' . $result['responseResult'][0]['testType2'] . '</td>';
+                            }
+                            if ($testThreeOptionalDisplay != "") {
+                                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['testType3'] . '</td>';
+                            }
+                            $labRes .= '<td colspan="5"></td>
+                                            </tr>';
+                            $labRes .= '<tr>
+                                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td>
+                                                <td>' . $result['responseResult'][0]['lot_no_1'] . '</td>';
+                            if ($testTwoDisplay != "") {
+                                $labRes .= '<td style="' . $testTwoDisplay . '">' . $result['responseResult'][0]['lot_no_2'] . '</td>';
+                            }
+                            if ($testThreeOptionalDisplay != "") {
+                                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['lot_no_3'] . '</td>';
+                            }
+                            $labRes .= '<td colspan="5"></td>
+                        </tr>';
             $labRes .= '<tr>
-                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td>
-                                <td>' . $result['responseResult'][0]['lot_no_1'] . '</td>';
-            if ($testTwoDisplay == "") {
-                $labRes .= '<td style="' . $testTwoDisplay . '">' . $result['responseResult'][0]['lot_no_2'] . '</td>';
-            }
-            if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['lot_no_3'] . '</td>';
-            }
-            $labRes .= '<td colspan="4"></td>
-                            </tr>';
-            $labRes .= '<tr>
-                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>
-                                <td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
-            if ($testTwoDisplay == "") {
-                $labRes .= '<td style="' . $testTwoDisplay . '">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
-            }
-            if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
-            }
-            $labRes .= '<td colspan="4"></td>
-                            </tr>';
+                            <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>
+                            <td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
+                            if ($testTwoDisplay != "") {
+                                $labRes .= '<td style="' . $testTwoDisplay . '">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
+                            }
+                            if ($testThreeOptionalDisplay != "") {
+                                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
+                            }
+                            $labRes .= '<td colspan="5"></td>
+                        </tr>';
             $labRes .= '<tr style="background-color:#dbe4ee;">
-                                <th style="text-align:center;font-weight:bold;">Specimen Panel ID </th>
-                                <th style="text-align:center;font-weight:bold;">Result-1</th>';
-            if ($testTwoDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testTwoDisplay . '">Result-2</th>';
-            }
-            if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . '">Result-3</th>';
-            }
-            $labRes .= '<th style="text-align:center;font-weight:bold;">Expected Result</th>
-							<th style="text-align:center;font-weight:bold;">Your Result</th>
+                            <th style="text-align:center;font-weight:bold;">Specimen Panel ID </th>';
+                            if ($testTwoDisplay == "" && $testThreeOptionalDisplay == "") {
+                                $labRes .= '<th style="text-align:center;font-weight:bold;">Result</th>';
+                            } else{
+                                $labRes .= '<th style="text-align:center;font-weight:bold;">Result-1</th>';
+                            }
+                            if ($testTwoDisplay != "") {
+                                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testTwoDisplay . '">Result-2</th>';
+                            }
+                            if ($testThreeOptionalDisplay != "") {
+                                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . '">Result-3</th>';
+                            }
+                            $labRes .= '<th style="text-align:center;font-weight:bold;">Expected Result</th>
+                            <th style="text-align:center;font-weight:bold;">Your Result</th>
                             <th style="text-align:center;font-weight:bold;" colspan="2">Score</th>
-                            </tr>';
+                            <th style="text-align:center;font-weight:bold;">Gene Types</th>
+                        </tr>';
 
             $nonMandatorySamples = array();
             $controlSamples = array();
@@ -296,16 +309,17 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '<tr>
 							<td style="text-align:center;">' . $response['sample_label'] . '</td>
 							<td>' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $covid19Results[$response['test_result_1']] : "") . '</td>';
-                if ($testTwoDisplay == "") {
+                if ($testTwoDisplay != "") {
                     $labRes .= '<td style="' . $testTwoDisplay . '">' . (isset($response['test_result_2']) && $response['test_result_2'] != "" ? $covid19Results[$response['test_result_2']] : "") . '</td>';
                 }
-                if ($testThreeOptionalDisplay == "") {
+                if ($testThreeOptionalDisplay != "") {
                     $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $covid19Results[$response['test_result_3']] : "") . '</td>';
                 }
                 $labRes .= '<td>' . ucfirst(strtolower($response['referenceResult'])) . '</td>
                             <td>' . ucfirst(strtolower($response['labResult'])) . '</td>
                             <td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $score . '</td>
+							<td style="text-align:center;">'.implode(", ", $geneDetails).'</td>
 						  </tr>';
             }
             $labRes .= '</table>';

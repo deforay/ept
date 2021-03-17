@@ -488,6 +488,7 @@ try {
         ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type'))
         ->where("eq.status=?", 'pending')
         ->limit($limit);
+    // die($sQuery);
     $evalResult = $db->fetchAll($sQuery);
 
     $reportService = new Application_Service_Reports();
@@ -507,7 +508,7 @@ try {
         $passPercentage = $commonService->getConfig('pass_percentage');
         $trainingInstance = $commonService->getConfig('training_instance');
         $trainingInstanceText = $commonService->getConfig('training_instance_text');
-
+        
         $customField1 = $commonService->getConfig('custom_field_1');
         $customField2 = $commonService->getConfig('custom_field_2');
         $haveCustom = $commonService->getConfig('custom_field_needed');
@@ -520,7 +521,10 @@ try {
             }
         }
         foreach ($evalResult as $evalRow) {
-
+            // For Identify the geny types for covid-19 test type
+            if(isset($evalRow['scheme_type']) && $evalRow['scheme_type'] == 'covid19'){
+                $allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
+            }
             //$alertMail = new Zend_Mail();
             ini_set('memory_limit', '-1');
 

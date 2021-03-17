@@ -7,7 +7,7 @@
 				<label class="col-lg-4 control-label" for="geneTypeName">Gene Type Name <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<input type="hidden" id="genetypeId" name="genetypeId" value="<?php echo $this->result['gene_id']; ?>"/>
-					<input type="text" id="geneTypeName" name="geneTypeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Gene Type Name here" placeholder="Please enter the Gene Type Name here" onblur="checkDuplicate('r_covid19_gene_types', 'gene_id', this, '<?php echo "gene_id##" . $this->result['gene_id']; ?>', 'This Test Type Name already exists for another Test Type. Please try something else.')" value="<?php echo $this->result['gene_name']; ?>"/>
+					<input type="text" id="geneTypeName" name="geneTypeName" class="isRequired form-control" title="Please enter the Gene Type Name here" placeholder="Please enter the Gene Type Name here" onblur="checkDuplicate('r_covid19_gene_types', 'gene_name', this, '<?php echo "gene_id##" . $this->result['gene_id']; ?>', 'This Test Type Name already exists for another Test Type. Please try something else.')" value="<?php echo $this->result['gene_name']; ?>"/>
 				</div>
 			</div>
 		
