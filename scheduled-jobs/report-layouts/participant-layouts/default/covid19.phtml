@@ -27,9 +27,13 @@ if (sizeof($resultArray['shipment']) > 0) {
     foreach ($resultArray['shipment'] as $result) {
         // Zend_Debug::dump($result);die;
         $geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($result['map_id']);
+
+        $geneDetails = array();
         foreach($geneIdentifiedTypes as $gene){
-            $geneDetails[] = $allGeneTypes[$gene['gene_id']]." = ".$gene['ct_value'];
+            $geneDetails[$gene['sample_id']][] = $allGeneTypes[$gene['gene_id']]." = ".$gene['ct_value'];
         }
+
+        
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
@@ -297,6 +301,9 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             foreach ($result['responseResult'] as $response) {
 
+                // echo (var_export($geneDetails, true));
+                // echo (var_export($geneDetails[$response['sample_id']], true));
+
                 if ($response['calculated_score'] == 'Pass') {
                     $img = UPLOAD_PATH . '/../images/check.jpg';
 
@@ -321,7 +328,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                             <td>' . ucfirst(strtolower($response['labResult'])) . '</td>
                             <td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $score . '</td>
-							<td style="text-align:center;">'.implode(", ", $geneDetails).'</td>
+							<td style="text-align:center;">'.(!empty($geneDetails[$response['sample_id']]) ? implode(", ", $geneDetails[$response['sample_id']]) : '').'</td>
 						  </tr>';
             }
             $labRes .= '</table>';

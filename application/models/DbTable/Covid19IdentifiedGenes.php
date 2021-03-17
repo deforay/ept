@@ -30,7 +30,8 @@ class Application_Model_DbTable_Covid19IdentifiedGenes extends Zend_Db_Table_Abs
 
     public function getAllCovid19IdentifiedGeneTypeResponseWise($mapId)
     {
-        $sql = $this->select(array('map_id' => $mapId));
+        $sql = $this->select();
+        $sql = $sql->where("map_id= ? ", $mapId);
 		return $this->fetchAll($sql);
     }
 }
