@@ -25,6 +25,7 @@ if (sizeof($resultArray['shipment']) > 0) {
     //$resultArray['dmResult'];
 
     foreach ($resultArray['shipment'] as $result) {
+        // Zend_Debug::dump($result);die;
         $geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($result['map_id']);
         foreach($geneIdentifiedTypes as $gene){
             $geneDetails[] = $allGeneTypes[$gene['gene_id']]." = ".$gene['ct_value'];
@@ -166,6 +167,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
+        $labInfo .= '	<td><strong>Specimen Volume</strong><br>' . $result['specimen_volume'] . '</td>';
         $labInfo .= '	<td>';
         
         $labInfo .= ' </td>';
@@ -255,8 +257,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                             if ($testThreeOptionalDisplay != "") {
                                 $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . '">Result-3</th>';
                             }
-                            $labRes .= '<th style="text-align:center;font-weight:bold;">Expected Result</th>
-                            <th style="text-align:center;font-weight:bold;">Your Result</th>
+                            $labRes .= '<th style="text-align:center;font-weight:bold;">Expected Final Interpretation</th>
+                            <th style="text-align:center;font-weight:bold;">Your Final Interpretation</th>
                             <th style="text-align:center;font-weight:bold;" colspan="2">Score</th>
                             <th style="text-align:center;font-weight:bold;">Gene Types</th>
                         </tr>';
