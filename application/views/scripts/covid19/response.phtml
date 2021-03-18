@@ -563,7 +563,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 <script>
     var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
     var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
-    var geneType = [[]];
+    
     function showHideTest(no){
         $('.testOne').html('Test-1');
         $('.resultOne').html('Result-1');
@@ -791,7 +791,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                     if(sample == sampleId){
                         strTxt.push('<tr>\
                             <td><input type="hidden" value="<?php echo $this->allGeneTypes[$gene['gene_id']];?>" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, $gene['gene_id'], '-- Select --'); ?></select></td>\
-                            <td><input placeholder="Enter CT Value" value="<?php echo $gene['ct_value'];?>" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td>\
+                            <td><input placeholder="Enter CT Value" value="<?php echo $gene['ct_value'];?>" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control checkNum ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td>\
                             <td><input type="text" value="<?php echo $gene['remarks'];?>" placeholder="Enter Remarks" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"></td>\
                             <td style="text-align:center">\
                                 <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
@@ -815,7 +815,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         if(strTxt.length === 0){
             strTxt.push('<tr>\
                 <td><input type="hidden" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select></td>\
-                <td><input placeholder="Enter CT Value" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td>\
+                <td><input placeholder="Enter CT Value" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control checkNum ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td>\
                 <td><input type="text" placeholder="Enter Remarks" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"/></td>\
                 <td style="text-align:center">\
                     <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
@@ -863,7 +863,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         e.setAttribute("align", "center");
 
         b.innerHTML = '<input type="hidden" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId  + sampleCounter + '"  id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select>';
-        c.innerHTML = '<input placeholder="Enter CT Value" id="'+ sampleCounter + '" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/>';
+        c.innerHTML = '<input placeholder="Enter CT Value" id="'+ sampleCounter + '" type="text" name="cTValue[' + sampleId + '][]" class="form-control checkNum ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/>';
         d.innerHTML = '<input type="text" placeholder="Enter Remarks" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"/>';
         e.innerHTML = '<a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>&nbsp;<a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>';
         $(a).fadeIn(800);
@@ -883,7 +883,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
             }
         }
         if (k > 1) {
-            alert("Selected Gene Type already added..!!");
+            alert("Selected Gene Type has already been added for this Sample");
             $(".geneTypeInput" + sampleId+count).val('');
         }
 
@@ -913,7 +913,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                 if($(".cTValue"+sampleId+i).val() == ""){
                     $(".cTValue"+sampleId+i).focus();
                     $(".cTValue"+sampleId+i).css('border','1px solid red')
-                    // modelFlag = false;
+                    modelFlag = false;
                 } 
             }
         }
