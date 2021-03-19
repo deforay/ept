@@ -1,11 +1,11 @@
 <?php
 
-class Admin_TestTypeController extends Zend_Controller_Action {
+class Admin_TestPlatformController extends Zend_Controller_Action {
 
     public function init() {
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-                ->addActionContext('get-test-type', 'html')
+                ->addActionContext('get-test-platform', 'html')
                 ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -24,7 +24,7 @@ class Admin_TestTypeController extends Zend_Controller_Action {
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();            
             $schemeService->addTestType($params);
-            $this->redirect("/admin/test-type");
+            $this->redirect("/admin/test-platform");
         }
         
     }
@@ -35,12 +35,12 @@ class Admin_TestTypeController extends Zend_Controller_Action {
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $schemeService->updateTestType($params);
-            $this->redirect("/admin/test-type");
+            $this->redirect("/admin/test-platform");
         } else if ($this->hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
             $this->view->result = $schemeService->getCovid19TestType($id);
         } else {
-            $this->redirect('admin/test-type/index');
+            $this->redirect('admin/test-platform/index');
         }
     }
 
@@ -49,16 +49,16 @@ class Admin_TestTypeController extends Zend_Controller_Action {
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $schemeService->updateTestTypeStage($params);
-            $this->redirect("/admin/test-type/standard-Type");
+            $this->redirect("/admin/test-platform/standard-Type");
         }
     }
 
-    public function getTestTypeAction() {
+    public function getTestPlatformAction() {
         if ($this->hasParam('stage')) {
             $stage = $this->_getParam('stage');
             $schemeService = new Application_Service_Schemes();
-            $this->view->testTypeList = $schemeService->getAllCovid19TestTypeList(true);
-            $this->view->testTypeStage =$stage;
+            $this->view->testPlatformList = $schemeService->getAllCovid19TestTypeList(true);
+            $this->view->testPlatformStage =$stage;
         }
     }
 

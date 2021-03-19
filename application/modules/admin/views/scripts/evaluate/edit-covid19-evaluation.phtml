@@ -149,17 +149,17 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         </tr>
     </thead>
     <tr style="text-align:center">
-        <th style="width:10%;"> Type Name</th>
+        <th style="width:10%;"> Platform Name</th>
         <td>
-            <select name="test_type_1" id="test_type_1" class="isRequired form-control" title="Please Choose Test Type 1">
+            <select name="test_type_1" id="test_type_1" class="isRequired form-control" title="Please Choose Test Platform 1">
                 <?php $this->dropdownSelection($this->allTestTypes, $this->evaluateData['results'][0]["test_type_1"], true); ?>
             </select> </td>
         <td class='testTwo'>
-            <select name="test_type_2" id="test_type_2" class="isRequired form-control" title="Please Choose Test Type 2">
+            <select name="test_type_2" id="test_type_2" class="isRequired form-control" title="Please Choose Test Platform 2">
                 <?php $this->dropdownSelection($this->allTestTypes, $this->evaluateData['results'][0]["test_type_2"], true); ?>
             </select> </td>
         <td class='testThree'>
-            <select name="test_type_3" id="test_type_3" class="isRequired form-control" title="Please Choose Test Type 3">
+            <select name="test_type_3" id="test_type_3" class="isRequired form-control" title="Please Choose Test Platform 3">
                 <?php $this->dropdownSelection($this->allTestTypes, $this->evaluateData['results'][0]["test_type_3"], true); ?>
             </select> </td>
     </tr>

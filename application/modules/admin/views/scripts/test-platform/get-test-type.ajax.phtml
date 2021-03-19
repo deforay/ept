@@ -1,0 +1,14 @@
+<?php
+$result = ''; 
+foreach ($this->testPlatformList as $key => $testPlatformList) {
+    $selected = "";
+    if($this->testPlatformStage=='test_type_1' && $testPlatformList['test_type_1']==1){
+        $selected = "selected='selected'";
+    }else if($this->testPlatformStage=='test_type_2' && $testPlatformList['test_type_2']==1){
+        $selected = "selected='selected'";
+    }else if($this->testPlatformStage=='test_type_3' && $testPlatformList['test_type_3']==1){
+        $selected = "selected='selected'";
+    }
+    $result.='<option value="' . $testPlatformList['test_type_id'] . '"' . $selected . '>' . $testPlatformList['test_type_name']. '</option>';
+}
+echo $result;

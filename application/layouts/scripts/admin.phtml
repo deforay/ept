@@ -172,7 +172,7 @@ if ($adminSession->privileges != "") {
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments'), 'default', true); ?>">Scheme Enrollments</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>">Testkits</a></li>
 								<?php if (in_array('covid19', $adminSession->activeSchemes)) { ?>
-								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-type'), 'default', true); ?>">Covid-19 Test Types</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform'), 'default', true); ?>">Covid-19 Test Platforms</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-gene-type'), 'default', true); ?>">Covid-19 Gene Types</a></li>
 								<?php } ?>
 								<li class="divider"></li>

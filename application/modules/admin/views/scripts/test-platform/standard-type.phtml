@@ -5,11 +5,11 @@
         <legend>DTS Testkit Mapping (Country Standard)</legend>
         <div class="row">
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Choose a Test Type</label>
+                <label class="col-lg-4 control-label">Choose a Test Platform</label>
 
                 <div class="col-lg-8">
                     <select class="form-control isRequired" name="testStages" id="testStages" title="Please choose a test stage" onchange="getTestType(this.value)">
-                        <option value="">Select Test Type</option>
+                        <option value="">Select Test Platform</option>
                         <option value="test_type_1">Test 1</option>
                         <option value="test_type_2">Test 2</option>
                         <option value="test_type_3">Test 3</option>
@@ -17,21 +17,21 @@
                 </div>
             </div>
         </div>
-        <form name="submitdatamanager" id="submitdatamanager" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-type', 'action' => 'standard-type'), 'default', true); ?>" class="hide">
+        <form name="submitdatamanager" id="submitdatamanager" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform', 'action' => 'standard-type'), 'default', true); ?>" class="hide">
 
             <div class="text-info" style="text-align:center;padding:10px 0;">Click on the Testkit Name to move them between the two sections<br /><br />
                 <div style="width:500px;margin:0 auto;clear:both;">
-                    <a href='#' id='select-all-test-type' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-test-type' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+                    <a href='#' id='select-all-test-platform' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-test-platform' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
                 </div>
             </div>
             <br />
-            <select id="testTypeData" name="testTypeData[]" multiple="multiple">
+            <select id="testPlatformData" name="testPlatformData[]" multiple="multiple">
             </select>
-            <input type="hidden" name="testTypeStage" id="testTypeStage" value="">
+            <input type="hidden" name="testPlatformStage" id="testPlatformStage" value="">
             <br />
             <div class="col-md-12 col-xs-12" align="center">
                 <input type="submit" class="btn btn-primary" value="Save Selected" />
-                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-type', 'action' => 'standard-type'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
+                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform', 'action' => 'standard-type'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
             </div>
         </form>
 
@@ -43,15 +43,15 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
     function getTestType(stage) {
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-type', 'action' => 'get-test-type')); ?>", {
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform', 'action' => 'get-test-platform')); ?>", {
                 stage: stage,
                 format: "html"
             },
             function(data) {
-                $('#testTypeStage').val(stage);
+                $('#testPlatformStage').val(stage);
                 $('#submitdatamanager').removeClass('hide');
-                $('#testTypeData').html(data);
-                $('#testTypeData').multiSelect("destroy").multiSelect({
+                $('#testPlatformData').html(data);
+                $('#testPlatformData').multiSelect("destroy").multiSelect({
                     selectableFooter: "<div class='custom-header'>Unselected Testkits (<span id='msUnselectedCountHolder'></span>)</div>",
                     selectionFooter: "<div class='custom-header'>Selected Testkits (<span id='msSelectedCountHolder'></span>)</div>",
                     selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Testkit Name To Filter'>",
@@ -90,12 +90,12 @@
                 });
 
 
-                $('#select-all-test-type').click(function() {
-                    $('#testTypeData').multiSelect('select_all');
+                $('#select-all-test-platform').click(function() {
+                    $('#testPlatformData').multiSelect('select_all');
                     return false;
                 });
-                $('#deselect-all-test-type').click(function() {
-                    $('#testTypeData').multiSelect('deselect_all');
+                $('#deselect-all-test-platform').click(function() {
+                    $('#testPlatformData').multiSelect('deselect_all');
                     return false;
                 });
 

@@ -311,15 +311,15 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 </tr>
                             </thead>
                             <tr align="CENTER" class="light">
-                                <th> Test Type</th>
+                                <th> Test Platform</th>
                                 <td class="dark" width="20%">
                                     <select name="test_type_1" id="test_type_1" style="width: 100%;" class="form-control" title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
                                         <option value=""> ---Select Type---</option>
                                         <?php
-                                        foreach ($this->allTestTypes as $key => $testType) {
-                                            if ($testType['test_type_1'] == '1') {
+                                        foreach ($this->allTestTypes as $key => $testPlatform) {
+                                            if ($testPlatform['test_type_1'] == '1') {
                                         ?>
-                                                <option value="<?php echo $testType['test_type_id'] ?>" <?php echo (isset($this->allSamples[0]["test_type_1"]) && $testType['test_type_id'] == $this->allSamples[0]["test_type_1"]) ? 'selected' : ''; ?>><?php echo $testType['test_type_name'] ?></option>
+                                                <option value="<?php echo $testPlatform['test_type_id'] ?>" <?php echo (isset($this->allSamples[0]["test_type_1"]) && $testPlatform['test_type_id'] == $this->allSamples[0]["test_type_1"]) ? 'selected' : ''; ?>><?php echo $testPlatform['test_type_name'] ?></option>
                                         <?php
                                             }
                                         }
@@ -332,10 +332,10 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                     <select name="test_type_2" id="test_type_2" style="width: 100%;" class="form-control" title="Please Choose Test Kit 2" onchange="selectTestKitName(this)">
                                         <option value=""> ---Select Type---</option>
                                         <?php
-                                        foreach ($this->allTestTypes as $key => $testType) {
-                                            if ($testType['test_type_2'] == '1') {
+                                        foreach ($this->allTestTypes as $key => $testPlatform) {
+                                            if ($testPlatform['test_type_2'] == '1') {
                                         ?>
-                                                <option value="<?php echo $testType['test_type_id'] ?>" <?php echo (isset($this->allSamples[0]["test_type_2"]) && $testType['test_type_id'] == $this->allSamples[0]["test_type_2"]) ? 'selected' : ''; ?>><?php echo $testType['test_type_name'] ?></option>
+                                                <option value="<?php echo $testPlatform['test_type_id'] ?>" <?php echo (isset($this->allSamples[0]["test_type_2"]) && $testPlatform['test_type_id'] == $this->allSamples[0]["test_type_2"]) ? 'selected' : ''; ?>><?php echo $testPlatform['test_type_name'] ?></option>
                                         <?php
                                             }
                                         }
@@ -349,10 +349,10 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                     <select name="test_type_3" id="test_type_3" style="width: 100%;" class="form-control" title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
                                         <option value=""> ---Select Type---</option>
                                         <?php
-                                        foreach ($this->allTestTypes as $key => $testType) {
-                                            if ($testType['test_type_3'] == '1') {
+                                        foreach ($this->allTestTypes as $key => $testPlatform) {
+                                            if ($testPlatform['test_type_3'] == '1') {
                                         ?>
-                                                <option value="<?php echo $testType['test_type_id'] ?>" <?php echo (isset($this->allSamples[0]["test_type_3"]) && $testType['test_type_id'] == $this->allSamples[0]["test_type_3"]) ? 'selected' : ''; ?>><?php echo $testType['test_type_name'] ?></option>
+                                                <option value="<?php echo $testPlatform['test_type_id'] ?>" <?php echo (isset($this->allSamples[0]["test_type_3"]) && $testPlatform['test_type_id'] == $this->allSamples[0]["test_type_3"]) ? 'selected' : ''; ?>><?php echo $testPlatform['test_type_name'] ?></option>
                                         <?php
                                             }
                                         }

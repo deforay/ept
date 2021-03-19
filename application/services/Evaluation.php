@@ -1253,9 +1253,9 @@ class Application_Service_Evaluation
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resc19.reported_result', array('labResult' => 'respr.response'))
 					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resc19.shipment_map_id', array('sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason', 'sp.specimen_volume'))
 					->join(array('refc19' => 'reference_result_covid19'), 'refc19.shipment_id=sp.shipment_id and refc19.sample_id=resc19.sample_id', array('refc19.reference_result', 'refc19.sample_label', 'refc19.mandatory', 'refc19.sample_score', 'refc19.control'))
-					->joinLeft(array('c19tk1' => 'r_test_type_covid19'), 'c19tk1.test_type_id=resc19.test_type_1', array('testType1' => 'c19tk1.test_type_name'))
-					->joinLeft(array('c19tk2' => 'r_test_type_covid19'), 'c19tk2.test_type_id=resc19.test_type_2', array('testType2' => 'c19tk2.test_type_name'))
-					->joinLeft(array('c19tk3' => 'r_test_type_covid19'), 'c19tk3.test_type_id=resc19.test_type_3', array('testType3' => 'c19tk3.test_type_name'))
+					->joinLeft(array('c19tk1' => 'r_test_type_covid19'), 'c19tk1.test_type_id=resc19.test_type_1', array('testPlatform1' => 'c19tk1.test_type_name'))
+					->joinLeft(array('c19tk2' => 'r_test_type_covid19'), 'c19tk2.test_type_id=resc19.test_type_2', array('testPlatform2' => 'c19tk2.test_type_name'))
+					->joinLeft(array('c19tk3' => 'r_test_type_covid19'), 'c19tk3.test_type_id=resc19.test_type_3', array('testPlatform3' => 'c19tk3.test_type_name'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refc19.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("resc19.shipment_map_id = ?", $res['map_id']);
 
@@ -1905,15 +1905,15 @@ class Application_Service_Evaluation
 					} */
 					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(''))
 						->join(array('resC19' => 'response_result_covid19'), 'resC19.shipment_map_id=spm.map_id', array(
-							'testType1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resC19.test_type_1,resC19.shipment_map_id)))')
+							'testPlatform1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resC19.test_type_1,resC19.shipment_map_id)))')
 						))
-						->join(array('testTypeC19' => 'r_test_type_covid19'), 'testTypeC19.test_type_id=resC19.test_type_1', array('test_type_name'))
+						->join(array('testPlatformC19' => 'r_test_type_covid19'), 'testPlatformC19.test_type_id=resC19.test_type_1', array('test_type_name'))
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
 						->where("spm.is_excluded!='yes'")
 						->where("spm.shipment_id = ?", $shipmentId)
-						->group('testTypeC19.test_type_name')
-						->order('testType1Total DESC');
+						->group('testPlatformC19.test_type_name')
+						->order('testPlatform1Total DESC');
 					// die($rQuery);
 					$rQueryRes = $db->fetchAll($rQuery);
 					$shipmentResult['pieChart'] = $rQueryRes;

@@ -2059,7 +2059,7 @@ class Application_Service_Reports
                 foreach ($refResult as $key => $refRes) {
                     $refCovid19Query = $db->select()->from(array('refCovid19' => 'reference_covid19_test_type'), array('refCovid19.lot_no', 'refCovid19.expiry_date', 'refCovid19.result'))
                         ->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refCovid19.result', array('referenceTypeResult' => 'r.response'))
-                        ->joinLeft(array('tt' => 'r_test_type_covid19'), 'tt.test_type_id=refCovid19.test_type', array('testTypeName' => 'tt.test_type_name'))
+                        ->joinLeft(array('tt' => 'r_test_type_covid19'), 'tt.test_type_id=refCovid19.test_type', array('testPlatformName' => 'tt.test_type_name'))
                         ->where("refCovid19.shipment_id = ?", $shipmentId)
                         ->where("refCovid19.sample_id = ?", $refRes['sample_id']);
                     $refResult[$key]['typeReference'] = $db->fetchAll($refCovid19Query);
@@ -2177,9 +2177,9 @@ class Application_Service_Reports
             foreach ($shipmentResult as $key => $aRow) {
                 if ($result['scheme_type'] == 'covid19') {
                     $resQuery = $db->select()->from(array('rrcovid19' => 'response_result_covid19'))
-                        ->joinLeft(array('tt1' => 'r_test_type_covid19'), 'tt1.test_type_id=rrcovid19.test_type_1', array('testTypeName1' => 'tt1.test_type_name'))
-                        ->joinLeft(array('tt2' => 'r_test_type_covid19'), 'tt2.test_type_id=rrcovid19.test_type_2', array('testTypeName2' => 'tt2.test_type_name'))
-                        ->joinLeft(array('tt3' => 'r_test_type_covid19'), 'tt3.test_type_id=rrcovid19.test_type_3', array('testTypeName3' => 'tt3.test_type_name'))
+                        ->joinLeft(array('tt1' => 'r_test_type_covid19'), 'tt1.test_type_id=rrcovid19.test_type_1', array('testPlatformName1' => 'tt1.test_type_name'))
+                        ->joinLeft(array('tt2' => 'r_test_type_covid19'), 'tt2.test_type_id=rrcovid19.test_type_2', array('testPlatformName2' => 'tt2.test_type_name'))
+                        ->joinLeft(array('tt3' => 'r_test_type_covid19'), 'tt3.test_type_id=rrcovid19.test_type_3', array('testPlatformName3' => 'tt3.test_type_name'))
                         ->joinLeft(array('r' => 'r_possibleresult'), 'r.id=rrcovid19.test_result_1', array('testResult1' => 'r.response'))
                         ->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id=rrcovid19.test_result_2', array('testResult2' => 'rp.response'))
                         ->joinLeft(array('rpr' => 'r_possibleresult'), 'rpr.id=rrcovid19.test_result_3', array('testResult3' => 'rpr.response'))
@@ -2403,7 +2403,7 @@ class Application_Service_Reports
                         if (trim($row['typeReference'][0]['expiry_date']) != "") {
                             $row['typeReference'][0]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][0]['expiry_date']);
                         }
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['testTypeName'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['testPlatformName'], PHPExcel_Cell_DataType::TYPE_STRING);
                         $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
                         $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
 
@@ -2413,7 +2413,7 @@ class Application_Service_Reports
                             if (trim($row['typeReference'][1]['expiry_date']) != "") {
                                 $row['typeReference'][1]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][1]['expiry_date']);
                             }
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['testTypeName'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['testPlatformName'], PHPExcel_Cell_DataType::TYPE_STRING);
                             $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
                             $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
                         }
@@ -2423,7 +2423,7 @@ class Application_Service_Reports
                             if (trim($row['typeReference'][2]['expiry_date']) != "") {
                                 $row['typeReference'][2]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][2]['expiry_date']);
                             }
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['testTypeName'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['testPlatformName'], PHPExcel_Cell_DataType::TYPE_STRING);
                             $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
                             $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
                         }
@@ -2574,7 +2574,7 @@ class Application_Service_Reports
                         $aRow['response'][0]['exp_date_3'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['exp_date_3']);
                     }
 
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testTypeName1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName1'], PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_1'], PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_1'], PHPExcel_Cell_DataType::TYPE_STRING);
 
@@ -2582,7 +2582,7 @@ class Application_Service_Reports
                         //$row[] = $aRow[$k]['testResult1'];
                         $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult1'], PHPExcel_Cell_DataType::TYPE_STRING);
                     }
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testTypeName2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName2'], PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], PHPExcel_Cell_DataType::TYPE_STRING);
 
@@ -2590,7 +2590,7 @@ class Application_Service_Reports
                         //$row[] = $aRow[$k]['testResult2'];
                         $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], PHPExcel_Cell_DataType::TYPE_STRING);
                     }
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testTypeName3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName3'], PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], PHPExcel_Cell_DataType::TYPE_STRING);
 

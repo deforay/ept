@@ -61,9 +61,9 @@ if ($resultArray['shipment'] != "") {
         $dataY = array();
         $total = 0;
         foreach ($resultArray['shipment']['pieChart'] as $piechart) {
-            $dataX[] = $piechart['testType1Total'];
-            $dataY[] = $piechart['test_type_name'] .' (n='.$piechart['testType1Total'].')';
-            $total +=$piechart['testType1Total'];
+            $dataX[] = $piechart['testPlatform1Total'];
+            $dataY[] = $piechart['test_type_name'] .' (n='.$piechart['testPlatform1Total'].')';
+            $total +=$piechart['testPlatform1Total'];
         }
         // Create the graph. These two calls are always required
         $graph = new Graph(680, 600, 'auto');
@@ -90,9 +90,9 @@ if ($resultArray['shipment'] != "") {
         $graph->Add($gbplot);
         
         $b1plot->SetColor("white");
-        $graph->title->Set("Test types used for Covid19-based PT survey " . $resultArray['shipment']['distribution_code'] . "(N=".$total.")");
+        $graph->title->Set("Test platforms used for Covid19-based PT survey " . $resultArray['shipment']['distribution_code'] . "(N=".$total.")");
         $graph->yaxis->title->Set('Number of Participants');
-        $graph->xaxis->title->Set('Test Type-1 Name');
+        $graph->xaxis->title->Set('Test Platform-1 Name');
         $graph->yaxis->SetTitleMargin(35);
         $graph->xaxis->SetTitleMargin(180);
         // Turn the tick mark out from the plot area

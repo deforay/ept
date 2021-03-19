@@ -19,15 +19,15 @@ class Application_Service_Schemes
     public function getAllCovid19TestType($countryAdapted = false)
     {
 
-        $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
-        return $testTypesDb->getActiveTestTypesNamesForScheme('covid19', $countryAdapted);
+        $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
+        return $testPlatformsDb->getActiveTestTypesNamesForScheme('covid19', $countryAdapted);
     }
 
-    public function getAllCovid19TestTypeResponseWise($countryAdapted = false)
+    public function getAllCovid19TestTypeResponseWise($scheme, $countryAdapted = false)
     {
 
-        $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
-        return $testTypesDb->getActiveTestTypesNamesForSchemeResponseWise('covid19', $countryAdapted);
+        $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
+        return $testPlatformsDb->getActiveTestTypesNamesForSchemeResponseWise($scheme, $countryAdapted);
     }
     public function getAllDtsTestKitList($countryAdapted = false)
     {
@@ -78,14 +78,14 @@ class Application_Service_Schemes
         return $retval;
     }
 
-    public function getRecommededCovid19TestTypes($testTypes = null)
+    public function getRecommededCovid19TestTypes($testPlatforms = null)
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('covid19_recommended_test_types'));
 
-        if ($testTypes != null && (int) $testTypes > 0 && (int) $testTypes <= 3) {
-            $sql = $sql->where('test_no = ' . (int) $testTypes);
+        if ($testPlatforms != null && (int) $testPlatforms > 0 && (int) $testPlatforms <= 3) {
+            $sql = $sql->where('test_no = ' . (int) $testPlatforms);
         }
         // die($sql);
         $stmt = $db->fetchAll($sql);
@@ -876,8 +876,8 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
-            $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
-            $testTypesDb->addTestTypeDetails($params);
+            $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
+            $testPlatformsDb->addTestTypeDetails($params);
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
@@ -890,8 +890,8 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
-            $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
-            $testTypesDb->updateTestTypeDetails($params);
+            $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
+            $testPlatformsDb->updateTestTypeDetails($params);
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
@@ -918,8 +918,8 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
-            $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
-            $testTypesDb->updateTestTypeStageDetails($params);
+            $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
+            $testPlatformsDb->updateTestTypeStageDetails($params);
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
@@ -935,8 +935,8 @@ class Application_Service_Schemes
 
     public function getAllCovid19TestTypeInGrid($parameters)
     {
-        $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
-        return $testTypesDb->getAllTestTypesForAllSchemes($parameters);
+        $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
+        return $testPlatformsDb->getAllTestTypesForAllSchemes($parameters);
     }
 
     public function getDtsTestkit($testkitId)
@@ -947,8 +947,8 @@ class Application_Service_Schemes
 
     public function getCovid19TestType($testtypeId)
     {
-        $testTypesDb = new Application_Model_DbTable_TestTypenameCovid19();
-        return $testTypesDb->getCovid19TestTypeDetails($testtypeId);
+        $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
+        return $testPlatformsDb->getCovid19TestTypeDetails($testtypeId);
     }
 
     public function getVlManualValue($shipmentId, $sampleId, $vlAssay)
