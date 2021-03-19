@@ -21,9 +21,9 @@ class ShipmentFormController extends Zend_Controller_Action
             $shipmentService->getAllShipmentForm($params);
           }else{
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-                    if(!isset($authNameSpace->dm_id)){
-                        $this->_helper->layout()->setLayout('home');
-                    }
+                if(!isset($authNameSpace->dm_id)){
+                    $this->_helper->layout()->setLayout('home');
+                }
           }
           
         
@@ -45,6 +45,10 @@ class ShipmentFormController extends Zend_Controller_Action
             if($shipment["scheme_type"]=='dts'){
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                 $this->view->dtsConfig = new Zend_Config_Ini($file, APPLICATION_ENV);                
+            }
+            if($shipment["scheme_type"]=='covid19'){
+                $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+                $this->view->covid19Config = new Zend_Config_Ini($file, APPLICATION_ENV);                
             }
             
         }
