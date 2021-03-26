@@ -1391,7 +1391,7 @@ class Application_Service_Shipments
 
             // ------------------>
         } 
-
+        
         $distroService->updateDistributionStatus($params['distribution'], 'pending');
     }
 
@@ -2034,7 +2034,7 @@ class Application_Service_Shipments
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->getShipmentReportDetails($parameters);
     }
-    public function getShipmentParticipants($sid)
+    public function sendShipmentMailAlertToParticipants($sid)
     {
         $commonServices = new Application_Service_Common();
         $general = new Pt_Commons_General();

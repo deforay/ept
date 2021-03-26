@@ -16,19 +16,19 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
             // die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            $testTypeDb = new Application_Model_DbTable_TestTypenameCovid19();
+            $testPlatformDb = new Application_Model_DbTable_TestTypenameCovid19();
             if (isset($params['test_type_1']) && trim($params['test_type_1']) == 'other') {
-                $otherTestkitId1 = $testTypeDb->addTestTypeInParticipant($params['test_type_other_update_1'], $params['test_type_other_1'], 'covid19', 1);
+                $otherTestkitId1 = $testPlatformDb->addTestTypeInParticipant($params['test_type_other_update_1'], $params['test_type_other_1'], 'covid19', 1);
                 $params['test_type_1'] = $otherTestkitId1;
             }
 
             if (isset($params['test_type_2']) && trim($params['test_type_2']) == 'other') {
-                $otherTestkitId2 = $testTypeDb->addTestTypeInParticipant($params['test_type_other_update_2'], $params['test_type_other_2'], 'covid19', 2);
+                $otherTestkitId2 = $testPlatformDb->addTestTypeInParticipant($params['test_type_other_update_2'], $params['test_type_other_2'], 'covid19', 2);
                 $params['test_type_2'] = $otherTestkitId2;
             }
 
             if (isset($params['test_type_3']) && trim($params['test_type_3']) == 'other') {
-                $otherTestkitId3 = $testTypeDb->addTestTypeInParticipant($params['test_type_other_update_3'], $params['test_type_other_3'], 'covid19', 3);
+                $otherTestkitId3 = $testPlatformDb->addTestTypeInParticipant($params['test_type_other_update_3'], $params['test_type_other_3'], 'covid19', 3);
                 $params['test_type_3'] = $otherTestkitId3;
             }
             $data = array(
@@ -106,21 +106,21 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
         
         $sampleIds = $params['covid19Data']->Section5->data->samples->id;
         foreach ($sampleIds as $key => $sampleId) {
-            $testTypeDb = new Application_Model_DbTable_TestTypenameCovid19();
+            $testPlatformDb = new Application_Model_DbTable_TestTypenameCovid19();
             if (isset($params['covid19Data']->Section4->data->typeValue[0]) && trim($params['covid19Data']->Section4->data->typeValue[0]) == 'other') {
-                $otherTestkitId1 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_1"], $params['covid19Data']->Section4->data->typeOther[0], 'covid19', 1);
+                $otherTestkitId1 = $testPlatformDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_1"], $params['covid19Data']->Section4->data->typeOther[0], 'covid19', 1);
                 $params['test_type_1'] = $otherTestkitId1;
             } else {
                 $params['test_type_1'] = (isset($params['covid19Data']->Section4->data->typeValue[0]) && $params['covid19Data']->Section4->data->typeValue[0] != '') ? $params['covid19Data']->Section4->data->typeValue[0] : '';
             }
             if (isset($params['covid19Data']->Section4->data->typeValue[1]) && trim($params['covid19Data']->Section4->data->typeValue[1]) == 'other') {
-                $otherTestkitId2 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_2"], $params['covid19Data']->Section4->data->typeOther[1], 'covid19', 2);
+                $otherTestkitId2 = $testPlatformDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_2"], $params['covid19Data']->Section4->data->typeOther[1], 'covid19', 2);
                 $params['test_type_2'] = $otherTestkitId2;
             } else {
                 $params['test_type_2'] = (isset($params['covid19Data']->Section4->data->typeValue[1]) && $params['covid19Data']->Section4->data->typeValue[1] != '') ? $params['covid19Data']->Section4->data->typeValue[1] : '';
             }
             if (isset($params['covid19Data']->Section4->data->typeValue[2]) && trim($params['covid19Data']->Section4->data->typeValue[2]) == 'other') {
-                $otherTestkitId3 = $testTypeDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_3"], $params['covid19Data']->Section4->data->typeOther[2], 'covid19', 3);
+                $otherTestkitId3 = $testPlatformDb->addTestTypeInParticipantByAPI($allSamples[0]["test_type_3"], $params['covid19Data']->Section4->data->typeOther[2], 'covid19', 3);
                 $params['test_type_3'] = $otherTestkitId3;
             } else {
                 $params['test_type_3'] = (isset($params['covid19Data']->Section4->data->typeValue[2]) && $params['covid19Data']->Section4->data->typeValue[2] != '') ? $params['covid19Data']->Section4->data->typeValue[2] : '';

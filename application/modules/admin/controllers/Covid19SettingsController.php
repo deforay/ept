@@ -15,11 +15,11 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($this->getRequest()->isPost()) {
            // Zend_Debug::dump($this->getAllParams());die;
-            $testTypes[1] =$this->getRequest()->getPost('testType1');
-            $testTypes[2] =$this->getRequest()->getPost('testType2');
-            $testTypes[3] =$this->getRequest()->getPost('testType3');
+            $testPlatforms[1] =$this->getRequest()->getPost('testPlatform1');
+            $testPlatforms[2] =$this->getRequest()->getPost('testPlatform2');
+            $testPlatforms[3] =$this->getRequest()->getPost('testPlatform3');
             
-            $schemeService->setRecommededCovid19TestTypes($testTypes);
+            $schemeService->setRecommededCovid19TestTypes($testPlatforms);
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
 

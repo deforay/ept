@@ -1,19 +1,19 @@
 <div class="well">
-	<form name="addTestTypeForm" id="addTestTypeForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "test-type", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+	<form name="addTestTypeForm" id="addTestTypeForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "test-platform", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
-			<legend>Add New Test Type</legend>
+			<legend>Add New Test Platform</legend>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="testTypeName">Test Type Name <span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="testPlatformName">Test Platform Name <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
-					<input type="text" id="testTypeName" name="testTypeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Test Type Name here" placeholder="Please enter the Test Type Name here" onblur="checkDuplicate('r_test_type_covid19', 'test_type_id', this, null, 'This Test Type Name already exists for another Test Type. Please try something else.')" />
+					<input type="text" id="testPlatformName" name="testPlatformName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Test Platform Name here" placeholder="Please enter the Test Platform Name here" onblur="checkDuplicate('r_test_type_covid19', 'test_type_id', this, null, 'This Test Platform Name already exists for another Test Platform. Please try something else.')" />
 				</div>
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="shortTestTypeName">Short Test Type Name</label>
+				<label class="col-lg-4 control-label" for="shortTestTypeName">Short Test Platform Name</label>
 				<div class="col-lg-8">
-					<input type="text" id="shortTestTypeName" name="shortTestTypeName" size="50" maxlength="255" class="form-control" title="Please enter the Short Test Type Name here" placeholder="Please enter the Short Test Type Name here" />
+					<input type="text" id="shortTestTypeName" name="shortTestTypeName" size="50" maxlength="255" class="form-control" title="Please enter the Short Test Platform Name here" placeholder="Please enter the Short Test Platform Name here" />
 				</div>
 			</div>
 
@@ -44,7 +44,7 @@
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="manufacturer">Test Type Manufacturer</label>
+				<label class="col-lg-4 control-label" for="manufacturer">Test Platform Manufacturer</label>
 				<div class="col-lg-8">
 					<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255" class="form-control" title="Please enter the test type manufacturer here" placeholder="Please enter the test type manufacturer here" />
 				</div>
@@ -71,7 +71,7 @@
 
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
 				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
-				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/test-type';" tabindex="8" value="Cancel" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/test-platform';" tabindex="8" value="Cancel" />
 			</div>
 		</fieldset>
 	</form>

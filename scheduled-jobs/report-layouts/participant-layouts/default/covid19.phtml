@@ -4,7 +4,7 @@ require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'General.php');
 $general = new General();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 // Zend_Debug::dump($resultArray['shipment']);die;
-//var_dump($resultArray['shipment'][0]['responseResult'][0]['testType1']);die;
+//var_dump($resultArray['shipment'][0]['responseResult'][0]['testPlatform1']);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
@@ -206,8 +206,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                             $labRes .= '<th colspan="5" style="border:none;"></th>
                         </tr>';
             $labRes .= '<tr>
-                            <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Test Type</td>
-                            <td>' . $result['responseResult'][0]['testType1'] . '</td>';
+                            <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Test Platform</td>
+                            <td>' . $result['responseResult'][0]['testPlatform1'] . '</td>';
                             $labRes .= '<td colspan="5"></td>
                                             </tr>';
                             $labRes .= '<tr>

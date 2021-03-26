@@ -5,8 +5,8 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     protected $_name = 'r_test_type_covid19';
     protected $_primary = 'test_type_id';
 	
-	public function getTestTypeNameById($testTypeId){
-		return $this->getAdapter()->fetchCol($this->getAdapter()->select()->from('r_test_type_covid19', 'test_type_name')->where("test_type_id = '$testTypeId'"));
+	public function getTestTypeNameById($testPlatformId){
+		return $this->getAdapter()->fetchCol($this->getAdapter()->select()->from('r_test_type_covid19', 'test_type_name')->where("test_type_id = '$testPlatformId'"));
 	}
 	
 	public function getActiveTestTypesNamesForScheme($scheme,$countryAdapted=false){
@@ -44,7 +44,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
 
         $data = array(
             'test_type_id'              => $tkId,
-            'test_type_name'            => $params['testTypeName'],
+            'test_type_name'            => $params['testPlatformName'],
             'test_type_short_name'      => $params['shortTestTypeName'],
             'test_type_comments'        => $params['comments'],
             'test_type_manufacturer'    => $params['manufacturer'],
@@ -60,7 +60,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     public function updateTestTypeDetails($params) {
         if (trim($params['testtypeId']) != "") {
             $data = array(
-                'test_type_name'            => $params['testTypeName'],
+                'test_type_name'            => $params['testPlatformName'],
                 'test_type_short_name'      => $params['shortTestTypeName'],
                 'test_type_comments'        => $params['comments'],
                 'test_type_manufacturer'    => $params['manufacturer'],
@@ -75,11 +75,11 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     }
 
     public function updateTestTypeStageDetails($params) {
-        if (trim($params['testTypeStage']) != "") {
-            $this->update(array($params['testTypeStage'] => '0'), array());
-            if (isset($params["testTypeData"]) && $params["testTypeData"] != '' && count($params["testTypeData"]) > 0) {
-                foreach ($params["testTypeData"] as $data) {
-                    $this->update(array($params['testTypeStage'] => '1'), "test_type_id='" . $data . "'");
+        if (trim($params['testPlatformStage']) != "") {
+            $this->update(array($params['testPlatformStage'] => '0'), array());
+            if (isset($params["testPlatformData"]) && $params["testPlatformData"] != '' && count($params["testPlatformData"]) > 0) {
+                foreach ($params["testPlatformData"] as $data) {
+                    $this->update(array($params['testPlatformStage'] => '1'), "test_type_id='" . $data . "'");
                 }
             }
         }
@@ -239,7 +239,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
             $row[] = $aRow['test_type_approval_agency'];
             $row[] = $approved;
             $row[] = $general->humanDateFormat($createdDate[0]) . " " . $createdDate[1];
-            $row[] = '<a href="/admin/test-type/edit/53s5k85_8d/' . base64_encode($aRow['test_type_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = '<a href="/admin/test-platform/edit/53s5k85_8d/' . base64_encode($aRow['test_type_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
             $output['aaData'][] = $row;
         }

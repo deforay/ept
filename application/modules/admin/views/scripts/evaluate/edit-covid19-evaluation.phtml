@@ -149,17 +149,17 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         </tr>
     </thead>
     <tr style="text-align:center">
-        <th style="width:10%;"> Type Name</th>
+        <th style="width:10%;"> Platform Name</th>
         <td>
-            <select name="test_type_1" id="test_type_1" class="isRequired form-control" title="Please Choose Test Type 1">
+            <select name="test_type_1" id="test_type_1" class="isRequired form-control" title="Please Choose Test Platform 1">
                 <?php $this->dropdownSelection($this->allTestTypes, $this->evaluateData['results'][0]["test_type_1"], true); ?>
             </select> </td>
         <td class='testTwo'>
-            <select name="test_type_2" id="test_type_2" class="isRequired form-control" title="Please Choose Test Type 2">
+            <select name="test_type_2" id="test_type_2" class="isRequired form-control" title="Please Choose Test Platform 2">
                 <?php $this->dropdownSelection($this->allTestTypes, $this->evaluateData['results'][0]["test_type_2"], true); ?>
             </select> </td>
         <td class='testThree'>
-            <select name="test_type_3" id="test_type_3" class="isRequired form-control" title="Please Choose Test Type 3">
+            <select name="test_type_3" id="test_type_3" class="isRequired form-control" title="Please Choose Test Platform 3">
                 <?php $this->dropdownSelection($this->allTestTypes, $this->evaluateData['results'][0]["test_type_3"], true); ?>
             </select> </td>
     </tr>
@@ -388,7 +388,11 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     }
 
     $(function() {
-        showHideTest($('#numberOfParticipantTest').val());
+        <?php if($maximumAllowed > 1){ ?>
+            showHideTest($('#numberOfParticipantTest').val());
+        <?php } else{ ?>
+            showHideTest(1);
+        <?php }?>
         showHideTest2();
         showHideTest3();
     });
@@ -428,7 +432,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
             strTxt.push('<tr>\
                 <td><input type="hidden" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId + sampleCounter + '" id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select></td>\
                 <td><input placeholder="Enter CT Value" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/></td>\
-                <td><textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"><?php echo $gene['remarks'];?></textarea></td>\
+                <td><textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"></textarea></td>\
                 <td style="text-align:center">\
                     <a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
                     <a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
@@ -474,14 +478,29 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         e.setAttribute("align", "center");
 
         b.innerHTML = '<input type="hidden" id="hidden-gene' + sampleId  + sampleCounter + '" name=""/><select onchange="changeGeneType(this,' + sampleId  +','+ sampleCounter + ')" class="form-control geneTypeInput' + sampleId  + sampleCounter + '"  id="' + sampleId + '" name="geneType[' + sampleId + '][]"><?php echo $commonService->generateSelectOptions($this->allGeneTypes, null, '-- Select --'); ?></select>';
-        c.innerHTML = '<input placeholder="Enter CT Value" id="'+ sampleCounter + '" type="text" name="cTValue[' + sampleId + '][]"  id="' + sampleCounter + '" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/>';
+        c.innerHTML = '<input placeholder="Enter CT Value" id="'+ sampleCounter + '" type="text" name="cTValue[' + sampleId + '][]" class="form-control ct-input' + sampleId  +' cTValue' + sampleId  + sampleCounter + '"/>';
         d.innerHTML = '<textarea placeholder="Enter Remarks" type="text" name="remarks[' + sampleId + '][]"  id="' + sampleId + '" class="form-control remarks' + sampleId  + sampleCounter + '"></textarea>';
         e.innerHTML = '<a href="javascript:void(0);" onclick="addNewGeneTypeRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>&nbsp;<a  href="javascript:void(0);" onclick="removeGeneTypeRow(this,' + sampleId + ','+ sampleCounter +')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>';
-        // $("#agentName" + payTableRowId + " option").hide();
         $(a).fadeIn(800);
     }
 
     function changeGeneType(obj, sampleId, count){
+        var itemId = $('.geneTypeInput'+sampleId+count).val();
+        var itemCount = document.getElementsByName("geneType["+sampleId+"][]");
+        var itemLength = itemCount.length - 1;
+        var k = 0;
+        for (i = 0; i <= itemLength; i++) {
+            if (itemId == itemCount[i].value) {
+                if(itemCount[i].value != '' && itemId != ''){
+                    k++;
+                }
+            }
+        }
+        if (k > 1) {
+            alert("Selected Gene Type has already been added for this Sample");
+            $(".geneTypeInput" + sampleId+count).val('');
+        }
+        
         let text = $(obj).find(":selected").text();
         $("#hidden-gene" + sampleId  + count).val(text);
     }
@@ -505,7 +524,6 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         for(i=1;i<=counter;i++){
             if($(".geneTypeInput"+sampleId+i).val() != ""){
                 if($(".cTValue"+sampleId+i).val() == ""){
-                    alert('Please enter the CT Value');
                     $(".cTValue"+sampleId+i).focus();
                     $(".cTValue"+sampleId+i).css('border','1px solid red')
                     modelFlag = false;
@@ -513,6 +531,9 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
             }
         }
 
+        if(!modelFlag){
+            alert('Please enter the CT Value');
+        }
         geneTypeInputChange(sampleId);
         if(modelFlag){
             document.getElementById(divId).innerHTML = getEl("mbd").innerHTML;

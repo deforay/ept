@@ -70,21 +70,21 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
             <br>
             <p class="mandatory">Note : <br />
                 <ul>
-                    <li>If a response does not contain the following recommended Test Types, participants will not pass for the respective samples.</li>
+                    <li>If a response does not contain the following recommended Test Platforms, participants will not pass for the respective samples.</li>
                     <li>If you don't want to enforce the test type check, please leave the following 3 options blank</li>
-                    <li>Please set the <a href="/admin/test-type/standard-type">Covid-19 Standard Test Types</a> before you do the below</li>
+                    <li>Please set the <a href="/admin/test-platform/standard-type">Covid-19 Standard Test Platforms</a> before you do the below</li>
                 </ul>
 
             </p>
             <div class="form-group">
-                <label for="testType1" class="col-lg-3 control-label">Recommended TestType 1</label>
+                <label for="testPlatform1" class="col-lg-3 control-label">Recommended TestType 1</label>
                 <div class="col-lg-6">
-                    <select name="testType1[]" id="testType1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Type 1">
+                    <select name="testPlatform1[]" id="testPlatform1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Platform 1">
                         <?php
-                        foreach ($this->allTestTypes as $key => $testType) {
-                            if ($testType['test_type_1'] == '1') {
+                        foreach ($this->allTestTypes as $key => $testPlatform) {
+                            if ($testPlatform['test_type_1'] == '1') {
                         ?>
-                                <option value="<?php echo $testType['test_type_id'] ?>" <?php echo (isset($this->recommendedTesttypes[1]) && in_array($testType['test_type_id'], $this->recommendedTesttypes[1])) ? 'selected' : ''; ?>><?php echo $testType['test_type_name'] ?></option>
+                                <option value="<?php echo $testPlatform['test_type_id'] ?>" <?php echo (isset($this->recommendedTesttypes[1]) && in_array($testPlatform['test_type_id'], $this->recommendedTesttypes[1])) ? 'selected' : ''; ?>><?php echo $testPlatform['test_type_name'] ?></option>
                         <?php
                             }
                         }
@@ -94,14 +94,14 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
             </div>
 
             <div class="form-group">
-                <label for="testType2" class="col-lg-3 control-label">Recommended TestType 2</label>
+                <label for="testPlatform2" class="col-lg-3 control-label">Recommended TestType 2</label>
                 <div class="col-lg-6">
-                    <select name="testType2[]" id="testType2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Type 1">
+                    <select name="testPlatform2[]" id="testPlatform2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Platform 1">
                         <?php
-                        foreach ($this->allTestTypes as $key => $testType) {
-                            if ($testType['test_type_2'] == '1') {
+                        foreach ($this->allTestTypes as $key => $testPlatform) {
+                            if ($testPlatform['test_type_2'] == '1') {
                         ?>
-                                <option value="<?php echo $testType['test_type_id'] ?>" <?php echo (isset($this->recommendedTesttypes[2]) && in_array($testType['test_type_id'], $this->recommendedTesttypes[2])) ? 'selected' : ''; ?>><?php echo $testType['test_type_name'] ?></option>
+                                <option value="<?php echo $testPlatform['test_type_id'] ?>" <?php echo (isset($this->recommendedTesttypes[2]) && in_array($testPlatform['test_type_id'], $this->recommendedTesttypes[2])) ? 'selected' : ''; ?>><?php echo $testPlatform['test_type_name'] ?></option>
                         <?php
                             }
                         }
@@ -112,14 +112,14 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
 
 
             <div class="form-group">
-                <label for="testType3" class="col-lg-3 control-label">Recommended TestType 3</label>
+                <label for="testPlatform3" class="col-lg-3 control-label">Recommended TestType 3</label>
                 <div class="col-lg-6">
-                    <select name="testType3[]" id="testType3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Type 1">
+                    <select name="testPlatform3[]" id="testPlatform3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Platform 1">
                         <?php
-                        foreach ($this->allTestTypes as $key => $testType) {
-                            if ($testType['test_type_3'] == '1') {
+                        foreach ($this->allTestTypes as $key => $testPlatform) {
+                            if ($testPlatform['test_type_3'] == '1') {
                         ?>
-                                <option value="<?php echo $testType['test_type_id'] ?>" <?php echo (isset($this->recommendedTesttypes[3]) && in_array($testType['test_type_id'], $this->recommendedTesttypes[3])) ? 'selected' : ''; ?>><?php echo $testType['test_type_name'] ?></option>
+                                <option value="<?php echo $testPlatform['test_type_id'] ?>" <?php echo (isset($this->recommendedTesttypes[3]) && in_array($testPlatform['test_type_id'], $this->recommendedTesttypes[3])) ? 'selected' : ''; ?>><?php echo $testPlatform['test_type_name'] ?></option>
                         <?php
                             }
                         }

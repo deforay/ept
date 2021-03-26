@@ -28,6 +28,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         $result = $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('s' => 'shipment'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('map_id', 'number_of_tests'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
             ->group('s.shipment_id')
             ->where("s.shipment_id = ?", $sId));
@@ -39,6 +40,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $tableName = "reference_result_eid";
             } elseif ($result['scheme_type'] == 'dts') {
                 $tableName = "reference_result_dts";
+            }elseif ($result['scheme_type'] == 'covid19') {
+                $tableName = "reference_result_covid19";
             }
             $result['referenceResult'] = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array($tableName))
                 ->where('shipment_id = ? ', $result['shipment_id']));
@@ -67,6 +70,63 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function updateShipmentStatusByDistribution($distributionId, $status)
     {
+        $commonServices = new Application_Service_Common();
+        $general = new Pt_Commons_General();
+        $shipmentRow =  $this->fetchRow("distribution_id = ".$distributionId);
+        /* New shipment push notification start */
+        $subQuery = $this->select()
+        ->from(array('s' => 'shipment'), array('shipment_code', 'scheme_type'))
+        ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('map_id','participant_id'))
+        ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=spm.participant_id', array('dm_id'))
+        ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+        ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
+        ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
+        ->group('spm.participant_id')->setIntegrityCheck(false);
+        $subResult = $this->fetchAll($subQuery);
+        foreach ($subResult as $dm) {
+            $pushContent = $commonServices->getPushTemplateByPurpose('new-shipment');
+            $participantDb = new Application_Model_DbTable_Participants();
+            $participantRow = $participantDb->fetchRow('participant_id=' . $dm['participant_id']);
+            // Zend_Debug::dump($participantRow);die;
+            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+            $replace = array($participantRow['first_name'] . ' ' . $participantRow['last_name'], $shipmentRow['shipment_code'], $shipmentRow['scheme_type'], '', '');
+            $title = str_replace($search, $replace, $pushContent['notify_title']);
+            $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
+            if (isset($pushContent['data_msg']) && $pushContent['data_msg'] != '') {
+                $dataMsg = str_replace($search, $replace, $pushContent['data_msg']);
+            } else {
+                $dataMsg = '';
+            }
+            $commonServices->insertPushNotification($title, $msgBody, $dataMsg, $pushContent['icon'], $shipmentRow['shipment_id'], 'new-shipment', 'shipment');
+        }
+        /* New shipment push notification end */
+
+        /* New shipment mail alert start */
+        $notParticipatedMailContent = $commonServices->getEmailTemplate('new_shipment');
+        $subQuery = $this->select()
+            ->from(array('s' => 'shipment'), array('shipment_code', 'scheme_type'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('map_id','participant_id'))
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=spm.participant_id', array('dm_id'))
+            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
+            ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
+            ->group('dm.dm_id')->setIntegrityCheck(false);
+        // echo $subQuery;die;
+        $subResult = $this->fetchAll($subQuery);
+        foreach ($subResult as $dm) {
+            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+            $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
+            $content = $notParticipatedMailContent['mail_content'];
+            $message = str_replace($search, $replace, $content);
+            $subject = $notParticipatedMailContent['mail_subject'];
+            $fromEmail = $notParticipatedMailContent['mail_from'];
+            $fromFullName = $notParticipatedMailContent['from_name'];
+            $toEmail = $dm['primary_email'];
+            $cc = $notParticipatedMailContent['mail_cc'];
+            $bcc = $notParticipatedMailContent['mail_bcc'];
+            $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
+        }
+        /* New shipment mail alert end */
         if (isset($status) && $status != null && $status != "") {
             return $this->update(array('response_switch' => 'on', 'status' => $status), "distribution_id = $distributionId");
         } else {
@@ -3235,42 +3295,42 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $covid19['Section3']['status']                              = true;
             
             // Section 3 end // Section 4 Start
-            $testTypeArray = array();
+            $testPlatformArray = array();
             $allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise(true);
             foreach ($allTestTypes as $testtype) {
                 if ($testtype['test_type_1'] == '1') {
-                    $testTypeArray['testTypeDropDown']['Test-1']['status'] = true;
-                    $testTypeArray['testTypeDropDown']['Test-1']['data'][] = array(
+                    $testPlatformArray['testPlatformDropDown']['Test-1']['status'] = true;
+                    $testPlatformArray['testPlatformDropDown']['Test-1']['data'][] = array(
                         'value'         => (string) $testtype['test_type_id'],
                         'show'          => $testtype['test_type_name'],
                         'selected'      => (isset($allSamples[0]["test_type_1"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_1"]) ? 'selected' : ''
                     );
                     /* if(isset($allSamples[0]["test_type_1"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_1"]){
-                        $testTypeArray['Test-1']['data'][] = array(
-                            'testTypeDropDown'   => $testtype['test_type_name'],
+                        $testPlatformArray['Test-1']['data'][] = array(
+                            'testPlatformDropDown'   => $testtype['test_type_name'],
                             'typeValue'  => (string)$testtype['test_type_id']
                         );
                     } */
                 }
                 if ($testtype['test_type_1'] == '1' && isset($allSamples[0]["test_type_1"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_1"]) {
-                    $testTypeArray['typeName'][0] = $testtype['test_type_name'];
+                    $testPlatformArray['typeName'][0] = $testtype['test_type_name'];
                 }
 
                 if ($testtype['test_type_2'] == '1' && isset($allSamples[0]["test_type_2"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_2"]) {
-                    $testTypeArray['typeName'][1] = $testtype['test_type_name'];
+                    $testPlatformArray['typeName'][1] = $testtype['test_type_name'];
                 }
                 if ($testtype['test_type_3'] == '1' && isset($allSamples[0]["test_type_3"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_3"]) {
-                    $testTypeArray['typeName'][2] = $testtype['test_type_name'];
+                    $testPlatformArray['typeName'][2] = $testtype['test_type_name'];
                 }
 
                 if ($testtype['test_type_2'] == '1') {
                     // if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
                     if (!$testTwoOptional) {
-                        $testTypeArray['testTypeDropDown']['Test-2']['status'] = true;
+                        $testPlatformArray['testPlatformDropDown']['Test-2']['status'] = true;
                     } else {
-                        $testTypeArray['testTypeDropDown']['Test-2']['status'] = false;
+                        $testPlatformArray['testPlatformDropDown']['Test-2']['status'] = false;
                     }
-                    $testTypeArray['testTypeDropDown']['Test-2']['data'][] = array(
+                    $testPlatformArray['testPlatformDropDown']['Test-2']['data'][] = array(
                         'value'         => (string) $testtype['test_type_id'],
                         'show'          => $testtype['test_type_name'],
                         'selected'      => (isset($allSamples[0]["test_type_2"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_2"]) ? 'selected' : ''
@@ -3278,73 +3338,73 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 if (!$testThreeOptional) {
                     // if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
-                        $testTypeArray['testTypeDropDown']['Test-3']['status'] = true;
+                        $testPlatformArray['testPlatformDropDown']['Test-3']['status'] = true;
                     /* } else {
-                        $testTypeArray['testTypeDropDown']['Test-3']['status'] = false;
+                        $testPlatformArray['testPlatformDropDown']['Test-3']['status'] = false;
                     } */
                 } else {
-                    $testTypeArray['testTypeDropDown']['Test-3']['status'] = false;
+                    $testPlatformArray['testPlatformDropDown']['Test-3']['status'] = false;
                 }
                 if ($testtype['test_type_3'] == '1') {
-                    $testTypeArray['testTypeDropDown']['Test-3']['data'][] = array(
+                    $testPlatformArray['testPlatformDropDown']['Test-3']['data'][] = array(
                         'value'         => (string) $testtype['test_type_id'],
                         'show'          => $testtype['test_type_name'],
                         'selected'      => (isset($allSamples[0]["test_type_3"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_3"]) ? 'selected' : ''
                     );
                 }
             }
-            if (!isset($testTypeArray['typeName'][0])) {
-                $testTypeArray['typeName'][0] = '';
+            if (!isset($testPlatformArray['typeName'][0])) {
+                $testPlatformArray['typeName'][0] = '';
             }
-            if (!isset($testTypeArray['typeName'][1])) {
-                $testTypeArray['typeName'][1] = '';
+            if (!isset($testPlatformArray['typeName'][1])) {
+                $testPlatformArray['typeName'][1] = '';
             }
-            if (!isset($testTypeArray['typeName'][2])) {
-                $testTypeArray['typeName'][2] = '';
+            if (!isset($testPlatformArray['typeName'][2])) {
+                $testPlatformArray['typeName'][2] = '';
             }
 
-            $testTypeArray['typeText'] = array('Test-1', 'Test-2', 'Test-3');
+            $testPlatformArray['typeText'] = array('Test-1', 'Test-2', 'Test-3');
             if (isset($allSamples) && count($allSamples) > 0) {
                 $covid19['Section4']['status'] = true;
-                $testTypeArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] != "0000-00-00" && $allSamples[0]["exp_date_1"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_1"])) : '';
-                $testTypeArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] != "0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_2"])) : '';
-                $testTypeArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] != "0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_3"])) : '';
+                $testPlatformArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] != "0000-00-00" && $allSamples[0]["exp_date_1"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_1"])) : '';
+                $testPlatformArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] != "0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_2"])) : '';
+                $testPlatformArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] != "0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_3"])) : '';
 
-                $testTypeArray['typeValue'][0] = (isset($allSamples[0]["test_type_1"]) && trim($allSamples[0]["test_type_1"]) != "") ? $allSamples[0]["test_type_1"] : '';
-                $testTypeArray['typeValue'][1] = (isset($allSamples[0]["test_type_2"]) && trim($allSamples[0]["test_type_2"]) != "") ? $allSamples[0]["test_type_2"] : '';
-                $testTypeArray['typeValue'][2] = (isset($allSamples[0]["test_type_3"]) && trim($allSamples[0]["test_type_3"]) != "") ? $allSamples[0]["test_type_3"] : '';
+                $testPlatformArray['typeValue'][0] = (isset($allSamples[0]["test_type_1"]) && trim($allSamples[0]["test_type_1"]) != "") ? $allSamples[0]["test_type_1"] : '';
+                $testPlatformArray['typeValue'][1] = (isset($allSamples[0]["test_type_2"]) && trim($allSamples[0]["test_type_2"]) != "") ? $allSamples[0]["test_type_2"] : '';
+                $testPlatformArray['typeValue'][2] = (isset($allSamples[0]["test_type_3"]) && trim($allSamples[0]["test_type_3"]) != "") ? $allSamples[0]["test_type_3"] : '';
 
-                $testTypeArray['lot'][0]      = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "") ? $allSamples[0]["lot_no_1"] : '';
-                $testTypeArray['lot'][1]      = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "") ? $allSamples[0]["lot_no_2"] : '';
-                $testTypeArray['lot'][2]      = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "") ? $allSamples[0]["lot_no_3"] : '';
+                $testPlatformArray['lot'][0]      = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "") ? $allSamples[0]["lot_no_1"] : '';
+                $testPlatformArray['lot'][1]      = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "") ? $allSamples[0]["lot_no_2"] : '';
+                $testPlatformArray['lot'][2]      = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "") ? $allSamples[0]["lot_no_3"] : '';
 
-                $testTypeArray['typeOther']   = array('', '', '');
+                $testPlatformArray['typeOther']   = array('', '', '');
                 if ($allSamples[0]["test_type_1"] == '') {
-                    $testTypeArray['typeName'][0] = '';
+                    $testPlatformArray['typeName'][0] = '';
                 }
                 if ($allSamples[0]["test_type_2"] == '') {
-                    $testTypeArray['typeName'][1] = '';
+                    $testPlatformArray['typeName'][1] = '';
                 }
                 if ($allSamples[0]["test_type_3"] == '') {
-                    $testTypeArray['typeName'][2] = '';
+                    $testPlatformArray['typeName'][2] = '';
                 }
 
-                $testTypeArray['testTypeDropDown']['Test-1']['data'][]    = array(
+                $testPlatformArray['testPlatformDropDown']['Test-1']['data'][]    = array(
                     'value'         => 'other',
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["test_type_1"]) && 'other' == $allSamples[0]["test_type_1"]) ? 'selected' : ''
                 );
-                $testTypeArray['testTypeDropDown']['Test-2']['data'][] = array(
+                $testPlatformArray['testPlatformDropDown']['Test-2']['data'][] = array(
                     'value'         => 'other',
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["test_type_2"]) && 'other' == $allSamples[0]["test_type_2"]) ? 'selected' : ''
                 );
-                $testTypeArray['testTypeDropDown']['Test-3']['data'][] = array(
+                $testPlatformArray['testPlatformDropDown']['Test-3']['data'][] = array(
                     'value'         => 'other',
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["test_type_3"]) && 'other' == $allSamples[0]["test_type_3"]) ? 'selected' : ''
                 );
-                $covid19['Section4']['data']    = $testTypeArray;
+                $covid19['Section4']['data']    = $testPlatformArray;
             } else {
                 $covid19['Section4']['status']  = false;
             }

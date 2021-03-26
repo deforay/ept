@@ -53,7 +53,7 @@ class Covid19Controller extends Zend_Controller_Action
 			$this->view->shipment = $shipment;
 			
 			//Zend_Debug::dump($this->view->shipment);
-			$this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise();
+			$this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise('covid19');
 			$this->view->allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
 			$this->view->geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($shipment['map_id']);
 			$this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19');

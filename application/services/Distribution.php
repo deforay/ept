@@ -46,7 +46,6 @@ class Application_Service_Distribution {
 		try{
 			$shipmentDb = new Application_Model_DbTable_Shipments();
 			$shipmentDb->updateShipmentStatusByDistribution($distributionId,"shipped");		
-			
 			$disrtibutionDb = new Application_Model_DbTable_Distribution();		
 			$disrtibutionDb->updateDistributionStatus($distributionId,"shipped");
 			$db->commit();

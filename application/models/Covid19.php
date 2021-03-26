@@ -38,11 +38,11 @@ class Application_Model_Covid19
 			$maxScore = 0;
 			$mandatoryResult = "";
 			$lotResult = "";
-			$testType1 = "";
-			$testType2 = "";
-			$testType3 = "";
-			$testTypeRepeatResult = "";
-			$testTypeExpiryResult = "";
+			$testPlatform1 = "";
+			$testPlatform2 = "";
+			$testPlatform3 = "";
+			$testPlatformRepeatResult = "";
+			$testPlatformExpiryResult = "";
 			$lotResult = "";
 			$scoreResult = "";
 			$failureReason = array();
@@ -93,40 +93,40 @@ class Application_Model_Covid19
 				$expDate3 = new DateTime($results[0]['exp_date_3']);
 			}
 
-			// Getting Test Type Names
+			// Getting Test Platform Names
 
-			$testTypeDb = new Application_Model_DbTable_TestTypenameCovid19();
-			$testType1 = "";
+			$testPlatformDb = new Application_Model_DbTable_TestTypenameCovid19();
+			$testPlatform1 = "";
 
-			$testTypeName = $testTypeDb->getTestTypeNameById($results[0]['test_type_1']);
-			if (isset($testTypeName[0])) {
-				$testType1 = $testTypeName[0];
+			$testPlatformName = $testPlatformDb->getTestTypeNameById($results[0]['test_type_1']);
+			if (isset($testPlatformName[0])) {
+				$testPlatform1 = $testPlatformName[0];
 			}
 
-			$testType2 = "";
+			$testPlatform2 = "";
 			if (trim($results[0]['test_type_2']) != "") {
-				$testTypeName = $testTypeDb->getTestTypeNameById($results[0]['test_type_2']);
-				if (isset($testTypeName[0])) {
-					$testType2 = $testTypeName[0];
+				$testPlatformName = $testPlatformDb->getTestTypeNameById($results[0]['test_type_2']);
+				if (isset($testPlatformName[0])) {
+					$testPlatform2 = $testPlatformName[0];
 				}
 			}
-			$testType3 = "";
+			$testPlatform3 = "";
 			if (trim($results[0]['test_type_3']) != "") {
-				$testTypeName = $testTypeDb->getTestTypeNameById($results[0]['test_type_3']);
-				if (isset($testTypeName[0])) {
-					$testType3 = $testTypeName[0];
+				$testPlatformName = $testPlatformDb->getTestTypeNameById($results[0]['test_type_3']);
+				if (isset($testPlatformName[0])) {
+					$testPlatform3 = $testPlatformName[0];
 				}
 			}
 
 
-			// T.7 Checking for Expired Test Types
+			// T.7 Checking for Expired Test Platforms
 
-			if ($testType1 != "") {
+			if ($testPlatform1 != "") {
 				if ($expDate1 != "") {
 					if ($testedOn > ($expDate1)) {
 						$difference = $testedOn->diff($expDate1);
 						$failureReason[] = array(
-							'warning' => "Test Type 1 (<strong>" . $testType1 . "</strong>) expired " . $difference->format('%a') . " days before the test date " . $testDate,
+							'warning' => "Test Platform 1 (<strong>" . $testPlatform1 . "</strong>) expired " . $difference->format('%a') . " days before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
 						);
 						$correctiveActionList[] = 5;
@@ -136,7 +136,7 @@ class Application_Model_Covid19
 					}
 				} else {
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test type 1 expiry date is not reported with PT response.",
+						'warning' => "Result not evaluated – Test platform 1 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
 					);
 					$correctiveActionList[] = 6;
@@ -155,12 +155,12 @@ class Application_Model_Covid19
 				}
 			}
 
-			if ($testType2 != "") {
+			if ($testPlatform2 != "") {
 				if ($expDate2 != "") {
 					if ($testedOn > ($expDate2)) {
 						$difference = $testedOn->diff($expDate2);
 						$failureReason[] = array(
-							'warning' => "Test Type 2 (<strong>" . $testType2 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate,
+							'warning' => "Test Platform 2 (<strong>" . $testPlatform2 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
 						);
 						$correctiveActionList[] = 5;
@@ -170,7 +170,7 @@ class Application_Model_Covid19
 					}
 				} else {
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test type 2 expiry date is not reported with PT response.",
+						'warning' => "Result not evaluated – Test platform 2 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
 					);
 					$correctiveActionList[] = 6;
@@ -191,12 +191,12 @@ class Application_Model_Covid19
 			}
 
 
-			if ($testType3 != "") {
+			if ($testPlatform3 != "") {
 				if ($expDate3 != "") {
 					if ($testedOn > ($expDate2)) {
 						$difference = $testedOn->diff($expDate2);
 						$failureReason[] = array(
-							'warning' => "Test Type 3 (<strong>" . $testType3 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate,
+							'warning' => "Test Platform 3 (<strong>" . $testPlatform3 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
 						);
 						$correctiveActionList[] = 5;
@@ -207,7 +207,7 @@ class Application_Model_Covid19
 				} else {
 
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test type 3 expiry date is not reported with PT response.",
+						'warning' => "Result not evaluated – Test platform 3 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
 					);
 					$correctiveActionList[] = 6;
@@ -227,42 +227,42 @@ class Application_Model_Covid19
 				}
 			}
 			//checking if testtypes were repeated
-			// T.9 Test type repeated for confirmatory or tiebreaker test (T1/T2/T3).
-			if (($testType1 == "") && ($testType2 == "") && ($testType3 == "")) {
+			// T.9 Test platform repeated for confirmatory or tiebreaker test (T1/T2/T3).
+			if (($testPlatform1 == "") && ($testPlatform2 == "") && ($testPlatform3 == "")) {
 				$failureReason[] = array(
-					'warning' => "No Test Type reported. Result not evaluated",
+					'warning' => "No Test Platform reported. Result not evaluated",
 					'correctiveAction' => $correctiveActions[7]
 				);
 				$correctiveActionList[] = 7;
 				$shipment['is_excluded'] = 'yes';
-			} else if (($testType1 != "") && ($testType2 != "") && ($testType3 != "") && ($testType1 == $testType2) && ($testType2 == $testType3)) {
-				//$testTypeRepeatResult = 'Fail';
+			} else if (($testPlatform1 != "") && ($testPlatform2 != "") && ($testPlatform3 != "") && ($testPlatform1 == $testPlatform2) && ($testPlatform2 == $testPlatform3)) {
+				//$testPlatformRepeatResult = 'Fail';
 				$failureReason[] = array(
-					'warning' => "<strong>$testType1</strong> repeated for all three Test Types",
+					'warning' => "<strong>$testPlatform1</strong> repeated for all three Test Platforms",
 					'correctiveAction' => $correctiveActions[8]
 				);
 				$correctiveActionList[] = 8;
 			} else {
-				if (($testType1 != "") && ($testType2 != "") && ($testType1 == $testType2) && $testType1 != "" && $testType2 != "") {
-					//$testTypeRepeatResult = 'Fail';
+				if (($testPlatform1 != "") && ($testPlatform2 != "") && ($testPlatform1 == $testPlatform2) && $testPlatform1 != "" && $testPlatform2 != "") {
+					//$testPlatformRepeatResult = 'Fail';
 					$failureReason[] = array(
-						'warning' => "<strong>$testType1</strong> repeated as Test Type 1 and Test Type 2",
+						'warning' => "<strong>$testPlatform1</strong> repeated as Test Platform 1 and Test Platform 2",
 						'correctiveAction' => $correctiveActions[9]
 					);
 					$correctiveActionList[] = 9;
 				}
-				if (($testType2 != "") && ($testType3 != "") && ($testType2 == $testType3) && $testType2 != "" && $testType3 != "") {
-					//$testTypeRepeatResult = 'Fail';
+				if (($testPlatform2 != "") && ($testPlatform3 != "") && ($testPlatform2 == $testPlatform3) && $testPlatform2 != "" && $testPlatform3 != "") {
+					//$testPlatformRepeatResult = 'Fail';
 					$failureReason[] = array(
-						'warning' => "<strong>$testType2</strong> repeated as Test Type 2 and Test Type 3",
+						'warning' => "<strong>$testPlatform2</strong> repeated as Test Platform 2 and Test Platform 3",
 						'correctiveAction' => $correctiveActions[9]
 					);
 					$correctiveActionList[] = 9;
 				}
-				if (($testType1 != "") && ($testType3 != "") && ($testType1 == $testType3) && $testType1 != "" && $testType3 != "") {
-					//$testTypeRepeatResult = 'Fail';
+				if (($testPlatform1 != "") && ($testPlatform3 != "") && ($testPlatform1 == $testPlatform3) && $testPlatform1 != "" && $testPlatform3 != "") {
+					//$testPlatformRepeatResult = 'Fail';
 					$failureReason[] = array(
-						'warning' => "<strong>$testType1</strong> repeated as Test Type 1 and Test Type 3",
+						'warning' => "<strong>$testPlatform1</strong> repeated as Test Platform 1 and Test Platform 3",
 						'correctiveAction' => $correctiveActions[9]
 					);
 					$correctiveActionList[] = 9;
@@ -272,33 +272,33 @@ class Application_Model_Covid19
 
 			// checking if all LOT details were entered
 			// T.3 Ensure test type lot number is reported for all performed tests. 
-			if ($testType1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
+			if ($testPlatform1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
 				if (isset($results[0]['test_result_1']) && $results[0]['test_result_1'] != "" && $results[0]['test_result_1'] != null) {
 					$lotResult = 'Fail';
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test Type lot number 1 is not reported.",
+						'warning' => "Result not evaluated – Test Platform lot number 1 is not reported.",
 						'correctiveAction' => $correctiveActions[10]
 					);
 					$correctiveActionList[] = 10;
 					$shipment['is_excluded'] = 'yes';
 				}
 			}
-			if ($testType2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)) {
+			if ($testPlatform2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)) {
 				if (isset($results[0]['test_result_2']) && $results[0]['test_result_2'] != "" && $results[0]['test_result_2'] != null) {
 					$lotResult = 'Fail';
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test Type lot number 2 is not reported.",
+						'warning' => "Result not evaluated – Test Platform lot number 2 is not reported.",
 						'correctiveAction' => $correctiveActions[10]
 					);
 					$correctiveActionList[] = 10;
 					$shipment['is_excluded'] = 'yes';
 				}
 			}
-			if ($testType3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)) {
+			if ($testPlatform3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)) {
 				if (isset($results[0]['test_result_3']) && $results[0]['test_result_3'] != "" && $results[0]['test_result_3'] != null) {
 					$lotResult = 'Fail';
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test Type lot number 3 is not reported.",
+						'warning' => "Result not evaluated – Test Platform lot number 3 is not reported.",
 						'correctiveAction' => $correctiveActions[10]
 					);
 					$correctiveActionList[] = 10;
@@ -429,7 +429,7 @@ class Application_Model_Covid19
 			} else {
 				$shipment['is_excluded'] = 'no';
 				// if any of the results have failed, then the final result is fail
-				if ($algoResult == 'Fail' || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testTypeExpiryResult == 'Fail') {
+				if ($algoResult == 'Fail' || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testPlatformExpiryResult == 'Fail') {
 					$finalResult = 2;
 					$shipmentResult[$counter]['is_followup'] = 'yes';
 				} else {
