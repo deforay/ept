@@ -244,7 +244,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $sid = strtolower(base64_decode($this->_getParam('sid')));
             $shipmentService = new Application_Service_Shipments();
-            $this->view->pcount = $shipmentService->getShipmentParticipants($sid);
+            $this->view->pcount = $shipmentService->sendShipmentMailAlertToParticipants($sid);
         }
     }
 
