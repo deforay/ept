@@ -23,7 +23,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                         ->where("p.status='active'")
                         ->where("e.scheme_id=?",$scheme['scheme_id']);
             $aResult= $this->getAdapter()->fetchCol($sQuery);
-            $result[strtoupper($scheme['scheme_id'])]=  $aResult[0];
+            $result[strtoupper($scheme['scheme_name'])]=  $aResult[0];
             
         }
         
