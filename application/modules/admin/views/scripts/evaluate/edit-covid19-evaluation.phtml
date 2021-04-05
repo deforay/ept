@@ -171,7 +171,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     </tr>
 
     <tr style="text-align:center">
-        <th>Exp Date</th>
+        <th>Expiry Date</th>
         <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_1"]) && $this->evaluateData['results'][0]["exp_date_1"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_1"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_1"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
         <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_2"]) && $this->evaluateData['results'][0]["exp_date_2"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_2"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_2"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
         <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_3"]) && $this->evaluateData['results'][0]["exp_date_3"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_3"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_3"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>

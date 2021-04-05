@@ -97,11 +97,11 @@ $configData = $this->getGlobalConfig();
 
 <body class="hold-transition skin-green layout-top-nav layout-boxed">
 	<div class="wrapper">
-	<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
-        <div class="marquee">
-          <p><?php echo ($configData['training_instance_text']); ?></p>
-        </div>
-	<?php } ?>
+		<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
+			<div class="marquee">
+				<p><?php echo ($configData['training_instance_text']); ?></p>
+			</div>
+		<?php } ?>
 		<header class="main-header">
 			<nav class="navbar navbar-static-top">
 				<div class="container">
@@ -124,7 +124,7 @@ $configData = $this->getGlobalConfig();
 							<?php } else { ?>
 								<?php if ($titleStatus) { ?>
 									<li>
-										<a href="<?php echo $this->url(array("controller" => "pt-request-enrollment", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName;?> Enrollment</span></a>
+										<a href="<?php echo $this->url(array("controller" => "pt-request-enrollment", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName; ?> Enrollment</span></a>
 									</li>
 								<?php } ?>
 								<li>
@@ -149,7 +149,7 @@ $configData = $this->getGlobalConfig();
 						$text = $this->PTProgramName();
 						if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 							echo '<h5>' . ucwords($text['value']) . '</h5>';
-						}?>
+						} ?>
 					</div>
 					<div class="col-lg-2" style="text-align: center;padding:10px;"><img src="<?php echo $this->baseUrl(); ?>/images/country/institute-logo.jpg" style="max-height:100px;" /></div>
 				</div>
@@ -160,11 +160,10 @@ $configData = $this->getGlobalConfig();
 		</div><!-- /.content-wrapper -->
 		<footer class="main-footer">
 
-			<div class="pull-right hidden-xs">
-
-				<strong>This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC). | ver. <?php echo APP_VERSION; ?></strong>
+			<div class="pull-right hidden-xs" style="color:#fff;">
+				<span>This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC). | ver. <?php echo APP_VERSION; ?></span>
 			</div>
-			<span>ePT-Online Proficiency Testing</span>
+
 		</footer>
 
 		<div class="control-sidebar-bg"></div>
@@ -192,10 +191,13 @@ $configData = $this->getGlobalConfig();
 	<!-- AdminLTE App -->
 	<script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
 	<script>
-		$(document).ready(function(){
-		<?php $alertMsg = new Zend_Session_Namespace('alertSpace'); if(isset($alertMsg->message) && $alertMsg->message != ""){ ?>
-			alert("<?php echo $alertMsg->message;?>");
-		<?php $alertMsg->message=""; unset($alertMsg->message);} ?>
+		$(document).ready(function() {
+			<?php $alertMsg = new Zend_Session_Namespace('alertSpace');
+			if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
+				alert("<?php echo $alertMsg->message; ?>");
+			<?php $alertMsg->message = "";
+				unset($alertMsg->message);
+			} ?>
 		});
 	</script>
 </body>

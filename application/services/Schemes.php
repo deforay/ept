@@ -51,12 +51,13 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('r_test_type_covid19'), array('test_type_id', 'test_type_name', 'test_type_1', 'test_type_2', 'test_type_3'))
+        $sql = $db->select()->from(array('r_test_type_covid19'))
             ->where("scheme_type = 'covid19'");
 
         if ($countryAdapted) {
             $sql = $sql->where('country_adapted = 1');
         }
+
         return $db->fetchAll($sql);
     }
 

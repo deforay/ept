@@ -1537,13 +1537,13 @@ class Application_Service_Reports
 
         //------------- Participant List Details End ------>
         //<-------- Second sheet start
-        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Reported on ePT', 'Test#1 Name', 'Kit Lot #', 'Exp Date');
+        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Reported on ePT', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
 
         if ($result['scheme_type'] == 'dts') {
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-            array_push($reportHeadings, 'Test#2 Name', 'Kit Lot #', 'Exp Date');
+            array_push($reportHeadings, 'Test#2 Name', 'Kit Lot #', 'Expiry Date');
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-            array_push($reportHeadings, 'Test#3 Name', 'Kit Lot #', 'Exp Date');
+            array_push($reportHeadings, 'Test#3 Name', 'Kit Lot #', 'Expiry Date');
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             array_push($reportHeadings, 'Comments');
@@ -2212,13 +2212,13 @@ class Application_Service_Reports
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Type Lot #1', 'Exp Date');
+        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Type Lot #1', 'Expiry Date');
 
         if ($result['scheme_type'] == 'covid19') {
             $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
-            array_push($reportHeadings, 'Test#2 Name', 'Type Lot #2', 'Exp Date');
+            array_push($reportHeadings, 'Test#2 Name', 'Type Lot #2', 'Expiry Date');
             $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
-            array_push($reportHeadings, 'Test#3 Name', 'Type Lot #3', 'Exp Date');
+            array_push($reportHeadings, 'Test#3 Name', 'Type Lot #3', 'Expiry Date');
             $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
             $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
             array_push($reportHeadings, 'Comments');
