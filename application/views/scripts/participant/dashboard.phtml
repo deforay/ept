@@ -110,18 +110,25 @@ foreach($this->participants as $row){
 					<input class="btn btn-sm btn-danger" type="button" onclick="window.location.href = '/participant/dashboard';" tabindex="8" value="Clear"/>
 				</div>
 			</fieldset>
+			<?php if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) { ?>
 			<h3 class="txt text-info vl" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for VL Scheme</h3>
 			<div id="participantChartContainerVl" class="vl" style="display: none;"></div>
+			<?php } if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) { ?>
 			<h3 class="txt text-info eid" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for EId Scheme</h3>
 			<div id="participantChartContainerEid" class="eid" style="display: none;"></div>
+			<?php } if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) { ?>
 			<h3 class="txt text-info dts" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for DTS Scheme</h3>
 			<div id="participantChartContainerDts" class="dts" style="display: none;"></div>
+			<?php } if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
 			<h3 class="txt text-info dbs" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for DBS Scheme</h3>
 			<div id="participantChartContainerDbs" class="dbs" style="display: none;"></div>
+			<?php } if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
 			<h3 class="txt text-info recency" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for Recency Scheme</h3>
 			<div id="participantChartContainerRecency" class="recency" style="display: none;"></div>
+			<?php } if (count($activeSchemes) > 0 && in_array('covid19', $activeSchemes)) { ?>
 			<h3 class="txt text-info covid19" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for SARS-CoV-2 Scheme</h3>
 			<div id="participantChartContainerCovid19" class="covid19" style="display: none;"></div>
+			<?php }?>
 		</div>
 	</div>
 	<?php
@@ -1186,9 +1193,9 @@ foreach($this->participants as $row){
 				$('.covid19').show();
 				<?php } ?>
 			}
-			
+			// console.log(covid19);
 			if(vl != false && dts != false && dbs != false && recency != false && covid19 != false && eid != false){
-				$('.all').show();
+				// $('.all').show();
 			}
 		}, 1000);
 	}
