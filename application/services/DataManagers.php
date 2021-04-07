@@ -132,10 +132,10 @@ class Application_Service_DataManagers
             $fromName = Application_Service_Common::getConfig('admin-name');
             //$common->sendMail($email, null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
             $common->insertTempMail($email, null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
-            $sessionAlert->message = "Your password has been reset. Please check your registered mail id for the instructions.";
+            $sessionAlert->message = "Your password has been reset. Please check your registered email id for the instructions.";
             $sessionAlert->status = "success";
         } else {
-            $sessionAlert->message = "Sorry, we could not reset your password. Please make sure that you enter your registered primary email id";
+            $sessionAlert->message = "Sorry, we could not reset your password. Please make sure that you entered your registered primary email";
             $sessionAlert->status = "failure";
         }
     }
