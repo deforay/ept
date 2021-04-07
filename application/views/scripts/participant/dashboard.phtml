@@ -79,7 +79,7 @@ foreach($this->participants as $row){
 	<h1> Dashboard </h1>
 </section>
 <section class="content">
-	<div class="box all">
+	<div class="box all"  style="display: none;">
 
 		<div class="box-body">
 			<!-- <h3 class="txt text-info"></h3> -->
@@ -1061,6 +1061,7 @@ foreach($this->participants as $row){
 			var participant = $('#participantDefault').val();
 			var type = "string";
 		}
+		<?php if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) { ?>
 		/* for shipment vl */
 		$('#participantChartContainerVl').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
@@ -1074,7 +1075,7 @@ foreach($this->participants as $row){
 		function(data) {
 			$('#participantChartContainerVl').html(data);
 		});
-		
+		<?php } if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) { ?>
 		/* for shipment eid */
 		$('#participantChartContainerEid').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
@@ -1088,7 +1089,7 @@ foreach($this->participants as $row){
 		function(data) {
 			$('#participantChartContainerEid').html(data);
 		});
-		
+		<?php } if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) { ?>
 		/* for shipment dts */
 		$('#participantChartContainerDts').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
@@ -1102,7 +1103,7 @@ foreach($this->participants as $row){
 		function(data) {
 			$('#participantChartContainerDts').html(data);
 		});
-		
+		<?php } if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
 		/* for shipment dbs */
 		$('#participantChartContainerDbs').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
@@ -1116,7 +1117,7 @@ foreach($this->participants as $row){
 		function(data) {
 			$('#participantChartContainerDbs').html(data);
 		});
-
+		<?php } if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) { ?>
 		/* for shipment recency */
 		$('#participantChartContainerRecency').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
@@ -1130,6 +1131,8 @@ foreach($this->participants as $row){
 		function(data) {
 			$('#participantChartContainerRecency').html(data);
 		});
+		<?php } if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
+
 		setTimeout(function(){ 
 			vl =	$("div").hasClass("vl");
 			eid =	$("div").hasClass("eid");
@@ -1138,6 +1141,8 @@ foreach($this->participants as $row){
 			recency =	$("div").hasClass("recency");
 			if( (vl == false) && (eid == false) && (dts == false) && (dbs == false) && (recency == false) ){
 				$('.all').remove();
+			}else{
+				$('.all').show();
 			}
 		}, 1000);
 	}
