@@ -1131,7 +1131,7 @@ foreach($this->participants as $row){
 		function(data) {
 			$('#participantChartContainerRecency').html(data);
 		});
-		<?php } if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
+		<?php } ?>
 
 		setTimeout(function(){ 
 			vl =	$("div").hasClass("vl");
