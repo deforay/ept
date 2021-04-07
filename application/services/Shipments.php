@@ -2273,8 +2273,7 @@ class Application_Service_Shipments
                 if (isset($shipmentDate[1]) && $shipmentDate[1] != "") {
                     $sQuery->where('s.shipment_date <="' . date('Y-m-t', strtotime($monthYr)) . '"');
                 }
-                /* echo "Monthyear => ".$monthYr."<br>";
-                echo($sQuery);echo "<br><br>"; */
+                // echo($sQuery);echo "<br><br>";die;
                 $result =  $db->fetchAll($sQuery);
                 // Zend_Debug::dump($result);
                 if (count($result) > 0) {
