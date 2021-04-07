@@ -1193,9 +1193,9 @@ foreach($this->participants as $row){
 				$('.covid19').show();
 				<?php } ?>
 			}
-			// console.log(covid19);
-			if(vl != false && dts != false && dbs != false && recency != false && covid19 != false && eid != false){
-				// $('.all').show();
+			console.log(covid19);
+			if(vl != true || dts != true || dbs != true || recency != true || covid19 != true || eid != true){
+				$('.all').show();
 			}
 		}, 1000);
 	}

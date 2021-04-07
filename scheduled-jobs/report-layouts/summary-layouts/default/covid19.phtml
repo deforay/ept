@@ -65,42 +65,45 @@ if ($resultArray['shipment'] != "") {
             $dataY[] = $piechart['test_type_name'] .' (n='.$piechart['testPlatform1Total'].')';
             $total +=$piechart['testPlatform1Total'];
         }
-        // Create the graph. These two calls are always required
-        $graph = new Graph(680, 600, 'auto');
-        $graph->SetScale("textlin");
+        if($total > 0){
 
-        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
-        $graph->SetBox(false);
-        $graph->SetMargin(80,30,20,400);
-
-        $graph->ygrid->SetFill(false);
-        $graph->xaxis->SetTickLabels($dataY);
-        $graph->xaxis->SetLabelAngle(90);
-        $graph->xaxis->SetLabelMargin(0);
-        $graph->xaxis->SetPos(0.5,0.97,'center','bottom');
-
-        $graph->yaxis->HideLine(false);
-        $graph->yaxis->HideTicks(false, false);
-
-        // Create the bar plots
-        $b1plot = new BarPlot($dataX);
-        // Create the grouped bar plot
-        $gbplot = new GroupBarPlot(array($b1plot));
-        // ...and add it to the graPH
-        $graph->Add($gbplot);
-        
-        $b1plot->SetColor("white");
-        $graph->title->Set("Test platforms used for Covid19-based PT survey " . $resultArray['shipment']['distribution_code'] . "(N=".$total.")");
-        $graph->yaxis->title->Set('Number of Participants');
-        $graph->xaxis->title->Set('Test Platform-1 Name');
-        $graph->yaxis->SetTitleMargin(35);
-        $graph->xaxis->SetTitleMargin(180);
-        // Turn the tick mark out from the plot area
-        $graph->xaxis->SetTickSide(SIDE_DOWN);
-        $graph->yaxis->SetTickSide(SIDE_LEFT);
-
-        $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'pieChart.png';
-        $graph->Stroke($piechart);
+            // Create the graph. These two calls are always required
+            $graph = new Graph(680, 600, 'auto');
+            $graph->SetScale("textlin");
+    
+            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+            $graph->SetBox(false);
+            $graph->SetMargin(80,30,20,400);
+    
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($dataY);
+            $graph->xaxis->SetLabelAngle(90);
+            $graph->xaxis->SetLabelMargin(0);
+            $graph->xaxis->SetPos(0.5,0.97,'center','bottom');
+    
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+    
+            // Create the bar plots
+            $b1plot = new BarPlot($dataX);
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
+            
+            $b1plot->SetColor("white");
+            $graph->title->Set("Test platforms used for Covid19-based PT survey " . $resultArray['shipment']['distribution_code'] . "(N=".$total.")");
+            $graph->yaxis->title->Set('Number of Participants');
+            $graph->xaxis->title->Set('Test Platform-1 Name');
+            $graph->yaxis->SetTitleMargin(35);
+            $graph->xaxis->SetTitleMargin(180);
+            // Turn the tick mark out from the plot area
+            $graph->xaxis->SetTickSide(SIDE_DOWN);
+            $graph->yaxis->SetTickSide(SIDE_LEFT);
+    
+            $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'pieChart.png';
+            $graph->Stroke($piechart);
+        }
     }
 
     $pdf->AddPage('P', 'A4');
@@ -350,30 +353,33 @@ if ($resultArray['shipment'] != "") {
         $total = $passed + $failed + $notResponded + $excluded;
         // Some data
         $data = array($passed, $failed, $notResponded, $excluded);
-        // Create the Pie Graph.
-        $graph = new PieGraph(700, 400);
-        $graph->SetShadow();
-        $graph->SetMargin(80,30,20,30);
+        if($total > 0){
 
-        // Set A title for the plot
-        $graph->title->Set("Shipment Participant Result Report (N=".$total.")");
-        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
-
-        $p1 = new PiePlot($data);
-        $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Excluded (N=$excluded)"));
-        $graph->legend->SetPos(0.5,0.97,'center','bottom');
-        $graph->legend->SetColumns(3);
-
-        $graph->Add($p1);
-
-        $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'yellow'));
-
-        $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
-        $graph->Stroke($performancePiechart);
-       
-        $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 300);
-        if (file_exists($performancePiechart)) {
-            unlink($performancePiechart);
+            // Create the Pie Graph.
+            $graph = new PieGraph(700, 400);
+            $graph->SetShadow();
+            $graph->SetMargin(80,30,20,30);
+    
+            // Set A title for the plot
+            $graph->title->Set("Shipment Participant Result Report (N=".$total.")");
+            // $graph->title->SetFont(FF_FONT2,FS_BOLD);
+    
+            $p1 = new PiePlot($data);
+            $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Excluded (N=$excluded)"));
+            $graph->legend->SetPos(0.5,0.97,'center','bottom');
+            $graph->legend->SetColumns(3);
+    
+            $graph->Add($p1);
+    
+            $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'yellow'));
+    
+            $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
+            $graph->Stroke($performancePiechart);
+           
+            $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 300);
+            if (file_exists($performancePiechart)) {
+                unlink($performancePiechart);
+            }
         }
     }
 
