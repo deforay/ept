@@ -1,25 +1,30 @@
 <?php
 //Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
 
-//Zend_Debug::dump($this->shipment);die;
 require_once('tcpdf/tcpdf.php');
 
-
-$optionalTest3 = $this->config->evaluation->dts->dtsOptionalTest3;
-
-if($optionalTest3 == 'no'){
-	$width = '22%';
-}else{
-	$width = '30%';
+$maximumAllowed = $this->config->evaluation->covid19->covid19MaximumTestAllowed;
+if($this->shipment['number_of_tests'] > 0 && $this->shipment['number_of_tests'] != null & $this->shipment['number_of_tests'] != ""){
+	$maximumAllowed = $this->shipment['number_of_tests'];
 }
+$test1Text = "Test-1";$resul1Text = "Result-1";
+if($maximumAllowed == 1){
+	$genwidth = '55%';$test1Text = "Test";$resul1Text = "Result";
+}else if($maximumAllowed == 2){
+	$genwidth = '40%';
+}else if($maximumAllowed == 3){
+	$genwidth = '25%';
+}		
+$width = '15%';
 	
 class MYPDF extends TCPDF {
 	
-	public function setSchemeName($header,$logo,$logoRight) {
-		//$this->scheme_name = $schemeName;
+	public function setSchemeName($header,$schemeName,$logo,$logoRight,$schemeType) {
+		$this->scheme_name = $schemeName;
 		$this->header = $header;
 		$this->logo = $logo;
 		$this->logoRight = $logoRight;
+		$this->schemeType = strtoupper($schemeType);
 	}
 	
 	//Page header
@@ -52,6 +57,7 @@ class MYPDF extends TCPDF {
 		$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
 
 		$html='<p  style="font-weight: bold;text-align:center;">DRIED TUBE SPECIMENS (DTS) FOR RAPID HIV TESTING</p>';
+		$html='<p  style="font-weight: bold;text-align:center;">'.$this->scheme_name.' ('.$this->schemeType.')</p>';
 		$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
 		$html='<hr/>';
 		$this->writeHTMLCell(0, 0, 10, 45, $html, 0, 0, 0, true, 'J', true);
@@ -72,7 +78,8 @@ class MYPDF extends TCPDF {
 	
 	// create new PDF document
 	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-	$pdf->setSchemeName($this->header,$this->logo,$this->logoRight);
+	// $pdf->setSchemeName($this->header,$this->logo,$this->logoRight);
+	$pdf->setSchemeName($this->header,$this->shipment['scheme_name'],$this->logo,$this->logoRight,$this->shipment['scheme_type']);
 	// set document information
 	//$pdf->SetCreator(PDF_CREATOR);
 	//$pdf->SetAuthor('ePT');
@@ -172,18 +179,20 @@ class MYPDF extends TCPDF {
 		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 			$labInfo.='<tr style="background-color:#CCCCCC;">';
 				$labInfo.='<td style="width:12%"></td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Test-1</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">'.$test1Text.'</td>';
+				if($maximumAllowed >= 2){
 				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Test-2</td>';
-				if($optionalTest3 == 'no'){
-					$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Test-3</td>';
+				} if($maximumAllowed == 3){
+					$labInfo.='<td style="text-align:center;font-weight:bold;width'.$width.'%">Test-3</td>';
 				}
 			$labInfo.='</tr>';
 			
 			$labInfo.='<tr style="background-color:#F7F7F7;">';
 				$labInfo.='<td style="font-weight:bold;">Kit Name</td>';
 				$labInfo.='<td></td>';
-				$labInfo.='<td></td>';
-				if($optionalTest3 == 'no'){
+				if($maximumAllowed >= 2){
+					$labInfo.='<td></td>';
+				} if($maximumAllowed == 3){
 					$labInfo.='<td></td>';
 				}
 			$labInfo.='</tr>';
@@ -191,8 +200,9 @@ class MYPDF extends TCPDF {
 			$labInfo.='<tr style="background-color:#F7F7F7;">';
 				$labInfo.='<td style="font-weight:bold;">Lot No.</td>';
 				$labInfo.='<td></td>';
-				$labInfo.='<td></td>';
-				if($optionalTest3 == 'no'){
+				if($maximumAllowed >= 2){
+					$labInfo.='<td></td>';
+				} if($maximumAllowed == 3){
 					$labInfo.='<td></td>';
 				}
 			$labInfo.='</tr>';
@@ -200,8 +210,9 @@ class MYPDF extends TCPDF {
 			$labInfo.='<tr style="background-color:#F7F7F7;">';
 				$labInfo.='<td style="font-weight:bold;">Expiry Date</td>';
 				$labInfo.='<td></td>';
-				$labInfo.='<td></td>';
-				if($optionalTest3 == 'no'){
+				if($maximumAllowed >= 2){
+					$labInfo.='<td></td>';
+				} if($maximumAllowed == 3){
 					$labInfo.='<td></td>';
 				}
 			$labInfo.='</tr>';
@@ -210,22 +221,26 @@ class MYPDF extends TCPDF {
 		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 			$labInfo.='<tr style="background-color:#CCCCCC;">';
 				$labInfo.='<td style="width:12%"></td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Result-1</td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Result-2</td>';
-				if($optionalTest3 == 'no'){
-					$labInfo.='<td style="text-align:center;font-weight:bold;width:22%">Result-3</td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">'.$resul1Text.'</td>';
+				if($maximumAllowed >= 2){
+					$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Result-2</td>';
+				} if($maximumAllowed == 3){
+					$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Result-3</td>';
 				}
 				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$width.'">Final Result * </td>';
+				$labInfo.='<td style="text-align:center;font-weight:bold;width:'.$genwidth.'">Gene Types </td>';
 			$labInfo.='</tr>';
 			
 			foreach($this->referenceDetails as $sample){
 				$labInfo.='<tr style="background-color:#F7F7F7;">';
 					$labInfo.='<td style="font-weight:bold;">'.$sample['sample_label'].'</td>';
 					$labInfo.='<td></td>';
-					$labInfo.='<td></td>';
-					if($optionalTest3 == 'no'){
+					if($maximumAllowed >= 2){
+						$labInfo.='<td></td>';
+					} if($maximumAllowed == 3){
 						$labInfo.='<td></td>';
 					}
+					$labInfo.='<td></td>';
 					$labInfo.='<td></td>';
 				$labInfo.='</tr>';
 			}
