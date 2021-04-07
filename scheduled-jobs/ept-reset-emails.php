@@ -72,7 +72,7 @@ try {
                         </thead>
                         <tbody>';
         $sno = 1;
-        $conf->domain = rtrim($conf->domain, "/");
+        $eptDomain = rtrim($conf->domain, "/");
         foreach($participants as $prow){
             
             $message .= '<tr>
@@ -80,7 +80,7 @@ try {
                             <td style="border: 1px solid black;text-align:left;">' . str_replace(", ",",<br>",$prow[1]) . '</td>
                             <td style="border: 1px solid black;">' . $prow[2] . '</td
                             <td style="border: 1px solid black;text-align:center;">' . $general->humanDateFormat($prow[3]) . '</td>
-                            <td style="border: 1px solid black;text-align:center;"><a href="' . $conf->domain . '/auth/verify-email/t/' . base64_encode($prow[2]).'">Click Here</a></td>
+                            <td style="border: 1px solid black;text-align:center;"><a href="' . $eptDomain . '/auth/verify-email/t/' . base64_encode($prow[2]).'">Click Here</a></td>
                         </tr>';
             $db->update('data_manager', array('last_date_for_email_reset' => $prow[4], 'force_profile_check' => 'yes', 'updated_on' => new Zend_Db_Expr('now()')), 'primary_email= "' . $prow[3] . '"');
             $sno++;

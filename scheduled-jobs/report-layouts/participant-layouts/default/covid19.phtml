@@ -182,12 +182,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= ' </td>';
         $labInfo .= '	<td>';
         if (isset($haveCustom) && $haveCustom == 'yes') {
-            $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . $totParticipantsRes['custom_field_1'];
+            $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . $result['custom_field_1'];
         }
         $labInfo .= ' </td>';
         $labInfo .= '	<td>';
         if (isset($haveCustom) && $haveCustom == 'yes') {
-            $labInfo .= '	<strong>' . $customField2 . '</strong> <br>' . $totParticipantsRes['custom_field_2'];
+            $labInfo .= '	<strong>' . $customField2 . '</strong> <br>' . $result['custom_field_2'];
         }
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';

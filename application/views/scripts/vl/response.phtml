@@ -52,8 +52,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 				?>
 				<div id="view-content">
 					<?php
-					$date = new DateTime();
-					$lastDate = new DateTime($this->shipment['lastdate_response']);
+
+					$date = (new DateTime())->setTime(0, 0, 0);
+					$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0);
 
 					if ($this->isEditable) {
 						if (($date > $lastDate) && $this->shipment['status'] == 'finalized') {
