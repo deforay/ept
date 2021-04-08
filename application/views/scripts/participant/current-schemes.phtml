@@ -174,9 +174,17 @@
 
 	function ReportFilter() {
 		if ($("#shipmentCode").val() == "" || $("#shipmentCode").val() == null || $("#shipmentCode").val() == undefined || $("#province").val() == "" || $("#province").val() == null || $("#province").val() == undefined) {
+			if($("#shipmentCode").val() != ""){
+				csTable.fnDraw();
+				return false;
+			}
+			if($("#province").val() != ""){
+				csTable.fnDraw();
+				return false;
+				
+			}
 			alert("Please choose code or province Detail to proceed");
 			return false;
 		}
-		csTable.fnDraw();
 	}
 </script>
