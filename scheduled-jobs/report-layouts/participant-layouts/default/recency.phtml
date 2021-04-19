@@ -250,11 +250,11 @@ if (sizeof($resultArray['shipment']) > 0) {
                             </tr>
                             <tr>
                                 <th style="text-align:center;font-weight:bold;width:9%;">Control Line</th>
-                                <th style="text-align:center;font-weight:bold;width:11%;">Diagnosis Line</th>
+                                <th style="text-align:center;font-weight:bold;width:11%;">Verification Line</th>
                                 <th style="text-align:center;font-weight:bold;width:10%;">Longterm Line</th>
                                 <th style="text-align:center;font-weight:bold;width:10%;">Final Result</th>
                                 <th style="text-align:center;font-weight:bold;width:9%;">Control Line</th>
-                                <th style="text-align:center;font-weight:bold;width:11%;">Diagnosis Line</th>
+                                <th style="text-align:center;font-weight:bold;width:11%;">Verification Line</th>
                                 <th style="text-align:center;font-weight:bold;width:10%;">Longterm Line</th>
                                 <th style="text-align:center;font-weight:bold;width:10%;">Final Result</th>
                             </tr>';
@@ -307,7 +307,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $labRes .= '<tr>
 							<td style="text-align:center;">' . $response['sample_label'] . '</td>
                             <td>' . (isset($response['refControlLine']) && $response['refControlLine'] != "" ? ucwords($response['refControlLine']) : "") . '</td>
-                            <td>' . (isset($response['refDiagnosisLine']) && $response['refDiagnosisLine'] != "" ? ucwords($response['refDiagnosisLine']) : "") . '</td>
+                            <td>' . (isset($response['refverificationLine']) && $response['refverificationLine'] != "" ? ucwords($response['refverificationLine']) : "") . '</td>
                             <td>' . (isset($response['refLongTermLine']) && $response['refLongTermLine'] != "" ? ucwords($response['refLongTermLine']) : "") . '</td>
 							<td>' . ucfirst(strtolower($response['referenceResult'])) . '</td>
                             <th>' . (isset($response['control_line']) && $response['control_line'] != "" ? ucwords($response['control_line']) : "") . '</th>

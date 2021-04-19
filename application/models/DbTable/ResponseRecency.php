@@ -15,7 +15,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $params['controlLine'][$key] = '';
-                $params['diagnosisLine'][$key] = '';
+                $params['verificationLine'][$key] = '';
                 $params['longtermLine'][$key] = '';
                 $params['result'][$key] = '';
             }
@@ -26,7 +26,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                     'sample_id' => $sampleId,
                     'reported_result' => $params['result'][$key],
                     'control_line' => $params['controlLine'][$key],
-                    'diagnosis_line' => $params['diagnosisLine'][$key],
+                    'diagnosis_line' => $params['verificationLine'][$key],
                     'longterm_line' => $params['longtermLine'][$key],
                     'created_by' => $authNameSpace->dm_id,
                     'created_on' => new Zend_Db_Expr('now()')
@@ -35,7 +35,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                 $this->update(array(
                     'reported_result' => $params['result'][$key],
                     'control_line' => $params['controlLine'][$key],
-                    'diagnosis_line' => $params['diagnosisLine'][$key],
+                    'diagnosis_line' => $params['verificationLine'][$key],
                     'longterm_line' => $params['longtermLine'][$key],
                     'updated_by' => $authNameSpace->dm_id,
                     'updated_on' => new Zend_Db_Expr('now()')
@@ -57,7 +57,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                     'sample_id'         => $sampleId,
                     'reported_result'   => $params['recencyData']->Section3->data->samples->yourResults[$key],
                     'control_line'      => $params['recencyData']->Section3->data->samples->controlLine[$key],
-                    'diagnosis_line' => $params['recencyData']->Section3->data->samples->diagnosisLine[$key],
+                    'diagnosis_line' => $params['recencyData']->Section3->data->samples->verificationLine[$key],
                     'longterm_line'     => $params['recencyData']->Section3->data->samples->longtermLine[$key],
                     'created_by'        => $dm['dm_id'],
                     'created_on'        => new Zend_Db_Expr('now()')
@@ -66,7 +66,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                 $update = $this->update(array(
                     'reported_result'   => $params['recencyData']->Section3->data->samples->yourResults[$key],
                     'control_line'      => $params['recencyData']->Section3->data->samples->controlLine[$key],
-                    'diagnosis_line' => $params['recencyData']->Section3->data->samples->diagnosisLine[$key],
+                    'diagnosis_line' => $params['recencyData']->Section3->data->samples->verificationLine[$key],
                     'longterm_line'     => $params['recencyData']->Section3->data->samples->longtermLine[$key],
                     'updated_by'        => $dm['dm_id'],
                     'updated_on'        => new Zend_Db_Expr('now()')

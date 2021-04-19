@@ -826,7 +826,7 @@ class Application_Service_Evaluation
 				$db->update('response_result_recency', array(
 					'reported_result' => $params['reported_result'][$i],
 					'control_line' => $params['controlLine'][$i],
-					'diagnosis_line' => $params['diagnosisLine'][$i],
+					'diagnosis_line' => $params['verificationLine'][$i],
 					'longterm_line' => $params['longtermLine'][$i],
 					'updated_by' => $admin,
 					'updated_on' => new Zend_Db_Expr('now()')
@@ -1027,7 +1027,7 @@ class Application_Service_Evaluation
 				$sQuery = $db->select()->from(array('resrecency' => 'response_result_recency'), array('resrecency.shipment_map_id', 'resrecency.sample_id', 'resrecency.reported_result', 'responseDate' => 'resrecency.created_on', 'calculated_score', 'control_line', 'diagnosis_line', 'longterm_line'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resrecency.reported_result', array('labResult' => 'respr.response'))
 					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resrecency.shipment_map_id', array('sp.shipment_score', 'sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
-					->join(array('refrecency' => 'reference_result_recency'), 'refrecency.shipment_id=sp.shipment_id and refrecency.sample_id=resrecency.sample_id', array('refrecency.reference_result', 'refControlLine' => 'refrecency.reference_control_line', 'refDiagnosisLine' => 'refrecency.reference_diagnosis_line', 'refLongTermLine' => 'refrecency.reference_longterm_line', 'refrecency.sample_label', 'refrecency.mandatory', 'refrecency.sample_score', 'refrecency.control'))
+					->join(array('refrecency' => 'reference_result_recency'), 'refrecency.shipment_id=sp.shipment_id and refrecency.sample_id=resrecency.sample_id', array('refrecency.reference_result', 'refControlLine' => 'refrecency.reference_control_line', 'refverificationLine' => 'refrecency.reference_diagnosis_line', 'refLongTermLine' => 'refrecency.reference_longterm_line', 'refrecency.sample_label', 'refrecency.mandatory', 'refrecency.sample_score', 'refrecency.control'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refrecency.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("resrecency.shipment_map_id = ?", $res['map_id']);
 

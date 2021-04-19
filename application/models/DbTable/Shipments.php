@@ -897,7 +897,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 } else {
                     $buttonText = "Enter Response";
-                    $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+                    $download = ''; //<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                 }
             }
 
@@ -3037,7 +3037,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $recency['Section3']['data']['samples']['id'][]                = $sample['sample_id'];
                 $recency['Section3']['data']['samples']['mandatory'][]         = ($sample['mandatory'] == 1) ? true : false;
                 $recency['Section3']['data']['samples']['controlLine'][]       = (isset($sample['control_line']) && $sample['control_line'] != "") ? $sample['control_line'] : '';
-                $recency['Section3']['data']['samples']['diagnosisLine'][]     = (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '') ? $sample['diagnosis_line'] : '';
+                $recency['Section3']['data']['samples']['verificationLine'][]     = (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '') ? $sample['diagnosis_line'] : '';
                 $recency['Section3']['data']['samples']['longtermLine'][]      = (isset($sample['longterm_line']) && $sample['longterm_line'] != '') ? $sample['longterm_line'] : '';
                 $recency['Section3']['data']['samples']['yourResults'][]       = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
 
@@ -3063,14 +3063,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $longLineResults[] = array('value' => (string) $pr, 'show' => ucwords($pr), 'selected' => ($sample['longterm_line'] == $pr) ? 'selected' : '');
                 }
 
-                $recency['Section3']['data']['resultsText'] = array('Control/Sample', 'Control Line', 'Diagnosis Line', 'Longterm Line', 'Your Result');
+                $recency['Section3']['data']['resultsText'] = array('Control/Sample', 'Control Line', 'Verification Line', 'Longterm Line', 'Your Result');
                 $recency['Section3']['data']['resultStatus'] = array(true, true, true, true);
                 $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Control Line']     = (isset($sample['control_line']) && $sample['control_line'] != '') ? $sample['control_line'] : '';
-                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Diagnosis Line'] = (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '') ? $sample['diagnosis_line'] : '';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Verification Line'] = (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '') ? $sample['diagnosis_line'] : '';
                 $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Longterm Line']    = (isset($sample['longterm_line']) && $sample['longterm_line'] != '') ? $sample['longterm_line'] : '';
                 $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Your Results']     = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
                 $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Control Line']        = $ctlLineResults;
-                $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Diagnosis Line']   = $verifyLineResults;
+                $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Verification Line']   = $verifyLineResults;
                 $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Longterm Line']       = $longLineResults;
                 $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Your Result']        = $possibleRecencyResults;
             }

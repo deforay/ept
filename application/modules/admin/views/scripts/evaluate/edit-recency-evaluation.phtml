@@ -117,7 +117,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         <tr align="CENTER" class="dark">
             <th style="text-align: center">Control/Sample</th>
             <th style="text-align: center">Control Line</th>
-            <th style="text-align: center">Diagnosis Line</th>
+            <th style="text-align: center">Verification Line</th>
             <th style="text-align: center">Longterm Line</th>
             <th style="text-align: center">Your Results</th>
             <th style="text-align: center">Reference Result</th>
@@ -151,7 +151,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                 </select>
             </td>
             <td class='testTwo'>
-                <select name="diagnosisLine[]" id="<?php echo "diagnosisLine_" . $count; ?>" class=" form-control">
+                <select name="verificationLine[]" id="<?php echo "verificationLine_" . $count; ?>" class=" form-control">
                     <?php $this->dropdownSelection($possibleResults, $sample['diagnosis_line'], true); ?>
                 </select>
             </td>
@@ -200,7 +200,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                 </select>
             </td>
             <td class='testTwo'>
-                <select name="diagnosisLine[]" id="<?php echo "diagnosisLine_" . $count; ?>" class=" form-control">
+                <select name="verificationLine[]" id="<?php echo "verificationLine_" . $count; ?>" class=" form-control">
                     <?php $this->dropdownSelection($possibleResults, $sample['diagnosis_line'], true); ?>
                 </select>
             </td>

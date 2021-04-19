@@ -2772,3 +2772,8 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('training_instance', 'no')
 -- Thana 17-Mar-2021
 ALTER TABLE `covid19_identified_genes` ADD FOREIGN KEY (`gene_id`) REFERENCES `r_covid19_gene_types`(`gene_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE `covid19_identified_genes` ADD `gene_map_id` INT(11) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`gene_map_id`);
+
+
+-- Amit 19-April-2021
+
+UPDATE `scheme_list` SET `scheme_name` = 'Rapid Test for Recent Infection (RTRI)\n' WHERE `scheme_list`.`scheme_id` = 'recency';

@@ -3702,7 +3702,7 @@ class Application_Service_Reports
 
         if ($result['scheme_type'] == 'recency') {
             foreach (range(0, $result['number_of_samples']) as $dummy) {
-                array_push($reportHeadings, 'Control Line', 'Diagnosis Line', 'Long Term Line');
+                array_push($reportHeadings, 'Control Line', 'Verification Line', 'Long Term Line');
             }
             array_push($reportHeadings, 'Comments');
         }

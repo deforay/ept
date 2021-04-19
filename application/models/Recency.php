@@ -28,9 +28,9 @@ class Application_Model_Recency
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
                 $createdOn = new DateTime($createdOnUser[0]);
-			} else {
-				$createdOn = new DateTime('1970-01-01');
-			}
+            } else {
+                $createdOn = new DateTime('1970-01-01');
+            }
 
             $lastDate = new DateTime($shipment['lastdate_response']);
 
@@ -49,6 +49,14 @@ class Application_Model_Recency
                 $this->failureReason = array();
 
                 foreach ($results as $result) {
+
+                    $controlLine = $result['control_line'];
+                    $verificationLine = $result['diagnosis_line'];
+                    $longtermLine = $result['longterm_line'];
+
+
+
+
                     // matching reported and reference results
                     if (isset($result['reported_result']) && $result['reported_result'] != null) {
                         if ($result['reference_result'] == $result['reported_result']) {
@@ -58,16 +66,55 @@ class Application_Model_Recency
                             $score = "Pass";
                         } else {
                             if ($result['sample_score'] > 0) {
-                                /* $this->failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly"; */
+                                $this->failureReason[] = array(
+                                    'warning' => "Final interpretation for sample <strong>" . $result['sample_label'] . "</strong> reported wrongly",
+                                    'correctiveAction' => ""
+                                );
                             }
                             $score = "Fail";
                         }
-                    } else{
+                    } else {
                         $score = "Fail";
                     }
                     if (0 == $result['control']) {
                         $maxScore += $result['sample_score'];
                     }
+
+
+                    if (empty($controlLine) || empty($verificationLine) || empty($longtermLine)) {
+                        $isAlgoWrong = true;
+                    } else if ($controlLine == 'absent') {
+                        $isAlgoWrong = true;
+                    }
+
+                    // if final result was reported as Recent
+                    if($result['reported_result'] == 13){
+                        if ($controlLine == 'present' && $verificationLine == 'present' && $verificationLine == 'absent') {
+                            
+                        }else{
+                            $isAlgoWrong = true;
+                        }
+                    }
+
+                    // if final result was reported as Long term
+                    if($result['reported_result'] == 14){
+                        if ($controlLine == 'present' && $verificationLine == 'present' && $verificationLine == 'present') {
+                            
+                        }else{
+                            $isAlgoWrong = true;
+                        }
+                    }
+
+                    if ($isAlgoWrong) {
+                        $score = "Fail";
+                        $this->failureReason[] =  array(
+                            'warning' => "Algorithm reported wrongly for sample <strong>" . $result['sample_label'] . "</strong>",
+                            'correctiveAction' => "Please follow the recency algorithm to report the recency test results."
+                        );
+                    }
+
+
+
 
                     if ($score == 'Fail' || (!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null) || ($result['reference_result'] != $result['reported_result'])) {
                         $this->db->update('response_result_recency', array('calculated_score' => "Fail"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
@@ -135,7 +182,7 @@ class Application_Model_Recency
 
                 //$counter++;
             } else {
-                $this->failureReason = array('warning' => "Response was submitted after the last response date.");
+                $this->failureReason[]['warning'] =  "Response was submitted after the last response date.";
                 $this->db->update('shipment_participant_map', array('failure_reason' => json_encode($this->failureReason)), "map_id = " . $shipment['map_id']);
             }
             $counter++;

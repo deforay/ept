@@ -241,7 +241,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 							<tr align="center" class="">
 								<th style="width:20%;text-align: center;">Control/Sample</th>
 								<th style="width:20%;text-align: center;">Control Line</th>
-								<th style="width:20%;text-align: center;">Diagnosis Line</th>
+								<th style="width:20%;text-align: center;">Verification Line</th>
 								<th style="width:20%;text-align: center;">Longterm Line</th>
 								<th style="width:20%;text-align: center;">Your Results</th>
 							</tr>
@@ -274,7 +274,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 									</select>
 								</td>
 								<td>
-									<select name="diagnosisLine[]" id="diagnosisLine<?php echo $count; ?>" class="isRequired recency-pt-tested form-control input-sm" title="Please choose diagnosis line">
+									<select name="verificationLine[]" id="verificationLine<?php echo $count; ?>" class="isRequired recency-pt-tested form-control input-sm" title="Please choose verification line">
 										<option value="">--Select--</option>
 										<option value="present" <?php echo ($sample['diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>>Present</option>
 										<option value="absent" <?php echo ($sample['diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>>Absent</option>
@@ -498,7 +498,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 			<?php $count = 0; foreach ($this->allSamples as $sample) {
 				$count++;
 				if (isset($sample['mandatory']) && $sample['mandatory'] == 1) {?>
-				$('#controlLine<?php echo $count;?>,#diagnosisLine<?php echo $count;?>,#longtermLine<?php echo $count;?>,#result<?php echo $count;?>').addClass('isRequired');
+				$('#controlLine<?php echo $count;?>,#verificationLine<?php echo $count;?>,#longtermLine<?php echo $count;?>,#result<?php echo $count;?>').addClass('isRequired');
 				$('rm-<?php echo $count;?>').css('display','block');
 			<?php }
 			} ?>
