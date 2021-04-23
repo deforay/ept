@@ -175,28 +175,28 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo = '<table border="1" cellpadding="5" style="font-size:11px;">';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Shipment Type</strong><br>' . $result['scheme_name'] . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Shipment Type</strong><br>' . $result['scheme_name'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>';
 
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Response Date</strong><br>' . $responseDate . '</td>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;">';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Response Date</strong><br>' . $responseDate . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
         if (isset($attributes['algorithm'])) {
             $labInfo .= '	<strong>Algorithm</strong><br>' . ($attributes['algorithm'] == 'myanmarNationalDtsAlgo' ? 'Myanmar National Algorithm' : ucfirst($attributes['algorithm']));
         }
