@@ -31,7 +31,7 @@ if (sizeof($resultArray['shipment']) > 0) {
     // Zend_Debug::dump($recencyAssay[1]);die;
 
     foreach ($resultArray['shipment'] as $result) {
-        
+
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
@@ -49,7 +49,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'],"",$trainingInstanceText);
+        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $trainingInstanceText);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -222,10 +222,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</table>';
         //shipment_test_date
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-        
+
         if (count($result['responseResult']) > 0) {
             if ($result['scheme_type'] == 'recency') {
-                
+
                 $labRes = '<span style="font-weight: bold;font-size:12px;">Your laboratory test results : <br/></span>
                         <table border="1" style="font-size:12px;">';
                 $labRes .= '<tr>
@@ -319,7 +319,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 					</tr>';
                 }
                 $labRes .= '</table>';
-                
+
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
 
@@ -426,10 +426,10 @@ if (sizeof($resultArray['shipment']) > 0) {
 					</tr>';
 
                 $docRes .= '</table>';
-                
+
                 $pdf->writeHTML($docRes, true, false, true, false, '');
 
-                /* if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
+                if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
                     $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
                     $failRes .= '<table border="1" style="font-size:11px;">';
                     $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
@@ -442,7 +442,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     }
                     $failRes .= '</table>';
                     $pdf->writeHTML($failRes, true, false, true, false, '');
-                } */
+                }
             }
         }
         // if($result['shipment_code'] == 'REC0920-6'){
@@ -481,14 +481,14 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        
+
         $totalScore = $result['shipment_score'] + $result['documentation_score'];
         if ($totalScore >= $passPercentage) {
             $wishes = '<p style="font-size:12px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
         } else {
             $wishes = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
         }
-        $html = '<p style="font-size:12px;">'.$wishes.'</p>';
+        $html = '<p style="font-size:12px;">' . $wishes . '</p>';
         $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
 
         $pdf->writeHTML($html, true, false, true, false, '');
