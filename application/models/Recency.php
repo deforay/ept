@@ -79,7 +79,7 @@ class Application_Model_Recency
                     if (0 == $result['control']) {
                         $maxScore += $result['sample_score'];
                     }
-
+                    $isAlgoWrong = false;
 
                     if (empty($controlLine) || empty($verificationLine) || empty($longtermLine)) {
                         $isAlgoWrong = true;
@@ -89,7 +89,7 @@ class Application_Model_Recency
 
                     // if final result was reported as Recent
                     if($result['reported_result'] == 13){
-                        if ($controlLine == 'present' && $verificationLine == 'present' && $verificationLine == 'absent') {
+                        if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'absent') {
                             
                         }else{
                             $isAlgoWrong = true;
@@ -98,13 +98,12 @@ class Application_Model_Recency
 
                     // if final result was reported as Long term
                     if($result['reported_result'] == 14){
-                        if ($controlLine == 'present' && $verificationLine == 'present' && $verificationLine == 'present') {
+                        if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'present') {
                             
                         }else{
                             $isAlgoWrong = true;
                         }
                     }
-
                     if ($isAlgoWrong) {
                         $score = "Fail";
                         $this->failureReason[] =  array(
