@@ -564,6 +564,8 @@ class Application_Service_Participants
 
 	public function addBulkParticipant()
 	{
+		ini_set('memory_limit', -1);
+		ini_set('max_execution_time', -1);
 		try {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');
 			$adminSession = new Zend_Session_Namespace('administrators');
