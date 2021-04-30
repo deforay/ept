@@ -138,20 +138,16 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
 
-        
-        $shipmentDb = new Application_Model_DbTable_Shipments();
-
+        // $shipmentDb = new Application_Model_DbTable_Shipments();
         foreach ($rResult as $aRow) {
-            
-            $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
-            
+            // $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             $row = array();
             $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/'.$aRow['distribution_id'].'"><span><i class="icon-search"></i></span></a>';
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = '<a href="/admin/shipment/index/searchString/'.$aRow['distribution_code'].'">'.$aRow['distribution_code'].'</a>';
             $row[] = $aRow['shipments'];
             $row[] = ucwords($aRow['status']);
-	    $edit='<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-pencil"></i> Edit</span></a>';
+	        $edit='<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/'.base64_encode($aRow['distribution_id']).'"><span><i class="icon-pencil"></i> Edit</span></a>';
             if(isset($aRow['status']) && $aRow['status'] == 'configured'){
                 $row[] = $edit.' '.'<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\''.base64_encode($aRow['distribution_id']).'\')"><span><i class="icon-ambulance"></i> Ship Now</span></a>';	    
             }else if(isset($aRow['status']) && $aRow['status'] == 'shipped'){
@@ -169,11 +165,13 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
     
     public function addDistribution($params){
 	$authNameSpace = new Zend_Session_Namespace('administrators');
-        $data = array('distribution_code'=>$params['distributionCode'],
-                      'distribution_date'=> Pt_Commons_General::dateFormat($params['distributionDate']),
-                      'status' => 'created',
-		      'created_by' => $authNameSpace->admin_id,
-                      'created_on' => new Zend_Db_Expr('now()'));
+        $data = array(
+            'distribution_code' =>$params['distributionCode'],
+            'distribution_date' => Pt_Commons_General::dateFormat($params['distributionDate']),
+            'status'            => 'created',
+		    'created_by'        => $authNameSpace->admin_id,
+            'created_on'        => new Zend_Db_Expr('now()')
+        );
         return $this->insert($data);
     }
     
@@ -339,13 +337,11 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
         
-        $shipmentDb = new Application_Model_DbTable_Shipments();
+        // $shipmentDb = new Application_Model_DbTable_Shipments();
         foreach ($rResult as $aRow) {
-            
-            $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
-            
+            // $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             $row = array();
-	    $row['DT_RowId']="dist".$aRow['distribution_id'];
+	        $row['DT_RowId']="dist".$aRow['distribution_id'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];

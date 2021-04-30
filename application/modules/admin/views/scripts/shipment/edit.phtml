@@ -565,7 +565,6 @@ $dtFormat =  $vHelper->getDateFormat();
 								foreach ($shipmentData['reference'] as $reference) {
 							?>
 
-									addNewTypeNameBlock('<?php echo $i; ?>');
 									addNewEiaBlock('<?php echo $i; ?>');
 									addNewWbBlock('<?php echo $i; ?>');
 
@@ -573,7 +572,6 @@ $dtFormat =  $vHelper->getDateFormat();
 									$i++;
 								}
 							} else { ?>
-								addNewTypeNameBlock(sampleCounter);
 								addNewEiaBlock(sampleCounter);
 								addNewWbBlock(sampleCounter);
 							<?php } ?>
@@ -1048,7 +1046,18 @@ $dtFormat =  $vHelper->getDateFormat();
 									dateFormat: '<?php echo $dtFormat; ?>'
 								})
 							});
-							
+							<?php
+							$i = 1;
+							if (count($shipmentData['reference']) > 0) {
+								foreach ($shipmentData['reference'] as $reference) { ?>
+									addNewPlatformNameBlock('<?php echo $i; ?>');
+
+								<?php
+									$i++;
+								}
+							} else { ?>
+								addNewPlatformNameBlock(sampleCounter);
+							<?php } ?>
 						});
 
 						function addCovid19Row(obj) {
@@ -1076,10 +1085,10 @@ $dtFormat =  $vHelper->getDateFormat();
 									<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 								</td> \
 							</tr>');
-							addNewTypeNameBlock(sampleCounter);
+							addNewPlatformNameBlock(sampleCounter);
 						}
 
-						function addNewTypeNameBlock(sampleId) {
+						function addNewPlatformNameBlock(sampleId) {
 							$("#eiaBlockHolder").after('<div id="typeName' + sampleId + '" class="dialog">\
 							<span onClick="hidedefModal()" class="closeModal"></span>\
 							<div class="modal-header">\
@@ -1135,13 +1144,13 @@ $dtFormat =  $vHelper->getDateFormat();
 							if (count($shipmentData['reference']) > 0) {
 								foreach ($shipmentData['reference'] as $reference) {
 							?>
-									addNewTypeNameBlock('<?php echo $i; ?>');
+									addNewPlatformNameBlock('<?php echo $i; ?>');
 								<?php
 									$i++;
 								}
 							} else {
 								?>
-								addNewTypeNameBlock(sampleCounter);
+								addNewPlatformNameBlock(sampleCounter);
 							<?php
 							}
 							?>
@@ -1681,6 +1690,7 @@ $dtFormat =  $vHelper->getDateFormat();
 				</div>');
 
 						}
+
 						function removeRow(obj) {
 							$(obj.parentNode.parentNode).fadeOut("normal", function() {
 								$(this).remove();
@@ -2499,17 +2509,17 @@ $dtFormat =  $vHelper->getDateFormat();
 									<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 								</td> \
 							</tr>');
-					}
+						}
 
-					function removeRow(obj) {
-						$(obj.parentNode.parentNode).fadeOut("normal", function() {
-							$(this).remove();
-						});
-					}
-				</script>
+						function removeRow(obj) {
+							$(obj.parentNode.parentNode).fadeOut("normal", function() {
+								$(this).remove();
+							});
+						}
+					</script>
 
 
-			<?php } ?>
+				<?php } ?>
 
 			</div>
 

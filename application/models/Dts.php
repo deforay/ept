@@ -143,7 +143,6 @@ class Application_Model_Dts
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
 				}
-
 				if (isset($recommendedTestkits[1]) && count($recommendedTestkits[1]) > 0) {
 					if (!in_array($results[0]['test_kit_name_1'], $recommendedTestkits[1])) {
 						$tk1RecommendedUsed = false;

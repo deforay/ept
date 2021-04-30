@@ -946,12 +946,8 @@ class Application_Service_Evaluation
 
 	public function getEvaluateReportsInPdf($shipmentId, $sLimit = null, $sOffset = null)
 	{
-		//echo $shipmentId;die;
-		$responseResult = "";
-		$vlCalculation = "";
 		$vlGraphResult = array();
 		$mapRes = array();
-		$penResult = array();
 		$shipmentResult = array();
 		$vlGraphResult = array();
 

@@ -1163,6 +1163,7 @@ foreach($this->participants as $row){
 			dbs =	$("div").hasClass("dbs");
 			recency =	$("div").hasClass("recency");
 			covid19 =	$("div").hasClass("covid19");
+
 			if($("div").hasClass("vl")){
 				<?php if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) { ?>
 				$('.vl').show();
@@ -1193,8 +1194,8 @@ foreach($this->participants as $row){
 				$('.covid19').show();
 				<?php } ?>
 			}
-			console.log(covid19);
-			if(vl != true || dts != true || dbs != true || recency != true || covid19 != true || eid != true){
+			
+			if(vl == true || dts == true || dbs == true || recency == true || covid19 == true || eid == true){
 				$('.all').show();
 			}
 		}, 1000);
