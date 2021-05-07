@@ -73,7 +73,7 @@ class Application_Model_Dts
 
 			// 3 tests algo added for Myanmar initally, might be used in other places eventually
 			//$threeTestCorrectResponses = array('NXX','PPP');  
-			
+
 			$testedOn = new DateTime($results[0]['shipment_test_date']);
 
 			// Getting the Test Date string to show in Corrective Actions and other sentences
