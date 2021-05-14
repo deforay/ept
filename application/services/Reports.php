@@ -2989,7 +2989,7 @@ class Application_Service_Reports
         //Zend_Debug::dump($assayWiseData);die;
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $assayRes = $db->fetchAll($db->select()->from('r_vl_assay'));
+        $assayRes = $db->fetchAll($db->select()->from('r_vl_assay')->where("`status` like 'active'"));
 
         $countOfVlAssaySheet = 1;
         foreach ($assayRes as $assayRow) {
@@ -5625,7 +5625,7 @@ class Application_Service_Reports
         if (isset($params['shipmentId']) && $params['shipmentId'] != "") {
             $shipmentId = $params['shipmentId'];
         }
-        $vlQuery = $db->select()->from(array('vl' => 'r_vl_assay'), array('vl.id', 'vl.name', 'vl.short_name'));
+        $vlQuery = $db->select()->from(array('vl' => 'r_vl_assay'), array('vl.id', 'vl.name', 'vl.short_name'))->where("`status` like 'active'");
         $assayResult = $db->fetchAll($vlQuery);
 
 
@@ -5668,7 +5668,7 @@ class Application_Service_Reports
             $shimentResult = $db->fetchAll($shQuery);
         }
         if ($shimentResult) {
-            $vlQuery = $db->select()->from(array('vl' => 'r_vl_assay'), array('vl.id', 'vl.name', 'vl.short_name'));
+            $vlQuery = $db->select()->from(array('vl' => 'r_vl_assay'), array('vl.id', 'vl.name', 'vl.short_name'))->where("`status` like 'active'");
             $assayResult = $db->fetchAll($vlQuery);
             $s = 0;
             foreach ($shimentResult as $shipData) {

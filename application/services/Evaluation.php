@@ -1778,7 +1778,7 @@ class Application_Service_Evaluation
 
 
 				$vlCalculation = array();
-				$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay'));
+				$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay')->where("`status` like 'active'"));
 				$otherAssayCounter = array();
 				foreach ($vlAssayResultSet as $vlAssayRow) {
 					// $json = json_encode(array('vl_assay'=>$vlAssayRow['id']));

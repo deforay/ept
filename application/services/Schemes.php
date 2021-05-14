@@ -134,7 +134,7 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $res = $db->fetchAll($db->select()->from('r_eid_extraction_assay')->order('sort_order'));
+        $res = $db->fetchAll($db->select()->from('r_eid_extraction_assay')->where("`status` like 'active'")->order('sort_order'));
         $response = array();
         foreach ($res as $row) {
             $response[$row['id']] = $row['name'];
@@ -146,7 +146,7 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $res = $db->fetchAll($db->select()->from('r_eid_detection_assay')->order('sort_order'));
+        $res = $db->fetchAll($db->select()->from('r_eid_detection_assay')->where("`status` like 'active'")->order('sort_order'));
         $response = array();
         foreach ($res as $row) {
             $response[$row['id']] = $row['name'];
@@ -169,7 +169,7 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $res = $db->fetchAll($db->select()->from('r_vl_assay'));
+        $res = $db->fetchAll($db->select()->from('r_vl_assay')->where("`status` like 'active'"));
         $response = array();
         foreach ($res as $row) {
             $response[$row['id']] = $row['name'];

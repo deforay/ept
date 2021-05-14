@@ -6,20 +6,22 @@ class Application_Model_DbTable_EidDetectionAssay extends Zend_Db_Table_Abstract
     protected $_name = 'r_eid_detection_assay';
     protected $_primary = 'id';
 
-    public function addEidDetectionAssayDetails($params){
+    public function addEidDetectionAssayDetails($params)
+    {
         $id = 0;
-        if(isset($params['name']) && trim($params['name'])!= ''){
-            $id = $this->insert(array('name'=>$params['name']));
+        if (isset($params['name']) && trim($params['name']) != '') {
+            $id = $this->insert(array('name' => $params['name']));
         }
-      return $id;
+        return $id;
     }
-    
-    public function fetchAllEidDetectionAssay($parameters){
+
+    public function fetchAllEidDetectionAssay($parameters)
+    {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('name','status');
+        $aColumns = array('name', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -98,7 +100,7 @@ class Application_Model_DbTable_EidDetectionAssay extends Zend_Db_Table_Abstract
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('eid_dt_asay' => $this->_name));
-	
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -141,20 +143,21 @@ class Application_Model_DbTable_EidDetectionAssay extends Zend_Db_Table_Abstract
             $row = array();
             $fromSource = 'detection';
             $row[] = ucwords($aRow['name']);
-            $row[] = '<select onchange="changeNameStatus(\''.$fromSource.'\','.$aRow['id'].',this.value);"><option value="active" ' . ($aRow['status'] == "active" ? "selected=selected" : "") . '>Active</option><option value="inactive" ' . ($aRow['status'] == "inactive" ? "selected=selected" : "") . '>Inactive</option></select>';
-            
+            $row[] = '<select onchange="changeNameStatus(\'' . $fromSource . '\',' . $aRow['id'] . ',this.value);"><option value="active" ' . ($aRow['status'] == "active" ? "selected=selected" : "") . '>Active</option><option value="inactive" ' . ($aRow['status'] == "inactive" ? "selected=selected" : "") . '>Inactive</option></select>';
+
             $output['aaData'][] = $row;
         }
 
         echo json_encode($output);
     }
-    
-    public function fetchEidDetectionAssay($id){
-        return $this->fetchRow("id = ".$id);
+
+    public function fetchEidDetectionAssay($id)
+    {
+        return $this->fetchRow("id = " . $id)->where("`status` like 'active'");
     }
-    
-    public function updateEidDetectionNameStatus($params){
-        return $this->update(array("status"=>$params['switchStatus']),"id = ".$params['id']);
+
+    public function updateEidDetectionNameStatus($params)
+    {
+        return $this->update(array("status" => $params['switchStatus']), "id = " . $params['id']);
     }
 }
-

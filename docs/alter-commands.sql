@@ -2451,7 +2451,8 @@ UPDATE `r_possibleresult` SET `result_code` = 'NT' WHERE `r_possibleresult`.`sch
 --- Amit 3 June, 2020
 
 
-c
+INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) 
+      VALUES ('recency', 'Rapid HIV Recency Testing', 'response_result_recency', 'reference_result_recency', NULL, 'inactive');
 
 
 CREATE TABLE `reference_result_recency` (
@@ -2777,3 +2778,11 @@ ALTER TABLE `covid19_identified_genes` ADD `gene_map_id` INT(11) NOT NULL AUTO_I
 -- Amit 19-April-2021
 
 UPDATE `scheme_list` SET `scheme_name` = 'Rapid Test for Recent Infection (RTRI)\n' WHERE `scheme_list`.`scheme_id` = 'recency';
+
+
+-- Amit 14-May-2021
+
+ALTER TABLE `r_vl_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'active' AFTER `short_name`;
+ALTER TABLE `r_eid_detection_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'active' AFTER `sort_order`;
+ALTER TABLE `r_eid_extraction_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'active' AFTER `sort_order`;
+

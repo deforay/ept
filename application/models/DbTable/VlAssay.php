@@ -5,25 +5,28 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
 
     protected $_name = 'r_vl_assay';
     protected $_primary = 'id';
-    
-    public function addVlAssayDetails($params){
+
+    public function addVlAssayDetails($params)
+    {
         $id = 0;
-        if(isset($params['name']) && trim($params['name'])!= ''){
+        if (isset($params['name']) && trim($params['name']) != '') {
             $data = array(
-                          'name'=>$params['name'],
-                          'short_name'=>$params['shortName']
-                          );
+                'name' => $params['name'],
+                'short_name' => $params['shortName'],
+                'status' => !empty($params['status']) ? $params['status'] : 'active'
+            );
             $id = $this->insert($data);
         }
-      return $id;
+        return $id;
     }
 
-    public function fetchAllVlAssay($parameters){
+    public function fetchAllVlAssay($parameters)
+    {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('name','short_name');
+        $aColumns = array('name', 'short_name');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -102,7 +105,7 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('vl_asay' => $this->_name));
-	
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -152,22 +155,24 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
 
         echo json_encode($output);
     }
-    
-    public function fetchVlAssay($id){
-        return $this->fetchRow("id = ".$id);
+
+    public function fetchVlAssay($id)
+    {
+        return $this->fetchRow("id = " . $id." AND `status` like 'active'");
     }
-    
-    public function updateVlAssayDetails($params){
+
+    public function updateVlAssayDetails($params)
+    {
         $id = 0;
-        if(isset($params['vlAssayId']) && trim($params['vlAssayId'])!= '') {
+        if (isset($params['vlAssayId']) && trim($params['vlAssayId']) != '') {
             $id = $params['vlAssayId'];
             $data = array(
-                          'name'=>$params['name'],
-                          'short_name'=>$params['shortName']
-                          );
-            $this->update($data,"id = ".$id);
+                'name' => $params['name'],
+                'short_name' => $params['shortName'],
+                'status' => !empty($params['status']) ? $params['status'] : 'active'
+            );
+            $this->update($data, "id = " . $id);
         }
-      return $id;
+        return $id;
     }
 }
-
