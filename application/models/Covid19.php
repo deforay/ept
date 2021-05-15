@@ -122,26 +122,26 @@ class Application_Model_Covid19
 			// T.7 Checking for Expired Test Platforms
 
 			if ($testPlatform1 != "") {
-				if ($expDate1 != "") {
-					if ($testedOn > ($expDate1)) {
-						$difference = $testedOn->diff($expDate1);
-						$failureReason[] = array(
-							'warning' => "Test Platform 1 (<strong>" . $testPlatform1 . "</strong>) expired " . $difference->format('%a') . " days before the test date " . $testDate,
-							'correctiveAction' => $correctiveActions[5]
-						);
-						$correctiveActionList[] = 5;
-						$tt1Expired = true;
-					} else {
-						$tt1Expired = false;
-					}
-				} else {
-					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test platform 1 expiry date is not reported with PT response.",
-						'correctiveAction' => $correctiveActions[6]
-					);
-					$correctiveActionList[] = 6;
-					$shipment['is_excluded'] = 'yes';
-				}
+				// if ($expDate1 != "") {
+				// 	if ($testedOn > ($expDate1)) {
+				// 		$difference = $testedOn->diff($expDate1);
+				// 		$failureReason[] = array(
+				// 			'warning' => "Test Platform 1 (<strong>" . $testPlatform1 . "</strong>) expired " . $difference->format('%a') . " days before the test date " . $testDate,
+				// 			'correctiveAction' => $correctiveActions[5]
+				// 		);
+				// 		$correctiveActionList[] = 5;
+				// 		$tt1Expired = true;
+				// 	} else {
+				// 		$tt1Expired = false;
+				// 	}
+				// } else {
+				// 	$failureReason[] = array(
+				// 		'warning' => "Result not evaluated – Test platform 1 expiry date is not reported with PT response.",
+				// 		'correctiveAction' => $correctiveActions[6]
+				// 	);
+				// 	$correctiveActionList[] = 6;
+				// 	$shipment['is_excluded'] = 'yes';
+				// }
 				if (isset($recommendedTesttypes[1]) && count($recommendedTesttypes[1]) > 0) {
 					if (!in_array($results[0]['test_type_1'], $recommendedTesttypes[1])) {
 						$tt1RecommendedUsed = false;
@@ -156,26 +156,26 @@ class Application_Model_Covid19
 			}
 
 			if ($testPlatform2 != "") {
-				if ($expDate2 != "") {
-					if ($testedOn > ($expDate2)) {
-						$difference = $testedOn->diff($expDate2);
-						$failureReason[] = array(
-							'warning' => "Test Platform 2 (<strong>" . $testPlatform2 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate,
-							'correctiveAction' => $correctiveActions[5]
-						);
-						$correctiveActionList[] = 5;
-						$tt2Expired = true;
-					} else {
-						$tt2Expired = false;
-					}
-				} else {
-					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test platform 2 expiry date is not reported with PT response.",
-						'correctiveAction' => $correctiveActions[6]
-					);
-					$correctiveActionList[] = 6;
-					$shipment['is_excluded'] = 'yes';
-				}
+				// if ($expDate2 != "") {
+				// 	if ($testedOn > ($expDate2)) {
+				// 		$difference = $testedOn->diff($expDate2);
+				// 		$failureReason[] = array(
+				// 			'warning' => "Test Platform 2 (<strong>" . $testPlatform2 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate,
+				// 			'correctiveAction' => $correctiveActions[5]
+				// 		);
+				// 		$correctiveActionList[] = 5;
+				// 		$tt2Expired = true;
+				// 	} else {
+				// 		$tt2Expired = false;
+				// 	}
+				// } else {
+				// 	$failureReason[] = array(
+				// 		'warning' => "Result not evaluated – Test platform 2 expiry date is not reported with PT response.",
+				// 		'correctiveAction' => $correctiveActions[6]
+				// 	);
+				// 	$correctiveActionList[] = 6;
+				// 	$shipment['is_excluded'] = 'yes';
+				// }
 
 				if (isset($recommendedTesttypes[2]) && count($recommendedTesttypes[2]) > 0) {
 					if (!in_array($results[0]['test_type_2'], $recommendedTesttypes[2])) {
@@ -192,27 +192,27 @@ class Application_Model_Covid19
 
 
 			if ($testPlatform3 != "") {
-				if ($expDate3 != "") {
-					if ($testedOn > ($expDate2)) {
-						$difference = $testedOn->diff($expDate2);
-						$failureReason[] = array(
-							'warning' => "Test Platform 3 (<strong>" . $testPlatform3 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate,
-							'correctiveAction' => $correctiveActions[5]
-						);
-						$correctiveActionList[] = 5;
-						$tt3Expired = true;
-					} else {
-						$tt3Expired = false;
-					}
-				} else {
+				// if ($expDate3 != "") {
+				// 	if ($testedOn > ($expDate2)) {
+				// 		$difference = $testedOn->diff($expDate2);
+				// 		$failureReason[] = array(
+				// 			'warning' => "Test Platform 3 (<strong>" . $testPlatform3 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate,
+				// 			'correctiveAction' => $correctiveActions[5]
+				// 		);
+				// 		$correctiveActionList[] = 5;
+				// 		$tt3Expired = true;
+				// 	} else {
+				// 		$tt3Expired = false;
+				// 	}
+				// } else {
 
-					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test platform 3 expiry date is not reported with PT response.",
-						'correctiveAction' => $correctiveActions[6]
-					);
-					$correctiveActionList[] = 6;
-					$shipment['is_excluded'] = 'yes';
-				}
+				// 	$failureReason[] = array(
+				// 		'warning' => "Result not evaluated – Test platform 3 expiry date is not reported with PT response.",
+				// 		'correctiveAction' => $correctiveActions[6]
+				// 	);
+				// 	$correctiveActionList[] = 6;
+				// 	$shipment['is_excluded'] = 'yes';
+				// }
 
 				if (isset($recommendedTesttypes[3]) && count($recommendedTesttypes[3]) > 0) {
 					if (!in_array($results[0]['test_type_3'], $recommendedTesttypes[3])) {
@@ -272,39 +272,39 @@ class Application_Model_Covid19
 
 			// checking if all LOT details were entered
 			// T.3 Ensure test type lot number is reported for all performed tests. 
-			if ($testPlatform1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
-				if (isset($results[0]['test_result_1']) && $results[0]['test_result_1'] != "" && $results[0]['test_result_1'] != null) {
-					$lotResult = 'Fail';
-					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test Platform lot number 1 is not reported.",
-						'correctiveAction' => $correctiveActions[10]
-					);
-					$correctiveActionList[] = 10;
-					$shipment['is_excluded'] = 'yes';
-				}
-			}
-			if ($testPlatform2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)) {
-				if (isset($results[0]['test_result_2']) && $results[0]['test_result_2'] != "" && $results[0]['test_result_2'] != null) {
-					$lotResult = 'Fail';
-					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test Platform lot number 2 is not reported.",
-						'correctiveAction' => $correctiveActions[10]
-					);
-					$correctiveActionList[] = 10;
-					$shipment['is_excluded'] = 'yes';
-				}
-			}
-			if ($testPlatform3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)) {
-				if (isset($results[0]['test_result_3']) && $results[0]['test_result_3'] != "" && $results[0]['test_result_3'] != null) {
-					$lotResult = 'Fail';
-					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test Platform lot number 3 is not reported.",
-						'correctiveAction' => $correctiveActions[10]
-					);
-					$correctiveActionList[] = 10;
-					$shipment['is_excluded'] = 'yes';
-				}
-			}
+			// if ($testPlatform1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
+			// 	if (isset($results[0]['test_result_1']) && $results[0]['test_result_1'] != "" && $results[0]['test_result_1'] != null) {
+			// 		$lotResult = 'Fail';
+			// 		$failureReason[] = array(
+			// 			'warning' => "Result not evaluated – Test Platform lot number 1 is not reported.",
+			// 			'correctiveAction' => $correctiveActions[10]
+			// 		);
+			// 		$correctiveActionList[] = 10;
+			// 		$shipment['is_excluded'] = 'yes';
+			// 	}
+			// }
+			// if ($testPlatform2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)) {
+			// 	if (isset($results[0]['test_result_2']) && $results[0]['test_result_2'] != "" && $results[0]['test_result_2'] != null) {
+			// 		$lotResult = 'Fail';
+			// 		$failureReason[] = array(
+			// 			'warning' => "Result not evaluated – Test Platform lot number 2 is not reported.",
+			// 			'correctiveAction' => $correctiveActions[10]
+			// 		);
+			// 		$correctiveActionList[] = 10;
+			// 		$shipment['is_excluded'] = 'yes';
+			// 	}
+			// }
+			// if ($testPlatform3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)) {
+			// 	if (isset($results[0]['test_result_3']) && $results[0]['test_result_3'] != "" && $results[0]['test_result_3'] != null) {
+			// 		$lotResult = 'Fail';
+			// 		$failureReason[] = array(
+			// 			'warning' => "Result not evaluated – Test Platform lot number 3 is not reported.",
+			// 			'correctiveAction' => $correctiveActions[10]
+			// 		);
+			// 		$correctiveActionList[] = 10;
+			// 		$shipment['is_excluded'] = 'yes';
+			// 	}
+			// }
 
 			$samplePassOrFail = array();
 			foreach ($results as $result) {
