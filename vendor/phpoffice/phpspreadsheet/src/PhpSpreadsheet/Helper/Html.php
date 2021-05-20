@@ -694,9 +694,9 @@ class Html
         return implode('', $values[0]);
     }
 
-    protected function colourNameLookup($rgb)
+    public static function colourNameLookup(string $rgb): string
     {
-        return self::$colourMap[$rgb];
+        return self::$colourMap[$rgb] ?? '';
     }
 
     protected function startFontTag($tag): void
@@ -711,7 +711,7 @@ class Html
                 } elseif (strpos(trim($attributeValue), '#') === 0) {
                     $this->$attributeName = ltrim($attributeValue, '#');
                 } else {
-                    $this->$attributeName = $this->colourNameLookup($attributeValue);
+                    $this->$attributeName = static::colourNameLookup($attributeValue);
                 }
             } else {
                 $this->$attributeName = $attributeValue;

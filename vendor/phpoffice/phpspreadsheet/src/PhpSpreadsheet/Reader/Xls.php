@@ -1275,8 +1275,10 @@ class Xls extends BaseReader
                 // Extract range
                 if (strpos($definedName['formula'], '!') !== false) {
                     $explodes = Worksheet::extractSheetTitle($definedName['formula'], true);
-                    if (($docSheet = $this->spreadsheet->getSheetByName($explodes[0])) ||
-                        ($docSheet = $this->spreadsheet->getSheetByName(trim($explodes[0], "'")))) {
+                    if (
+                        ($docSheet = $this->spreadsheet->getSheetByName($explodes[0])) ||
+                        ($docSheet = $this->spreadsheet->getSheetByName(trim($explodes[0], "'")))
+                    ) {
                         $extractedRange = $explodes[1];
                         $extractedRange = str_replace('$', '', $extractedRange);
 
@@ -1701,7 +1703,8 @@ class Xls extends BaseReader
                 //        max 2048 bytes will probably throw a wobbly.
                 $row = self::getUInt2d($recordData, 0);
                 $extension = true;
-                $cellAddress = array_pop(array_keys($this->phpSheet->getComments()));
+                $arrayKeys = array_keys($this->phpSheet->getComments());
+                $cellAddress = array_pop($arrayKeys);
             }
 
             $cellAddress = str_replace('$', '', $cellAddress);
@@ -2284,8 +2287,8 @@ class Xls extends BaseReader
                     $rotation = $angle;
                 } elseif ($angle <= 180) {
                     $rotation = 90 - $angle;
-                } elseif ($angle == 255) {
-                    $rotation = -165;
+                } elseif ($angle == Alignment::TEXTROTATION_STACK_EXCEL) {
+                    $rotation = Alignment::TEXTROTATION_STACK_PHPSPREADSHEET;
                 }
                 $objStyle->getAlignment()->setTextRotation($rotation);
 
@@ -2387,7 +2390,7 @@ class Xls extends BaseReader
 
                         break;
                     case 1:
-                        $objStyle->getAlignment()->setTextRotation(-165);
+                        $objStyle->getAlignment()->setTextRotation(Alignment::TEXTROTATION_STACK_PHPSPREADSHEET);
 
                         break;
                     case 2:
@@ -2971,6 +2974,9 @@ class Xls extends BaseReader
         // offset within (spliced) record data
         $pos = 0;
 
+        // Limit global SST position, further control for bad SST Length in BIFF8 data
+        $limitposSST = 0;
+
         // get spliced record data
         $splicedRecordData = $this->getSplicedRecordData();
 
@@ -2984,8 +2990,17 @@ class Xls extends BaseReader
         $nm = self::getInt4d($recordData, 4);
         $pos += 4;
 
+        // look up limit position
+        foreach ($spliceOffsets as $spliceOffset) {
+            // it can happen that the string is empty, therefore we need
+            // <= and not just <
+            if ($pos <= $spliceOffset) {
+                $limitposSST = $spliceOffset;
+            }
+        }
+
         // loop through the Unicode strings (16-bit length)
-        for ($i = 0; $i < $nm; ++$i) {
+        for ($i = 0; $i < $nm && $pos < $limitposSST; ++$i) {
             // number of characters in the Unicode string
             $numChars = self::getUInt2d($recordData, $pos);
             $pos += 2;
@@ -3018,7 +3033,7 @@ class Xls extends BaseReader
             // expected byte length of character array if not split
             $len = ($isCompressed) ? $numChars : $numChars * 2;
 
-            // look up limit position
+            // look up limit position - Check it again to be sure that no error occurs when parsing SST structure
             foreach ($spliceOffsets as $spliceOffset) {
                 // it can happen that the string is empty, therefore we need
                 // <= and not just <
@@ -3444,6 +3459,9 @@ class Xls extends BaseReader
 
             // offset: 10; size: 2; option flags
 
+            // bit: 0; mask: 0x0001; 0=down then over, 1=over then down
+            $isOverThenDown = (0x0001 & self::getUInt2d($recordData, 10));
+
             // bit: 1; mask: 0x0002; 0=landscape, 1=portrait
             $isPortrait = (0x0002 & self::getUInt2d($recordData, 10)) >> 1;
 
@@ -3453,16 +3471,8 @@ class Xls extends BaseReader
 
             if (!$isNotInit) {
                 $this->phpSheet->getPageSetup()->setPaperSize($paperSize);
-                switch ($isPortrait) {
-                    case 0:
-                        $this->phpSheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
-
-                        break;
-                    case 1:
-                        $this->phpSheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
-
-                        break;
-                }
+                $this->phpSheet->getPageSetup()->setPageOrder(((bool) $isOverThenDown) ? PageSetup::PAGEORDER_OVER_THEN_DOWN : PageSetup::PAGEORDER_DOWN_THEN_OVER);
+                $this->phpSheet->getPageSetup()->setOrientation(((bool) $isPortrait) ? PageSetup::ORIENTATION_PORTRAIT : PageSetup::ORIENTATION_LANDSCAPE);
 
                 $this->phpSheet->getPageSetup()->setScale($scale, false);
                 $this->phpSheet->getPageSetup()->setFitToPage((bool) $this->isFitToPages);
@@ -4004,21 +4014,27 @@ class Xls extends BaseReader
 
                 // read STRING record
                 $value = $this->readString();
-            } elseif ((ord($recordData[6]) == 1)
+            } elseif (
+                (ord($recordData[6]) == 1)
                 && (ord($recordData[12]) == 255)
-                && (ord($recordData[13]) == 255)) {
+                && (ord($recordData[13]) == 255)
+            ) {
                 // Boolean formula. Result is in +2; 0=false, 1=true
                 $dataType = DataType::TYPE_BOOL;
                 $value = (bool) ord($recordData[8]);
-            } elseif ((ord($recordData[6]) == 2)
+            } elseif (
+                (ord($recordData[6]) == 2)
                 && (ord($recordData[12]) == 255)
-                && (ord($recordData[13]) == 255)) {
+                && (ord($recordData[13]) == 255)
+            ) {
                 // Error formula. Error code is in +2
                 $dataType = DataType::TYPE_ERROR;
                 $value = Xls\ErrorCode::lookup(ord($recordData[8]));
-            } elseif ((ord($recordData[6]) == 3)
+            } elseif (
+                (ord($recordData[6]) == 3)
                 && (ord($recordData[12]) == 255)
-                && (ord($recordData[13]) == 255)) {
+                && (ord($recordData[13]) == 255)
+            ) {
                 // Formula result is a null string
                 $dataType = DataType::TYPE_NULL;
                 $value = '';
@@ -4374,11 +4390,22 @@ class Xls extends BaseReader
             // offset: 10; size: 2; cached magnification factor in page break preview (in percent); 0 = Default (60%)
             // offset: 12; size: 2; cached magnification factor in normal view (in percent); 0 = Default (100%)
             // offset: 14; size: 4; not used
-            $zoomscaleInPageBreakPreview = self::getUInt2d($recordData, 10);
+            if (!isset($recordData[10])) {
+                $zoomscaleInPageBreakPreview = 0;
+            } else {
+                $zoomscaleInPageBreakPreview = self::getUInt2d($recordData, 10);
+            }
+
             if ($zoomscaleInPageBreakPreview === 0) {
                 $zoomscaleInPageBreakPreview = 60;
             }
-            $zoomscaleInNormalView = self::getUInt2d($recordData, 12);
+
+            if (!isset($recordData[12])) {
+                $zoomscaleInNormalView = 0;
+            } else {
+                $zoomscaleInNormalView = self::getUInt2d($recordData, 12);
+            }
+
             if ($zoomscaleInNormalView === 0) {
                 $zoomscaleInNormalView = 100;
             }
@@ -4604,8 +4631,10 @@ class Xls extends BaseReader
         if ($this->version == self::XLS_BIFF8 && !$this->readDataOnly) {
             $cellRangeAddressList = $this->readBIFF8CellRangeAddressList($recordData);
             foreach ($cellRangeAddressList['cellRangeAddresses'] as $cellRangeAddress) {
-                if ((strpos($cellRangeAddress, ':') !== false) &&
-                    ($this->includeCellRangeFiltered($cellRangeAddress))) {
+                if (
+                    (strpos($cellRangeAddress, ':') !== false) &&
+                    ($this->includeCellRangeFiltered($cellRangeAddress))
+                ) {
                     $this->phpSheet->mergeCells($cellRangeAddress);
                 }
             }

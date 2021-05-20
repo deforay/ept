@@ -3,6 +3,7 @@
 namespace PhpOffice\PhpSpreadsheet\Calculation;
 
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class Functions
 {
@@ -67,7 +68,8 @@ class Functions
      */
     public static function setCompatibilityMode($compatibilityMode)
     {
-        if (($compatibilityMode == self::COMPATIBILITY_EXCEL) ||
+        if (
+            ($compatibilityMode == self::COMPATIBILITY_EXCEL) ||
             ($compatibilityMode == self::COMPATIBILITY_GNUMERIC) ||
             ($compatibilityMode == self::COMPATIBILITY_OPENOFFICE)
         ) {
@@ -106,7 +108,8 @@ class Functions
      */
     public static function setReturnDateType($returnDateType)
     {
-        if (($returnDateType == self::RETURNDATE_UNIX_TIMESTAMP) ||
+        if (
+            ($returnDateType == self::RETURNDATE_UNIX_TIMESTAMP) ||
             ($returnDateType == self::RETURNDATE_PHP_DATETIME_OBJECT) ||
             ($returnDateType == self::RETURNDATE_EXCEL)
         ) {
@@ -250,9 +253,11 @@ class Functions
         if ($condition === '') {
             $condition = '=""';
         }
-
         if (!is_string($condition) || !in_array($condition[0], ['>', '<', '='])) {
-            if (!is_numeric($condition)) {
+            $condition = self::operandSpecialHandling($condition);
+            if (is_bool($condition)) {
+                return '=' . ($condition ? 'TRUE' : 'FALSE');
+            } elseif (!is_numeric($condition)) {
                 $condition = Calculation::wrapResult(strtoupper($condition));
             }
 
@@ -261,14 +266,36 @@ class Functions
         preg_match('/(=|<[>=]?|>=?)(.*)/', $condition, $matches);
         [, $operator, $operand] = $matches;
 
+        $operand = self::operandSpecialHandling($operand);
         if (is_numeric(trim($operand, '"'))) {
             $operand = trim($operand, '"');
-        } elseif (!is_numeric($operand)) {
+        } elseif (!is_numeric($operand) && $operand !== 'FALSE' && $operand !== 'TRUE') {
             $operand = str_replace('"', '""', $operand);
             $operand = Calculation::wrapResult(strtoupper($operand));
         }
 
         return str_replace('""""', '""', $operator . $operand);
+    }
+
+    private static function operandSpecialHandling($operand)
+    {
+        if (is_numeric($operand) || is_bool($operand)) {
+            return $operand;
+        } elseif (strtoupper($operand) === Calculation::getTRUE() || strtoupper($operand) === Calculation::getFALSE()) {
+            return strtoupper($operand);
+        }
+
+        // Check for percentage
+        if (preg_match('/^\-?\d*\.?\d*\s?\%$/', $operand)) {
+            return ((float) rtrim($operand, '%')) / 100;
+        }
+
+        // Check for dates
+        if (($dateValueOperand = Date::stringToExcel($operand)) !== false) {
+            return $dateValueOperand;
+        }
+
+        return $operand;
     }
 
     /**
@@ -645,7 +672,7 @@ class Functions
         preg_match('/^' . Calculation::CALCULATION_REGEXP_CELLREF . '$/i', $cellReference, $matches);
 
         $cellReference = $matches[6] . $matches[7];
-        $worksheetName = trim($matches[3], "'");
+        $worksheetName = str_replace("''", "'", trim($matches[2], "'"));
 
         $worksheet = (!empty($worksheetName))
             ? $pCell->getWorksheet()->getParent()->getSheetByName($worksheetName)

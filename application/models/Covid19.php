@@ -363,7 +363,7 @@ class Application_Model_Covid19
 				$documentationScore += $documentationScorePerItem;
 			} else {
 				$failureReason[] = array(
-					'warning' => "Missing reporting rehydration date for DTS Panel",
+					'warning' => "Sample rehydration date not recorded",
 					'correctiveAction' => $correctiveActions[12]
 				);
 				$correctiveActionList[] = 12;

@@ -2675,7 +2675,7 @@ INSERT INTO `r_covid19_corrective_actions` (`action_id`, `corrective_action`, `d
 (11, 'Ensure to provide supervisor approval along with his name.', 'Missing supervisor approval for reported result.'),
 (12, 'Ensure to provide sample rehydration date', 'Re-hydration date missing in PT report form.'),
 (13, 'Ensure to provide to provide panel testing date.', 'Testing date missing in PT report form.'),
-(14, 'Covid19 Testing should be done within specified hours of rehydration as per SOP.', 'Testing is not performed within X to Y hours of rehydration.'),
+(14, 'SARS CoV-2 Testing should be done within specified hours of rehydration as per SOP.', 'Testing is not performed within X to Y hours of rehydration.'),
 (15, 'Review all testing procedures prior to performing client testing and contact your supervisor for improvement.', 'Participant did not meet the score criteria (Participant Score is 80 and Required Score is 95)'),
 (16, 'Ensure to provide to provide panel receipt date. ', 'Panel receipt date missing in PT report form.'),
 (17, 'Please test Covid19 sample as per National Covid-19 Testing lab. Review and refer to SOP for testing.', 'For Test (1/2/3) testing is not performed with country approved test type.');
