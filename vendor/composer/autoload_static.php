@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7c019d76703238a84efd46e71825bbb0
+class ComposerStaticInit659c8b96dbf0e6d63ed5a6e17212eace
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -119,8 +119,8 @@ class ComposerStaticInit7c019d76703238a84efd46e71825bbb0
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -155,7 +155,6 @@ class ComposerStaticInit7c019d76703238a84efd46e71825bbb0
     );
 
     public static $classMap = array (
-        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Datamatrix' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/datamatrix.php',
         'PDF417' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/pdf417.php',
         'QRcode' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/qrcode.php',
@@ -175,10 +174,10 @@ class ComposerStaticInit7c019d76703238a84efd46e71825bbb0
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7c019d76703238a84efd46e71825bbb0::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7c019d76703238a84efd46e71825bbb0::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit7c019d76703238a84efd46e71825bbb0::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit7c019d76703238a84efd46e71825bbb0::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit659c8b96dbf0e6d63ed5a6e17212eace::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit659c8b96dbf0e6d63ed5a6e17212eace::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit659c8b96dbf0e6d63ed5a6e17212eace::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit659c8b96dbf0e6d63ed5a6e17212eace::$classMap;
 
         }, null, ClassLoader::class);
     }

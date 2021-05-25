@@ -461,12 +461,15 @@ class Application_Service_Participants
 
 			$sheet->setCellValue('A4', html_entity_decode("Participant Id", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 			$sheet->setCellValue('B4', html_entity_decode("Lab Name/Participant Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('C4', html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('D4', html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('E4', html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('F4', html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('G4', html_entity_decode("Email", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-			$sheet->setCellValue('H4', html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('C4', html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('D4', html_entity_decode("Email", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('E4', html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('F4', html_entity_decode("City", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('G4', html_entity_decode("State", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('H4', html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('I4', html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('J4', html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+			$sheet->setCellValue('K4', html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
 			$sheet->getStyle('A4')->applyFromArray($styleArray);
 			$sheet->getStyle('B4')->applyFromArray($styleArray);
@@ -476,6 +479,9 @@ class Application_Service_Participants
 			$sheet->getStyle('F4')->applyFromArray($styleArray);
 			$sheet->getStyle('G4')->applyFromArray($styleArray);
 			$sheet->getStyle('H4')->applyFromArray($styleArray);
+			$sheet->getStyle('I4')->applyFromArray($styleArray);
+			$sheet->getStyle('J4')->applyFromArray($styleArray);
+			$sheet->getStyle('K4')->applyFromArray($styleArray);
 
 			$sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -486,11 +492,14 @@ class Application_Service_Participants
 				$row = array();
 				$row[] = $aRow['unique_identifier'];
 				$row[] = $aRow['participantName'];
-				$row[] = $aRow['iso_name'];
+				$row[] = $aRow['department_name'];
+				$row[] = $aRow['email'];
 				$row[] = $aRow['mobile'];
+				$row[] = $aRow['city'];
+				$row[] = $aRow['state'];
+				$row[] = $aRow['iso_name'];
 				$row[] = $aRow['phone'];
 				$row[] = $aRow['affiliation'];
-				$row[] = $aRow['email'];
 				$row[] = ucwords($aRow['RESPONSE']);
 
 				$output[] = $row;
