@@ -512,7 +512,7 @@ class Application_Service_Shipments
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes["algorithm"] = $params['algorithm'];
             $attributes = json_encode($attributes);
-            
+
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
@@ -527,13 +527,13 @@ class Application_Service_Shipments
                 "specimen_volume" => $params['specimenVolume'],
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
-            
+
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
-            
+
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
                 $data['qc_done'] = $params['qcDone'];
                 if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
@@ -546,7 +546,7 @@ class Application_Service_Shipments
                     $data['qc_created_on'] = null;
                 }
             }
-            
+
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
@@ -558,11 +558,11 @@ class Application_Service_Shipments
                 $data['pt_test_not_performed_comments'] = NULL;
                 $data['pt_support_comments'] = NULL;
             }
-            
+
             if (isset($params['customField1']) && !empty(trim($params['customField1']))) {
                 $data['custom_field_1'] = trim($params['customField1']);
             }
-            
+
             if (isset($params['customField2']) && !empty(trim($params['customField2']))) {
                 $data['custom_field_2'] = trim($params['customField2']);
             }
@@ -570,7 +570,7 @@ class Application_Service_Shipments
             /* Save Gene Type */
             $geneIdentifyTypesDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
             $geneIdentifyTypesDb->saveCovid19IdentifiedGenesResults($params);
-            
+
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->updateResults($params);
             $db->commit();
@@ -586,7 +586,7 @@ class Application_Service_Shipments
             error_log($e->getTraceAsString());
         }
     }
-    
+
     public function removeDtsResults($mapId)
     {
         try {
@@ -957,12 +957,12 @@ class Application_Service_Shipments
                 $params['assayExpirationDate'] = Pt_Commons_General::dateFormat($params['assayExpirationDate']);
             }
             $attributes = array(
-                "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])),
-                "vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])),
-                "assay_lot_number" => (isset($params['assayLotNumber']) && !empty($params['assayLotNumber'])),
-                "assay_expiration_date" => (isset($params['assayExpirationDate']) && !empty($params['assayExpirationDate'])),
-                "specimen_volume" => (isset($params['specimenVolume']) && !empty($params['specimenVolume'])),
-                "uploaded_file" => (isset($params['uploadedFilePath']) && !empty($params['uploadedFilePath'])),
+                "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? $params['sampleRehydrationDate'] : '',
+                "vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? $params['vlAssay'] : '',
+                "assay_lot_number" => (isset($params['assayLotNumber']) && !empty($params['assayLotNumber'])) ? $params['assayLotNumber'] : '',
+                "assay_expiration_date" => (isset($params['assayExpirationDate']) && !empty($params['assayExpirationDate'])) ? $params['assayExpirationDate'] : '',
+                "specimen_volume" => (isset($params['specimenVolume']) && !empty($params['specimenVolume'])) ? $params['specimenVolume'] : '',
+                "uploaded_file" => (isset($params['uploadedFilePath']) && !empty($params['uploadedFilePath'])) ? $params['uploadedFilePath'] : '',
             );
 
             if (isset($params['otherAssay']) && $params['otherAssay'] != "") {
@@ -972,7 +972,7 @@ class Application_Service_Shipments
             if (!isset($params['modeOfReceipt'])) {
                 $params['modeOfReceipt'] = NULL;
             }
-            $attributes = json_encode($attributes);
+            $attributes = Zend_Json::encode($attributes);
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
@@ -1015,7 +1015,6 @@ class Application_Service_Shipments
                     $data['qc_created_on'] = NULL;
                 }
             }
-
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $eidResponseDb = new Application_Model_DbTable_ResponseVl();
@@ -1075,7 +1074,7 @@ class Application_Service_Shipments
             'created_on_admin'      => new Zend_Db_Expr('now()'),
             'created_by_admin'      => $authNameSpace->primary_email
         );
-        
+
         $lastId = $db->insert($data);
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1390,8 +1389,8 @@ class Application_Service_Shipments
             }
 
             // ------------------>
-        } 
-        
+        }
+
         $distroService->updateDistributionStatus($params['distribution'], 'pending');
     }
 
@@ -1464,8 +1463,8 @@ class Application_Service_Shipments
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $query = $db->select()->from(array('s' => 'shipment'))
-        ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-        ->where("s.shipment_id = ?", $sid);
+            ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+            ->where("s.shipment_id = ?", $sid);
         // die($query);
         $shipment = $db->fetchRow($query);
 
