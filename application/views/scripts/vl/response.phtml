@@ -535,7 +535,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 			$('#vlNotTestedReason').addClass('isRequired');
 			$('#ptNotTestedComments').addClass('isRequired');
 			$('#testDate').removeClass('isRequired');
-			$('#assayLotNumber').removeClass('isRequired');
+			$('#assayLotNumber,#testDate').removeClass('isRequired');
 		} else {
 			$('.vlResultSection').show();
 			$('.ptNotPerformedSection').hide();

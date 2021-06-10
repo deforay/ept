@@ -14,7 +14,7 @@ class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark="")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -92,48 +92,46 @@ class IndividualPDF extends TCPDF
         $html = '<hr/>';
         $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
         //Put the watermark
-        $this->SetFont('','B',120);
-        $this->SetTextColor( 230, 228, 198 );
-        $this->RotatedText(25,190,$this->watermark,45);
+        $this->SetFont('', 'B', 120);
+        $this->SetTextColor(230, 228, 198);
+        $this->RotatedText(25, 190, $this->watermark, 45);
     }
 
-    function Rotate($angle,$x=-1,$y=-1)
-	{
-		if($x==-1)
-			$x=$this->x;
-		if($y==-1)
-			$y=$this->y;
-		if($this->angle!=0)
-			$this->_out('Q');
-		$this->angle=$angle;
-		if($angle!=0)
-		{
-			$angle*=M_PI/180;
-			$c=cos($angle);
-			$s=sin($angle);
-			$cx=$x*$this->k;
-			$cy=($this->h-$y)*$this->k;
-			$this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',$c,$s,-$s,$c,$cx,$cy,-$cx,-$cy));
-		}
-	}
+    function Rotate($angle, $x = -1, $y = -1)
+    {
+        if ($x == -1)
+            $x = $this->x;
+        if ($y == -1)
+            $y = $this->y;
+        if ($this->angle != 0)
+            $this->_out('Q');
+        $this->angle = $angle;
+        if ($angle != 0) {
+            $angle *= M_PI / 180;
+            $c = cos($angle);
+            $s = sin($angle);
+            $cx = $x * $this->k;
+            $cy = ($this->h - $y) * $this->k;
+            $this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm', $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy));
+        }
+    }
 
-	function RotatedText($x, $y, $txt, $angle)
-	{
-		//Text rotated around its origin
-		$this->Rotate($angle,$x,$y);
-		$this->Text($x,$y,$txt);
-		$this->Rotate(0);
-	}
+    function RotatedText($x, $y, $txt, $angle)
+    {
+        //Text rotated around its origin
+        $this->Rotate($angle, $x, $y);
+        $this->Text($x, $y, $txt);
+        $this->Rotate(0);
+    }
 
-	function _endpage()
-	{
-		if($this->angle!=0)
-		{
-			$this->angle=0;
-			$this->_out('Q');
-		}
-		parent::_endpage();
-	}
+    function _endpage()
+    {
+        if ($this->angle != 0) {
+            $this->angle = 0;
+            $this->_out('Q');
+        }
+        parent::_endpage();
+    }
 
     // Page footer
     public function Footer()
@@ -161,9 +159,9 @@ class IndividualPDF extends TCPDF
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(0, 10, 'Effective Date:'.date('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
-            $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().' | '.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
-        } else{
+            $this->Cell(0, 10, 'Effective Date:' . date('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        } else {
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->Cell(0, 05,  strtoupper($this->header), 0, false, 'C', 0, '', 0, false, 'T', 'M');
             } else {
@@ -212,9 +210,9 @@ class SummaryPDF extends TCPDF
         if (trim($this->logo) != "") {
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                if(isset($this->config) && $this->config != ""){
+                if (isset($this->config) && $this->config != "") {
                     $this->Image($image_file, 10, 3, 28, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }else{
+                } else {
                     $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             }
@@ -234,21 +232,21 @@ class SummaryPDF extends TCPDF
 
         if ($this->schemeType == 'vl') {
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral Load using Dried Tube Specimen</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
-            if(isset($this->config) && $this->config != ""){
-                $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">'.$this->config->instituteName.'</span>
+            if (isset($this->config) && $this->config != "") {
+                $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                         <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . $this->header . '</span>
                         <br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>
                         ';
                 $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
-            } else{
+            } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
         } else if ($this->schemeType == 'eid') {
             $this->SetFont('helvetica', '', 10);
-            if(isset($this->config) && $this->config != ""){
+            if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;font-size:11;">' . $this->header . '</span><br/><br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
                 $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:13;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
-            } else{
+            } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
         } else if ($this->schemeType == 'recency') {
@@ -260,9 +258,9 @@ class SummaryPDF extends TCPDF
         } else {
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             $this->SetFont('helvetica', '', 10);
-            if ($this->schemeType == 'dts'){
+            if ($this->schemeType == 'dts') {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Antibody Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
-            } else{
+            } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
         }
@@ -271,56 +269,55 @@ class SummaryPDF extends TCPDF
             $this->writeHTMLCell(0, 0, 27, 30, $htmlTitle, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 48, $html, 0, 0, 0, true, 'J', true);
-        } else{
+        } else {
             $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
         }
-
-        //Put the watermark
-        $this->SetFont('','B',120);
-        $this->SetTextColor( 230, 228, 198 );
-        $this->RotatedText(25,190,$this->watermark,45);
+        if (isset($this->watermark) && $this->watermark != "") {
+            //Put the watermark
+            $this->SetFont('', 'B', 120);
+            $this->SetTextColor(230, 228, 198);
+            $this->RotatedText(25, 190, $this->watermark, 45);
+        }
     }
 
-    function Rotate($angle,$x=-1,$y=-1)
-	{
-		if($x==-1)
-			$x=$this->x;
-		if($y==-1)
-			$y=$this->y;
-		if($this->angle!=0)
-			$this->_out('Q');
-		$this->angle=$angle;
-		if($angle!=0)
-		{
-			$angle*=M_PI/180;
-			$c=cos($angle);
-			$s=sin($angle);
-			$cx=$x*$this->k;
-			$cy=($this->h-$y)*$this->k;
-			$this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',$c,$s,-$s,$c,$cx,$cy,-$cx,-$cy));
-		}
-	}
+    function Rotate($angle, $x = -1, $y = -1)
+    {
+        if ($x == -1)
+            $x = $this->x;
+        if ($y == -1)
+            $y = $this->y;
+        if ($this->angle != 0)
+            $this->_out('Q');
+        $this->angle = $angle;
+        if ($angle != 0) {
+            $angle *= M_PI / 180;
+            $c = cos($angle);
+            $s = sin($angle);
+            $cx = $x * $this->k;
+            $cy = ($this->h - $y) * $this->k;
+            $this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm', $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy));
+        }
+    }
 
-	function RotatedText($x, $y, $txt, $angle)
-	{
-		//Text rotated around its origin
-		$this->Rotate($angle,$x,$y);
-		$this->Text($x,$y,$txt);
-		$this->Rotate(0);
-	}
+    function RotatedText($x, $y, $txt, $angle)
+    {
+        //Text rotated around its origin
+        $this->Rotate($angle, $x, $y);
+        $this->Text($x, $y, $txt);
+        $this->Rotate(0);
+    }
 
-	function _endpage()
-	{
-		if($this->angle!=0)
-		{
-			$this->angle=0;
-			$this->_out('Q');
-		}
-		parent::_endpage();
-	}
-    
+    function _endpage()
+    {
+        if ($this->angle != 0) {
+            $this->angle = 0;
+            $this->_out('Q');
+        }
+        parent::_endpage();
+    }
+
     // Page footer
     public function Footer()
     {
@@ -345,131 +342,138 @@ class SummaryPDF extends TCPDF
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(0, 10, 'Effective Date:'.date('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
-            $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().' | '.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
-        } else{
+            $this->Cell(0, 10, 'Effective Date:' . date('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        } else {
             $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }
     }
-	
+
     function dateFormat($dateIn)
-	{
+    {
 
-		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 
-		// $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications'=>true, 'nestSeparator'=>"#"));
-		$config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications' => false));
+        // $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications'=>true, 'nestSeparator'=>"#"));
+        $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications' => false));
 
-		$formatDate = $config->participant->dateformat;
+        $formatDate = $config->participant->dateformat;
 
-		if (empty($dateIn) && $dateIn == null || $dateIn == "" || $dateIn == "0000-00-00") {
-			return '';
-		} else {
+        if (empty($dateIn) && $dateIn == null || $dateIn == "" || $dateIn == "0000-00-00") {
+            return '';
+        } else {
 
-			$dateArray = explode('-', $dateIn);
-			$newDate = $dateArray[2] . "-";
+            $dateArray = explode('-', $dateIn);
+            $newDate = $dateArray[2] . "-";
 
-			$monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-			$mon = $monthsArray[$dateArray[1] - 1];
-			if ($formatDate == 'dd-M-yy')
-				return  $newDate . $mon . "-" . $dateArray[0];
-			else
-				return   $mon . "-" . $newDate  . $dateArray[0];
-		}
-	}
+            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+            $mon = $monthsArray[$dateArray[1] - 1];
+            if ($formatDate == 'dd-M-yy')
+                return  $newDate . $mon . "-" . $dateArray[0];
+            else
+                return   $mon . "-" . $newDate  . $dateArray[0];
+        }
+    }
 }
-class PDF_Rotate extends FPDI{
-    
-	var $angle = 0;
-	function Rotate($angle, $x = -1, $y = -1){
+class PDF_Rotate extends FPDI
+{
+
+    var $angle = 0;
+    function Rotate($angle, $x = -1, $y = -1)
+    {
         if ($x == -1)
-			$x = $this->x;
+            $x = $this->x;
         if ($y == -1)
-			$y = $this->y;
+            $y = $this->y;
         if ($this->angle != 0)
-			$this->_out('Q');
+            $this->_out('Q');
         $this->angle = $angle;
         if ($angle != 0) {
-			$angle *= M_PI / 180;
-			$c = cos($angle);
-			$s = sin($angle);
-			$cx = $x * $this->k;
-			$cy = ($this->h - $y) * $this->k;
-			$this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm', $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy));
+            $angle *= M_PI / 180;
+            $c = cos($angle);
+            $s = sin($angle);
+            $cx = $x * $this->k;
+            $cy = ($this->h - $y) * $this->k;
+            $this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm', $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy));
         }
-	}
-    
-	function _endpage(){
+    }
+
+    function _endpage()
+    {
         if ($this->angle != 0) {
-          $this->angle = 0;
-          $this->_out('Q');
+            $this->angle = 0;
+            $this->_out('Q');
         }
         parent::_endpage();
-	}
+    }
 }
-    
-class Watermark extends PDF_Rotate{
+
+class Watermark extends PDF_Rotate
+{
     private $waterMarkText = null;
-	var $_tplIdx;
-    
-	public function __construct($waterMarkText){
+    var $_tplIdx;
+
+    public function __construct($waterMarkText)
+    {
         $this->waterMarkText = $waterMarkText;
-	}
-    
-	function Header()
-	{
+    }
+
+    function Header()
+    {
         global $fullPathToFile;
-        Zend_Debug::dump($fullPathToFile);die;
-		//Put the watermark
-		$this->SetFont('helvetica', 'B', 50);
-		$this->SetTextColor( 230, 228, 198 );
-		$this->RotatedText(67, 109, $this->waterMarkText, 45);
+        Zend_Debug::dump($fullPathToFile);
+        die;
+        //Put the watermark
+        $this->SetFont('helvetica', 'B', 50);
+        $this->SetTextColor(230, 228, 198);
+        $this->RotatedText(67, 109, $this->waterMarkText, 45);
 
-		if (is_null($this->_tplIdx)) {
-			// THIS IS WHERE YOU GET THE NUMBER OF PAGES
-			$this->numPages = $this->setSourceFile($fullPathToFile);
-			$this->_tplIdx = $this->importPage(1);
-		}
-		$this->useTemplate($this->_tplIdx, 0, 0, 200);
-	}
+        if (is_null($this->_tplIdx)) {
+            // THIS IS WHERE YOU GET THE NUMBER OF PAGES
+            $this->numPages = $this->setSourceFile($fullPathToFile);
+            $this->_tplIdx = $this->importPage(1);
+        }
+        $this->useTemplate($this->_tplIdx, 0, 0, 200);
+    }
 
-	function RotatedText($x, $y, $txt, $angle)
-	{
-		//Text rotated around its origin
-		$this->Rotate($angle, $x, $y);
-		$this->Text($x, $y, $txt);
-		$this->Rotate(0);
-		//$this->SetAlpha(0.7);
-	}
+    function RotatedText($x, $y, $txt, $angle)
+    {
+        //Text rotated around its origin
+        $this->Rotate($angle, $x, $y);
+        $this->Text($x, $y, $txt);
+        $this->Rotate(0);
+        //$this->SetAlpha(0.7);
+    }
 }
-class Pdf_concat extends FPDI{
-	var $files = array();
-	function setFiles($files)
-	{
-		$this->files = $files;
-	}
-	function concat(){
-		foreach ($this->files as $file) {
-			$pagecount = $this->setSourceFile($file);
-			for ($i = 1; $i <= $pagecount; $i++) {
+class Pdf_concat extends FPDI
+{
+    var $files = array();
+    function setFiles($files)
+    {
+        $this->files = $files;
+    }
+    function concat()
+    {
+        foreach ($this->files as $file) {
+            $pagecount = $this->setSourceFile($file);
+            for ($i = 1; $i <= $pagecount; $i++) {
                 $tplidx = $this->ImportPage($i);
                 $s = $this->getTemplatesize($tplidx);
                 $this->AddPage('P', array($s['w'], $s['h']));
                 $this->useTemplate($tplidx);
-			}
+            }
         }
-	}
+    }
 }
-function rmdir_recursive($dir) {
-    foreach(scandir($dir) as $file) {
+function rmdir_recursive($dir)
+{
+    foreach (scandir($dir) as $file) {
         if ('.' === $file || '..' === $file) continue;
-        if (is_dir("$dir/$file")){
+        if (is_dir("$dir/$file")) {
             rmdir_recursive("$dir/$file");
-        }
-        else{
+        } else {
             unlink("$dir/$file");
-        } 
-            
+        }
     }
     rmdir($dir);
 }
@@ -508,21 +512,21 @@ try {
         $passPercentage = $commonService->getConfig('pass_percentage');
         $trainingInstance = $commonService->getConfig('training_instance');
         $trainingInstanceText = $commonService->getConfig('training_instance_text');
-        
+
         $customField1 = $commonService->getConfig('custom_field_1');
         $customField2 = $commonService->getConfig('custom_field_2');
         $haveCustom = $commonService->getConfig('custom_field_needed');
         $recencyAssay = $schemeService->getRecencyAssay();
-        if(isset($evalResult[0]['shipment_code']) && $evalResult[0]['shipment_code'] != ""){
+        if (isset($evalResult[0]['shipment_code']) && $evalResult[0]['shipment_code'] != "") {
             $shipmentCodePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $evalResult[0]['shipment_code'];
-            if (file_exists($shipmentCodePath)){
+            if (file_exists($shipmentCodePath)) {
                 rmdir_recursive($shipmentCodePath);
                 mkdir($shipmentCodePath);
             }
         }
         foreach ($evalResult as $evalRow) {
             // For Identify the geny types for covid-19 test type
-            if(isset($evalRow['scheme_type']) && $evalRow['scheme_type'] == 'covid19'){
+            if (isset($evalRow['scheme_type']) && $evalRow['scheme_type'] == 'covid19') {
                 $allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
             }
             //$alertMail = new Zend_Mail();
@@ -547,9 +551,9 @@ try {
                     'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed not like 'yes')")
                 )
             )
-            ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array())
-            ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
-            ->group('spm.shipment_id');
+                ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array())
+                ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
+                ->group('spm.shipment_id');
 
             $totParticipantsRes = $db->fetchRow($pQuery);
 
