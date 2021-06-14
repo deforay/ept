@@ -237,7 +237,7 @@ class ParticipantController extends Zend_Controller_Action
             $this->redirect("/participant/dashboard");
         }
     }
-    
+
     public function resentMailVerificationAction()
     {
         $this->_helper->layout()->disableLayout();

@@ -18,6 +18,7 @@ class Admin_IndexController extends Zend_Controller_Action
         $scheme = new Application_Service_Schemes();
         $clientsServices = new Application_Service_Participants();
 
+        $this->view->ptchart = $shipmentService->getShipmentListBasedOnScheme();
         $this->view->events = $distributionService->getAllDistributionStatus();
         $this->view->schemeCountResult = $scheme->countEnrollmentSchemes();
         $this->view->shipmentCountResult = $shipmentService->getParticipantCountBasedOnShipment();

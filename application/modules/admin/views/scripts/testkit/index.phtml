@@ -3,28 +3,28 @@ $adminSession = new Zend_Session_Namespace('administrators');
 ?>
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
 
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">List of All Testkits</div>
-	<div style="margin-top:10px;">
-		<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New Testkit</a>
-		<?php if(in_array('dts',$adminSession->activeSchemes)){ ?>
-		<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'standard-kit'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right:10px;"><i class="icon-medkit"></i>&nbsp;&nbsp;DTS Standard Testkit Map</a>
-		<?php } ?>
-	</div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">List of All Test Kits</div>
+    <div style="margin-top:10px;">
+        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New Test Kit</a>
+        <?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'standard-kit'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right:10px;"><i class="icon-medkit"></i>&nbsp;&nbsp;National HIV Rapid Test</a>
+        <?php } ?>
+    </div>
 </h4>
 
 <span class="col-md-3 col-xs-12" style="padding:10px 0;">
-<select id="status" name="status" onchange="getApproval(this.value);" class="form-control input-sm">
-	<option value="">Show All</option>
-	<option value="1">Show Approved</option>
-	<option value="0">Show UnApproved</option>
-</select>
+    <select id="status" name="status" onchange="getApproval(this.value);" class="form-control input-sm">
+        <option value="">Show All</option>
+        <option value="1">Show Approved</option>
+        <option value="0">Show UnApproved</option>
+    </select>
 </span>
-<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="testkitTable">
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="testkitTable">
     <thead>
         <tr>
-            <th>Testkit Name</th>
+            <th>Test Kit Name</th>
             <th>Scheme Name</th>
-            <th>TestKit Manufacturer</th>
+            <th>Test Kit Manufacturer</th>
             <th>Approval Agency</th>
             <th>Approved</th>
             <th>Created On</th>
@@ -43,6 +43,7 @@ $adminSession = new Zend_Session_Namespace('administrators');
     $(document).ready(function() {
         drawTable();
     });
+
     function getApproval(status) {
         $('#status').val(status);
         drawTable();
@@ -60,22 +61,41 @@ $adminSession = new Zend_Session_Namespace('administrators');
             "sPaginationType": "bootstrap",
             "bRetrieve": false,
             "bDestroy": true,
-            "aoColumns": [
-                {"sClass": ""},
-				{"sClass": ""},
-                {"sClass": ""},
-                {"sClass": "center"},
-                {"sClass": "center"},
-                {"sClass": "center"},
-                {"sClass": "center", "bSortable": false}
+            "aoColumns": [{
+                    "sClass": ""
+                },
+                {
+                    "sClass": ""
+                },
+                {
+                    "sClass": ""
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center",
+                    "bSortable": false
+                }
             ],
-            "aaSorting": [[0, "asc"]],
+            "aaSorting": [
+                [0, "asc"]
+            ],
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'index', 'format' => 'html')); ?>",
             "fnServerParams": function(aoData) {
                 approvalStatus = $("#status").val();
-                aoData.push({"name": "status", "value": approvalStatus});
+                aoData.push({
+                    "name": "status",
+                    "value": approvalStatus
+                });
             },
             "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
@@ -88,6 +108,4 @@ $adminSession = new Zend_Session_Namespace('administrators');
             }
         });
     }
-
-
 </script>

@@ -1,107 +1,111 @@
-
 <div class="well">
-    <form name="addTestkitForm" id="addTestkitForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "testkit", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
-        <fieldset>
-            <legend>Add New Testkit</legend>
-		
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Testkit Name <span class="mandatory">*</span></label>
-                <div class="col-lg-8">
-                    <input type="text" id="testKitName" name="testKitName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Testkit Name here" placeholder="Please enter the Testkit Name here" onblur="checkDuplicate('r_testkitname_dts', 'TestKit_Name', this, null, 'This Testkit Name already exists for another Testkit. Please try something else.')"/>
-                </div>
-            </div>
-	    
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Short Testkit Name</label>
-                <div class="col-lg-8">
-                    <input type="text" id="shortTestKitName" name="shortTestKitName" size="50" maxlength="255" class="form-control" title="Please enter the Short Testkit Name here" placeholder="Please enter the Short Testkit Name here"/>
-                </div>
-            </div>
-	    
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Approval Agency <span class="mandatory">*</span></label>
-                <div class="col-lg-8">
-					<input type="text" id="approvalAgency" name="approvalAgency" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Approval Agency here" placeholder="Please enter the Approval Agency here"/>
-				</div>
-            </div>
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Scheme <span class="mandatory">*</span></label>
+	<form name="addTestkitForm" id="addTestkitForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "testkit", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+		<fieldset>
+			<legend>Add New Test Kit</legend>
 
-                <div class="col-lg-8">
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Test Kit Name <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<input type="text" id="testKitName" name="testKitName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Testkit Name here" placeholder="Please enter the Testkit Name here" onblur="checkDuplicate('r_testkitname_dts', 'TestKit_Name', this, null, 'This Testkit Name already exists for another Testkit. Please try something else.')" />
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Short Test Kit Name</label>
+				<div class="col-lg-8">
+					<input type="text" id="shortTestKitName" name="shortTestKitName" size="50" maxlength="255" class="form-control" title="Please enter the Short Testkit Name here" placeholder="Please enter the Short Testkit Name here" />
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Approval Agency <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<input type="text" id="approvalAgency" name="approvalAgency" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Approval Agency here" placeholder="Please enter the Approval Agency here" />
+				</div>
+			</div>
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Scheme <span class="mandatory">*</span></label>
+
+				<div class="col-lg-8">
 					<select id="scheme" name="scheme" class="form-control isRequired" title="Please select the Scheme">
 						<option value="">--Select Scheme--</option>
-						<?php foreach($this->schemeList as $scheme) { ?>
-						<option value="<?php echo $scheme->scheme_id; ?>"><?php echo $scheme->scheme_name; ?></option>	
+						<?php foreach ($this->schemeList as $scheme) { ?>
+							<option value="<?php echo $scheme->scheme_id; ?>"><?php echo $scheme->scheme_name; ?></option>
 						<?php } ?>
 					</select>
 				</div>
-            </div>
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Source Reference</label>
+			</div>
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Source Reference</label>
 
-                <div class="col-lg-8">
-					<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255" class="form-control" title="Please enter the Source Reference here" placeholder="Please enter the Source Reference here"/>
+				<div class="col-lg-8">
+					<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255" class="form-control" title="Please enter the Source Reference here" placeholder="Please enter the Source Reference here" />
 				</div>
-            </div>
-            
-	    <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Testkit Manufacturer</label>
-                <div class="col-lg-8">
-			<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255" class="form-control" title="Please enter the testkit manufacturer here" placeholder="Please enter the testkit manufacturer here"/>
-		</div>
-	    </div>
-	    
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Comments</label>
-                <div class="col-lg-8">
-			<textarea class="form-control" name="comments" id="comments"></textarea>
-		</div>
-            </div>
-            
-	    <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Country Adapted <span class="mandatory">*</span></label>
-                <div class="col-lg-8">
-			<select class="form-control isRequired" name="countryAdapted" id="countryAdapted" title="Please choose the country adapted here">
-                        <option value="">--Select--</option>
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                       
-			</select>
-		</div>
-	    </div>
-            
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add"/>
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/testkit';" tabindex="8" value="Cancel"/>
-            </div>
-        </fieldset>
-    </form>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Test Kit Manufacturer</label>
+				<div class="col-lg-8">
+					<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255" class="form-control" title="Please enter the testkit manufacturer here" placeholder="Please enter the testkit manufacturer here" />
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Comments</label>
+				<div class="col-lg-8">
+					<textarea class="form-control" name="comments" id="comments"></textarea>
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Country Adapted <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted" title="Please choose the country adapted here">
+						<option value="">--Select--</option>
+						<option value="1">Yes</option>
+						<option value="0">No</option>
+
+					</select>
+				</div>
+			</div>
+
+			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
+				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/testkit';" tabindex="8" value="Cancel" />
+			</div>
+		</fieldset>
+	</form>
 </div>
 
 <script type="text/javascript">
 	var duplicated = false;
-	
+
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-	    $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html"},
-	    function(data) {
-		if (data > 0) {
-		    alert(msg, "err");
-		    duplicated = true;
-		    obj.focus();
-		}
-		else {
-		    duplicated = false;
-		}
-	    });
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+				tableName: tableName,
+				fieldName: fieldName,
+				value: obj.value,
+				fnct: fnct,
+				format: "html"
+			},
+			function(data) {
+				if (data > 0) {
+					alert(msg, "err");
+					duplicated = true;
+					obj.focus();
+				} else {
+					duplicated = false;
+				}
+			});
 	}
-	
+
 	function validateNow() {
 		flag = deforayValidator.init({
-		    formId: 'addTestkitForm'
+			formId: 'addTestkitForm'
 		});
 		if (flag && !duplicated) {
-		    $.blockUI();
-		    document.getElementById('addTestkitForm').submit();
+			$.blockUI();
+			document.getElementById('addTestkitForm').submit();
 		}
 	}
 </script>

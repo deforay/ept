@@ -1,118 +1,122 @@
-
 <div class="well">
-    <form name="editTestkitForm" id="editTestkitForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "testkit", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
-        <fieldset>
-            <legend>Edit Testkit</legend>
-		
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Testkit Name <span class="mandatory">*</span></label>
-                <div class="col-lg-8">
-                    <input type="text" id="testKitName" name="testKitName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Testkit Name here" placeholder="Please enter the Testkit Name here" onblur="checkDuplicate('r_testkitname_dts', 'TestKit_Name', this, '<?php echo "TestKitName_ID##" . $this->result['TestKitName_ID']; ?>', 'This Testkit Name already exists for another Testkit. Please try something else.')" value="<?php echo $this->result['TestKit_Name']; ?>"/>
-                </div>
-            </div>
-	    
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Short Testkit Name</label>
-                <div class="col-lg-8">
-                    <input type="text" id="shortTestKitName" name="shortTestKitName" size="50" maxlength="255" class="form-control" title="Please enter the Short Testkit Name here" placeholder="Please enter the Short Testkit Name here" value="<?php echo $this->result['TestKit_Name_Short']; ?>"/>
-                    <input type="hidden" id="testkitId" name="testkitId" size="50" maxlength="255" class="form-control" value="<?php echo $this->result['TestKitName_ID']; ?>"/>
-                </div>
-            </div>
-	    
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Approval Agency <span class="mandatory">*</span></label>
-                <div class="col-lg-8">
-					<input type="text" id="approvalAgency" name="approvalAgency" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Approval Agency here" placeholder="Please enter the Approval Agency here" value="<?php echo $this->result['TestKit_ApprovalAgency']; ?>"/>
-				</div>
-            </div>
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Scheme <span class="mandatory">*</span></label>
+	<form name="editTestkitForm" id="editTestkitForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "testkit", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+		<fieldset>
+			<legend>Edit Test Kit</legend>
 
-                <div class="col-lg-8">
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Test Kit Name <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<input type="text" id="testKitName" name="testKitName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Testkit Name here" placeholder="Please enter the Testkit Name here" onblur="checkDuplicate('r_testkitname_dts', 'TestKit_Name', this, '<?php echo "TestKitName_ID##" . $this->result['TestKitName_ID']; ?>', 'This Testkit Name already exists for another Testkit. Please try something else.')" value="<?php echo $this->result['TestKit_Name']; ?>" />
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Short Test Kit Name</label>
+				<div class="col-lg-8">
+					<input type="text" id="shortTestKitName" name="shortTestKitName" size="50" maxlength="255" class="form-control" title="Please enter the Short Testkit Name here" placeholder="Please enter the Short Testkit Name here" value="<?php echo $this->result['TestKit_Name_Short']; ?>" />
+					<input type="hidden" id="testkitId" name="testkitId" size="50" maxlength="255" class="form-control" value="<?php echo $this->result['TestKitName_ID']; ?>" />
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Approval Agency <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<input type="text" id="approvalAgency" name="approvalAgency" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Approval Agency here" placeholder="Please enter the Approval Agency here" value="<?php echo $this->result['TestKit_ApprovalAgency']; ?>" />
+				</div>
+			</div>
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Scheme <span class="mandatory">*</span></label>
+
+				<div class="col-lg-8">
 					<select id="scheme" name="scheme" class="form-control isRequired" title="Please select the Scheme">
 						<option value="">--Select Scheme--</option>
-						<?php foreach($this->schemeList as $scheme) { ?>
-						<option value="<?php echo $scheme->scheme_id; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme->scheme_id) ? " selected='selected'" : ""; ?>><?php echo $scheme->scheme_name; ?></option>	
+						<?php foreach ($this->schemeList as $scheme) { ?>
+							<option value="<?php echo $scheme->scheme_id; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme->scheme_id) ? " selected='selected'" : ""; ?>><?php echo $scheme->scheme_name; ?></option>
 						<?php } ?>
 					</select>
 				</div>
-            </div>			
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Source Reference</label>
+			</div>
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Source Reference</label>
 
-                <div class="col-lg-8">
-					<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255" class="form-control" title="Please enter the Source Reference here" placeholder="Please enter the Source Reference here" value="<?php echo $this->result['source_reference']; ?>"/>
+				<div class="col-lg-8">
+					<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255" class="form-control" title="Please enter the Source Reference here" placeholder="Please enter the Source Reference here" value="<?php echo $this->result['source_reference']; ?>" />
 				</div>
-            </div>
-            
-	    <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Testkit Manufacturer</label>
-                <div class="col-lg-8">
-			<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255" class="form-control" title="Please enter the testkit manufacturer here" placeholder="Please enter the testkit manufacturer here" value="<?php echo $this->result['TestKit_Manufacturer']; ?>"/>
-		</div>
-	    </div>
-	    
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Comments</label>
-                <div class="col-lg-8">
-			<textarea class="form-control" name="comments" id="comments"><?php echo $this->result['TestKit_Comments']; ?></textarea>
-		</div>
-            </div>
-            
-	    <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Approved <span class="mandatory">*</span></label>
-                <div class="col-lg-8">
-			<select class="form-control isRequired" name="approved" id="approved" title="Please choose the testkit approved here">
-				<option value="">--Select--</option>
-				<option value="1" <?php echo(($this->result["Approval"] == '1') ? "selected='selected'" : "") ?>>Yes</option>
-				<option value="0" <?php echo(($this->result["Approval"] == '0') ? "selected='selected'" : "") ?>>No</option>
-			</select>
-		</div>
-	    </div>
-	    
-	    <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Country Adapted <span class="mandatory">*</span></label>
-                <div class="col-lg-8">
-			<select class="form-control isRequired" name="countryAdapted" id="countryAdapted" title="Please choose the country adapted here">
-				<option value="">--Select--</option>
-				<option value="1" <?php echo(($this->result["CountryAdapted"] == '1') ? "selected='selected'" : "") ?>>Yes</option>
-				<option value="0" <?php echo(($this->result["CountryAdapted"] == '0') ? "selected='selected'" : "") ?>>No</option>
-			</select>
-		</div>
-	    </div>
-            
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update"/>
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/testkit';" tabindex="8" value="Cancel"/>
-            </div>
-        </fieldset>
-    </form>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Test Kit Manufacturer</label>
+				<div class="col-lg-8">
+					<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255" class="form-control" title="Please enter the testkit manufacturer here" placeholder="Please enter the testkit manufacturer here" value="<?php echo $this->result['TestKit_Manufacturer']; ?>" />
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Comments</label>
+				<div class="col-lg-8">
+					<textarea class="form-control" name="comments" id="comments"><?php echo $this->result['TestKit_Comments']; ?></textarea>
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Approved <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<select class="form-control isRequired" name="approved" id="approved" title="Please choose the testkit approved here">
+						<option value="">--Select--</option>
+						<option value="1" <?php echo (($this->result["Approval"] == '1') ? "selected='selected'" : "") ?>>Yes</option>
+						<option value="0" <?php echo (($this->result["Approval"] == '0') ? "selected='selected'" : "") ?>>No</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label">Country Adapted <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted" title="Please choose the country adapted here">
+						<option value="">--Select--</option>
+						<option value="1" <?php echo (($this->result["CountryAdapted"] == '1') ? "selected='selected'" : "") ?>>Yes</option>
+						<option value="0" <?php echo (($this->result["CountryAdapted"] == '0') ? "selected='selected'" : "") ?>>No</option>
+					</select>
+				</div>
+			</div>
+
+			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
+				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/testkit';" tabindex="8" value="Cancel" />
+			</div>
+		</fieldset>
+	</form>
 </div>
 
 <script type="text/javascript">
 	var duplicated = false;
-	
+
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-	    $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html"},
-	    function(data) {
-		if (data > 0) {
-		    alert(msg, "err");
-		    duplicated = true;
-		    obj.focus();
-		}
-		else {
-		    duplicated = false;
-		}
-	    });
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+				tableName: tableName,
+				fieldName: fieldName,
+				value: obj.value,
+				fnct: fnct,
+				format: "html"
+			},
+			function(data) {
+				if (data > 0) {
+					alert(msg, "err");
+					duplicated = true;
+					obj.focus();
+				} else {
+					duplicated = false;
+				}
+			});
 	}
-	
+
 	function validateNow() {
 		flag = deforayValidator.init({
-		    formId: 'editTestkitForm'
+			formId: 'editTestkitForm'
 		});
 		if (flag && !duplicated) {
-		    $.blockUI();
-		    document.getElementById('editTestkitForm').submit();
+			$.blockUI();
+			document.getElementById('editTestkitForm').submit();
 		}
 	}
 </script>

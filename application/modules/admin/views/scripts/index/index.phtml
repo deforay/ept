@@ -1,46 +1,104 @@
 <!--<link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.4.3.min.css">-->
-    <link rel="stylesheet" href="<?php echo $this->baseUrl("css/morris-0.4.3.css"); ?>" type="text/css" media="all">
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/morris-0.4.3.css"); ?>" type="text/css" media="all">
 <?php
+
+/* Zend_Debug::dump($this->ptchart);
+die; */
 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-$lastmonth=date("F",strtotime("-1 month"));
-$lastmonthShipped=0;
-$shippedCount=0;
-$configuredCount=0;
-$createdCount=0;
-foreach($this->events as $events){
-    $distributionDate = date("F", strtotime($events["distribution_date"]));
-    if($events["status"]=='shipped'){
-            if($lastmonth==$distributionDate){
-                $lastmonthShipped+=1;
-            }
-            $shippedCount+=1;
-    }
-    if($events["status"]=='configured'){
-            $configuredCount+=1;
-    }
-    if($events["status"]=='created'){
-            $createdCount+=1;
-    }
+$lastmonth = date("F", strtotime("-1 month"));
+$lastmonthShipped = 0;
+$shippedCount = 0;
+$configuredCount = 0;
+$createdCount = 0;
+foreach ($this->events as $events) {
+	$distributionDate = date("F", strtotime($events["distribution_date"]));
+	if ($events["status"] == 'shipped') {
+		if ($lastmonth == $distributionDate) {
+			$lastmonthShipped += 1;
+		}
+		$shippedCount += 1;
+	}
+	if ($events["status"] == 'configured') {
+		$configuredCount += 1;
+	}
+	if ($events["status"] == 'created') {
+		$createdCount += 1;
+	}
+}
+
+$activeSchemes = array();
+if (isset($this->schemes) && count($this->schemes) > 0) {
+	foreach ($this->schemes as $scheme) {
+		$activeSchemes[] = $scheme['scheme_id'];
+	}
 }
 ?>
 <div class="row">
-    <div class="col-lg-12">
-      <ol class="breadcrumb" style="margin-bottom:10px;">
-        <li class="active" style="font-size:20px;color:#555"><i class="icon icon-dashboard"></i> Dashboard</li>
-      </ol>
-    </div>
+	<div class="col-lg-12">
+		<ol class="breadcrumb" style="margin-bottom:10px;">
+			<li class="active" style="font-size:20px;color:#555"><i class="icon icon-dashboard"></i> Dashboard</li>
+		</ol>
+	</div>
 </div><!-- /.row -->
 <?php
-if(count($this->pendingParticipants)>0){
+if (count($this->pendingParticipants) > 0) {
 ?>
-<div class="row" style="margin-bottom:10px;">
-    <div class="col-lg-12" style="text-align:center;"><a href="/admin/participants/pending" style="color:red;font-size:17px;text-decoration:underline;"><?php echo count($this->pendingParticipants); ?> participant<?php echo(count($this->pendingParticipants) > 1)?' s have ':' has '; ?> registered but not yet approved to use ePT. Please click here to approve.</a></div>
-</div>
+	<div class="row" style="margin-bottom:10px;">
+		<div class="col-lg-12" style="text-align:center;"><a href="/admin/participants/pending" style="color:red;font-size:17px;text-decoration:underline;"><?php echo count($this->pendingParticipants); ?> participant<?php echo (count($this->pendingParticipants) > 1) ? ' s have ' : ' has '; ?> registered but not yet approved to use ePT. Please click here to approve.</a></div>
+	</div>
 <?php } ?>
+<style>
+	.highcharts-figure,
+	.highcharts-data-table table {
+		min-width: 310px;
+		max-width: 800px;
+		margin: 1em auto;
+	}
+
+	#container {
+		height: 400px;
+	}
+
+	.highcharts-data-table table {
+		font-family: Verdana, sans-serif;
+		border-collapse: collapse;
+		border: 1px solid #EBEBEB;
+		margin: 10px auto;
+		text-align: center;
+		width: 100%;
+		max-width: 500px;
+	}
+
+	.highcharts-data-table caption {
+		padding: 1em 0;
+		font-size: 1.2em;
+		color: #555;
+	}
+
+	.highcharts-data-table th {
+		font-weight: 600;
+		padding: 0.5em;
+	}
+
+	.highcharts-data-table td,
+	.highcharts-data-table th,
+	.highcharts-data-table caption {
+		padding: 0.5em;
+	}
+
+	.highcharts-data-table thead tr,
+	.highcharts-data-table tr:nth-child(even) {
+		background: #f8f8f8;
+	}
+
+	.highcharts-data-table tr:hover {
+		background: #f1f7ff;
+	}
+</style>
 <div class="row">
-<!--    <div class="col-lg-3">
+	<!--    <div class="col-lg-3">
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <div class="row">
@@ -67,147 +125,160 @@ if(count($this->pendingParticipants)>0){
               </a>
             </div>
     </div>-->
-    
-    <div class="col-lg-4">
-            <div class="panel panel-primary">
-              <div class="panel-heading">
-                <div class="row">
-                  <div class="col-xs-5">
-                    <i class="icon-check icon-3x"></i>
-                  </div>
-                  <div class="col-xs-7 text-right">
-                    <p class="announcement-heading"><?php echo $createdCount; ?></p>
-                    <p class="announcement-text">On <?php echo date('d-M-Y')?></p>
-                  </div>
-                </div>
-              </div>
-              <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'distributions','searchString'=>'created'),'default',true); ?>">
-                <div class="panel-footer announcement-bottom" >
-                  <div class="row">
-                    <div class="col-xs-10" style="color:#2c3e50">
-                     New PT Surveys
-                    </div>
-                    <div class="col-xs-1 text-right">
-                      <i class="fa fa-arrow-circle-right"></i>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-    </div>
-    <div class="col-lg-4">
-            <div class="panel panel-primary">
-              <div class="panel-heading">
-                <div class="row">
-                  <div class="col-xs-5">
-                    <i class="icon-cogs icon-3x"></i>
-                  </div>
-                  <div class="col-xs-7 text-right">
-                    <p class="announcement-heading"><?php echo $configuredCount; ?></p>
-                    <p class="announcement-text">On <?php echo date('d-M-Y')?></p>
-                  </div>
-                </div>
-              </div>
-              <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'distributions','searchString'=>'Configured'),'default',true); ?>">
-                <div class="panel-footer announcement-bottom" >
-                  <div class="row">
-                    <div class="col-xs-10" style="color:#2c3e50">
-                    Ready to Ship PT Surveys
-                    </div>
-                    <div class="col-xs-1 text-right">
-                      <i class="fa fa-arrow-circle-right"></i>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-    </div>
-    <div class="col-lg-4">
-            <div class="panel panel-primary">
-              <div class="panel-heading">
-                <div class="row">
-                  <div class="col-xs-5">
-                    <i class="icon-truck icon-3x"></i>
-                  </div>
-                  <div class="col-xs-7 text-right">
-                    <p class="announcement-heading"><?php echo $shippedCount; ?></p>
-                    <p class="announcement-text">On <?php echo date('d-M-Y')?></p>
-                  </div>
-                </div>
-              </div>
-              <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'distributions','searchString'=>'shipped'),'default',true); ?>">
-                <div class="panel-footer announcement-bottom" >
-                  <div class="row">
-                    <div class="col-xs-10" style="color:#2c3e50">
-                     Shipped Events (This month)
-                    </div>
-                    <div class="col-xs-1 text-right">
-                      <i class="fa fa-arrow-circle-right"></i>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-    </div>
+
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-xs-5">
+						<i class="icon-check icon-3x"></i>
+					</div>
+					<div class="col-xs-7 text-right">
+						<p class="announcement-heading"><?php echo $createdCount; ?></p>
+						<p class="announcement-text">On <?php echo date('d-M-Y') ?></p>
+					</div>
+				</div>
+			</div>
+			<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'searchString' => 'created'), 'default', true); ?>">
+				<div class="panel-footer announcement-bottom">
+					<div class="row">
+						<div class="col-xs-10" style="color:#2c3e50">
+							New PT Surveys
+						</div>
+						<div class="col-xs-1 text-right">
+							<i class="fa fa-arrow-circle-right"></i>
+						</div>
+					</div>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-xs-5">
+						<i class="icon-cogs icon-3x"></i>
+					</div>
+					<div class="col-xs-7 text-right">
+						<p class="announcement-heading"><?php echo $configuredCount; ?></p>
+						<p class="announcement-text">On <?php echo date('d-M-Y') ?></p>
+					</div>
+				</div>
+			</div>
+			<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'searchString' => 'Configured'), 'default', true); ?>">
+				<div class="panel-footer announcement-bottom">
+					<div class="row">
+						<div class="col-xs-10" style="color:#2c3e50">
+							Ready to Ship PT Surveys
+						</div>
+						<div class="col-xs-1 text-right">
+							<i class="fa fa-arrow-circle-right"></i>
+						</div>
+					</div>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-xs-5">
+						<i class="icon-truck icon-3x"></i>
+					</div>
+					<div class="col-xs-7 text-right">
+						<p class="announcement-heading"><?php echo $shippedCount; ?></p>
+						<p class="announcement-text">On <?php echo date('d-M-Y') ?></p>
+					</div>
+				</div>
+			</div>
+			<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'searchString' => 'shipped'), 'default', true); ?>">
+				<div class="panel-footer announcement-bottom">
+					<div class="row">
+						<div class="col-xs-10" style="color:#2c3e50">
+							Shipped Events (This month)
+						</div>
+						<div class="col-xs-1 text-right">
+							<i class="fa fa-arrow-circle-right"></i>
+						</div>
+					</div>
+				</div>
+			</a>
+		</div>
+	</div>
 </div>
 <div class="row">
-    <div class="col-lg-6" style="">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="icon-user"></i>&nbsp;&nbsp;Active Participants Enrolled (Scheme-wise)</h3>
-            </div>
-            <div class="panel-body">
-                <div id="participant-per-scheme" width="450" height="450"></div>
-                <?php
-                
-                
-                $dataScheme = array();
-                foreach($this->schemeCountResult as $schemeName => $pCount){
-                    $dataScheme[] = "{ x: '".strtoupper($schemeName)."', y: ".$pCount." }";
-                }
-                ?>
+	<div class="col-lg-6">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="icon-user"></i>&nbsp;&nbsp;Active Participants Enrolled (Scheme-wise)</h3>
+			</div>
+			<div class="panel-body">
+				<div id="participant-per-scheme" width="450" height="450"></div>
+				<?php
 
-                <div class="text-right">
-                    <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'enrollments','action'=>'index'),'default',true); ?>" class="btn-sm btn-primary" style="text-decoration: none;">View all Enrollments <i class="icon-forward"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6" style="">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="icon-user"></i>&nbsp;&nbsp;PT Survey participants (Last 24 months)</h3>
-            </div>
-            <div class="panel-body">
-                <div id="participant-per-shipment" width="450" height="450"></div>
-                <?php
-                $code = array();
-                $dataShipment = array();
-                $ppsSchemeType = array();
-                $ppercentage = array();
-                $ppsShipmentLastDate = array();
-                foreach($this->shipmentCountResult as $pc){
-                    $per=0;
-                    if(isset($pc['receivedCount'])){
-                        $per=(round(($pc['receivedCount']/$pc['participantCount']),2))*100;
-                        
-                    }
-                    //echo $per;
-                    $dataShipment[] = "{ y: '".strtoupper($pc['shipment_code'])."', a: ".$pc['participantCount']." , b: ".(isset($pc['receivedCount']) ? $pc['receivedCount'] : 0)." }";
-                    $ppercentage[] = "'".$per."%'";
-                    $ppsSchemeType[] = "'".strtoupper($pc['scheme_type'])."'";
-                    $ppsShipmentLastDate[] = "'".$this->dateFormat($pc['lastdate_response'])."'";
-                }
-                ?>
 
-                <div class="text-right">
-                    <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'shipment','action'=>'index'),'default',true); ?>" class="btn-sm btn-primary" style="text-decoration: none;">View all Shipments <i class="icon-forward"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
+				$dataScheme = array();
+				foreach ($this->schemeCountResult as $schemeName => $pCount) {
+					$dataScheme[] = "{ x: '" . trim(strtoupper($schemeName)) . "', y: " . $pCount . " }";
+				}
+				?>
+
+				<div class="text-right">
+					<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments', 'action' => 'index'), 'default', true); ?>" class="btn-sm btn-primary" style="text-decoration: none;">View all Enrollments <i class="icon-forward"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-6">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="icon-user"></i>&nbsp;&nbsp;PT Survey participants (Last 24 months)</h3>
+			</div>
+			<div class="panel-body">
+				<div id="participant-per-shipment" width="450" height="450"></div>
+				<?php
+				$code = array();
+				$dataShipment = array();
+				$ppsSchemeType = array();
+				$ppercentage = array();
+				$ppsShipmentLastDate = array();
+				foreach ($this->shipmentCountResult as $pc) {
+					$per = 0;
+					if (isset($pc['receivedCount'])) {
+						$per = (round(($pc['receivedCount'] / $pc['participantCount']), 2)) * 100;
+					}
+					//echo $per;
+					$dataShipment[] = "{ y: '" . strtoupper($pc['shipment_code']) . "', a: " . $pc['participantCount'] . " , b: " . (isset($pc['receivedCount']) ? $pc['receivedCount'] : 0) . " }";
+					$ppercentage[] = "'" . $per . "%'";
+					$ppsSchemeType[] = "'" . strtoupper($pc['scheme_type']) . "'";
+					$ppsShipmentLastDate[] = "'" . $this->dateFormat($pc['lastdate_response']) . "'";
+				}
+				?>
+
+				<div class="text-right">
+					<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'index'), 'default', true); ?>" class="btn-sm btn-primary" style="text-decoration: none;">View all Shipments <i class="icon-forward"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
-<br/>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="icon-user"></i>&nbsp;&nbsp;List of all PT surveys</h3>
+			</div>
+			<div class="panel-body">
+				<figure class="highcharts-figure">
+					<div id="participant-pt-scheme" width="1000" height="430"></div>
+				</figure>
+			</div>
+		</div>
+	</div>
+</div>
+<br />
 
 <!--
     <span class="" style="padding:1px 0;">
@@ -215,100 +286,223 @@ if(count($this->pendingParticipants)>0){
     <select id="scheme" name="scheme" onchange="showParticipantsLocation();" class="form-control input-sm">
       <option value="all">Show for all Schemes</option>
       <?php
-        foreach($this->schemes as $scheme){
-        ?>
+		foreach ($this->schemes as $scheme) {
+		?>
           <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
         <?php
-        }
-      ?>
+		}
+		?>
     </select>
     </span>
     <div class="col-lg-13" id="map-canvas" style="width:100%; height: 450px;margin-top:10px !important;"></div>
   -->
- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 <!--<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>-->
 <script src="<?php echo $this->baseUrl("js/raphael.min.js"); ?>" type="text/javascript"></script>
 <script src="<?php echo $this->baseUrl("js/morris_0.4.3.js"); ?>" type="text/javascript"></script>
 <!--<script src="http://cdn.oesmith.co.uk/morris-0.4.3.min.js"></script>-->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
 
- <script>
-     var ppercentage = [<?php echo implode(",",$ppercentage); ?>]
-     var ppsSchemes = [<?php echo implode(",",$ppsSchemeType); ?>]
-     var ppsShipmentLastDate = [<?php echo implode(",",$ppsShipmentLastDate); ?>]
-     Morris.Bar({
-         element: 'participant-per-scheme',
-         data: [
-             <?php echo implode(",",$dataScheme); ?>
-         ],
-         xLabelAngle: 45,
-         hideHover : true,
-         xkey: 'x',
-         ykeys: ['y'],
-         labels: ['Participants']
-     });
-Morris.Bar({
-  element: 'participant-per-shipment',
-  data: [
-    <?php echo implode(",",$dataShipment); ?>
-  ],
-  xLabelAngle: 45,
-  hideHover : true,
-  xkey: 'y',
-  ykeys: ['a', 'b'],
-  hoverCallback: function (index, options, content) {
-    var row = options.data[index];
-    return content + "<strong>Percentage : "+ppercentage[index]+"<br />Scheme Type : " + ppsSchemes[index] +  "<br />" + "Result Due Date : " + ppsShipmentLastDate[index] + "</strong>";
-  },  
-  labels: ['Shipped','Received']
-});     
+<script>
+	var ppercentage = [<?php echo implode(",", $ppercentage); ?>]
+	var ppsSchemes = [<?php echo implode(",", $ppsSchemeType); ?>]
+	var ppsShipmentLastDate = [<?php echo implode(",", $ppsShipmentLastDate); ?>]
+	Morris.Bar({
+		element: 'participant-per-scheme',
+		data: [
+			<?php echo implode(",", $dataScheme); ?>
+		],
+		xLabelAngle: 45,
+		hideHover: true,
+		xkey: 'x',
+		ykeys: ['y'],
+		labels: ['Participants']
+	});
+	Morris.Bar({
+		element: 'participant-per-shipment',
+		data: [
+			<?php echo implode(",", $dataShipment); ?>
+		],
+		xLabelAngle: 45,
+		hideHover: true,
+		xkey: 'y',
+		ykeys: ['a', 'b'],
+		hoverCallback: function(index, options, content) {
+			var row = options.data[index];
+			return content + "<strong>Percentage : " + ppercentage[index] + "<br />Scheme Type : " + ppsSchemes[index] + "<br />" + "Result Due Date : " + ppsShipmentLastDate[index] + "</strong>";
+		},
+		labels: ['Shipped', 'Received']
+	});
 
-    var center = new google.maps.LatLng(<?php echo $config->map->center; ?>);
-    
-    var map;
-    
-    $(document).ready(function(){
-    $('#shipActivity').dataTable({
-      "sDom": '<"top">rt<"bottom"flp><"clear">',
-      "bFilter": false,
-      "bPaginate": false,
-      "aaSorting": [[ 2, "desc" ]]
-      
-      });
-        showParticipantsLocation();
-    });
-  
-   
-    function showParticipantsLocation() {
-        objVal=document.getElementById("scheme").value;
-        var mapOptions = {
-            zoom: <?php echo (isset($config->map->zoom) && (int)$config->map->zoom > 0 ? $config->map->zoom : 5); ?> ,
-            center: center
-        };
-        map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
-        var infowindow = new google.maps.InfoWindow();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'get-scheme-participants'),'default',true); ?>", { schemeType: objVal,format: "html" },
-        function (data) {
-            data = JSON.parse(data);
-            //console.log(data);
-            k=data.length;
-            for(n=0;n<k;n++){
-                res=data[n].split("#");
-                var myLatLng = new google.maps.LatLng(res[0],res[1]);
-                var marker = new google.maps.Marker({
-                    position: myLatLng,
-                    map: map,
-                    info: res[2],
-                    draggable: false,
-                    animation: google.maps.Animation.DROP
-                });
-                
-                google.maps.event.addListener(marker, 'click', function() {
-                    infowindow.setContent(this.info);//set the content
-                    infowindow.open(map,this);
-                });
-            }
-        });
-    }
-//google.maps.event.addDomListener(window, 'load', initialize);
+	var center = new google.maps.LatLng(<?php echo $config->map->center; ?>);
+
+	var map;
+
+	$(document).ready(function() {
+		$('#shipActivity').dataTable({
+			"sDom": '<"top">rt<"bottom"flp><"clear">',
+			"bFilter": false,
+			"bPaginate": false,
+			"aaSorting": [
+				[2, "desc"]
+			]
+
+		});
+		// showParticipantsLocation();
+	});
+
+
+	/* function showParticipantsLocation() {
+		objVal = document.getElementById("scheme").value;
+		var mapOptions = {
+			zoom: <?php echo (isset($config->map->zoom) && (int)$config->map->zoom > 0 ? $config->map->zoom : 5); ?>,
+			center: center
+		};
+		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+		var infowindow = new google.maps.InfoWindow();
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'get-scheme-participants'), 'default', true); ?>", {
+				schemeType: objVal,
+				format: "html"
+			},
+			function(data) {
+				data = JSON.parse(data);
+				//console.log(data);
+				k = data.length;
+				for (n = 0; n < k; n++) {
+					res = data[n].split("#");
+					var myLatLng = new google.maps.LatLng(res[0], res[1]);
+					var marker = new google.maps.Marker({
+						position: myLatLng,
+						map: map,
+						info: res[2],
+						draggable: false,
+						animation: google.maps.Animation.DROP
+					});
+
+					google.maps.event.addListener(marker, 'click', function() {
+						infowindow.setContent(this.info); //set the content
+						infowindow.open(map, this);
+					});
+				}
+			});
+	} */
+	//google.maps.event.addDomListener(window, 'load', initialize);
+	$(document).ready(function() {
+		// Create the chart
+		Highcharts.chart('participant-pt-scheme', {
+			chart: {
+				type: 'column',
+				scrollablePlotArea: {
+					minWidth: 700,
+					scrollPositionX: 1
+				}
+			},
+			title: {
+				text: ''
+			},
+			subtitle: {
+				text: 'Click the columns to view Indivual scheme.'
+			},
+			accessibility: {
+				announceNewData: {
+					enabled: true
+				}
+			},
+			xAxis: {
+				type: 'category',
+				title: {
+					text: 'PT Scheme'
+				},
+				labels: {
+					overflow: 'justify'
+				}
+			},
+			yAxis: {
+				title: {
+					text: 'Number of participants'
+				}
+			},
+			legend: {
+				enabled: false
+			},
+			credits: {
+				enabled: false
+			},
+			plotOptions: {
+				series: {
+					borderWidth: 0,
+					dataLabels: {
+						enabled: true,
+						format: '{point.y}'
+					}
+				}
+			},
+
+			tooltip: {
+				headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+				pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b> participants<br/>'
+			},
+
+			series: [{
+				name: "PT Scheme",
+				colorByPoint: true,
+				data: [
+					<?php
+					$sn = count($this->ptchart['total']);
+					$n = 0;
+					foreach ($this->ptchart['total'] as $scheme => $total) {
+						echo "{
+							name: '" . $scheme . "',
+							y: " . $total . ",
+							drilldown: '" . $scheme . "',
+						}";
+						$n++;
+						if ($sn != $n) {
+							echo ",";
+						}
+					} ?>
+				]
+			}],
+			drilldown: {
+				series: [
+					<?php
+					$n = 0;
+					foreach ($this->ptchart['total'] as $scheme => $total) {
+						if (isset($this->ptchart['result'][$scheme]) && count($this->ptchart['result'][$scheme]) > 0) {
+							echo "{
+							name: '" . $scheme . "',
+							id: '" . $scheme . "',
+							data :
+							[";
+							$ssn = count($this->ptchart['result'][$scheme]);
+							$sj = 0;
+							foreach ($this->ptchart['result'][$scheme] as $subScheme => $row) {
+								if ($scheme == $row['scheme_type']) {
+									echo "[
+									'" . $row['shipment_code'] . "',
+									" . $row['participantCount'] . "
+									]";
+									$sj++;
+									if ($ssn != $sj) {
+										echo ",";
+									}
+								}
+							}
+							echo "]}";
+						}
+						$n++;
+						if ($sn != $n) {
+							echo ",";
+						}
+					} ?>
+				]
+			}
+		});
+	});
 </script>
