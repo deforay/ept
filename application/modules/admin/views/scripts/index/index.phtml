@@ -212,10 +212,10 @@ if (count($this->pendingParticipants) > 0) {
 	<div class="col-lg-6">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				<h3 class="panel-title"><i class="icon-user"></i>&nbsp;&nbsp;Active Participants Enrolled (Scheme-wise)</h3>
+				<h3 class="panel-title"><i class="icon-user"></i>&nbsp;&nbsp;Active Participants enrolled per PT Scheme</h3>
 			</div>
 			<div class="panel-body">
-				<div id="participant-per-scheme" width="450" height="450"></div>
+				<div id="participant-per-scheme" width="450" height="700"></div>
 				<?php
 
 
@@ -234,7 +234,7 @@ if (count($this->pendingParticipants) > 0) {
 	<div class="col-lg-6">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				<h3 class="panel-title"><i class="icon-user"></i>&nbsp;&nbsp;PT Survey participants (Last 24 months)</h3>
+				<h3 class="panel-title"><i class="icon-user"></i>&nbsp;&nbsp;Number of PT Survey Participants</h3>
 			</div>
 			<div class="panel-body">
 				<div id="participant-per-shipment" width="450" height="450"></div>
@@ -407,7 +407,7 @@ if (count($this->pendingParticipants) > 0) {
 				text: ''
 			},
 			subtitle: {
-				text: 'Click the columns to view Indivual scheme.'
+				text: 'Click the columns to view the Indivual scheme.'
 			},
 			accessibility: {
 				announceNewData: {
@@ -458,7 +458,7 @@ if (count($this->pendingParticipants) > 0) {
 					$n = 0;
 					foreach ($this->ptchart['total'] as $scheme => $total) {
 						echo "{
-							name: '" . $scheme . "',
+							name: '" . $this->ptchart['name'][$scheme] . "',
 							y: " . $total . ",
 							drilldown: '" . $scheme . "',
 						}";
@@ -505,4 +505,5 @@ if (count($this->pendingParticipants) > 0) {
 			}
 		});
 	});
+	$('svg').height(500);
 </script>
