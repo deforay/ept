@@ -45,12 +45,12 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
     </tr>
     <tr>
         <th>
-            <?php if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] != 'serum') { ?>
+            <?php if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] != 'serum' && $shipmentAttributes['sampleType'] != 'plasma') { ?>
                 Sample Rehydration Date
             <?php } ?>
         </th>
         <td>
-            <?php if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] != 'serum') { ?>
+            <?php if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] != 'serum' && $shipmentAttributes['sampleType'] != 'plasma') { ?>
                 <input id="rehydrationDate" type="text" name="rehydrationDate" value="<?php echo $this->dateFormat($attributes['sample_rehydration_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" />
             <?php } ?>
         </td>
