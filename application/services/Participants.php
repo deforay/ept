@@ -388,7 +388,7 @@ class Application_Service_Participants
 
 			$writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
 			if ($params['type'] == 'from-participant') {
-				$filename = 'Shipment-participant-report-(' . date('d-M-Y-H-i-s') . ').xls';
+				$filename = 'Shipment-Participant-Report-(' . date('d-M-Y-H-i-s') . ').xls';
 			} else {
 				$filename = $params['shipmentCode'] . '-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xls';
 			}

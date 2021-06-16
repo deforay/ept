@@ -210,8 +210,6 @@ if ($adminSession->privileges != "") {
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions'), 'default', true); ?>">PT Survey</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment'), 'default', true); ?>">Shipments</a></li>
 							<?php } ?>
-							<li class="divider"></li>
-							<li><a href="javascript:void(0);">Packaging</a></li>
 							<?php if (isset($configData['disable_push_notification']) && $configData['disable_push_notification'] != 'yes') { ?>
 								<li><a href="/admin/announcement"> Announcement</a></li>
 							<?php } ?>
@@ -224,6 +222,7 @@ if ($adminSession->privileges != "") {
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate'), 'default', true); ?>">Evaluate Responses</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution'), 'default', true); ?>">Generate Reports</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize'), 'default', true); ?>">Finalize Reports</a></li>
+								<li class="divider"></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'shipments'), 'default', true); ?>">View Finalized Shipments</a></li>
 							</ul>
 						</li>
@@ -232,6 +231,8 @@ if ($adminSession->privileges != "") {
 						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'report') ? "class='active dropdown'" : "class='dropdown'"; ?>>
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-bar-chart"></i>&nbsp;&nbsp;Reports <b class="caret"></b></a>
 							<ul class="dropdown-menu">
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments'), 'default', true); ?>">Shipments Report</a></li>
+								<li class="divider"></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed'), 'default', true); ?>">Participant Response Report</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance'), 'default', true); ?>">Participant Performance Report</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions'), 'default', true); ?>">Corrective Actions Report</a></li>
@@ -239,13 +240,16 @@ if ($adminSession->privileges != "") {
 									<!-- <li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response'), 'default', true); ?>">Shipment Response Report</a></li> -->
 								<?php } ?>
 								<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
+									<li class="divider"></li>
 									<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit'), 'default', true); ?>">Test Kit Report For DTS</a></li>
 								<?php } ?>
-								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments'), 'default', true); ?>">Shipments Report</a></li>
+
 								<?php if (in_array('vl', $adminSession->activeSchemes)) { ?>
+									<li class="divider"></li>
 									<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis'), 'default', true); ?>">VL Sample Analysis</a></li>
 									<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution'), 'default', true); ?>">VL Assay Distribution</a></li>
 								<?php } ?>
+								<li class="divider"></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'index'), 'default', true); ?>">Annual Report</a></li>
 							</ul>
 						</li>
