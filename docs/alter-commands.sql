@@ -2777,7 +2777,7 @@ ALTER TABLE `covid19_identified_genes` ADD `gene_map_id` INT(11) NOT NULL AUTO_I
 
 -- Amit 19-April-2021
 
-UPDATE `scheme_list` SET `scheme_name` = 'Rapid Test for Recent Infection (RTRI)\n' WHERE `scheme_list`.`scheme_id` = 'recency';
+UPDATE `scheme_list` SET `scheme_name` = 'Rapid Test for Recent Infection (RTRI)' WHERE `scheme_list`.`scheme_id` = 'recency';
 
 
 -- Amit 14-May-2021

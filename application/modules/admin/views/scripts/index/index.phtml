@@ -166,7 +166,7 @@ if (count($this->pendingParticipants) > 0) {
 					</div>
 				</div>
 			</div>
-			<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'searchString' => 'Configured'), 'default', true); ?>">
+			<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'searchString' => 'configured'), 'default', true); ?>">
 				<div class="panel-footer announcement-bottom">
 					<div class="row">
 						<div class="col-xs-10" style="color:#2c3e50">
@@ -221,7 +221,8 @@ if (count($this->pendingParticipants) > 0) {
 
 				$dataScheme = array();
 				foreach ($this->schemeCountResult as $schemeName => $pCount) {
-					$dataScheme[] = "{ x: '" . trim(strtoupper($schemeName)) . "', y: " . $pCount . " }";
+					if($pCount == 0) continue;
+					$dataScheme[$schemeName] = $pCount;
 				}
 				?>
 
@@ -313,32 +314,32 @@ if (count($this->pendingParticipants) > 0) {
 	var ppercentage = [<?php echo implode(",", $ppercentage); ?>]
 	var ppsSchemes = [<?php echo implode(",", $ppsSchemeType); ?>]
 	var ppsShipmentLastDate = [<?php echo implode(",", $ppsShipmentLastDate); ?>]
-	Morris.Bar({
-		element: 'participant-per-scheme',
-		data: [
-			<?php echo implode(",", $dataScheme); ?>
-		],
-		xLabelAngle: 45,
-		hideHover: true,
-		xkey: 'x',
-		ykeys: ['y'],
-		labels: ['Participants']
-	});
-	Morris.Bar({
-		element: 'participant-per-shipment',
-		data: [
-			<?php echo implode(",", $dataShipment); ?>
-		],
-		xLabelAngle: 45,
-		hideHover: true,
-		xkey: 'y',
-		ykeys: ['a', 'b'],
-		hoverCallback: function(index, options, content) {
-			var row = options.data[index];
-			return content + "<strong>Percentage : " + ppercentage[index] + "<br />Scheme Type : " + ppsSchemes[index] + "<br />" + "Result Due Date : " + ppsShipmentLastDate[index] + "</strong>";
-		},
-		labels: ['Shipped', 'Received']
-	});
+	// Morris.Bar({
+	// 	element: 'participant-per-scheme',
+	// 	data: [
+	// 		<?php echo implode(",", $dataScheme); ?>
+	// 	],
+	// 	xLabelAngle: 45,
+	// 	hideHover: true,
+	// 	xkey: 'x',
+	// 	ykeys: ['y'],
+	// 	labels: ['Participants']
+	// });
+	// Morris.Bar({
+	// 	element: 'participant-per-shipment',
+	// 	data: [
+	// 		<?php echo implode(",", $dataShipment); ?>
+	// 	],
+	// 	xLabelAngle: 45,
+	// 	hideHover: true,
+	// 	xkey: 'y',
+	// 	ykeys: ['a', 'b'],
+	// 	hoverCallback: function(index, options, content) {
+	// 		var row = options.data[index];
+	// 		return content + "<strong>Percentage : " + ppercentage[index] + "<br />Scheme Type : " + ppsSchemes[index] + "<br />" + "Result Due Date : " + ppsShipmentLastDate[index] + "</strong>";
+	// 	},
+	// 	labels: ['Shipped', 'Received']
+	// });
 
 	var center = new google.maps.LatLng(<?php echo $config->map->center; ?>);
 
@@ -392,8 +393,69 @@ if (count($this->pendingParticipants) > 0) {
 				}
 			});
 	} */
+
+	var participantPtSchemeTitle = "PT Schemes";
+	var participantPtSchemeTitleDrilldownTitle = "";
 	//google.maps.event.addDomListener(window, 'load', initialize);
 	$(document).ready(function() {
+
+
+
+
+		Highcharts.chart('participant-per-scheme', {
+			chart: {
+				type: 'column'
+			},
+			title: {
+				text: ' Active Participants enrolled per PT Scheme'
+			},
+			subtitle: {
+				text: ''
+			},
+			xAxis: {
+				categories: [<?= "'" . implode("','",array_keys($dataScheme)). "'"; ?>],
+				crosshair: true,
+				title: {
+					text: 'Scheme Names'
+				}
+			},
+			yAxis: {
+				min: 0,
+				title: {
+					text: 'Number of Participants'
+				}
+			},
+			legend: {
+				enabled: false
+			},
+			credits: {
+				enabled: false
+			},
+			tooltip: {
+				headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+				pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+					'<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+				footerFormat: '</table>',
+				shared: true,
+				useHTML: true
+			},
+			plotOptions: {
+				column: {
+					pointPadding: 0.2,
+					borderWidth: 0
+				}
+			},
+			series: [{
+				name: '',
+				data: [<?= implode(",",array_values($dataScheme)); ?>]
+
+			}]
+		});
+
+
+
+
+
 		// Create the chart
 		Highcharts.chart('participant-pt-scheme', {
 			chart: {
@@ -404,10 +466,10 @@ if (count($this->pendingParticipants) > 0) {
 				}
 			},
 			title: {
-				text: ''
+				text: 'No. of Participants for all PT Schemes'
 			},
 			subtitle: {
-				text: 'Click the columns to view the Individual scheme.'
+				text: 'Click the columns to view individual Panels/Shipments.'
 			},
 			accessibility: {
 				announceNewData: {
@@ -417,7 +479,7 @@ if (count($this->pendingParticipants) > 0) {
 			xAxis: {
 				type: 'category',
 				title: {
-					text: 'PT Scheme'
+					text: 'PT Schemes'
 				},
 				labels: {
 					overflow: 'justify'
@@ -476,7 +538,7 @@ if (count($this->pendingParticipants) > 0) {
 					foreach ($this->ptchart['total'] as $scheme => $total) {
 						if (isset($this->ptchart['result'][$scheme]) && count($this->ptchart['result'][$scheme]) > 0) {
 							echo "{
-							name: '" . $scheme . "',
+							name: '" . $this->ptchart['name'][$scheme] . "',
 							id: '" . $scheme . "',
 							data :
 							[";
