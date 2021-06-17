@@ -221,7 +221,7 @@ if (count($this->pendingParticipants) > 0) {
 
 				$dataScheme = array();
 				foreach ($this->schemeCountResult as $schemeName => $pCount) {
-					if($pCount == 0) continue;
+					if ($pCount == 0) continue;
 					$dataScheme[$schemeName] = $pCount;
 				}
 				?>
@@ -466,7 +466,7 @@ if (count($this->pendingParticipants) > 0) {
 					name: "Number of participants",
 					data: [
 						<?php
-						$sn = count($this->ptchart['total']);
+						$sn = count($this->ptchart['total']['participants']);
 						$n = 0;
 						foreach ($this->ptchart['total']['participants'] as $scheme => $total) {
 							echo "{
@@ -485,7 +485,7 @@ if (count($this->pendingParticipants) > 0) {
 					name: "Number of participants responded",
 					data: [
 						<?php
-						$sn = count($this->ptchart['total']);
+						$sn = count($this->ptchart['total']['received']);
 						$n = 0;
 						foreach ($this->ptchart['total']['received'] as $scheme => $total) {
 							echo "{
