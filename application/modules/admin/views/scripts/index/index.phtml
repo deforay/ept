@@ -272,9 +272,7 @@ if (count($this->pendingParticipants) > 0) {
 				<h3 class="panel-title"><i class="icon-user"></i>&nbsp;&nbsp;List of all PT Surveys</h3>
 			</div>
 			<div class="panel-body">
-				<figure class="highcharts-figure">
-					<div id="participant-pt-scheme" width="1000" height="430"></div>
-				</figure>
+				<div id="participant-pt-scheme" width="450" height="700"></div>
 			</div>
 		</div>
 	</div>
@@ -300,7 +298,6 @@ if (count($this->pendingParticipants) > 0) {
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 <!--<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>-->
 <script src="<?php echo $this->baseUrl("js/raphael.min.js"); ?>" type="text/javascript"></script>
-<script src="<?php echo $this->baseUrl("js/morris_0.4.3.js"); ?>" type="text/javascript"></script>
 <!--<script src="http://cdn.oesmith.co.uk/morris-0.4.3.min.js"></script>-->
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/data.js"></script>
@@ -314,35 +311,7 @@ if (count($this->pendingParticipants) > 0) {
 	var ppercentage = [<?php echo implode(",", $ppercentage); ?>]
 	var ppsSchemes = [<?php echo implode(",", $ppsSchemeType); ?>]
 	var ppsShipmentLastDate = [<?php echo implode(",", $ppsShipmentLastDate); ?>]
-	// Morris.Bar({
-	// 	element: 'participant-per-scheme',
-	// 	data: [
-	// 		<?php echo implode(",", $dataScheme); ?>
-	// 	],
-	// 	xLabelAngle: 45,
-	// 	hideHover: true,
-	// 	xkey: 'x',
-	// 	ykeys: ['y'],
-	// 	labels: ['Participants']
-	// });
-	// Morris.Bar({
-	// 	element: 'participant-per-shipment',
-	// 	data: [
-	// 		<?php echo implode(",", $dataShipment); ?>
-	// 	],
-	// 	xLabelAngle: 45,
-	// 	hideHover: true,
-	// 	xkey: 'y',
-	// 	ykeys: ['a', 'b'],
-	// 	hoverCallback: function(index, options, content) {
-	// 		var row = options.data[index];
-	// 		return content + "<strong>Percentage : " + ppercentage[index] + "<br />Scheme Type : " + ppsSchemes[index] + "<br />" + "Result Due Date : " + ppsShipmentLastDate[index] + "</strong>";
-	// 	},
-	// 	labels: ['Shipped', 'Received']
-	// });
-
 	var center = new google.maps.LatLng(<?php echo $config->map->center; ?>);
-
 	var map;
 
 	$(document).ready(function() {
@@ -398,18 +367,64 @@ if (count($this->pendingParticipants) > 0) {
 	var participantPtSchemeTitleDrilldownTitle = "";
 	//google.maps.event.addDomListener(window, 'load', initialize);
 	$(document).ready(function() {
-		// Create the chart
 
+		Highcharts.chart('participant-per-scheme', {
+			chart: {
+				type: 'column'
+			},
+			title: {
+				text: ' Active Participants enrolled per PT Scheme'
+			},
+			subtitle: {
+				text: ''
+			},
+			xAxis: {
+				categories: [<?= "'" . implode("','", array_keys($dataScheme)) . "'"; ?>],
+				crosshair: true,
+				title: {
+					text: 'Scheme Names'
+				}
+			},
+			yAxis: {
+				min: 0,
+				title: {
+					text: 'Number of Participants'
+				}
+			},
+			legend: {
+				enabled: false
+			},
+			credits: {
+				enabled: false
+			},
+			tooltip: {
+				headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+				pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+					'<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+				footerFormat: '</table>',
+				shared: true,
+				useHTML: true
+			},
+			plotOptions: {
+				column: {
+					pointPadding: 0.2,
+					borderWidth: 0
+				}
+			},
+			series: [{
+				name: '',
+				data: [<?= implode(",", array_values($dataScheme)); ?>]
+
+			}]
+		});
+
+		// Create the chart
 		Highcharts.setOptions({
 			colors: ['#058DC7', '#50B432']
 		});
 		Highcharts.chart('participant-pt-scheme', {
 			chart: {
 				type: 'column',
-				scrollablePlotArea: {
-					minWidth: 700,
-					scrollPositionX: 1
-				}
 			},
 			title: {
 				text: 'No. of Participants for all PT Schemes'
@@ -557,5 +572,5 @@ if (count($this->pendingParticipants) > 0) {
 			}
 		});
 	});
-	$('svg').height(500);
+	// $('svg').height(500);
 </script>
