@@ -398,65 +398,11 @@ if (count($this->pendingParticipants) > 0) {
 	var participantPtSchemeTitleDrilldownTitle = "";
 	//google.maps.event.addDomListener(window, 'load', initialize);
 	$(document).ready(function() {
-
-
-
-
-		Highcharts.chart('participant-per-scheme', {
-			chart: {
-				type: 'column'
-			},
-			title: {
-				text: ' Active Participants enrolled per PT Scheme'
-			},
-			subtitle: {
-				text: ''
-			},
-			xAxis: {
-				categories: [<?= "'" . implode("','",array_keys($dataScheme)). "'"; ?>],
-				crosshair: true,
-				title: {
-					text: 'Scheme Names'
-				}
-			},
-			yAxis: {
-				min: 0,
-				title: {
-					text: 'Number of Participants'
-				}
-			},
-			legend: {
-				enabled: false
-			},
-			credits: {
-				enabled: false
-			},
-			tooltip: {
-				headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-				pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-					'<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-				footerFormat: '</table>',
-				shared: true,
-				useHTML: true
-			},
-			plotOptions: {
-				column: {
-					pointPadding: 0.2,
-					borderWidth: 0
-				}
-			},
-			series: [{
-				name: '',
-				data: [<?= implode(",",array_values($dataScheme)); ?>]
-
-			}]
-		});
-
-
-
-
-
 		// Create the chart
+
+		Highcharts.setOptions({
+			colors: ['#058DC7', '#50B432']
+		});
 		Highcharts.chart('participant-pt-scheme', {
 			chart: {
 				type: 'column',
@@ -476,22 +422,27 @@ if (count($this->pendingParticipants) > 0) {
 					enabled: true
 				}
 			},
+			legend: {
+				enabled: true
+			},
 			xAxis: {
 				type: 'category',
 				title: {
-					text: 'PT Schemes'
-				},
-				labels: {
-					overflow: 'justify'
+					text: 'PT Scheme'
+				}
+			},
+			plotOptions: {
+				series: {
+					borderWidth: 0,
+					dataLabels: {
+						enabled: true
+					}
 				}
 			},
 			yAxis: {
 				title: {
 					text: 'Number of Participants'
 				}
-			},
-			legend: {
-				enabled: false
 			},
 			credits: {
 				enabled: false
@@ -512,34 +463,54 @@ if (count($this->pendingParticipants) > 0) {
 			},
 
 			series: [{
-				name: "PT Scheme",
-				colorByPoint: true,
-				data: [
-					<?php
-					$sn = count($this->ptchart['total']);
-					$n = 0;
-					foreach ($this->ptchart['total'] as $scheme => $total) {
-						echo "{
+					name: "Number of participants",
+					data: [
+						<?php
+						$sn = count($this->ptchart['total']);
+						$n = 0;
+						foreach ($this->ptchart['total']['participants'] as $scheme => $total) {
+							echo "{
 							name: '" . $this->ptchart['name'][$scheme] . "',
 							y: " . $total . ",
-							drilldown: '" . $scheme . "',
+							drilldown: 'a-" . $scheme . "',
 						}";
-						$n++;
-						if ($sn != $n) {
-							echo ",";
-						}
-					} ?>
-				]
-			}],
+							$n++;
+							if ($sn != $n) {
+								echo ",";
+							}
+						} ?>
+					]
+				},
+				{
+					name: "Number of participants responded",
+					data: [
+						<?php
+						$sn = count($this->ptchart['total']);
+						$n = 0;
+						foreach ($this->ptchart['total']['received'] as $scheme => $total) {
+							echo "{
+							name: '" . $this->ptchart['name'][$scheme] . "',
+							y: " . $total . ",
+							drilldown: 'r-" . $scheme . "',
+						}";
+							$n++;
+							if ($sn != $n) {
+								echo ",";
+							}
+						} ?>
+					]
+				}
+			],
 			drilldown: {
+				allowPointDrilldown: false,
 				series: [
 					<?php
 					$n = 0;
-					foreach ($this->ptchart['total'] as $scheme => $total) {
+					foreach ($this->ptchart['total']['participants'] as $scheme => $total) {
 						if (isset($this->ptchart['result'][$scheme]) && count($this->ptchart['result'][$scheme]) > 0) {
 							echo "{
-							name: '" . $this->ptchart['name'][$scheme] . "',
-							id: '" . $scheme . "',
+							id: 'a-" . $scheme . "',
+							name: 'Number of participants',
 							data :
 							[";
 							$ssn = count($this->ptchart['result'][$scheme]);
@@ -550,6 +521,25 @@ if (count($this->pendingParticipants) > 0) {
 									'" . $row['shipment_code'] . "',
 									" . $row['participantCount'] . "
 									]";
+									$sj++;
+									if ($ssn != $sj) {
+										echo ",";
+									}
+								}
+							}
+							echo "]},{
+							id: 'r-" . $scheme . "',
+							name: 'Number of participants responded',
+							data :
+							[";
+							$ssn = count($this->ptchart['result'][$scheme]);
+							$sj = 0;
+							foreach ($this->ptchart['result'][$scheme] as $subScheme => $row) {
+								if ($scheme == $row['scheme_type']) {
+									echo "[
+										'" . $row['shipment_code'] . "',
+										" . $row['receivedCount'] . "
+										]";
 									$sj++;
 									if ($ssn != $sj) {
 										echo ",";
