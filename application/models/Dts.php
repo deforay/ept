@@ -13,6 +13,7 @@ class Application_Model_Dts
 		$maxScore = 0;
 		$scoreHolder = array();
 		$schemeService = new Application_Service_Schemes();
+
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";

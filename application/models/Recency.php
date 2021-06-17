@@ -19,6 +19,12 @@ class Application_Model_Recency
         $finalResult = null;
         $schemeService = new Application_Service_Schemes();
 
+        $possibleResultsArray = $schemeService->getPossibleResults('recency');
+        $possibleResults = array();
+        foreach($possibleResultsArray as $pr){
+            $possibleResults['result_code'] =  $possibleResults['id'];
+        }
+
 
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
@@ -39,6 +45,7 @@ class Application_Model_Recency
                 $attributes = json_decode($shipment['attributes'], true);
                 $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
                 $results = $schemeService->getRecencySamples($shipmentId, $shipment['participant_id']);
+                
 
                 $documentationScore = $this->getDocumentationScore($results, $attributes, $shipmentAttributes);
 
@@ -87,7 +94,7 @@ class Application_Model_Recency
                     }
 
                     // if final result was reported as Recent
-                    if ($result['reported_result'] == 14) {
+                    if ($result['reported_result'] == $possibleResults['R']) {
                         if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'absent') {
                         } else {
                             $isAlgoWrong = true;
@@ -95,7 +102,7 @@ class Application_Model_Recency
                     }
 
                     // if final result was reported as Long term
-                    if ($result['reported_result'] == 15) {
+                    if ($result['reported_result'] == $possibleResults['LT']) {
                         if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'present') {
                         } else {
                             $isAlgoWrong = true;

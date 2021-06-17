@@ -188,6 +188,7 @@ $dtFormat =  $vHelper->getDateFormat();
 									<th style="width:12%;text-align: center;">Expiry</th>\
 									<th style="width:10%;text-align: center;">OD</th>\
 									<th style="width:10%;text-align: center;">Cutoff</th>\
+									<th style="width:10%;text-align: center;">Result</th>\
 									<th style="width:10%;text-align: center;">Options</th>\
 								</tr>\
 							</thead>\
@@ -198,6 +199,7 @@ $dtFormat =  $vHelper->getDateFormat();
 									<td><input type="text" name="eia[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
 									<td><input type="text" name="eia[' + sampleId + '][od][]" class="form-control"/></td>\
 									<td><input type="text" name="eia[' + sampleId + '][cutoff][]" class="form-control"/></td>\
+									<td><select class="form-control" name="eia[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
 									<td>\
 										<a href="javascript:void(0);" onclick="addNewEiaRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
 									</td>\
@@ -300,6 +302,7 @@ $dtFormat =  $vHelper->getDateFormat();
 							<td><input type="text" name="eia[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
 							<td><input type="text" name="eia[' + sampleId + '][od][]" class="form-control"/></td> \
 							<td><input type="text" name="eia[' + sampleId + '][cutoff][]" class="form-control"/></td> \
+							<td><select class="form-control" name="eia[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
 							<td> \
 								<a href="javascript:void(0);" onclick="addNewEiaRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
 								<a  href="javascript:void(0);" onclick="removeEiaRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
