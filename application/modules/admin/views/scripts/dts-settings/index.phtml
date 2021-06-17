@@ -11,23 +11,27 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             <legend>DTS HIV Serology Settings</legend>
 
             <div class="form-group">
-                <label for="dtsPassPercentage" class="col-lg-3 control-label">DTS Pass Percentage <span class="mandatory">*</span></label>
-                <div class="col-lg-1 input-group" style="width:140px;">
-                    <input type="text" id="dtsPassPercentage" name="dtsPassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo $this->config->evaluation->dts->passPercentage; ?>" />
-                    <span class="input-group-addon">%</span>
+                <label for="dtsPassPercentage" class="col-lg-3 control-label">Minimum Passing Score <span class="mandatory">*</span></label>
+                <div class="col-lg-1" style="min-width:110px;">
+                    <input type="number" id="dtsPassPercentage" name="dtsPassPercentage" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $this->config->evaluation->dts->passPercentage; ?>" />
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="dtsPassPercentage" class="col-lg-3 control-label">DTS Documentation Score (Percentage)<span class="mandatory">*</span></label>
-                <div class="col-lg-1 input-group" style="width:140px;">
-                    <input type="text" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Documentation Score Percentage" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>" />
-                    <span class="input-group-addon">%</span>
+                <label for="dtsPanelScore" class="col-lg-3 control-label">Panel/Shipment Score<span class="mandatory">*</span></label>
+                <div class="col-lg-1" style="min-width:110px;">
+                    <input type="number" id="dtsPanelScore" name="dtsPanelScore" class="isRequired isNumeric form-control" placeholder = "0" title="Please enter the Panel Score breakup" value="<?php echo $this->config->evaluation->dts->panelScore; ?>" oninput="$('#dtsDocumentationScore').val(100 - $(this).val());">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="dtsDocumentationScore" class="col-lg-3 control-label">Documentation Score<span class="mandatory">*</span></label>
+                <div class="col-lg-1" style="min-width:110px;">
+                    <input type="number" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder = "0" title="Please enter the Documentation Score breakup" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>"  oninput="$('#dtsPanelScore').val(100 - $(this).val());">
                 </div>
             </div>
 
             <div class="form-group dtsOptionalTest3Div">
-                <label for="dtsOptionalTest3" class="col-lg-3 control-label">DTS Test 3 is Optional <span class="mandatory">*</span></label>
+                <label for="dtsOptionalTest3" class="col-lg-3 control-label">Disable Test-3 <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="dtsOptionalTest3" name="dtsOptionalTest3" title="Please select if test 3 is optional">
                         <option value="yes" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
@@ -66,16 +70,18 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             </div>
             <br>
             <br>
+            <h4 style="border-bottom: 1px solid #ccc;padding-bottom:5px;">National HIV Rapid Test Algorithm (optional)</h4>
             <p class="mandatory">Note : <br />
-                <ul>
-                    <li>If a response does not contain the following recommended Testkits, participants will not pass for the respective samples.</li>
-                    <li>If you don't want to enforce the testkit check, please leave the following 3 options blank</li>
-                    <li>Please set the <a href="/admin/testkit/standard-kit">DTS Standard Testkits</a> before you do the below</li>
-                </ul>
+            <ul>
+                <li>Do you want Participants to use specific test kit for specific test number? Only then you need to configure this section.</li>
+                <li>If a response does not contain the following enforced Test kits, participants will not pass for the respective samples.</li>
+                <li>If you don't want to enforce the test kit check, please leave the following 3 options blank</li>
+                <li class="text-danger"><strong>Please <a href="/admin/testkit/standard-kit" style="text-decoration:underline;">map test kits for each test</a> before you do the below</strong></li>
+            </ul>
 
             </p>
             <div class="form-group">
-                <label for="testkit1" class="col-lg-3 control-label">Recommended Testkit 1</label>
+                <label for="testkit1" class="col-lg-3 control-label">Enforce these Test kits for Test 1</label>
                 <div class="col-lg-6">
                     <select name="testkit1[]" id="testkit1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
                         <?php
@@ -92,7 +98,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             </div>
 
             <div class="form-group">
-                <label for="testkit2" class="col-lg-3 control-label">Recommended Testkit 2</label>
+                <label for="testkit2" class="col-lg-3 control-label">Enforce these Test kits for Test 2</label>
                 <div class="col-lg-6">
                     <select name="testkit2[]" id="testkit2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
                         <?php
@@ -110,7 +116,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
 
 
             <div class="form-group">
-                <label for="testkit3" class="col-lg-3 control-label">Recommended Testkit 3</label>
+                <label for="testkit3" class="col-lg-3 control-label">Enforce these Test kits for Test 3</label>
                 <div class="col-lg-6">
                     <select name="testkit3[]" id="testkit3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
                         <?php

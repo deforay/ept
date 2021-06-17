@@ -1,87 +1,102 @@
-
 <style>
-	.txt{
-		border-bottom:1px solid #888;
-		margin-bottom:10px;
-		margin-top:30px;
+	.txt {
+		border-bottom: 1px solid #888;
+		margin-bottom: 10px;
+		margin-top: 30px;
 	}
-	.dataTables_paginate, .dataTables_info{
+
+	.dataTables_paginate,
+	.dataTables_info {
 		margin-top: 5px;
 		vertical-align: middle !important;
 	}
-	
-	.dataTables_length,.dataTables_filter{
+
+	.dataTables_length,
+	.dataTables_filter {
 		margin-bottom: 5px;
 		vertical-align: middle !important;
 	}
-	
 </style>
 <section class="content-header">
-<h1>Download Shipment Form</h1>
+	<h1>Download Shipment Form</h1>
 </section>
 <section class="content">
-<section class="box">
-    <div class="box-body">
-            
-		
-		<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped"  id="shipmentFormDownload">
-			<thead>
-				<tr>
+	<section class="box">
+		<div class="box-body">
+
+
+			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped" id="shipmentFormDownload">
+				<thead>
+					<tr>
 						<th>Shipment Code</th>
 						<th>Scheme Type</th>
 						<th>PT Survey Code</th>
 						<th>PT Survey Date</th>
+						<th>Submission Due Date</th>
 						<th>Action</th>
-				</tr>
-			</thead>
-			<tbody>
-			    <tr>
-				<td colspan="5" class="dataTables_empty">Loading data from server</td>
-			    </tr>
-			</tbody>
-		</table>
-    </div>
-</section>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="5" class="dataTables_empty">Loading data from server</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>
 </section>
 <script>
-	$(document).ready(function(){
-	allSchemes();
+	$(document).ready(function() {
+		allSchemes();
 	});
-	
-	
-	function allSchemes(){
+
+
+	function allSchemes() {
 		schemeTable = $('#shipmentFormDownload').dataTable({
 			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
+				"sLengthMenu": "_MENU_ records per page"
 			},
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
 			"bScrollCollapse": true,
 			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center","bSortable":false}
+			"bRetrieve": true,
+			"aoColumns": [{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center",
+					"bSortable": false
+				}
 			],
-			"aaSorting": [[ 3, "asc" ]],
+			"aaSorting": [
+				[4, "asc"]
+			],
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'shipment-form', 'action' => 'index', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
+			"fnServerData": function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": aoData,
+					"success": fnCallback
+				});
 			}
 		});
 	}
-	
-
 </script>

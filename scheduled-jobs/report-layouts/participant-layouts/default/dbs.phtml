@@ -121,7 +121,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $testThreeOptionalDisplay = "display:none;";
         }
         $shipmentAttributesSampleTypeDisplay = "";
-        if (isset($shipmentAttributes["sampleType"]) && $shipmentAttributes["sampleType"] == 'serum') {
+        if (isset($shipmentAttributes["sampleType"]) && ($shipmentAttributes["sampleType"] == 'serum' || $shipmentAttributes["sampleType"] == 'plasma')) {
             $shipmentAttributesSampleTypeDisplay = "display:none;";
         }
         /* for Shipment attributes functionality end */

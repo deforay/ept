@@ -3,7 +3,7 @@
 		<fieldset>
 			<legend>ePT Global Settings</legend>
 			<div class="form-group">
-				<label for="admin_email" class="col-lg-3 control-label">Admin Email <span class="mandatory">*</span></label>
+				<label for="admin_email" class="col-lg-3 control-label">Admininstrator Email <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?php echo $this->admin_email; ?>" />
 				</div>
@@ -32,10 +32,11 @@
 					<input type="text" class="form-control" id="pt_program_short_name" name="pt_program_short_name" placeholder="Enter PT Program Short Name" title="Please Enter the PT Program Short Name" value="<?php echo $this->pt_program_short_name; ?>" />
 				</div>
 			</div>
+			<hr>
 			<div class="form-group">
-				<label for="training_instance" class="col-lg-3 control-label">Training Instance</label>
+				<label for="training_instance" class="col-lg-3 control-label">Is this installation of ePT used for training purposes?</label>
 				<div class="col-lg-6">
-					<select class="form-control" id="training_instance" name="training_instance" title="Please Enter the Training Instance">
+					<select class="form-control" id="training_instance" name="training_instance" title="Is this installation of ePT used for training purposes?">
 						<option value="">-- Select --</option>
 						<option value="yes" <?php echo ($this->training_instance == "yes") ? "selected='selected'" : ""; ?>>Yes</option>
 						<option value="no" <?php echo ($this->training_instance == "no") ? "selected='selected'" : ""; ?>>No</option>
@@ -43,11 +44,12 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="training_instance_text" class="col-lg-3 control-label">Training Instance Text</label>
+				<label for="training_instance_text" class="col-lg-3 control-label">For training instances, use this Watermark in reports</label>
 				<div class="col-lg-6">
-					<input type="text" class="form-control" id="training_instance_text" name="training_instance_text" placeholder="Enter Training Instance Text" title="Please Enter the Training Instance Text" value="<?php echo $this->training_instance_text; ?>" />
+					<input type="text" class="form-control" id="training_instance_text" name="training_instance_text" placeholder="Watermark to show in reports" title="Please enter the Watermark to show in reports" value="<?php echo $this->training_instance_text; ?>" />
 				</div>
 			</div>
+			<hr>
 			<div class="form-group">
 				<label for="schemeId" class="col-lg-3 control-label">Choose Active Schemes <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
@@ -63,8 +65,8 @@
 				</div>
 			</div>
 			
-			<div class="form-group">
-				<label for="disable_push_notification" class="col-lg-3 control-label">Disable Push Notification <span class="mandatory">*</span></label>
+			<!-- <div class="form-group">
+				<label for="disable_push_notification" class="col-lg-3 control-label">Disable Mobile Push Notification <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<select class="form-control isRequired" id="disable_push_notification" name="disable_push_notification" title="Please select if you want to disable push notification?">
 						<option value="">--Select--</option>
@@ -72,7 +74,7 @@
 						<option value="no" <?php echo (isset($this->disable_push_notification) && $this->disable_push_notification == 'no')?'selected="selected"':"";?>>No</option>
 					</select>
 				</div>
-			</div>
+			</div> -->
 			<div class="form-group">
 				<label for="admin_email" class="col-lg-3 control-label">Accept responses after shipment is finalized? <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
@@ -98,7 +100,7 @@
 
 			</div> -->
 			<div class="form-group">
-				<label for="admin_email" class="col-lg-3 control-label">QC Access <span class="mandatory">*</span></label>
+				<label for="admin_email" class="col-lg-3 control-label">Enable QC Fields <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<input type="radio" class="isRequired" name="qc_access" id="qc_access_yes" <?php echo (isset($this->qc_access) && $this->qc_access == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose QC access" /> Yes
 					<input type="radio" class="isRequired" name="qc_access" id="qc_access_no" <?php echo (isset($this->qc_access) && $this->qc_access == "no") ? " checked='checked' " : ""; ?> value="no" /> No

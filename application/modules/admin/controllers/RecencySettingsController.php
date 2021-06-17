@@ -15,6 +15,7 @@ class Admin_RecencySettingsController extends Zend_Controller_Action
             $sec = APPLICATION_ENV;
 
             $config->$sec->evaluation->recency->passPercentage = $this->getRequest()->getPost('recencyPassPercentage');
+            $config->$sec->evaluation->recency->panelScore = $this->getRequest()->getPost('recencyPanelScore');
             $config->$sec->evaluation->recency->documentationScore = $this->getRequest()->getPost('recencyDocumentationScore');
             $config->$sec->evaluation->recency->sampleRehydrateDays = $this->getRequest()->getPost('sampleRehydrateDays');
 

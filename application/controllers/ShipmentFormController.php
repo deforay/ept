@@ -7,55 +7,40 @@ class ShipmentFormController extends Zend_Controller_Action
     {
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-                ->initContext();
+            ->initContext();
         $this->_helper->layout()->pageName = 'shipmentForm';
-        
     }
 
     public function indexAction()
     {
-          if ($this->getRequest()->isPost()) {
+        if ($this->getRequest()->isPost()) {
             //SHIPMENT_CURRENT
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getAllShipmentForm($params);
-          }else{
+        } else {
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-                if(!isset($authNameSpace->dm_id)){
-                    $this->_helper->layout()->setLayout('home');
-                }
-          }
-          
-        
+            if (!isset($authNameSpace->dm_id)) {
+                $this->_helper->layout()->setLayout('home');
+            }
+        }
     }
 
     public function downloadAction()
     {
-         $this->_helper->layout()->disableLayout();
-        if($this->hasParam('sId')){
+        $this->_helper->layout()->disableLayout();
+        if ($this->hasParam('sId')) {
             $id = (int)base64_decode($this->_getParam('sId'));
             $reportService = new Application_Service_Reports();
             //$schemeService = new Application_Service_Schemes();
             //$this->view->referenceDetails = $schemeService->getDtsReferenceData($id);
-            $this->view->header=$reportService->getReportConfigValue('report-header');
-            $this->view->logo=$reportService->getReportConfigValue('logo');
-            $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
+            $this->view->header = $reportService->getReportConfigValue('report-header');
+            $this->view->logo = $reportService->getReportConfigValue('logo');
+            $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
             $shipmentService = new Application_Service_Shipments();
-            $this->view->shipment=$shipment= $shipmentService->getShipmentRowData($id);
-            if($shipment["scheme_type"]=='dts'){
-                $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-                $this->view->dtsConfig = new Zend_Config_Ini($file, APPLICATION_ENV);                
-            }
-            if($shipment["scheme_type"]=='covid19'){
-                $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-                $this->view->covid19Config = new Zend_Config_Ini($file, APPLICATION_ENV);                
-            }
-            
+            $this->view->shipment = $shipment = $shipmentService->getShipmentRowData($id);
+            $configFile = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+            $this->view->customConfig = new Zend_Config_Ini($configFile, APPLICATION_ENV);
         }
     }
-
-
 }
-
-
-

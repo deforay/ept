@@ -60,15 +60,12 @@ class Application_Model_Recency
                     // matching reported and reference results
                     if (isset($result['reported_result']) && $result['reported_result'] != null) {
                         if ($result['reference_result'] == $result['reported_result']) {
-                            if (0 == $result['control']) {
-                                $totalScore += $result['sample_score'];
-                            }
                             $score = "Pass";
                         } else {
                             if ($result['sample_score'] > 0) {
                                 $this->failureReason[] = array(
                                     'warning' => "Final interpretation for sample <strong>" . $result['sample_label'] . "</strong> reported wrongly",
-                                    'correctiveAction' => ""
+                                    'correctiveAction' => "Final interpretation not matching with the expected results. Please review the RTRI SOP and/or job aide to ensure test procedures are followed and  interpretation of results are reported accurately."
                                 );
                             }
                             $score = "Fail";
@@ -79,6 +76,8 @@ class Application_Model_Recency
                     if (0 == $result['control']) {
                         $maxScore += $result['sample_score'];
                     }
+
+                    
                     $isAlgoWrong = false;
 
                     if (empty($controlLine) || empty($verificationLine) || empty($longtermLine)) {
@@ -88,19 +87,17 @@ class Application_Model_Recency
                     }
 
                     // if final result was reported as Recent
-                    if($result['reported_result'] == 13){
+                    if ($result['reported_result'] == 14) {
                         if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'absent') {
-                            
-                        }else{
+                        } else {
                             $isAlgoWrong = true;
                         }
                     }
 
                     // if final result was reported as Long term
-                    if($result['reported_result'] == 14){
+                    if ($result['reported_result'] == 15) {
                         if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'present') {
-                            
-                        }else{
+                        } else {
                             $isAlgoWrong = true;
                         }
                     }
@@ -108,11 +105,13 @@ class Application_Model_Recency
                         $score = "Fail";
                         $this->failureReason[] =  array(
                             'warning' => "Algorithm reported wrongly for sample <strong>" . $result['sample_label'] . "</strong>",
-                            'correctiveAction' => "Please follow the recency algorithm to report the recency test results."
+                            'correctiveAction' => "Identification of the presence or absence of RTRI lines/bands do not match the Final Interpretation reported. Please follow the RTRI SOP and/or job aide to report the presence or absence of RTRI lines/bands correctly."
                         );
                     }
 
-
+                    if (0 == $result['control'] && $score == "Pass") {
+                        $totalScore += $result['sample_score'];
+                    }
 
 
                     if ($score == 'Fail' || (!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null) || ($result['reference_result'] != $result['reported_result'])) {

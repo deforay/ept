@@ -131,7 +131,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $testThreeOptionalDisplay = "display:none;";
         }
         $shipmentAttributesSampleTypeDisplay = "";
-        if (isset($shipmentAttributes["sampleType"]) && $shipmentAttributes["sampleType"] == 'serum') {
+        if (isset($shipmentAttributes["sampleType"]) && ($shipmentAttributes["sampleType"] == 'serum' || $shipmentAttributes["sampleType"] == 'plasma')) {
             $shipmentAttributesSampleTypeDisplay = "display:none;";
         }
         /* for Shipment attributes functionality end */
@@ -195,7 +195,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $labInfo .= '<tr>';
         $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Response Date</strong><br>' . $responseDate . '</td>';
-        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Panel Test Date</strong><br>' . $shipmentTestDate . '</td>';
         $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
         if (isset($attributes['algorithm'])) {
             $labInfo .= '	<strong>Algorithm</strong><br>' . ($attributes['algorithm'] == 'myanmarNationalDtsAlgo' ? 'Myanmar National Algorithm' : ucfirst($attributes['algorithm']));
@@ -396,7 +396,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
 
                 $docRes .= '<tr>
-							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
+							<td style="text-align:left;font-weight:bold;">Reporting of the Panel Test Date</td>
 							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $scoreDoc . '</td>
 					</tr>';
@@ -435,8 +435,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
                     foreach ($warnings as $warning) {
                         $failRes .= '<tr>';
-                        $failRes .= '<td> ' . (isset($warning['warning']) ? $warning['warning'] : "") . ' </td>';
-                        $failRes .= '<td> ' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . ' </td>';
+                        $failRes .= '<td>' . (isset($warning['warning']) ? $warning['warning'] : "") . ' </td>';
+                        $failRes .= '<td>' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . ' </td>';
                         $failRes .= '</tr>';
                     }
                     $failRes .= '</table>';
