@@ -2316,9 +2316,11 @@ class Application_Service_Shipments
                     'shipment_score'        => $row['shipment_score'],
                     'documentation_score'   => $row['documentation_score'],
                     'participantCount'      => $row['participantCount'],
+                    'receivedCount'      => $row['receivedCount'],
                     'scheme_type'           => $row['scheme_type']
                 );
-                $total[$row['scheme_type']] += $row['participantCount'];
+                $total['participants'][$row['scheme_type']] += $row['participantCount'];
+                $total['received'][$row['scheme_type']] += $row['receivedCount'];
                 $name[$row['scheme_type']] = $row['scheme_name'];
             }
         }
