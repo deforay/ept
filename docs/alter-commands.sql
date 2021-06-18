@@ -2786,3 +2786,16 @@ ALTER TABLE `r_vl_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'active' AFTER `
 ALTER TABLE `r_eid_detection_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'active' AFTER `sort_order`;
 ALTER TABLE `r_eid_extraction_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'active' AFTER `sort_order`;
 
+-- tHANA 18-jUN-2021
+ALTER TABLE `reference_dts_wb` ADD `result` VARCHAR(256) NULL DEFAULT NULL AFTER `17`; 
+ALTER TABLE `reference_dts_eia` ADD `result` VARCHAR(556) NULL DEFAULT NULL AFTER `cutoff`; 
+
+CREATE TABLE `reference_dts_geenius` (
+ `id` int NOT NULL AUTO_INCREMENT,
+ `shipment_id` int DEFAULT NULL,
+ `sample_id` varchar(256) DEFAULT NULL,
+ `lot_no` varchar(256) DEFAULT NULL,
+ `expiry_date` date DEFAULT NULL,
+ `result` varchar(256) DEFAULT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1035,7 +1035,8 @@ class Application_Service_Shipments
     public function addShipment($params)
     {
 
-        //Zend_Debug::dump($params);die;
+        /* Zend_Debug::dump($params);
+        die; */
         $scheme = $params['schemeId'];
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = new Application_Model_DbTable_Shipments();
@@ -1076,7 +1077,6 @@ class Application_Service_Shipments
         );
 
         $lastId = $db->insert($data);
-
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $size = count($params['sampleName']);
         if ($params['schemeId'] == 'eid') {
@@ -1162,7 +1162,8 @@ class Application_Service_Shipments
                                     'lot' => $params['eia'][$i + 1]['lot'][$e],
                                     'exp_date' => $expDate,
                                     'od' => $params['eia'][$i + 1]['od'][$e],
-                                    'cutoff' => $params['eia'][$i + 1]['cutoff'][$e]
+                                    'cutoff' => $params['eia'][$i + 1]['cutoff'][$e],
+                                    'result' => $params['eia'][$i + 1]['result'][$e]
                                 )
                             );
                         }
@@ -1194,7 +1195,8 @@ class Application_Service_Shipments
                                     '41' => $params['wb'][$i + 1]['41'][$e],
                                     '31' => $params['wb'][$i + 1]['31'][$e],
                                     '24' => $params['wb'][$i + 1]['24'][$e],
-                                    '17' => $params['wb'][$i + 1]['17'][$e]
+                                    '17' => $params['wb'][$i + 1]['17'][$e],
+                                    'result' => $params['wb'][$i + 1]['result'][$e]
                                 )
                             );
                         }
@@ -1225,7 +1227,31 @@ class Application_Service_Shipments
                         }
                     }
                 }
+                // ------------------>
 
+                // <------ Insert reference_dts_geenius table
+                if (isset($params['geenius'][$i + 1]['expiry'])) {
+                    $geeniusSize = sizeof($params['geenius'][$i + 1]['expiry']);
+                    for ($e = 0; $e < $geeniusSize; $e++) {
+                        if (isset($params['geenius'][$i + 1]['expiry'][$e]) && trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
+                            $expDate = '';
+                            if (trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
+                                $expDate = Pt_Commons_General::dateFormat($params['geenius'][$i + 1]['expiry'][$e]);
+                            }
+
+                            $id = $dbAdapter->insert(
+                                'reference_dts_geenius',
+                                array(
+                                    'shipment_id' => $lastId,
+                                    'sample_id' => ($i + 1),
+                                    'lot_no' => $params['geenius'][$i + 1]['lot'][$e],
+                                    'expiry_date' => $expDate,
+                                    'result' => $params['geenius'][$i + 1]['result'][$e]
+                                )
+                            );
+                        }
+                    }
+                }
                 // ------------------>
             }
         } else if ($params['schemeId'] == 'dbs') {
@@ -1472,6 +1498,7 @@ class Application_Service_Shipments
         $eia = '';
         $wb = '';
         $rhiv = '';
+        $geenius = '';
 
         $returnArray = array();
 
@@ -1485,9 +1512,11 @@ class Application_Service_Shipments
             $eia = $db->fetchAll($db->select()->from('reference_dts_eia')->where("shipment_id = ?", $sid));
             $wb = $db->fetchAll($db->select()->from('reference_dts_wb')->where("shipment_id = ?", $sid));
             $rhiv = $db->fetchAll($db->select()->from('reference_dts_rapid_hiv')->where("shipment_id = ?", $sid));
+            $geenius = $db->fetchAll($db->select()->from('reference_dts_geenius')->where("shipment_id = ?", $sid));
             $returnArray['eia'] = $eia;
             $returnArray['wb'] = $wb;
             $returnArray['rhiv'] = $rhiv;
+            $returnArray['geenius'] = $geenius;
         } else if ($shipment['scheme_type'] == 'dbs') {
 
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
@@ -1644,6 +1673,7 @@ class Application_Service_Shipments
             $dbAdapter->delete('reference_dts_eia', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_dts_wb', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_dts_rapid_hiv', 'shipment_id = ' . $params['shipmentId']);
+            $dbAdapter->delete('reference_dts_geenius', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
                 $dbAdapter->insert(
                     'reference_result_dts',
@@ -1706,7 +1736,8 @@ class Application_Service_Shipments
                                     '41' => $params['wb'][$i + 1]['41'][$e],
                                     '31' => $params['wb'][$i + 1]['31'][$e],
                                     '24' => $params['wb'][$i + 1]['24'][$e],
-                                    '17' => $params['wb'][$i + 1]['17'][$e]
+                                    '17' => $params['wb'][$i + 1]['17'][$e],
+                                    'result' => $params['wb'][$i + 1]['result'][$e]
                                 )
                             );
                         }
@@ -1738,6 +1769,31 @@ class Application_Service_Shipments
                     }
                 }
 
+                // ------------------>
+
+                // <------ Insert reference_dts_geenius table
+                if (isset($params['geenius'][$i + 1]['expiry'])) {
+                    $geeniusSize = sizeof($params['geenius'][$i + 1]['expiry']);
+                    for ($e = 0; $e < $geeniusSize; $e++) {
+                        if (isset($params['geenius'][$i + 1]['expiry'][$e]) && trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
+                            $expDate = '';
+                            if (trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
+                                $expDate = Pt_Commons_General::dateFormat($params['geenius'][$i + 1]['expiry'][$e]);
+                            }
+
+                            $id = $dbAdapter->insert(
+                                'reference_dts_geenius',
+                                array(
+                                    'shipment_id' => $params['shipmentId'],
+                                    'sample_id' => ($i + 1),
+                                    'lot_no' => $params['geenius'][$i + 1]['lot'][$e],
+                                    'expiry_date' => $expDate,
+                                    'result' => $params['geenius'][$i + 1]['result'][$e]
+                                )
+                            );
+                        }
+                    }
+                }
                 // ------------------>
             }
         } else if ($scheme == 'covid19') {

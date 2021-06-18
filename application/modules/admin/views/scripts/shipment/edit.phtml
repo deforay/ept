@@ -1,6 +1,7 @@
 <?php
 
-// Zend_Debug::dump($this->shipmentData);die;
+// Zend_Debug::dump($this->shipmentData['wb']);
+// die;
 $shipmentData = $this->shipmentData;
 $shipmentAttribute = json_decode($shipmentData['shipment']['shipment_attributes'], true);
 $vHelper = $this->getHelper('DateFormat');
@@ -94,6 +95,10 @@ $dtFormat =  $vHelper->getDateFormat();
 					$allRhiv = array();
 					foreach ($shipmentData['rhiv'] as $rhiv) {
 						$allRhiv[] = $rhiv['sample_id'];
+					}
+					$allRgeenius = array();
+					foreach ($shipmentData['geenius'] as $geenius) {
+						$allRgeenius[] = $geenius['sample_id'];
 					}
 					$dtskit = '<option value="">--Select--</option>';
 					foreach ($this->allTestKits as $kitId => $kitName) {
@@ -250,7 +255,7 @@ $dtFormat =  $vHelper->getDateFormat();
 																						<?php
 																						if ($k > 0) {
 																						?>
-																							<a href="javascript:void(0);" onclick="removeDbsRow(this,'<?php echo $eia['sample_id']; ?>')" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+																							<a href="javascript:void(0);" onclick="removeEiaRow(this,'<?php echo $eia['sample_id']; ?>')" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
 																						<?php } ?>
 																					</td>
 																				</tr>
@@ -294,9 +299,6 @@ $dtFormat =  $vHelper->getDateFormat();
 												<div class="modal-header">
 													<h4 class="modal-title">WB</h4>
 												</div>
-
-
-
 												<div class="modal-body">
 													<div class="row" style="overflow-x:scroll;">
 														<div>
@@ -315,6 +317,7 @@ $dtFormat =  $vHelper->getDateFormat();
 																		<th style="text-align: center;">31</th>
 																		<th style="text-align: center;">24</th>
 																		<th style="text-align: center;">17</th>
+																		<th style="text-align: center;">Result</th>
 																		<th style="text-align: center;">Options</th>
 																	</tr>
 																</thead>
@@ -322,7 +325,9 @@ $dtFormat =  $vHelper->getDateFormat();
 																	<?php
 																	if (in_array($reference['sample_id'], $allWb)) {
 																		$k = 0;
+
 																		foreach ($shipmentData['wb'] as $wb) {
+
 																			if ($wb['sample_id'] == $reference['sample_id']) {
 																	?>
 																				<tr>
@@ -374,8 +379,20 @@ $dtFormat =  $vHelper->getDateFormat();
 																							<option value="1" <?php echo (isset($wb['17']) && $wb['17'] == 1) ? "selected='selected'" : ""; ?>>+</option>
 																							<option value="0" <?php echo (isset($wb['17']) && $wb['17'] == 0) ? "selected='selected'" : ""; ?>>-</option>
 																						</select></td>
-
-
+																					<td>
+																						<select class="form-control" name="wb[<?php echo $eia['sample_id']; ?>][result][]">
+																							<option value="">--Select--</option>
+																							<?php
+																							foreach ($this->dtsPossibleResults as $pr) {
+																								if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+																							?>
+																									<option value='<?php echo $pr['id']; ?>' <?php echo (isset($pr['id']) && $pr['id'] == $wb['result']) ? "selected='selected'" : ""; ?>><?php echo $pr['response']; ?></option>
+																							<?php
+																								}
+																							}
+																							?>
+																						</select>
+																					</td>
 																					<td>
 																						<a href="javascript:void(0);" onclick="addNewWbRow(this,<?php echo $wb['sample_id']; ?>)" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>
 																						<?php
@@ -441,6 +458,18 @@ $dtFormat =  $vHelper->getDateFormat();
 																					<option value="1">+</option>
 																					<option value="0">-</option>
 																				</select></td>
+																			<td><select class="form-control" name="wb[<?php echo $reference['sample_id']; ?>][result][]">
+																					<option value="">--Select--</option>
+																					<?php
+																					foreach ($this->dtsPossibleResults as $pr) {
+																						if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+																					?>
+																							<option value='<?php echo $pr['id']; ?>'><?php echo $pr['response']; ?></option>
+																					<?php
+																						}
+																					}
+																					?>
+																				</select>
 																			<td>
 																				<a href="javascript:void(0);" onclick="addNewWbRow(this,<?php echo $reference['sample_id']; ?>)" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>
 																			</td>
@@ -525,7 +554,72 @@ $dtFormat =  $vHelper->getDateFormat();
 													</div>
 												</div>
 
-
+												<div class="modal-header">
+													<h4 class="modal-title">GEENIUS HIV ½ SUPPLEMENTAL ASSAY</h4>
+												</div>
+												<div class="modal-body">
+													<div class="row">
+														<div>
+															<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">
+																<thead>
+																	<tr align="center">
+																		<th style="width:25%;text-align: center;">Lot</th>
+																		<th style="width:25%;text-align: center;">Expiry</th>
+																		<th style="width:25%;text-align: center;">Result</th>
+																		<th style="width:25%;text-align: center;">Options</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<?php
+																	if (in_array($reference['sample_id'], $allRgeenius)) {
+																		$k = 0;
+																		foreach ($shipmentData['geenius'] as $geenius) {
+																			$testSelectedResults = '<option value="">--Select--</option>';
+																			foreach ($this->dtsPossibleResults as $pr) {
+																				if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+																					$selected = ($pr['id'] == $geenius['result']) ? "selected='selected'" : "";
+																					$testSelectedResults .= '<option value="' . $pr['id'] . '" ' . $selected . '>' . $pr['response'] . '</option>';
+																				}
+																			}
+																			if ($geenius['sample_id'] == $reference['sample_id']) {
+																	?>
+																				<tr>
+																					<td><input type="text" name="geenius[<?php echo $geenius['sample_id']; ?>][lot][]" class="form-control" value="<?php echo $geenius['lot_no']; ?>" /></td>
+																					<td><input type="text" name="geenius[<?php echo $geenius['sample_id']; ?>][expiry][]" class="form-control datepicker" readonly="readonly" value="<?php echo $this->dateFormat($geenius['expiry_date']); ?>" /></td>
+																					<td>
+																						<select class="form-control" name="geenius[<?php echo $geenius['sample_id']; ?>][result][]">
+																							<?php echo $testSelectedResults; ?>
+																						</select>
+																					</td>
+																					<td>
+																						<a href="javascript:void(0);" onclick="addNewGeeniusRow(this,<?php echo $geenius['sample_id']; ?>)" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>
+																						<?php
+																						if ($k > 0) {
+																						?>
+																							<a href="javascript:void(0);" onclick="removeGeeniusRow(this,'<?php echo $geenius['sample_id']; ?>')" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+																						<?php } ?>
+																					</td>
+																				</tr>
+																		<?php
+																			}
+																			$k++;
+																		}
+																	} else {
+																		?>
+																		<tr>
+																			<td><input type="text" name="geenius[<?php echo $reference['sample_id']; ?>][lot][]" class="form-control" /></td>
+																			<td><input type="text" name="geenius[<?php echo $reference['sample_id']; ?>'][expiry][]" class="form-control datepicker" readonly="readonly" /></td>
+																			<td><select class="form-control" name="geenius[<?php echo $reference['sample_id']; ?>][result][]"><?php echo $testResults; ?></select></td>
+																			<td>
+																				<a href="javascript:void(0);" onclick="addNewGeeniusRow(this,<?php echo $reference['sample_id']; ?>)" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>
+																			</td>
+																		</tr>
+																	<?php } ?>
+																</tbody>
+															</table>
+														</div>
+													</div>
+												</div>
 
 
 												<div class="modal-footer">
@@ -885,6 +979,7 @@ $dtFormat =  $vHelper->getDateFormat();
 							<td><select name="wb[' + sampleWbId + '][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
 							<td><select name="wb[' + sampleWbId + '][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
 							<td><select name="wb[' + sampleWbId + '][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select class="form-control" name="wb[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
 							<td> \
 								<a href="javascript:void(0);" onclick="addNewWbRow(this,' + sampleWbId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
 								<a  href="javascript:void(0);" onclick="removeWbRow(this,' + sampleWbId + ')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
@@ -908,6 +1003,28 @@ $dtFormat =  $vHelper->getDateFormat();
 						</tr>');
 							$(".datepicker").datepicker({
 								dateFormat: '<?php echo $dtFormat; ?>'
+							});
+						}
+
+						function addNewGeeniusRow(obj, sampleId) {
+							$(obj.parentNode.parentNode).after('<tr> \
+							<td><input type="text" name="geenius[' + sampleId + '][lot][]" class="form-control"/></td> \
+							<td><input type="text" name="geenius[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
+							<td><select class="form-control" name="geenius[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
+							<td> \
+								<a href="javascript:void(0);" onclick="addNewGeeniusRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
+								<a  href="javascript:void(0);" onclick="removeGeeniusRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+							</td> \
+						</tr>');
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $dtFormat; ?>'
+							});
+						}
+
+						function removeGeeniusRow(obj, sampleId) {
+							$(obj.parentNode.parentNode).fadeOut("normal", function() {
+								$(this).remove();
+								//$('#sampleWb'+sampleId).remove();
 							});
 						}
 
@@ -1334,10 +1451,10 @@ $dtFormat =  $vHelper->getDateFormat();
 																	<tr align="center">
 																		<th style="width:20%;text-align: center;">EIA</th>
 																		<th style="width:10%;text-align: center;">Lot</th>
-																		<th style="width:12%;text-align: center;">Expiry</th>
+																		<th style="width:20%;text-align: center;">Expiry</th>
 																		<th style="width:10%;text-align: center;">OD</th>
 																		<th style="width:10%;text-align: center;">Cutoff</th>
-																		<th style="width:10%;text-align: center;">Result</th>
+																		<th style="width:20%;text-align: center;">Result</th>
 																		<th style="width:10%;text-align: center;">Options</th>
 																	</tr>
 																</thead>
@@ -1444,6 +1561,7 @@ $dtFormat =  $vHelper->getDateFormat();
 																		<th style="text-align: center;">31</th>
 																		<th style="text-align: center;">24</th>
 																		<th style="text-align: center;">17</th>
+																		<th style="text-align: center;">Result</th>
 																		<th style="text-align: center;">Options</th>
 																	</tr>
 																</thead>
@@ -1503,6 +1621,20 @@ $dtFormat =  $vHelper->getDateFormat();
 																							<option value="1" <?php echo (isset($wb['17']) && $wb['17'] == 1) ? "selected='selected'" : ""; ?>>+</option>
 																							<option value="0" <?php echo (isset($wb['17']) && $wb['17'] == 0) ? "selected='selected'" : ""; ?>>-</option>
 																						</select></td>
+																					<td>
+																						<select class="form-control" name="wb[<?php echo $eia['sample_id']; ?>][result][]">
+																							<option value="">--Select--</option>
+																							<?php
+																							foreach ($this->dtsPossibleResults as $pr) {
+																								if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+																							?>
+																									<option value='<?php echo $pr['id']; ?>' <?php echo (isset($pr['id']) && $pr['id'] == $wb['result']) ? "selected='selected'" : ""; ?>><?php echo $pr['response']; ?></option>
+																							<?php
+																								}
+																							}
+																							?>
+																						</select>
+																					</td>
 
 
 																					<td>
