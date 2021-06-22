@@ -1,12 +1,27 @@
 <?php
 
+$assayChoices = '<option value="">--Select--</option>';
+foreach ($this->recencyAssay as $assayId => $assayName) {
+	$assayChoices .= '<option value="' . $assayId . '">' . $assayName . '</option>';
+}
+
 $possibleResults = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 foreach ($this->recencyPossibleResults as $pr) {
-	$possibleResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+	if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+		$possibleResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+	}
 }
 
 $possibleResults .= "</select>";
 
+$testResults = '<option value="">--Select--</option>';
+foreach ($this->recencyPossibleResults as $pr) {
+	if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+		$testResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+	}
+}
+$vHelper = $this->getHelper('DateFormat');
+$dtFormat =  $vHelper->getDateFormat();
 ?>
 
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
@@ -67,16 +82,22 @@ $possibleResults .= "</select>";
 				</select>
 			</td>
 			<td>
+				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleAssay1', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a>
 				<a href="javascript:void(0);" onclick="addRecencyRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
 			</td>
 		</tr>
 	</tbody>
 </table>
 <br>
+<div id="recencyAssayBlockHolder">
 
+</div> <!-- recencyAssayBlockHolder -->
 <script type="text/javascript">
+	var sampleCounter = 1;
 	
 	function addRecencyRow(obj) {
+		sampleCounter++;
+	
 		$(obj.parentNode.parentNode).after('<tr align="center">\
 			<td style="text-align: center">\
 				<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" />\
@@ -120,15 +141,111 @@ $possibleResults .= "</select>";
 				</select>\
 			</td>\
 			<td>\
+				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal("sampleAssay'+sampleCounter+'", 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a>\
 				<a href="javascript:void(0);" onclick="addRecencyRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>\
 				<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 			</td>\
 		</tr>');
+		addNewAssayBlock(sampleCounter);
 	}
 
 	function removeRow(obj) {
 		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});
+	}
+
+	function addNewAssayBlock(sampleId) {
+		$("#recencyAssayBlockHolder").after('<div id="sampleAssay' + sampleId + '" class="dialog">\
+			<span onClick="hidedefModal()" class="closeModal"></span>\
+			<div class="modal-header">\
+				<h4 class="modal-title">Assay</h4>\
+			</div>\
+			<div class="modal-body">\
+				<div class="row">\
+					<div >\
+					<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
+						<thead>\
+							<tr align="center">\
+								<th style="width:20%;text-align: center;">Recency Assay</th>\
+								<th style="width:10%;text-align: center;">Lot</th>\
+								<th style="width:12%;text-align: center;">Expiry</th>\
+								<th style="width:10%;text-align: center;">Result</th>\
+								<th style="width:10%;text-align: center;">Options</th>\
+							</tr>\
+						</thead>\
+						<tbody>\
+							<tr>\
+								<td><select class="form-control" name="assay[' + sampleId + '][assay][]"><?php echo $assayChoices; ?></select></td>\
+								<td><input type="text" name="assay[' + sampleId + '][lot][]" class="form-control"/></td>\
+								<td><input type="text" name="assay[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
+								<td><select class="form-control" name="assay[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
+								<td>\
+									<a href="javascript:void(0);" onclick="addNewAssayRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+								</td>\
+							</tr>\
+						</tbody>\
+					</table>\
+					</div>\
+				</div>\
+				</div>\
+				<div class="modal-footer">\
+					<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleAssay' + sampleId + '\')">OK</button>\
+				</div>\
+			</div>');
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
+	}
+
+	function addNewAssayRow(obj, sampleId) {
+		$(obj.parentNode.parentNode).after('<tr> \
+			<td><select class="form-control" name="assay[' + sampleId + '][assay][]"><?php echo $assayChoices; ?></select></td> \
+			<td><input type="text" name="assay[' + sampleId + '][lot][]" class="form-control"/></td> \
+			<td><input type="text" name="assay[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
+			<td><select class="form-control" name="assay[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
+			<td> \
+				<a href="javascript:void(0);" onclick="addNewAssayRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
+				<a  href="javascript:void(0);" onclick="removeAssayRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+			</td> \
+		</tr>');
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
+	}
+
+	function removeAssayRow(obj) {
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+			$(this).remove();
+			//$('#sampleEia'+sampleId).remove();
+		});
+	}
+
+	$(document).ready(function() {
+		addNewAssayBlock('1');
+		//addNewWbBlock('1');
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
+	});
+
+	function loadCal() {
+		$(".datepicker").removeClass("hasDatepicker");
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		})
+	}
+
+	function closeShipmentModal(divId) {
+		document.getElementById(divId).innerHTML = getEl("mbd").innerHTML;
+
+		$("#mbd input:text").each(function(i, obj) {
+			$("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
+		});
+		$("#mbd select").each(function(i, obj) {
+			$("#" + divId + " select:eq(" + i + ")").val($(this).val());
+		});
+
+		hidedefModal();
 	}
 </script>

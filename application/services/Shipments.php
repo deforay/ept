@@ -1035,8 +1035,6 @@ class Application_Service_Shipments
     public function addShipment($params)
     {
 
-        /* Zend_Debug::dump($params);
-        die; */
         $scheme = $params['schemeId'];
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = new Application_Model_DbTable_Shipments();
@@ -1372,6 +1370,32 @@ class Application_Service_Shipments
                         'sample_score' => 1
                     )
                 );
+
+                // <------ Insert reference_recency_assay table
+                if (isset($params['assay'][$i + 1]['assay'])) {
+                    $assaySize = sizeof($params['assay'][$i + 1]['assay']);
+                    for ($e = 0; $e < $assaySize; $e++) {
+                        if (isset($params['assay'][$i + 1]['assay'][$e]) && trim($params['assay'][$i + 1]['assay'][$e]) != "") {
+                            $expDate = '';
+                            if (trim($params['assay'][$i + 1]['expiry'][$e]) != "") {
+                                $expDate = Pt_Commons_General::dateFormat($params['assay'][$i + 1]['expiry'][$e]);
+                            }
+
+                            $dbAdapter->insert(
+                                'reference_recency_assay',
+                                array(
+                                    'shipment_id' => $lastId,
+                                    'sample_id' => ($i + 1),
+                                    'assay' => $params['assay'][$i + 1]['assay'][$e],
+                                    'lot_no' => $params['assay'][$i + 1]['lot'][$e],
+                                    'expiry_date' => $expDate,
+                                    'result' => $params['assay'][$i + 1]['result'][$e]
+                                )
+                            );
+                        }
+                    }
+                }
+                // ------------------>
             }
         } else if ($params['schemeId'] == 'covid19') {
             for ($i = 0; $i < $size; $i++) {
@@ -1499,6 +1523,7 @@ class Application_Service_Shipments
         $wb = '';
         $rhiv = '';
         $geenius = '';
+        $recencyAssay = '';
 
         $returnArray = array();
 
@@ -1548,6 +1573,8 @@ class Application_Service_Shipments
                 ->where("s.shipment_id = ?", $sid));
             $possibleResults = "";
         } else if ($shipment['scheme_type'] == 'recency') {
+            $recencyAssay = $db->fetchAll($db->select()->from('reference_recency_assay')->where("shipment_id = ?", $sid));
+            $returnArray['recencyAssay'] = $recencyAssay;
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                 ->join(array('ref' => 'reference_result_recency'), 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
@@ -1572,8 +1599,7 @@ class Application_Service_Shipments
 
     public function updateShipment($params)
     {
-        //Zend_Debug::dump($params);die;
-
+        // Zend_Debug::dump($params);die;
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s' => 'shipment'))->where('shipment_id = ' . $params['shipmentId']));
@@ -1887,6 +1913,7 @@ class Application_Service_Shipments
             }
         } else if ($scheme == 'recency') {
             $dbAdapter->delete('reference_result_recency', 'shipment_id = ' . $params['shipmentId']);
+            $dbAdapter->delete('reference_recency_assay', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
                 $dbAdapter->insert(
                     'reference_result_recency',
@@ -1903,6 +1930,31 @@ class Application_Service_Shipments
                         'sample_score' => 1
                     )
                 );
+                // <------ Insert reference_recency_assay table
+                if (isset($params['assay'][$i + 1]['assay'])) {
+                    $assaySize = sizeof($params['assay'][$i + 1]['assay']);
+                    for ($e = 0; $e < $assaySize; $e++) {
+                        if (isset($params['assay'][$i + 1]['assay'][$e]) && trim($params['assay'][$i + 1]['assay'][$e]) != "") {
+                            $expDate = '';
+                            if (trim($params['assay'][$i + 1]['expiry'][$e]) != "") {
+                                $expDate = Pt_Commons_General::dateFormat($params['assay'][$i + 1]['expiry'][$e]);
+                            }
+    
+                            $dbAdapter->insert(
+                                'reference_recency_assay',
+                                array(
+                                    'shipment_id' => $params['shipmentId'],
+                                    'sample_id' => ($i + 1),
+                                    'assay' => $params['assay'][$i + 1]['assay'][$e],
+                                    'lot_no' => $params['assay'][$i + 1]['lot'][$e],
+                                    'expiry_date' => $expDate,
+                                    'result' => $params['assay'][$i + 1]['result'][$e]
+                                )
+                            );
+                        }
+                    }
+                }
+                // ------------------>
             }
         }
         $shipmentAttributes = array();

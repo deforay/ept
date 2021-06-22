@@ -92,6 +92,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             } else if ($sid == 'recency') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->recencyPossibleResults = $scheme->getPossibleResults($sid);
+                $this->view->recencyAssay = $scheme->getRecencyAssay();
             } else if ($sid == 'covid19') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->covid19PossibleResults = $scheme->getPossibleResults($sid);
@@ -154,7 +155,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $sid = (int) base64_decode($this->_getParam('sid'));
                 $shipmentService = new Application_Service_Shipments();
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
-
+                
                 $schemeService = new Application_Service_Schemes();
                 if ($response['shipment']['scheme_type'] == 'dts') {
                     $this->view->wb = $schemeService->getDbsWb();
@@ -167,6 +168,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 } else if ($response['shipment']['scheme_type'] == 'vl') {
 
                     $this->view->vlAssay = $schemeService->getVlAssay();
+                } else if ($response['shipment']['scheme_type'] == 'recency') {
+                    $scheme = new Application_Service_Schemes();
+                    $this->view->recencyPossibleResults = $scheme->getPossibleResults($response['shipment']['scheme_type']);
+                    $this->view->recencyAssay = $scheme->getRecencyAssay();
                 }
 
                 // oOps !! Nothing to edit....

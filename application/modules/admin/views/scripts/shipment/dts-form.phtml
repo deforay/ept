@@ -15,11 +15,12 @@ foreach ($this->dtsPossibleResults as $pr) {
 		$testResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
 	}
 }
-
+$possibleResultsOption = '<option value="">--Select--</option>';
 $possibleResults = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 foreach ($this->dtsPossibleResults as $pr) {
 	if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
 		$possibleResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+		$possibleResultsOption .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
 	}
 }
 
@@ -249,7 +250,7 @@ $dtFormat =  $vHelper->getDateFormat();
 									<td><select name="wb[' + sampleId + '][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
 									<td><select name="wb[' + sampleId + '][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
 									<td><select name="wb[' + sampleId + '][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select class="form-control" name="wb[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
+									<td><select class="form-control" name="wb[' + sampleId + '][result][]"><?php echo $possibleResultsOption; ?></select></td>\
 									<td>\
 										<a href="javascript:void(0);" onclick="addNewWbRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
 									</td>\
@@ -421,7 +422,7 @@ $dtFormat =  $vHelper->getDateFormat();
 							<td><select name="wb[' + sampleWbId + '][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
 							<td><select name="wb[' + sampleWbId + '][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
 							<td><select name="wb[' + sampleWbId + '][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-							<td><select class="form-control" name="wb[' + sampleWbId + '][result][]"><?php echo $testResults; ?></select></td>\
+							<td><select class="form-control" name="wb[' + sampleWbId + '][result][]"><?php echo $possibleResultsOption; ?></select></td>\
 							<td> \
 								<a href="javascript:void(0);" onclick="addNewWbRow(this,' + sampleWbId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
 								<a  href="javascript:void(0);" onclick="removeWbRow(this,' + sampleWbId + ')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
