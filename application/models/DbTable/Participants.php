@@ -928,7 +928,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         // error_log($sQuery);
-
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */

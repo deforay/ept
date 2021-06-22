@@ -3336,9 +3336,17 @@ class Application_Service_Reports
         $firstSheet->setCellValue('K1', html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getStyle('K1:K2')->applyFromArray($borderStyle);
 
+        $firstSheet->mergeCells('L1:L2');
+        $firstSheet->setCellValue('L1', html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyle('L1:L2')->applyFromArray($borderStyle);
+
+        $firstSheet->mergeCells('M1:M2');
+        $firstSheet->setCellValue('M1', html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyle('M1:M2')->applyFromArray($borderStyle);
+
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
-        $colNameCount = 11;
+        $colNameCount = 13;
         $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount)->getColumn();
 
         foreach ($refResult as $refRow) {
@@ -3416,6 +3424,8 @@ class Application_Service_Reports
             $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_test_date']) : "";
             $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode((isset($rowOverAll['shipment_test_date']) && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "")?"Responded":"Not Responded", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['shipment_score'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
             foreach ($resultResponse as $responseRow) {
                 $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
