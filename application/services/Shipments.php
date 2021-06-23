@@ -2421,14 +2421,14 @@ class Application_Service_Shipments
             foreach ($result as $key => $row) {
                 $response[$row['scheme_type']][$key] = array(
                     'shipment_code'         => $row['shipment_code'],
-                    'shipment_score'        => $row['shipment_score'],
+                    'shipment_score'        => (isset($row['shipment_score']) && count($row['shipment_score']) > 0)?$row['shipment_score']:0,
                     'documentation_score'   => $row['documentation_score'],
                     'participantCount'      => $row['participantCount'],
-                    'receivedCount'      => $row['receivedCount'],
+                    'receivedCount'         => (isset($row['receivedCount']) && count($row['receivedCount']) > 0)?$row['receivedCount']:0,
                     'scheme_type'           => $row['scheme_type']
                 );
                 $total['participants'][$row['scheme_type']] += $row['participantCount'];
-                $total['received'][$row['scheme_type']] += $row['receivedCount'];
+                $total['received'][$row['scheme_type']] += (isset($row['receivedCount']) && count($row['receivedCount']) > 0)?$row['receivedCount']:0;
                 $name[$row['scheme_type']] = $row['scheme_name'];
             }
         }
