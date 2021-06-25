@@ -40,13 +40,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $tableName = "reference_result_eid";
             } elseif ($result['scheme_type'] == 'dts') {
                 $tableName = "reference_result_dts";
+            }elseif ($result['scheme_type'] == 'recency') {
+                $tableName = "reference_result_recency";
             }elseif ($result['scheme_type'] == 'covid19') {
                 $tableName = "reference_result_covid19";
             }
             $result['referenceResult'] = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array($tableName))
                 ->where('shipment_id = ? ', $result['shipment_id']));
         }
-
         return $result;
     }
 

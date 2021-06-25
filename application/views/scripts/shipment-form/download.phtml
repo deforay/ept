@@ -407,6 +407,71 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<td colspan="3"></td>';
 	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
+} else if ($this->shipment["scheme_type"] == 'recency') {
+
+	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+		$labInfo .= '<tr style="background-color:#F7F7F7;">';
+			$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
+			$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["shipment_date"]) . '</td>';
+			$labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date</td>';
+			$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+		$labInfo .= '</tr>';
+
+		$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
+			$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
+			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+			$labInfo .= '<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
+			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+		$labInfo .= '</tr>';
+
+		$labInfo .= '<tr style="background-color:#F7F7F7;">';
+			$labInfo .= '<td style="font-weight:bold;width:25%">Testing Date</td> ';
+			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+			$labInfo .= '<td style="font-weight:bold;width:25%">Assay Name</td>';
+			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+		$labInfo .= '</tr>';
+
+		$labInfo .= '<tr style="background-color:#F7F7F7;">';
+			$labInfo .= '<td style="font-weight:bold;width:25%">Assay Lot No</td> ';
+			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+			$labInfo .= '<td style="font-weight:bold;width:25%">Assay Expiry Date</td>';
+			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+		$labInfo .= '</tr>';
+
+	$labInfo .= '</table><br/><br/>';
+
+	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+		$labInfo .= '<tr style="background-color:#CCCCCC;">';
+			$labInfo .= '<td style="text-align:center;font-weight:bold;">Control/Sample</td>';
+			$labInfo .= '<td style="text-align:center;font-weight:bold;">Control Line</td>';
+			$labInfo .= '<td style="text-align:center;font-weight:bold;">Verification Line</td>';
+			$labInfo .= '<td style="text-align:center;font-weight:bold;">Longterm Line</td>';
+			$labInfo .= '<td style="text-align:center;font-weight:bold;">Your Results</td>';
+		$labInfo .= '</tr>';
+		foreach ($this->shipment["referenceResult"] as $sample) {
+			$labInfo .= '<tr style="background-color:#F7F7F7;">';
+				$labInfo .= '<td style="font-weight:bold;">' . $sample['sample_label'] . '</td>';
+				$labInfo .= '<td></td>';
+				$labInfo .= '<td></td>';
+				$labInfo .= '<td></td>';
+				$labInfo .= '<td></td>';
+			$labInfo .= '</tr>';
+		}
+	$labInfo .= '</table><br/><br/>';
+
+	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+		$labInfo .= '<tr style="background-color:#CCCCCC;">';
+			$labInfo .= '<td style="font-weight:bold;">Supervisor Review</td>';
+			$labInfo .= '<td>Yes/No</td>';
+			$labInfo .= '<td style="font-weight:bold;">Supervisor Name</td>';
+			$labInfo .= '<td></td>';
+		$labInfo .= '</tr>';
+
+		$labInfo .= '<tr style="background-color:#F7F7F7;">';
+			$labInfo .= '<td style="font-weight:bold;">Comments</td>';
+			$labInfo .= '<td colspan="3"></td>';
+		$labInfo .= '</tr>';
+	$labInfo .= '</table>';
 } else if ($this->shipment["scheme_type"] == 'covid19') {
 	$maximumAllowed = $this->customConfig->evaluation->covid19->covid19MaximumTestAllowed;
 	if ($this->shipment['number_of_tests'] > 0 && $this->shipment['number_of_tests'] != null & $this->shipment['number_of_tests'] != "") {

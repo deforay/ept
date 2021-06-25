@@ -12,7 +12,10 @@ defined('APPLICATION_ENV')
 defined('CRON_PATH')
     || define('CRON_PATH', realpath(dirname(__FILE__)));
 
-
+// Define path to u directory
+defined('ROOT_PATH')
+    || define('ROOT_PATH', dirname(__DIR__, 1).'/public');
+    
 // Define path to u directory
 defined('UPLOAD_PATH')
     || define('UPLOAD_PATH', realpath(dirname(__FILE__) . '/../public/uploads'));

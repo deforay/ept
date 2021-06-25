@@ -113,6 +113,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
+        $flag = UPLOAD_PATH . '/../images/red-flag.png';
 
         $testThreeOptionalDisplay = "";
         if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
@@ -183,8 +184,13 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
-        $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>';
-
+        $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
+        if(isset($sampleRehydrationDate) && $sampleRehydrationDate != ""){
+            $labInfo .= '<br>' . $sampleRehydrationDate;
+        }else{
+            $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
+        }
+        $labInfo .= '</td>';
         $labInfo .= '	<td><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
         $labInfo .= '</tr>';
 
@@ -195,11 +201,17 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($attributes['algorithm'])) {
             $labInfo .= '	<strong>Algorithm</strong><br>' . ($attributes['algorithm'] == 'myanmarNationalDtsAlgo' ? 'Myanmar National Algorithm' : ucfirst($attributes['algorithm']));
         }
+        
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
         $labInfo .= '	<td>';
-        $labInfo .= '	<strong>Supervisor Name</strong><br>' . ($result['participant_supervisor']);
+        $labInfo .= '	<strong>Supervisor Name</strong>';
+        if(isset($result['participant_supervisor']) && $result['participant_supervisor'] != ""){
+            $labInfo .= '<br>' . ($result['participant_supervisor']);
+        }else{
+            $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
+        }
         $labInfo .= ' </td>';
         $labInfo .= '	<td>';
         if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField1)) {
