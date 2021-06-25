@@ -616,23 +616,23 @@ class Application_Service_Evaluation
 			}
 
 			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
-
+			$db->delete('response_result_eid', "shipment_map_id = ".$params['smid']);
 			for ($i = 0; $i < $size; $i++) {
 
 
-				$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+				/* $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 				$sql = $db->select()->from('response_result_eid')
 					->where("shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
-				$respResult = $db->fetchRow($sql);
+				$respResult = $db->fetchRow($sql); */
 
-				if (false != $respResult) {
+				/* if (false != $respResult) {
 					$resultData = array(
 						'reported_result' => $params['reported'][$i],
 						'updated_by' => $admin,
 						'updated_on' => new Zend_Db_Expr('now()')
 					);
 					$db->update('response_result_eid', $resultData, "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
-				} else {
+				} else { */
 					$resultData = array(
 						'shipment_map_id' => $params['smid'],
 						'sample_id' => $params['sampleId'][$i],
@@ -643,7 +643,7 @@ class Application_Service_Evaluation
 						'created_on' => new Zend_Db_Expr('now()')
 					);
 					$db->insert('response_result_eid', $resultData);
-				}
+				// }
 			}
 		} else if ($params['scheme'] == 'dts') {
 
@@ -728,13 +728,13 @@ class Application_Service_Evaluation
 			}
 
 			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
-
-			$shipmentOverall = $db->fetchRow($db->select()->from('response_result_vl')
-				->where("shipment_map_id = ?", $params['smid']));
+			$db->delete('response_result_vl', "shipment_map_id = ".$params['smid']);
+			/* $shipmentOverall = $db->fetchRow($db->select()->from('response_result_vl')
+			->where("shipment_map_id = ?", $params['smid'])); */
 			$resVlDb = new Application_Model_DbTable_ResponseVl();
 
 			for ($i = 0; $i < $size; $i++) {
-				if (!$shipmentOverall) {
+				// if (!$shipmentOverall) {
 					$resData = array(
 						'shipment_map_id' 		=> $params['smid'],
 						'vl_assay' 				=> $params['vlAssay'],
@@ -746,14 +746,14 @@ class Application_Service_Evaluation
 						'updated_on' 			=> new Zend_Db_Expr('now()')
 					);
 					$id = $resVlDb->insert($resData);
-				} else {
-					$resData = array(
-						'reported_viral_load'	=> $params['reported'][$i],
-						'updated_by' 			=> $admin,
-						'updated_on' 			=> new Zend_Db_Expr('now()')
-					);
-					$id = $resVlDb->update($resData, "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
-				}
+				// } else {
+				// 	$resData = array(
+				// 		'reported_viral_load'	=> $params['reported'][$i],
+				// 		'updated_by' 			=> $admin,
+				// 		'updated_on' 			=> new Zend_Db_Expr('now()')
+				// 	);
+				// 	$id = $resVlDb->update($resData, "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+				// }
 			}
 		} else if ($params['scheme'] == 'dbs') {
 			for ($i = 0; $i < $size; $i++) {

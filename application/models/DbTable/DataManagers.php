@@ -28,7 +28,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'created_on' => new Zend_Db_Expr('now()')
         );
         $dmId = $this->insert($data);
-        if (isset($params['allparticipant']) && count($params['allparticipant'] > 0)) {
+        if (isset($params['allparticipant']) && count($params['allparticipant']) > 0) {
             $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
             foreach ($params['allparticipant'] as $participant) {
