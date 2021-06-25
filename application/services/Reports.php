@@ -1371,7 +1371,7 @@ class Application_Service_Reports
             )
         );
 
-        $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'))
+        $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples', 'number_of_controls'))
             ->where("shipment_id = ?", $shipmentId);
         $result = $db->fetchRow($query);
 
@@ -1545,7 +1545,6 @@ class Application_Service_Reports
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             array_push($reportHeadings, 'Test#3 Name', 'Kit Lot #', 'Expiry Date');
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-            $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             array_push($reportHeadings, 'Comments');
         }
 
@@ -1559,9 +1558,9 @@ class Application_Service_Reports
         $colNo = 0;
         $currentRow = 2;
         $n = count($reportHeadings);
-        $finalResColoumn = $n - ($result['number_of_samples'] + 1);
+        $finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
         $c = 1;
-        $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
+        $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 1;
 
         $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn, 1)->getColumn();
         $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell, 1)->getColumn();
@@ -1581,7 +1580,7 @@ class Application_Service_Reports
             $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle);
 
             if ($colNo >= $finalResColoumn) {
-                if ($c <= $result['number_of_samples']) {
+                if ($c <= ($result['number_of_samples'] + $result['number_of_controls'])) {
 
                     $sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
                     $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
@@ -1621,7 +1620,7 @@ class Application_Service_Reports
         $sheetThreeColNo = 0;
         $sheetThreeRow = 1;
         $panelScoreHeadingCount = count($panelScoreHeadings);
-        $sheetThreeColor = 1 + $result['number_of_samples'];
+        $sheetThreeColor = 1 + $result['number_of_samples'] + $result['number_of_controls'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
             $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheetThree->getStyleByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getFont()->setBold(true);
@@ -1732,7 +1731,7 @@ class Application_Service_Reports
                         $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][0]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
                         $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][0]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
 
-                        $kitId = $kitId + $aRow['number_of_samples'];
+                        $kitId = $kitId + $aRow['number_of_samples'] + $aRow['number_of_controls'];
                         if (isset($row['kitReference'][1]['referenceKitResult'])) {
                             //In Excel Third row added the Test kit name2,kit lot,exp date
                             if (trim($row['kitReference'][1]['expiry_date']) != "") {
@@ -1742,7 +1741,7 @@ class Application_Service_Reports
                             $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][1]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
                             $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][1]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
                         }
-                        $kitId = $kitId + $aRow['number_of_samples'];
+                        $kitId = $kitId + $aRow['number_of_samples'] + $aRow['number_of_controls'];
                         if (isset($row['kitReference'][2]['referenceKitResult'])) {
                             //In Excel Third row added the Test kit name3,kit lot,exp date
                             if (trim($row['kitReference'][2]['expiry_date']) != "") {
@@ -1755,12 +1754,12 @@ class Application_Service_Reports
                     }
 
                     $sheet->getCellByColumnAndRow($ktr, 3)->setValueExplicit($row['kitReference'][0]['referenceKitResult'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $ktr = ($aRow['number_of_samples'] - $keyv) + $ktr + 3;
+                    $ktr = ($aRow['number_of_samples'] + $aRow['number_of_controls'] - $keyv) + $ktr + 3;
 
                     if (isset($row['kitReference'][1]['referenceKitResult'])) {
                         $ktr = $ktr + $keyv;
                         $sheet->getCellByColumnAndRow($ktr, 3)->setValueExplicit($row['kitReference'][1]['referenceKitResult'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $ktr = ($aRow['number_of_samples'] - $keyv) + $ktr + 3;
+                        $ktr = ($aRow['number_of_samples'] + $aRow['number_of_controls'] - $keyv) + $ktr + 3;
                     }
                     if (isset($row['kitReference'][2]['referenceKitResult'])) {
                         $ktr = $ktr + $keyv;
@@ -1910,7 +1909,7 @@ class Application_Service_Reports
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_1'], PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_1'], PHPExcel_Cell_DataType::TYPE_STRING);
 
-                    for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
+                    for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                         //$row[] = $aRow[$k]['testResult1'];
                         $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult1'], PHPExcel_Cell_DataType::TYPE_STRING);
                     }
@@ -1918,7 +1917,7 @@ class Application_Service_Reports
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], PHPExcel_Cell_DataType::TYPE_STRING);
 
-                    for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
+                    for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                         //$row[] = $aRow[$k]['testResult2'];
                         $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], PHPExcel_Cell_DataType::TYPE_STRING);
                     }
@@ -1926,12 +1925,12 @@ class Application_Service_Reports
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], PHPExcel_Cell_DataType::TYPE_STRING);
 
-                    for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
+                    for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                         //$row[] = $aRow[$k]['testResult3'];
                         $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], PHPExcel_Cell_DataType::TYPE_STRING);
                     }
 
-                    for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
+                    for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                         //$row[] = $aRow[$k]['finalResult'];
                         $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['finalResult'], PHPExcel_Cell_DataType::TYPE_STRING);
 
@@ -2104,7 +2103,7 @@ class Application_Service_Reports
         $firstSheet->getColumnDimensionByColumn(1)->setWidth(100);
 
         $firstSheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode("Results Reported", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode("This tab should include no commentary from NPHRL or GHSS staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.  Dropdown menu legend is as followed: negative (NEG), positive (POS), invalid (INV), indeterminate (IND), not entered or reported (NE), not tested (NT) and should be used according to the way the site reported it.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode("This tab should include no commentary from PT Admin staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.  Dropdown menu legend is as followed: negative (NEG), positive (POS), invalid (INV), indeterminate (IND), not entered or reported (NE), not tested (NT) and should be used according to the way the site reported it.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
         $firstSheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode("Panel Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $firstSheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode("This tab is automatically populated.  Panel score calculated 6/6.  If a panel member must be omitted from the calculation (ie, loss of sample, etc) you must revise the equation manually by changing the number 6 to 5,4,etc. accordingly. Example seen for Akai House Clinic.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);

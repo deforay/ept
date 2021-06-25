@@ -24,7 +24,7 @@ class Application_Model_Dts
 		foreach ($shipmentResult as $shipment) {
 			//Zend_Debug::dump($shipment);
 
-			//$shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
+			$shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
 			$createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
 			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
@@ -749,6 +749,7 @@ class Application_Model_Dts
 					$finalResult = 2;
 					$shipmentResult[$counter]['is_followup'] = 'yes';
 				} else {
+					$shipment['is_excluded'] = 'no';
 					$finalResult = 1;
 				}
 				$shipmentResult[$counter]['shipment_score'] = $responseScore;
