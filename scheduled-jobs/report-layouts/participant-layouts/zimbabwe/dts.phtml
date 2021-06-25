@@ -282,7 +282,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $wrongSamples = array();
             $otherSamples = array();
             $allSamples = array();
-
+            $mandatorySampleCount = 0;
             foreach ($result['responseResult'] as $response) {
                 $allSamples[] = $response['sample_label'];
                 if ($response['control'] == 1) {
@@ -291,12 +291,15 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 if ($response['mandatory'] == 0) {
                     $nonMandatorySamples[] = $response['sample_label'];
-                } else if ($response['calculated_score'] == 'Pass') {
-                    $correctSamples[] = $response['sample_label'];
-                } else if ($response['calculated_score'] == 'Fail') {
-                    $wrongSamples[] = $response['sample_label'];
                 } else {
-                    $otherSamples[] = $response['sample_label'];
+                    $mandatorySampleCount++;
+                    if ($response['calculated_score'] == 'Pass') {
+                        $correctSamples[] = $response['sample_label'];
+                    } else if ($response['calculated_score'] == 'Fail') {
+                        $wrongSamples[] = $response['sample_label'];
+                    } else {
+                        $otherSamples[] = $response['sample_label'];
+                    }
                 }
             }
 
@@ -304,8 +307,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             $totalProperSamples = $correctSamplesCount + count($wrongSamples);
             $maxDocumentationPoints = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore) : 0;
             $maximumResponseScore = 100 - $maxDocumentationPoints;
-            $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
-
+            // $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
+            $scorePerCorrectSample = round($maximumResponseScore / $mandatorySampleCount, 2);
             foreach ($result['responseResult'] as $response) {
 
                 if ($response['calculated_score'] == 'Pass') {
