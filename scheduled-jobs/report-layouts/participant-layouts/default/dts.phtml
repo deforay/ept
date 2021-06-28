@@ -206,13 +206,18 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
         $labInfo .= '	<td>';
+            $labInfo .= '<strong>Supervisor Review</strong>';
+            $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+        $labInfo .= '</td><td>';
         $labInfo .= '	<strong>Supervisor Name</strong>';
         if(isset($result['participant_supervisor']) && $result['participant_supervisor'] != ""){
             $labInfo .= '<br>' . ($result['participant_supervisor']);
         }else{
             $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
         }
-        $labInfo .= ' </td>';
+        $labInfo .= '</td><td></td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';        
         $labInfo .= '	<td>';
         if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField1)) {
             $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
@@ -223,6 +228,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '<strong>' . $customField2 . '</strong> <br>' . (!empty($result['custom_field_2']) ? $result['custom_field_2'] : '');
         }
         $labInfo .= ' </td>';
+        $labInfo .= ' <td></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';

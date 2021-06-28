@@ -203,9 +203,15 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
-        $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;">';
-        $labInfo .= '	<strong>Supervisor Name</strong><br>' . ($result['participant_supervisor']);
-        $labInfo .= ' </td>';
+            $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
+                $labInfo .= '<strong>Supervisor Review</strong>';
+                $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+            $labInfo .= '	</td><td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
+                $labInfo .= '	<strong>Supervisor Name</strong>';
+                $labInfo .= '<br>' . ($result['participant_supervisor']);
+            $labInfo .= '</td><td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"></td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
         $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;">';
         if (isset($haveCustom) && $haveCustom == 'yes') {
             $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . $totParticipantsRes['custom_field_1'];
@@ -216,6 +222,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '	<strong>' . $customField2 . '</strong> <br>' . $totParticipantsRes['custom_field_2'];
         }
         $labInfo .= ' </td>';
+        $labInfo .= '<td style="border-color:white;border-spacing: 25px;border-collapse: separate;"></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
