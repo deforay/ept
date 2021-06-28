@@ -298,10 +298,10 @@ class Application_Service_Schemes
         return $db->fetchAll($sql);
     }
 
-    public function getEidReferenceData($shipmentId)
+    public function getRecencyReferenceData($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('reference_result_eid'))
+        $sql = $db->select()->from(array('reference_result_recency'))
             ->where('shipment_id = ? ', $shipmentId);
         return $db->fetchAll($sql);
     }

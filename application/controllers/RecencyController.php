@@ -99,7 +99,7 @@ class RecencyController extends Zend_Controller_Action
 		$participantService = new Application_Service_Participants();
 		$this->view->participant = $participantService->getParticipantDetails($pID);
 		$schemeService = new Application_Service_Schemes();
-		$this->view->referenceDetails = $schemeService->getEidReferenceData($sID);
+		$this->view->referenceDetails = $schemeService->getRecencyReferenceData($sID);
 
 		$shipment = $schemeService->getShipmentData($sID, $pID);
 		$shipment['attributes'] = json_decode($shipment['attributes'], true);
