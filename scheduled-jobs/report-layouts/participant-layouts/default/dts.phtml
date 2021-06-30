@@ -207,7 +207,14 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td>';
             $labInfo .= '<strong>Supervisor Review</strong>';
-            $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+            if(isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes"){
+                $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+            } else if(isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no"){
+                $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
+                $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+            }else{
+                $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
+            }
         $labInfo .= '</td><td>';
         $labInfo .= '	<strong>Supervisor Name</strong>';
         if(isset($result['participant_supervisor']) && $result['participant_supervisor'] != ""){
