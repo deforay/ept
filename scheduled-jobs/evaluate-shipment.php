@@ -678,6 +678,6 @@ try {
     error_log($e->getMessage());
     echo ($e->getMessage()) . PHP_EOL;
     error_log($e->getTraceAsString());
-    echo ('whoops! Something went wrong in scheduled-jobs/evaluate-shipment.php  - ' . $evalRow['shipment_id']);
-    error_log('whoops! Something went wrong in crscheduled-jobson/evaluate-shipment.php  - ' . $evalRow['shipment_id']);
+    echo ('whoops! Something went wrong in scheduled-jobs/evaluate-shipment.php');
+    error_log('whoops! Something went wrong in scheduled-jobs/evaluate-shipment.php');
 }

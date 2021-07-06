@@ -44,7 +44,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'],"",$trainingInstanceText);
+        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $trainingInstanceText);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -145,6 +145,17 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
             $sampleRehydrationDate = $general->humanDateFormat($attributes['sample_rehydration_date']);
         }
+
+        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        $srDate = new DateTime($attributes['sample_rehydration_date']);
+        $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
+        $interval = $srDate->diff($testedOnDate);
+
+        // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
+        $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+        $rehydrateHours = $sampleRehydrateDays * 24;
+
+
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
             $shipmentReceiptDate = $general->humanDateFormat($result['responseResult'][0]['shipment_receipt_date']);
@@ -185,11 +196,13 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
         $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
-        if(isset($sampleRehydrationDate) && $sampleRehydrationDate != ""){
-            $labInfo .= '<br>' . $sampleRehydrationDate;
-        }else{
-            $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
+        if (empty($sampleRehydrationDate) || ($interval->days > $sampleRehydrateDays)) {
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
+        if (isset($sampleRehydrationDate) && $sampleRehydrationDate != "") {
+            $labInfo .= '<br>' . $sampleRehydrationDate;
+        }
+
         $labInfo .= '</td>';
         $labInfo .= '	<td><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
         $labInfo .= '</tr>';
@@ -201,30 +214,30 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($attributes['algorithm'])) {
             $labInfo .= '	<strong>Algorithm</strong><br>' . ($attributes['algorithm'] == 'myanmarNationalDtsAlgo' ? 'Myanmar National Algorithm' : ucfirst($attributes['algorithm']));
         }
-        
+
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
         $labInfo .= '	<td>';
-            $labInfo .= '<strong>Supervisor Review</strong>';
-            if(isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes"){
-                $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
-            } else if(isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no"){
-                $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
-                $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
-            }else{
-                $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
-            }
+        $labInfo .= '<strong>Supervisor Review</strong>';
+        if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
+            $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+        } else if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
+            $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+        } else {
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
+        }
         $labInfo .= '</td><td>';
         $labInfo .= '	<strong>Supervisor Name</strong>';
-        if(isset($result['participant_supervisor']) && $result['participant_supervisor'] != ""){
+        if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
             $labInfo .= '<br>' . ($result['participant_supervisor']);
-        }else{
-            $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
+        } else {
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
         $labInfo .= '</td><td></td>';
         $labInfo .= '</tr>';
-        $labInfo .= '<tr>';        
+        $labInfo .= '<tr>';
         $labInfo .= '	<td>';
         if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField1)) {
             $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
@@ -468,15 +481,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 							<td style="text-align:center;">' . $scoreDoc . '</td>
 					</tr>';
 
-            $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-            $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
-            $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
-            $interval = $sampleRehydrationDate->diff($testedOnDate);
-
-            // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-            $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
-            $rehydrateHours = $sampleRehydrateDays * 24;
-
+            
             if ($interval->days > $sampleRehydrateDays) {
                 $scoreDoc = 0;
                 $img = $imgFail;

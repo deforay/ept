@@ -4,7 +4,7 @@ class Application_Model_Recency
 {
 
     private $db = null;
-    private $failureReason = array();
+    public $failureReason = array();
     public function __construct($db = null)
     {
         $this->db = $db;
@@ -21,7 +21,7 @@ class Application_Model_Recency
 
         $possibleResultsArray = $schemeService->getPossibleResults('recency');
         $possibleResults = array();
-        foreach($possibleResultsArray as $pr){
+        foreach ($possibleResultsArray as $pr) {
             $possibleResults['result_code'] =  $possibleResults['id'];
         }
 
@@ -45,9 +45,10 @@ class Application_Model_Recency
                 $attributes = json_decode($shipment['attributes'], true);
                 $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
                 $results = $schemeService->getRecencySamples($shipmentId, $shipment['participant_id']);
-                
 
-                $documentationScore = $this->getDocumentationScore($results, $attributes, $shipmentAttributes);
+
+                $documentationScoreArray = $this->getDocumentationScore($results, $attributes, $shipmentAttributes);
+                $documentationScore = $documentationScoreArray['documentationScore'];
 
                 $totalScore = 0;
                 $maxScore = 0;
@@ -60,9 +61,6 @@ class Application_Model_Recency
                     $controlLine = $result['control_line'];
                     $verificationLine = $result['diagnosis_line'];
                     $longtermLine = $result['longterm_line'];
-
-
-
 
                     // matching reported and reference results
                     if (isset($result['reported_result']) && $result['reported_result'] != null) {
@@ -84,12 +82,14 @@ class Application_Model_Recency
                         $maxScore += $result['sample_score'];
                     }
 
-                    
+
                     $isAlgoWrong = false;
 
                     if (empty($controlLine) || empty($verificationLine) || empty($longtermLine)) {
                         $isAlgoWrong = true;
                     } else if ($controlLine == 'absent') {
+                        $isAlgoWrong = true;
+                    } else if ($verificationLine == 'absent') {
                         $isAlgoWrong = true;
                     }
 
@@ -149,6 +149,15 @@ class Application_Model_Recency
                 } else {
                     $scoreResult = 'Pass';
                 }
+
+                if (!empty($documentationScoreArray['failureReasons'])) {
+                    $this->failureReason = array_merge($this->failureReason, $documentationScoreArray['failureReasons']);
+                }
+
+
+                // echo "<pre>";
+                // var_dump($this->failureReason);
+                // echo "</pre>";
 
                 // if we are excluding this result, then let us not give pass/fail				
                 if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
@@ -213,6 +222,8 @@ class Application_Model_Recency
     {
 
 
+        $failureReasonsArray = array();
+
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
@@ -220,6 +231,10 @@ class Application_Model_Recency
         $documentationScore = 0;
         $documentationPercentage = !empty($config->evaluation->recency->documentationScore) ? $config->evaluation->recency->documentationScore : 10;
 
+
+        if (empty($shipmentAttributes['sampleType'])) {
+            $shipmentAttributes['sampleType'] = 'dried'; // in case sampleType is not set, we will treat it as dried
+        }
 
 
         if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
@@ -235,10 +250,10 @@ class Application_Model_Recency
         if (isset($results[0]['shipment_receipt_date']) && strtolower($results[0]['shipment_receipt_date']) != '') {
             $documentationScore += $documentationScorePerItem;
         } else {
-            /* $this->failureReason[] = array(
-                'warning' => "Shipment Receipt Date not provided",
-                'correctiveAction' => "Provide Shipment Receipt Date"
-            ); */
+            $failureReasonsArray[] =  array(
+                'warning' => "Panel Receipt date not provided",
+                'correctiveAction' => "Review and refer to SOP for testing. Panel Receipt Date needs to be provided."
+            );
         }
 
         //D.3
@@ -247,10 +262,10 @@ class Application_Model_Recency
             if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
                 $documentationScore += $documentationScorePerItem;
             } else {
-                /* $this->failureReason[] = array(
-                    'warning' => "Missing reporting rehydration date for Shipment Panel",
-                    'correctiveAction' => "Provide Shipment rehydration Date"
-                ); */
+                $failureReasonsArray[] =  array(
+                    'warning' => "Specimen Rehydration date not provided",
+                    'correctiveAction' => "Review and refer to National SOP for testing.  Specimen Rehydration date needs to be provided."
+                );
             }
         }
 
@@ -258,10 +273,10 @@ class Application_Model_Recency
         if (isset($results[0]['shipment_test_date']) && trim($results[0]['shipment_test_date']) != "") {
             $documentationScore += $documentationScorePerItem;
         } else {
-            /* $this->failureReason[] = array(
-                'warning' => "Shipment test date not provided",
-                'correctiveAction' => "Provide Shipment test date"
-            ); */
+            $failureReasonsArray[] =  array(
+                'warning' => "Panel test date not provided",
+                'correctiveAction' => "Review and refer to National SOP for testing. Panel test date needs to be provided."
+            );
         }
 
         //D.7
@@ -277,11 +292,11 @@ class Application_Model_Recency
             $sampleRehydrateDays = $config->evaluation->recency->sampleRehydrateDays;
             $rehydrateHours = $sampleRehydrateDays * 24;
 
-            if ($interval->days > $sampleRehydrateDays) {
-                /* $this->failureReason[] = array(
-                    'warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
-                    'correctiveAction' => "Testing should be done within $rehydrateHours hours of rehydration."
-                ); */
+            if (empty($attributes['sample_rehydration_date']) || $interval->days > $sampleRehydrateDays) {
+                $failureReasonsArray[] = array(
+                    'warning' => "Testing not done within $rehydrateHours hours of rehydration.",
+                    'correctiveAction' => "Review and refer to National SOP for testing. Testing should be done within $rehydrateHours hours of rehydration."
+                );
             } else {
                 $documentationScore += $documentationScorePerItem;
             }
@@ -291,11 +306,11 @@ class Application_Model_Recency
         if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
             $documentationScore += $documentationScorePerItem;
         } else {
-            /* $this->failureReason[] = array(
-                'warning' => "Supervisor approval absent",
-                'correctiveAction' => "Provide Supervisor approval",
-            ); */
+            $failureReasonsArray[] = array(
+                'warning' => "Supervisor approval not recorded",
+                'correctiveAction' => "Review and refer to National SOP for testing. Supervisor approval is mandatory",
+            );
         }
-        return $documentationScore;
+        return array('documentationScore' => $documentationScore, 'failureReasons' => $failureReasonsArray);
     }
 }

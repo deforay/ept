@@ -149,8 +149,9 @@ if (count($this->shipment) > 0) {
                 }
                 $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
                 $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
-                $indiualReports = "";
-                if ($shipment['status'] == 'evaluated') {
+                $individualReports = "";
+                $invididualFilePath = "";
+                if ($shipment['status'] == 'evaluated' && $shipment['final_result'] != 3) {
                     $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $shipment['map_id'] . ".pdf");
                     if (!file_exists($invididualFilePath)) {
                         // Search this file name using the map id
@@ -158,7 +159,7 @@ if (count($this->shipment) > 0) {
                         $invididualFilePath = isset($files[0]) ? $files[0] : '';
                     }
                     if (file_exists($invididualFilePath) && $reportQueue != 'disabled') {
-                        $indiualReports .= '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_BLANK" download><i class="icon icon-download"></i> Download Report</a>';
+                        $individualReports .= '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_BLANK" download><i class="icon icon-download"></i> Download Report</a>';
                     }
                 } ?>
                 <tr>
@@ -167,7 +168,7 @@ if (count($this->shipment) > 0) {
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
-                    <td style="text-align:left;vertical-align:middle;"><?php echo $indiualReports; ?></td>
+                    <td style="text-align:left;vertical-align:middle;"><?php echo $individualReports; ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
                 </tr>
             <?php }

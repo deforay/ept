@@ -643,7 +643,7 @@ class Application_Model_Dts
 
 
 			// D.1
-			if (isset($results[0]['shipment_receipt_date']) && strtolower($results[0]['shipment_receipt_date']) != '') {
+			if (isset($results[0]['shipment_receipt_date']) && !empty($results[0]['shipment_receipt_date'])) {
 				$documentationScore += $documentationScorePerItem;
 			} else {
 				$failureReason[] = array(
@@ -691,7 +691,7 @@ class Application_Model_Dts
 				$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
 				$rehydrateHours = $sampleRehydrateDays * 24;
 
-				if ($interval->days > $sampleRehydrateDays) {
+				if (empty($attributes['sample_rehydration_date']) || $interval->days > $sampleRehydrateDays) {
 					$failureReason[] = array(
 						'warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
 						'correctiveAction' => $correctiveActions[14]
@@ -705,7 +705,7 @@ class Application_Model_Dts
 			//D.8
 			// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
 			if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-				$documentationScore += $documentationScorePerItem;
+				//$documentationScore += $documentationScorePerItem;
 			} else {
 				if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
 					$documentationScore += $documentationScorePerItem;
@@ -734,7 +734,7 @@ class Application_Model_Dts
 			// if we are excluding this result, then let us not give pass/fail				
 			if ($shipment['is_excluded'] == 'yes') {
 				$finalResult = '';
-				$shipment['is_excluded'] == 'yes';
+				$shipment['is_excluded'] = 'yes';
 				$shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
 				$shipmentResult[$counter]['documentation_score'] = 0;
 				$shipmentResult[$counter]['display_result'] = '';

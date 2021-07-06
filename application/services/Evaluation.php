@@ -616,7 +616,7 @@ class Application_Service_Evaluation
 			}
 
 			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
-			$db->delete('response_result_eid', "shipment_map_id = ".$params['smid']);
+			$db->delete('response_result_eid', "shipment_map_id = " . $params['smid']);
 			for ($i = 0; $i < $size; $i++) {
 
 
@@ -633,16 +633,16 @@ class Application_Service_Evaluation
 					);
 					$db->update('response_result_eid', $resultData, "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
 				} else { */
-					$resultData = array(
-						'shipment_map_id' => $params['smid'],
-						'sample_id' => $params['sampleId'][$i],
-						'reported_result' => $params['reported'][$i],
-						'hiv_ct_od' => '',
-						'ic_qs' => '',
-						'created_by' => $admin,
-						'created_on' => new Zend_Db_Expr('now()')
-					);
-					$db->insert('response_result_eid', $resultData);
+				$resultData = array(
+					'shipment_map_id' => $params['smid'],
+					'sample_id' => $params['sampleId'][$i],
+					'reported_result' => $params['reported'][$i],
+					'hiv_ct_od' => '',
+					'ic_qs' => '',
+					'created_by' => $admin,
+					'created_on' => new Zend_Db_Expr('now()')
+				);
+				$db->insert('response_result_eid', $resultData);
 				// }
 			}
 		} else if ($params['scheme'] == 'dts') {
@@ -728,24 +728,24 @@ class Application_Service_Evaluation
 			}
 
 			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
-			$db->delete('response_result_vl', "shipment_map_id = ".$params['smid']);
+			$db->delete('response_result_vl', "shipment_map_id = " . $params['smid']);
 			/* $shipmentOverall = $db->fetchRow($db->select()->from('response_result_vl')
 			->where("shipment_map_id = ?", $params['smid'])); */
 			$resVlDb = new Application_Model_DbTable_ResponseVl();
 
 			for ($i = 0; $i < $size; $i++) {
 				// if (!$shipmentOverall) {
-					$resData = array(
-						'shipment_map_id' 		=> $params['smid'],
-						'vl_assay' 				=> $params['vlAssay'],
-						'sample_id' 			=> $params['sampleId'][$i],
-						'reported_viral_load' 	=> $params['reported'][$i],
-						'created_by' 			=> $admin,
-						'created_on' 			=> new Zend_Db_Expr('now()'),
-						'updated_by' 			=> $admin,
-						'updated_on' 			=> new Zend_Db_Expr('now()')
-					);
-					$id = $resVlDb->insert($resData);
+				$resData = array(
+					'shipment_map_id' 		=> $params['smid'],
+					'vl_assay' 				=> $params['vlAssay'],
+					'sample_id' 			=> $params['sampleId'][$i],
+					'reported_viral_load' 	=> $params['reported'][$i],
+					'created_by' 			=> $admin,
+					'created_on' 			=> new Zend_Db_Expr('now()'),
+					'updated_by' 			=> $admin,
+					'updated_on' 			=> new Zend_Db_Expr('now()')
+				);
+				$id = $resVlDb->insert($resData);
 				// } else {
 				// 	$resData = array(
 				// 		'reported_viral_load'	=> $params['reported'][$i],
@@ -880,8 +880,8 @@ class Application_Service_Evaluation
 			}
 
 			/* Save Gene Type */
-            $geneIdentifyTypesDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
-            $geneIdentifyTypesDb->saveCovid19IdentifiedGenesResults($params);
+			$geneIdentifyTypesDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
+			$geneIdentifyTypesDb->saveCovid19IdentifiedGenesResults($params);
 		}
 
 		$params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] != "") ? $params['isFollowUp'] : "no";
@@ -923,17 +923,15 @@ class Application_Service_Evaluation
 	public function getShipmentToEvaluateReports($shipmentId, $reEvaluate = false)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
+		$sql = $db->select()
+			->from(array('sp' => 'shipment_participant_map'))
+			->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id')
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('first_name', 'last_name', 'lab_name', 'unique_identifier', 'country'))
 			->join(array('c' => 'countries'), 'p.country=c.id', array('country_name' => 'iso_name'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result')
-			->where("s.shipment_id = ?", $shipmentId)
-			//->where("p.country = 220")
-			//->where("substring(sp.evaluation_status,4,1) != '0'")
-		;
+			->where("s.shipment_id = ?", $shipmentId);
 		$shipmentResult = $db->fetchAll($sql);
 		return $shipmentResult;
 	}
@@ -1374,23 +1372,24 @@ class Application_Service_Evaluation
 
 				$shipmentResult['referenceResult'] = $sqlRes;
 
-				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes', 'spm.is_excluded',
+				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(
+					'spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes', 'spm.is_excluded',
 					'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2 AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
 					'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
 					'totalScore' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score)"),
 					'0-59' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 0 AND SUM(spm.documentation_score+spm.shipment_score) <= 59"),
 					'60-69' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 60 AND SUM(spm.documentation_score+spm.shipment_score) <= 69"),
-					'70-'.$pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 70 AND SUM(spm.documentation_score+spm.shipment_score) <= $pass"),
-					'above '.$pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass"),
+					'70-' . $pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 70 AND SUM(spm.documentation_score+spm.shipment_score) <= $pass"),
+					'above ' . $pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass"),
 					'failed' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass AND spm.final_result = 2"),
 				))
-				->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array(''))
-				->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
-				->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
-				->where("spm.shipment_id = ?", $shipmentId)
-				->where("spm.final_result IS NOT NULL")
-				->where("spm.final_result !=''")
-				->group('spm.map_id');
+					->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array(''))
+					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
+					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
+					->where("spm.shipment_id = ?", $shipmentId)
+					->where("spm.final_result IS NOT NULL")
+					->where("spm.final_result !=''")
+					->group('spm.map_id');
 				// die($sQuery);
 				$sQueryRes = $db->fetchAll($sQuery);
 				if (count($sQueryRes) > 0) {
@@ -1410,9 +1409,9 @@ class Application_Service_Evaluation
 					$shipmentResult['summaryResult'][] = $sQueryRes;
 					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
 
-					$kitNameRes = $db->fetchAll($db->select()->from(array('rtdts'=>'r_testkitname_dts'))
-					->where("scheme_type='dts'"));
-					
+					$kitNameRes = $db->fetchAll($db->select()->from(array('rtdts' => 'r_testkitname_dts'))
+						->where("scheme_type='dts'"));
+
 					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(''))
 						->join(array('resdts' => 'response_result_dts'), 'resdts.shipment_map_id=spm.map_id', array(
 							'testkit1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resdts.test_kit_name_1,resdts.shipment_map_id)))')
@@ -1428,7 +1427,7 @@ class Application_Service_Evaluation
 					$shipmentResult['pieChart'] = $rQueryRes;
 				}
 				// DTS Participants Perfomance chart
-				$sQuery = $db->select()->from(array('s' => 'shipment'),array('shipment_code'))
+				$sQuery = $db->select()->from(array('s' => 'shipment'), array('shipment_code'))
 					->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array(''))
 					->join(
 						array('sp' => 'shipment_participant_map'),
@@ -1441,7 +1440,7 @@ class Application_Service_Evaluation
 							"pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
 						)
 					)->where("s.shipment_id = ?", $shipmentId);
-					// die($sQuery);
+				// die($sQuery);
 				$shipmentResult['participantBeforeAfterDueChart'] = $db->fetchRow($sQuery);
 
 				// DTS Aberrant test result chart
@@ -1485,7 +1484,7 @@ class Application_Service_Evaluation
 					->where("s.shipment_id = ?", $shipmentId)
 					// ->group(array('p.network_tier'));
 					->group(array('p.department_name'));
-					// die($sQuery);
+				// die($sQuery);
 				$rResult = $db->fetchAll($sQuery);
 				$row = array();
 				$row['totalN'] = 0;
@@ -1496,7 +1495,7 @@ class Application_Service_Evaluation
 					$row['afterDueDate'][$key]      = round($aRow['afterDueDate'], 2);
 					$row['fail_percentage'][$key]   = round($aRow['fail_percentage'], 2);
 					$row['departmentCount'][$key]   = round($aRow['departmentCount'], 2);
-					$row['totalN']+=$aRow['departmentCount'];
+					$row['totalN'] += $aRow['departmentCount'];
 				}
 				$shipmentResult['participantAberrantDepartmentChart'] = $row;
 
@@ -1505,13 +1504,12 @@ class Application_Service_Evaluation
 					->where("spm.shipment_id = ?", $shipmentId);
 				$shipmentResult['participantScores'] = $db->fetchAll($sql);
 
-				$sitesSql = $db->select()->from(array('p' => 'participant'), array('department_name','totalSites' => new Zend_Db_Expr('COUNT(department_name)')))
+				$sitesSql = $db->select()->from(array('p' => 'participant'), array('department_name', 'totalSites' => new Zend_Db_Expr('COUNT(department_name)')))
 					->join(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id', array(''))
 					->where("spm.shipment_id = ?", $shipmentId)
 					->group('p.department_name')
 					->order('totalSites DESC');
 				$shipmentResult['siteChart'] = $db->fetchAll($sitesSql);
-
 			} else if ($shipmentResult['scheme_type'] == 'recency') {
 				$sql = $db->select()->from(array('refrecency' => 'reference_result_recency'), array('refrecency.reference_result', 'refrecency.sample_label', 'refrecency.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refrecency.reference_result', array('referenceResult' => 'refpr.response'))
@@ -1810,12 +1808,11 @@ class Application_Service_Evaluation
 						foreach ($cResult as $val) {
 							$valAttributes = json_decode($val['attributes'], true);
 							if (isset($valAttributes['other_assay'])) {
-								if(!empty($otherAssayCounter[$valAttributes['other_assay']])){
+								if (!empty($otherAssayCounter[$valAttributes['other_assay']])) {
 									$otherAssayCounter[$valAttributes['other_assay']]++;
-								}else{
+								} else {
 									$otherAssayCounter[$valAttributes['other_assay']] = 1;
 								}
-								
 							}
 						}
 						//var_dump($otherAssayCounter);
