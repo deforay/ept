@@ -2811,3 +2811,7 @@ CREATE TABLE `reference_recency_assay` (
  `result` varchar(256) DEFAULT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- Amit 07 July 2021
+ALTER TABLE `shipment_participant_map` ADD `user_client_info` JSON NULL DEFAULT NULL AFTER `mode_of_response`;

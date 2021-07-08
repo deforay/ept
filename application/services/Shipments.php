@@ -222,6 +222,21 @@ class Application_Service_Shipments
         echo json_encode($output);
     }
 
+    public function mandatoryFieldsCheck($params, $mandatoryFields)
+    {
+
+        // let us only keep the mandatory params
+        $mandatoryParams = array_intersect_key($params, array_flip($mandatoryFields));
+        $errors = array();
+        foreach ($mandatoryParams as $param => $val) {
+            if (empty(trim($val))) {
+                $errors[] = $param;
+            }
+        }
+
+        return $errors;
+    }
+
     public function updateEidResults($params)
     {
         //Zend_Debug::dump($params);die;
@@ -232,8 +247,24 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
+        $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate');
+
         $db->beginTransaction();
         try {
+
+            $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
+            if (count($mandatoryCheckErrors) > 0) {
+                $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                $commonService = new Application_Service_Common();
+
+                $ipAddress = $commonService->getIPAddress();
+                $operatingSystem = $commonService->getOperatingSystem($userAgent);
+                $browser = $commonService->getBrowser($userAgent);
+                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
+                error_log('FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                throw new Exception('Missed mandatory fields on the form');
+            }
+
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate']) != "") {
@@ -337,8 +368,25 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
+        $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate');
+
         $db->beginTransaction();
         try {
+
+
+            $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
+            if (count($mandatoryCheckErrors) > 0) {
+                $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                $commonService = new Application_Service_Common();
+
+                $ipAddress = $commonService->getIPAddress();
+                $operatingSystem = $commonService->getOperatingSystem($userAgent);
+                $browser = $commonService->getBrowser($userAgent);
+                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
+                error_log('FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                throw new Exception('Missed mandatory fields on the form');
+            }
+
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate']) != "") {
@@ -430,11 +478,30 @@ class Application_Service_Shipments
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
             return false;
         }
+
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
+
+        $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate', 'algorithm');
+
         $db->beginTransaction();
         try {
+
+            $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
+            if (count($mandatoryCheckErrors) > 0) {
+                $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                $commonService = new Application_Service_Common();
+
+                $ipAddress = $commonService->getIPAddress();
+                $operatingSystem = $commonService->getOperatingSystem($userAgent);
+                $browser = $commonService->getBrowser($userAgent);
+                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
+                error_log('FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                throw new Exception('Missed mandatory fields on the form');
+            }
+
+
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
@@ -492,7 +559,7 @@ class Application_Service_Shipments
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            $alertMsg->message = "Sorry we could not record your result. Please try again or contact the PT adminstrator";
+            $alertMsg->message = "Sorry we could not record your result. Please try again or contact the PT adminstrator. \\n\\nReason: " . $e->getMessage();
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
         }
@@ -946,8 +1013,24 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
+        $mandatoryFields = array('receiptDate', 'testDate', 'vl_assay', 'assayExpirationDate', 'assayLotNumber');
+        
         $db->beginTransaction();
         try {
+
+            $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
+            if (count($mandatoryCheckErrors) > 0) {
+
+                $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                $commonService = new Application_Service_Common();
+
+                $ipAddress = $commonService->getIPAddress();
+                $operatingSystem = $commonService->getOperatingSystem($userAgent);
+                $browser = $commonService->getBrowser($userAgent);
+                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
+                error_log('FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                throw new Exception('Missed mandatory fields on the form');
+            }
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate']) != "") {
@@ -1939,7 +2022,7 @@ class Application_Service_Shipments
                             if (trim($params['assay'][$i + 1]['expiry'][$e]) != "") {
                                 $expDate = Pt_Commons_General::dateFormat($params['assay'][$i + 1]['expiry'][$e]);
                             }
-    
+
                             $dbAdapter->insert(
                                 'reference_recency_assay',
                                 array(
@@ -2421,14 +2504,14 @@ class Application_Service_Shipments
             foreach ($result as $key => $row) {
                 $response[$row['scheme_type']][$key] = array(
                     'shipment_code'         => $row['shipment_code'],
-                    'shipment_score'        => (isset($row['shipment_score']) && count($row['shipment_score']) > 0)?$row['shipment_score']:0,
+                    'shipment_score'        => (isset($row['shipment_score']) && count($row['shipment_score']) > 0) ? $row['shipment_score'] : 0,
                     'documentation_score'   => $row['documentation_score'],
                     'participantCount'      => $row['participantCount'],
-                    'receivedCount'         => (isset($row['receivedCount']) && count($row['receivedCount']) > 0)?$row['receivedCount']:0,
+                    'receivedCount'         => (isset($row['receivedCount']) && count($row['receivedCount']) > 0) ? $row['receivedCount'] : 0,
                     'scheme_type'           => $row['scheme_type']
                 );
                 $total['participants'][$row['scheme_type']] += $row['participantCount'];
-                $total['received'][$row['scheme_type']] += (isset($row['receivedCount']) && count($row['receivedCount']) > 0)?$row['receivedCount']:0;
+                $total['received'][$row['scheme_type']] += (isset($row['receivedCount']) && count($row['receivedCount']) > 0) ? $row['receivedCount'] : 0;
                 $name[$row['scheme_type']] = $row['scheme_name'];
             }
         }

@@ -115,14 +115,14 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 							</td>
 							<td><label>Sample Rehydration Date <span class='mandatory'>*</span></label></td>
 							<td>
-								<input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" style="width:180px;float:left;" value="<?php echo  $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>" class="datepicker isRequired form-control" readonly="readonly" />
+								<input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" style="width:180px;float:left;" value="<?php echo  $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>" class="datepicker isRequired form-control" title="Please enter the Sample Rehydration Date" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('sampleRehydrationDate')"> Clear</i>
 							</td>
 						</tr>
 						<tr>
 							<td><label>Testing Date <span class="mandatory">*</span></label></td>
 							<td>
-								<input type="text" id="testDate" name="testDate" style="width:180px;float:left;" maxlength="11" value="<?php echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>" class="isRequired datepicker form-control" readonly="readonly" />
+								<input type="text" id="testDate" name="testDate" style="width:180px;float:left;" maxlength="11" value="<?php echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>" class="isRequired datepicker form-control" title="Please enter the Panel Test Date" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> Clear</i>
 							</td>
 
@@ -135,7 +135,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 						<tr class="dark">
 							<td><label>Viral Load Assay <span class="mandatory">*</span></label></td>
 							<td>
-								<select id="vlAssay" name="vlAssay" class="isRequired form-control" onchange="showHideOtherAssay(this.value)">
+								<select id="vlAssay" name="vlAssay" class="isRequired form-control" onchange="showHideOtherAssay(this.value)" title="Please select the Viral Load Assay">
 									<option value="">--Select--</option>
 									<?php
 									foreach ($this->vlAssay as $id => $name) {
@@ -241,10 +241,10 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 						<?php } ?>
 					</table>
 					<hr>
-					<div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;">PT panel not tested<label></div>
+					<div style="width:100%;padding-left:10%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;">PT panel not tested<label></div>
 
 
-					<table class="table table-bordered table-striped" style="width:60%;margin:10px auto;">
+					<table class="table table-bordered table-striped table-hover" style="width:80%;margin:10px auto;">
 						<thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 							<tr>
 								<td colspan="3" style="font-size:1.1em;">
@@ -255,15 +255,14 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 										<li>For negative or undetectable result (TND), please enter 0.00.</li>
 										<li>For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section</li>
 									</ul>
-
 									<div class="vlResultSection" style="width:100%;padding-left:20%;"><label style="font-size:16px;">Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)<label></div>
 									<div class="vlResultSection" style="width:100%;padding-left:20%;"><input type="text" class="form-control checkNum" id="vlResultToLog" name="vlResultToLog" placeholder="Enter a result value to calculate the log value" style="width:80%;" /><span class="mandatory logValFormVl" style="font-size:16px;display:none;"></span></div>
 								</td>
 							</tr>
 							<tr align="center" class="">
-								<th style="width:50%;">Control/Sample</th>
-								<th>Viral Load (log<sub>10</sub> copies/ml)</th>
-								<th>TND(Target Not Detected)</th>
+								<th style="width: 30%;font-size: 1.2em;">Control/Sample</th>
+								<th style="font-size: 1.2em;">Viral Load (log<sub>10</sub> copies/ml)</th>
+								<th  style="width: 30%;font-size: 1.2em;">TND (Target Not Detected)</th>
 							</tr>
 						</thead>
 						<tfoot>
@@ -282,12 +281,12 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 						?>
 
 							<tr class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
-								<td style="text-align:center;">
+								<td style="text-align:left;font-size:1.1em;font-weight:bold;">
 									<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory' style='visibility:hidden;'>*</span>"; ?>
 									<input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
 								</td>
 								<td style="text-align:center;">
-									<input type="text" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues" value="<?php echo $vlResult; ?>" title="Please enter the Viral Load Values for <?php echo $sample['sample_label']; ?>" />
+									<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" min="0.00" max="7.00" step="0.01" maxlength="4" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1) ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues" value="<?php echo $vlResult; ?>" title="Please enter the Viral Load result for <?php echo $sample['sample_label']; ?>" />
 								</td>
 								<td style="text-align:center;">
 									<input type="hidden" name="tndReference[]" id="tndReference<?php echo $count; ?>" />
@@ -446,6 +445,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 		<?php
 		}
 		?>
+
+
+		$(".tnd").trigger("change");
+
+
 	});
 
 
@@ -454,24 +458,27 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 		flag = deforayValidator.init({
 			formId: 'vlResponseForm'
 		});
-		$(".vlResultValues").each(function() {
-			if (parseFloat($(this).val()) < 0 || parseFloat($(this).val()) > 7) {
-				alert("VL Result has to be between 1 and 7");
-				flag = false;
-				return false;
-			}
-		});
+
 		if (flag) {
 
+
+			$(".vlResultValues").each(function() {
+				if (!$.isNumeric($(this).val()) || parseFloat($(this).val()) < 0 || parseFloat($(this).val()) > 7) {
+					;
+					alert("Viral Load Result has to be a number between 0.00 and 7.00. Please check the result for " + $(this).attr("data-sample-label"));
+					$(this).focus();
+					flag = false;
+					return false;
+				}
+			});
+		}
+		if (flag) {
 			if ($("#testDate").val() != "") {
 				if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
 					alert('Testing Date has to come after the Shipment Receipt Date');
 					return false;
 				}
 			}
-
-
-
 			$.blockUI();
 			document.getElementById('vlResponseForm').submit();
 		}
@@ -510,21 +517,23 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 	}
 
 	//TND---0.00 prepopulate
-	$('.tnd').change(function() {
+	$('.tnd').on('change', function() {
 		var selfVal = this.value;
 		if ($(this).is(':checked')) {
 			$('#vlResult' + selfVal).val('0.00');
 			$('#tndReference' + selfVal).val('yes');
 			$('#vlResult' + selfVal).prop("readonly", true);
 		} else {
-			$('#vlResult' + selfVal).val('');
+			if ($('#vlResult' + selfVal).val() == '0' || $('#vlResult' + selfVal).val() == '0.00') {
+				$('#vlResult' + selfVal).val('');
+			}
 			$('#tndReference' + selfVal).val('');
 			$('#vlResult' + selfVal).prop("readonly", false);
 		}
 	});
 
 	//PT not performed case
-	$('#isPtTestNotPerformed').change(function() {
+	$('#isPtTestNotPerformed').on('change', function() {
 		if ($(this).is(':checked')) {
 			$('.vlResultSection').hide();
 			$('.vlResultValues').val('');
@@ -548,7 +557,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 		}
 	});
 
-	jQuery(".checkNum").keydown(function(e) {
+	jQuery(".checkNum").on('keydown', function(e) {
 		// Allow: backspace, delete, tab, escape, enter and .
 		if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
 			// Allow: Ctrl+A
@@ -564,7 +573,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 		}
 	});
 
-	jQuery(".checkVlVal").keypress(function(event) {
+	jQuery(".checkVlVal").on('keypress', function(event) {
 		var $this = $(this);
 		if ((event.which != 46 || $this.val().indexOf('.') != -1) &&
 			((event.which < 48 || event.which > 57) &&

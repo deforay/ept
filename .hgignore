@@ -26,5 +26,6 @@ Thumbs.db.orig
 application.ini
 config.development.php
 index-new.php
+errors.log
 
 

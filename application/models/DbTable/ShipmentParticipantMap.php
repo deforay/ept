@@ -9,8 +9,6 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     public function shipItNow($params)
     {
         try {
-            $commonServices = new Application_Service_Common();
-            $general = new Pt_Commons_General();
             $this->getAdapter()->beginTransaction();
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $this->delete('shipment_id=' . $params['shipmentId']);
@@ -25,14 +23,14 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 );
                 $this->insert($data);
             }
-            
+
             $shipmentDb = new Application_Model_DbTable_Shipments();
             $shipmentDb->updateShipmentStatus($params['shipmentId'], 'ready');
-            
+
             $shipmentRow = $shipmentDb->fetchRow('shipment_id=' . $params['shipmentId']);
-            
+
             $resultSet = $shipmentDb->fetchAll($shipmentDb->select()->where("status = 'pending' AND distribution_id = " . $shipmentRow['distribution_id']));
-            
+
             if (count($resultSet) == 0) {
                 $distroService = new Application_Service_Distribution();
                 $distroService->updateDistributionStatus($shipmentRow['distribution_id'], 'configured');
@@ -92,6 +90,20 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
     public function updateShipment($params, $shipmentMapId, $lastDate)
     {
+
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+        $commonService = new Application_Service_Common();
+
+        $ipAddress = $commonService->getIPAddress();
+        $operatingSystem = $commonService->getOperatingSystem($userAgent);
+        $browser = $commonService->getBrowser($userAgent);
+
+        $params['user_client_info'] = json_encode(array(
+            'ip' => $ipAddress,
+            'os' => $operatingSystem,
+            'browser' => $browser
+        ));
+
         $row = $this->fetchRow("map_id = " . $shipmentMapId);
         if ($row != "") {
             if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {

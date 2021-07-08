@@ -49,7 +49,6 @@ $configData = $this->getGlobalConfig();
     .mandatory {
       color: red;
     }
-
   </style>
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -64,9 +63,9 @@ $configData = $this->getGlobalConfig();
 <body class="hold-transition skin-green sidebar-mini">
   <div class="wrapper">
     <?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
-          <div class="marquee">
-            <p><?php echo ($configData['training_instance_text']); ?></p>
-          </div>
+      <div class="marquee">
+        <p><?php echo ($configData['training_instance_text']); ?></p>
+      </div>
     <?php } ?>
     <header class="main-header">
       <!-- Logo -->
@@ -272,6 +271,7 @@ $configData = $this->getGlobalConfig();
       }
       return this;
     }
+
   </script>
 </body>
 
