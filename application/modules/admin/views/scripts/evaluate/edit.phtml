@@ -14,7 +14,7 @@ if ($prev >= 0) {
 if ($next < count($urlListArray)) {
 	$nextLink = $urlListArray[$next];
 }
-// Zend_Debug::dump($this->evaluateData);die;
+// Zend_Debug::dump($this->evaluateData['shipment']);die;
 ?>
 <style>
 	ul.showlist {
@@ -77,7 +77,36 @@ $reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report
 	}
 
 	?>
-
+	<!-- Manual result override changes -->
+	<table class="table table-bordered" style="width:70%;margin:0 auto;">
+		<tr>
+			<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="manualOverride">Manually Override Results</label></td>
+			<td style="vertical-align: middle">
+				<select name="manualOverride" id="manualOverride" class="form-control" title="Please choose manual override yes or no" onchange="manualOverrideChange(this.value)">
+					<option value="">-- Select --</option>
+					<option <?php echo (isset($this->evaluateData['shipment']['manual_override']) && $this->evaluateData['shipment']['manual_override'] == "no") ? " selected='selected' " : ""; ?> value="no">No</option>
+					<option <?php echo (isset($this->evaluateData['shipment']['manual_override']) && $this->evaluateData['shipment']['manual_override'] == "yes") ? " selected='selected' " : ""; ?> value="yes">Yes</option>
+				</select>
+			</td>
+		</tr>
+		<?php if(isset($this->evaluateData['shipment']['manual_override']) && $this->evaluateData['shipment']['manual_override'] == "yes"){
+			$show = "display";
+		}else{
+			$show = "none";
+		}?>
+		<tr class="manualOverrideRow" style="display: <?php echo $show;?>;">
+			<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="shipmentScore">Shipement Score <span class="mandatory">*</span></label></td>
+			<td style="vertical-align: middle">
+				<input type="text" value="<?php echo $this->evaluateData['shipment']['shipment_score'];?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
+			</td>
+		</tr>
+		<tr class="manualOverrideRow" style="display: <?php echo $show;?>;">
+			<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="documentationScore">Documentation Score <span class="mandatory">*</span></label></td>
+			<td style="vertical-align: middle">
+				<input type="text" value="<?php echo $this->evaluateData['shipment']['documentation_score'];?>" name="documentationScore" id="documentationScore" class="form-control" placeholder="Enter the documentation score" title="Please enter the documentation score">
+			</td>
+		</tr>
+	</table>
 	<table class="table table-bordered" style="width:70%;margin:0 auto;">
 		<tr>
 			<td style="width:25%;vertical-align: middle">Notes</td>
@@ -89,14 +118,15 @@ $reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report
 					if ($warnings != "" && $warnings != null) {
 						echo "<table class='table table-bordered'>";
 						echo "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
-						foreach ($warnings as $warning) {
-				?>
-		<tr>
-			<td><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
-			<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
-		</tr>
-<?php
-						}
+						foreach ($warnings as $key=>$warning) { ?>
+						<tr>
+							<td><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
+							<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
+							<!-- Manual result override changes -->
+							<td class="manualOverrideRow" style="display: <?php echo $show;?>;"><input type="checkbox" id="manualCorrective<?php echo $key;?>" name="manualCorrective[<?php echo $warning['warning'];?>]" value="<?php echo $warning['correctiveAction'];?>"><label for="manualCorrective<?php echo $key;?>"> </label></td>
+						</tr>
+						<?php }
+						
 						echo "</table>";
 					} else {
 						echo " No Warnings or Corrective Actions ";
@@ -223,4 +253,14 @@ $dtFormat =  $vHelper->getDateFormat();
 			$('#participantSupervisor').hide();
 		}
 	});
+	/* Manual result override changes */
+	function manualOverrideChange(value){
+		if(value == "yes"){
+			$('.manualOverrideRow').show();
+			$('#shipmentScore,#documentationScore').addClass('isRequired');
+		}else{
+			$('.manualOverrideRow').hide();
+			$('#shipmentScore,#documentationScore').removeClass('isRequired');
+		}
+	}
 </script>

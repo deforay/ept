@@ -191,9 +191,25 @@ class Application_Model_Recency
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $shipmentResult[$counter]['failure_reason'] = $this->failureReason = json_encode($this->failureReason);
                 }
-                // let us update the total score in DB
-                $this->db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, 'failure_reason' => $this->failureReason), "map_id = " . $shipment['map_id']);
-
+                /* Manual result override changes */
+                if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
+                    $sql = $this->db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
+                    $shipmentOverall = $this->db->fetchRow($sql);
+                    if (sizeof($shipmentOverall) > 0) {
+                        $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
+                        $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
+                        if(!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == ""){
+                            $shipmentOverall['final_result'] = 2;
+                        }
+                        $fRes = $this->db->fetchCol($this->db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
+                        $shipmentResult[$counter]['display_result'] = $fRes[0];
+                        // Zend_Debug::dump($shipmentResult);die;
+                        $nofOfRowsUpdated = $this->db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
+                    }
+                } else {
+                    // let us update the total score in DB
+                    $this->db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, 'failure_reason' => $this->failureReason), "map_id = " . $shipment['map_id']);
+                }
                 //$counter++;
             } else {
                 $this->failureReason[]['warning'] =  "Response was submitted after the last response date.";
