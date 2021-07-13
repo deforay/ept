@@ -45,6 +45,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         if ($this->hasParam('sid')) {
             $id = (int)base64_decode($this->_getParam('sid'));
             $reEvaluate = false;
+            $override = "";
             if($this->hasParam('override')){
                 if (base64_decode($this->_getParam('override')) == 'yes') {
                     $override = 'yes';
