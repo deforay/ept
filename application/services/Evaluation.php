@@ -190,7 +190,7 @@ class Application_Service_Evaluation
 		return $db->fetchRow($sql);
 	}
 
-	public function getShipmentToEvaluate($shipmentId, $reEvaluate = false)
+	public function getShipmentToEvaluate($shipmentId, $reEvaluate = false, $override = '')
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.shipment_attributes', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.distribution_id', 's.number_of_samples', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status'))
@@ -200,7 +200,9 @@ class Application_Service_Evaluation
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
 			->where("s.shipment_id = ?", $shipmentId);
 		//->where("substring(sp.evaluation_status,4,1) != '0'");
-
+		if($override != ""){
+			$sql = $sql->where("sp.manual_override = ?", $override);
+		}
 		$shipmentResult = $db->fetchAll($sql);
 
 		$schemeService = new Application_Service_Schemes();

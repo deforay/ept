@@ -111,7 +111,16 @@ if ($adminSession->privileges != "") {
 			<td style="vertical-align: middle;"><button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span>Update Comment</span></button></td>
 		</tr>
 	</table>
-
+	<table class="table table-borderless" style="width:50%;margin:10px auto;">
+		<tr>
+			<td><label for="manuelOverride">Show only manual override</label></td>
+			<td><select name="manuelOverride" id="manuelOverride" class="form-control" title="Please choose manual override yes or no" onchange="manualOverride(this.value)">
+					<option value="">-- Select --</option>
+					<option <?php echo (isset($this->override) && $this->override == "no") ? " selected='selected' " : ""; ?> value="no">No</option>
+					<option <?php echo (isset($this->override) && $this->override == "yes") ? " selected='selected' " : ""; ?> value="yes">Yes</option>
+				</select></td>
+		</tr>
+	</table>
 	<br /><br />
 	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
 		<thead>
@@ -201,8 +210,6 @@ if ($adminSession->privileges != "") {
 		var oTable = null;
 		var nTr = null;
 		$(document).ready(function() {
-
-
 			$('#shipmentEvaluation').on('click', ".clicker", function() {
 				nTr = $(this).parents('tr')[0];
 				aData = oTable.fnGetData(nTr);
@@ -250,6 +257,24 @@ if ($adminSession->privileges != "") {
 				"bProcessing": true,
 			});
 		});
+
+		function manualOverride(value){
+			$.blockUI();
+			var url = '/admin/evaluate/shipment/sid/<?php echo $this->id;?>';
+			val = '';
+			if(value == 'yes'){
+				val = "eWVz";
+			}
+			if(value == 'no'){
+				val = "bm8=";
+			}
+			if(val != ''){
+				window.location.href = url+"/override/"+val;
+			}else{
+				window.location.href = url;
+			}
+			$.unblockUI();
+		}
 
 		function fnFormatDetails(oTable, nTr) {
 			var aData = oTable.fnGetData(nTr);

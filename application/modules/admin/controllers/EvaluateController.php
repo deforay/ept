@@ -45,13 +45,23 @@ class Admin_EvaluateController extends Zend_Controller_Action
         if ($this->hasParam('sid')) {
             $id = (int)base64_decode($this->_getParam('sid'));
             $reEvaluate = false;
+            if($this->hasParam('override')){
+                if (base64_decode($this->_getParam('override')) == 'yes') {
+                    $override = 'yes';
+                }
+                if (base64_decode($this->_getParam('override')) == 'no') {
+                    $override = 'no';
+                }
+            }
             if ($this->hasParam('re')) {
                 if (base64_decode($this->_getParam('re')) == 'yes') {
                     $reEvaluate = true;
                 }
             }
             $evalService = new Application_Service_Evaluation();
-            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id, $reEvaluate);
+            $this->view->override= $override;
+            $this->view->id= $this->_getParam('sid');
+            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id, $reEvaluate, $override);
             $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
         } else {
             $this->redirect("/admin/evaluate/");
