@@ -7,6 +7,7 @@ if ($adminSession->privileges != "") {
 	$pstatus = true;
 	$privileges = array();
 }
+$overrideStatus = "no";
 ?><style>
 	td {
 		vertical-align: middle !important;
@@ -111,9 +112,9 @@ if ($adminSession->privileges != "") {
 			<td style="vertical-align: middle;"><button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span>Update Comment</span></button></td>
 		</tr>
 	</table>
-	<table class="table table-borderless" style="width:50%;margin:10px auto;">
+	<table class="table table-borderless" style="width:50%;float:left;" id="overrideTable">
 		<tr>
-			<td><label for="manuelOverride">Show only manual override</label></td>
+			<td><label for="manuelOverride">Show only manually overridden results</label></td>
 			<td><select name="manuelOverride" id="manuelOverride" class="form-control" title="Please choose manual override yes or no" onchange="manualOverride(this.value)">
 					<option value="">-- Select --</option>
 					<option <?php echo (isset($this->override) && $this->override == "no") ? " selected='selected' " : ""; ?> value="no">No</option>
@@ -141,9 +142,10 @@ if ($adminSession->privileges != "") {
 			<?php
 			$editList = array();
 			$viewList = array();
-
-			//ZEND_DEBUG();
 			foreach ($this->shipment as $shipment) {
+				if($shipment['manual_override'] == 'yes'){
+					$overrideStatus = "yes";
+				}
 				$btnClassName = "btn-success";
 				$editList[] = "/admin/evaluate/edit/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
 				$viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
@@ -210,6 +212,10 @@ if ($adminSession->privileges != "") {
 		var oTable = null;
 		var nTr = null;
 		$(document).ready(function() {
+			let overrideStatus = '<?php echo (isset($overrideStatus) && $overrideStatus != "")?$overrideStatus:true;?>';
+			if(overrideStatus != 'yes'){
+				$('#overrideTable').hide();
+			}
 			$('#shipmentEvaluation').on('click', ".clicker", function() {
 				nTr = $(this).parents('tr')[0];
 				aData = oTable.fnGetData(nTr);

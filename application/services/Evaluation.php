@@ -968,11 +968,11 @@ class Application_Service_Evaluation
 			$updateArray['shipment_score'] = $shipmentScore;
 			$updateArray['documentation_score'] = $docScore;
 			$updateArray['final_result'] = $finalResult;
-			$updateArray['manual_override'] = 'yes';
 			if(isset($failureReason) && $failureReason != ""){
 				$updateArray['failure_reason'] = json_encode($failureReason);
 			}
 		}
+		$updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != "")?$params['manualOverride']:'no';
 		// Zend_Debug::dump($params['smid']);
 		// Zend_Debug::dump($updateArray);
 		$id = $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
