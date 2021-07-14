@@ -52,8 +52,9 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 <label for="sampleRehydrateDays" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
-                        <option value="1" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1</option>
-                        <option value="2" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2</option>
+                        <option value="0" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - Allow Same Day Testing</option>
+                        <option value="1" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - Testing after 1 day only</option>
+                        <option value="2" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - Testing after 2 days only</option>
                     </select>
                 </div>
             </div>

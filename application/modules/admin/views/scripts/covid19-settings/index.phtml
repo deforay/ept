@@ -50,22 +50,12 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
                         <option value="">--Select--</option>
-                        <option value="1" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1</option>
-                        <option value="2" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2</option>
+                        <option value="0" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - Allow Same Day Testing</option>
+                        <option value="1" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - Testing after 1 day only</option>
+                        <option value="2" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - Testing after 2 days only</option>
                     </select>
                 </div>
             </div>
-
-            <!-- <div class="form-group">
-                <label for="allowedAlgorithms" class="col-lg-3 control-label">Allowed Algorithms <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="allowedAlgorithms[]" multiple="multiple" title="Please select allowed algorithms">
-                        <option value="serial" <?php echo (!empty($allowedAlgorithms) && in_array("serial", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Serial</option>
-                        <option value="parallel" <?php echo (!empty($allowedAlgorithms) && in_array("parallel", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Parallel</option>
-                        <option value="myanmarNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("myanmarNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Myanmar National Algorithm</option>
-                    </select>
-                </div>
-            </div> -->
             <br>
             <br>
             <p class="mandatory">Note : <br />

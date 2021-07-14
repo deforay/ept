@@ -388,11 +388,12 @@ class Application_Model_Covid19
 			$interval = $sampleRehydrationDate->diff($testedOnDate);
 
 			$sampleRehydrateDays = $config->evaluation->covid19->sampleRehydrateDays;
-			$rehydrateHours = $sampleRehydrateDays * 24;
+			//$rehydrateHours = $sampleRehydrateDays * 24;
 
-			if ($interval->days > $sampleRehydrateDays) {
-				$failureReason[] = array(
-					'warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
+			// we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
+            if (empty($attributes['sample_rehydration_date']) || $interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
+                $failureReason[] = array(
+                    'warning' => "Testing not done within specified time of rehydration as per SOP.",
 					'correctiveAction' => $correctiveActions[14]
 				);
 				$correctiveActionList[] = 14;
