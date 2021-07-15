@@ -687,12 +687,13 @@ class Application_Model_Dts
 				$testedOnDate = new DateTime($results[0]['shipment_test_date']);
 				$interval = $sampleRehydrationDate->diff($testedOnDate);
 
-				$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
-				$rehydrateHours = $sampleRehydrateDays * 24;
+				$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays; 
+				//$rehydrateHours = $sampleRehydrateDays * 24;
 
-				if (empty($attributes['sample_rehydration_date']) || $interval->days > $sampleRehydrateDays) {
+				// we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
+				if (empty($attributes['sample_rehydration_date']) || $interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
 					$failureReason[] = array(
-						'warning' => "Testing should be done within $rehydrateHours hours of rehydration.",
+						'warning' => "Testing not done within specified time of rehydration as per SOP.",
 						'correctiveAction' => $correctiveActions[14]
 					);
 					$correctiveActionList[] = 14;

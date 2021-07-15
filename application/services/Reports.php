@@ -1882,7 +1882,7 @@ class Application_Service_Reports
                     $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
                     $rehydrateHours = $sampleRehydrateDays * 24;
 
-                    if ($interval->days > $sampleRehydrateDays) {
+                    if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
 
                         $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                     } else {
@@ -2553,7 +2553,7 @@ class Application_Service_Reports
                     $sampleRehydrateDays = $config->evaluation->covid19->sampleRehydrateDays;
                     $rehydrateHours = $sampleRehydrateDays * 24;
 
-                    if ($interval->days > $sampleRehydrateDays) {
+                    if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
 
                         $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                     } else {
@@ -4012,7 +4012,7 @@ class Application_Service_Reports
                     $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
                     $rehydrateHours = $sampleRehydrateDays * 24;
 
-                    if ($interval->days > $sampleRehydrateDays) {
+                    if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
 
                         $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                     } else {

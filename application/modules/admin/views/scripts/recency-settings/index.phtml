@@ -16,13 +16,13 @@
             <div class="form-group">
                 <label for="recencyPassPercentage" class="col-lg-3 control-label">Panel/Shipment Score<span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="recencyPanelScore" name="recencyPanelScore" class="isRequired isNumeric form-control" placeholder = "0" title="Please enter the Panel Score breakup" value="<?php echo $this->config->evaluation->recency->panelScore; ?>" oninput="$('#recencyDocumentationScore').val(100 - $(this).val());">
+                    <input type="number" id="recencyPanelScore" name="recencyPanelScore" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Panel Score breakup" value="<?php echo $this->config->evaluation->recency->panelScore; ?>" oninput="$('#recencyDocumentationScore').val(100 - $(this).val());">
                 </div>
             </div>
             <div class="form-group">
                 <label for="recencyPassPercentage" class="col-lg-3 control-label">Documentation Score<span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="recencyDocumentationScore" name="recencyDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder = "0" title="Please enter the Documentation Score breakup" value="<?php echo $this->config->evaluation->recency->documentationScore; ?>"  oninput="$('#recencyPanelScore').val(100 - $(this).val());">
+                    <input type="number" id="recencyDocumentationScore" name="recencyDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Documentation Score breakup" value="<?php echo $this->config->evaluation->recency->documentationScore; ?>" oninput="$('#recencyPanelScore').val(100 - $(this).val());">
                 </div>
             </div>
 
@@ -30,8 +30,9 @@
                 <label for="sampleRehydrateDays" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
-                        <option value="1" <?php echo (isset($this->config->evaluation->recency->sampleRehydrateDays) && $this->config->evaluation->recency->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1</option>
-                        <option value="2" <?php echo (isset($this->config->evaluation->recency->sampleRehydrateDays) && $this->config->evaluation->recency->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2</option>
+                        <option value="0" <?php echo (isset($this->config->evaluation->recency->sampleRehydrateDays) && $this->config->evaluation->recency->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - Allow Same Day Testing</option>
+                        <option value="1" <?php echo (isset($this->config->evaluation->recency->sampleRehydrateDays) && $this->config->evaluation->recency->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - Testing after 1 day only</option>
+                        <option value="2" <?php echo (isset($this->config->evaluation->recency->sampleRehydrateDays) && $this->config->evaluation->recency->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - Testing after 2 days only</option>
                     </select>
                 </div>
             </div>
@@ -54,5 +55,4 @@
             document.getElementById('recencySettingsForm').submit();
         }
     }
-
 </script>

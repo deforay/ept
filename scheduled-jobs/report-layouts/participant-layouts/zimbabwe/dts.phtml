@@ -430,7 +430,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
             $rehydrateHours = $sampleRehydrateDays * 24;
 
-            if ($interval->days > $sampleRehydrateDays) {
+            if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
                 $scoreDoc = 0;
                 $img = $imgFail;
             } else {

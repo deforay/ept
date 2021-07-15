@@ -198,7 +198,7 @@ class Application_Model_Recency
                     if (sizeof($shipmentOverall) > 0) {
                         $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
                         $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
-                        if(!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == ""){
+                        if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
                             $shipmentOverall['final_result'] = 2;
                         }
                         $fRes = $this->db->fetchCol($this->db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
@@ -306,12 +306,12 @@ class Application_Model_Recency
             $interval = $sampleRehydrationDate->diff($testedOnDate);
 
             $sampleRehydrateDays = $config->evaluation->recency->sampleRehydrateDays;
-            $rehydrateHours = $sampleRehydrateDays * 24;
 
-            if (empty($attributes['sample_rehydration_date']) || $interval->days > $sampleRehydrateDays) {
-                $failureReasonsArray[] = array(
-                    'warning' => "Testing not done within $rehydrateHours hours of rehydration.",
-                    'correctiveAction' => "Review and refer to National SOP for testing. Testing should be done within $rehydrateHours hours of rehydration."
+            // we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
+            if (empty($attributes['sample_rehydration_date']) || $interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
+                $failureReason[] = array(
+                    'warning' => "Testing not done within specified time of rehydration as per SOP.",
+                    'correctiveAction' => "Review and refer to National SOP for testing. Testing should be done within specified time of rehydration."
                 );
             } else {
                 $documentationScore += $documentationScorePerItem;

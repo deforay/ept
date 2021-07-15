@@ -196,7 +196,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
         $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
-        if (empty($sampleRehydrationDate) || ($interval->days > $sampleRehydrateDays)) {
+        if (empty($sampleRehydrationDate) || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1))) {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
         if (isset($sampleRehydrationDate) && $sampleRehydrationDate != "") {
@@ -482,7 +482,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 					</tr>';
 
             
-            if ($interval->days > $sampleRehydrateDays) {
+            if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
                 $scoreDoc = 0;
                 $img = $imgFail;
             } else {
