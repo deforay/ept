@@ -100,12 +100,14 @@ $reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report
 				<input type="text" value="<?php echo $this->evaluateData['shipment']['shipment_score'];?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
 			</td>
 		</tr>
+		<?php if ($this->scheme != 'vl'){ ?>
 		<tr class="manualOverrideRow" style="display: <?php echo $show;?>;">
 			<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="documentationScore">Documentation Score <span class="mandatory">*</span></label></td>
 			<td style="vertical-align: middle">
 				<input type="text" value="<?php echo $this->evaluateData['shipment']['documentation_score'];?>" name="documentationScore" id="documentationScore" class="form-control" placeholder="Enter the documentation score" title="Please enter the documentation score">
 			</td>
 		</tr>
+		<?php } ?>
 	</table>
 	<table class="table table-bordered" style="width:70%;margin:0 auto;">
 		<tr>
@@ -123,7 +125,7 @@ $reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report
 							<td><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
 							<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
 							<!-- Manual result override changes -->
-							<td class="manualOverrideRow" style="display: <?php echo $show;?>;"><input type="checkbox" id="manualCorrective<?php echo $key;?>" name="manualCorrective[<?php echo $warning['warning'];?>]" value="<?php echo $warning['correctiveAction'];?>"><label for="manualCorrective<?php echo $key;?>"> </label></td>
+							<td class="manualOverrideRow" style="display: <?php echo $show;?>;"><input type="checkbox" id="manualCorrective<?php echo $key;?>" name="manualCorrective[<?php echo $warning['warning'];?>]" value="<?php echo $warning['correctiveAction'];?>" checked><label for="manualCorrective<?php echo $key;?>"> </label></td>
 						</tr>
 						<?php }
 						
