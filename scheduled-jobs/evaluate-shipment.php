@@ -64,15 +64,12 @@ class IndividualPDF extends TCPDF
 
         $this->SetFont('helvetica', '', 10);
 
-        $this->header = nl2br(trim($this->header));
+        //$this->header = nl2br(trim($this->header));
         //$this->header = preg_replace('/<br>$/', "", $this->header);
         if ($this->schemeType == 'vl') {
-            //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral Load using Dried Tube Specimen</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
-
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using <br/>' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
         } else if ($this->schemeType == 'eid') {
             $this->SetFont('helvetica', '', 10);
-            //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using Dried Blood Spot</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using <br/>' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
         } else if ($this->schemeType == 'recency') {
             $this->SetFont('helvetica', '', 10);
@@ -211,7 +208,7 @@ class SummaryPDF extends TCPDF
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
                 if (isset($this->config) && $this->config != "") {
-                    $this->Image($image_file, 10, 3, 28, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 10, 8, 28, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else {
                     $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
@@ -227,17 +224,16 @@ class SummaryPDF extends TCPDF
         // Set font
         $this->SetFont('helvetica', '', 10);
 
-        $this->header = nl2br(trim($this->header));
-        $this->header = preg_replace('/<br>$/', "", $this->header);
-
+        //$this->header = nl2br(trim($this->header));
+        //$this->header = preg_replace('/<br>$/', "", $this->header);
+        $html = $htmlTitle = '';
         if ($this->schemeType == 'vl') {
-            //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for HIV Viral Load using Dried Tube Specimen</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                         <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . $this->header . '</span>
                         <br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>
                         ';
-                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
+                //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
@@ -245,7 +241,7 @@ class SummaryPDF extends TCPDF
             $this->SetFont('helvetica', '', 10);
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;font-size:11;">' . $this->header . '</span><br/><br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
-                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:13;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
+                //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:13;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
@@ -265,10 +261,10 @@ class SummaryPDF extends TCPDF
             }
         }
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "") {
-            $this->writeHTMLCell(0, 0, 45, 5, $html, 0, 0, 0, true, 'J', true);
-            $this->writeHTMLCell(0, 0, 27, 30, $htmlTitle, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 45, 10, $html, 0, 0, 0, true, 'J', true);
+            //$this->writeHTMLCell(0, 0, 27, 30, $htmlTitle, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 48, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
         } else {
             $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';

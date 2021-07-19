@@ -687,7 +687,7 @@ class Application_Model_Dts
 				$testedOnDate = new DateTime($results[0]['shipment_test_date']);
 				$interval = $sampleRehydrationDate->diff($testedOnDate);
 
-				$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays; 
+				$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
 				//$rehydrateHours = $sampleRehydrateDays * 24;
 
 				// we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
@@ -766,13 +766,13 @@ class Application_Model_Dts
 			$shipmentResult[$counter]['max_score'] = $maxScore;
 			$shipmentResult[$counter]['final_result'] = $finalResult;
 			/* Manual result override changes */
-			if(isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes'){
+			if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
 				$sql = $db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
 				$shipmentOverall = $db->fetchRow($sql);
-				if(sizeof($shipmentOverall) > 0){
+				if (sizeof($shipmentOverall) > 0) {
 					$shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
 					$shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
-					if(!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == ""){
+					if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
 						$shipmentOverall['final_result'] = 2;
 					}
 					$fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
@@ -780,7 +780,7 @@ class Application_Model_Dts
 					// Zend_Debug::dump($shipmentResult);die;
 					$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
 				}
-			}else{
+			} else {
 				// let us update the total score in DB
 				$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, "is_followup" => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
 			}

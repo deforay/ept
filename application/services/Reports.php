@@ -2014,8 +2014,8 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-        $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xls';
+        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }
@@ -2668,8 +2668,8 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-        $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xls';
+        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }
@@ -3233,8 +3233,8 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-        $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xls';
+        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }
@@ -3464,8 +3464,8 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-        $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xls';
+        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }
@@ -4092,8 +4092,8 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-        $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xls';
+        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }
@@ -4468,8 +4468,8 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-            $filename = 'participant-performance-' . date('d-M-Y-H-i-s') . '.xls';
+            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+            $filename = 'participant-performance-report-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
@@ -4602,8 +4602,8 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-            $filename = 'corrective-actions-' . date('d-M-Y-H-i-s') . '.xls';
+            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+            $filename = 'Participant-Corrective-Actions-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
@@ -4698,8 +4698,8 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-            $filename = 'shipment-response-' . date('d-M-Y-H-i-s') . '.xls';
+            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+            $filename = 'shipment-response-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
@@ -5170,8 +5170,8 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-            $filename = 'participant-performance-region-wise' . date('d-M-Y-H-i-s') . '.xls';
+            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+            $filename = 'participant-performance-region-wise' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
@@ -6021,8 +6021,8 @@ class Application_Service_Reports
             mkdir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports");
         }
         $excel->setActiveSheetIndex(0);
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
-        $filename = 'ePT-Annual-Report-' . date('d-M-Y-H-i-s') . '.xls';
+        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $filename = 'ePT-Annual-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }

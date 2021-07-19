@@ -1663,6 +1663,7 @@ class Application_Service_Evaluation
 					->where("spm.shipment_id = ?", $shipmentId)
 					//->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR spm.is_pt_test_not_performed ='yes'")
 					->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00'")
+					//->where("spm.is_pt_test_not_performed not like 'yes'")
 					->group('spm.map_id');
 
 				$sQueryRes = $db->fetchAll($sQuery);

@@ -2817,3 +2817,6 @@ CREATE TABLE `reference_recency_assay` (
 ALTER TABLE `shipment_participant_map` ADD `user_client_info` JSON NULL DEFAULT NULL AFTER `mode_of_response`;
 -- Thana 12-July-2021
 ALTER TABLE `shipment_participant_map` ADD `manual_override` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `mode_id`; 
+
+-- Amit 20-July-2021
+UPDATE `shipment_participant_map` set shipment_test_date = NULL WHERE is_pt_test_not_performed = 'yes'

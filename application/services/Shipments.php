@@ -318,6 +318,7 @@ class Application_Service_Shipments
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = NULL;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
@@ -433,6 +434,7 @@ class Application_Service_Shipments
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = NULL;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
@@ -616,6 +618,7 @@ class Application_Service_Shipments
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = NULL;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
@@ -1076,6 +1079,7 @@ class Application_Service_Shipments
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = NULL;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
