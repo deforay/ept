@@ -236,14 +236,13 @@ class Application_Model_Vl
                     $shipmentOverall = $db->fetchRow($sql);
                     if (sizeof($shipmentOverall) > 0) {
                         $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
-                        $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
                         if(!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == ""){
                             $shipmentOverall['final_result'] = 2;
                         }
                         $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
                         // Zend_Debug::dump($shipmentResult);die;
-                        $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
+                        $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
                     }
                 } else {
 
