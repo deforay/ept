@@ -1870,7 +1870,7 @@ class Application_Service_Evaluation
 						->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
 						->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))
 						->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
-							'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' THEN 1 ELSE 0 END)"), 'z_score', 'calculated_score'
+							'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"), 'z_score', 'calculated_score'
 						))
 						->where("vlCal.shipment_id=?", $shipmentId)
 						->where("vlCal.vl_assay=?", $vlAssayRow['id'])

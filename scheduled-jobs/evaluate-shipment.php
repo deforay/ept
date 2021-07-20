@@ -264,7 +264,7 @@ class SummaryPDF extends TCPDF
             $this->writeHTMLCell(0, 0, 45, 10, $html, 0, 0, 0, true, 'J', true);
             //$this->writeHTMLCell(0, 0, 27, 30, $htmlTitle, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
         } else {
             $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
