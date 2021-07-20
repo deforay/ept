@@ -31,9 +31,9 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
     if ($methodOfEvaluation == 'iso17043') {
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 60, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
     } else {
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
     }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -62,10 +62,11 @@ if ($resultArray['shipment'] != "") {
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', 'B', 11);
 
-
-    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br><br><span style="font-weight: bold; font-size:10;text-align:center;">All Participants Summary Report</span>';
-    $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
-
+    if ($methodOfEvaluation == 'iso17043') {
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br><br><span style="font-weight: bold; font-size:10;text-align:center;">All Participants Summary Report</span>';
+        // $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+    }
     if ($methodOfEvaluation == 'standard') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
@@ -82,9 +83,9 @@ if ($resultArray['shipment'] != "") {
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
     }
-
-    $pdf->writeHTML($referenceRes, true, false, true, false, '');
-
+    if (isset($methodOfEvaluation) && $methodOfEvaluation != "") {
+        $pdf->writeHTML($referenceRes, true, false, true, false, '');
+    }
 
     $participantCount = '';
 

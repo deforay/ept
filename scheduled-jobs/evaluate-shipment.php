@@ -239,11 +239,12 @@ class SummaryPDF extends TCPDF
             }
         } else if ($this->schemeType == 'eid') {
             $this->SetFont('helvetica', '', 10);
+            $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
-                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;font-size:11;">' . $this->header . '</span><br/><br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                $html = '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:13;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
-                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
+                $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
         } else if ($this->schemeType == 'recency') {
             $this->SetFont('helvetica', '', 10);
