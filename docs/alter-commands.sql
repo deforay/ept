@@ -2820,3 +2820,16 @@ ALTER TABLE `shipment_participant_map` ADD `manual_override` VARCHAR(50) NOT NUL
 
 -- Amit 20-July-2021
 UPDATE `shipment_participant_map` set shipment_test_date = NULL WHERE is_pt_test_not_performed = 'yes'
+
+
+DROP TABLE IF EXISTS `system_config`;
+CREATE TABLE `system_config` (
+ `config` varchar(256) NOT NULL,
+ `value` mediumtext,
+ `display_name` mediumtext,
+ PRIMARY KEY (`config`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES
+('app_version', '7.0.0', 'App Version');
+-- Version 7.0.0 Amit 20-July-2020
