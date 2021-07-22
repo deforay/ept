@@ -268,12 +268,12 @@ if ($resultArray['shipment'] != "") {
                         $noOfPaResponse[$key18Last] += (int)$data['no_of_responses'];
                         $participantScore[$key18Last] += (int)$data['numberPassed'];
                         $scoreBelow[$key18Last] += (int)$data['numberFailed'];
-                        $avg[$key18Last] = (int)($participantScore[$key18Last] / 100) * $noOfPaResponse[$key18Last];
+                        $avg[$key18Last] = number_format(($participantScore[$key18Last] / $noOfPaResponse[$key18Last]) * 100,2);
                     }else{
                         $noOfPaResponse[] = $data['no_of_responses'];
                         $participantScore[] = $data['numberPassed'];
                         $scoreBelow[] = $data['numberFailed'];
-                        $avg[] = ($data['numberPassed'] / 100) * $data['no_of_responses'];
+                        $avg[] = number_format(($data['numberPassed'] / $data['no_of_responses']) * 100,2);
                     }
                 }
             }
@@ -283,8 +283,6 @@ if ($resultArray['shipment'] != "") {
             $scoreBelow = array(0);
             $avg=array(0,0,0);
         }
-        // Zend_Debug::dump($assayName);
-        // Zend_Debug::dump($noOfPaResponse);die;
 
         /* JPGraph start */
         // Create the graph and specify the scale for both Y-axis
@@ -294,6 +292,7 @@ if ($resultArray['shipment'] != "") {
         $graph->SetY2Scale("lin",0,90);
         $graph->SetY2OrderBack(false);
         $graph->SetShadow();
+
         // Adjust the margin
         $graph->img->SetMargin(55,55,5,150);
         
@@ -302,7 +301,8 @@ if ($resultArray['shipment'] != "") {
 
         // Create the two linear plot
         $lineplot2=new ScatterPlot($avg);
-        // $lineplot2->mark->SetType(MARK_IMG,ROOT_PATH.'/images/line.gif',1.0);
+        $lineplot2->mark->SetType(MARK_IMG,ROOT_PATH.'/images/line.gif',1.0);
+        $lineplot2->mark->SetSize(2);
         $lineplot2->SetWeight(10);
         $lineplot2->SetCenter();
         $lineplot2->hidelegend();
@@ -334,16 +334,16 @@ if ($resultArray['shipment'] != "") {
         $gbplot = new GroupBarPlot(array($b1plot,$b2plot,$b3plot));
         $graph->Add($gbplot);
 
-        $b1plot->SetColor("#0000cd");
-        $b1plot->SetFillColor("#0000cd");
+        $b1plot->SetColor("#1471c1");
+        $b1plot->SetFillColor("#1471c1");
         $b1plot->SetLegend("Number of Participants Submitted Results");
         
-        $b2plot->SetColor("#9acd32");
-        $b2plot->SetFillColor("#9acd32");
+        $b2plot->SetColor("#92d14f");
+        $b2plot->SetFillColor("#92d14f");
         $b2plot->SetLegend('Number of Participants Scoring "100%"');
         
-        $b3plot->SetColor("#ffec8b");
-        $b3plot->SetFillColor("#ffec8b");
+        $b3plot->SetColor("#fbda66");
+        $b3plot->SetFillColor("#fbda66");
         $b3plot->SetLegend('Number of Participants Scoring Below "100%"');
         
         $graph->legend->SetFrameWeight(1);
