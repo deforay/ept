@@ -4,6 +4,7 @@ require_once('tcpdf/tcpdf.php');
 require_once('jpgraph/jpgraph.php');
 require_once('jpgraph/jpgraph_bar.php');
 require_once('jpgraph/jpgraph_line.php');
+require_once('jpgraph/jpgraph_scatter.php');
 require_once(CRON_PATH . '/General.php');
 $general = new General();
 // Zend_Debug::dump($resultArray);die;
@@ -35,7 +36,7 @@ if ($resultArray['shipment'] != "") {
     // if ($methodOfEvaluation == 'iso17043') {
         // $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
     // }else{
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
     // }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -66,10 +67,11 @@ if ($resultArray['shipment'] != "") {
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('freesans', 'B', 11);
 
-
-    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br><br><span style="font-weight: bold; font-size:12;text-align:center;">All Participants Summary Report</span>';
-    $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
-
+    if ($methodOfEvaluation == 'iso17043') {
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br><br><span style="font-weight: bold; font-size:12;text-align:center;">All Participants Summary Report</span><br>';
+        // $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+    }
     if ($methodOfEvaluation == 'standard') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
@@ -130,6 +132,7 @@ if ($resultArray['shipment'] != "") {
         $footerHead .= '<small>Notes:<ol><li>Results from participants using Biocentric and "Other" Platforms were not used for results evaluation due to less than 6 participating labs in this PT event.</li><li>A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</li></ol></small>';
         $pdf->writeHTML($footerHead, true, false, true, false, '');
     } else if ($methodOfEvaluation == 'iso17043') {
+    
         if (count($resultArray['vlCalculation']) > 0) {
 
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
@@ -197,10 +200,10 @@ if ($resultArray['shipment'] != "") {
                                     <td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                                 </tr>';
-                            $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses'];
+                           /*  $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses'];
                             $chart[$vlCal['vlAssay']]['NumberPassed'] =  $score;
                             $chart[$vlCal['vlAssay']]['score'] =  $score;
-                            $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2);
+                            $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2); */
                         }
                     }
                     $assayName[] = $vlCal['vlAssay'];
@@ -238,58 +241,90 @@ if ($resultArray['shipment'] != "") {
                             <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                         </tr>';
                     $noOfPaResponseTxt = $label['response'];
-                    $chart[$platform]['response'] =  $label['response'];
+                    /* $chart[$platform]['response'] =  $label['response'];
                     $chart[$platform]['NumberPassed'] =  $score;
                     $chart[$platform]['score'] =  $score;
-                    $chart[$platform]['avg'] =  round($label['NumberPassed'] / $label['response'], 2);
+                    $chart[$platform]['avg'] =  round($label['NumberPassed'] / $label['response'], 2); */
                 }
                 $assayName[] = 'VL platforms with < 18 participants';
                 $calRes .= '</table>';
                 $pdf->writeHTML($calRes, true, false, true, false, '');
             }
         }
-        // // Zend_Debug::dump($assayName);die;
-        // 
 
         $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
         $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">' . $assayNameTxt . '</span>';
 
         $pdf->writeHTML($note, true, false, true, false, '');
 
-
         $pdf->AddPage();
+
         /* JPGraph start */
-        if (isset($chart) && count($chart) > 0) {
-            foreach ($chart as $data) {
-                $noOfPaResponse[] = $data['response'];
-                $participantScore[] = $data['NumberPassed'];
-                $scoreBelow[] = $data['score'];
-                $totalNo = $data['response'];
-                $data6y[] = ($data['NumberPassed'] / 100) * $data['response'];
+        if (isset($resultArray['vlAssayRes']) && count($resultArray['vlAssayRes']) > 0) {
+            $key18Last = array_key_last($assayName);
+            foreach ($resultArray['vlAssayRes'] as $key=>$data) {
+                if ($methodOfEvaluation == 'iso17043') {
+                    if (isset($data['no_of_responses']) && $data['no_of_responses'] < 18 || $data['assay_name'] == "Other") {
+                        $noOfPaResponse[$key18Last] += (int)$data['no_of_responses'];
+                        $participantScore[$key18Last] += (int)$data['numberPassed'];
+                        $scoreBelow[$key18Last] += (int)$data['numberFailed'];
+                        $avg[$key18Last] = (int)($participantScore[$key18Last] / 100) * $noOfPaResponse[$key18Last];
+                    }else{
+                        $noOfPaResponse[] = $data['no_of_responses'];
+                        $participantScore[] = $data['numberPassed'];
+                        $scoreBelow[] = $data['numberFailed'];
+                        $avg[] = ($data['numberPassed'] / 100) * $data['no_of_responses'];
+                    }
+                }
             }
         } else{
             $noOfPaResponse = array(0);
             $participantScore = array(0);
             $scoreBelow = array(0);
-            $data6y=array(0,0,0);
+            $avg=array(0,0,0);
         }
-        // Zend_Debug::dump($data6y);die;
-        // Display the graph
-        $graph = new Graph(700,450,'auto');
+        // Zend_Debug::dump($assayName);
+        // Zend_Debug::dump($noOfPaResponse);die;
+
+        /* JPGraph start */
+        // Create the graph and specify the scale for both Y-axis
+        $graph = new Graph(700,600);
         $graph->SetScale("textlin");
+        // $graph->SetY2Scale("lin");
         $graph->SetY2Scale("lin",0,90);
         $graph->SetY2OrderBack(false);
-
-        $theme_class = new UniversalTheme;
-        $graph->SetTheme($theme_class);
-
-        $graph->SetMargin(40,20,46,80);
-
-        $graph->SetBox(false);
-
+        $graph->SetShadow();
+        // Adjust the margin
+        $graph->img->SetMargin(55,55,5,150);
+        
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($assayName);
 
+        // Create the two linear plot
+        $lineplot2=new ScatterPlot($avg);
+        // $lineplot2->mark->SetType(MARK_IMG,ROOT_PATH.'/images/line.gif',1.0);
+        $lineplot2->SetWeight(10);
+        $lineplot2->SetCenter();
+        $lineplot2->hidelegend();
+        $graph->AddY2($lineplot2);
+        
+        $graph->title->Set("All Participants Results Summary");
+        $graph->title->SetFont(FF_FONT2);
+        
+        $graph->yaxis->title->Set('Number of participants', 'center');
+        $graph->yaxis->title->SetFont(FF_FONT2);
+        $graph->yaxis->title->SetMargin(8); 
+        $graph->yscale->SetAutoMax(120);
+        $graph->yscale->SetAutoMin(0);
+
+        $graph->y2axis->title->Set('Number of Participants Scoring "100%"');
+        $graph->y2axis->title->SetFont(FF_FONT2);
+        $graph->y2axis->title->SetMargin(8); 
+        $graph->y2scale->SetAutoMax(100);
+        $graph->y2scale->SetAutoMin(0);
+        // Add the plot to the graph
+        
+        
         // Create the bar plots
         $b1plot = new BarPlot($noOfPaResponse);
         $b2plot = new BarPlot($participantScore);
@@ -297,55 +332,36 @@ if ($resultArray['shipment'] != "") {
         
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot,$b2plot,$b3plot));
-        // ...and add it to the graPH
         $graph->Add($gbplot);
-        
-        $b1plot->SetColor("#00688b");
-        $b1plot->SetFillColor("#00688b");
+
+        $b1plot->SetColor("#0000cd");
+        $b1plot->SetFillColor("#0000cd");
         $b1plot->SetLegend("Number of Participants Submitted Results");
-
-        $b2plot->SetColor("#a2cd5a");
-        $b2plot->SetFillColor("#a2cd5a");
+        
+        $b2plot->SetColor("#9acd32");
+        $b2plot->SetFillColor("#9acd32");
         $b2plot->SetLegend('Number of Participants Scoring "100%"');
-
+        
         $b3plot->SetColor("#ffec8b");
         $b3plot->SetFillColor("#ffec8b");
         $b3plot->SetLegend('Number of Participants Scoring Below "100%"');
-
         
-        $lplot = new LinePlot($data6y);
-        $graph->y2axis->title->Set('Percent of Participants Scoring "100%"', 'center');
-        $graph->AddY2($lplot);
-
-        $lplot->SetBarCenter();
-        $lplot->SetColor("#ff1493");
-        $lplot->SetLegend('Percent of Participants Scoring "100%"');
-        $lplot->mark->SetType(MARK_X,'',1.0);
-        $lplot->mark->SetWeight(2);
-        $lplot->mark->SetWidth(8);
-        $lplot->mark->setColor("yellow");
-        $lplot->mark->setFillColor("yellow");
-
         $graph->legend->SetFrameWeight(1);
         $graph->legend->SetColumns(2);
-        $graph->legend->SetColor('#4E4E4E','#00A78A');
-        $graph->legend->SetPos(0.5,0.99,'center','bottom');
-
+        
         $band = new PlotBand(VERTICAL,BAND_RDIAG,11,"max",'khaki4');
         $band->ShowFrame(true);
         $band->SetOrder(DEPTH_BACK);
         $graph->Add($band);
-
-        $graph->title->Set("All Participants Results Summary");
-        $graph->yaxis->title->Set('Number of participants', 'center');
-
-        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+       
+        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_yaxis_chart.png';
         $graph->Stroke($image_file);
 
-        $pdf->Image($image_file, 5, $pdf->getY()+60, '', '', '', '', '', false, 300);
+        $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
+
         $pdf->AddPage();
         /* JPGraph end */
         $note = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';

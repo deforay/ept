@@ -1358,6 +1358,7 @@ class Application_Service_Evaluation
 	{
 		$responseResult = array();
 		$vlCalculation = array();
+		$vlAssayRes = array();
 		$penResult = array();
 		$shipmentResult = array();
 		$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -1368,7 +1369,6 @@ class Application_Service_Evaluation
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_code'))
 			->where("s.shipment_id = ?", $shipmentId);
-
 		$shipmentResult = $db->fetchRow($sql);
 		$i = 0;
 		if ($shipmentResult != "") {
@@ -1864,24 +1864,39 @@ class Application_Service_Evaluation
 				$vlCalculation = array();
 				$vlAssayResultSet = $db->fetchAll($db->select()->from('r_vl_assay')->where("`status` like 'active'"));
 				$otherAssayCounter = array();
+				/* VL Assay for chart */
+				$vlAssayQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('no_of_responses'))
+					->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('no_of_samples' => new Zend_Db_Expr("COUNT(DISTINCT refVl.sample_id)")))
+					->join(array('rvla' => 'r_vl_assay'), 'rvla.id=vlCal.vl_assay', array('assay_name'=>'name'))
+					->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array(
+						'numberPassed' => new Zend_Db_Expr("SUM(CASE WHEN final_result = 1 THEN 1 ELSE 0 END)/COUNT(DISTINCT refVl.sample_id)"),
+						'numberFailed' => new Zend_Db_Expr("SUM(CASE WHEN final_result != 1 THEN 1 ELSE 0 END)/COUNT(DISTINCT refVl.sample_id)"),
+					))
+					->where("vlCal.shipment_id=?", $shipmentId)
+					->where("refVl.control!=1")
+					->where("(sp.attributes like CONCAT('%\"vl_assay\":\"', vlCal.vl_assay, '\"%') )")
+					->where("sp.is_excluded not like 'yes'")
+					->group('rvla.name')
+					->order('vlCal.no_of_responses DESC')
+					;
+				$vlAssayRes = $db->fetchAll($vlAssayQuery);
+				// Zend_Debug::dump($vlAssayRes);die;
+
 				foreach ($vlAssayResultSet as $vlAssayRow) {
-					// $json = json_encode(array('vl_assay'=>$vlAssayRow['id']));
 					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('no_of_responses', 'median', 'low_limit', 'high_limit', 'sd'))
 						->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
-						->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes'))
+						->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
 						->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
 							'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"), 'z_score', 'calculated_score'
 						))
 						->where("vlCal.shipment_id=?", $shipmentId)
 						->where("vlCal.vl_assay=?", $vlAssayRow['id'])
 						->where("refVl.control!=1")
-						//->where("sp.attributes like '%".str_replace("}",'',str_replace("{",'', $json))."%'")
 						->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayRow['id'] . '"%')
 						->where("sp.is_excluded not like 'yes'")
 						->group('refVl.sample_id');
 					// die($vlQuery);
 					$vlCalRes = $db->fetchAll($vlQuery);
-					// Zend_Debug::dump($vlCalRes);die;
 
 					if ($vlAssayRow['id'] == 6) {
 						$cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
@@ -1902,8 +1917,7 @@ class Application_Service_Evaluation
 							}
 						}
 						//var_dump($otherAssayCounter);
-						// Zend_Debug::dump($vlAssayRow['id']);
-						// die;
+						// Zend_Debug::dump($vlAssayRow['id']);die;
 					}
 					if (count($vlCalRes) > 0) {
 						$vlCalculation[$vlAssayRow['id']] = $vlCalRes;
@@ -2009,7 +2023,7 @@ class Application_Service_Evaluation
 
 			$i++;
 		}
-		$result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'pendingAssay' => $penResult);
+		$result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'vlAssayRes' => $vlAssayRes, 'pendingAssay' => $penResult);
 
 		return $result;
 		//Zend_Debug::dump($shipmentResult);die;
