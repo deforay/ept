@@ -7,7 +7,6 @@ require_once('jpgraph/jpgraph_line.php');
 require_once('jpgraph/jpgraph_scatter.php');
 require_once(CRON_PATH . '/General.php');
 $general = new General();
-// Zend_Debug::dump($resultArray);die;
 //require_once('libchart/classes/libchart.php');
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
@@ -292,13 +291,13 @@ if ($resultArray['shipment'] != "") {
         $graph->SetY2Scale("lin",0,90);
         $graph->SetY2OrderBack(false);
         $graph->SetShadow();
-
+        
         // Adjust the margin
         $graph->img->SetMargin(55,55,5,150);
         
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($assayName);
-
+        
         // Create the two linear plot
         $lineplot2=new ScatterPlot($avg);
         $lineplot2->mark->SetType(MARK_IMG,ROOT_PATH.'/images/line.gif',1.0);
@@ -308,17 +307,14 @@ if ($resultArray['shipment'] != "") {
         $lineplot2->hidelegend();
         $graph->AddY2($lineplot2);
         
-        $graph->title->Set("All Participants Results Summary");
-        $graph->title->SetFont(FF_FONT2);
+        $graph->title->Set("All Participants Results Summary", 20);
         
         $graph->yaxis->title->Set('Number of participants', 'center');
-        $graph->yaxis->title->SetFont(FF_FONT2);
         $graph->yaxis->title->SetMargin(8); 
         $graph->yscale->SetAutoMax(120);
         $graph->yscale->SetAutoMin(0);
-
+        
         $graph->y2axis->title->Set('Number of Participants Scoring "100%"');
-        $graph->y2axis->title->SetFont(FF_FONT2);
         $graph->y2axis->title->SetMargin(8); 
         $graph->y2scale->SetAutoMax(100);
         $graph->y2scale->SetAutoMin(0);
@@ -333,7 +329,7 @@ if ($resultArray['shipment'] != "") {
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot,$b2plot,$b3plot));
         $graph->Add($gbplot);
-
+        
         $b1plot->SetColor("#1471c1");
         $b1plot->SetFillColor("#1471c1");
         $b1plot->SetLegend("Number of Participants Submitted Results");
@@ -353,10 +349,10 @@ if ($resultArray['shipment'] != "") {
         $band->ShowFrame(true);
         $band->SetOrder(DEPTH_BACK);
         $graph->Add($band);
-       
+        
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_yaxis_chart.png';
         $graph->Stroke($image_file);
-
+        
         $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
