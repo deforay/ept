@@ -303,8 +303,6 @@ if ($resultArray['shipment'] != "") {
         $lineplot2->mark->SetType(MARK_IMG,ROOT_PATH.'/images/line.gif',1.0);
         $lineplot2->mark->SetSize(2);
         $lineplot2->SetWeight(10);
-        $lineplot2->SetCenter();
-        $lineplot2->hidelegend();
         $graph->AddY2($lineplot2);
         
         $graph->title->Set("All Participants Results Summary", 20);
@@ -314,7 +312,7 @@ if ($resultArray['shipment'] != "") {
         $graph->yscale->SetAutoMax(120);
         $graph->yscale->SetAutoMin(0);
         
-        $graph->y2axis->title->Set('Number of Participants Scoring "100%"');
+        $graph->y2axis->title->Set('Percent of Participants Scoring "100%"');
         $graph->y2axis->title->SetMargin(8); 
         $graph->y2scale->SetAutoMax(100);
         $graph->y2scale->SetAutoMin(0);
