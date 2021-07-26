@@ -100,10 +100,17 @@
 
 			</div> -->
 			<div class="form-group">
-				<label for="admin_email" class="col-lg-3 control-label">Enable QC Fields <span class="mandatory">*</span></label>
+				<label for="theme_color" class="col-lg-3 control-label">Theme Color</label>
 				<div class="col-lg-6">
-					<input type="radio" class="isRequired" name="qc_access" id="qc_access_yes" <?php echo (isset($this->qc_access) && $this->qc_access == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose QC access" /> Yes
-					<input type="radio" class="isRequired" name="qc_access" id="qc_access_no" <?php echo (isset($this->qc_access) && $this->qc_access == "no") ? " checked='checked' " : ""; ?> value="no" /> No
+					<select class="form-control" id="theme_color" name="theme_color" title="Please select the theme color">
+						<option value="">-- Select --</option>
+						<option value="green" <?php echo (isset($this->theme_color) && $this->theme_color == 'green')?'selected="selected"':"";?>>Green</option>
+						<option value="blue" <?php echo (isset($this->theme_color) && $this->theme_color == 'blue')?'selected="selected"':"";?>>Blue</option>
+						<option value="#d9d90d" <?php echo (isset($this->theme_color) && $this->theme_color == '#d9d90d')?'selected="selected"':"";?>>Yellow</option>
+						<option value="purple" <?php echo (isset($this->theme_color) && $this->theme_color == 'purple')?'selected="selected"':"";?>>Purple</option>
+						<option value="red" <?php echo (isset($this->theme_color) && $this->theme_color == 'red')?'selected="selected"':"";?>>Red</option>
+						<option value="black" <?php echo (isset($this->theme_color) && $this->theme_color == 'black')?'selected="selected"':"";?>>Black</option>
+					</select>
 				</div>
 			</div>
 			<br>

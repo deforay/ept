@@ -2833,3 +2833,6 @@ CREATE TABLE `system_config` (
 INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES
 ('app_version', '7.0.0', 'App Version');
 -- Version 7.0.0 Amit 20-July-2020
+
+-- Thana 23-July-2021
+INSERT INTO `global_config` (`name`, `value`) VALUES ('theme_color', '#2c3e50');
