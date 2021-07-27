@@ -13,6 +13,7 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 	$shortName = ucwords($text['value']);
 }
 $configData = $this->getGlobalConfig();
+$skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_color'] != "")?$configData['theme_color']:'#00a65a';
 ?>
 <!DOCTYPE html>
 <html>
@@ -95,7 +96,7 @@ $configData = $this->getGlobalConfig();
 	<script src="<?php echo $this->baseUrl('assets/plugins/jQuery/jQuery-2.1.4.min.js'); ?>"></script>
 </head>
 
-<body class="hold-transition skin-green layout-top-nav layout-boxed">
+<body class="hold-transition skin-<?= $skinColorFromConfig ?> layout-top-nav layout-boxed">
 	<div class="wrapper">
 		<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
 			<div class="marquee">
