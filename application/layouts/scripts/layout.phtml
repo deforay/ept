@@ -49,6 +49,13 @@ $configData = $this->getGlobalConfig();
     .mandatory {
       color: red;
     }
+    .skin-green .sidebar-menu > li:hover > a, .skin-green .sidebar-menu > li.active > a{
+      border-left-color : <?php echo (isset($configData['theme_color']) && $configData['theme_color'] != "")?$configData['theme_color']:'#A2CB56';?> !important;
+    }
+    .skin-green .pagination > .active > a, .skin-green .pagination > .active > a:focus, .skin-green .pagination > .active > a:hover, .skin-green .pagination > .active > span, .skin-green .pagination > .active > span:focus, .skin-green .pagination > .active > span:hover{
+      background-color: <?php echo (isset($configData['theme_color']) && $configData['theme_color'] != "")?$configData['theme_color']:'rgb(131, 165, 67)';?> !important;
+      border-color: <?php echo (isset($configData['theme_color']) && $configData['theme_color'] != "")?$configData['theme_color']:'rgb(131, 165, 67)';?> !important;
+    }
   </style>
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -69,14 +76,14 @@ $configData = $this->getGlobalConfig();
     <?php } ?>
     <header class="main-header">
       <!-- Logo -->
-      <a href="/" class="logo">
+      <a href="/" class="logo" style="background-color: <?php echo (isset($configData['theme_color']) && $configData['theme_color'] != "")?$configData['theme_color']:'#00A65A';?> !important;">
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini"><b>e</b>PT</span>
         <!-- logo for regular state and mobile devices -->
         <span class="logo-lg"><b>e</b>PT</span>
       </a>
       <!-- Header Navbar: style can be found in header.less -->
-      <nav class="navbar navbar-static-top" role="navigation">
+      <nav class="navbar navbar-static-top" role="navigation" style="background-color: <?php echo (isset($configData['theme_color']) && $configData['theme_color'] != "")?$configData['theme_color']:'#00A65A';?> !important;">
         <!-- Sidebar toggle button-->
         <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
           <span class="sr-only">Toggle navigation</span>
