@@ -14,7 +14,7 @@ class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -26,6 +26,7 @@ class IndividualPDF extends TCPDF
         $this->dateTime = $datetime;
         $this->config = $conf;
         $this->watermark = $watermark;
+        $this->dateFinalised = $dateFinalised;
     }
 
     public function humanDateTimeFormat($date)
@@ -155,7 +156,12 @@ class IndividualPDF extends TCPDF
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(0, 10, 'Effective Date:' . date('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            if(isset($this->dateFinalised) && $this->dateFinalised != ""){
+                $effectiveDate = date('M Y', strtotime($this->dateFinalised));
+            }else{
+                $effectiveDate = date('M Y');
+            }
+            $this->Cell(0, 10, 'Effective Date:' . $effectiveDate, 0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         } else {
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
@@ -171,7 +177,7 @@ class IndividualPDF extends TCPDF
 class SummaryPDF extends TCPDF
 {
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -182,6 +188,7 @@ class SummaryPDF extends TCPDF
         $this->dateTime = $datetime;
         $this->config = $conf;
         $this->watermark = $watermark;
+        $this->dateFinalised = $dateFinalised;
     }
 
     public function humanDateTimeFormat($date)
@@ -340,7 +347,13 @@ class SummaryPDF extends TCPDF
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(0, 10, 'Effective Date:' . date('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            if(isset($this->dateFinalised) && $this->dateFinalised != ""){
+                $effectiveDate = date('M Y', strtotime($this->dateFinalised));
+            }else{
+                $effectiveDate = date('M Y');
+
+            }
+            $this->Cell(0, 10, 'Effective Date:' . $effectiveDate, 0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         } else {
             $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
