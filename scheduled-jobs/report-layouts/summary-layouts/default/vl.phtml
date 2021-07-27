@@ -303,6 +303,7 @@ if ($resultArray['shipment'] != "") {
         $lineplot2->mark->SetType(MARK_IMG,ROOT_PATH.'/images/line.gif',1.0);
         $lineplot2->mark->SetSize(2);
         $lineplot2->SetWeight(10);
+        $lineplot2->SetLegend('% of Participants scoring "100%"');
         $graph->AddY2($lineplot2);
         
         $graph->title->Set("All Participants Results Summary", 20);
