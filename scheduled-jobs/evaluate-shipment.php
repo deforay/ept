@@ -155,13 +155,9 @@ class IndividualPDF extends TCPDF
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "") {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
+            $effectiveDate = new DateTime($showTime);
             $this->SetFont('helvetica', '', 10);
-            if(isset($this->dateFinalised) && $this->dateFinalised != ""){
-                $effectiveDate = date('M Y', strtotime($this->dateFinalised));
-            }else{
-                $effectiveDate = date('M Y');
-            }
-            $this->Cell(0, 10, 'Effective Date:' . $effectiveDate, 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         } else {
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
@@ -346,14 +342,9 @@ class SummaryPDF extends TCPDF
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "") {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
+            $effectiveDate = new DateTime($showTime);
             $this->SetFont('helvetica', '', 10);
-            if(isset($this->dateFinalised) && $this->dateFinalised != ""){
-                $effectiveDate = date('M Y', strtotime($this->dateFinalised));
-            }else{
-                $effectiveDate = date('M Y');
-
-            }
-            $this->Cell(0, 10, 'Effective Date:' . $effectiveDate, 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         } else {
             $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');

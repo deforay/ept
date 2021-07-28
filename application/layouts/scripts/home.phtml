@@ -13,7 +13,7 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 	$shortName = ucwords($text['value']);
 }
 $configData = $this->getGlobalConfig();
-$skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_color'] != "")?$configData['theme_color']:'#00a65a';
+$skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_color'] != "") ? $configData['theme_color'] : 'blue';
 ?>
 <!DOCTYPE html>
 <html>
