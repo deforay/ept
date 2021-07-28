@@ -300,7 +300,7 @@ if ($resultArray['shipment'] != "") {
         
         // Create the two linear plot
         $lineplot2=new ScatterPlot($avg);
-        $lineplot2->mark->SetType(MARK_IMG,ROOT_PATH.'/images/line.gif',1.0);
+        $lineplot2->mark->SetType(MARK_IMG,ROOT_PATH.'/images/scatter.gif',1.0);
         $lineplot2->mark->SetSize(2);
         $lineplot2->SetWeight(10);
         $lineplot2->SetLegend('% of Participants scoring "100%"');
@@ -313,7 +313,7 @@ if ($resultArray['shipment'] != "") {
         $graph->yscale->SetAutoMax(120);
         $graph->yscale->SetAutoMin(0);
         
-        $graph->y2axis->title->Set('Percent of Participants Scoring "100%"');
+        $graph->y2axis->title->Set('% of Participants scoring "100%"');
         $graph->y2axis->title->SetMargin(8); 
         $graph->y2scale->SetAutoMax(100);
         $graph->y2scale->SetAutoMin(0);
@@ -360,7 +360,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->AddPage();
         /* JPGraph end */
         $note = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by the trained staff of CDC-ILB using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
         $note .= '<h5>Procedures used to establish the assigned value:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
