@@ -2836,3 +2836,6 @@ INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES
 
 -- Thana 23-July-2021
 INSERT INTO `global_config` (`name`, `value`) VALUES ('theme_color', 'blue');
+
+-- Amit 28-July-2021
+UPDATE `system_config` SET `value` = '7.1.0' WHERE `system_config`.`config` = 'app_version';
