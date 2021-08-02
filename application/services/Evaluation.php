@@ -200,7 +200,7 @@ class Application_Service_Evaluation
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
 			->where("s.shipment_id = ?", $shipmentId);
 		//->where("substring(sp.evaluation_status,4,1) != '0'");
-		if($override != ""){
+		if ($override != "") {
 			$sql = $sql->where("sp.manual_override = ?", $override);
 		}
 		$shipmentResult = $db->fetchAll($sql);
@@ -384,10 +384,10 @@ class Application_Service_Evaluation
 
 					$shipmentResult[$counter]['display_result'] = $fRes[0];
 					$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
-					if(isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes'){
+					if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
 						// let us update the total score in DB
 						$nofOfRowsUpdated = $db->update('shipment_participant_map', array('failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
-					}else{
+					} else {
 						// let us update the total score in DB
 						$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
 					}
@@ -421,7 +421,7 @@ class Application_Service_Evaluation
 
 		$participantData = $participantService->getParticipantDetails($participantId);
 		$shipmentData = $schemeService->getShipmentData($shipmentId, $participantId);
-		
+
 		if ($scheme == 'eid') {
 			$possibleResults = $schemeService->getPossibleResults('eid');
 			$evalComments = $schemeService->getSchemeEvaluationComments('eid');
@@ -586,15 +586,15 @@ class Application_Service_Evaluation
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 		$failureReason = array();
 		/* Manual result override changes */
-		if(isset($params['manualOverride']) && $params['manualOverride'] == "yes"){
+		if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
 			$shipmentDB = new Application_Model_DbTable_Shipments();
 			$shipmentDeails = $shipmentDB->fetchRow("shipment_id = " . $params['shipmentId']);
 			$maxScore = ((isset($shipmentDeails['max_score']) && $shipmentDeails['max_score'] != "") ? $shipmentDeails['max_score'] : 0);
 			$shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != "") ? $params['shipmentScore'] : 0);
 			$docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != "") ? $params['documentationScore'] : 0);
-			if(isset($params['manualCorrective']) && $params['manualCorrective'] != ""){
-				$i=0;
-				foreach($params['manualCorrective'] as $warning=>$correctiveAction){
+			if (isset($params['manualCorrective']) && $params['manualCorrective'] != "") {
+				$i = 0;
+				foreach ($params['manualCorrective'] as $warning => $correctiveAction) {
 					$failureReason[$i]['warning'] = $warning;
 					$failureReason[$i]['correctiveAction'] = $correctiveAction;
 					$i++;
@@ -671,12 +671,12 @@ class Application_Service_Evaluation
 				// }
 			}
 			/* Manual result override changes */
-			if(isset($params['manualOverride']) && $params['manualOverride'] == "yes"){
-				
+			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
+
 				$grandTotal = ($shipmentScore + $docScore);
 				if ($grandTotal < $config->evaluation->dts->passPercentage) {
 					$finalResult = 2;
-				}else{
+				} else {
 					$finalResult = 1;
 				}
 			}
@@ -726,12 +726,12 @@ class Application_Service_Evaluation
 				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
 			}
 			/* Manual result override changes */
-			if(isset($params['manualOverride']) && $params['manualOverride'] == "yes"){
-				
-				$grandTotal = number_format($shipmentScore+$docScore);
+			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
+
+				$grandTotal = number_format($shipmentScore + $docScore);
 				if ($grandTotal < $config->evaluation->dts->passPercentage) {
 					$finalResult = 2;
-				}else{
+				} else {
 					$finalResult = 1;
 				}
 			}
@@ -801,12 +801,12 @@ class Application_Service_Evaluation
 				// }
 			}
 			/* Manual result override changes */
-			if(isset($params['manualOverride']) && $params['manualOverride'] == "yes"){
-				
+			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
+
 				$grandTotal = ($shipmentScore + $docScore);
 				if ($shipmentScore != $maxScore) {
 					$finalResult = 2;
-				}else{
+				} else {
 					$finalResult = 1;
 				}
 			}
@@ -888,11 +888,11 @@ class Application_Service_Evaluation
 				), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $params['sampleId'][$i]);
 			}
 			/* Manual result override changes */
-			if(isset($params['manualOverride']) && $params['manualOverride'] == "yes"){
+			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
 				$grandTotal = ($shipmentScore + $docScore);
 				if ($grandTotal < $config->evaluation->recency->passPercentage) {
 					$finalResult = 2;
-				}else{
+				} else {
 					$finalResult = 1;
 				}
 			}
@@ -947,11 +947,11 @@ class Application_Service_Evaluation
 			$geneIdentifyTypesDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
 			$geneIdentifyTypesDb->saveCovid19IdentifiedGenesResults($params);
 			/* Manual result override changes */
-			if(isset($params['manualOverride']) && $params['manualOverride'] == "yes"){
+			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
 				$grandTotal = ($shipmentScore + $docScore);
 				if ($grandTotal < $config->evaluation->covid19->passPercentage) {
 					$finalResult = 2;
-				}else{
+				} else {
 					$finalResult = 1;
 				}
 			}
@@ -964,15 +964,15 @@ class Application_Service_Evaluation
 			$updateArray['final_result'] = 3;
 		}
 		/* Manual result override changes */
-		if(isset($params['manualOverride']) && $params['manualOverride'] == "yes"){
+		if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
 			$updateArray['shipment_score'] = $shipmentScore;
 			$updateArray['documentation_score'] = $docScore;
 			$updateArray['final_result'] = $finalResult;
-			if(isset($failureReason) && $failureReason != ""){
+			if (isset($failureReason) && $failureReason != "") {
 				$updateArray['failure_reason'] = json_encode($failureReason);
 			}
 		}
-		$updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != "")?$params['manualOverride']:'no';
+		$updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != "") ? $params['manualOverride'] : 'no';
 		// Zend_Debug::dump($params['smid']);
 		// Zend_Debug::dump($updateArray);
 		$id = $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
@@ -1038,7 +1038,7 @@ class Application_Service_Evaluation
 		$schemeService = new Application_Service_Schemes();
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment', 'shipment_attributes', 'pt_co_ordinator_name'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
-			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume','sp.manual_override'))
+			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.region'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
@@ -1867,7 +1867,7 @@ class Application_Service_Evaluation
 				/* VL Assay for chart */
 				$vlAssayQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('no_of_responses'))
 					->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('no_of_samples' => new Zend_Db_Expr("COUNT(DISTINCT refVl.sample_id)")))
-					->join(array('rvla' => 'r_vl_assay'), 'rvla.id=vlCal.vl_assay', array('assay_name'=>'name'))
+					->join(array('rvla' => 'r_vl_assay'), 'rvla.id=vlCal.vl_assay', array('assay_name' => 'name'))
 					->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array(
 						'numberPassed' => new Zend_Db_Expr("SUM(CASE WHEN final_result = 1 THEN 1 ELSE 0 END)/COUNT(DISTINCT refVl.sample_id)"),
 						'numberFailed' => new Zend_Db_Expr("SUM(CASE WHEN final_result != 1 THEN 1 ELSE 0 END)/COUNT(DISTINCT refVl.sample_id)"),
@@ -1877,13 +1877,12 @@ class Application_Service_Evaluation
 					->where("(sp.attributes like CONCAT('%\"vl_assay\":\"', vlCal.vl_assay, '\"%') )")
 					->where("sp.is_excluded not like 'yes'")
 					->group('rvla.name')
-					->order('vlCal.no_of_responses DESC')
-					;
+					->order('vlCal.no_of_responses DESC');
 				$vlAssayRes = $db->fetchAll($vlAssayQuery);
 				// Zend_Debug::dump($vlAssayRes);die;
 
 				foreach ($vlAssayResultSet as $vlAssayRow) {
-					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('no_of_responses', 'median', 'low_limit', 'high_limit', 'sd'))
+					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('mean', 'no_of_responses', 'median', 'low_limit', 'high_limit', 'sd', 'cv'))
 						->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
 						->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
 						->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(

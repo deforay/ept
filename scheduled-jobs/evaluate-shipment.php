@@ -225,7 +225,7 @@ class SummaryPDF extends TCPDF
 
         // Set font
         $this->SetFont('helvetica', '', 10);
-        
+
         //$this->header = nl2br(trim($this->header));
         //$this->header = preg_replace('/<br>$/', "", $this->header);
         $html = $htmlTitle = '';

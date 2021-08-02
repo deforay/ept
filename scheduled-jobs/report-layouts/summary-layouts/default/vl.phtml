@@ -33,9 +33,9 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
     // if ($methodOfEvaluation == 'iso17043') {
-        // $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
+    // $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
     // }else{
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
     // }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -55,9 +55,9 @@ if ($resultArray['shipment'] != "") {
     $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
     if ($methodOfEvaluation == 'iso17043') {
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config,$trainingInstanceText,$evalRow['date_finalised']);
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, $evalRow['date_finalised']);
     } else {
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'],"",$trainingInstanceText);
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $trainingInstanceText);
     }
     // add a page
     //$pdf->AddPage();
@@ -131,7 +131,7 @@ if ($resultArray['shipment'] != "") {
         $footerHead .= '<small>Notes:<ol><li>Results from participants using Biocentric and "Other" Platforms were not used for results evaluation due to less than 6 participating labs in this PT event.</li><li>A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</li></ol></small>';
         $pdf->writeHTML($footerHead, true, false, true, false, '');
     } else if ($methodOfEvaluation == 'iso17043') {
-    
+
         if (count($resultArray['vlCalculation']) > 0) {
 
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
@@ -165,7 +165,7 @@ if ($resultArray['shipment'] != "") {
                     // $responseTxt = $val['no_of_responses'];
                     if ($vlCal['vlAssay'] == "Other") {
                         foreach ($vlCal['otherAssayName'] as $otherAssayName => $otherAssayCount) {
-                            $assayNameTxt .= 'Other - '. $otherAssayName . '(n=' . $otherAssayCount . '), ';
+                            $assayNameTxt .= 'Other - ' . $otherAssayName . '(n=' . $otherAssayCount . '), ';
                         }
                     } else {
                         $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
@@ -199,7 +199,7 @@ if ($resultArray['shipment'] != "") {
                                     <td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                                 </tr>';
-                           /*  $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses'];
+                            /*  $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses'];
                             $chart[$vlCal['vlAssay']]['NumberPassed'] =  $score;
                             $chart[$vlCal['vlAssay']]['score'] =  $score;
                             $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2); */
@@ -261,97 +261,97 @@ if ($resultArray['shipment'] != "") {
         /* JPGraph start */
         if (isset($resultArray['vlAssayRes']) && count($resultArray['vlAssayRes']) > 0) {
             $key18Last = array_key_last($assayName);
-            foreach ($resultArray['vlAssayRes'] as $key=>$data) {
+            foreach ($resultArray['vlAssayRes'] as $key => $data) {
                 if ($methodOfEvaluation == 'iso17043') {
                     if (isset($data['no_of_responses']) && $data['no_of_responses'] < 18 || $data['assay_name'] == "Other") {
                         $noOfPaResponse[$key18Last] += (int)$data['no_of_responses'];
                         $participantScore[$key18Last] += (int)$data['numberPassed'];
                         $scoreBelow[$key18Last] += (int)$data['numberFailed'];
-                        $avg[$key18Last] = number_format(($participantScore[$key18Last] / $noOfPaResponse[$key18Last]) * 100,2);
-                    }else{
+                        $avg[$key18Last] = number_format(($participantScore[$key18Last] / $noOfPaResponse[$key18Last]) * 100, 2);
+                    } else {
                         $noOfPaResponse[] = $data['no_of_responses'];
                         $participantScore[] = $data['numberPassed'];
                         $scoreBelow[] = $data['numberFailed'];
-                        $avg[] = number_format(($data['numberPassed'] / $data['no_of_responses']) * 100,2);
+                        $avg[] = number_format(($data['numberPassed'] / $data['no_of_responses']) * 100, 2);
                     }
                 }
             }
-        } else{
+        } else {
             $noOfPaResponse = array(0);
             $participantScore = array(0);
             $scoreBelow = array(0);
-            $avg=array(0,0,0);
+            $avg = array(0, 0, 0);
         }
 
         /* JPGraph start */
         // Create the graph and specify the scale for both Y-axis
-        $graph = new Graph(700,600);
+        $graph = new Graph(700, 600);
         $graph->SetScale("textlin");
         // $graph->SetY2Scale("lin");
-        $graph->SetY2Scale("lin",0,90);
+        $graph->SetY2Scale("lin", 0, 90);
         $graph->SetY2OrderBack(false);
         $graph->SetShadow();
-        
+
         // Adjust the margin
-        $graph->img->SetMargin(55,55,5,150);
-        
+        $graph->img->SetMargin(55, 55, 5, 150);
+
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($assayName);
-        
+
         // Create the two linear plot
-        $lineplot2=new ScatterPlot($avg);
-        $lineplot2->mark->SetType(MARK_IMG,ROOT_PATH.'/images/scatter.gif',1.0);
+        $lineplot2 = new ScatterPlot($avg);
+        $lineplot2->mark->SetType(MARK_IMG, ROOT_PATH . '/images/scatter.gif', 1.0);
         $lineplot2->mark->SetSize(2);
         $lineplot2->SetWeight(10);
         $lineplot2->SetLegend('% of Participants scoring "100%"');
         $graph->AddY2($lineplot2);
-        
+
         $graph->title->Set("All Participants Results Summary", 20);
-        
+
         $graph->yaxis->title->Set('Number of participants', 'center');
-        $graph->yaxis->title->SetMargin(8); 
+        $graph->yaxis->title->SetMargin(8);
         $graph->yscale->SetAutoMax(120);
         $graph->yscale->SetAutoMin(0);
-        
+
         $graph->y2axis->title->Set('% of Participants scoring "100%"');
-        $graph->y2axis->title->SetMargin(8); 
+        $graph->y2axis->title->SetMargin(8);
         $graph->y2scale->SetAutoMax(100);
         $graph->y2scale->SetAutoMin(0);
         // Add the plot to the graph
-        
-        
+
+
         // Create the bar plots
         $b1plot = new BarPlot($noOfPaResponse);
         $b2plot = new BarPlot($participantScore);
         $b3plot = new BarPlot($scoreBelow);
-        
+
         // Create the grouped bar plot
-        $gbplot = new GroupBarPlot(array($b1plot,$b2plot,$b3plot));
+        $gbplot = new GroupBarPlot(array($b1plot, $b2plot, $b3plot));
         $graph->Add($gbplot);
-        
+
         $b1plot->SetColor("#1471c1");
         $b1plot->SetFillColor("#1471c1");
         $b1plot->SetLegend("Number of Participants Submitted Results");
-        
+
         $b2plot->SetColor("#92d14f");
         $b2plot->SetFillColor("#92d14f");
         $b2plot->SetLegend('Number of Participants Scoring "100%"');
-        
+
         $b3plot->SetColor("#fbda66");
         $b3plot->SetFillColor("#fbda66");
         $b3plot->SetLegend('Number of Participants Scoring Below "100%"');
-        
+
         $graph->legend->SetFrameWeight(1);
         $graph->legend->SetColumns(2);
-        
-        $band = new PlotBand(VERTICAL,BAND_RDIAG,11,"max",'khaki4');
+
+        $band = new PlotBand(VERTICAL, BAND_RDIAG, 11, "max", 'khaki4');
         $band->ShowFrame(true);
         $band->SetOrder(DEPTH_BACK);
         $graph->Add($band);
-        
+
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_yaxis_chart.png';
         $graph->Stroke($image_file);
-        
+
         $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
@@ -407,9 +407,9 @@ if ($resultArray['shipment'] != "") {
     $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
-    if($trainingInstance == "yes"){
+    if ($trainingInstance == "yes") {
         //Watermark section
-        $pdf= new PDF_Rotate();
+        $pdf = new PDF_Rotate();
     }
     //============================================================+
     // END OF FILE
