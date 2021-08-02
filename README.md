@@ -7,7 +7,7 @@ Welcome to the Open Source repository of the e-Proficiency Testing (e-PT) softwa
 * MySQL 5+
 * PHP 7+
 
-#### Supported PT Schmes
+#### Supported PT Schemes
 * HIV Serology
 * HIV Viral Load 
 * Early Infant Diagnosis
@@ -38,6 +38,16 @@ Welcome to the Open Source repository of the e-Proficiency Testing (e-PT) softwa
    </Directory>
 </VirtualHost>
 ```
+
+You also need to add a couple of cron or scheduled jobs. Following is an example on a Linux system
+
+```bash
+
+* * * * * /usr/bin/php -f /var/www/ept/scheduled-jobs/evaluate-shipment.php
+* * * * * /usr/bin/php -f /var/www/ept/scheduled-jobs/SendMailAlerts.php
+
+```
+
 
 ### Next Steps ###
 
