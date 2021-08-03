@@ -175,9 +175,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> Clear</i>
                             </td>
 
-                            <td><label for="specimenVolume">Specimen Volume <span class='mandatory ptTestPerformed'>*</span></label></td>
+                            <td><label for="specimenVolume">Specimen Volume</label></td>
                             <td>
-                                <input type="text" id="specimenVolume" name="specimenVolume" style="width:180px;float:left;" value="<?php echo $this->shipment["specimen_volume"]; ?>" class="form-control isRequired" placeholder="Enter Specimen Volume" title="Please enter Specimen Volume" />
+                                <input type="text" id="specimenVolume" name="specimenVolume" style="width:180px;float:left;" value="<?php echo $this->shipment["specimen_volume"]; ?>" class="form-control" placeholder="Enter Specimen Volume" title="Please enter Specimen Volume" />
                             </td>
                             <!-- <td><label>Algorithm Used <span class='mandatory'>*</span></label></td>
                             <td>

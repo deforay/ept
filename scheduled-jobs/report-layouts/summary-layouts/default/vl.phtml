@@ -153,10 +153,10 @@ if ($resultArray['shipment'] != "") {
                         if (isset($val['median'])) {
 
                             $sample[$k]['response']       += $val['no_of_responses'];
-                            $sample[$k]['median']         += $val['median'];
-                            $sample[$k]['lowLimit']       += $val['low_limit'];
-                            $sample[$k]['highLimit']      += $val['high_limit'];
-                            $sample[$k]['sd']             += $val['sd'];
+                            $sample[$k]['median']         = $val['median'];
+                            $sample[$k]['lowLimit']       = $val['low_limit'];
+                            $sample[$k]['highLimit']      = $val['high_limit'];
+                            $sample[$k]['sd']             = $val['sd'];
                             $sample[$k]['NumberPassed']   += $val['NumberPassed'];
                             $sample[$t]['label']          = $val['sample_label'];
                             $t++;

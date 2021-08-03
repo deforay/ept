@@ -556,6 +556,7 @@ class Application_Service_Schemes
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        $db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $sId");
         $db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $sId and is_pt_test_not_performed = 'yes'");
 
         $db->delete('reference_vl_calculation', "shipment_id=$sId");
@@ -721,7 +722,7 @@ class Application_Service_Schemes
         }
 
         // Okay now we are going to take the assay with maximum responses and use its range for assays having < $minimumRequiredSamples
-
+        
         $skippedAssays = array_unique($skippedAssays);
         arsort($responseCounter);
         reset($responseCounter);
@@ -746,6 +747,10 @@ class Application_Service_Schemes
                 // (this is especially put to check and remove vl assay = 6 if no one used "Others")
                 // Why? because we manually inserted "6" into skippedAssays at the top of this function
                 if (empty($row['no_of_responses'])) continue;
+
+                // echo "<br><br><br><pre>";
+                // var_dump($row);
+                // echo "</pre>";
 
                 $db->delete('reference_vl_calculation', "vl_assay = " . $row['vl_assay'] . " and sample_id= " . $row['sample_id'] . " and shipment_id=  " . $row['shipment_id']);
                 $db->insert('reference_vl_calculation', $row);
@@ -1059,7 +1064,8 @@ class Application_Service_Schemes
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('r_covid19_gene_types'), array('gene_id', 'gene_name'))
-            ->where("scheme_type = 'covid19'");
+            ->where("scheme_type = 'covid19'")
+            ->order('gene_name');
         return $db->fetchAll($sql);
     }
 
