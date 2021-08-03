@@ -469,24 +469,24 @@ class Application_Service_Schemes
     public function getVlRangeInformation($sId, $sampleId = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id', 'sample_id', 'vl_assay', 'low_limit', 'high_limit', 'calculated_on', 'manual_high_limit', 'manual_low_limit', 'mean', 'sd','standard_uncertainty', 'is_uncertainty_acceptable' ,'median','manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'updated_on', 'use_range'))
+        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id', 'sample_id', 'vl_assay', 'low_limit', 'high_limit', 'calculated_on', 'manual_high_limit', 'manual_low_limit', 'mean', 'sd', 'standard_uncertainty', 'is_uncertainty_acceptable', 'median', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'updated_on', 'use_range'))
             ->join(array('ref' => 'reference_result_vl'), 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $sId, array('sample_label'))
             ->join(array('a' => 'r_vl_assay'), 'a.id = rvc.vl_assay', array('assay_name' => 'name'))
             ->join(array('s' => 'shipment'), 'rvc.shipment_id = s.shipment_id')
             ->where('rvc.shipment_id = ?', $sId)
-            ->order(array('sample_label','assay_name'));
+            ->order(array('sample_label', 'assay_name'));
 
         if ($sampleId != null) {
             $sql = $sql->where('rvc.sample_id = ?', $sampleId);
         }
-        
+
 
         //die($sql);
         $res = $db->fetchAll($sql);
 
         $shipmentAttributes = !empty($res[0]['shipment_attributes']) ? json_decode($res[0]['shipment_attributes'], true) : null;
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
-        
+
 
         $response = array();
 
@@ -494,7 +494,7 @@ class Application_Service_Schemes
 
         foreach ($res as $row) {
 
-            
+
 
             //$response[$row['vl_assay']][$row['sample_id']]['sample_label'] = $row['sample_label'];
             //$response[$row['vl_assay']][$row['sample_id']]['sample_id'] = $row['sample_id'];
@@ -722,7 +722,7 @@ class Application_Service_Schemes
         }
 
         // Okay now we are going to take the assay with maximum responses and use its range for assays having < $minimumRequiredSamples
-        
+
         $skippedAssays = array_unique($skippedAssays);
         arsort($responseCounter);
         reset($responseCounter);
@@ -732,7 +732,7 @@ class Application_Service_Schemes
             // ->where('rvc.vl_assay = ?', $maxAssay)
             ->where('rvc.shipment_id = ?', $sId);
 
-        if(isset($maxAssay) && $maxAssay != ""){
+        if (isset($maxAssay) && $maxAssay != "") {
             $sql->where('rvc.vl_assay = ?', $maxAssay);
         }
         $res = $db->fetchAll($sql);
@@ -772,14 +772,18 @@ class Application_Service_Schemes
         }
     }
 
-    public function getMedian($numbers = array())
+    public function getMedian($arr = array())
     {
-        if (!is_array($numbers))
-            $numbers = func_get_args();
-
-        rsort($numbers);
-        $mid = (count($numbers) / 2);
-        return ($mid % 2 != 0) ? $numbers[$mid - 1] : (($numbers[$mid - 1]) + $numbers[$mid]) / 2;
+        $count = count($arr); //total numbers in array
+        $middleval = floor(($count - 1) / 2); // find the middle value, or the lowest middle value
+        if ($count % 2) { // odd number, middle is the median
+            $median = $arr[$middleval];
+        } else { // even number, calculate avg of 2 medians
+            $low = $arr[$middleval];
+            $high = $arr[$middleval + 1];
+            $median = (($low + $high) / 2);
+        }
+        return $median;
     }
 
     public function getAverage($inputArray)
@@ -890,7 +894,7 @@ class Application_Service_Schemes
             error_log($e->getMessage());
         }
     }
-    
+
     public function updateTestType($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1074,7 +1078,7 @@ class Application_Service_Schemes
         $geneTypesDb = new Application_Model_DbTable_RCovid19GeneTypes();
         return $geneTypesDb->fetchAllCovid19GeneTypeResponseWise('covid19');
     }
-    
+
     public function getAllCovid19IdentifiedGeneTypeResponseWise($mapId)
     {
         $geneIdentifiedTypesDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
