@@ -1043,8 +1043,6 @@ class Application_Service_Evaluation
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.region', 'p.lab_name'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
-			->joinLeft(array('vlCal' => 'reference_vl_calculation'), 's.shipment_id=vlCal.shipment_id', array(''))
-			->joinLeft(array('rvla' => 'r_vl_assay'), 'rvla.id=vlCal.vl_assay', array('assay_name' => 'name'))
 			->where("s.shipment_id = ?", $shipmentId)
 			->where("sp.is_excluded = 'no'")
 			//->where("substring(sp.evaluation_status,4,1) != '0'")

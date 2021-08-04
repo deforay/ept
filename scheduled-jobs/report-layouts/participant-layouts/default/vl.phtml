@@ -146,7 +146,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
         $labInfo .= '	<td width="20%"><strong>Laboratory Name : </strong></td>';
-        $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['lab_name'] . '</td>';
+        $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
@@ -200,8 +200,9 @@ if (sizeof($resultArray['shipment']) > 0) {
                                         <td style="background-color:#8ECF64;"><br><br>Your Grade</td>
                                         <td style="background-color:#8ECF64;"><br><br>Score</td>
                                     </tr>';
+                    $color = (isset($$passPercentage) && $passPercentage <= $response['shipment_score']) ? "" : "red";
                     if ($result['is_excluded'] == 'yes') {
-                        $color = (isset($$passPercentage) && $passPercentage <= $response['shipment_score']) ? "" : "red";
+
                         foreach ($result['responseResult'] as $key => $response) {
                             $labRes .= '<tr>
                                     <td style="text-align:center;">' . $response['sample_label'] . '</td>
