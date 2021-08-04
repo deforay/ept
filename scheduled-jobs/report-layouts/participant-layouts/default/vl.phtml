@@ -183,7 +183,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             if (sizeof($result['responseResult']) > 0) {
                 $labRes = "";
-                $rospan = count($result['responseResult']);
+                $rowspan = count($result['responseResult']);
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
                     $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
@@ -214,7 +214,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                                     <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
                                     <td>Not Evaluated</td>';
                             if ($key == 0) {
-                                $labRes .= '<td style="color:' . $color . '">' . $response['shipment_score'] . '</td>';
+                                $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
                             }
                             $labRes .= '</tr>';
                         }
@@ -229,7 +229,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                                 <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
                                 <td>' . $response['grade'] . '</td>';
                             if ($key == 0) {
-                                $labRes .= '<td style="color:' . $color . '">' . $response['shipment_score'] . '</td>';
+                                $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
                             }
                             $labRes .= '</tr>';
                         }
@@ -535,7 +535,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $shipmentCode = $result['shipment_code'];
         $j++;
-        exit(0);
     }
 
     // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
