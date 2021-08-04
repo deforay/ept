@@ -203,7 +203,6 @@ if (sizeof($resultArray['shipment']) > 0) {
                                         <td style="background-color:#8ECF64;"><br><br>Score</td>
                                     </tr>';
                     if ($result['is_excluded'] == 'yes') {
-                        $j = 0;
                         foreach ($result['responseResult'] as $response) {
                             $labRes .= '<tr>
                                         <td>Not Evaluated</td>
@@ -213,14 +212,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                                         <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
                                         <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
                                         <td>Not Evaluated</td>';
-                            $j++;
-                            if ($rowspan == $j) {
-                                $labRes .= '<td rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
-                            }
+                            $labRes .= '<td rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
                             $labRes .= '</tr>';
                         }
                     } else {
-                        $j = 0;
                         foreach ($result['responseResult'] as $response) {
                             $labRes .= '<tr>
                                     <td style="text-align:center;">' . $response['sample_label'] . '</td>
@@ -230,10 +225,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                                     <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
                                     <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
                                     <td>' . $response['grade'] . '</td>';
-                            $j++;
-                            if ($rowspan == $j) {
-                                $labRes .= '<td rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
-                            }
+                            $labRes .= '<td rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
                             $labRes .= '</tr>';
                         }
                     }
@@ -538,7 +530,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $shipmentCode = $result['shipment_code'];
         $j++;
-        exit(0);
     }
 
     // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
