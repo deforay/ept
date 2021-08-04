@@ -226,7 +226,7 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
     public function fetchAllCovid19GeneTypeResponseWise($scheme){
 		
 		
-        $sql = $this->getAdapter()->select()->from(array($this->_name), array('gene_id', 'gene_name'))->where("scheme_type = '$scheme'");
+        $sql = $this->getAdapter()->select()->from(array($this->_name), array('gene_id', 'gene_name'))->where("scheme_type = '$scheme'")->order('gene_name');
         $result = $this->getAdapter()->fetchAll($sql);
         $geneTypeOptions = array();
         foreach ($result as $geneType) {

@@ -6,7 +6,8 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     protected $_primary = 'test_type_id';
 	
 	public function getTestTypeNameById($testPlatformId){
-		return $this->getAdapter()->fetchCol($this->getAdapter()->select()->from('r_test_type_covid19', 'test_type_name')->where("test_type_id = '$testPlatformId'"));
+		return $this->getAdapter()->fetchCol($this->getAdapter()->select()->from('r_test_type_covid19', 'test_type_name')
+        ->where("test_type_id = '$testPlatformId'"));
 	}
 	
 	public function getActiveTestTypesNamesForScheme($scheme,$countryAdapted=false){
@@ -17,6 +18,9 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
         if ($countryAdapted) {
             $sql = $sql->where('country_adapted = 1');
         }
+
+        $sql = $sql->order('test_type_name');
+
         $stmt = $this->getAdapter()->fetchAll($sql);
 
         foreach ($stmt as $type) {
@@ -33,6 +37,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
         if ($countryAdapted) {
             $sql = $sql->where('country_adapted = 1');
         }
+        $sql = $sql->order('test_type_name');
         return $this->getAdapter()->fetchAll($sql);
 	}
 

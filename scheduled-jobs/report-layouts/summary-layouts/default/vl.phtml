@@ -153,10 +153,10 @@ if ($resultArray['shipment'] != "") {
                         if (isset($val['median'])) {
 
                             $sample[$k]['response']       += $val['no_of_responses'];
-                            $sample[$k]['median']         += $val['median'];
-                            $sample[$k]['lowLimit']       += $val['low_limit'];
-                            $sample[$k]['highLimit']      += $val['high_limit'];
-                            $sample[$k]['sd']             += $val['sd'];
+                            $sample[$k]['median']         = $val['median'];
+                            $sample[$k]['lowLimit']       = $val['low_limit'];
+                            $sample[$k]['highLimit']      = $val['high_limit'];
+                            $sample[$k]['sd']             = $val['sd'];
                             $sample[$k]['NumberPassed']   += $val['NumberPassed'];
                             $sample[$t]['label']          = $val['sample_label'];
                             $t++;
@@ -182,7 +182,7 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Pass Result <br/>(z < ± 3.0)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(z < ± 3.0)</th>
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
                         if (isset($val['median'])) {
@@ -224,7 +224,7 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Pass Result <br/>(z < ± 3.0)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(z < ± 3.0)</th>
                                     </tr>';
                 foreach ($sample as $point => $label) {
                     $score = round((($label['NumberPassed'] / $label['response']) * 100));
@@ -259,8 +259,12 @@ if ($resultArray['shipment'] != "") {
         $pdf->AddPage();
 
         /* JPGraph start */
+
+
+        $allParticipantChartLabels = $assayName;
+
         if (isset($resultArray['vlAssayRes']) && count($resultArray['vlAssayRes']) > 0) {
-            $key18Last = array_key_last($assayName);
+            $key18Last = array_key_last($allParticipantChartLabels);
             foreach ($resultArray['vlAssayRes'] as $key => $data) {
                 if ($methodOfEvaluation == 'iso17043') {
                     if (isset($data['no_of_responses']) && $data['no_of_responses'] < 18 || $data['assay_name'] == "Other") {
@@ -282,11 +286,26 @@ if ($resultArray['shipment'] != "") {
             $scoreBelow = array(0);
             $avg = array(0, 0, 0);
         }
+        
+        // Now let us create the last part of the barchart with totals 
+        $allParticipantChartLabels[] = 'All Participants Scores';
+        $totalBarResponses = array_sum($noOfPaResponse);
+        $totalBarPassed = array_sum($participantScore);
+        $totalBarFailed = array_sum($scoreBelow);
+        $totalBarAvg = number_format(($totalBarPassed / $totalBarResponses) * 100, 2);
+
+        $noOfPaResponse[] = $totalBarResponses;
+        $participantScore[] = $totalBarPassed;
+        $scoreBelow[] = $totalBarFailed;
+        $avg[] = $totalBarAvg;
+
+
+        
 
         /* JPGraph start */
         // Create the graph and specify the scale for both Y-axis
         $graph = new Graph(700, 600);
-        $graph->SetScale("textlin");
+        $graph->SetScale("texlin");
         // $graph->SetY2Scale("lin");
         $graph->SetY2Scale("lin", 0, 90);
         $graph->SetY2OrderBack(false);
@@ -296,7 +315,7 @@ if ($resultArray['shipment'] != "") {
         $graph->img->SetMargin(55, 55, 5, 150);
 
         $graph->ygrid->SetFill(false);
-        $graph->xaxis->SetTickLabels($assayName);
+        $graph->xaxis->SetTickLabels($allParticipantChartLabels);
 
         // Create the two linear plot
         $lineplot2 = new ScatterPlot($avg);
