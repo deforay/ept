@@ -140,25 +140,25 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
 
-        $labInfo = '<table cellpadding="2" style="font-size:12px;width:100%;">';
+        $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
 
         $labInfo .= '<tr>';
         $labInfo .= '	<td width="20%"><strong>Laboratory ID : </strong></td>';
-        $labInfo .= '	<td width="80%">' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['unique_identifier'] . '</td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
         $labInfo .= '	<td width="20%"><strong>Laboratory Name : </strong></td>';
-        $labInfo .= '	<td width="80%">' . $result['lab_name'] . '</td>';
+        $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['lab_name'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>PT Panel Name :</strong>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Received Date :</strong>' . $shipmentReceiptDate . '</td>';
+        $labInfo .= '	<td width="50%"><strong>PT Panel Name :</strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Panel Received Date :</strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Results Due Date :</strong>' . $result['lastdate_response'] . '</td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Tested Date :</strong>' . $shipmentTestDate . '</td>';
+        $labInfo .= '	<td width="50%"><strong>Results Due Date :</strong><span style="font-weight: normal;">' . $result['lastdate_response'] . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Panel Tested Date :</strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
         $labInfo .= '</tr>';
 
         if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
@@ -167,8 +167,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             $machine = $result['responseResult'][0]['vl_assay'];
         }
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Platform/Assay Name :</strong>' . $machine . '</td>';
-        $labInfo .= '	<td width="50%"><strong>Results Submitted Date :</strong>' . $shipmentTestDate . '</td>';
+        $labInfo .= '	<td width="50%"><strong>Platform/Assay Name :</strong><span style="font-weight: normal;">' . $machine . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Results Submitted Date :</strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
@@ -183,7 +183,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             if (sizeof($result['responseResult']) > 0) {
                 $labRes = "";
-                $rowspan = count($result['responseResult']);
+                $rospan = count($result['responseResult']);
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
                     $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
@@ -205,28 +205,28 @@ if (sizeof($resultArray['shipment']) > 0) {
                     if ($result['is_excluded'] == 'yes') {
                         foreach ($result['responseResult'] as $response) {
                             $labRes .= '<tr>
-                                        <td>Not Evaluated</td>
-                                        <td>' . $response['reported_viral_load'] . '</td>
-                                        <td>' . $response['no_of_participants'] . '</td>
-                                        <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
-                                        <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                        <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
-                                        <td>Not Evaluated</td>';
-                            $labRes .= '<td rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
-                            $labRes .= '</tr>';
+                                                            <td style="text-align:center;">' . $response['sample_label'] . '</td>
+                                                            <td>' . $response['reported_viral_load'] . '</td>
+                                                            <td>' . $response['no_of_participants'] . '</td>
+                                                            <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
+                                                            <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                                                            <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
+                                                            <td>Not Evaluated</td>
+                                                            <td>' . $response['shipment_score'] . '</td>
+                                                        </tr>';
                         }
                     } else {
                         foreach ($result['responseResult'] as $response) {
                             $labRes .= '<tr>
-                                    <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                    <td>' . ((isset($response['reported_viral_load']) && !empty($response['reported_viral_load']) ? $response['reported_viral_load'] : "")) . '</td>
-                                    <td>' . $response['no_of_participants'] . '</td>
-                                    <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
-                                    <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                    <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
-                                    <td>' . $response['grade'] . '</td>';
-                            $labRes .= '<td rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
-                            $labRes .= '</tr>';
+                                                            <td style="text-align:center;">' . $response['sample_label'] . '</td>
+                                                            <td>' . ((isset($response['reported_viral_load']) && !empty($response['reported_viral_load']) ? $response['reported_viral_load'] : "")) . '</td>
+                                                            <td>' . $response['no_of_participants'] . '</td>
+                                                            <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
+                                                            <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                                                            <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
+                                                            <td>' . $response['grade'] . '</td>
+                                                            <td>' . $response['shipment_score'] . '</td>
+                                                        </tr>';
                         }
                     }
                     $labRes .= '</table>';
@@ -530,6 +530,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $shipmentCode = $result['shipment_code'];
         $j++;
+        exit(0);
     }
 
     // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
