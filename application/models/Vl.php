@@ -236,7 +236,7 @@ class Application_Model_Vl
                     $shipmentOverall = $db->fetchRow($sql);
                     if (sizeof($shipmentOverall) > 0) {
                         $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
-                        if(!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == ""){
+                        if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
                             $shipmentOverall['final_result'] = 2;
                         }
                         $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
