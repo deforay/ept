@@ -287,7 +287,7 @@ if ($resultArray['shipment'] != "") {
             $avg = array(0, 0, 0);
         }
         
-
+        // Now let us create the last part of the barchart with totals 
         $allParticipantChartLabels[] = 'All Participants Scores';
         $totalBarResponses = array_sum($noOfPaResponse);
         $totalBarPassed = array_sum($participantScore);
@@ -305,7 +305,7 @@ if ($resultArray['shipment'] != "") {
         /* JPGraph start */
         // Create the graph and specify the scale for both Y-axis
         $graph = new Graph(700, 600);
-        $graph->SetScale("int");
+        $graph->SetScale("texlin");
         // $graph->SetY2Scale("lin");
         $graph->SetY2Scale("lin", 0, 90);
         $graph->SetY2OrderBack(false);
