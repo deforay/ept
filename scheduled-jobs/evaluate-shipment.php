@@ -67,7 +67,7 @@ class IndividualPDF extends TCPDF
         //$this->header = nl2br(trim($this->header));
         //$this->header = preg_replace('/<br>$/', "", $this->header);
         if ($this->schemeType == 'vl') {
-            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using <br/>' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using <br/>' . $this->scheme_name . '</span>';
         } else if ($this->schemeType == 'eid') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using <br/>' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';

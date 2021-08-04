@@ -200,10 +200,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                                         <td style="background-color:#8ECF64;"><br><br>Your Grade</td>
                                         <td style="background-color:#8ECF64;"><br><br>Score</td>
                                     </tr>';
-                    $color = (isset($$passPercentage) && $passPercentage <= $response['shipment_score']) ? "" : "red";
                     if ($result['is_excluded'] == 'yes') {
-
                         foreach ($result['responseResult'] as $key => $response) {
+                            $color = (isset($passPercentage) && $passPercentage <= $response['shipment_score']) ? "black" : "red";
+                            $txtcolor = (isset($response['grade']) && $response['grade'] == 'Not Acceptable') ? "red" : "black";
                             $labRes .= '<tr>
                                     <td style="text-align:center;">' . $response['sample_label'] . '</td>
                                     <td>' . $response['reported_viral_load'] . '</td>
@@ -211,7 +211,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                                     <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
                                     <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
                                     <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
-                                    <td>Not Evaluated</td>';
+                                    <td style="color:' . $txtcolor . ';">Not Evaluated</td>';
                             if ($key == 0) {
                                 $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
                             }
@@ -219,6 +219,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                         }
                     } else {
                         foreach ($result['responseResult'] as $key => $response) {
+                            $color = (isset($passPercentage) && $passPercentage <= $response['shipment_score']) ? "black" : "red";
+                            $txtcolor = (isset($response['grade']) && $response['grade'] == 'Not Acceptable') ? "red" : "black";
                             $labRes .= '<tr>
                                 <td style="text-align:center;">' . $response['sample_label'] . '</td>
                                 <td>' . ((isset($response['reported_viral_load']) && !empty($response['reported_viral_load']) ? $response['reported_viral_load'] : "")) . '</td>
@@ -226,7 +228,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                                 <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
                                 <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
                                 <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
-                                <td>' . $response['grade'] . '</td>';
+                                <td style="color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
                             if ($key == 0) {
                                 $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
                             }
@@ -272,7 +274,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $footerHead = '<h5>0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</h5>';
                 $pdf->writeHTML($footerHead, true, false, true, false, '');
 
-                $zscorehtml = '<h5>Results Interpretation and Recommended Actions</h5><br/>';
+                $zscorehtml = '<h5 style="text-align:center;">Results Interpretation and Recommended Actions</h5>';
                 $zscorehtml .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">   ';
                 $zscorehtml .= '<tr>';
                 $zscorehtml .= '<th style="background-color:#8ECF64;"><strong>z Score</strong></th>';
@@ -294,15 +296,15 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $zscorehtml .= '<tr>';
                 $zscorehtml .= '<td>z ≥ ± 3.0</td>';
-                $zscorehtml .= '<td>Unacceptable</td>';
-                $zscorehtml .= '<td>Perform corrective action</td>';
+                $zscorehtml .= '<td style="color:red;">Unacceptable</td>';
+                $zscorehtml .= '<td style="color:red;">Perform corrective action</td>';
                 $zscorehtml .= '</tr>';
 
                 $zscorehtml .= '</table>';
-                $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;"><i style="color:darkgreen;background-color:lightgreen;">NOTE: *Results due date was extended for ePT results validation from submitted participants to address discrepancies.</i></span>';
+                // $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;"><i style="color:darkgreen;background-color:lightgreen;">NOTE: *Results due date was extended for ePT results validation from submitted participants to address discrepancies.</i></span>';
 
-                $zscorehtml .= '<h5>Participants with scores of less than 100%</h5>';
-                $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;">Laboratory must complete a <b>Proficiency Testing Corrective Action Form</b> within 30 days of report authorization date. Refer to Proficiency Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tab under the Main Navigation.</span>';
+                $zscorehtml .= '<h5>Participants with scores of less than 100%</h5>';
+                $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;">Laboratory must complete a <b>Proficiency Testing Corrective Action Form</b> within 30 days of report authorization date. Refer to Proficiency Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tab under the Main Navigation.</span>';
 
                 $zscorehtml .= '<h5>Information with respect to compliance with standards ISO 13528:2015(E)Preparation of Proficiency Test items:</h5>';
                 $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOP. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
