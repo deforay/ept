@@ -104,7 +104,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
-
+        $passPercentage = $config->evaluation->vl->passPercentage;
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
             $responseDate = $general->humanDateFormat($splitDate[0]);
@@ -203,30 +203,35 @@ if (sizeof($resultArray['shipment']) > 0) {
                                         <td style="background-color:#8ECF64;"><br><br>Score</td>
                                     </tr>';
                     if ($result['is_excluded'] == 'yes') {
-                        foreach ($result['responseResult'] as $response) {
+                        $color = (isset($$passPercentage) && $passPercentage <= $response['shipment_score']) ? "" : "red";
+                        foreach ($result['responseResult'] as $key => $response) {
                             $labRes .= '<tr>
-                                                            <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                                            <td>' . $response['reported_viral_load'] . '</td>
-                                                            <td>' . $response['no_of_participants'] . '</td>
-                                                            <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
-                                                            <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                                            <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
-                                                            <td>Not Evaluated</td>
-                                                            <td>' . $response['shipment_score'] . '</td>
-                                                        </tr>';
+                                    <td style="text-align:center;">' . $response['sample_label'] . '</td>
+                                    <td>' . $response['reported_viral_load'] . '</td>
+                                    <td>' . $response['no_of_participants'] . '</td>
+                                    <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
+                                    <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                                    <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
+                                    <td>Not Evaluated</td>';
+                            if ($key == 0) {
+                                $labRes .= '<td style="color:' . $color . '">' . $response['shipment_score'] . '</td>';
+                            }
+                            $labRes .= '</tr>';
                         }
                     } else {
-                        foreach ($result['responseResult'] as $response) {
+                        foreach ($result['responseResult'] as $key => $response) {
                             $labRes .= '<tr>
-                                                            <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                                            <td>' . ((isset($response['reported_viral_load']) && !empty($response['reported_viral_load']) ? $response['reported_viral_load'] : "")) . '</td>
-                                                            <td>' . $response['no_of_participants'] . '</td>
-                                                            <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
-                                                            <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                                            <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
-                                                            <td>' . $response['grade'] . '</td>
-                                                            <td>' . $response['shipment_score'] . '</td>
-                                                        </tr>';
+                                <td style="text-align:center;">' . $response['sample_label'] . '</td>
+                                <td>' . ((isset($response['reported_viral_load']) && !empty($response['reported_viral_load']) ? $response['reported_viral_load'] : "")) . '</td>
+                                <td>' . $response['no_of_participants'] . '</td>
+                                <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
+                                <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                                <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
+                                <td>' . $response['grade'] . '</td>';
+                            if ($key == 0) {
+                                $labRes .= '<td style="color:' . $color . '">' . $response['shipment_score'] . '</td>';
+                            }
+                            $labRes .= '</tr>';
                         }
                     }
                     $labRes .= '</table>';
@@ -530,6 +535,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $shipmentCode = $result['shipment_code'];
         $j++;
+        exit(0);
     }
 
     // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
