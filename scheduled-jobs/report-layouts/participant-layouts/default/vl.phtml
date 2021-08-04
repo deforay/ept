@@ -6,9 +6,7 @@ $general = new General();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 // Zend_Debug::dump($resultArray);die;
 //var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
-$pdfNew = new Zend_Pdf();
-$extractor = new Zend_Pdf_Resource_Extractor();
-$font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
+
 $shipmentCode = '';
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -509,11 +507,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             ob_end_clean();
         }
 
-        //Close and output PDF document
-        if (isset($result['last_name']) && trim($result['last_name']) != "") {
-            $result['last_name'] = "_" . $result['last_name'];
-        }
-
         //    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
         //        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
         //    }
@@ -524,52 +517,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 
-        //$pdf->Output($fileName, 'I');
-
-        $loadpdf = Zend_Pdf::load($filePath);
-
-        foreach ($loadpdf->pages as $page) {
-            $pdfExtract = $extractor->clonePage($page);
-            //$pdfExtract->setFont($font, 8) ->drawText('Page '.$j.' / '.$totalPages, 280, 50);
-            $pdfNew->pages[] = $pdfExtract;
-        }
         $shipmentCode = $result['shipment_code'];
         $j++;
     }
 
-    // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
-    // $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    // $pdfNew->save($mergeFilePath);
-
-    // foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
-    //     $pdfNew->pages = array();
-    //     $expRes = explode(",", $dmRes);
-    //     $resCount = count($expRes);
-    //     if ($resCount > 0) {
-    //         foreach ($expRes as $res) {
-    //             $expStrRes = explode("#", $res);
-    //             $dmFileName = $dmID . ".pdf";
-    //             $participantFileName = $expStrRes[1] . ".pdf";
-    //             $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
-    //             $participantFileName = str_replace(" ", "-", $participantFileName);
-    //             $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
-    //             if (file_exists($filePath)) {
-    //                 $loadpdf = Zend_Pdf::load($filePath);
-    //                 foreach ($loadpdf->pages as $page) {
-    //                     $pdfExtract = $extractor->clonePage($page);
-    //                     $pdfNew->pages[] = $pdfExtract;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
-    //     $dmFileName = str_replace(" ", "-", $dmFileName);
-
-    //     $mergePdf = $shipmentCode . "-" . $dmFileName;
-    //     $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    //     $pdfNew->save($mergeFilePath);
-    // }
     //============================================================+
     // END OF FILE
     //============================================================+
