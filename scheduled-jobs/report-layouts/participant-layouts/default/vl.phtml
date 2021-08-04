@@ -140,28 +140,35 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
 
-        $labInfo = '<table cellpadding="2" style="font-size:12px;width:830px;">';
+        $labInfo = '<table cellpadding="2" style="font-size:12px;width:100%;">';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>PT Panel </strong> <br>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
-        $labInfo .= '	<td><strong>Date PT Panel Received</strong> <br>' . $shipmentReceiptDate . '</td>';
-
+        $labInfo .= '	<td width="20%"><strong>Laboratory ID : </strong></td>';
+        $labInfo .= '	<td width="80%">' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td width="20%"><strong>Laboratory Name : </strong></td>';
+        $labInfo .= '	<td width="80%">' . $result['lab_name'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Participant ID</strong> <br>' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '	<td><strong>Date PT Panel Tested</strong> <br>' . $shipmentTestDate . '</td>';
+        $labInfo .= '	<td width="50%"><strong>PT Panel Name :</strong>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
+        $labInfo .= '	<td width="50%"><strong>Panel Received Date :</strong>' . $shipmentReceiptDate . '</td>';
         $labInfo .= '</tr>';
+
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td width="50%"><strong>Results Due Date :</strong>' . $result['lastdate_response'] . '</td>';
+        $labInfo .= '	<td width="50%"><strong>Panel Tested Date :</strong>' . $shipmentTestDate . '</td>';
+        $labInfo .= '</tr>';
+
         if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
-            // $machine = $attributes['vl_assay'];
             $machine = 'Other' . " - " . $attributes['other_assay'];;
         } else {
             $machine = $result['responseResult'][0]['vl_assay'];
         }
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Platform/Assay Name</strong> <br>' . $machine . '</td>';
-        $labInfo .= '	<td></td>';
-        // $labInfo .= '	<td><strong>Results Submitted Date</strong> <br>' . date('d-M-Y',strtotime($result['responseResult']['shipment_test_report_date'])) . '</td>';
+        $labInfo .= '	<td width="50%"><strong>Platform/Assay Name :</strong>' . $machine . '</td>';
+        $labInfo .= '	<td width="50%"><strong>Results Submitted Date :</strong>' . $shipmentTestDate . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
@@ -176,13 +183,14 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             if (sizeof($result['responseResult']) > 0) {
                 $labRes = "";
+                $rowspan = count($result['responseResult']);
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
                     $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
                                     <tr>
                                         <td style="background-color:white;" colspan="2"></td>
                                         <td style="background-color:#8ECF64;" colspan="3">All Participants Results <br/>Summary</td>
-                                        <td style="background-color:#8ECF64;" colspan="2">Your Lab Performance</td>
+                                        <td style="background-color:#8ECF64;" colspan="3">Your Lab Performance</td>
                                     </tr>
                                     <tr>
                                         <td style="background-color:#8ECF64;"><br><br>Specimen ID </td>
@@ -192,30 +200,41 @@ if (sizeof($resultArray['shipment']) > 0) {
                                         <td style="background-color:#8ECF64;"><br>Robust <br/>Standard <br/>Deviation</td>
                                         <td style="background-color:#8ECF64;"><br><br>z Score</td>
                                         <td style="background-color:#8ECF64;"><br><br>Your Grade</td>
+                                        <td style="background-color:#8ECF64;"><br><br>Score</td>
                                     </tr>';
                     if ($result['is_excluded'] == 'yes') {
+                        $j = 0;
                         foreach ($result['responseResult'] as $response) {
                             $labRes .= '<tr>
-                                            <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                            <td>' . $response['reported_viral_load'] . '</td>
-                                            <td>' . $response['no_of_participants'] . '</td>
-                                            <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
-                                            <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                            <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
-                                            <td>Not Evaluated</td>
-                                        </tr>';
+                                        <td>Not Evaluated</td>
+                                        <td>' . $response['reported_viral_load'] . '</td>
+                                        <td>' . $response['no_of_participants'] . '</td>
+                                        <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
+                                        <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                                        <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
+                                        <td>Not Evaluated</td>';
+                            $j++;
+                            if ($rowspan == $j) {
+                                $labRes .= '<td rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
+                            }
+                            $labRes .= '</tr>';
                         }
                     } else {
+                        $j = 0;
                         foreach ($result['responseResult'] as $response) {
                             $labRes .= '<tr>
-                                            <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                            <td>' . ((isset($response['reported_viral_load']) && !empty($response['reported_viral_load']) ? $response['reported_viral_load'] : "")) . '</td>
-                                            <td>' . $response['no_of_participants'] . '</td>
-                                            <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
-                                            <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                            <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
-                                            <td>' . $response['grade'] . '</td>
-                                        </tr>';
+                                    <td style="text-align:center;">' . $response['sample_label'] . '</td>
+                                    <td>' . ((isset($response['reported_viral_load']) && !empty($response['reported_viral_load']) ? $response['reported_viral_load'] : "")) . '</td>
+                                    <td>' . $response['no_of_participants'] . '</td>
+                                    <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
+                                    <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                                    <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
+                                    <td>' . $response['grade'] . '</td>';
+                            $j++;
+                            if ($rowspan == $j) {
+                                $labRes .= '<td rowspan="' . $rowspan . '">' . $response['shipment_score'] . '</td>';
+                            }
+                            $labRes .= '</tr>';
                         }
                     }
                     $labRes .= '</table>';
@@ -254,7 +273,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
 
-                $footerHead = '<h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
+                $footerHead = '<h5>0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</h5>';
                 $pdf->writeHTML($footerHead, true, false, true, false, '');
 
                 $zscorehtml = '<h5>Results Interpretation and Recommended Actions</h5><br/>';
@@ -284,6 +303,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $zscorehtml .= '</tr>';
 
                 $zscorehtml .= '</table>';
+                $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;"><i style="color:darkgreen;background-color:lightgreen;">NOTE: *Results due date was extended for ePT results validation from submitted participants to address discrepancies.</i></span>';
+
+                $zscorehtml .= '<h5>Participants with scores of less than 100%</h5>';
+                $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;">Laboratory must complete a <b>Proficiency Testing Corrective Action Form</b> within 30 days of report authorization date. Refer to Proficiency Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tab under the Main Navigation.</span>';
 
                 $zscorehtml .= '<h5>Information with respect to compliance with standards ISO 13528:2015(E)Preparation of Proficiency Test items:</h5>';
                 $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOP. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
@@ -515,6 +538,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $shipmentCode = $result['shipment_code'];
         $j++;
+        exit(0);
     }
 
     // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
