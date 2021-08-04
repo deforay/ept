@@ -375,7 +375,7 @@ class Application_Service_Schemes
         return $db->fetchAll($sql);
     }
 
-    public function getVlSamples($sId, $pId)
+    public function getVlSamples($sId, $pId, $withoutControls = true)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('ref' => 'reference_result_vl'))
@@ -385,6 +385,9 @@ class Application_Service_Schemes
             ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on', 'z_score', 'calculated_score'))
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
+        if ($withoutControls) {
+            $sql = $sql->where("ref.control = 0");
+        }
         return $db->fetchAll($sql);
     }
 

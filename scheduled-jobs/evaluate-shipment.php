@@ -492,7 +492,7 @@ try {
     $sQuery = $db->select()
         ->from(array('eq' => 'evaluation_queue'))
         ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type'))
-        ->where("eq.status=?", 'pending')
+        //->where("eq.status=?", 'pending')
         ->limit($limit);
     // die($sQuery);
     $evalResult = $db->fetchAll($sQuery);

@@ -5741,7 +5741,7 @@ class Application_Service_Reports
             $resultExe[] = $resultEx;
 
             $resultAcc['name'] = 'Acceptable Result';
-            $resultFa['name'] = 'Not Acceptable Result';
+            $resultFa['name'] = 'Unacceptable Result';
             $resultExe['name'] = 'Excluded from evaluation';
             $totalResult = array($resultAcc, $resultFa, $resultExe, 'nameList' => $totalResult);
         }

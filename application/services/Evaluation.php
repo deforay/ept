@@ -1154,7 +1154,7 @@ class Application_Service_Evaluation
 					$vlRange = $schemeService->getVlRange($shipmentId);
 				}
 
-				$sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('sample_id', 'ref.sample_label'))
+				$sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('sample_id', 'ref.sample_label', 'control', 'mandatory'))
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('*'))
 					->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded'))
 					->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier'))
@@ -1272,7 +1272,7 @@ class Application_Service_Evaluation
 								if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
 									$grade = 'Acceptable';
 								} else {
-									$grade = 'Not Acceptable';
+									$grade = 'Unacceptable';
 								}
 							}
 
@@ -1281,13 +1281,13 @@ class Application_Service_Evaluation
 									$grade = 'Acceptable';
 								} else {
 									if ($result['sample_score'] > 0) {
-										$grade = 'Not Acceptable';
+										$grade = 'Unacceptable';
 									} else {
 										$grade = '-';
 									}
 								}
 							} else {
-								$grade = 'Not Acceptable';
+								$grade = 'Unacceptable';
 							}
 							$toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['low'];
 							$toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['high'];
@@ -1300,7 +1300,7 @@ class Application_Service_Evaluation
 							if (isset($result['calculated_score']) && $result['calculated_score'] == 'pass') {
 								$grade = 'Acceptable';
 							} else if (isset($result['calculated_score']) && $result['calculated_score'] == 'fail') {
-								$grade = 'Not Acceptable';
+								$grade = 'Unacceptable';
 							} else if (isset($result['calculated_score']) && $result['calculated_score'] == 'warn') {
 								$grade = 'Warning';
 							}
