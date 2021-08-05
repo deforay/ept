@@ -150,23 +150,23 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>PT Panel Name :</strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Received Date :</strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>PT Panel Name : </strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Results Due Date :</strong><span style="font-weight: normal;">' . $result['lastdate_response'] . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Tested Date :</strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Results Due Date : </strong><span style="font-weight: normal;">' . $result['lastdate_response'] . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Panel Tested Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
         $labInfo .= '</tr>';
 
         if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
-            $machine = 'Other' . " - " . $attributes['other_assay'];;
+            $machine = 'Other' . " - " . $attributes['other_assay'];
         } else {
             $machine = $result['responseResult'][0]['vl_assay'];
         }
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Platform/Assay Name :</strong><span style="font-weight: normal;">' . $machine . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Results Submitted Date :</strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
