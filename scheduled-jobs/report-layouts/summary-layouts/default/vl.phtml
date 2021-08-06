@@ -309,7 +309,7 @@ if ($resultArray['shipment'] != "") {
         $graph->SetShadow();
 
         // Adjust the margin
-        $graph->img->SetMargin(85, 55, 5, 300);
+        $graph->img->SetMargin(85, 55, 150, 250);
 
         // Create the two linear plot
         $lineplot2 = new ScatterPlot($avg);
@@ -335,8 +335,11 @@ if ($resultArray['shipment'] != "") {
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($allParticipantChartLabels);
         $graph->xaxis->SetTextLabelInterval(2);
+        $graph->xaxis->SetLabelAlign('center');
         // $graph->xaxis->scale->ticks->SupressFirst();
-        $graph->xaxis->SetLabelAngle(70);
+        if (sizeof($allParticipantChartLabels) > 3) {
+            $graph->xaxis->SetLabelAngle(70);
+        }
 
         // Create the bar plots
         $b1plot = new BarPlot($noOfPaResponse);
@@ -361,7 +364,7 @@ if ($resultArray['shipment'] != "") {
 
         $graph->legend->SetFrameWeight(1);
         $graph->legend->SetColumns(2);
-        $graph->legend->SetPos(0.12, 0.85);
+        $graph->legend->SetPos(0.12, 0.1);
 
         $band = new PlotBand(VERTICAL, BAND_RDIAG, 11, "max", 'khaki4');
         $band->ShowFrame(true);
