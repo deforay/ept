@@ -423,8 +423,6 @@ class Watermark extends PDF_Rotate
     function Header()
     {
         global $fullPathToFile;
-        Zend_Debug::dump($fullPathToFile);
-        die;
         //Put the watermark
         $this->SetFont('helvetica', 'B', 50);
         $this->SetTextColor(230, 228, 198);

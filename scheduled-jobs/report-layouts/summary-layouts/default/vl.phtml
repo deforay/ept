@@ -143,8 +143,9 @@ if ($resultArray['shipment'] != "") {
             $sample = array();
             $assayNameTxt = "";
             $noOfPaResponseTxt = "";
+            // Zend_Debug::dump($resultArray['vlCalculation']);
+            // die;
             foreach ($resultArray['vlCalculation'] as $vlCal) {
-                // Zend_Debug::dump($vlCal);die;
                 if (isset($vlCal['participant-count']) && $vlCal['participant-count'] < 18 || $vlCal['vlAssay'] == "Other") {
                     $t = 0;
 
@@ -260,7 +261,6 @@ if ($resultArray['shipment'] != "") {
 
         /* JPGraph start */
 
-
         $allParticipantChartLabels = $assayName;
 
         if (isset($resultArray['vlAssayRes']) && count($resultArray['vlAssayRes']) > 0) {
@@ -286,7 +286,7 @@ if ($resultArray['shipment'] != "") {
             $scoreBelow = array(0);
             $avg = array(0, 0, 0);
         }
-        
+
         // Now let us create the last part of the barchart with totals 
         $allParticipantChartLabels[] = 'All Participants Scores';
         $totalBarResponses = array_sum($noOfPaResponse);
@@ -299,9 +299,6 @@ if ($resultArray['shipment'] != "") {
         $scoreBelow[] = $totalBarFailed;
         $avg[] = $totalBarAvg;
 
-
-        
-
         /* JPGraph start */
         // Create the graph and specify the scale for both Y-axis
         $graph = new Graph(700, 600);
@@ -312,10 +309,7 @@ if ($resultArray['shipment'] != "") {
         $graph->SetShadow();
 
         // Adjust the margin
-        $graph->img->SetMargin(55, 55, 5, 150);
-
-        $graph->ygrid->SetFill(false);
-        $graph->xaxis->SetTickLabels($allParticipantChartLabels);
+        $graph->img->SetMargin(85, 55, 5, 300);
 
         // Create the two linear plot
         $lineplot2 = new ScatterPlot($avg);
@@ -329,7 +323,7 @@ if ($resultArray['shipment'] != "") {
 
         $graph->yaxis->title->Set('Number of participants', 'center');
         $graph->yaxis->title->SetMargin(8);
-        $graph->yscale->SetAutoMax(120);
+        $graph->yscale->SetAutoMax(250);
         $graph->yscale->SetAutoMin(0);
 
         $graph->y2axis->title->Set('% of Participants scoring "100%"');
@@ -338,6 +332,11 @@ if ($resultArray['shipment'] != "") {
         $graph->y2scale->SetAutoMin(0);
         // Add the plot to the graph
 
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($allParticipantChartLabels);
+        $graph->xaxis->SetTextLabelInterval(2);
+        // $graph->xaxis->scale->ticks->SupressFirst();
+        $graph->xaxis->SetLabelAngle(70);
 
         // Create the bar plots
         $b1plot = new BarPlot($noOfPaResponse);
@@ -362,6 +361,7 @@ if ($resultArray['shipment'] != "") {
 
         $graph->legend->SetFrameWeight(1);
         $graph->legend->SetColumns(2);
+        $graph->legend->SetPos(0.12, 0.85);
 
         $band = new PlotBand(VERTICAL, BAND_RDIAG, 11, "max", 'khaki4');
         $band->ShowFrame(true);
