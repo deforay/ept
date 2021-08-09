@@ -334,10 +334,10 @@ if ($resultArray['shipment'] != "") {
 
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($allParticipantChartLabels);
-        $graph->xaxis->SetTextLabelInterval(2);
+        $graph->xaxis->SetTextLabelInterval(sizeof($allParticipantChartLabels) + 2);
         $graph->xaxis->SetLabelAlign('center');
         // $graph->xaxis->scale->ticks->SupressFirst();
-        if (sizeof($allParticipantChartLabels) > 3) {
+        if (sizeof($allParticipantChartLabels) > 2) {
             $graph->xaxis->SetLabelAngle(70);
         }
 
