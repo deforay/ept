@@ -263,6 +263,11 @@ if ($resultArray['shipment'] != "") {
 
         $allParticipantChartLabels = $assayName;
 
+        $noOfPaResponse = array();
+        $participantScore = array();
+        $scoreBelow = array();
+        $avg = array();
+        
         if (isset($resultArray['vlAssayRes']) && count($resultArray['vlAssayRes']) > 0) {
             $key18Last = array_key_last($allParticipantChartLabels);
             foreach ($resultArray['vlAssayRes'] as $key => $data) {
