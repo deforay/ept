@@ -67,7 +67,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetFont('freesans', 'B', 11);
 
     if ($methodOfEvaluation == 'iso17043') {
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br><br><span style="font-weight: bold; font-size:12;text-align:center;">All Participants Summary Report</span><br>';
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br><br><span style="font-weight: bold; font-size:12;text-align:center;">All Participants Results Summary Report</span><br>';
         // $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     }
@@ -136,7 +136,7 @@ if ($resultArray['shipment'] != "") {
 
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
             $referenceRes .= '<tr>';
-            $referenceRes .= '<td style="font-weight:bold;">PT Panel Name and Results Due Date : <span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . '(' . $general->humanDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
+            $referenceRes .= '<td style="font-weight:bold;">PT Panel Name and Results Due Date : <span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . $general->humanDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
             $referenceRes .= '</tr>';
             $referenceRes .= '</table>';
             $pdf->writeHTML($referenceRes, true, false, true, false, '');
@@ -327,24 +327,24 @@ if ($resultArray['shipment'] != "") {
         $graph->title->Set("All Participants Results Summary", 20);
 
         $graph->yaxis->title->Set('Number of participants', 'center');
-        $graph->yaxis->title->SetMargin(8);
-        $graph->yscale->SetAutoMax(250);
+        $graph->yaxis->title->SetMargin(20);
+        //$graph->yscale->SetAutoMax(250);
         $graph->yscale->SetAutoMin(0);
 
         $graph->y2axis->title->Set('% of Participants scoring "100%"');
-        $graph->y2axis->title->SetMargin(8);
+        $graph->y2axis->title->SetMargin(20);
         $graph->y2scale->SetAutoMax(100);
         $graph->y2scale->SetAutoMin(0);
         // Add the plot to the graph
 
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($allParticipantChartLabels);
-        $graph->xaxis->SetTextLabelInterval(2);
+        $graph->xaxis->SetTextLabelInterval(5);
         $graph->xaxis->SetLabelAlign('center');
         // $graph->xaxis->scale->ticks->SupressFirst();
-        if (sizeof($allParticipantChartLabels) > 3) {
+        //if (sizeof($allParticipantChartLabels) > 3) {
             $graph->xaxis->SetLabelAngle(70);
-        }
+        //}
 
         // Create the bar plots
         $b1plot = new BarPlot($noOfPaResponse);
@@ -386,14 +386,16 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->AddPage();
         /* JPGraph end */
-        $note = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
+        $note = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) </h5>';
+
+        $note .= '<h5>Preparation of Proficiency Test items:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
         $note .= '<h5>Procedures used to establish the assigned value:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
 
         $note .= '<h5>Subcontracting:</h5>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted.<br/> The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted.<br/> The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing. Each participant has been assigned a unique identification number for the purposes of database management.</span>';
         if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
             $html .= '<br/><hr>';
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
