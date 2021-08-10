@@ -46,7 +46,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $id = (int)base64_decode($this->_getParam('sid'));
             $reEvaluate = false;
             $override = "";
-            if($this->hasParam('override')){
+            if ($this->hasParam('override')) {
                 if (base64_decode($this->_getParam('override')) == 'yes') {
                     $override = 'yes';
                 }
@@ -60,8 +60,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 }
             }
             $evalService = new Application_Service_Evaluation();
-            $this->view->override= $override;
-            $this->view->id= $this->_getParam('sid');
+            $this->view->override = $override;
+            $this->view->id = $this->_getParam('sid');
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id, $reEvaluate, $override);
             $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
         } else {
@@ -97,7 +97,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                 $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-               
+
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evaluateData = $evalService->editEvaluation($sid, $pid, $scheme);
 
@@ -118,7 +118,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 } else if ($scheme == 'covid19') {
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
                     $this->view->allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
-			        $this->view->geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($evaluateData['shipment']['map_id']);
+                    $this->view->geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($evaluateData['shipment']['map_id']);
                 }
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
@@ -132,14 +132,27 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function updateShipmentCommentAction()
     {
-        if ($this->hasParam('sid')) {
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+        $params = $this->getRequest()->getPost();
+        if ($this->getRequest()->isPost()) {
+            $evalService = new Application_Service_Evaluation();
+            $result = $evalService->updateShipmentComment($params);
+            if ($result == 'Comment updated') {
+                $alertMsg->message = "Comment updated";
+                $this->redirect("/admin/evaluate/shipment/sid/" . $params['shipmentId']);
+            }
+        } else {
+            $this->redirect("/admin/evaluate/shipment/sid/" . $params['shipmentId']);
+            $alertMsg->message = "Unable to update shipment status. Please try again later.";
+        }
+        /* if ($this->hasParam('sid')) {
             $sid = (int)base64_decode($this->_getParam('sid'));
             $comment = $this->_getParam('comment');
             $evalService = new Application_Service_Evaluation();
             $this->view->message = $evalService->updateShipmentComment($sid, $comment);
         } else {
             $this->view->message = "Unable to update shipment comment. Please try again later.";
-        }
+        } */
     }
 
     public function updateShipmentStatusAction()

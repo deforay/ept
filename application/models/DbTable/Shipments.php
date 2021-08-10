@@ -40,9 +40,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $tableName = "reference_result_eid";
             } elseif ($result['scheme_type'] == 'dts') {
                 $tableName = "reference_result_dts";
-            }elseif ($result['scheme_type'] == 'recency') {
+            } elseif ($result['scheme_type'] == 'recency') {
                 $tableName = "reference_result_recency";
-            }elseif ($result['scheme_type'] == 'covid19') {
+            } elseif ($result['scheme_type'] == 'covid19') {
                 $tableName = "reference_result_covid19";
             }
             $result['referenceResult'] = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array($tableName))
@@ -1180,8 +1180,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * SQL queries
          * Get data to display
          */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             ->where("pmm.dm_id=?", $this->_session->dm_id)
@@ -1239,6 +1239,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
+            $download = "";
+            $corrective = "";
             $row = array();
             $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
@@ -1246,7 +1248,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);
-            $row[] = '<a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : underline;" target="_BLANK" download>' . $aRow['REPORT'] . '</a>';
+            if (isset($aRow['REPORT']) && $aRow['REPORT'] != "") {
+                $download = '<a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : underline;" target="_BLANK" download>' . $aRow['REPORT'] . '</a>';
+            }
+            if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != "")) {
+                $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"  style="text-decoration : underline;" target="_BLANK" download>Download Correcetive Action File</a>';
+            }
+            $row[] = $download . $corrective;
 
             $output['aaData'][] = $row;
         }

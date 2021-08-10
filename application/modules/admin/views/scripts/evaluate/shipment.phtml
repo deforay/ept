@@ -102,16 +102,24 @@ $overrideStatus = "no";
 		</tr>
 	</table>
 	<br />
-
-	<table class="table table-bordered" style="width:95%;margin:10px auto;">
-		<tr>
-			<td style="vertical-align: middle;">
-				Comment for all Participants of this shipment
-			</td>
-			<td style="width:55%;"><textarea class="form-control" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea></td>
-			<td style="vertical-align: middle;"><button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span>Update Comment</span></button></td>
-		</tr>
-	</table>
+	<form id="fileinfo" enctype="multipart/form-data" method="post" name="fileinfo" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>">
+		<table class="table table-bordered" style="width:95%;margin:10px auto;">
+			<tr>
+				<td style="width:25%;vertical-align: middle;">
+					Corrective Action File
+				</td>
+				<td style="width:25%;"><input type="file" class="form-control" name="correctiveActionFile" id="correctiveActionFile" title="Please chosse corrective actiion file."></td>
+				<td style="width:25%;vertical-align: middle;">
+					Comment for all Participants of this shipment
+				</td>
+				<td style="width:25%;"><textarea class="form-control" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea></td>
+				<td style="vertical-align: middle;">
+					<input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId" id="shipmentId">
+					<button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span>Update Comment</span></button>
+				</td>
+			</tr>
+		</table>
+	</form>
 	<table class="table table-borderless" style="width:50%;float:left;" id="overrideTable">
 		<tr>
 			<td><label for="manuelOverride">Show only manually overridden results</label></td>
@@ -143,7 +151,7 @@ $overrideStatus = "no";
 			$editList = array();
 			$viewList = array();
 			foreach ($this->shipment as $shipment) {
-				if($shipment['manual_override'] == 'yes'){
+				if ($shipment['manual_override'] == 'yes') {
 					$overrideStatus = "yes";
 				}
 				$btnClassName = "btn-success";
@@ -182,14 +190,13 @@ $overrideStatus = "no";
 					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
 						<?php if (!$pstatus && in_array('edit-participant-response', $privileges)) { ?>
 							<a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
-						<?php } ?>
-						<?php
-						if ($shipment['shipment_status'] != 'finalized' && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00 00:00:00') {
-						?>
+						<?php }
+						if ($shipment['shipment_status'] != 'finalized' && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00 00:00:00') { ?>
 							<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('<?php echo $shipment['scheme_type']; ?>','<?php echo base64_encode($shipment['map_id']); ?>')"><span><i class="icon-remove"></i> Delete</span></a>
-						<?php
-						}
-						?>
+						<?php }
+						if (($shipment['display_result'] == 'Fail') && (isset($shipment['corrective_action_file']) && $shipment['corrective_action_file'] != "")) { ?>
+							<a class="btn btn-primary btn-xs" href="/uploads/corrective-action-files/<?php echo $shipment['corrective_action_file'] ?>" download=""><span><i class="icon-download"></i> Download Corrective Action File</span></a>
+						<?php } ?>
 					</td>
 				</tr>
 			<?php
@@ -212,8 +219,8 @@ $overrideStatus = "no";
 		var oTable = null;
 		var nTr = null;
 		$(document).ready(function() {
-			let overrideStatus = '<?php echo (isset($overrideStatus) && $overrideStatus != "")?$overrideStatus:true;?>';
-			if(overrideStatus != 'yes'){
+			let overrideStatus = '<?php echo (isset($overrideStatus) && $overrideStatus != "") ? $overrideStatus : true; ?>';
+			if (overrideStatus != 'yes') {
 				$('#overrideTable').hide();
 			}
 			$('#shipmentEvaluation').on('click', ".clicker", function() {
@@ -264,19 +271,19 @@ $overrideStatus = "no";
 			});
 		});
 
-		function manualOverride(value){
+		function manualOverride(value) {
 			$.blockUI();
-			var url = '/admin/evaluate/shipment/sid/<?php echo $this->id;?>';
+			var url = '/admin/evaluate/shipment/sid/<?php echo $this->id; ?>';
 			val = '';
-			if(value == 'yes'){
+			if (value == 'yes') {
 				val = "eWVz";
 			}
-			if(value == 'no'){
+			if (value == 'no') {
 				val = "bm8=";
 			}
-			if(val != ''){
-				window.location.href = url+"/override/"+val;
-			}else{
+			if (val != '') {
+				window.location.href = url + "/override/" + val;
+			} else {
 				window.location.href = url;
 			}
 			$.unblockUI();
@@ -293,7 +300,7 @@ $overrideStatus = "no";
 				} else {
 					sOut = 'No comments to show';
 				}
-			<?php } else { ?> 
+			<?php } else { ?>
 				if (aData[5] != "" && aData[5] != null && aData[5] != undefined) {
 					sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
 					sOut += '<tr><td>' + aData[5] + '</td></tr>';
@@ -301,7 +308,7 @@ $overrideStatus = "no";
 				} else {
 					sOut = 'No comments to show';
 				}
-			<?php }?>
+			<?php } ?>
 			return sOut;
 
 		}
@@ -315,6 +322,7 @@ $overrideStatus = "no";
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>", {
 					sid: sid,
 					comment: $("#shipmentComment").val(),
+					correctiveActionFile: formdata,
 					format: "html"
 				},
 				function(data) {

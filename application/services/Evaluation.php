@@ -193,7 +193,7 @@ class Application_Service_Evaluation
 	public function getShipmentToEvaluate($shipmentId, $reEvaluate = false, $override = '')
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.shipment_attributes', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.distribution_id', 's.number_of_samples', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status'))
+		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.shipment_attributes', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.distribution_id', 's.number_of_samples', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status', 's.corrective_action_file'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
 			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
@@ -979,12 +979,29 @@ class Application_Service_Evaluation
 		// Zend_Debug::dump($id);die;
 	}
 
-	public function updateShipmentComment($shipmentId, $comment)
+	public function updateShipmentComment($params)
 	{
+		// Zend_Debug::dump($params);
+		// die;
+		$shipmentId = base64_decode($params['shipmentId']);
+		$comment = $params['shipmentComment'];
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$authNameSpace = new Zend_Session_Namespace('administrators');
 		$admin = $authNameSpace->admin_id;
 		$noOfRows = $db->update('shipment', array('shipment_comment' => $comment, 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $shipmentId);
+		if (isset($_FILES['correctiveActionFile']['name']) && count($_FILES['correctiveActionFile']) > 0) {
+			if (isset($_FILES['correctiveActionFile']['name']) && trim($_FILES['correctiveActionFile']['name']) != '') {
+				if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'corrective-action-files') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'corrective-action-files')) {
+					mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'corrective-action-files');
+				}
+
+				$extension = strtolower(pathinfo(UPLOAD_PATH . DIRECTORY_SEPARATOR . $_FILES['correctiveActionFile']['name'], PATHINFO_EXTENSION));
+				$fileName = "corrective-action-files" . $shipmentId . "." . $extension;
+				if (move_uploaded_file($_FILES["correctiveActionFile"]["tmp_name"], UPLOAD_PATH . DIRECTORY_SEPARATOR . "corrective-action-files" . DIRECTORY_SEPARATOR . $fileName)) {
+					$db->update('shipment', array('corrective_action_file' => $fileName), "shipment_id = " . $shipmentId);
+				}
+			}
+		}
 		if ($noOfRows > 0) {
 			return "Comment updated";
 		} else {

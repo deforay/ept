@@ -2842,3 +2842,6 @@ UPDATE `system_config` SET `value` = '7.1.0' WHERE `system_config`.`config` = 'a
 
 -- Amit 04-Aug-2021
 UPDATE `system_config` SET `value` = '7.2.0' WHERE `system_config`.`config` = 'app_version';
+
+-- Thana 10-Aug-2021
+ALTER TABLE `shipment` ADD `corrective_action_file` VARCHAR(256) NULL DEFAULT NULL AFTER `report_in_queue`;
