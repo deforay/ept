@@ -99,6 +99,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $responseDate = "";
         $shipmentTestDate = "";
+        $shipmentTestReportDate = "";
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
@@ -118,6 +119,10 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
             $shipmentTestDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_date']);
+        }
+
+        if (isset($result['responseResult'][0]['shipment_test_report_date']) && trim($result['responseResult'][0]['shipment_test_report_date']) != "") {
+            $shipmentTestReportDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_report_date']);
         }
 
         //if($result['result_name']=='Fail'){
@@ -166,7 +171,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $labInfo .= '<tr>';
         $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestReportDate . '</span></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
@@ -327,7 +332,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             //    $result['distribution_date']=$general->humanDateFormat($result['distribution_date']);
             //}
 
-            
+
             if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
                 $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 

@@ -310,6 +310,7 @@ if ($resultArray['shipment'] != "") {
         $graph->SetScale("texlin");
         $graph->SetY2Scale("lin", 0, 90);
         $graph->SetY2OrderBack(false);
+
         $graph->img->SetMargin(40, 30, 40, 40);
         $graph->SetShadow();
 
@@ -328,7 +329,7 @@ if ($resultArray['shipment'] != "") {
 
         $graph->yaxis->title->Set('Number of participants', 'center');
         $graph->yaxis->title->SetMargin(20);
-        //$graph->yscale->SetAutoMax(250);
+        $graph->yscale->SetAutoMax(250);
         $graph->yscale->SetAutoMin(0);
 
         $graph->y2axis->title->Set('% of Participants scoring "100%"');
@@ -364,6 +365,7 @@ if ($resultArray['shipment'] != "") {
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot, $b2plot, $b3plot));
         $gbplot->SetWidth(0.5);
+        $gbplot->SetAlign('center');
         $graph->Add($gbplot);
 
         $b1plot->SetAbsWidth(25);

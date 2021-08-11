@@ -66,7 +66,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set margins
 
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -111,7 +111,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $responseDate = "";
         $shipmentTestDate = "";
-        $shipmentTestReportDate = "";
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
@@ -144,10 +143,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $shipmentTestDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
-        if (isset($result['responseResult'][0]['shipment_test_report_date']) && trim($result['responseResult'][0]['shipment_test_report_date']) != "") {
-            $shipmentTestReportDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_report_date']);
-        }
-
         //if($result['result_name']=='Fail'){
         //    $wishes="";
         //    $splStr=explode("###",$result['failure_reason']);
@@ -168,64 +163,31 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
 
 
-        if ($methodOfEvaluation == 'standard') {
-            $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
-            $labInfo .= '	<td><strong>PT Panel Received</strong> <br>' . $shipmentReceiptDate . '</td>';
-            $labInfo .= '</tr>';
+        //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+        //$pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Extraction Assay </strong> <br>' . $result['extractionAssayVal'] . '</td>';
-            $labInfo .= '	<td><strong>PT Panel Tested </strong> <br>' . $shipmentTestDate . '</td>';
-            $labInfo .= '</tr>';
+        $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
+        $labInfo .= '	<td><strong>PT Panel Received</strong> <br>' . $shipmentReceiptDate . '</td>';
+        $labInfo .= '</tr>';
 
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Detection Assay </strong> <br>' . $result['extractionAssayVal'] . '</td>';
-            $labInfo .= '	<td><strong>Results Submitted Date</strong> <br>' . $responseDate . '</td>';
-            $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        //$labInfo.='    <td><strong>Lab Id</strong> <br>'.$result['unique_identifier'].'</td>';
+        $labInfo .= '	<td><strong>Extraction Assay </strong> <br>' . $result['extractionAssayVal'] . '</td>';
+        $labInfo .= '	<td><strong>PT Panel Tested </strong> <br>' . $shipmentTestDate . '</td>';
+        $labInfo .= '</tr>';
 
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Lab ID</strong> <br>' . $result['unique_identifier'] . '</td>';
-            $labInfo .= '</tr>';
-            $labInfo .= '</table>';
-        } else if ($methodOfEvaluation == 'iso17043') {
-            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
-            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Detection Assay </strong> <br>' . $result['extractionAssayVal'] . '</td>';
+        $labInfo .= '	<td><strong>Results Submitted Date</strong> <br>' . $responseDate . '</td>';
+        $labInfo .= '</tr>';
 
-            $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Lab ID</strong> <br>' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '</tr>';
 
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td width="20%"><strong>Laboratory ID : </strong></td>';
-            $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['unique_identifier'] . '</td>';
-            $labInfo .= '</tr>';
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td width="20%"><strong>Laboratory Name : </strong></td>';
-            $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
-            $labInfo .= '</tr>';
-
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td width="50%"><strong>PT Panel Name : </strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</span></td>';
-            $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
-            $labInfo .= '</tr>';
-
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td width="50%"><strong>Results Due Date : </strong><span style="font-weight: normal;">' . $result['lastdate_response'] . '</span></td>';
-            $labInfo .= '	<td width="50%"><strong>Panel Tested Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
-            $labInfo .= '</tr>';
-
-            if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
-                $machine = 'Other' . " - " . $attributes['other_assay'];
-            } else {
-                $machine = $result['responseResult'][0]['vl_assay'];
-            }
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
-            $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestReportDate . '</span></td>';
-            $labInfo .= '</tr>';
-
-            $labInfo .= '</table>';
-        }
+        $labInfo .= '</table>';
 
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
@@ -236,7 +198,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($methodOfEvaluation == 'standard') {
                 $labRes = '<span style="font-weight: bold;font-size:13px;text-align:center;">Your laboratory test results : <br/></span>';
             } else if ($methodOfEvaluation == 'iso17043') {
-                $labRes = '<span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
+                $labRes = '<span style="font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
             }
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3">';
             if ($methodOfEvaluation == 'standard') {
@@ -253,11 +215,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             foreach ($result['responseResult'] as $response) {
                 $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
             }
-            if ($methodOfEvaluation == 'standard') {
-                $labRes .= '<td style="text-align:center;font-weight:bold;">Score(%)</td>';
-            } else if ($methodOfEvaluation == 'iso17043') {
-                $labRes .= '<td style="text-align:center;font-weight:bold;">Your Score(%)</td>';
-            }
+
+            $labRes .= '<td style="text-align:center;font-weight:bold;">Score(%)</td>';
             $labRes .= '</tr>';
             $labRes .= '<tr>';
             $labRes .= '<td>Expected Result</td>';
@@ -321,10 +280,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $html .= '<br>' . $reportComment;
             }
         } else if ($methodOfEvaluation == 'iso17043') {
-            $html = '<h5>Participants with scores of less than 100%:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a <b>Proficiency Testing Corrective Action Form</b> within 30 days of report authorization date. Refer to Proficiency Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tap under the Main Navigation.</span>';
-
-            $html .= '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
+            $html = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods.  Samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
             $html .= '<h5>Procedures used to establish the assigned value:</h5>';
@@ -343,8 +299,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
             }
+            $pdf->writeHTML($html, true, false, true, false, '');
         }
-        $pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {
             ob_end_clean();

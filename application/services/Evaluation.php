@@ -1146,16 +1146,25 @@ class Application_Service_Evaluation
 
 				$sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'responseDate' => 'reseid.created_on'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=reseid.reported_result', array('labResult' => 'respr.response'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date'))
+					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'sp.shipment_test_report_date'))
 					->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("refeid.control = 0")
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
 
-				//$vlAssayResultSet[$responseAssay['vl_assay']]
 				//error_log($sQuery);
-				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+				$eidDetectionAssayResultSet = $schemeService->getEidDetectionAssay();
+				$result = $db->fetchAll($sQuery);
+				$response = array();
+				foreach ($result as $key => $row) {
+					if (isset($row['attributes'])) {
+						$attributes = json_decode($row['attributes'], true);
+					}
+					$row['vl_assay'] = $eidDetectionAssayResultSet[$attributes['extraction_assay']];
+					$response[$key] = $row;
+				}
+				$shipmentResult[$i]['responseResult'] = $response;
 			} else if ($res['scheme_type'] == 'vl') {
 				$vlAssayResultSet = $schemeService->getVlAssay();
 				$vlAssayList = array();
