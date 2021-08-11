@@ -18,8 +18,8 @@
 </style>
 <section class="content-header">
     <h1>
-        Individual Reports
-        <small>Download Participant-wise Individual Reports for each Shipment</small>
+        Corrective Actions
+        <small>Download Participant-wise Corrective Actions for each Shipment</small>
     </h1>
 
 </section>
@@ -59,7 +59,7 @@
                         <th>Participant Id</th>
                         <th>Participant</th>
                         <th>Response Date</th>
-                        <th>Report</th>
+                        <th>Corrective Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -135,7 +135,7 @@
             ],
             "bProcessing": true,
             "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'report', 'format' => 'html')); ?>",
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'corrective', 'format' => 'html')); ?>",
             "fnServerParams": function(aoData) {
                 aoData.push({
                     "name": "scheme",

@@ -261,7 +261,7 @@ class Application_Service_Shipments
                 $operatingSystem = $commonService->getOperatingSystem($userAgent);
                 $browser = $commonService->getBrowser($userAgent);
                 //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                error_log(date('Y-m-d H:i:s') .'|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
                 throw new Exception('Missed mandatory fields on the form');
             }
 
@@ -384,7 +384,7 @@ class Application_Service_Shipments
                 $operatingSystem = $commonService->getOperatingSystem($userAgent);
                 $browser = $commonService->getBrowser($userAgent);
                 //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                error_log(date('Y-m-d H:i:s') .'|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
                 throw new Exception('Missed mandatory fields on the form');
             }
 
@@ -499,7 +499,7 @@ class Application_Service_Shipments
                 $operatingSystem = $commonService->getOperatingSystem($userAgent);
                 $browser = $commonService->getBrowser($userAgent);
                 //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                error_log(date('Y-m-d H:i:s') .'|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
                 throw new Exception('Missed mandatory fields on the form');
             }
 
@@ -1017,7 +1017,7 @@ class Application_Service_Shipments
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
         $mandatoryFields = array('receiptDate', 'testDate', 'vl_assay', 'assayExpirationDate', 'assayLotNumber');
-        
+
         $db->beginTransaction();
         try {
 
@@ -1031,7 +1031,7 @@ class Application_Service_Shipments
                 $operatingSystem = $commonService->getOperatingSystem($userAgent);
                 $browser = $commonService->getBrowser($userAgent);
                 //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                error_log(date('Y-m-d H:i:s') .'|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
                 throw new Exception('Missed mandatory fields on the form');
             }
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
@@ -2098,6 +2098,12 @@ class Application_Service_Shipments
     {
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->getindividualReportDetails($parameters);
+    }
+
+    public function getCorrectiveActionReport($parameters)
+    {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->fetchCorrectiveActionReport($parameters);
     }
     public function getSummaryReport($parameters)
     {

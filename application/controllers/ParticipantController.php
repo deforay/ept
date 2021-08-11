@@ -13,6 +13,7 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('current-schemes', 'html')
             ->addActionContext('all-schemes', 'html')
             ->addActionContext('report', 'html')
+            ->addActionContext('corrective', 'html')
             ->addActionContext('summary-report', 'html')
             ->addActionContext('shipment-report', 'html')
             ->addActionContext('add-qc', 'html')
@@ -55,6 +56,19 @@ class ParticipantController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getindividualReport($params);
+        }
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
+    }
+
+    public function correctiveAction()
+    {
+        $this->_helper->layout()->activeMenu = 'view-reports';
+        $this->_helper->layout()->activeSubMenu = 'corrective-action';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $shipmentService = new Application_Service_Shipments();
+            $shipmentService->getCorrectiveActionReport($params);
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
