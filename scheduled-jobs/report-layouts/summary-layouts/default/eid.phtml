@@ -31,7 +31,7 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
     if ($methodOfEvaluation == 'iso17043') {
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
     } else {
         $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
     }
@@ -51,9 +51,9 @@ if ($resultArray['shipment'] != "") {
     }
 
     if ($methodOfEvaluation == 'iso17043') {
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config,$trainingInstanceText);
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText);
     } else {
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'],"",$trainingInstanceText);
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $trainingInstanceText);
     }
     // add a page
     //$pdf->AddPage();
@@ -63,7 +63,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetFont('helvetica', 'B', 11);
 
     if ($methodOfEvaluation == 'iso17043') {
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br><br><span style="font-weight: bold; font-size:10;text-align:center;">All Participants Summary Report</span><br>';
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br><br><span style="font-weight: bold; font-size:10;text-align:center;">All Participants Results Report</span><br>';
         // $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     }
@@ -79,7 +79,7 @@ if ($resultArray['shipment'] != "") {
     } else if ($methodOfEvaluation == 'iso17043') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name and Due Date:</strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' ( ' . $general->humanDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
+        $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name and Due Date : </strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . $general->humanDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
     }
@@ -115,7 +115,7 @@ if ($resultArray['shipment'] != "") {
             $overAllCorrectRes = '<div style="border:1px solid #333;">';
             $overAllCorrectRes .= '<h3>&nbsp;Summary of All Participants Scores*</h3>';
             $overAllCorrectRes .= '<table border="1" cellpadding="3">';
-            $overAllCorrectRes .= '<tr style="background-color:#BCD7EC;">';
+            $overAllCorrectRes .= '<tr style="background-color:#D9E0F2;">';
             $overAllCorrectRes .= '<td style="text-align:center;">Total number of participants</td>';
             $overAllCorrectRes .= '<td style="text-align:center;">Number of participants submitted results</td>';
             $overAllCorrectRes .= '<td style="text-align:center;">Number of participants scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
@@ -140,13 +140,13 @@ if ($resultArray['shipment'] != "") {
                 $overAllCorrectRes .= '<br><h3>&nbsp;Percentage of participants reporting correctly*</h3>';
                 $overAllCorrectRes .= '<table border="1" cellpadding="4">';
 
-                $overAllCorrectRes .= '<tr style="background-color:#BCD7EC;">';
+                $overAllCorrectRes .= '<tr style="background-color:#D9E0F2;">';
                 $overAllCorrectRes .= '<td  style=""></td>';
                 $overAllCorrectRes .= '<td style="text-align:center;font-weight:bold;" colspan="' . ($n) . '">Sample ID</td>';
                 $overAllCorrectRes .= '<td></td>';
                 $overAllCorrectRes .= '</tr>';
 
-                $overAllCorrectRes .= '<tr style="background-color:#BCD7EC;">';
+                $overAllCorrectRes .= '<tr style="background-color:#D9E0F2;">';
                 $overAllCorrectRes .= '<td></td>';
                 foreach ($resultArray['shipment']['correctRes'] as $cKey => $cVal) {
                     $overAllCorrectRes .= '<td style="text-align:center;">' . $cKey . '</td>';
@@ -200,7 +200,7 @@ if ($resultArray['shipment'] != "") {
 
 
 
-                    $avgAssay .= '<tr style="background-color:#BCD7EC;">';
+                    $avgAssay .= '<tr style="background-color:#D9E0F2;">';
                     $avgAssay .= '<td style="text-align:center;">Number of Participants</td>';
                     $avgAssay .= '<td style="text-align:center;">Number of Participants Scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
                     $avgAssay .= '<td style="text-align:center;">Number of Participants Scoring Below "' . $resultArray['shipment']['max_score'] . '"</td>';
@@ -226,13 +226,13 @@ if ($resultArray['shipment'] != "") {
 
                     $m = count($assayResult['specimen']);
                     $avgAssay .= '<br/><br/><table border="1" cellpadding="3">';
-                    $avgAssay .= '<tr style="background-color:#BCD7EC;">';
+                    $avgAssay .= '<tr style="background-color:#D9E0F2;">';
                     $avgAssay .= '<td></td>';
                     $avgAssay .= '<td style="text-align:center;" colspan="' . ($m) . '">Sample ID</td>';
                     $avgAssay .= '<td></td>';
                     $avgAssay .= '</tr>';
 
-                    $avgAssay .= '<tr style="background-color:#BCD7EC;">';
+                    $avgAssay .= '<tr style="background-color:#D9E0F2;">';
                     $avgAssay .= '<td></td>';
                     foreach ($assayResult['specimen'] as $sKey => $sample) {
                         $avgAssay .= '<td style="text-align:center;">' . $sKey . '</td>';
@@ -242,7 +242,7 @@ if ($resultArray['shipment'] != "") {
                     $sampleAvg = 0;
                     $sCount = count($assayResult['specimen']);
                     $avgAssay .= '<tr>';
-                    $avgAssay .= '<td rowspan="2" style="text-align:center;background-color:#BCD7EC;">Correctly Reported</td>';
+                    $avgAssay .= '<td rowspan="2" style="text-align:center;background-color:#D9E0F2;">Correctly Reported</td>';
                     foreach ($assayResult['specimen'] as $sKey => $sample) {
                         $sampleAvg += $sample['correctRes'];
                         $avgAssay .= '<td style="text-align:center;">' . $sample['correctRes'] . '</td>';
@@ -276,7 +276,7 @@ if ($resultArray['shipment'] != "") {
             $overAllCorrectRes .= '<table border="1" cellpadding="3">';
             $overAllCorrectRes .= '<tr><td colspan="5"><strong>Summary of All Participants Scores</strong></td></tr>';
 
-            $overAllCorrectRes .= '<tr style="background-color:#BCD7EC;">';
+            $overAllCorrectRes .= '<tr style="background-color:#D9E0F2;">';
             $overAllCorrectRes .= '<td style="text-align:center;">Total number of participants</td>';
             $overAllCorrectRes .= '<td style="text-align:center;">Number of participants submitted results</td>';
             $overAllCorrectRes .= '<td style="text-align:center;">Number of participants scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
@@ -300,7 +300,7 @@ if ($resultArray['shipment'] != "") {
             if ($n > 0) {
                 // $overAllCorrectRes .= '<br><h3>&nbsp;Percentage of participants reporting correctly*</h3>';
                 $overAllCorrectRes .= '<table border="1" cellpadding="4">';
-                $overAllCorrectRes .= '<tr style="background-color:#BCD7EC;">';
+                $overAllCorrectRes .= '<tr style="background-color:#D9E0F2;">';
                 $overAllCorrectRes .= '<td style="text-align:center;font-weight:bold;>Sample ID</td>';
                 foreach ($resultArray['shipment']['correctRes'] as $cKey => $cVal) {
                     $overAllCorrectRes .= '<td style="text-align:center;">' . $cKey . '</td>';
@@ -352,7 +352,7 @@ if ($resultArray['shipment'] != "") {
 
 
 
-                    $avgAssay .= '<tr style="background-color:#BCD7EC;">';
+                    $avgAssay .= '<tr style="background-color:#D9E0F2;">';
                     $avgAssay .= '<td style="text-align:center;">Number of participants submitted results</td>';
                     $avgAssay .= '<td style="text-align:center;">Number of Participants Scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
                     $avgAssay .= '<td style="text-align:center;">Number of Participants Scoring Below "' . $resultArray['shipment']['max_score'] . '"</td>';
@@ -377,7 +377,7 @@ if ($resultArray['shipment'] != "") {
 
                     $m = count($assayResult['specimen']);
                     $avgAssay .= '<br/><br/><table border="1" cellpadding="3">';
-                    $avgAssay .= '<tr style="background-color:#BCD7EC;">';
+                    $avgAssay .= '<tr style="background-color:#D9E0F2;">';
                     $avgAssay .= '<td style="text-align:center;">Sample ID</td>';
                     foreach ($assayResult['specimen'] as $sKey => $sample) {
                         $avgAssay .= '<td style="text-align:center;">' . $sKey . '</td>';
@@ -387,7 +387,7 @@ if ($resultArray['shipment'] != "") {
                     $sampleAvg = 0;
                     $sCount = count($assayResult['specimen']);
                     $avgAssay .= '<tr>';
-                    $avgAssay .= '<td rowspan="2" style="text-align:center;background-color:#BCD7EC;">Correctly Reported</td>';
+                    $avgAssay .= '<td rowspan="2" style="text-align:center;background-color:#D9E0F2;">Correctly Reported</td>';
                     foreach ($assayResult['specimen'] as $sKey => $sample) {
                         $sampleAvg += $sample['correctRes'];
                         $avgAssay .= '<td style="text-align:center;">' . $sample['correctRes'] . '</td>';
@@ -414,14 +414,14 @@ if ($resultArray['shipment'] != "") {
                     }
                 }
             }
-            $html = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods.  Samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+            $html = '<h4>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h4>';
+            $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods.  Samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
-            $html .= '<h5>Procedures used to establish the assigned value:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Team using COBAS Ampliprep/Taqman HIV-1 Qualitative Test.</span>';
+            $html .= '<h4>Procedures used to establish the assigned value:</h4>';
+            $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Team using COBAS Ampliprep/Taqman HIV-1 Qualitative Test.</span>';
 
-            $html .= '<h5>Subcontracting:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing. In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
+            $html .= '<h4>Subcontracting:</h4>';
+            $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing. In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
 
             if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
                 $html .= '<br/><hr>';
@@ -444,9 +444,9 @@ if ($resultArray['shipment'] != "") {
     $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
-    if($trainingInstance == "yes"){
+    if ($trainingInstance == "yes") {
         //Watermark section
-        $pdf= new PDF_Rotate();
+        $pdf = new PDF_Rotate();
     }
     //============================================================+
     // END OF FILE
