@@ -623,14 +623,27 @@ class Application_Service_Evaluation
 			$attributes = json_encode($attributes);
 			$mapData = array(
 				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
-				"shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
 				"attributes" => $attributes,
+				"mode_id" => $params['modeOfReceipt'],
 				"supervisor_approval" => $params['supervisorApproval'],
 				"participant_supervisor" => $params['participantSupervisor'],
 				"user_comment" => $params['userComments'],
 				"updated_by_admin" => $admin,
 				"updated_on_admin" => new Zend_Db_Expr('now()')
 			);
+
+
+			if (isset($params['testDate']) && trim($params['testDate']) != '') {
+				$mapData['shipment_test_date'] = Pt_Commons_General::dateFormat($params['testDate']);
+			} else {
+				$mapData['shipment_test_date'] = new Zend_Db_Expr('now()');
+			}
+
+			if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
+				$mapData['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReportedDate']);
+			} else {
+				$mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+			}	
 
 			if (isset($params['customField1']) && trim($params['customField1']) != "") {
 				$mapData['custom_field_1'] = $params['customField1'];

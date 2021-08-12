@@ -18,6 +18,10 @@ class Application_Model_Eid
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         foreach ($shipmentResult as $shipment) {
+
+
+            $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
+
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
@@ -40,7 +44,6 @@ class Application_Model_Eid
                     'warning' => "Response was submitted after the last response date."
                 );
                 $shipment['is_excluded'] = 'yes';
-            } else {
                 $failureReason = array('warning' => "Response was submitted after the last response date.");
                 $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
@@ -88,6 +91,7 @@ class Application_Model_Eid
                 $shipmentResult[$counter]['documentation_score'] = 0;
                 $shipmentResult[$counter]['display_result'] = '';
                 $shipmentResult[$counter]['is_followup'] = 'yes';
+                $shipmentResult[$counter]['is_excluded'] = 'yes';
                 $failureReason[] = array('warning' => 'Excluded from Evaluation');
                 $finalResult = 3;
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
@@ -126,11 +130,11 @@ class Application_Model_Eid
                 if (sizeof($shipmentOverall) > 0) {
                     $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
                     $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
-                    if(!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == ""){
-						$shipmentOverall['final_result'] = 2;
-					}
-					$fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
-					$shipmentResult[$counter]['display_result'] = $fRes[0];
+                    if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
+                        $shipmentOverall['final_result'] = 2;
+                    }
+                    $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
+                    $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
                 }
             } else {

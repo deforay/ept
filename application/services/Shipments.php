@@ -310,7 +310,7 @@ class Application_Service_Shipments
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 
-            if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
+            if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
