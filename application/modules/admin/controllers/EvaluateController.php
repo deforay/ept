@@ -103,8 +103,10 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
                 $schemeService = new Application_Service_Schemes();
                 if ($scheme == 'eid') {
+                    $commonService = new Application_Service_Common();
                     $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
                     $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
+                    $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
                 } else if ($scheme == 'dts') {
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
                 } else if ($scheme == 'dbs') {

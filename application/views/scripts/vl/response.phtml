@@ -185,6 +185,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 									<td><label>Mode of Receipt</label></td>
 									<td>
 										<select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
+											<option value="">-- Select --</option>
 											<?php
 											foreach ($this->modeOfReceipt as $receipt) {
 											?>
@@ -262,7 +263,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 							<tr align="center" class="">
 								<th style="width: 30%;font-size: 1.2em;">Control/Sample</th>
 								<th style="font-size: 1.2em;">Viral Load (log<sub>10</sub> copies/ml)</th>
-								<th  style="width: 30%;font-size: 1.2em;">TND (Target Not Detected)</th>
+								<th style="width: 30%;font-size: 1.2em;">TND (Target Not Detected)</th>
 							</tr>
 						</thead>
 						<tfoot>
@@ -465,7 +466,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 
 			$(".vlResultValues").each(function() {
 				if (parseFloat($(this).val()) < 0 || parseFloat($(this).val()) > 7) {
-					
+
 					alert("Viral Load Result has to be a number between 0.00 and 7.00. Please check the result for " + $(this).attr("data-sample-label"));
 					$(this).focus();
 					flag = false;

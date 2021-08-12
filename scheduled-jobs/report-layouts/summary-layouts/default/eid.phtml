@@ -421,7 +421,7 @@ if ($resultArray['shipment'] != "") {
             $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Team using COBAS Ampliprep/Taqman HIV-1 Qualitative Test.</span>';
 
             $html .= '<h4>Subcontracting:</h4>';
-            $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing. In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
+            $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing. Each participant has been assigned a unique identification number for purpose of database management.</span>';
 
             if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
                 $html .= '<br/><hr>';

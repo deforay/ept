@@ -179,6 +179,7 @@ class Application_Model_Vl
                     $shipmentResult[$counter]['documentation_score'] = 0;
                     $shipmentResult[$counter]['display_result'] = 'Excluded';
                     $shipmentResult[$counter]['is_followup'] = 'yes';
+                    $shipmentResult[$counter]['is_excluded'] = 'yes';
                     $failureReason[] = array('warning' => 'Excluded from Evaluation');
                     $finalResult = 3;
                     $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);

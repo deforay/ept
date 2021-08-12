@@ -322,19 +322,20 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
         } else if ($methodOfEvaluation == 'iso17043') {
             $html = '<h5>Participants with scores of less than 100%:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a <b>Proficiency Testing Corrective Action Form</b> within 30 days of report authorization date. Refer to Proficiency Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tap under the Main Navigation.</span>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a Proficiency Testing Corrective Action Form within 30 days of report authorization date. Refer to Proficiency
+            Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tap under
+            the Main Navigation.</span>';
 
             $html .= '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods.  Samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods. Samples were tested for
+            homogeneity prior to shipment and met program requirements.</span>';
 
             $html .= '<h5>Procedures used to establish the assigned value:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Team using COBAS Ampliprep/Taqman HIV-1 Qualitative Test.</span>';
-
-            $html .= '<h5>Procedures used to establish the assigned value:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Team using
+            COBAS Ampliprep/Taqman HIV-1 Qualitative Test.</span>';
 
             $html .= '<h5>Subcontracting:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the Proficiency Testing Program.  In order to ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the Proficiency Testing Program.  Each participant has been assigned a unique identification number for purpose of database management.</span>';
 
             if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
                 $html .= '<br/><hr>';
