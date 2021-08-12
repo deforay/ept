@@ -99,7 +99,7 @@ foreach ($this->participants as $row) {
 				<div class="form-group col-lg-6" style=" top: 8px; ">
 					<label class="col-lg-4 control-label" for="dateRange" style=" top: 5px; ">Shipment Date</label>
 					<div class="col-lg-8">
-						<input type="text" id="dateRange" name="dateRange" value="<?php echo date('d-M-Y', strtotime('- 365 DAYS')) . ' ' . date('d-M-Y') ?>" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+						<input type="text" id="dateRange" name="dateRange" value="<?php echo date('d-M-Y', strtotime('- 2 YEARS')) . ' ' . date('d-M-Y') ?>" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
 					</div>
 				</div>
 				<?php if (count($this->participants) > 1) { ?>
