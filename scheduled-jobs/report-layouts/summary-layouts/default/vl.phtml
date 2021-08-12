@@ -306,26 +306,29 @@ if ($resultArray['shipment'] != "") {
 
         /* JPGraph start */
         // Create the graph and specify the scale for both Y-axis
-        $graph = new Graph(700, 600, 'auto');
+        $graph = new Graph(800, 920, 'auto');
         $graph->SetScale("texlin");
         $graph->SetY2Scale("lin", 0, 90);
         $graph->SetY2OrderBack(false);
 
-        $graph->img->SetMargin(40, 30, 40, 40);
+        $graph->img->SetMargin(60, 45, 140, 250);
         $graph->SetShadow();
 
-        // Adjust the margin
-        $graph->img->SetMargin(85, 55, 150, 250);
-
         // Create the two linear plot
-        $lineplot2 = new ScatterPlot($avg);
-        $lineplot2->mark->SetType(MARK_IMG, ROOT_PATH . '/images/scatter.gif', 1.0);
-        $lineplot2->mark->SetSize(2);
-        $lineplot2->SetWeight(10);
-        $lineplot2->SetLegend('% of Participants scoring "100%"');
-        $graph->AddY2($lineplot2);
+        $scatterPlot = new ScatterPlot($avg);
+        $scatterPlot->SetCenter();
+        // $scatterPlot->mark->SetType(MARK_IMG, ROOT_PATH . '/images/scatter.gif', 1.0);
+        $scatterPlot->mark->SetType(MARK_X, '', 1.0);
+        $scatterPlot->mark->SetWeight(10);
+        $scatterPlot->mark->SetWidth(8);
+        $scatterPlot->mark->setColor("#fbda66");
+        $scatterPlot->mark->setFillColor("#fbda66");
+        $scatterPlot->mark->SetSize(3);
+        $scatterPlot->SetLegend('% of Participants scoring "100%"');
 
-        $graph->title->Set("All Participants Results Summary", 20);
+        $graph->title->Set("All Participants Results Summary");
+        $graph->title->SetMargin(20);
+        // $graph->title->SetFont(FF_DEFAULT, 'B', 25);
 
         $graph->yaxis->title->Set('Number of participants', 'center');
         $graph->yaxis->title->SetMargin(20);
@@ -343,7 +346,8 @@ if ($resultArray['shipment'] != "") {
         $graph->xaxis->SetTextLabelInterval(sizeof($allParticipantChartLabels) + 2);
         $graph->xaxis->SetLabelAlign('center');
         $graph->xaxis->SetFont(FF_DEFAULT, FS_NORMAL, 7);
-        // $graph->xaxis->scale->ticks->SupressFirst();
+        // $graph->xaxis->scale->ticks->SetTextLabelStart(0.2);
+        $graph->xaxis->scale->ticks->SupressFirst();
         if (sizeof($allParticipantChartLabels) > 3) {
             $graph->xaxis->SetLabelAngle(70);
         }
@@ -353,6 +357,8 @@ if ($resultArray['shipment'] != "") {
         $b2plot = new BarPlot($participantScore);
         $b3plot = new BarPlot($scoreBelow);
 
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot, $b2plot, $b3plot));
         $b1plot->SetAlign('center');
         $b1plot->SetLegend("Number of Participants Submitted Results");
 
@@ -362,15 +368,13 @@ if ($resultArray['shipment'] != "") {
         $b1plot->SetAlign('center');
         $b3plot->SetLegend('Number of Participants Scoring Below "100%"');
 
-        // Create the grouped bar plot
-        $gbplot = new GroupBarPlot(array($b1plot, $b2plot, $b3plot));
         $gbplot->SetWidth(0.5);
-        $gbplot->SetAlign('center');
         $graph->Add($gbplot);
+        $graph->AddY2($scatterPlot);
 
-        $b1plot->SetAbsWidth(25);
-        $b2plot->SetAbsWidth(25);
-        $b3plot->SetAbsWidth(25);
+        $b1plot->SetAbsWidth(26);
+        $b2plot->SetAbsWidth(26);
+        $b3plot->SetAbsWidth(26);
 
         $b1plot->SetColor("#1471c1");
         $b2plot->SetColor("#92d14f");
@@ -394,6 +398,7 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->AddPage();
         /* JPGraph end */
+
         $note = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) </h5>';
 
         $note .= '<h5>Preparation of Proficiency Test items:</h5>';

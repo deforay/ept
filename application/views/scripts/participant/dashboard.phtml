@@ -9,15 +9,16 @@ if (isset($this->schemes) && count($this->schemes) > 0) {
 	}
 }
 $participant = array();
-foreach($this->participants as $row){
+foreach ($this->participants as $row) {
 	$participant[] = $row['participant_id'];
 }
 // Zend_Debug::dump($activeSchemes);die;
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <style>
-	.highcharts-figure, .highcharts-data-table table {
-		min-width: 360px; 
+	.highcharts-figure,
+	.highcharts-data-table table {
+		min-width: 360px;
 		max-width: 800px;
 		margin: 1em auto;
 	}
@@ -31,26 +32,34 @@ foreach($this->participants as $row){
 		width: 100%;
 		max-width: 500px;
 	}
+
 	.highcharts-data-table caption {
 		padding: 1em 0;
 		font-size: 1.2em;
 		color: #555;
 	}
+
 	.highcharts-data-table th {
 		font-weight: 600;
 		padding: 0.5em;
 	}
-	.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+
+	.highcharts-data-table td,
+	.highcharts-data-table th,
+	.highcharts-data-table caption {
 		padding: 0.5em;
 	}
-	.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+
+	.highcharts-data-table thead tr,
+	.highcharts-data-table tr:nth-child(even) {
 		background: #f8f8f8;
 	}
+
 	.highcharts-data-table tr:hover {
 		background: #f1f7ff;
 	}
 
-	#participantChartContainer{
+	#participantChartContainer {
 		max-width: 921px;
 		min-width: 921px;
 		height: 400px;
@@ -60,6 +69,7 @@ foreach($this->participants as $row){
 	.btn-group.open {
 		width: 100%;
 	}
+
 	.green {
 		background-color: green;
 	}
@@ -67,7 +77,8 @@ foreach($this->participants as $row){
 	.red {
 		background-color: red;
 	}
-	.show-filter{
+
+	.show-filter {
 		display: block;
 		background: aliceblue;
 		text-align: center;
@@ -88,47 +99,52 @@ foreach($this->participants as $row){
 				<div class="form-group col-lg-6" style=" top: 8px; ">
 					<label class="col-lg-4 control-label" for="dateRange" style=" top: 5px; ">Shipment Date</label>
 					<div class="col-lg-8">
-						<input type="text" id="dateRange" name="dateRange" value="<?php echo date('d-M-Y',strtotime('- 365 DAYS')) . ' ' . date('d-M-Y') ?>" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+						<input type="text" id="dateRange" name="dateRange" value="<?php echo date('d-M-Y', strtotime('- 365 DAYS')) . ' ' . date('d-M-Y') ?>" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
 					</div>
 				</div>
-				<?php if(count($this->participants) > 1){ ?>
-				<div class="form-group col-lg-6" style=" top: 8px; ">
-					<label class="col-lg-4 control-label" for="participant" style=" top: 5px; ">Pariticipants</label>
-					<div class="col-lg-8" style=" text-align: left; ">
-						<select id="participant" name="participant[]" class="form-control multipleSelect" multiple="multiple" title="Select one or more participants">
-							
-							<?php foreach($this->participants as $row){
-									echo '<option value="'.$row['participant_id'].'">'.ucwords($row['first_name']." " . $row['last_name'] ."(".$row['unique_identifier'] .")").'</option>';
-							} ?>
-						</select>
+				<?php if (count($this->participants) > 1) { ?>
+					<div class="form-group col-lg-6" style=" top: 8px; ">
+						<label class="col-lg-4 control-label" for="participant" style=" top: 5px; ">Pariticipants</label>
+						<div class="col-lg-8" style=" text-align: left; ">
+							<select id="participant" name="participant[]" class="form-control multipleSelect" multiple="multiple" title="Select one or more participants">
+
+								<?php foreach ($this->participants as $row) {
+									echo '<option value="' . $row['participant_id'] . '">' . ucwords($row['first_name'] . " " . $row['last_name'] . "(" . $row['unique_identifier'] . ")") . '</option>';
+								} ?>
+							</select>
+						</div>
 					</div>
-				</div>
-				<?php }?>
-				<input type="hidden" id="participantDefault" name="participantDefault" value="<?php echo implode(',',$participant);?>"/>
+				<?php } ?>
+				<input type="hidden" id="participantDefault" name="participantDefault" value="<?php echo implode(',', $participant); ?>" />
 				<div class="form-group col-lg-12" style=" top: 8px; ">
-					<input name="submitbtn" class="btn btn-sm btn-primary" type="button" tabindex="7" value="Search" onclick="participantChartContainer('search',$('#participant'));"/>
-					<input class="btn btn-sm btn-danger" type="button" onclick="window.location.href = '/participant/dashboard';" tabindex="8" value="Clear"/>
+					<input name="submitbtn" class="btn btn-sm btn-primary" type="button" tabindex="7" value="Search" onclick="participantChartContainer('search',$('#participant'));" />
+					<input class="btn btn-sm btn-danger" type="button" onclick="window.location.href = '/participant/dashboard';" tabindex="8" value="Clear" />
 				</div>
 			</fieldset>
 			<?php if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) { ?>
-			<h3 class="txt text-info vl" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for VL Scheme</h3>
-			<div id="participantChartContainerVl" class="vl" style="display: none;"></div>
-			<?php } if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) { ?>
-			<h3 class="txt text-info eid" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for EId Scheme</h3>
-			<div id="participantChartContainerEid" class="eid" style="display: none;"></div>
-			<?php } if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) { ?>
-			<h3 class="txt text-info dts" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for DTS Scheme</h3>
-			<div id="participantChartContainerDts" class="dts" style="display: none;"></div>
-			<?php } if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
-			<h3 class="txt text-info dbs" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for DBS Scheme</h3>
-			<div id="participantChartContainerDbs" class="dbs" style="display: none;"></div>
-			<?php } if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
-			<h3 class="txt text-info recency" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for Recency Scheme</h3>
-			<div id="participantChartContainerRecency" class="recency" style="display: none;"></div>
-			<?php } if (count($activeSchemes) > 0 && in_array('covid19', $activeSchemes)) { ?>
-			<h3 class="txt text-info covid19" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for SARS-CoV-2 Scheme</h3>
-			<div id="participantChartContainerCovid19" class="covid19" style="display: none;"></div>
-			<?php }?>
+				<h3 class="txt text-info vl" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for VL Scheme</h3>
+				<div id="participantChartContainerVl" class="vl" style="display: none;"></div>
+			<?php }
+			if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) { ?>
+				<h3 class="txt text-info eid" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for EId Scheme</h3>
+				<div id="participantChartContainerEid" class="eid" style="display: none;"></div>
+			<?php }
+			if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) { ?>
+				<h3 class="txt text-info dts" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for DTS Scheme</h3>
+				<div id="participantChartContainerDts" class="dts" style="display: none;"></div>
+			<?php }
+			if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
+				<h3 class="txt text-info dbs" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for DBS Scheme</h3>
+				<div id="participantChartContainerDbs" class="dbs" style="display: none;"></div>
+			<?php }
+			if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
+				<h3 class="txt text-info recency" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for Recency Scheme</h3>
+				<div id="participantChartContainerRecency" class="recency" style="display: none;"></div>
+			<?php }
+			if (count($activeSchemes) > 0 && in_array('covid19', $activeSchemes)) { ?>
+				<h3 class="txt text-info covid19" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for SARS-CoV-2 Scheme</h3>
+				<div id="participantChartContainerCovid19" class="covid19" style="display: none;"></div>
+			<?php } ?>
 		</div>
 	</div>
 	<?php
@@ -797,8 +813,8 @@ foreach($this->participants as $row){
 	<?php } ?>
 	$(document).ready(function() {
 		$('.multipleSelect').multiselect({
-            includeSelectAllOption: true
-        });
+			includeSelectAllOption: true
+		});
 		<?php
 		if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) {
 		?>
@@ -826,21 +842,22 @@ foreach($this->participants as $row){
 		<?php } ?>
 
 		$('#dateRange').daterangepicker({
-    		maxDate: moment(),
-			format: 'DD-MMM-YYYY',
-			ranges: {
-				'Last 30 Days': [moment().subtract('days', 29), moment()],
-				'Last 60 Days': [moment().subtract('days', 59), moment()],
-				'Last 90 Days': [moment().subtract('days', 89), moment()],
-				'Last 180 Days': [moment().subtract('days', 179), moment()],
-				'Last 12 Months': [moment().subtract('month', 12), moment()],
-				'Last 18 Months': [moment().subtract('month', 18), moment()],
-			}
-		},
-		function(start, end) {
-			startDate = start.format('YYYY-MM-DD');
-			endDate = end.format('YYYY-MM-DD');
-		});
+				maxDate: moment(),
+				format: 'DD-MMM-YYYY',
+				ranges: {
+					'Last 30 Days': [moment().subtract('days', 29), moment()],
+					'Last 60 Days': [moment().subtract('days', 59), moment()],
+					'Last 90 Days': [moment().subtract('days', 89), moment()],
+					'Last 180 Days': [moment().subtract('days', 179), moment()],
+					'Last 12 Months': [moment().subtract('month', 12), moment()],
+					'Last 18 Months': [moment().subtract('month', 18), moment()],
+				}
+			},
+			function(start, end) {
+				$('#dateRange').val(start.format('DD-MMM-YYYY') + ' ' + end.format('DD-MMM-YYYY'));
+				startDate = start.format('YYYY-MM-DD');
+				endDate = end.format('YYYY-MM-DD');
+			});
 	});
 
 	// var oTable = null;
@@ -972,7 +989,7 @@ foreach($this->participants as $row){
 
 	$(document).ready(function() {
 		allSchemes();
-		participantChartContainer('','');
+		participantChartContainer('', '');
 	});
 
 
@@ -1056,156 +1073,161 @@ foreach($this->participants as $row){
 		}
 	}
 
-	function participantChartContainer(val,obj){
-		if(val == "search"){
-			if($(obj).val() != '' && $(obj).val() != null){
+	function participantChartContainer(val, obj) {
+		if (val == "search") {
+			if ($(obj).val() != '' && $(obj).val() != null) {
 
 				var participant = $('#participant').val()
 				var type = "array";
-			}else{
+			} else {
 				var participant = $('#participantDefault').val();
 				var type = "string";
 			}
-		} else{
+		} else {
 			var participant = $('#participantDefault').val();
 			var type = "string";
 		}
 		<?php if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) { ?>
-		/* for shipment vl */
-		$('#participantChartContainerVl').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-			shipmentDate : $('#dateRange').val(),
-			participants: participant,
-			type : type,
-			shipmentType : 'vl',
-			render:'participantChartContainerVl',
-			format: "html"
-		},
-		function(data) {
-			$('#participantChartContainerVl').html(data);
-		});
-		<?php } if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) { ?>
-		/* for shipment eid */
-		$('#participantChartContainerEid').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-			shipmentDate : $('#dateRange').val(),
-			participants: participant,
-			type : type,
-			shipmentType : 'eid',
-			render:'participantChartContainerEid',
-			format: "html"
-		},
-		function(data) {
-			$('#participantChartContainerEid').html(data);
-		});
-		<?php } if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) { ?>
-		/* for shipment dts */
-		$('#participantChartContainerDts').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-			shipmentDate : $('#dateRange').val(),
-			participants: participant,
-			type : type,
-			shipmentType : 'dts',
-			render:'participantChartContainerDts',
-			format: "html"
-		},
-		function(data) {
-			$('#participantChartContainerDts').html(data);
-		});
-		<?php } if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
-		/* for shipment dbs */
-		$('#participantChartContainerDbs').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-			shipmentDate : $('#dateRange').val(),
-			participants: participant,
-			type : type,
-			shipmentType : 'dbs',
-			render:'participantChartContainerDbs',
-			format: "html"
-		},
-		function(data) {
-			$('#participantChartContainerDbs').html(data);
-		});
-		<?php } if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
-		/* for shipment recency */
-		$('#participantChartContainerRecency').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-			shipmentDate : $('#dateRange').val(),
-			participants: participant,
-			type : type,
-			shipmentType : 'recency',
-			render:'participantChartContainerRecency',
-			format: "html"
-		},
-		function(data) {
-			$('#participantChartContainerRecency').html(data);
-		});
-		<?php } if (count($activeSchemes) > 0 && in_array('covid19', $activeSchemes)) { ?>
-		/* for shipment covid19 */
-		$('#participantChartContainerCovid19').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-			shipmentDate : $('#dateRange').val(),
-			participants: participant,
-			type : type,
-			shipmentType : 'covid19',
-			render:'participantChartContainerCovid19',
-			format: "html"
-		},
-		function(data) {
-			$('#participantChartContainerCovid19').html(data);
-		});
+			/* for shipment vl */
+			$('#participantChartContainerVl').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'vl',
+					render: 'participantChartContainerVl',
+					format: "html"
+				},
+				function(data) {
+					$('#participantChartContainerVl').html(data);
+				});
+		<?php }
+		if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) { ?>
+			/* for shipment eid */
+			$('#participantChartContainerEid').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'eid',
+					render: 'participantChartContainerEid',
+					format: "html"
+				},
+				function(data) {
+					$('#participantChartContainerEid').html(data);
+				});
+		<?php }
+		if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) { ?>
+			/* for shipment dts */
+			$('#participantChartContainerDts').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'dts',
+					render: 'participantChartContainerDts',
+					format: "html"
+				},
+				function(data) {
+					$('#participantChartContainerDts').html(data);
+				});
+		<?php }
+		if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
+			/* for shipment dbs */
+			$('#participantChartContainerDbs').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'dbs',
+					render: 'participantChartContainerDbs',
+					format: "html"
+				},
+				function(data) {
+					$('#participantChartContainerDbs').html(data);
+				});
+		<?php }
+		if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
+			/* for shipment recency */
+			$('#participantChartContainerRecency').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'recency',
+					render: 'participantChartContainerRecency',
+					format: "html"
+				},
+				function(data) {
+					$('#participantChartContainerRecency').html(data);
+				});
+		<?php }
+		if (count($activeSchemes) > 0 && in_array('covid19', $activeSchemes)) { ?>
+			/* for shipment covid19 */
+			$('#participantChartContainerCovid19').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'covid19',
+					render: 'participantChartContainerCovid19',
+					format: "html"
+				},
+				function(data) {
+					$('#participantChartContainerCovid19').html(data);
+				});
 		<?php } ?>
 
-		setTimeout(function(){ 
-			vl =	$("div").hasClass("vl");
-			eid =	$("div").hasClass("eid");
-			dts =	$("div").hasClass("dts");
-			dbs =	$("div").hasClass("dbs");
-			recency =	$("div").hasClass("recency");
-			covid19 =	$("div").hasClass("covid19");
+		setTimeout(function() {
+			vl = $("div").hasClass("vl");
+			eid = $("div").hasClass("eid");
+			dts = $("div").hasClass("dts");
+			dbs = $("div").hasClass("dbs");
+			recency = $("div").hasClass("recency");
+			covid19 = $("div").hasClass("covid19");
 
-			if($("div").hasClass("vl")){
+			if ($("div").hasClass("vl")) {
 				<?php if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) { ?>
-				$('.vl').show();
+					$('.vl').show();
 				<?php } ?>
 			}
-			if($("div").hasClass("eid")){
+			if ($("div").hasClass("eid")) {
 				<?php if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) { ?>
-				$('.eid').show();
+					$('.eid').show();
 				<?php } ?>
 			}
-			if($("div").hasClass("dts")){
+			if ($("div").hasClass("dts")) {
 				<?php if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) { ?>
-				$('.dts').show();
+					$('.dts').show();
 				<?php } ?>
 			}
-			if($("div").hasClass("dbs")){
+			if ($("div").hasClass("dbs")) {
 				<?php if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
-				$('.dbs').show();
+					$('.dbs').show();
 				<?php } ?>
 			}
-			if($("div").hasClass("recency")){
+			if ($("div").hasClass("recency")) {
 				<?php if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
-				$('.recency').show();
+					$('.recency').show();
 				<?php } ?>
 			}
-			if($("div").hasClass("covid19")){
+			if ($("div").hasClass("covid19")) {
 				<?php if (count($activeSchemes) > 0 && in_array('covid19', $activeSchemes)) { ?>
-				$('.covid19').show();
+					$('.covid19').show();
 				<?php } ?>
 			}
-			
-			if(vl == true || dts == true || dbs == true || recency == true || covid19 == true || eid == true){
+
+			if (vl == true || dts == true || dbs == true || recency == true || covid19 == true || eid == true) {
 				$('.all').show();
 			}
 		}, 1000);
 	}
 
-	function showFilter(obj){
+	function showFilter(obj) {
 		$('.show-filter').toggle();
-		if($(obj).html() == "Show/Filters"){
+		if ($(obj).html() == "Show/Filters") {
 			$(obj).html('Hide/Filters');
-		} else{
+		} else {
 			$(obj).html('Show/Filters');
 		}
 	}

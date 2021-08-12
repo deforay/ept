@@ -68,9 +68,9 @@ class IndividualPDF extends TCPDF
         //$this->header = preg_replace('/<br>$/', "", $this->header);
         if ($this->schemeType == 'vl') {
             if (isset($this->config) && $this->config != "") {
-                $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
-                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>
-                <br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                $html = '<span style="font-weight: bold;text-align:center;font-size:11px;">' . $this->config->instituteName . '</span>
+                <span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>
+                <span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span>';
@@ -98,7 +98,7 @@ class IndividualPDF extends TCPDF
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - Rapid HIV Dried Tube Specimen </span>';
         }
 
-        if ($this->schemeType == 'eid') {
+        if ($this->schemeType == 'eid' || $this->schemeType == 'vl') {
             $this->writeHTMLCell(0, 0, 27, 05, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);

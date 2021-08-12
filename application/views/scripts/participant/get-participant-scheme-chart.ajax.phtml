@@ -2,16 +2,17 @@
 $result = $this->result['result'];
 $status = false;
 
-// Zend_Debug::dump($this->result);die;
-foreach($result as $row){
-    if($row != null){
+// Zend_Debug::dump($result);
+// die;
+foreach ($result as $row) {
+    if ($row != null) {
         $status = true;
-    }    
+    }
 }
-if (isset($this->result) && count($this->result) > 0 && $status) {
+if (isset($result) && count($result) > 0 && $status) {
 ?>
     <script>
-        Highcharts.chart('<?php echo $this->render;?>', {
+        Highcharts.chart('<?php echo $this->render; ?>', {
             chart: {
                 type: 'spline'
             },
@@ -22,18 +23,22 @@ if (isset($this->result) && count($this->result) > 0 && $status) {
                 text: ''
             },
             xAxis: {
-                //categories: ["21 Mar", "22 Mar", "23 Mar", "24 Mar", "25 Mar", "26 Mar", "27 Mar"]
-                categories: [<?php 
-                    if(count($this->result['monthRange']) > 0){
-                        foreach($this->result['monthRange'] as $monthYr){
-                            echo "'".$monthYr."',";
-                        }
-                    }
-                ?>]
+                categories: [<?php
+                                if (count($result) > 0) {
+                                    $j = 0;
+                                    foreach ($result as $shipmentCode => $val) {
+                                        echo "'" . $shipmentCode . "'";
+                                        if ($j < (count($result) - 1)) {
+                                            echo ",";
+                                        }
+                                        $j++;
+                                    }
+                                }
+                                ?>]
             },
             yAxis: {
-                min:0,
-                max:100,
+                min: 0,
+                max: 100,
                 title: {
                     text: 'Percentage %'
                 }
@@ -60,44 +65,43 @@ if (isset($this->result) && count($this->result) > 0 && $status) {
                 enabled: false
             },
 
-            series: [
-                {
+            series: [{
                 gridLineWidth: 0,
                 minorGridLineWidth: 0,
                 name: "Shipment Score",
                 colorByPoint: true,
                 data: [
-                <?php 
-                    if(count($result) > 0){
-                        foreach($result as $row){
-                            if($row != null){
-                                foreach($row as $val){
-                                    $score = str_replace(",","",(number_format(($val['shipment_score'] + $val['documentation_score']) / $val['participantCount'],2)));
-                                    echo '
+                    <?php if (count($result) > 0) {
+                        $j = 0;
+                        foreach ($result as $val) {
+                            if ($val != null) {
+                                $score = str_replace(",", "", (number_format(($val['shipment_score'] + $val['documentation_score']) / $val['participantCount'], 2)));
+                                echo '
                                     {
-                                        name: "'.$val['shipment_code'].'",
-                                        y:'.$score.'
-                                    },
+                                        name: "' . $val['shipment_code'] . '",
+                                        y:' . $score . '
+                                    }
                                     ';
-                                }
-                            } else{
+                            } else {
                                 echo '
                                 {
                                     name: "No shipment available",
                                     y:0.00
-                                },
+                                }
                                 ';
                             }
+                            if ($j < (count($result) - 1)) {
+                                echo ",";
+                            }
+                            $j++;
                         }
-                    }
-
-                ?>]
-                }
-            ]
+                    } ?>
+                ]
+            }]
         });
     </script>
 <?php } else { ?>
     <script>
-        $('.<?php echo $this->shipmentType;?>').remove();
+        $('.<?php echo $this->shipmentType; ?>').remove();
     </script>
 <?php } ?>
