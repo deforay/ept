@@ -63,8 +63,7 @@ class ParticipantController extends Zend_Controller_Action
 
     public function correctiveAction()
     {
-        $this->_helper->layout()->activeMenu = 'view-reports';
-        $this->_helper->layout()->activeSubMenu = 'corrective-action';
+        $this->_helper->layout()->activeMenu = 'corrective-action';
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();

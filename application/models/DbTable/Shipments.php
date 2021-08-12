@@ -1269,8 +1269,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('scheme_type', 'shipment_code', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'unique_identifier', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
-        $orderColumns = array('scheme_type', 'shipment_code', 'shipment_date', 'unique_identifier', 'first_name', 'spm.shipment_test_report_date', 's.created_on_admin');
+        $aColumns = array('shipment_code', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_type', 'unique_identifier', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $orderColumns = array('shipment_code', 'shipment_date', 'scheme_type', 'unique_identifier', 'first_name', 'spm.shipment_test_report_date', 's.created_on_admin');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -1351,8 +1351,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             ->where("pmm.dm_id=?", $this->_session->dm_id)
-            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'")
-            ->where("s.corrective_action_file NOT LIKE ''");
+            ->where("s.status='finalized'")
+            ->where("s.corrective_action_file NOT LIKE ''")
+            ->where("spm.final_result = 2");
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -1390,7 +1391,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
             ->where("pmm.dm_id=?", $this->_session->dm_id)
-            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+            ->where("s.status='finalized'")
+            ->where("s.corrective_action_file NOT LIKE ''")
+            ->where("spm.final_result = 2");
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 
@@ -1408,9 +1411,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $corrective = "";
             $row = array();
-            $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
+            $row[] = ($aRow['scheme_name']);
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);

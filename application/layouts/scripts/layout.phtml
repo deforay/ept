@@ -132,9 +132,13 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
               <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span>View PT Result </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
               <ul class="treeview-menu">
                 <li class="<?php echo ($activeSubMenu == 'individual-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "report"), null, true) ?>"> Individual Report</a></li>
-                <li class="<?php echo ($activeSubMenu == 'corrective-action') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "corrective"), null, true) ?>"> Corrective Actions</a></li>
                 <li class="<?php echo ($activeSubMenu == 'summary-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>"> Summary Report</a></li>
               </ul>
+            </li>
+            <li class="<?php echo ($activeMenu == 'corrective-action') ? ' active ' : '';  ?>">
+              <a href="<?php echo $this->url(array("controller" => "participant", "action" => "corrective"), null, true) ?>">
+                <i class="icon icon-check"></i> <span>Corrective Actions</span>
+              </a>
             </li>
             <li class="<?php echo ($activeMenu == 'all-schemes') ? ' active ' : '';  ?>">
               <a href="<?php echo $this->url(array("controller" => "participant", "action" => "all-schemes"), null, true) ?>">
