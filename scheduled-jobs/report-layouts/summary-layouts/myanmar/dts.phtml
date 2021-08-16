@@ -289,6 +289,7 @@ if ($resultArray['shipment'] != "") {
 
             $graph->ygrid->SetFill(false);
             $graph->xaxis->SetTickLabels($dataY);
+            $graph->xaxis->SetTextLabelInterval(1);
             $graph->xaxis->SetLabelAngle(05);
             $graph->yaxis->HideLine(false);
             $graph->yaxis->HideTicks(false, false);
@@ -350,6 +351,7 @@ if ($resultArray['shipment'] != "") {
 
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($dataY);
+        $graph->xaxis->SetTextLabelInterval(1);
         $graph->xaxis->SetLabelAngle(90);
         $graph->xaxis->SetLabelMargin(0);
         $graph->xaxis->SetPos(0.5, 0.97, 'center', 'bottom');
@@ -451,6 +453,7 @@ if ($resultArray['shipment'] != "") {
         $graph->ygrid->SetFill(false);
         $graph->yaxis->HideLine(false);
         $graph->xaxis->SetTickLabels(array('Before Due Date ' . $before . '% (n=' . $val['beforeDueDate'] . ')', 'After Due Date ' . $after . '% (n=' . $val['afterDueDate'] . ')', 'Not Tested ' . $ntrs . '% (n=' . $ntr . ')'));
+        $graph->xaxis->SetTextLabelInterval(1);
         $graph->yaxis->title->Set('Percentage');
         $graph->yaxis->HideTicks(false, false);
 
@@ -531,6 +534,7 @@ if ($resultArray['shipment'] != "") {
         $graph->ygrid->SetFill(false);
         $graph->yaxis->HideLine(false);
         $graph->xaxis->SetTickLabels($val['department_name']);
+        $graph->xaxis->SetTextLabelInterval(1);
         $graph->yaxis->title->Set('Number of Participants');
         $graph->yaxis->HideTicks(false, false);
 
