@@ -64,7 +64,6 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
     }
-
     if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
         $pass = $config->evaluation->dts->passPercentage;
         $abovePass = sprintf("above $pass");
@@ -73,8 +72,10 @@ if ($resultArray['shipment'] != "") {
         $barPoints["60 - 69"] = 0;
         $barPoints["70 - $pass"] = 0;
         $barPoints[$abovePass] = 0;
+        $reported = 0;
 
         foreach ($resultArray['shipment']['summaryResult'] as $result) {
+            $reported = (isset($result['correctCount'][0]['reported_count']) && $result['correctCount'][0]['reported_count'] > 0) ? $result['correctCount'][0]['reported_count'] : 0;
             $maxScore = 0;
             $belowScore = 0;
             $partCount = count($result) - 1;
@@ -156,9 +157,9 @@ if ($resultArray['shipment'] != "") {
 
 
         $overview .= '<tr>';
-        $overview .= '<td style="text-align:center;font-weight:normal;">' . $partCount . '</td>';
-        $overview .= '<td style="text-align:center;font-weight:normal;">' . $maxScore . ' (' . round(($maxScore / $partCount) * 100, 2) . '%)</td>';
-        $overview .= '<td style="text-align:center;font-weight:normal;">' . $belowScore . ' (' . round(($belowScore / $partCount) * 100, 2) . '%)</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $reported . '</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $maxScore . ' (' . round(($maxScore / $reported) * 100, 2) . '%)</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $belowScore . ' (' . round(($belowScore / $reported) * 100, 2) . '%)</td>';
 
         $overview .= '</tr>';
 
@@ -430,13 +431,13 @@ if ($resultArray['shipment'] != "") {
         $val = $resultArray['shipment']['participantBeforeAfterDueChart'];
         // JPGraph Charts
         /* To find the count of not responded participants */
-        $ntr = round(abs($val['total_shipped'] - $val['beforeDueDate'] - $val['afterDueDate']), 2);
+        $ntr = round(abs($val['reported_count'] - $val['beforeDueDate'] - $val['afterDueDate']), 2);
         /* Find by percentage */
-        $ntrs = round(($ntr / $val['total_shipped']) * 100, 2);
+        $ntrs = round(($ntr / $val['reported_count']) * 100, 2);
         /* To find the percentage of before due date score */
-        $before = round(($val['beforeDueDate'] / $val['total_shipped']) * 100, 2);
+        $before = round(($val['beforeDueDate'] / $val['reported_count']) * 100, 2);
         /* To find the percentage of after due date score */
-        $after = round(($val['afterDueDate'] / $val['total_shipped']) * 100, 2);
+        $after = round(($val['afterDueDate'] / $val['reported_count']) * 100, 2);
 
         // Create the graph. These two calls are always required
         $graph = new Graph(750, 320, 'auto');
@@ -474,7 +475,7 @@ if ($resultArray['shipment'] != "") {
         $graph->legend->SetColumns(6);
         $graph->legend->SetColor('#4E4E4E', '#00A78A');
 
-        $graph->title->Set('Performance by timeliness (N=' . $val['total_shipped'] . ')');
+        $graph->title->Set('Performance by timeliness (N=' . $val['reported_count'] . ')');
 
         // Display the graph
         $performanceBeforeAfterChart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'before_after_bar_chart.png';

@@ -643,7 +643,7 @@ class Application_Service_Evaluation
 				$mapData['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReportedDate']);
 			} else {
 				$mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
-			}	
+			}
 
 			if (isset($params['customField1']) && trim($params['customField1']) != "") {
 				$mapData['custom_field_1'] = $params['customField1'];
@@ -1506,6 +1506,7 @@ class Application_Service_Evaluation
 					'70-' . $pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 70 AND SUM(spm.documentation_score+spm.shipment_score) <= $pass"),
 					'above ' . $pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass"),
 					'failed' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass AND spm.final_result = 2"),
+					'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")
 				))
 					->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array(''))
 					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
@@ -1524,6 +1525,7 @@ class Application_Service_Evaluation
 						->join(array('spm' => 'shipment_participant_map'), 'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id', array(
 							'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
 							'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response AND spm.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
+							'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")
 						))
 						->where("spm.shipment_id = ?", $shipmentId)
 						->where("spm.final_result IS NOT NULL")
@@ -1559,6 +1561,7 @@ class Application_Service_Evaluation
 						array(
 							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
 							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+							'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')"),
 							"beforeDueDate" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
 							"afterDueDate" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_report_date > s.lastdate_response) THEN 1 ELSE 0 END)"),
 							"pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
@@ -1576,6 +1579,7 @@ class Application_Service_Evaluation
 						array(
 							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
 							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+							'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')"),
 							"fail_percentage" => new Zend_Db_Expr("((SUM(sp.final_result = 2))/(SUM(sp.final_result = 2) + SUM(sp.final_result = 1)))*100"),
 							"pass_percentage" => new Zend_Db_Expr("((SUM(sp.final_result = 1))/(SUM(sp.final_result = 1) + SUM(sp.final_result = 2)))*100"),
 							'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
@@ -1596,6 +1600,7 @@ class Application_Service_Evaluation
 						array(
 							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
 							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+							'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')"),
 							"departmentCount" => new Zend_Db_Expr('count("p.department_name")'),
 							"beforeDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date <= s.lastdate_response)"),
 							"afterDueDate" => new Zend_Db_Expr("SUM(sp.shipment_test_report_date > s.lastdate_response)"),
