@@ -89,7 +89,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $pushContent = $commonServices->getPushTemplateByPurpose('new-shipment');
             $participantDb = new Application_Model_DbTable_Participants();
             $participantRow = $participantDb->fetchRow('participant_id=' . $dm['participant_id']);
-            // Zend_Debug::dump($participantRow);die;
             $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
             $replace = array($participantRow['first_name'] . ' ' . $participantRow['last_name'], $shipmentRow['shipment_code'], $shipmentRow['scheme_type'], '', '');
             $title = str_replace($search, $replace, $pushContent['notify_title']);
