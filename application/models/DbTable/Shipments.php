@@ -120,7 +120,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
             $content = $notParticipatedMailContent['mail_content'];
             $message = str_replace($search, $replace, $content);
-            $subject = $notParticipatedMailContent['mail_subject'];
+            // $subject = $notParticipatedMailContent['mail_subject'];
+            $subject = str_replace($search, $replace, $notParticipatedMailContent['mail_subject']);
             $fromEmail = $notParticipatedMailContent['mail_from'];
             $fromFullName = $notParticipatedMailContent['from_name'];
             $toEmail = $dm['primary_email'];
@@ -1243,16 +1244,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $download = "";
             $corrective = "";
             $row = array();
-            
+
             $displayResult = "";
-            if($aRow['is_pt_test_not_performed'] == 'yes'){
-                $displayResult = 'Test Not Performed'; 
-            }else if($aRow['is_excluded'] == 'yes'){
-                $displayResult = 'Excluded'; 
-            }else if($aRow['final_result'] == 1) {
-                $displayResult = 'Satisfactory'; 
-            }else if($aRow['final_result'] == 2) {
-                $displayResult = 'Unsatisfactory'; 
+            if ($aRow['is_pt_test_not_performed'] == 'yes') {
+                $displayResult = 'Test Not Performed';
+            } else if ($aRow['is_excluded'] == 'yes') {
+                $displayResult = 'Excluded';
+            } else if ($aRow['final_result'] == 1) {
+                $displayResult = 'Satisfactory';
+            } else if ($aRow['final_result'] == 2) {
+                $displayResult = 'Unsatisfactory';
             }
 
             $row[] = strtoupper($aRow['scheme_name']);
