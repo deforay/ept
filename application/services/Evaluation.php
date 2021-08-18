@@ -770,12 +770,20 @@ class Application_Service_Evaluation
 				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
 				"shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
 				"attributes" => $attributes,
+				"mode_id" => $params['modeOfReceipt'],
 				"supervisor_approval" => $params['supervisorApproval'],
 				"participant_supervisor" => $params['participantSupervisor'],
 				"user_comment" => $params['userComments'],
 				"updated_by_admin" => $admin,
 				"updated_on_admin" => new Zend_Db_Expr('now()')
 			);
+
+
+			if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
+				$mapData['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReportedDate']);
+			} else {
+				$mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+			}			
 
 			if (isset($params['customField1']) && trim($params['customField1']) != "") {
 				$mapData['custom_field_1'] = $params['customField1'];
@@ -1163,6 +1171,7 @@ class Application_Service_Evaluation
 					->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("refeid.control = 0")
+					->where("sp.is_excluded ='no'")
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
 

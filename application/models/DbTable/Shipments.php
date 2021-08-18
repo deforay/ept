@@ -1182,7 +1182,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "shipment_score", "documentation_score", "is_excluded", "is_pt_test_not_performed", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             ->where("pmm.dm_id=?", $this->_session->dm_id)
@@ -1243,17 +1243,38 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $download = "";
             $corrective = "";
             $row = array();
+            
+            $displayResult = "";
+            if($aRow['is_pt_test_not_performed'] == 'yes'){
+                $displayResult = 'Test Not Performed'; 
+            }else if($aRow['is_excluded'] == 'yes'){
+                $displayResult = 'Excluded'; 
+            }else if($aRow['final_result'] == 1) {
+                $displayResult = 'Satisfactory'; 
+            }else if($aRow['final_result'] == 2) {
+                $displayResult = 'Unsatisfactory'; 
+            }
+
             $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);
-            if (isset($aRow['REPORT']) && $aRow['REPORT'] != "") {
-                $download = '<a href="/participant/download/d92nl9d8d/' . base64_encode($aRow['map_id']) . '"  style="text-decoration : underline;" target="_BLANK" download>' . $aRow['REPORT'] . '</a>';
+            $row[] = $displayResult;
+            if ($aRow['is_excluded'] != 'yes' && isset($aRow['REPORT']) && $aRow['REPORT'] != "") {
+                $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-" . $aRow['map_id'] . ".pdf");
+                if (!file_exists($invididualFilePath)) {
+                    // Search this file name using the map id
+                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $aRow['map_id'] . ".pdf");
+                    $invididualFilePath = isset($files[0]) ? $files[0] : '';
+                }
+                if (file_exists($invididualFilePath)) {
+                    $download = '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . $aRow['REPORT'] . '</a>';
+                }
             }
             if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != "")) {
-                $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"  style="text-decoration : underline;" target="_BLANK" download>Download Correcetive Action File</a>';
+                $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> Corrective Actions</a>';
             }
             $row[] = $download . $corrective;
 
@@ -1418,7 +1439,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $general->humanDateFormat($aRow['RESPONSEDATE']);
             if (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != "") {
-                $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"  style="text-decoration : underline;" target="_BLANK" download>Download Correcetive Action File</a>';
+                $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"  style="text-decoration : underline;" target="_BLANK" download>Corrective Action</a>';
             }
             $row[] = $corrective;
 

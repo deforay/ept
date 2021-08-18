@@ -195,7 +195,8 @@ $overrideStatus = "no";
 							<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('<?php echo $shipment['scheme_type']; ?>','<?php echo base64_encode($shipment['map_id']); ?>')"><span><i class="icon-remove"></i> Delete</span></a>
 						<?php }
 						if (($shipment['display_result'] == 'Fail') && (isset($shipment['corrective_action_file']) && $shipment['corrective_action_file'] != "")) { ?>
-							<a class="btn btn-primary btn-xs" href="/uploads/corrective-action-files/<?php echo $shipment['corrective_action_file'] ?>" download=""><span><i class="icon-download"></i> Download Corrective Action File</span></a>
+							<br>
+							<a class="btn btn-primary btn-xs" href="/uploads/corrective-action-files/<?php echo $shipment['corrective_action_file'] ?>" download=""><span><i class="icon-download"></i> Download Corrective Action</span></a>
 						<?php } ?>
 					</td>
 				</tr>

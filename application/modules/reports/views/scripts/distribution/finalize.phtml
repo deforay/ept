@@ -109,6 +109,7 @@ if (count($this->shipment) > 0) {
         <thead>
             <tr>
                 <th style="width:40px;"></th>
+                <th>Participant/Tester ID</th>
                 <th>Participant/Tester</th>
                 <th>Response Score</th>
                 <th>Documentation Score</th>
@@ -160,6 +161,7 @@ if (count($this->shipment) > 0) {
                 } ?>
                 <tr>
                     <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
+                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['unique_identifier'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
@@ -347,6 +349,9 @@ if (count($this->shipment) > 0) {
                 "aoColumns": [{
                         "bSortable": false,
                         "aTargets": [0]
+                    },
+                    {
+                        "sClass": "center"
                     },
                     {
                         "sClass": "center"
