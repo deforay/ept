@@ -225,9 +225,14 @@ class Application_Service_Shipments
     public function mandatoryFieldsCheck($params, $mandatoryFields)
     {
 
+        $errors = array();
+        if(isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes'){
+            return $errors;
+        }
+
+
         // let us only keep the mandatory params
         $mandatoryParams = array_intersect_key($params, array_flip($mandatoryFields));
-        $errors = array();
         foreach ($mandatoryParams as $param => $val) {
             if (empty(trim($val))) {
                 $errors[] = $param;
