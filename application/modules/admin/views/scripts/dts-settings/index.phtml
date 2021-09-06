@@ -20,13 +20,13 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             <div class="form-group">
                 <label for="dtsPanelScore" class="col-lg-3 control-label">Panel/Shipment Score<span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="dtsPanelScore" name="dtsPanelScore" class="isRequired isNumeric form-control" placeholder = "0" title="Please enter the Panel Score breakup" value="<?php echo $this->config->evaluation->dts->panelScore; ?>" oninput="$('#dtsDocumentationScore').val(100 - $(this).val());">
+                    <input type="number" id="dtsPanelScore" name="dtsPanelScore" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Panel Score breakup" value="<?php echo $this->config->evaluation->dts->panelScore; ?>" oninput="$('#dtsDocumentationScore').val(100 - $(this).val());">
                 </div>
             </div>
             <div class="form-group">
                 <label for="dtsDocumentationScore" class="col-lg-3 control-label">Documentation Score<span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder = "0" title="Please enter the Documentation Score breakup" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>"  oninput="$('#dtsPanelScore').val(100 - $(this).val());">
+                    <input type="number" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Documentation Score breakup" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>" oninput="$('#dtsPanelScore').val(100 - $(this).val());">
                 </div>
             </div>
 
@@ -66,6 +66,28 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                         <option value="serial" <?php echo (!empty($allowedAlgorithms) && in_array("serial", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Serial</option>
                         <option value="parallel" <?php echo (!empty($allowedAlgorithms) && in_array("parallel", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Parallel</option>
                         <option value="myanmarNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("myanmarNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Myanmar National Algorithm</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="conditionOfPtSample" class="col-lg-3 control-label">Display Sample Condition Fields on Participant Result Form <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <select class="form-control" id="conditionOfPtSample" name="conditionOfPtSample" title="Please select sample condition fields on participant result form">
+                        <option value="">--Select--</option>
+                        <option value="no" <?php echo (isset($this->config->evaluation->dts->display_sample_condition_fields) && $this->config->evaluation->dts->display_sample_condition_fields == "no") ? " selected='selected' " : ""; ?>>No</option>
+                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->display_sample_condition_fields) && $this->config->evaluation->dts->display_sample_condition_fields == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="allowRepeatTest" class="col-lg-3 control-label">Display Repeat Test Fields <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <select class="form-control" id="allowRepeatTest" name="allowRepeatTest" title="Please select sample condition fields on participant result form">
+                        <option value="">--Select--</option>
+                        <option value="no" <?php echo (isset($this->config->evaluation->dts->allow_repeat_tests) && $this->config->evaluation->dts->allow_repeat_tests == "no") ? " selected='selected' " : ""; ?>>No</option>
+                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->allow_repeat_tests) && $this->config->evaluation->dts->allow_repeat_tests == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
                     </select>
                 </div>
             </div>

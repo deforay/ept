@@ -226,7 +226,7 @@ class Application_Service_Shipments
     {
 
         $errors = array();
-        if(isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes'){
+        if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
             return $errors;
         }
 
@@ -1047,6 +1047,7 @@ class Application_Service_Shipments
             if (isset($params['assayExpirationDate']) && trim($params['assayExpirationDate']) != "") {
                 $params['assayExpirationDate'] = Pt_Commons_General::dateFormat($params['assayExpirationDate']);
             }
+
             $attributes = array(
                 "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? $params['sampleRehydrationDate'] : '',
                 "vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? $params['vlAssay'] : '',
@@ -1054,6 +1055,10 @@ class Application_Service_Shipments
                 "assay_expiration_date" => (isset($params['assayExpirationDate']) && !empty($params['assayExpirationDate'])) ? $params['assayExpirationDate'] : '',
                 "specimen_volume" => (isset($params['specimenVolume']) && !empty($params['specimenVolume'])) ? $params['specimenVolume'] : '',
                 "uploaded_file" => (isset($params['uploadedFilePath']) && !empty($params['uploadedFilePath'])) ? $params['uploadedFilePath'] : '',
+                "condition_pt_samples" => (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '',
+                "refridgerator" => (isset($params['refridgerator']) && !empty($params['refridgerator'])) ? $params['refridgerator'] : '',
+                "room_temperature" => (isset($params['roomTemperature']) && !empty($params['roomTemperature'])) ? $params['roomTemperature'] : '',
+                "stop_switch" => (isset($params['stopSwitch']) && !empty($params['stopSwitch'])) ? $params['stopSwitch'] : '',
             );
 
             if (isset($params['otherAssay']) && $params['otherAssay'] != "") {

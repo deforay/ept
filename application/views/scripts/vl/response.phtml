@@ -164,6 +164,44 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 								<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired form-control" value="<?php echo $this->shipment['attributes']['assay_lot_number']; ?>" title="Please enter Assay lot number" placeholder="Please enter Assay lot number" />
 							</td>
 						</tr>
+						<?php if ((isset($this->config->evaluation->dts->display_sample_condition_fields) && $this->config->evaluation->dts->display_sample_condition_fields == "yes")) { ?>
+
+							<tr class="light">
+								<td><label for="conditionOfPTSamples" class="label-control">Condition Of PT Samples</label></td>
+								<td>
+									<select class="form-control" name="conditionOfPTSamples" id="conditionOfPTSamples" title="Please select the condition of samples">
+										<option value="">--Select--</option>
+										<option value="good" <?php echo ($this->shipment['attributes']['condition_pt_samples'] == 'good') ? "selected='selected'" : ""; ?>>Good</option>
+										<option value="bad" <?php echo ($this->shipment['attributes']['condition_pt_samples'] == 'bad') ? "selected='selected'" : ""; ?>>Bad</option>
+										<option value="not-sure" <?php echo ($this->shipment['attributes']['condition_pt_samples'] == 'not-sure') ? "selected='selected'" : ""; ?>>Not Sure</option>
+									</select>
+								</td>
+
+								<td><label for="refridgerator" class="label-control">Refridgerator</label></td>
+								<td>
+									<select class="form-control" name="refridgerator" id="refridgerator" title="Please select the refridgerator">
+										<option value="">--Select--</option>
+										<option value="available" <?php echo ($this->shipment['attributes']['refridgerator'] == 'available') ? "selected='selected'" : ""; ?>>Available</option>
+										<option value="not-available" <?php echo ($this->shipment['attributes']['refridgerator'] == 'not-available') ? "selected='selected'" : ""; ?>>Not Available</option>
+									</select>
+								</td>
+							</tr>
+							<tr class="light">
+								<td><label for="roomTemperature" class="label-control">Room Temperature</label></td>
+								<td>
+									<input class="form-control" type="text" value="<?php echo $this->shipment['attributes']['room_temperature']; ?>" name="roomTemperature" id="roomTemperature" placeholder="Enter the temperature" title="Please select the room temperature"><span class="celcius"></span>
+								</td>
+
+								<td><label for="stopSwitch" class="label-control">Stop Switch</label></td>
+								<td>
+									<select class="form-control" name="stopSwitch" id="stopSwitch" title="Please select the stop switch">
+										<option value="">--Select--</option>
+										<option value="available" <?php echo ($this->shipment['attributes']['stop_switch'] == 'available') ? "selected='selected'" : ""; ?>>Available</option>
+										<option value="not-available" <?php echo ($this->shipment['attributes']['stop_switch'] == 'not-available') ? "selected='selected'" : ""; ?>>Not Available</option>
+									</select>
+								</td>
+							</tr>
+						<?php } ?>
 
 						<?php
 						if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes')) {
