@@ -476,18 +476,18 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 </td>
                                 <?php if ($allowRepeatTests == 'yes') { ?>
                                     <td style="width: <?php echo $width; ?>%;">
-                                        <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class="form-control">
-                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
+                                        <select name="repeat_test_result_1[]" id="<?php echo "repeat_test_result_1_" . $count; ?>" class="form-control">
+                                            <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_1'], true); ?>
                                         </select>
                                     </td>
                                     <td style="width: <?php echo $width; ?>%;" class='testTwo'>
-                                        <select name="test_result_2[]" id="<?php echo "testresult2_" . $count; ?>" class="form-control">
-                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
+                                        <select name="repeat_test_result_2[]" id="<?php echo "repeat_test_result_2_" . $count; ?>" class="form-control">
+                                            <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_2'], true); ?>
                                         </select>
                                     </td>
                                     <td style="width: <?php echo $width; ?>%;" class='testThree'>
-                                        <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" class="form-control">
-                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
+                                        <select name="repeat_test_result_3[]" id="<?php echo "repeat_test_result_3_" . $count; ?>" class="form-control">
+                                            <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_3'], true); ?>
                                         </select>
                                     </td>
                                 <?php } ?>
