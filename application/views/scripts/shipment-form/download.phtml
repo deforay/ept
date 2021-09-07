@@ -162,11 +162,18 @@ $labInfo .= '</table><br/><br/>';
 if ($this->shipment["scheme_type"] == 'dts') {
 
 	$optionalTest3 = $this->customConfig->evaluation->dts->dtsOptionalTest3;
-
+	$allowRepeatTests = isset($this->customConfig->evaluation->dts->allow_repeat_tests) ? $this->customConfig->evaluation->dts->allow_repeat_tests : 'no';
 	if ($optionalTest3 == 'no') {
-		$width = '22%';
+		$width = 22;
 	} else {
-		$width = '30%';
+		$width = 30;
+	}
+
+	if ($allowRepeatTests == 'yes') {
+		$width = 12.5;
+		if ($optionalTest3 == 'yes') {
+			$width = 16.6;
+		}
 	}
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
@@ -196,11 +203,18 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
-	$labInfo .= '<td style="width:12%"></td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Test-1</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Test-2</td>';
+	$labInfo .= '<td style="width:' . $width . '%;"></td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-1</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-2</td>';
 	if ($optionalTest3 == 'no') {
-		$labInfo .= '<td style="text-align:center;font-weight:bold;width:22%">Test-3</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-3</td>';
+	}
+	if ($allowRepeatTests == 'yes') {
+		if ($optionalTest3 == 'no') {
+			$labInfo .= '<td colspan="4" style="width:' . ($width * 4) . '%;"></td>';
+		} else {
+			$labInfo .= '<td colspan="3" style="width:' . ($width * 3) . '%;"></td>';
+		}
 	}
 	$labInfo .= '</tr>';
 
@@ -211,6 +225,13 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td></td>';
 	}
+	if ($allowRepeatTests == 'yes') {
+		if ($optionalTest3 == 'no') {
+			$labInfo .= '<td colspan="4"></td>';
+		} else {
+			$labInfo .= '<td colspan="3"></td>';
+		}
+	}
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
@@ -219,6 +240,13 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<td></td>';
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td></td>';
+	}
+	if ($allowRepeatTests == 'yes') {
+		if ($optionalTest3 == 'no') {
+			$labInfo .= '<td colspan="4"></td>';
+		} else {
+			$labInfo .= '<td colspan="3"></td>';
+		}
 	}
 	$labInfo .= '</tr>';
 
@@ -229,18 +257,49 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td></td>';
 	}
+	if ($allowRepeatTests == 'yes') {
+		if ($optionalTest3 == 'no') {
+			$labInfo .= '<td colspan="4"></td>';
+		} else {
+			$labInfo .= '<td colspan="3"></td>';
+		}
+	}
 	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
-	$labInfo .= '<tr style="background-color:#CCCCCC;">';
-	$labInfo .= '<td style="width:12%"></td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Result-1</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Result-2</td>';
-	if ($optionalTest3 == 'no') {
-		$labInfo .= '<td style="text-align:center;font-weight:bold;width:22%">Result-3</td>';
+
+	if ($allowRepeatTests == 'yes') {
+		$labInfo .= '<tr style="background-color:#CCCCCC;">';
+		if ($optionalTest3 == 'no') {
+			$labInfo .= '<td colspan="4" style="width:' . ($width * 4) . '%;"></td>';
+		} else {
+			$labInfo .= '<td colspan="3" style="width:' . ($width * 3) . '%;"></td>';
+		}
+		if ($optionalTest3 == 'no') {
+			$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . ($width * 3) . '%;" colspan="3">Repeat Test</td>';
+		} else {
+			$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . ($width * 2) . '%;" colspan="2">Repeat Test</td>';
+		}
+		$labInfo .= '<td></td>';
+		$labInfo .= '</tr>';
 	}
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Final Result * </td>';
+
+	$labInfo .= '<tr style="background-color:#CCCCCC;">';
+	$labInfo .= '<td style="width:' . $width . '%;"></td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
+	if ($optionalTest3 == 'no') {
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</td>';
+	}
+	if ($allowRepeatTests == 'yes') {
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
+		if ($optionalTest3 == 'no') {
+			$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</td>';
+		}
+	}
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final Result* </td>';
 	$labInfo .= '</tr>';
 	foreach ($this->shipment["referenceResult"] as $sample) {
 		$labInfo .= '<tr style="background-color:#F7F7F7;">';
@@ -249,6 +308,13 @@ if ($this->shipment["scheme_type"] == 'dts') {
 		$labInfo .= '<td></td>';
 		if ($optionalTest3 == 'no') {
 			$labInfo .= '<td></td>';
+		}
+		if ($allowRepeatTests == 'yes') {
+			$labInfo .= '<td></td>';
+			$labInfo .= '<td></td>';
+			if ($optionalTest3 == 'no') {
+				$labInfo .= '<td></td>';
+			}
 		}
 		$labInfo .= '<td></td>';
 		$labInfo .= '</tr>';
@@ -410,67 +476,67 @@ if ($this->shipment["scheme_type"] == 'dts') {
 } else if ($this->shipment["scheme_type"] == 'recency') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
-		$labInfo .= '<tr style="background-color:#F7F7F7;">';
-			$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
-			$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["shipment_date"]) . '</td>';
-			$labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date</td>';
-			$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
-		$labInfo .= '</tr>';
+	$labInfo .= '<tr style="background-color:#F7F7F7;">';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
+	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["shipment_date"]) . '</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date</td>';
+	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+	$labInfo .= '</tr>';
 
-		$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
-			$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
-			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-			$labInfo .= '<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
-			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-		$labInfo .= '</tr>';
+	$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '</tr>';
 
-		$labInfo .= '<tr style="background-color:#F7F7F7;">';
-			$labInfo .= '<td style="font-weight:bold;width:25%">Testing Date</td> ';
-			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-			$labInfo .= '<td style="font-weight:bold;width:25%">Assay Name</td>';
-			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-		$labInfo .= '</tr>';
+	$labInfo .= '<tr style="background-color:#F7F7F7;">';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Testing Date</td> ';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Assay Name</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '</tr>';
 
-		$labInfo .= '<tr style="background-color:#F7F7F7;">';
-			$labInfo .= '<td style="font-weight:bold;width:25%">Assay Lot No</td> ';
-			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-			$labInfo .= '<td style="font-weight:bold;width:25%">Assay Expiry Date</td>';
-			$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-		$labInfo .= '</tr>';
+	$labInfo .= '<tr style="background-color:#F7F7F7;">';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Assay Lot No</td> ';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Assay Expiry Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '</tr>';
 
 	$labInfo .= '</table><br/><br/>';
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
-		$labInfo .= '<tr style="background-color:#CCCCCC;">';
-			$labInfo .= '<td style="text-align:center;font-weight:bold;">Control/Sample</td>';
-			$labInfo .= '<td style="text-align:center;font-weight:bold;">Control Line</td>';
-			$labInfo .= '<td style="text-align:center;font-weight:bold;">Verification Line</td>';
-			$labInfo .= '<td style="text-align:center;font-weight:bold;">Longterm Line</td>';
-			$labInfo .= '<td style="text-align:center;font-weight:bold;">Your Results</td>';
+	$labInfo .= '<tr style="background-color:#CCCCCC;">';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;">Control/Sample</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;">Control Line</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;">Verification Line</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;">Longterm Line</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;">Your Results</td>';
+	$labInfo .= '</tr>';
+	foreach ($this->shipment["referenceResult"] as $sample) {
+		$labInfo .= '<tr style="background-color:#F7F7F7;">';
+		$labInfo .= '<td style="font-weight:bold;">' . $sample['sample_label'] . '</td>';
+		$labInfo .= '<td></td>';
+		$labInfo .= '<td></td>';
+		$labInfo .= '<td></td>';
+		$labInfo .= '<td></td>';
 		$labInfo .= '</tr>';
-		foreach ($this->shipment["referenceResult"] as $sample) {
-			$labInfo .= '<tr style="background-color:#F7F7F7;">';
-				$labInfo .= '<td style="font-weight:bold;">' . $sample['sample_label'] . '</td>';
-				$labInfo .= '<td></td>';
-				$labInfo .= '<td></td>';
-				$labInfo .= '<td></td>';
-				$labInfo .= '<td></td>';
-			$labInfo .= '</tr>';
-		}
+	}
 	$labInfo .= '</table><br/><br/>';
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
-		$labInfo .= '<tr style="background-color:#CCCCCC;">';
-			$labInfo .= '<td style="font-weight:bold;">Supervisor Review</td>';
-			$labInfo .= '<td>Yes/No</td>';
-			$labInfo .= '<td style="font-weight:bold;">Supervisor Name</td>';
-			$labInfo .= '<td></td>';
-		$labInfo .= '</tr>';
+	$labInfo .= '<tr style="background-color:#CCCCCC;">';
+	$labInfo .= '<td style="font-weight:bold;">Supervisor Review</td>';
+	$labInfo .= '<td>Yes/No</td>';
+	$labInfo .= '<td style="font-weight:bold;">Supervisor Name</td>';
+	$labInfo .= '<td></td>';
+	$labInfo .= '</tr>';
 
-		$labInfo .= '<tr style="background-color:#F7F7F7;">';
-			$labInfo .= '<td style="font-weight:bold;">Comments</td>';
-			$labInfo .= '<td colspan="3"></td>';
-		$labInfo .= '</tr>';
+	$labInfo .= '<tr style="background-color:#F7F7F7;">';
+	$labInfo .= '<td style="font-weight:bold;">Comments</td>';
+	$labInfo .= '<td colspan="3"></td>';
+	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
 } else if ($this->shipment["scheme_type"] == 'covid19') {
 	$maximumAllowed = $this->customConfig->evaluation->covid19->covid19MaximumTestAllowed;
