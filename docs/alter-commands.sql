@@ -2845,3 +2845,8 @@ UPDATE `system_config` SET `value` = '7.2.0' WHERE `system_config`.`config` = 'a
 
 -- Thana 10-Aug-2021
 ALTER TABLE `shipment` ADD `corrective_action_file` VARCHAR(256) NULL DEFAULT NULL AFTER `report_in_queue`;
+
+-- Thana 07-Sep-2021
+ALTER TABLE `response_result_dts` ADD `repeat_test_result_1` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_1`;
+ALTER TABLE `response_result_dts` ADD `repeat_test_result_2` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_2`;
+ALTER TABLE `response_result_dts` ADD `repeat_test_result_3` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_3`;

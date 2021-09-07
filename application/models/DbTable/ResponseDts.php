@@ -46,6 +46,9 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'lot_no_3' => $params['lot_no_3'],
                     'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
                     'test_result_3' => $params['test_result_3'][$key],
+                    'repeat_test_result_1' => $params['repeat_test_result_1'][$key],
+                    'repeat_test_result_2' => $params['repeat_test_result_2'][$key],
+                    'repeat_test_result_3' => $params['repeat_test_result_3'][$key],
                     'reported_result' => $params['reported_result'][$key],
                     'created_by' => $authNameSpace->dm_id,
                     'created_on' => new Zend_Db_Expr('now()')
@@ -64,6 +67,9 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'lot_no_3' => $params['lot_no_3'],
                     'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
                     'test_result_3' => $params['test_result_3'][$key],
+                    'repeat_test_result_1' => $params['repeat_test_result_1'][$key],
+                    'repeat_test_result_2' => $params['repeat_test_result_2'][$key],
+                    'repeat_test_result_3' => $params['repeat_test_result_3'][$key],
                     'reported_result' => $params['reported_result'][$key],
                     'updated_by' => $authNameSpace->dm_id,
                     'updated_on' => new Zend_Db_Expr('now()')
@@ -88,6 +94,9 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             'lot_no_3' => '',
             'exp_date_3' => '',
             'test_result_3' => '',
+            'repeat_test_result_1' => '',
+            'repeat_test_result_2' => '',
+            'repeat_test_result_3' => '',
             'reported_result' => '',
             'updated_by' => $authNameSpace->dm_id,
             'updated_on' => new Zend_Db_Expr('now()')
@@ -137,7 +146,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 $result3 = '';
             }
             // Zend_Debug::dump($params);die;
-            $count = (isset($res) && $res != "")?count($res):0;
+            $count = (isset($res) && $res != "") ? count($res) : 0;
             if ($res == null || $count == 0) {
                 $this->insert(array(
                     'shipment_map_id'   => $params['mapId'],
