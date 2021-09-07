@@ -24,7 +24,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
             if ($res == null || $count == 0) {
                 $this->insert(array(
                     'shipment_map_id' => $params['smid'],
-                    'vl_assay' => $params['vlAssay'],
+                    'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
                     'sample_id' => $sampleId,
                     'reported_viral_load' => $params['vlResult'][$key],
                     'is_tnd' => $tnd,
@@ -34,7 +34,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
             } else {
                 $this->update(array(
                     'shipment_map_id' => $params['smid'],
-                    'vl_assay' => $params['vlAssay'],
+                    'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
                     'sample_id' => $sampleId,
                     'reported_viral_load' => $params['vlResult'][$key],
                     'is_tnd' => $tnd,

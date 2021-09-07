@@ -1021,7 +1021,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
-        $mandatoryFields = array('receiptDate', 'testDate', 'vl_assay', 'assayExpirationDate', 'assayLotNumber');
+        $mandatoryFields = array('receiptDate', 'testDate', 'vlAssay', 'assayExpirationDate', 'assayLotNumber');
 
         $db->beginTransaction();
         try {
@@ -1050,7 +1050,7 @@ class Application_Service_Shipments
 
             $attributes = array(
                 "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? $params['sampleRehydrationDate'] : '',
-                "vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? $params['vlAssay'] : '',
+                "vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : '',
                 "assay_lot_number" => (isset($params['assayLotNumber']) && !empty($params['assayLotNumber'])) ? $params['assayLotNumber'] : '',
                 "assay_expiration_date" => (isset($params['assayExpirationDate']) && !empty($params['assayExpirationDate'])) ? $params['assayExpirationDate'] : '',
                 "specimen_volume" => (isset($params['specimenVolume']) && !empty($params['specimenVolume'])) ? $params['specimenVolume'] : '',
@@ -1114,8 +1114,8 @@ class Application_Service_Shipments
             }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
-            $eidResponseDb = new Application_Model_DbTable_ResponseVl();
-            $eidResponseDb->updateResults($params);
+            $vlResponseDb = new Application_Model_DbTable_ResponseVl();
+            $vlResponseDb->updateResults($params);
             $db->commit();
             $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
         } catch (Exception $e) {

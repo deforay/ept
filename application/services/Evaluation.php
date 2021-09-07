@@ -750,9 +750,26 @@ class Application_Service_Evaluation
 			}
 		} else if ($params['scheme'] == 'vl') {
 
+			$shipmentService = new Application_Service_Shipments();
+			$mandatoryFields = array('receiptDate', 'testDate', 'vlAssay', 'assayExpirationDate', 'assayLotNumber');
+			$mandatoryCheckErrors = $shipmentService->mandatoryFieldsCheck($params, $mandatoryFields);
+            if (count($mandatoryCheckErrors) > 0) {
+
+                $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                $commonService = new Application_Service_Common();
+
+                $ipAddress = $commonService->getIPAddress();
+                $operatingSystem = $commonService->getOperatingSystem($userAgent);
+                $browser = $commonService->getBrowser($userAgent);
+                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
+                error_log(date('Y-m-d H:i:s') . '|FORMERROR|PT ADMIN - Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+				return false;
+                //throw new Exception('Missed mandatory fields on the form');
+            }
+
 			$attributes = array(
 				"sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
-				"vl_assay" => $params['vlAssay'],
+				"vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : '',
 				"assay_lot_number" => $params['assayLotNumber'],
 				"assay_expiration_date" => Pt_Commons_General::dateFormat($params['assayExpirationDate']),
 				"specimen_volume" => $params['specimenVolume']
@@ -803,7 +820,7 @@ class Application_Service_Evaluation
 				// if (!$shipmentOverall) {
 				$resData = array(
 					'shipment_map_id' 		=> $params['smid'],
-					'vl_assay' 				=> $params['vlAssay'],
+					'vl_assay' 				=> (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
 					'sample_id' 			=> $params['sampleId'][$i],
 					'reported_viral_load' 	=> $params['reported'][$i],
 					'created_by' 			=> $admin,
