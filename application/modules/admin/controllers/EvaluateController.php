@@ -75,12 +75,17 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
             $params = $this->getRequest()->getPost();
             $evalService = new Application_Service_Evaluation();
-            $evalService->updateShipmentResults($params);
+            $response = $evalService->updateShipmentResults($params);
             $shipmentId = base64_encode($params['shipmentId']);
             $participantId = base64_encode($params['participantId']);
             $scheme = base64_encode($params['scheme']);
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $alertMsg->message = "Shipment Results for this participant updated successfully";
+            if($response == false){
+                $alertMsg->message = "Shipment Results NOT UPDATED for this participant";
+            }else{
+                $alertMsg->message = "Shipment Results for this participant updated successfully";
+            }
+            
             if (isset($params['whereToGo']) && $params['whereToGo'] != "") {
                 $this->redirect($params['whereToGo']);
             } else {

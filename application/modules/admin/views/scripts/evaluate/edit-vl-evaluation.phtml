@@ -21,15 +21,15 @@ $dtFormat =  $genderHelper->getDateFormat();
 		<td><?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?></td>
 	</tr>
 	<tr>
-		<th>Result Reported on</th>
+		<th>Result Reported on <span class="mandatory">*</span></th>
 		<td>
 			<input type="text" id="testReportedDate" name="testReportedDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->evaluateData['shipment']["shipment_test_report_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Result Reported Date" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testReportedDate')"> Clear</i>
 		</td>
-		<th><label>Mode of Result Receipt</label></th>
+		<th><label>Mode of Result Receipt <span class="mandatory">*</span></label></th>
 		<td>
 			<select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control isRequired" title="Please choose the mode of receipt">
-			<option value="">-- Select --</option>
+				<option value="">-- Select --</option>
 				<?php
 				foreach ($this->modeOfReceipt as $receipt) {
 				?>
@@ -39,24 +39,24 @@ $dtFormat =  $genderHelper->getDateFormat();
 				?>
 			</select>
 		</td>
-	</tr>	
+	</tr>
 	<tr>
-		<th>Shipment Received on</th>
+		<th>Shipment Received on <span class="mandatory">*</span></th>
 		<td>
 
-			<input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->evaluateData['shipment']["shipment_receipt_date"]); ?>" class="form-control datepicker" readonly="readonly" title="Please enter Test Receipt Date" />
+			<input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->evaluateData['shipment']["shipment_receipt_date"]); ?>" class="isRequired form-control datepicker" readonly="readonly" title="Please enter Test Panel Receipt Date" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('receiptDate')"> Clear</i>
 		</td>
 		<td><label>Sample Rehydration Date</label></td>
 		<td>
-			<input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" style="width:180px;float:left;" value="<?php echo  $this->dateFormat($attributes["sample_rehydration_date"]); ?>" class="isRequired datepicker form-control" readonly="readonly" />
+			<input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" style="width:180px;float:left;" value="<?php echo  $this->dateFormat($attributes["sample_rehydration_date"]); ?>" class="datepicker form-control" readonly="readonly" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('sampleRehydrationDate')"> Clear</i>
 		</td>
 	</tr>
 	<tr>
-		<th><label>Panel/Samples Tested on</label></th>
+		<th><label>Panel/Samples Tested on <span class="mandatory">*</span></label></th>
 		<td>
-			<input type="text" id="testDate" name="testDate" style="width:180px;float:left;" maxlength="11" value="<?php echo  $this->dateFormat($this->evaluateData['shipment']["shipment_test_date"]); ?>" class="isRequired datepicker form-control" readonly="readonly" />
+			<input type="text" id="testDate" name="testDate" style="width:180px;float:left;" maxlength="11" value="<?php echo  $this->dateFormat($this->evaluateData['shipment']["shipment_test_date"]); ?>" class="isRequired datepicker form-control" readonly="readonly" title="Please enter the Panel Test Date" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> Clear</i>
 		</td>
 
@@ -69,8 +69,8 @@ $dtFormat =  $genderHelper->getDateFormat();
 	<tr>
 		<td><label>Viral Load Assay <span class="mandatory">*</span></label></td>
 		<td>
-			<select id="vlAssay" name="vlAssay" class="isRequired form-control" onchange="showHideOtherAssay(this.value)">
-				<option>--Select--</option>
+			<select id="vlAssay" name="vlAssay" class="isRequired form-control" onchange="showHideOtherAssay(this.value)" title="Please select the Viral Load Assay">
+				<option value="">--Select--</option>
 				<?php
 				foreach ($this->vlAssay as $id => $name) {
 				?>

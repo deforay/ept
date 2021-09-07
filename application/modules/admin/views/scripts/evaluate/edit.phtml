@@ -18,20 +18,21 @@ if ($next < count($urlListArray)) {
 ?>
 <style>
 	ul.showlist {
-        list-style: none;
-        width: 100%;
-        padding: 10px;
-        text-align: left;
-        font-size: smaller;
-    }
-    ul.showlist li {
-        display: contents;
-    }
-    
-    ul.showlist li:last-child {
-        display: inherit;
-        border-bottom: none !important;
-    }
+		list-style: none;
+		width: 100%;
+		padding: 10px;
+		text-align: left;
+		font-size: smaller;
+	}
+
+	ul.showlist li {
+		display: contents;
+	}
+
+	ul.showlist li:last-child {
+		display: inherit;
+		border-bottom: none !important;
+	}
 </style>
 <br />
 <legend>Participant Result Summary</legend>
@@ -89,24 +90,24 @@ $reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report
 				</select>
 			</td>
 		</tr>
-		<?php if(isset($this->evaluateData['shipment']['manual_override']) && $this->evaluateData['shipment']['manual_override'] == "yes"){
+		<?php if (isset($this->evaluateData['shipment']['manual_override']) && $this->evaluateData['shipment']['manual_override'] == "yes") {
 			$show = "display";
-		}else{
+		} else {
 			$show = "none";
-		}?>
-		<tr class="manualOverrideRow" style="display: <?php echo $show;?>;">
+		} ?>
+		<tr class="manualOverrideRow" style="display: <?php echo $show; ?>;">
 			<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="shipmentScore">Shipement Score <span class="mandatory">*</span></label></td>
 			<td style="vertical-align: middle">
-				<input type="text" value="<?php echo $this->evaluateData['shipment']['shipment_score'];?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
+				<input type="text" value="<?php echo $this->evaluateData['shipment']['shipment_score']; ?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
 			</td>
 		</tr>
-		<?php if ($this->scheme != 'vl'){ ?>
-		<tr class="manualOverrideRow" style="display: <?php echo $show;?>;">
-			<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="documentationScore">Documentation Score <span class="mandatory">*</span></label></td>
-			<td style="vertical-align: middle">
-				<input type="text" value="<?php echo $this->evaluateData['shipment']['documentation_score'];?>" name="documentationScore" id="documentationScore" class="form-control" placeholder="Enter the documentation score" title="Please enter the documentation score">
-			</td>
-		</tr>
+		<?php if ($this->scheme != 'vl') { ?>
+			<tr class="manualOverrideRow" style="display: <?php echo $show; ?>;">
+				<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="documentationScore">Documentation Score <span class="mandatory">*</span></label></td>
+				<td style="vertical-align: middle">
+					<input type="text" value="<?php echo $this->evaluateData['shipment']['documentation_score']; ?>" name="documentationScore" id="documentationScore" class="form-control" placeholder="Enter the documentation score" title="Please enter the documentation score">
+				</td>
+			</tr>
 		<?php } ?>
 	</table>
 	<table class="table table-bordered" style="width:70%;margin:0 auto;">
@@ -120,15 +121,15 @@ $reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report
 					if ($warnings != "" && $warnings != null) {
 						echo "<table class='table table-bordered'>";
 						echo "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
-						foreach ($warnings as $key=>$warning) { ?>
-						<tr>
-							<td><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
-							<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
-							<!-- Manual result override changes -->
-							<td class="manualOverrideRow" style="display: <?php echo $show;?>;"><input type="checkbox" id="manualCorrective<?php echo $key;?>" name="manualCorrective[<?php echo $warning['warning'];?>]" value="<?php echo $warning['correctiveAction'];?>" checked><label for="manualCorrective<?php echo $key;?>"> </label></td>
-						</tr>
-						<?php }
-						
+						foreach ($warnings as $key => $warning) { ?>
+		<tr>
+			<td><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
+			<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
+			<!-- Manual result override changes -->
+			<td class="manualOverrideRow" style="display: <?php echo $show; ?>;"><input type="checkbox" id="manualCorrective<?php echo $key; ?>" name="manualCorrective[<?php echo $warning['warning']; ?>]" value="<?php echo $warning['correctiveAction']; ?>" checked><label for="manualCorrective<?php echo $key; ?>"> </label></td>
+		</tr>
+<?php }
+
 						echo "</table>";
 					} else {
 						echo " No Warnings or Corrective Actions ";
@@ -200,17 +201,17 @@ $reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report
 		<?php
 		if (isset($previousLink) && $previousLink != "") {
 		?>
-			<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $previousLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span><i class="icon-chevron-left"></i> Update and Previous</span></button>
+			<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $previousLink; ?>');validateNow();return false;"><span><i class="icon-chevron-left"></i> Update and Previous</span></button>
 		<?php
 		}
 		?>
 
-		<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update</span></button>
+		<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('');validateNow();;return false;"><span>Update</span></button>
 
 		<?php
 		if (isset($nextLink) && $nextLink != "") {
 		?>
-			<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $nextLink; ?>');$.blockUI();$('#updateResultsForm').submit();return false;"><span>Update and Next <i class="icon-chevron-right"></i></span></button>
+			<button class="btn btn-primary" type="button" onclick="$('#whereToGo').val('<?php echo $nextLink; ?>');validateNow();return false;"><span>Update and Next <i class="icon-chevron-right"></i></span></button>
 		<?php
 		}
 		?>
@@ -256,13 +257,23 @@ $dtFormat =  $vHelper->getDateFormat();
 		}
 	});
 	/* Manual result override changes */
-	function manualOverrideChange(value){
-		if(value == "yes"){
+	function manualOverrideChange(value) {
+		if (value == "yes") {
 			$('.manualOverrideRow').show();
 			$('#shipmentScore,#documentationScore').addClass('isRequired');
-		}else{
+		} else {
 			$('.manualOverrideRow').hide();
 			$('#shipmentScore,#documentationScore').removeClass('isRequired');
+		}
+	}
+
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'updateResultsForm'
+		});
+		if (flag) {
+			$.blockUI();
+			document.getElementById('updateResultsForm').submit();
 		}
 	}
 </script>
