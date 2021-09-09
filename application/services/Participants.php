@@ -72,8 +72,9 @@ class Application_Service_Participants
 		$sql = $db->select()->from(array('eln' => 'enrollment_lists_names'), array('*'));
 		if (trim($id) != '') {
 			$sql = $sql->where("eln.eln_unique_id IN (?)", base64_decode($id));
+		} else {
+			$sql = $sql->group(array('eln_unique_id'));
 		}
-		die($sql);
 		return $db->fetchAll($sql);
 	}
 	public function getParticipantSchemes($dmId)
