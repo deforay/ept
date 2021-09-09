@@ -2851,5 +2851,22 @@ ALTER TABLE `response_result_dts` ADD `repeat_test_result_1` VARCHAR(256) NULL D
 ALTER TABLE `response_result_dts` ADD `repeat_test_result_2` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_2`;
 ALTER TABLE `response_result_dts` ADD `repeat_test_result_3` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_3`;
 
+
 -- Amit 09-Sep-2021
 RENAME TABLE `response_vl_not_tested_reason` TO `r_response_vl_not_tested_reason`;
+
+
+
+-- Thana 09-Sep-2021
+CREATE TABLE `enrollment_lists_names` (
+ `eln_id` int NOT NULL AUTO_INCREMENT,
+ `eln_unique_id` varchar(256) NOT NULL,
+ `eln_name` varchar(256) NOT NULL,
+ `participant_id` int NOT NULL,
+ PRIMARY KEY (`eln_id`),
+ KEY `participant_id` (`participant_id`),
+ CONSTRAINT `enrollment_lists_names_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+ CONSTRAINT `enrollment_lists_names_ibfk_2` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `enrollment_lists_names` ADD `added_by` INT(11) NULL DEFAULT NULL AFTER `participant_id`, ADD `added_on` DATETIME NULL DEFAULT NULL AFTER `added_by`, ADD `updated_by` INT(11) NULL DEFAULT NULL AFTER `added_on`, ADD `updated_on` DATETIME NULL DEFAULT NULL AFTER `updated_by`;

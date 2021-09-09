@@ -22,6 +22,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             ->addActionContext('export-shipment-responded-participants', 'html')
             ->addActionContext('export-shipment-not-responded-participants', 'html')
             ->addActionContext('get-participants', 'html')
+            ->addActionContext('get-enrollment-list', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
     }
@@ -100,7 +101,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
-            } 
+            }
         }
     }
 
@@ -120,6 +121,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $this->view->participantCity  = $participantService->getUniqueCity();
                 $this->view->participantState  = $participantService->getUniqueState();
+                $this->view->participantListsName  = $participantService->getParticipantsListNames();
 
                 if ($previouslySelected == "" || $previouslySelected == null) {
                     $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
@@ -127,6 +129,29 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 } else {
                     $this->view->previouslyUnSelected = $participantService->getUnEnrolledByShipmentId($sid);
                 }
+            }
+        }
+    }
+
+    public function getEnrollmentListAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $shipmentService = new Application_Service_Shipments();
+            $participantService = new Application_Service_Participants();
+            $sid = (int) $params['sid'];
+            $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
+            $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
+
+            $this->view->participantCity  = $participantService->getUniqueCity();
+            $this->view->participantState  = $participantService->getUniqueState();
+            $this->view->participantListsName  = $participantService->getParticipantsListNames($params['unique']);
+
+            if ($previouslySelected == "" || $previouslySelected == null) {
+                $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
+                $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type']);
+            } else {
+                $this->view->previouslyUnSelected = $participantService->getUnEnrolledByShipmentId($sid);
             }
         }
     }
@@ -155,7 +180,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $sid = (int) base64_decode($this->_getParam('sid'));
                 $shipmentService = new Application_Service_Shipments();
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
-                
+
                 $schemeService = new Application_Service_Schemes();
                 if ($response['shipment']['scheme_type'] == 'dts') {
                     $this->view->wb = $schemeService->getDbsWb();

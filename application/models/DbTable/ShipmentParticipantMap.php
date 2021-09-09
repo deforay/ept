@@ -9,6 +9,8 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     public function shipItNow($params)
     {
         try {
+            $commonServices = new Application_Service_Common();
+            $uniqueId = $commonServices->getRandomString();
             $this->getAdapter()->beginTransaction();
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $this->delete('shipment_id=' . $params['shipmentId']);
@@ -22,7 +24,19 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                     "created_on_admin" => new Zend_Db_Expr('now()')
                 );
                 $this->insert($data);
+
+                if (isset($params['listName']) && $params['listName'] != "") {
+                    $db = Zend_Db_Table_Abstract::getAdapter();
+                    $db->insert('enrollment_lists_names', array(
+                        'eln_unique_id' => $uniqueId,
+                        'eln_name'      => $params['listName'],
+                        'participant_id' => $participant,
+                        'added_by'      => $authNameSpace->admin_id,
+                        "added_on"      => new Zend_Db_Expr('now()')
+                    ));
+                }
             }
+
 
             $shipmentDb = new Application_Model_DbTable_Shipments();
             $shipmentDb->updateShipmentStatus($params['shipmentId'], 'ready');

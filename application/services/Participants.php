@@ -65,6 +65,17 @@ class Application_Service_Participants
 			->where("p.participant_id=" . $pid);
 		return $db->fetchAll($sql);
 	}
+
+	public function getParticipantsListNames($id = "")
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('eln' => 'enrollment_lists_names'), array('*'));
+		if (trim($id) != '') {
+			$sql = $sql->where("eln.eln_unique_id IN (?)", base64_decode($id));
+		}
+		die($sql);
+		return $db->fetchAll($sql);
+	}
 	public function getParticipantSchemes($dmId)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
