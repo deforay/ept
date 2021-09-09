@@ -34,6 +34,30 @@
 				<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants()" value="Filter" />
 			</div>
 		</div>
+		<br>
+		<!-- <div class="row">
+			<div class="col-lg-5">
+				<div class="form-group">
+					<label class="col-lg-4 control-label">Enter the name for this list </label>
+					<div class="col-lg-6">
+						<input type="text" name="listName" id="listName" class="form-control" placeholder="Enter the name for this list" title="Please enter the name for this list" />
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-5">
+				<div class="form-group">
+					<label class="col-lg-4 control-label">Participant lists name</label>
+					<div class="col-lg-6">
+						<select style="width:100%" name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this.value)">
+							<option value="">--Select--</option>
+							<?php foreach ($this->participantListsName as $names) { ?>
+								<option value="<?php echo base64_encode($names['eln_unique_id']); ?>"><?php echo ucwords($names['eln_name']); ?></option>
+							<?php } ?>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div> -->
 
 		<input type="hidden" id="selectedForEnrollment" name="selectedForEnrollment" value="" />
 		<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />
@@ -45,37 +69,35 @@
 				</div>
 			</div>
 			<br />
-			<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
-				<?php
-
-				if (isset($this->previouslySelected) && $this->previouslySelected != null) {
-					foreach ($this->previouslySelected as $participant) {
-				?>
-						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+			<div id="participantsLists">
+				<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
 					<?php
-					}
-					foreach ($this->previouslyUnSelected as $participant) {
+
+					if (isset($this->previouslySelected) && $this->previouslySelected != null) {
+						foreach ($this->previouslySelected as $participant) {
 					?>
-						<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+							<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+						<?php
+						}
+						foreach ($this->previouslyUnSelected as $participant) {
+						?>
+							<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+						<?php
+						}
+					} else {
+						foreach ($this->enrolledParticipants as $participant) {
+						?>
+							<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+						<?php
+						}
+						foreach ($this->unEnrolledParticipants as $participant) {
+						?>
+							<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
-					}
-				} else {
-					foreach ($this->enrolledParticipants as $participant) {
-					?>
-						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-					<?php
-					}
-					foreach ($this->unEnrolledParticipants as $participant) {
-					?>
-						<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-				<?php
-					}
-				}
-
-
-
-				?>
-			</select>
+						}
+					} ?>
+				</select>
+			</div>
 		</div>
 
 		<div class="form-group" style="margin-left:230px;display:none;">
@@ -198,5 +220,22 @@
 			alert("Please Select a state / City ")
 			$.unblockUI();
 		}
+	}
+
+	function getEnrollmentParticipantsList(value) {
+		$.blockUI();
+		var shipId = $("#shipmentId").val();
+
+		if ($.trim(value) != '' || $.trim(shipId) != '') {
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-enrollment-list'), 'default', true); ?>", {
+					sid: shipId,
+					unique: value,
+					format: "html"
+				},
+				function(data) {
+					$("#participantsLists").html(data);
+				});
+		}
+		$.unblockUI();
 	}
 </script>

@@ -546,31 +546,29 @@ class Application_Service_Common
         return $osPlatform;
     }
 
-    public function getBrowser($userAgent = null) {
+    public function getBrowser($userAgent = null)
+    {
 
-        $browser        =   "Unknown Browser - ". $userAgent;
+        $browser        =   "Unknown Browser - " . $userAgent;
         $browserArray  =   array(
-                                '/msie/i'       =>  'Internet Explorer',
-                                '/firefox/i'    =>  'Firefox',
-                                '/safari/i'     =>  'Safari',
-                                '/chrome/i'     =>  'Chrome',
-                                '/opera/i'      =>  'Opera',
-                                '/netscape/i'   =>  'Netscape',
-                                '/maxthon/i'    =>  'Maxthon',
-                                '/konqueror/i'  =>  'Konqueror',
-                                '/mobile/i'     =>  'Handheld Browser'
-                            );
-    
-        foreach ($browserArray as $regex => $value) { 
-    
+            '/msie/i'       =>  'Internet Explorer',
+            '/firefox/i'    =>  'Firefox',
+            '/safari/i'     =>  'Safari',
+            '/chrome/i'     =>  'Chrome',
+            '/opera/i'      =>  'Opera',
+            '/netscape/i'   =>  'Netscape',
+            '/maxthon/i'    =>  'Maxthon',
+            '/konqueror/i'  =>  'Konqueror',
+            '/mobile/i'     =>  'Handheld Browser'
+        );
+
+        foreach ($browserArray as $regex => $value) {
+
             if (preg_match($regex, $userAgent)) {
                 $browser    =   $value;
             }
-    
         }
-    
+
         return $browser;
-    
     }
-    
 }
