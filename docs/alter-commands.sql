@@ -2263,13 +2263,13 @@ ALTER TABLE `response_result_vl` ADD `is_tnd` VARCHAR(45) NULL DEFAULT NULL AFTE
 
 ALTER TABLE `shipment_participant_map` ADD `is_pt_test_not_performed` VARCHAR(45) NULL DEFAULT NULL AFTER `shipment_test_date`, ADD `vl_not_tested_reason`INT(11) NULL DEFAULT NULL AFTER `is_pt_test_not_performed`, ADD `pt_test_not_performed_comments` TEXT NULL DEFAULT NULL AFTER `vl_not_tested_reason`;
 
-CREATE TABLE `response_vl_not_tested_reason` (
+CREATE TABLE `r_response_vl_not_tested_reason` (
   `vl_not_tested_reason_id` int(11) NOT NULL,
   `vl_not_tested_reason` varchar(500) DEFAULT NULL,
   `status` varchar(45) NOT NULL DEFAULT 'active'
 );
 
-INSERT INTO `response_vl_not_tested_reason` (`vl_not_tested_reason_id`, `vl_not_tested_reason`, `status`) VALUES
+INSERT INTO `r_response_vl_not_tested_reason` (`vl_not_tested_reason_id`, `vl_not_tested_reason`, `status`) VALUES
 (1, 'No reagents for testing of PT panel', 'active'),
 (2, 'No lab personal for testing of PT panel', 'active'),
 (3, ' Instrument down', 'active'),
@@ -2282,10 +2282,10 @@ INSERT INTO `response_vl_not_tested_reason` (`vl_not_tested_reason_id`, `vl_not_
 (10, 'Not received PT panel shipment due to incorrect contact info on the shipment package', 'active'),
 (11, 'Other (please explain)', 'active');
 
-ALTER TABLE `response_vl_not_tested_reason`
+ALTER TABLE `r_response_vl_not_tested_reason`
   ADD PRIMARY KEY (`vl_not_tested_reason_id`);
 
-ALTER TABLE `response_vl_not_tested_reason`
+ALTER TABLE `r_response_vl_not_tested_reason`
   MODIFY `vl_not_tested_reason_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 -- Pal 24th-DEC-2016
@@ -2850,6 +2850,12 @@ ALTER TABLE `shipment` ADD `corrective_action_file` VARCHAR(256) NULL DEFAULT NU
 ALTER TABLE `response_result_dts` ADD `repeat_test_result_1` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_1`;
 ALTER TABLE `response_result_dts` ADD `repeat_test_result_2` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_2`;
 ALTER TABLE `response_result_dts` ADD `repeat_test_result_3` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_3`;
+
+
+-- Amit 09-Sep-2021
+RENAME TABLE `response_vl_not_tested_reason` TO `r_response_vl_not_tested_reason`;
+
+
 
 -- Thana 09-Sep-2021
 CREATE TABLE `enrollment_lists_names` (
