@@ -135,6 +135,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $width = 14.3;
         }
 
+        $attributes = json_decode($result['attributes'], true);
         /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         $shipmentAttributesScreeningTestDisplay = "";
@@ -191,7 +192,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
         $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
         $rehydrateHours = $sampleRehydrateDays * 24;
-
+        $sampleConditionFields = (isset($config->evaluation->dts->display_sample_condition_fields) && $config->evaluation->dts->display_sample_condition_fields != "") ? $config->evaluation->dts->display_sample_condition_fields : 'no';
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
@@ -251,9 +252,21 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($attributes['algorithm'])) {
             $labInfo .= '	<strong>Algorithm</strong><br>' . ($attributes['algorithm'] == 'myanmarNationalDtsAlgo' ? 'Myanmar National Algorithm' : ucfirst($attributes['algorithm']));
         }
-
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
+
+        if ($sampleConditionFields == 'yes') {
+            $labInfo .= '<tr>';
+            $labInfo .= '	<td><strong>Condition of PT Samples</strong><br>' . ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) . '</td>';
+            $labInfo .= '	<td><strong>Refridgerator</strong><br>' . ucwords(str_replace('-', ' ', $attributes['refridgerator'])) . '</td>';
+            $labInfo .= '	<td><strong>Room Temperature</strong><br>' . $attributes['room_temperature'] . '</td>';
+            $labInfo .= '</tr>';
+
+            $labInfo .= '<tr>';
+            $labInfo .= '	<td><strong>Stop Watch</strong><br>' . ucwords(str_replace('-', ' ', $attributes['stop_switch'])) . '</td>';
+            $labInfo .= '</tr>';
+        }
+
         $labInfo .= '<tr>';
         $labInfo .= '	<td>';
         $labInfo .= '<strong>Supervisor Review</strong>';

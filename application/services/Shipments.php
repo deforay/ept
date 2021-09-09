@@ -513,6 +513,10 @@ class Application_Service_Shipments
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes["algorithm"] = $params['algorithm'];
+            $attributes["condition_pt_samples"] = (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '';
+            $attributes["refridgerator"] = (isset($params['refridgerator']) && !empty($params['refridgerator'])) ? $params['refridgerator'] : '';
+            $attributes["room_temperature"] = (isset($params['roomTemperature']) && !empty($params['roomTemperature'])) ? $params['roomTemperature'] : '';
+            $attributes["stop_switch"] = (isset($params['stopSwitch']) && !empty($params['stopSwitch'])) ? $params['stopSwitch'] : '';
             $attributes = json_encode($attributes);
 
             $data = array(
@@ -1054,11 +1058,7 @@ class Application_Service_Shipments
                 "assay_lot_number" => (isset($params['assayLotNumber']) && !empty($params['assayLotNumber'])) ? $params['assayLotNumber'] : '',
                 "assay_expiration_date" => (isset($params['assayExpirationDate']) && !empty($params['assayExpirationDate'])) ? $params['assayExpirationDate'] : '',
                 "specimen_volume" => (isset($params['specimenVolume']) && !empty($params['specimenVolume'])) ? $params['specimenVolume'] : '',
-                "uploaded_file" => (isset($params['uploadedFilePath']) && !empty($params['uploadedFilePath'])) ? $params['uploadedFilePath'] : '',
-                "condition_pt_samples" => (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '',
-                "refridgerator" => (isset($params['refridgerator']) && !empty($params['refridgerator'])) ? $params['refridgerator'] : '',
-                "room_temperature" => (isset($params['roomTemperature']) && !empty($params['roomTemperature'])) ? $params['roomTemperature'] : '',
-                "stop_switch" => (isset($params['stopSwitch']) && !empty($params['stopSwitch'])) ? $params['stopSwitch'] : '',
+                "uploaded_file" => (isset($params['uploadedFilePath']) && !empty($params['uploadedFilePath'])) ? $params['uploadedFilePath'] : ''
             );
 
             if (isset($params['otherAssay']) && $params['otherAssay'] != "") {

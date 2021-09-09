@@ -220,8 +220,8 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             </tr>
                             <tr class="light">
                                 <td><label for="roomTemperature" class="label-control">Room Temperature</label></td>
-                                <td>
-                                    <input class="form-control" type="text" value="<?php echo $this->shipment['attributes']['room_temperature']; ?>" name="roomTemperature" id="roomTemperature" placeholder="Enter the temperature" title="Please select the room temperature"><span class="celcius"></span>
+                                <td style=" display: flex; ">
+                                    <input class="form-control" type="text" value="<?php echo $this->shipment['attributes']['room_temperature']; ?>" name="roomTemperature" id="roomTemperature" placeholder="Enter the temperature" title="Please select the room temperature"><span>℃</span>
                                 </td>
 
                                 <td><label for="stopSwitch" class="label-control">Stop Switch</label></td>
