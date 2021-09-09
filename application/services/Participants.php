@@ -611,6 +611,10 @@ class Application_Service_Participants
 
 							$lastInsertedId = 0;
 
+							if (empty($sheetData[$i]['A']) && empty($sheetData[$i]['B']) && empty($sheetData[$i]['C']) && empty($sheetData[$i]['D'])) {
+								continue;
+							}
+
 
 							$sheetData[$i]['A'] = filter_var(trim($sheetData[$i]['A']), FILTER_SANITIZE_STRING);
 							$sheetData[$i]['B'] = filter_var(trim($sheetData[$i]['B']), FILTER_SANITIZE_STRING);
@@ -633,6 +637,20 @@ class Application_Service_Participants
 							$sheetData[$i]['P'] = filter_var(trim($sheetData[$i]['P']), FILTER_SANITIZE_EMAIL);
 							$sheetData[$i]['R'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_EMAIL);
 
+							// if the unique_identifier is blank, we generate a new one
+							$useUniqueIDForDuplicateCheck = true;
+							if (empty($sheetData[$i]['B'])) {
+								$useUniqueIDForDuplicateCheck = false;
+								$sheetData[$i]['B'] = "PT-" . strtoupper(bin2hex(random_bytes(3)));
+							}
+
+							// if the email is blank, we generate a new one
+							$useEmailForDuplicateCheck = true;
+							if (empty($sheetData[$i]['P'])) {
+								$useEmailForDuplicateCheck = false;
+								$sheetData[$i]['P'] = $this->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
+							}
+
 							$dataForStatistics = array(
 								'serialNo' 	=> $sheetData[$i]['A'],
 								'identifier' => $sheetData[$i]['B'],
@@ -652,16 +670,43 @@ class Application_Service_Participants
 								if (!in_array($isIndividual, array('yes', 'no'))) {
 									$isIndividual = 'yes'; // Default we treat testers as individuals
 								}
-								/* To check the duplication in participant table */
-								$psql = $db->select()->from('participant')
-									->where("email LIKE ?", $sheetData[$i]['P'])
-									->orWhere("unique_identifier LIKE ?", $sheetData[$i]['B']);
-								$presult = $db->fetchRow($psql);
+
+								$presult = $dmresult = false;
+								if ($useUniqueIDForDuplicateCheck && $useEmailForDuplicateCheck) {
+									/* To check the duplication in participant table */
+									$psql = $db->select()->from('participant')
+										->where("unique_identifier LIKE ?", $sheetData[$i]['B'])
+										->orWhere("email LIKE ?", $sheetData[$i]['P']);
+									$presult = $db->fetchRow($psql);
+								} else if ($useUniqueIDForDuplicateCheck) {
+									/* To check the duplication in participant table */
+									$psql = $db->select()->from('participant')
+										->where("unique_identifier LIKE ?", $sheetData[$i]['B']);
+									$presult = $db->fetchRow($psql);
+								} else if ($useEmailForDuplicateCheck) {
+									/* To check the duplication in participant table */
+									$psql = $db->select()->from('participant')
+										->where("email LIKE ?", $sheetData[$i]['P']);
+									$presult = $db->fetchRow($psql);
+								} else {
+									$psql = $db->select()->from('participant')
+										->where("first_name LIKE ?", $sheetData[$i]['D'])
+										->where("last_name LIKE ?", $sheetData[$i]['E'])
+										->where("mobile LIKE ?", $sheetData[$i]['O'])
+										->where("city LIKE ?", $sheetData[$i]['I']);
+									$presult = $db->fetchRow($psql);
+								}
 
 								/* To check the duplication in data manager table */
 								$dmsql = $db->select()->from('data_manager')
 									->where("primary_email LIKE ?", $sheetData[$i]['P']);
 								$dmresult = $db->fetchRow($dmsql);
+
+
+								// if($dmresult !== false){
+								// 	$sheetData[$i]['P'] = $this->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
+								// 	$dmresult = false;
+								// }
 
 								/* To find the country id */
 								$cmsql = $db->select()->from('countries')
@@ -750,7 +795,12 @@ class Application_Service_Participants
 										continue;
 									}
 								} else {
-									$dataForStatistics['error'] = 'Possible duplicate of Email or Unique ID.';
+									if ($useUniqueIDForDuplicateCheck || $useEmailForDuplicateCheck) {
+										$dataForStatistics['error'] = 'Possible duplicate of Participant Email or Unique ID.';
+									} else {
+										$dataForStatistics['error'] = 'Possible duplicate of Name, Location, Mobile combination';
+									}
+
 									$response['error-data'][] = $dataForStatistics;
 								}
 								// if ($lastInsertedId > 0 || $dmId > 0) {
@@ -786,6 +836,17 @@ class Application_Service_Participants
 			return false;
 		}
 		return $response;
+	}
+
+	public function generateFakeEmailId($uniqueId, $participantName)
+	{
+		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+		$eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
+		$uniqueId = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $uniqueId));
+		$participantName = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $participantName));
+
+		$fakeEmail = $uniqueId . "_" . $participantName . "@" . parse_url($eptDomain, PHP_URL_HOST);
+		return $fakeEmail;
 	}
 
 	public function getFilterDetailsAPI($params)

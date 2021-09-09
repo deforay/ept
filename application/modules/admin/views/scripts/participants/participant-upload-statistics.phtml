@@ -2,18 +2,20 @@
 <fieldset>
     <legend>Participant Upload Statistics</legend>
 
+    <a class="btn btn-primary" href="/admin/participants/bulk-import">Upload Another File</a>
+
 
     <div class="form-group col-lg-12">
-        <h3>Total <?= count($this->response['data']) + count($this->response['error-data']) ?> | Added <?= count($this->response['data']) ?> | Not Added <?= count($this->response['error-data']) ?></h3>
+        <h3>Total Records : <?= count($this->response['data']) + count($this->response['error-data']) ?> | Added : <?= count($this->response['data']) ?> | Not Added : <?= count($this->response['error-data']) ?></h3>
         <?php if (isset($this->response['data']) && count($this->response['data']) > 0) { ?>
             <h3 class="text-success">The following participants were added successfully.</h3>
             <table class="table table-bordered table-striped dataTable table-hover table-responsive" id="successTable">
                 <thead>
                     <tr>
-                        <td>S.NO</td>
-                        <td>Unique Identifier</td>
-                        <td>Name</td>
-                        <td>Email</td>
+                        <td>S.NO.</td>
+                        <td>Participant Unique ID</td>
+                        <td>Participant Name</td>
+                        <td>Unique Email</td>
                         <td>Mobile</td>
                         <td>Institute</td>
                         <td>City/Region</td>
@@ -42,9 +44,9 @@
                 <thead>
                     <tr>
                         <td>S.NO</td>
-                        <td>Unique Identifier</td>
-                        <td>Name</td>
-                        <td>Email</td>
+                        <td>Participant Unique ID</td>
+                        <td>Participant Name</td>
+                        <td>Unique Email</td>
                         <td>Mobile</td>
                         <td>Institute</td>
                         <td>City</td>
