@@ -66,16 +66,22 @@ class Application_Service_Participants
 		return $db->fetchAll($sql);
 	}
 
-	public function getParticipantsListNames($id = "")
+	public function getParticipantsListNames()
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('eln' => 'enrollment_lists_names'), array('*'));
-		if (trim($id) != '') {
-			$sql = $sql->where("eln.eln_unique_id IN (?)", base64_decode($id));
-		} else {
-			$sql = $sql->group(array('eln_unique_id'));
-		}
+		$sql = $db->select()->from(array('eln' => 'enrollment_lists_names'), array('*'))->group(array('eln_unique_id'));
 		return $db->fetchAll($sql);
+	}
+
+	public function getParticipantsListNamesByUniqueId($id)
+	{
+		if (isset($id) && trim($id) != "") {
+
+			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$sql = $db->select()->from(array('eln' => 'enrollment_lists_names'), array('*'))
+				->where("eln.eln_unique_id IN (?)", base64_decode($id));
+			return $db->fetchAll($sql);
+		}
 	}
 	public function getParticipantSchemes($dmId)
 	{
