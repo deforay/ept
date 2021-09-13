@@ -753,19 +753,19 @@ class Application_Service_Evaluation
 			$shipmentService = new Application_Service_Shipments();
 			$mandatoryFields = array('receiptDate', 'testDate', 'vlAssay', 'assayExpirationDate', 'assayLotNumber');
 			$mandatoryCheckErrors = $shipmentService->mandatoryFieldsCheck($params, $mandatoryFields);
-            if (count($mandatoryCheckErrors) > 0) {
+			if (count($mandatoryCheckErrors) > 0) {
 
-                $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                $commonService = new Application_Service_Common();
+				$userAgent = $_SERVER['HTTP_USER_AGENT'];
+				$commonService = new Application_Service_Common();
 
-                $ipAddress = $commonService->getIPAddress();
-                $operatingSystem = $commonService->getOperatingSystem($userAgent);
-                $browser = $commonService->getBrowser($userAgent);
-                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                error_log(date('Y-m-d H:i:s') . '|FORMERROR|PT ADMIN - Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+				$ipAddress = $commonService->getIPAddress();
+				$operatingSystem = $commonService->getOperatingSystem($userAgent);
+				$browser = $commonService->getBrowser($userAgent);
+				//throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
+				error_log(date('Y-m-d H:i:s') . '|FORMERROR|PT ADMIN - Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
 				return false;
-                //throw new Exception('Missed mandatory fields on the form');
-            }
+				//throw new Exception('Missed mandatory fields on the form');
+			}
 
 			$attributes = array(
 				"sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
@@ -1644,8 +1644,8 @@ class Application_Service_Evaluation
 				$row = array();
 				$row['totalN'] = 0;
 				foreach ($rResult as $key => $aRow) {
-					$row['department_name'][$key]      = $aRow['department_name'] . ' (N : ' . round($aRow['departmentCount'], 2) . ')';
-					$row['totalShipped'][$key]      = $aRow['total_shipped'];
+					$row['department_name'][$key]  	= $aRow['department_name'] . ' (N : ' . round($aRow['departmentCount'], 2) . ')';
+					$row['totalShipped'] 			+= $aRow['total_shipped'];
 					$row['beforeDueDate'][$key]     = round($aRow['beforeDueDate'], 2);
 					$row['afterDueDate'][$key]      = round($aRow['afterDueDate'], 2);
 					$row['fail_percentage'][$key]   = round($aRow['fail_percentage'], 2);

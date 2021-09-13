@@ -390,12 +390,20 @@ if ($resultArray['shipment'] != "") {
 
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;
-        $passed = $responseResult["number_passed"];
-        $failed = abs($responseResult["number_failed"]);
-        $notResponded = $responseResult["not_responded"];
-        $excluded = ($responseResult["excluded"] - $responseResult["not_responded"]);
-        $total = $passed + $failed + $notResponded + $excluded;
+        $total = $responseResult["total_shipped"];
+
+        $passedN = $responseResult["number_passed"];
+        $failedN = $responseResult["number_failed"];
+        $notRespondedN = $responseResult["not_responded"];
+        $excludedN = $responseResult["excluded"];
+        // $late = $responseResult["number_late"];
+        $total = $passedN + $failedN + $notRespondedN + $excludedN;
+
         // Some data
+        $passed = number_format((($responseResult["number_passed"] / $total) * 100), 2);
+        $failed = number_format((($responseResult["number_failed"] / $total) * 100), 2);
+        $notResponded = number_format((($responseResult["not_responded"] / $total) * 100), 2);
+        $excluded = number_format((($responseResult["excluded"] / $total) * 100), 2);
         $data = array($passed, $failed, $notResponded, $excluded);
         // Create the Pie Graph.
         $graph = new PieGraph(700, 400);
@@ -406,7 +414,7 @@ if ($resultArray['shipment'] != "") {
         // $graph->title->SetFont(FF_FONT2,FS_BOLD);
 
         $p1 = new PiePlot($data);
-        $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Excluded (N=$excluded)"));
+        $p1->SetLegends(array("Passed (N=" . $passedN . ")", "Failed (N=" . $failedN . ")", "Not Responded (N=" . $notRespondedN . ")", "Excluded (N=" . $excludedN . ")"));
         $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
         $graph->legend->SetColumns(3);
 
@@ -475,7 +483,7 @@ if ($resultArray['shipment'] != "") {
         $graph->legend->SetColumns(6);
         $graph->legend->SetColor('#4E4E4E', '#00A78A');
 
-        $graph->title->Set('Performance by timeliness (N=' . $val['reported_count'] . ')');
+        $graph->title->Set('Performance by timeliness (N=' . $val['total_shipped'] . ')');
 
         // Display the graph
         $performanceBeforeAfterChart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'before_after_bar_chart.png';
