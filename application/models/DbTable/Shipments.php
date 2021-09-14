@@ -3970,7 +3970,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $status = $this->saveShipmentByType((array) $params['data'], $dm);
             // die($status);
             if ($status) {
-                return array('status' => 'success', 'message' => 'Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date.', 'profileInfo' => $dm['profileInfo']);
+                return array('status' => 'success', 'message' => 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date.', 'profileInfo' => $dm['profileInfo']);
             } else {
                 return array('status' => 'fail', 'message' => 'Please check your network connection and try again.', 'profileInfo' => $dm['profileInfo']);
             }

@@ -59,25 +59,6 @@ if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $thi
         <td>
             <input id="rehydrationDate" type="text" name="rehydrationDate" value="<?php echo $this->dateFormat($attributes['sample_rehydration_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" />
         </td>
-        <!-- <th>Algorithm Used</th>
-        <td>
-            <select name="algorithm" id="algorithm" class="isRequired form-control" title="Please choose the Algorithm used"  onchange="showHideTest3();">
-
-                <option value="">--Select--</option>
-                <?php if (!empty($this->config->evaluation->covid19->covid19EnforceAlgorithmCheck) && $this->config->covid19EnforceAlgorithmCheck == 'yes') { ?>
-
-                <?php } ?>
-                <?php if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
-                    <option value="serial" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>
-                <?php } ?>
-                <?php if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
-                    <option value="parallel" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
-                <?php } ?>
-                <?php if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
-                    <option value="myanmarNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Myanmar National Algorithm</option>
-                <?php } ?>
-            </select>
-        </td> -->
         <?php if($maximumAllowed > 1){ ?>
         <td><label for="numberOfParticipantTest"> Number of tests <span class='mandatory'>*</span></label></td>
         <td>

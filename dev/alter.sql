@@ -2865,8 +2865,14 @@ CREATE TABLE `enrollment_lists_names` (
  `participant_id` int NOT NULL,
  PRIMARY KEY (`eln_id`),
  KEY `participant_id` (`participant_id`),
- CONSTRAINT `enrollment_lists_names_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
- CONSTRAINT `enrollment_lists_names_ibfk_2` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+ CONSTRAINT `enrollment_lists_names_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `enrollment_lists_names` ADD `added_by` INT(11) NULL DEFAULT NULL AFTER `participant_id`, ADD `added_on` DATETIME NULL DEFAULT NULL AFTER `added_by`, ADD `updated_by` INT(11) NULL DEFAULT NULL AFTER `added_on`, ADD `updated_on` DATETIME NULL DEFAULT NULL AFTER `updated_by`;
+
+
+
+-- Amit 14-Sep-2021
+
+ALTER TABLE `r_possibleresult` ADD UNIQUE( `scheme_sub_group`, `result_code`);

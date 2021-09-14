@@ -189,6 +189,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                     <?php if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="myanmarNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Myanmar National Algorithm</option>
                                     <?php } ?>
+                                    <?php if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                                        <option value="malawiNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Malawi National Algorithm</option>
+                                    <?php } ?>
 
 
 
