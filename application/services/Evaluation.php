@@ -1587,16 +1587,15 @@ class Application_Service_Evaluation
 						array(
 							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
 							'not_responded' => new Zend_Db_Expr("SUM(CASE WHEN ((sp.shipment_test_date like '0000-00-00' OR sp.shipment_test_date IS NULL) AND sp.is_excluded like 'yes%') THEN 1 ELSE 0 END)"),
-							'not_tested' => new Zend_Db_Expr("SUM(CASE WHEN (sp.is_pt_test_not_performed = 'yes') THEN 1 ELSE 0 END)"),
 							'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.is_excluded = 'yes%') THEN 1 ELSE 0 END)"),
 							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
 							'reported_count' => new Zend_Db_Expr("SUM(shipment_test_report_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')"),
-							"beforeDueDate" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_report_date <= s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
-							"afterDueDate" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_report_date > s.lastdate_response AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
+							"beforeDueDate" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_report_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
+							"afterDueDate" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_report_date > s.lastdate_response) THEN 1 ELSE 0 END)"),
 							"pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
 						)
 					)->where("s.shipment_id = ?", $shipmentId);
-				die($sQuery);
+				// die($sQuery);
 				$shipmentResult['participantBeforeAfterDueChart'] = $db->fetchRow($sQuery);
 
 				// DTS Aberrant test result chart

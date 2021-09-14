@@ -439,14 +439,12 @@ if ($resultArray['shipment'] != "") {
         $val = $resultArray['shipment']['participantBeforeAfterDueChart'];
         // JPGraph Charts
         /* To find the count of not responded participants */
-        $ntr = $val['not_tested'];
         /* Find by percentage */
-        $nors = round(($val['not_responded'] / $val['reported_count']) * 100, 2);
-        $ntrs = round(($ntr / $val['reported_count']) * 100, 2);
+        $nors = round(($val['not_responded'] / $val['total_shipped']) * 100, 2);
         /* To find the percentage of before due date score */
-        $before = round(($val['beforeDueDate'] / $val['reported_count']) * 100, 2);
+        $before = round(($val['beforeDueDate'] / $val['total_shipped']) * 100, 2);
         /* To find the percentage of after due date score */
-        $after = round(($val['afterDueDate'] / $val['reported_count']) * 100, 2);
+        $after = round(($val['afterDueDate'] / $val['total_shipped']) * 100, 2);
 
         // Create the graph. These two calls are always required
         $graph = new Graph(750, 320, 'auto');
@@ -462,13 +460,13 @@ if ($resultArray['shipment'] != "") {
         $graph->SetBox(false);
         $graph->ygrid->SetFill(false);
         $graph->yaxis->HideLine(false);
-        $graph->xaxis->SetTickLabels(array('Before Due Date ' . $before . '% (n=' . $val['beforeDueDate'] . ')', 'After Due Date ' . $after . '% (n=' . $val['afterDueDate'] . ')', 'Not Tested ' . $ntrs . '% (n=' . $ntr . ')', 'No Response ' . $nors . '% (n=' . $val['not_responded'] . ')'));
+        $graph->xaxis->SetTickLabels(array('Before Due Date ' . $before . '% (n=' . $val['beforeDueDate'] . ')', 'After Due Date ' . $after . '% (n=' . $val['afterDueDate'] . ')', 'No Response ' . $nors . '% (n=' . $val['not_responded'] . ')'));
         $graph->xaxis->SetTextLabelInterval(1);
         $graph->yaxis->title->Set('Percentage');
         $graph->yaxis->HideTicks(false, false);
 
         // Create the bar plots
-        $b1plot = new BarPlot(array($before, $after, $ntrs, $val['not_responded']));
+        $b1plot = new BarPlot(array($before, $after, $val['not_responded']));
 
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot));
@@ -477,7 +475,7 @@ if ($resultArray['shipment'] != "") {
         $graph->Add($gbplot);
 
         $b1plot->SetColor("white");
-        $b1plot->SetFillColor(array("darkgreen", "red", "black", "gray"));
+        $b1plot->SetFillColor(array("darkgreen", "red", "gray"));
         // $b1plot->SetLegend(array("Before Due Date","After Due Date"));
 
         $graph->legend->SetFrameWeight(1);
@@ -492,7 +490,7 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->Image($performanceBeforeAfterChart, 5, $y, '', '', '', '', '', false, 300);
         if (file_exists($performanceBeforeAfterChart)) {
-            // unlink($performanceBeforeAfterChart);
+            unlink($performanceBeforeAfterChart);
         }
     }
     if ((isset($resultArray['shipment']['participantAberrantDepartmentChart']) && count($resultArray['shipment']['participantAberrantDepartmentChart']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart'] != '') || (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '')) {
