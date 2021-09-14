@@ -351,7 +351,7 @@ class Application_Service_Shipments
             $eidResponseDb = new Application_Model_DbTable_ResponseEid();
             $eidResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -467,7 +467,7 @@ class Application_Service_Shipments
             $recencyResponseDb = new Application_Model_DbTable_ResponseRecency();
             $recencyResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -563,7 +563,7 @@ class Application_Service_Shipments
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -653,7 +653,7 @@ class Application_Service_Shipments
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -1117,7 +1117,7 @@ class Application_Service_Shipments
             $vlResponseDb = new Application_Model_DbTable_ResponseVl();
             $vlResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be publised on or after the due date";
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing

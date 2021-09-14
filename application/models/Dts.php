@@ -317,49 +317,80 @@ class Application_Model_Dts
 					continue;
 				}
 
+				$finalResultCode = $result['result_code'];
+
 
 				// Checking algorithm Pass/Fail only if it is NOT a control.
 				if (0 == $result['control']) {
-					$r1 = $r2 = $r3 = '';
+					$result1 = $result2 = $result3 = '';
+					$repeatResult1 = $repeatResult2 = $repeatResult3 = '';
 					if ($result['test_result_1'] == 1) {
-						$r1 = 'R';
+						$result1 = 'R';
 					} else if ($result['test_result_1'] == 2) {
-						$r1 = 'NR';
+						$result1 = 'NR';
 					} else if ($result['test_result_1'] == 3) {
-						$r1 = 'I';
+						$result1 = 'I';
 					} else {
-						$r1 = '-';
+						$result1 = '-';
+					}
+					if ($result['repeat_test_result_1'] == 1) {
+						$repeatResult1 = 'R';
+					} else if ($result['test_result_1'] == 2) {
+						$repeatResult1 = 'NR';
+					} else if ($result['test_result_1'] == 3) {
+						$repeatResult1 = 'I';
+					} else {
+						$repeatResult1 = '-';
 					}
 					if ($result['test_result_2'] == 1) {
-						$r2 = 'R';
+						$result2 = 'R';
 					} else if ($result['test_result_2'] == 2) {
-						$r2 = 'NR';
+						$result2 = 'NR';
 					} else if ($result['test_result_2'] == 3) {
-						$r2 = 'I';
+						$result2 = 'I';
 					} else {
-						$r2 = '-';
+						$result2 = '-';
+					}
+					if ($result['repeat_test_result_2'] == 1) {
+						$repeatResult2 = 'R';
+					} else if ($result['test_result_2'] == 2) {
+						$repeatResult2 = 'NR';
+					} else if ($result['test_result_2'] == 3) {
+						$repeatResult2 = 'I';
+					} else {
+						$repeatResult2 = '-';
 					}
 					if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
-						$r3 = 'X';
+						$result3 = 'X';
+						$repeatResult3 = 'X';
 					} else {
 						if ($result['test_result_3'] == 1) {
-							$r3 = 'R';
+							$result3 = 'R';
 						} else if ($result['test_result_3'] == 2) {
-							$r3 = 'NR';
+							$result3 = 'NR';
 						} else if ($result['test_result_3'] == 3) {
-							$r3 = 'I';
+							$result3 = 'I';
 						} else {
-							$r3 = '-';
+							$result3 = '-';
+						}
+						if ($result['repeat_test_result_3'] == 1) {
+							$repeatResult3 = 'R';
+						} else if ($result['repeat_test_result_3'] == 2) {
+							$repeatResult3 = 'NR';
+						} else if ($result['repeat_test_result_3'] == 3) {
+							$repeatResult3 = 'I';
+						} else {
+							$repeatResult3 = '-';
 						}
 					}
 
-					//$algoString = "Wrongly reported in the pattern : <strong>" . $r1 . "</strong> <strong>" . $r2 . "</strong> <strong>" . $r3 . "</strong>";
+					//$algoString = "Wrongly reported in the pattern : <strong>" . $result1 . "</strong> <strong>" . $result2 . "</strong> <strong>" . $result3 . "</strong>";
 
 					if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
 						// no algorithm to check
 					} else if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
-						if ($r1 == 'NR') {
-							if (($r2 == '-') && ($r3 == '-' || $r3 == 'X')) {
+						if ($result1 == 'NR') {
+							if (($result2 == '-') && ($result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
@@ -370,11 +401,11 @@ class Application_Model_Dts
 								$correctiveActionList[] = 2;
 							}
 						}
-						//			else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'NR') {
+						//			else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
 						//                            $algoResult = 'Pass';
 						//                        }
-						else if ($r1 == 'R' && $r2 == 'R') {
-							if (($r3 == '-' || $r3 == 'X')) {
+						else if ($result1 == 'R' && $result2 == 'R') {
+							if (($result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
@@ -384,7 +415,7 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						} else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'R' || $r3 == 'X')) {
+						} else if ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -396,8 +427,8 @@ class Application_Model_Dts
 						}
 					} else if ($attributes['algorithm'] == 'parallel') {
 
-						if ($r1 == 'R' && $r2 == 'R') {
-							if (($r3 == '-' || $r3 == 'X')) {
+						if ($result1 == 'R' && $result2 == 'R') {
+							if (($result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
 							} else {
 
@@ -408,12 +439,12 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						} else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'R' || $r3 == 'X')) {
+						} else if ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
 							$algoResult = 'Pass';
-						} else if ($r1 == 'R' && $r2 == 'NR' && ($r3 == 'NR' || $r3 == 'X')) {
+						} else if ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'NR' || $result3 == 'X')) {
 							$algoResult = 'Pass';
-						} else if ($r1 == 'NR' && $r2 == 'NR') {
-							if (($r3 == '-' || $r3 == 'X')) {
+						} else if ($result1 == 'NR' && $result2 == 'NR') {
+							if (($result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
@@ -423,9 +454,9 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						} else if ($r1 == 'NR' && $r2 == 'R' && ($r3 == 'NR' || $r3 == 'X')) {
+						} else if ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'NR' || $result3 == 'X')) {
 							$algoResult = 'Pass';
-						} else if ($r1 == 'NR' && $r2 == 'R' && ($r3 == 'R' || $r3 == 'X')) {
+						} else if ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'R' || $result3 == 'X')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -436,19 +467,19 @@ class Application_Model_Dts
 							$correctiveActionList[] = 2;
 						}
 					} else if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-						if ($r1 == 'R' && $r2 == 'R' && $r3 == 'R') {
+						if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R') {
 							$algoResult = 'Pass';
-						} else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'NR') {
+						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
 							$algoResult = 'Pass';
-						} else if ($r1 == 'R' && $r2 == 'NR' && $r3 == 'R') {
+						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R') {
 							$algoResult = 'Pass';
-						} else if (($r1 == 'R' && $r2 == 'R' && $r3 == 'NR') || ($r1 == 'R' && $r2 == 'R' && $r3 == 'I')) {
+						} else if (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I')) {
 							$algoResult = 'Pass';
-						} else if ($r1 == 'NR' && $r2 == '-' && $r3 == '-') {
+						} else if ($result1 == 'NR' && $result2 == '-' && $result3 == '-') {
 							$algoResult = 'Pass';
-						} else if ($r1 == 'NR' && $r2 == 'NR' && $r3 == '-') {
+						} else if ($result1 == 'NR' && $result2 == 'NR' && $result3 == '-') {
 							$algoResult = 'Pass';
-						} else if ($r1 == 'NR' && $r2 == 'NR' && $r3 == 'NR') {
+						} else if ($result1 == 'NR' && $result2 == 'NR' && $result3 == 'NR') {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -457,6 +488,48 @@ class Application_Model_Dts
 								'correctiveAction' => $correctiveActions[2]
 							);
 							$correctiveActionList[] = 2;
+						}
+					} else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+						if ($result1 == 'NR' && $finalResultCode == 'N') {
+							if ($result2 == '-' && $repeatResult1 == '-' && $repeatResult2 == '-') {
+								$algoResult = 'Pass';
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array(
+									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+									'correctiveAction' => $correctiveActions[2]
+								);
+								$correctiveActionList[] = 2;
+							}
+						} else if ($result1 == 'R') {
+							if ($result2 == 'R' && $finalResultCode == 'P' && $repeatResult1 == '-' && $repeatResult2 == '-') {
+								$algoResult = 'Pass';
+							} else if ($result2 == 'NR') {
+								// if Result 2 is NR then, we go for repeat tests
+								if ($repeatResult1 == 'NR' && $repeatResult2 == 'NR' && $finalResultCode == 'N') {
+									$algoResult = 'Pass';
+								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $finalResultCode == 'P') {
+									$algoResult = 'Pass';
+								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $finalResultCode == 'I') {
+									$algoResult = 'Pass';
+								} else if ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $finalResultCode == 'I') {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array(
+									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+									'correctiveAction' => $correctiveActions[2]
+								);
+								$correctiveActionList[] = 2;
+							}
 						}
 					} else {
 					}

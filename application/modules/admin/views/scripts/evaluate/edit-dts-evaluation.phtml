@@ -56,7 +56,7 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
         </td>
         <th>Algorithm Used</th>
         <td>
-            <select name="algorithm" id="algorithm" class="isRequired form-control" title="Please choose the Algorithm used"  onchange="showHideTest3();">
+            <select name="algorithm" id="algorithm" class="isRequired form-control" title="Please choose the Algorithm used" onchange="showHideTest3();">
 
                 <option value="">--Select--</option>
                 <?php if (!empty($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->dtsEnforceAlgorithmCheck == 'yes') { ?>
@@ -70,6 +70,9 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
                 <?php } ?>
                 <?php if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
                     <option value="myanmarNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Myanmar National Algorithm</option>
+                <?php } ?>
+                <?php if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                    <option value="malawiNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Malawi National Algorithm</option>
                 <?php } ?>
             </select>
         </td>
@@ -126,15 +129,18 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         <td>
             <select name="test_kit_name_1" id="test_kit_name_1" class="isRequired form-control" title="Please Choose Test Kit 1">
                 <?php $this->dropdownSelection($this->allTestKits, $this->evaluateData['results'][0]["test_kit_name_1"], true); ?>
-            </select> </td>
+            </select>
+        </td>
         <td class='testTwo'>
             <select name="test_kit_name_2" id="test_kit_name_2" class="isRequired form-control" title="Please Choose Test Kit 2">
                 <?php $this->dropdownSelection($this->allTestKits, $this->evaluateData['results'][0]["test_kit_name_2"], true); ?>
-            </select> </td>
+            </select>
+        </td>
         <td class='testThree'>
             <select name="test_kit_name_3" id="test_kit_name_3" class="isRequired form-control" title="Please Choose Test Kit 3">
                 <?php $this->dropdownSelection($this->allTestKits, $this->evaluateData['results'][0]["test_kit_name_3"], true); ?>
-            </select> </td>
+            </select>
+        </td>
 
 
 
@@ -157,7 +163,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         <tr align="CENTER" class="dark">
             <th></th>
             <th style="text-align: center">Result-1</th>
-            <th style="text-align: center"  class='testTwo'>Result-2</th>
+            <th style="text-align: center" class='testTwo'>Result-2</th>
             <th style="text-align: center" class='testThree'>Result-3</th>
             <th style="text-align: center">Reported Result</th>
             <th style="text-align: center">Reference Result</th>
@@ -292,6 +298,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         }
 
     }
+
     function showHideTest3() {
 
         var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
