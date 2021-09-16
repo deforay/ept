@@ -8,10 +8,12 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
     public function shipItNow($params)
     {
+
         try {
             $commonServices = new Application_Service_Common();
-            $uniqueId = $commonServices->getRandomString();
             $this->getAdapter()->beginTransaction();
+            $uniqueId = $commonServices->getRandomString();
+
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $this->delete('shipment_id=' . $params['shipmentId']);
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
@@ -27,13 +29,38 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
                 if (isset($params['listName']) && $params['listName'] != "") {
                     $db = Zend_Db_Table_Abstract::getAdapter();
-                    $db->insert('enrollment_lists_names', array(
-                        'eln_unique_id' => $uniqueId,
-                        'eln_name'      => $params['listName'],
-                        'participant_id' => $participant,
-                        'added_by'      => $authNameSpace->admin_id,
-                        "added_on"      => new Zend_Db_Expr('now()')
-                    ));
+                    if (isset($params['participantList']) && $params['participantList'] != "") {
+                        $exist = $db->fetchRow($db->select()->from(array('eln' => 'enrollment_lists_names'))
+                            ->where('eln_unique_id = "' . base64_decode($params['participantList']) . '" AND participant_id = ' . $participant));
+                        if (isset($exist['eln_name']) && $exist['eln_name']) {
+                            $db->update(
+                                'enrollment_lists_names',
+                                array(
+                                    'eln_name'          => $params['listName'],
+                                    'updated_by'        => $authNameSpace->admin_id,
+                                    "updated_on"        => new Zend_Db_Expr('now()')
+                                ),
+                                'eln_id = ' . $exist['eln_id']
+                            );
+                        } else {
+                            $db->insert('enrollment_lists_names', array(
+                                'eln_unique_id' => base64_decode($params['participantList']),
+                                'eln_name'      => $params['listName'],
+                                'participant_id' => $participant,
+                                'added_by'      => $authNameSpace->admin_id,
+                                "added_on"      => new Zend_Db_Expr('now()')
+                            ));
+                        }
+                        $db->delete('enrollment_lists_names', 'eln_unique_id = "' . base64_decode($params['participantList']) . '" AND participant_id NOT IN(' . implode(",", $params['selectedForEnrollment']) . ')');
+                    } else {
+                        $db->insert('enrollment_lists_names', array(
+                            'eln_unique_id' => $uniqueId,
+                            'eln_name'      => $params['listName'],
+                            'participant_id' => $participant,
+                            'added_by'      => $authNameSpace->admin_id,
+                            "added_on"      => new Zend_Db_Expr('now()')
+                        ));
+                    }
                 }
             }
 

@@ -34,30 +34,25 @@
 				<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants()" value="Filter" />
 			</div>
 		</div>
-		<!-- <br>
-		<div class="row">
-			<div class="col-lg-5">
-				<div class="form-group">
-					<label class="col-lg-4 control-label">Enter the name for this list </label>
-					<div class="col-lg-6">
-						<input type="text" name="listName" id="listName" class="form-control" placeholder="Enter the name for this list" title="Please enter the name for this list" />
+		<br>
+
+		<?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>
+			<div class="row">
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="col-lg-4 control-label">Participant lists name</label>
+						<div class="col-lg-6">
+							<select style="width:100%" name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this)">
+								<option value="">--Select--</option>
+								<?php foreach ($this->participantListsName as $names) { ?>
+									<option value="<?php echo base64_encode($names['eln_unique_id']); ?>"><?php echo ucwords($names['eln_name']); ?></option>
+								<?php } ?>
+							</select>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="col-lg-5">
-				<div class="form-group">
-					<label class="col-lg-4 control-label">Participant lists name</label>
-					<div class="col-lg-6">
-						<select style="width:100%" name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this.value)">
-							<option value="">--Select--</option>
-							<?php foreach ($this->participantListsName as $names) { ?>
-								<option value="<?php echo base64_encode($names['eln_unique_id']); ?>"><?php echo ucwords($names['eln_name']); ?></option>
-							<?php } ?>
-						</select>
-					</div>
-				</div>
-			</div>
-		</div> -->
+		<?php } ?>
 
 		<input type="hidden" id="selectedForEnrollment" name="selectedForEnrollment" value="" />
 		<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />
@@ -102,14 +97,22 @@
 
 		<div class="form-group" style="margin-left:230px;display:none;">
 			<label class="col-lg-4 control-label">Optional Enrollment Identifier</label>
-
 			<div class="col-lg-4"><input type="text" id="enrollmentName" name="enrollmentName" size="50" maxlength="45" class="form-control input-sm" title="Enter an optional name for this enrollment" placeholder="Enter an optional name for this enrollment" /></div>
-
-
 		</div>
 		<div style="clear:both;margin: 90px auto 30px auto; text-align: center;" align="center">
-			<input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();return false;" tabindex="7" value="Enroll" />
-			<input class="btn btn-danger btn-sm" type="button" onclick="window.history.go(-1);" tabindex="8" value="Cancel" />
+			<div class="col-lg-7">
+				<div class="form-group">
+					<label class="col-lg-4 control-label" for="listName">Enter the name for this list </label>
+					<div class="col-lg-6">
+						<input type="text" name="listName" id="listName" class="form-control" placeholder="Enter the name for this list" title="Please enter the name for this list" />
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-5 pull-left">
+				<input type="hidden" id="participantListId" name="participantListId" />
+				<input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();return false;" tabindex="7" value="Enroll" />
+				<input class="btn btn-danger btn-sm" type="button" onclick="window.history.go(-1);" tabindex="8" value="Cancel" />
+			</div>
 		</div>
 	</form>
 </fieldset>
@@ -118,6 +121,7 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
+	var updateList = true;
 	$(document).ready(function() {
 
 
@@ -179,11 +183,49 @@
 			$('#participants').multiSelect('deselect_all');
 			return false;
 		});
+
+		<?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>
+			$('#participants').multiSelect({
+				afterSelect: function(values) {
+					if ($("#participantList").val() != "" && updateList) {
+						if (confirm("Are you sure! You want to update this list to selected participant list name?")) {
+							// Do is confirm
+						} else {
+							$("#participantList").val('')
+						}
+					}
+					updateList = false;
+				},
+				afterDeselect: function(values) {
+					if ($("#participantList").val() != "" && updateList) {
+						if (confirm("Are you sure! You want to update this list to selected participant list name?")) {
+							// Do is confirm
+						} else {
+							$("#participantList").val('')
+						}
+					}
+					updateList = false;
+				}
+
+			});
+		<?php } ?>
 	});
 
 
 
 	function validateNow() {
+
+		if ($("#participantList").val() != "") {
+			if ($("#participantList").find('option:selected').text() != $("#listName").val()) {
+				$("#listName").focus();
+				if (confirm("Are you sure! You want to update the participant list name?")) {
+					$("#participantListId").val($("#participantList").val());
+				} else {
+					$("#participantList").val('');
+				}
+			}
+		}
+
 		flag = deforayValidator.init({
 			formId: 'shipForm'
 		});
@@ -222,18 +264,22 @@
 		}
 	}
 
-	function getEnrollmentParticipantsList(value) {
+	function getEnrollmentParticipantsList(obj) {
 		$.blockUI();
 		var shipId = $("#shipmentId").val();
-
-		if ($.trim(value) != '' || $.trim(shipId) != '') {
+		if (obj.value != "") {
+			var text = $(obj).find('option:selected').text();
+			$("#listName").val(text);
+		} else {
+			$("#listName").val('');
+		}
+		if ($.trim(obj.value) != '' || $.trim(shipId) != '') {
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-enrollment-list'), 'default', true); ?>", {
 					sid: shipId,
-					unique: value,
+					unique: obj.value,
 					format: "html"
 				},
 				function(data) {
-					console.log(data);
 					if (data != "" && data != undefined) {
 						$('#participants').multiSelect('deselect_all');
 						$('#participants').multiSelect('select', data.split(","))
@@ -242,13 +288,4 @@
 			$.unblockUI();
 		}
 	}
-
-	/* $('#participants').multiSelect({
-		afterSelect: function(values) {
-			alert("Select value: " + values);
-		},
-		afterDeselect: function(values) {
-			alert("Deselect value: " + values);
-		}
-	}); */
 </script>
