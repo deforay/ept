@@ -9,9 +9,9 @@ $screeningTest = false;
 $attributes = json_decode($this->evaluateData['shipment']['attributes'], true);
 
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
+$allowRepeatTests = isset($this->config->evaluation->dts->allow_repeat_tests) ? $this->config->evaluation->dts->allow_repeat_tests : 0;
 
 $shipmentAttributes = isset($this->evaluateData['shipment']['shipment_attributes']) ? json_decode($this->evaluateData['shipment']['shipment_attributes'], true) : array();
-
 
 if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
     $testThreeHidden = true;
@@ -21,7 +21,14 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
     $testThreeHidden = true;
     $screeningTest = true;
 }
+if (($testTwoHidden)) {
 
+    $noTest = 1;
+} else if ($testThreeHidden) {
+    $noTest = 2;
+} else {
+    $noTest = 3;
+}
 ?>
 
 <table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
@@ -77,6 +84,44 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
             </select>
         </td>
     </tr>
+    <?php if ((isset($this->config->evaluation->dts->display_sample_condition_fields) && $this->config->evaluation->dts->display_sample_condition_fields == "yes")) { ?>
+
+        <tr class="light malawiNationalDtsAlgo">
+            <td><label for="conditionOfPTSamples" class="label-control">Condition Of PT Samples</label></td>
+            <td>
+                <select class="form-control" name="conditionOfPTSamples" id="conditionOfPTSamples" title="Please select the condition of samples">
+                    <option value="">--Select--</option>
+                    <option value="good" <?php echo ($attributes['condition_pt_samples'] == 'good') ? "selected='selected'" : ""; ?>>Good</option>
+                    <option value="bad" <?php echo ($attributes['condition_pt_samples'] == 'bad') ? "selected='selected'" : ""; ?>>Bad</option>
+                    <option value="not-sure" <?php echo ($attributes['condition_pt_samples'] == 'not-sure') ? "selected='selected'" : ""; ?>>Not Sure</option>
+                </select>
+            </td>
+
+            <td><label for="refridgerator" class="label-control">Refridgerator</label></td>
+            <td>
+                <select class="form-control" name="refridgerator" id="refridgerator" title="Please select if a fridge is available">
+                    <option value="">--Select--</option>
+                    <option value="available" <?php echo ($attributes['refridgerator'] == 'available') ? "selected='selected'" : ""; ?>>Available</option>
+                    <option value="not-available" <?php echo ($attributes['refridgerator'] == 'not-available') ? "selected='selected'" : ""; ?>>Not Available</option>
+                </select>
+            </td>
+        </tr>
+        <tr class="light malawiNationalDtsAlgo">
+            <td><label for="roomTemperature" class="label-control">Room Temperature</label></td>
+            <td style=" display: flex; ">
+                <input class="form-control" type="text" style="width:100px;" value="<?php echo $attributes['room_temperature']; ?>" name="roomTemperature" id="roomTemperature" placeholder="Room Temperature" title="Please enter the room temperature">&nbsp;&nbsp;&nbsp;<span>&deg;C</span>
+            </td>
+
+            <td><label for="stopWatch" class="label-control">Stop Watch</label></td>
+            <td>
+                <select class="form-control" name="stopWatch" id="stopWatch" title="Please select if a stop watch is available">
+                    <option value="">--Select--</option>
+                    <option value="available" <?php echo ($attributes['stop_watch'] == 'available') ? "selected='selected'" : ""; ?>>Available</option>
+                    <option value="not-available" <?php echo ($attributes['stop_watch'] == 'not-available') ? "selected='selected'" : ""; ?>>Not Available</option>
+                </select>
+            </td>
+        </tr>
+    <?php } ?>
     <tr>
         <th>Supervisor Review</th>
         <td>
@@ -132,12 +177,12 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
             </select>
         </td>
         <td class='testTwo'>
-            <select name="test_kit_name_2" id="test_kit_name_2" class="isRequired form-control" title="Please Choose Test Kit 2">
+            <select name="test_kit_name_2" id="test_kit_name_2" class="<?php echo (isset($testTwoHidden) && $testTwoHidden) ? "" : "isRequired"; ?> form-control" title="Please Choose Test Kit 2">
                 <?php $this->dropdownSelection($this->allTestKits, $this->evaluateData['results'][0]["test_kit_name_2"], true); ?>
             </select>
         </td>
         <td class='testThree'>
-            <select name="test_kit_name_3" id="test_kit_name_3" class="isRequired form-control" title="Please Choose Test Kit 3">
+            <select name="test_kit_name_3" id="test_kit_name_3" class="<?php echo (isset($testThreeHidden) && $testThreeHidden) ? "" : "isRequired"; ?> form-control" title="Please Choose Test Kit 3">
                 <?php $this->dropdownSelection($this->allTestKits, $this->evaluateData['results'][0]["test_kit_name_3"], true); ?>
             </select>
         </td>
@@ -148,8 +193,8 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     <tr align="CENTER" class="dark">
         <th>Lot No.</th>
         <td><input type="text" size="40" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_1"]) ? $this->evaluateData['results'][0]["lot_no_1"] : ""); ?>" class="isRequired form-control" title="Please enter Lot No. 1" /></td>
-        <td class='testTwo'><input type="text" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_2"]) ? $this->evaluateData['results'][0]["lot_no_2"] : ""); ?>" class="isRequired form-control" title="Please enter Lot No. 2" /></td>
-        <td class='testThree'><input type="text" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_3"]) ? $this->evaluateData['results'][0]["lot_no_3"] : ""); ?>" class="isRequired form-control" title="Please enter Lot No. 3" /></td>
+        <td class='testTwo'><input type="text" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_2"]) ? $this->evaluateData['results'][0]["lot_no_2"] : ""); ?>" class="<?php echo (isset($testTwoHidden) && $testTwoHidden) ? "" : "isRequired"; ?> form-control" title="Please enter Lot No. 2" /></td>
+        <td class='testThree'><input type="text" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_3"]) ? $this->evaluateData['results'][0]["lot_no_3"] : ""); ?>" class="<?php echo (isset($testThreeHidden) && $testThreeHidden) ? "" : "isRequired"; ?> form-control" title="Please enter Lot No. 3" /></td>
     </tr>
 
     <tr style="text-align:center">
@@ -160,11 +205,26 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 
     </tr>
     <thead>
+        <?php if ($allowRepeatTests == 'yes') { ?>
+            <tr align="CENTER" class="light">
+                <th style="text-align: center;" colspan="<?php echo ($noTest + 1); ?>"></th>
+                <th style="text-align: center;" colspan="<?php echo $noTest; ?>">
+                    Repeat-Tests
+                </th>
+                <th style="text-align: center;"></th>
+                <th style="text-align: center;"></th>
+            </tr>
+        <?php } ?>
         <tr align="CENTER" class="dark">
             <th></th>
             <th style="text-align: center">Result-1</th>
             <th style="text-align: center" class='testTwo'>Result-2</th>
             <th style="text-align: center" class='testThree'>Result-3</th>
+            <?php if ($allowRepeatTests == 'yes') { ?>
+                <th style="text-align: center;">Result-1</th>
+                <th style="text-align: center;" class='testTwo'>Result-2</th>
+                <th style="text-align: center;" class='testThree'>Result-3</th>
+            <?php } ?>
             <th style="text-align: center">Reported Result</th>
             <th style="text-align: center">Reference Result</th>
             <!--<th style="text-align: center">Score</th>-->
@@ -209,7 +269,23 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                     <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
                 </select>
             </td>
-
+            <?php if ($allowRepeatTests == 'yes') { ?>
+                <td>
+                    <select name="repeat_test_result_1[]" id="<?php echo "repeat_test_result_1_" . $count; ?>" class="form-control">
+                        <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_1'], true); ?>
+                    </select>
+                </td>
+                <td class='testTwo'>
+                    <select name="repeat_test_result_2[]" id="<?php echo "repeat_test_result_2_" . $count; ?>" class="form-control">
+                        <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_2'], true); ?>
+                    </select>
+                </td>
+                <td class='testThree'>
+                    <select name="repeat_test_result_3[]" id="<?php echo "repeat_test_result_3_" . $count; ?>" class="form-control">
+                        <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_3'], true); ?>
+                    </select>
+                </td>
+            <?php } ?>
             <td>
                 <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired form-control'" : "class=' form-control'"; ?> title="Please enter the result">
                     <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
@@ -261,7 +337,23 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                     <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
                 </select>
             </td>
-
+            <?php if ($allowRepeatTests == 'yes') { ?>
+                <td>
+                    <select name="repeat_test_result_1[]" id="<?php echo "repeat_test_result_1_" . $count; ?>" class="form-control">
+                        <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_1'], true); ?>
+                    </select>
+                </td>
+                <td class='testTwo'>
+                    <select name="repeat_test_result_2[]" id="<?php echo "repeat_test_result_2_" . $count; ?>" class="form-control">
+                        <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_2'], true); ?>
+                    </select>
+                </td>
+                <td class='testThree'>
+                    <select name="repeat_test_result_3[]" id="<?php echo "repeat_test_result_3_" . $count; ?>" class="form-control">
+                        <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_3'], true); ?>
+                    </select>
+                </td>
+            <?php } ?>
             <td>
                 <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired form-control'" : "class=' form-control'"; ?> title="Please enter the result">
                     <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
