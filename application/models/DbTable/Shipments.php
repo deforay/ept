@@ -4253,8 +4253,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "mode_id"                   => (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params['recencyData']->Section2->data->modeOfReceiptSelected : '',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
-                if (isset($params['responseDate']) && trim($params['responseDate']) != '') {
-                    $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['responseDate']);
+                if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
+                    $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
                 } else {
                     $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }
