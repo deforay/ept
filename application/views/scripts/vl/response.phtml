@@ -574,6 +574,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 			$('#assayExpirationDate').removeClass('isRequired');
 			$('#assayLotNumber').removeClass('isRequired');
 			$('#supervisorApproval').removeClass('isRequired');
+			$('#sampleRehydrationDate').removeClass('isRequired');
 			$('.ptTestPerformed').hide();
 		} else {
 			$('.vlResultSection').show();
@@ -587,6 +588,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 			$('#assayExpirationDate').addClass('isRequired');
 			$('#assayLotNumber').addClass('isRequired');
 			$('#supervisorApproval').addClass('isRequired');
+			$('#sampleRehydrationDate').addClass('isRequired');
 			$('.ptTestPerformed').show();
 		}
 	});

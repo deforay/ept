@@ -16,7 +16,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
             $tnd = NULL;
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $params['vlResult'][$key] = '';
-            } else if (isset($params['tndReference'][$key]) && $params['tndReference'][$key] == 'yes') {
+            } else if ((empty($params['vlResult'][$key]) || $params['vlResult'][$key] == 0) || (isset($params['tndReference'][$key]) && $params['tndReference'][$key] == 'yes')) {
                 $tnd = 'yes';
                 $params['vlResult'][$key] = '0.00';
             }
@@ -26,17 +26,26 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                     'shipment_map_id' => $params['smid'],
                     'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
                     'sample_id' => $sampleId,
-                    'reported_viral_load' => $params['vlResult'][$key],
+                    'reported_viral_load' => (float)$params['vlResult'][$key],
                     'is_tnd' => $tnd,
                     'created_by' => $authNameSpace->dm_id,
                     'created_on' => new Zend_Db_Expr('now()')
                 ));
             } else {
+                var_dump(array(
+                    'shipment_map_id' => $params['smid'],
+                    'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
+                    'sample_id' => $sampleId,
+                    'reported_viral_load' => (float)$params['vlResult'][$key],
+                    'is_tnd' => $tnd,
+                    'updated_by' => $authNameSpace->UserID,
+                    'updated_on' => new Zend_Db_Expr('now()')
+                ));
                 $this->update(array(
                     'shipment_map_id' => $params['smid'],
                     'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
                     'sample_id' => $sampleId,
-                    'reported_viral_load' => $params['vlResult'][$key],
+                    'reported_viral_load' => (float)$params['vlResult'][$key],
                     'is_tnd' => $tnd,
                     'updated_by' => $authNameSpace->UserID,
                     'updated_on' => new Zend_Db_Expr('now()')

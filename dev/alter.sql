@@ -2878,3 +2878,7 @@ ALTER TABLE `r_possibleresult` ADD UNIQUE( `scheme_sub_group`, `result_code`);
 ALTER TABLE `participant` ADD `lab_director_name` VARCHAR(256) NULL DEFAULT NULL AFTER `department_name`, ADD `lab_director_email` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_name`;
 ALTER TABLE `participant` ADD `contact_person_name` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_email`, ADD `contact_person_email` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_name`, ADD `contact_person_telephone` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_email`;
 ALTER TABLE `shipment_participant_map` ADD `lab_director_name` VARCHAR(256) NULL DEFAULT NULL AFTER `participant_id`, ADD `lab_director_email` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_name`, ADD `contact_person_name` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_email`, ADD `contact_person_email` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_name`, ADD `contact_person_telephone` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_email`;
+
+
+-- Amit 16 Sep 2021
+INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (NULL, 'Please ensure all critical fields are reported in your PT Result Form', 'Please ensure all critical fields are reported in your PT Result Form');
