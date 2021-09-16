@@ -335,9 +335,9 @@ class Application_Model_Dts
 					}
 					if ($result['repeat_test_result_1'] == 1) {
 						$repeatResult1 = 'R';
-					} else if ($result['test_result_1'] == 2) {
+					} else if ($result['repeat_test_result_1'] == 2) {
 						$repeatResult1 = 'NR';
-					} else if ($result['test_result_1'] == 3) {
+					} else if ($result['repeat_test_result_1'] == 3) {
 						$repeatResult1 = 'I';
 					} else {
 						$repeatResult1 = '-';
@@ -353,9 +353,9 @@ class Application_Model_Dts
 					}
 					if ($result['repeat_test_result_2'] == 1) {
 						$repeatResult2 = 'R';
-					} else if ($result['test_result_2'] == 2) {
+					} else if ($result['repeat_test_result_2'] == 2) {
 						$repeatResult2 = 'NR';
-					} else if ($result['test_result_2'] == 3) {
+					} else if ($result['repeat_test_result_2'] == 3) {
 						$repeatResult2 = 'I';
 					} else {
 						$repeatResult2 = '-';
@@ -490,6 +490,7 @@ class Application_Model_Dts
 							$correctiveActionList[] = 2;
 						}
 					} else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+
 						if ($result1 == 'NR' && $finalResultCode == 'N') {
 							if ($result2 == '-' && $repeatResult1 == '-' && $repeatResult2 == '-') {
 								$algoResult = 'Pass';
@@ -705,13 +706,20 @@ class Application_Model_Dts
 			//Let us now calculate documentation score
 			$documentationScore = 0;
 			if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
-				// for Dried Samples, we will have rehydration as one of the documentation scores
-				$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 5);
+				// for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
+				$totalDocumentationItems = 5;
 			} else {
 				// for Non Dried Samples, we will NOT have rehydration documentation scores 
 				// there are 2 conditions for rehydration so 5 - 2 = 3
-				$documentationScorePerItem = ($config->evaluation->dts->documentationScore / 3);
+				$totalDocumentationItems = 3;
 			}
+
+			if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+				// For Malawi we have 4 more documentation items to consider - Sample Condition, Fridge, Stop Watch and Room Temp
+				$totalDocumentationItems += 4;
+			}
+
+			$documentationScorePerItem = ($config->evaluation->dts->documentationScore / $totalDocumentationItems);
 
 
 			// D.1
@@ -777,9 +785,7 @@ class Application_Model_Dts
 
 			//D.8
 			// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
-			if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-				//$documentationScore += $documentationScorePerItem;
-			} else {
+			if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
 				if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
 					$documentationScore += $documentationScorePerItem;
 				} else {
@@ -788,6 +794,45 @@ class Application_Model_Dts
 						'correctiveAction' => $correctiveActions[11]
 					);
 					$correctiveActionList[] = 11;
+				}
+			}
+
+			if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+				if (!empty($attributes['condition_pt_samples'])) {
+					$documentationScore += $documentationScorePerItem;
+				} else {
+					$failureReason[] = array(
+						'warning' => "Condition of PT Samples not reported",
+						'correctiveAction' => $correctiveActions[18]
+					);
+					$correctiveActionList[] = 18;
+				}
+				if (!empty($attributes['refridgerator'])) {
+					$documentationScore += $documentationScorePerItem;
+				} else {
+					$failureReason[] = array(
+						'warning' => "Refridgerator availability not reported",
+						'correctiveAction' => $correctiveActions[18]
+					);
+					$correctiveActionList[] = 18;
+				}
+				if (!empty($attributes['room_temperature'])) {
+					$documentationScore += $documentationScorePerItem;
+				} else {
+					$failureReason[] = array(
+						'warning' => "Room Temperature not reported",
+						'correctiveAction' => $correctiveActions[18]
+					);
+					$correctiveActionList[] = 18;
+				}
+				if (!empty($attributes['stop_watch'])) {
+					$documentationScore += $documentationScorePerItem;
+				} else {
+					$failureReason[] = array(
+						'warning' => "Stop Watch Availability not reported",
+						'correctiveAction' => $correctiveActions[18]
+					);
+					$correctiveActionList[] = 18;
 				}
 			}
 
