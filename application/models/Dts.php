@@ -719,7 +719,7 @@ class Application_Model_Dts
 				$totalDocumentationItems += 4;
 			}
 
-			$documentationScorePerItem = ($config->evaluation->dts->documentationScore / $totalDocumentationItems);
+			$documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
 
 
 			// D.1
