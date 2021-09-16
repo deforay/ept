@@ -250,7 +250,13 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
         $labInfo .= '	<td>';
         if (isset($attributes['algorithm'])) {
-            $labInfo .= '	<strong>Algorithm</strong><br>' . ($attributes['algorithm'] == 'myanmarNationalDtsAlgo' ? 'Myanmar National Algorithm' : ucfirst($attributes['algorithm']));
+            if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+                $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
+            } else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+                $labInfo .= '	<strong>Algorithm</strong><br>Malawi National Algorithm';
+            } else {
+                $labInfo .= '	<strong>Algorithm</strong><br>' . ucfirst($attributes['algorithm']);
+            }
         }
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
@@ -522,15 +528,24 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             //Let us now calculate documentation score
             $documentationScore = 0;
+            $totalDocumentationItems = 0;
 
             if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
                 // for Dried Samples, we will have rehydration as one of the documentation scores
-                $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / 5), 2);
+                // for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
+                $totalDocumentationItems = 5;
             } else {
                 // for Non Dried Samples, we will NOT have rehydration documentation scores 
                 // there are 2 conditions for rehydration so 5 - 2 = 3
-                $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / 3), 2);
+                $totalDocumentationItems = 3;
             }
+
+            if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+                // For Malawi we have 4 more documentation items to consider - Sample Condition, Fridge, Stop Watch and Room Temp
+                $totalDocumentationItems += 4;
+            }
+
+            $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
 
             $attributes = json_decode($result['attributes'], true);
 
@@ -545,26 +560,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 							<td style="text-align:center;font-weight:bold;width:25%" colspan="2">Score</td>
 						</tr>';
 
-            // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
-            if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                $scoreDoc = $documentationScorePerItem;
-                $img = $imgPass;
-            } else {
-                if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
-                }
-            }
-
-
-            $docRes .= '<tr>
-							<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
-							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>
-					</tr>';
 
             if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
                 $scoreDoc = $documentationScorePerItem;
@@ -622,6 +617,83 @@ if (sizeof($resultArray['shipment']) > 0) {
 							<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $scoreDoc . '</td>
 					</tr>';
+
+            // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
+            if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
+                if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                } else {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                }
+
+                $docRes .= '<tr>
+                <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
+                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                <td style="text-align:center;">' . $scoreDoc . '</td>
+                </tr>';
+            }
+
+            if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+                if (!empty($attributes['condition_pt_samples'])) {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                } else {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                }
+
+                $docRes .= '<tr>
+                <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>
+                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                <td style="text-align:center;">' . $scoreDoc . '</td>
+                </tr>';
+
+                if (!empty($attributes['refridgerator'])) {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                } else {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                }
+
+                $docRes .= '<tr>
+                <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>
+                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                <td style="text-align:center;">' . $scoreDoc . '</td>
+                </tr>';
+
+                if (!empty($attributes['room_temperature'])) {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                } else {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                }
+
+                $docRes .= '<tr>
+                <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>
+                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                <td style="text-align:center;">' . $scoreDoc . '</td>
+                </tr>';
+
+
+                if (!empty($attributes['stop_watch'])) {
+                    $scoreDoc = $documentationScorePerItem;
+                    $img = $imgPass;
+                } else {
+                    $scoreDoc = 0;
+                    $img = $imgFail;
+                }
+
+                $docRes .= '<tr>
+                <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>
+                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                <td style="text-align:center;">' . $scoreDoc . '</td>
+                </tr>';
+            }
+
 
             $docRes .= '</table>';
 
