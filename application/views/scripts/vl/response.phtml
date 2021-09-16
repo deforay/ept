@@ -111,7 +111,9 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 								<label class="label-control" for="labDirectorEmail">Laboratory Director e-mail: </label>
 							</td>
 							<td style="width:30%;">
-								<input type="text" id="labDirectorEmail" name="labDirectorEmail" class="form-control" value="<?php echo $labDirectorEmail; ?>" placeholder="Enter the laboratory director email" title="Please enter the laboratory director email">
+								<input type="hidden" id="labDirectorEmailChange" name="labDirectorEmailChange" value="<?php echo $labDirectorEmail; ?>" style="display:none;">
+								<input type="text" id="labDirectorEmail" name="labDirectorEmail" class="form-control" value="<?php echo $labDirectorEmail; ?>" placeholder="Enter the laboratory director email" title="Please enter the laboratory director email" onchange="changeEmail('#labDirectorEmail','#labDirectorEmailChange', '#confirmLabDirectorEmail');">
+								<input type="text" id="confirmLabDirectorEmail" name="confirmLabDirectorEmail" class="form-control" placeholder="Enter the confirm laboratory director email" title="Please enter the confirm laboratory director email" style="display: none;">
 							</td>
 						</tr>
 						<tr>
@@ -125,7 +127,9 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 								<label class="label-control" for="contactPersonEmail">Contact Person e-mail: </label>
 							</td>
 							<td style="width:30%;">
-								<input type="text" id="contactPersonEmail" name="contactPersonEmail" class="form-control" value="<?php echo $contactPersonEmail; ?>" placeholder="Enter the contact person email" title="Please enter the contact person email">
+								<input type="hidden" id="contactPersonEmailChange" name="contactPersonEmailChange" value="<?php echo $contactPersonEmail; ?>" style="display:none;">
+								<input type="text" id="contactPersonEmail" name="contactPersonEmail" class="form-control" value="<?php echo $contactPersonEmail; ?>" placeholder="Enter the contact person email" title="Please enter the contact person email" onchange="changeEmail('#contactPersonEmail','#contactPersonEmailChange','#confirmContactPersonEmail');">
+								<input type="text" id="confirmContactPersonEmail" name="confirmContactPersonEmail" class="form-control" placeholder="Enter the confirm contact person email" title="Please enter the confirm contact person email" style="display: none;">
 							</td>
 						</tr>
 						<tr>
@@ -405,6 +409,10 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 	</div>
 </section>
 <script>
+	var mailConfirmation = false;
+	var confirmEmailId = "";
+	var updateEmailId = "";
+
 	function goto_dashboard() {
 		window.history.back();
 	}
@@ -449,12 +457,29 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 
 		$(".tnd").trigger("change");
 		$('#isPtTestNotPerformed').trigger("change");
-
-
 	});
 
 
 	function validateNow() {
+
+		if (mailConfirmation) {
+			if ($("#confirmContactPersonEmail").is(":visible")) {
+				if ($("#contactPersonEmail").val() != $("#confirmContactPersonEmail").val()) {
+					$("#confirmContactPersonEmail").focus();
+					$("#confirmContactPersonEmail").css('border-color', 'red');
+					alert("Please enter the same email id for confirmation email");
+					return false;
+				}
+			}
+			if ($("#confirmLabDirectorEmail").is(":visible")) {
+				if ($("#labDirectorEmail").val() != $("#confirmLabDirectorEmail").val()) {
+					$("#confirmLabDirectorEmail").focus();
+					$("#confirmLabDirectorEmail").css('border-color', 'red');
+					alert("Please enter the same email id for confirmation email");
+					return false;
+				}
+			}
+		}
 
 		flag = deforayValidator.init({
 			formId: 'vlResponseForm'
@@ -619,4 +644,19 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 			$(".logValFormVl").html("");
 		}
 	});
+
+	function changeEmail(changeId, oldId, confirmId) {
+		if ($(changeId).val() != $(oldId).val()) {
+			if (confirm("Are you want to update the email id?")) {
+				mailConfirmation = true;
+				confirmEmailId = confirmId;
+				updateEmailId = changeId;
+				$(confirmId).show();
+			} else {
+				$(changeId).val($(oldId).val());
+				mailConfirmation = false;
+				$(confirmId).hide();
+			}
+		}
+	}
 </script>
