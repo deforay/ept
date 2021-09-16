@@ -550,6 +550,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 			$('#assayExpirationDate').removeClass('isRequired');
 			$('#assayLotNumber').removeClass('isRequired');
 			$('#supervisorApproval').removeClass('isRequired');
+			$('#sampleRehydrationDate').removeClass('isRequired');
 			$('.ptTestPerformed').hide();
 		} else {
 			$('.vlResultSection').show();
@@ -563,6 +564,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 			$('#assayExpirationDate').addClass('isRequired');
 			$('#assayLotNumber').addClass('isRequired');
 			$('#supervisorApproval').addClass('isRequired');
+			$('#sampleRehydrationDate').addClass('isRequired');
 			$('.ptTestPerformed').show();
 		}
 	});
