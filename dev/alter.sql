@@ -2871,8 +2871,10 @@ CREATE TABLE `enrollment_lists_names` (
 
 ALTER TABLE `enrollment_lists_names` ADD `added_by` INT(11) NULL DEFAULT NULL AFTER `participant_id`, ADD `added_on` DATETIME NULL DEFAULT NULL AFTER `added_by`, ADD `updated_by` INT(11) NULL DEFAULT NULL AFTER `added_on`, ADD `updated_on` DATETIME NULL DEFAULT NULL AFTER `updated_by`;
 
-
-
 -- Amit 14-Sep-2021
-
 ALTER TABLE `r_possibleresult` ADD UNIQUE( `scheme_sub_group`, `result_code`);
+
+-- Thana 15-Sep-2021
+ALTER TABLE `participant` ADD `lab_director_name` VARCHAR(256) NULL DEFAULT NULL AFTER `department_name`, ADD `lab_director_email` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_name`;
+ALTER TABLE `participant` ADD `contact_person_name` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_email`, ADD `contact_person_email` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_name`, ADD `contact_person_telephone` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_email`;
+ALTER TABLE `shipment_participant_map` ADD `lab_director_name` VARCHAR(256) NULL DEFAULT NULL AFTER `participant_id`, ADD `lab_director_email` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_name`, ADD `contact_person_name` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_email`, ADD `contact_person_email` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_name`, ADD `contact_person_telephone` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_email`;

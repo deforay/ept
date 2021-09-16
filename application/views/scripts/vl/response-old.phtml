@@ -7,12 +7,6 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 } else {
 	$testReceiptDate = date('d-M-Y');
 }
-
-$labDirectorName = (isset($this->shipment['lab_director_name']) && $this->shipment['lab_director_name'] != "") ? $this->shipment['lab_director_name'] : $this->participant['lab_director_name'];
-$labDirectorEmail = (isset($this->shipment['lab_director_email']) && $this->shipment['lab_director_email'] != "") ? $this->shipment['lab_director_email'] : $this->participant['lab_director_email'];
-$contactPersonName = (isset($this->shipment['contact_person_name']) && $this->shipment['contact_person_name'] != "") ? $this->shipment['contact_person_name'] : $this->participant['contact_person_name'];
-$contactPersonEmail = (isset($this->shipment['contact_person_email']) && $this->shipment['contact_person_email'] != "") ? $this->shipment['contact_person_email'] : $this->participant['contact_person_email'];
-$contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) && $this->shipment['contact_person_telephone'] != "") ? $this->shipment['contact_person_telephone'] : $this->participant['contact_person_telephone'];
 ?>
 <style>
 	th {
@@ -88,52 +82,19 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
 							<td style="width:20%;">
-								<label class="label-control" for="">Name of Laboratory: </label>
-							</td>
-							<td style="width:30%;">
-								<?php echo $this->participant['first_name'] . " " . $this->participant['last_name']; ?>
+								<h4 class="text-info"> Participant Name </h4> <?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>
 							</td>
 							<td style="width:20%;">
-								<label class="label-control" for="">Laboratory ID: </label>
-							</td>
-							<td style="width:30%;">
-								<?php echo $this->participant['unique_identifier']; ?>
-							</td>
-						</tr>
-						<tr>
-							<td style="width:20%;">
-								<label class="label-control" for="labDirectorName">Laboratory Director Name:</label>
-							</td>
-							<td style="width:30%;">
-								<input type="text" id="labDirectorName" name="labDirectorName" class="form-control" value="<?php echo $labDirectorName; ?>" placeholder="Enter the laboratory director name" title="Please enter the laboratory director name">
+								<h4 class="text-info"> Participant Code </h4> <?php echo $this->participant['unique_identifier'] ?>
 							</td>
 							<td style="width:20%;">
-								<label class="label-control" for="labDirectorEmail">Laboratory Director e-mail: </label>
-							</td>
-							<td style="width:30%;">
-								<input type="text" id="labDirectorEmail" name="labDirectorEmail" class="form-control" value="<?php echo $labDirectorEmail; ?>" placeholder="Enter the laboratory director email" title="Please enter the laboratory director email">
-							</td>
-						</tr>
-						<tr>
-							<td style="width:20%;">
-								<label class="label-control" for="contactPersonName">Contact Person Name: </label>
-							</td>
-							<td style="width:30%;">
-								<input type="text" id="contactPersonName" name="contactPersonName" class="form-control" value="<?php echo $contactPersonName; ?>" placeholder="Enter the contact person name" title="Please enter the contact person name">
+								<h4 class="text-info"> Affiliation </h4> <?php echo ($this->participant['affiliation']); ?>
 							</td>
 							<td style="width:20%;">
-								<label class="label-control" for="contactPersonEmail">Contact Person e-mail: </label>
+								<h4 class="text-info"> Phone No </h4> <?php echo ($this->participant['phone']); ?>
 							</td>
-							<td style="width:30%;">
-								<input type="text" id="contactPersonEmail" name="contactPersonEmail" class="form-control" value="<?php echo $contactPersonEmail; ?>" placeholder="Enter the contact person email" title="Please enter the contact person email">
-							</td>
-						</tr>
-						<tr>
 							<td style="width:20%;">
-								<label class="label-control" for="contactPersonTelephone">Contact Person telephone: </label>
-							</td>
-							<td style="width:30%;">
-								<input type="text" id="contactPersonTelephone" name="contactPersonTelephone" class="form-control" value="<?php echo $contactPersonTelephone; ?>" placeholder="Enter the contact person telephone" title="Please enter the contact person telephone">
+								<h4 class="text-info"> Mobile No </h4> <?php echo ($this->participant['mobile']); ?>
 							</td>
 						</tr>
 					</table>
@@ -589,7 +550,6 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 			$('#assayExpirationDate').removeClass('isRequired');
 			$('#assayLotNumber').removeClass('isRequired');
 			$('#supervisorApproval').removeClass('isRequired');
-			$('#sampleRehydrationDate').removeClass('isRequired');
 			$('.ptTestPerformed').hide();
 		} else {
 			$('.vlResultSection').show();
@@ -603,7 +563,6 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 			$('#assayExpirationDate').addClass('isRequired');
 			$('#assayLotNumber').addClass('isRequired');
 			$('#supervisorApproval').addClass('isRequired');
-			$('#sampleRehydrationDate').addClass('isRequired');
 			$('.ptTestPerformed').show();
 		}
 	});

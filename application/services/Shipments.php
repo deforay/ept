@@ -1112,6 +1112,33 @@ class Application_Service_Shipments
                     $data['qc_created_on'] = NULL;
                 }
             }
+            if (isset($params['labDirectorName']) && $params['labDirectorName'] != "") {
+                $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+                /* Shipment Participant table updation */
+                $dbAdapter->update(
+                    'shipment_participant_map',
+                    array(
+                        'lab_director_name'         => $params['labDirectorName'],
+                        'lab_director_email'        => $params['labDirectorEmail'],
+                        'contact_person_name'       => $params['contactPersonName'],
+                        'contact_person_email'      => $params['contactPersonEmail'],
+                        'contact_person_telephone'  => $params['contactPersonTelephone']
+                    ),
+                    'map_id = ' . $params['smid']
+                );
+                /* Participant table updation */
+                $dbAdapter->update(
+                    'participant',
+                    array(
+                        'lab_director_name'         => $params['labDirectorName'],
+                        'lab_director_email'        => $params['labDirectorEmail'],
+                        'contact_person_name'       => $params['contactPersonName'],
+                        'contact_person_email'      => $params['contactPersonEmail'],
+                        'contact_person_telephone'  => $params['contactPersonTelephone']
+                    ),
+                    'participant_id = ' . $params['participantId']
+                );
+            }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $vlResponseDb = new Application_Model_DbTable_ResponseVl();
