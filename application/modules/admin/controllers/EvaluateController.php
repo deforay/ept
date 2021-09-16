@@ -80,12 +80,12 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $participantId = base64_encode($params['participantId']);
             $scheme = base64_encode($params['scheme']);
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            if($response == false){
+            if ($response == false) {
                 $alertMsg->message = "Shipment Results NOT UPDATED for this participant";
-            }else{
+            } else {
                 $alertMsg->message = "Shipment Results for this participant updated successfully";
             }
-            
+
             if (isset($params['whereToGo']) && $params['whereToGo'] != "") {
                 $this->redirect($params['whereToGo']);
             } else {
@@ -107,12 +107,12 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $this->view->evaluateData = $evaluateData = $evalService->editEvaluation($sid, $pid, $scheme);
 
                 $schemeService = new Application_Service_Schemes();
-                
+
                 $commonService = new Application_Service_Common();
                 $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
 
                 if ($scheme == 'eid') {
-                    
+
                     $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
                     $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
                 } else if ($scheme == 'dts') {
