@@ -523,7 +523,7 @@ if ($resultArray['shipment'] != "") {
         }
     }
 
-    if (isset($resultArray['shipment']['participantAberrantDepartmentChart']) && count($resultArray['shipment']['participantAberrantDepartmentChart']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart'] != '') {
+    if (isset($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) && count($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart']['department_name'] != '') {
         $val = $resultArray['shipment']['participantAberrantDepartmentChart'];
         $y = $pdf->getY() + 5;
         // JPGraph Charts

@@ -1160,7 +1160,6 @@ class Application_Service_Evaluation
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("resdts.shipment_map_id = ?", $res['map_id']);
 
-
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				//Zend_Debug::dump($shipmentResult);
 			} else if ($res['scheme_type'] == 'recency') {

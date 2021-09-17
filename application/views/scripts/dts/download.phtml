@@ -6,11 +6,20 @@ require_once('tcpdf/tcpdf.php');
 
 
 $optionalTest3 = $this->config->evaluation->dts->dtsOptionalTest3;
-
+$allowRepeatTests = isset($this->config->evaluation->dts->allow_repeat_tests) ? $this->config->evaluation->dts->allow_repeat_tests : 0;
 if ($optionalTest3 == 'no') {
-	$width = '22%';
+	$width = 20;
 } else {
-	$width = '30%';
+	$width = 25;
+}
+
+if ($allowRepeatTests == "yes") {
+	$noOfTest = 2;
+	$width = 16.66;
+	if ($optionalTest3 == 'no') {
+		$noOfTest = 3;
+		$width = 12.5;
+	}
 }
 
 class MYPDF extends TCPDF
@@ -171,15 +180,36 @@ $labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 $labInfo .= '<td style="font-weight:bold;width:25%">Algorithm Used</td>';
 $labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 $labInfo .= '</tr>';
+if ((isset($this->config->evaluation->dts->display_sample_condition_fields) && $this->config->evaluation->dts->display_sample_condition_fields == "yes")) {
+	$labInfo .= '<tr style="background-color:#F7F7F7;">';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Condition Of PT Samples</td> ';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Refridgerator</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '</tr>';
+	$labInfo .= '<tr style="background-color:#F7F7F7;">';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Room Temperature</td> ';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">Stop Watch</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '</tr>';
+}
 $labInfo .= '</table><br/><br/>';
 
 $labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 $labInfo .= '<tr style="background-color:#CCCCCC;">';
-$labInfo .= '<td style="width:12%"></td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Test-1</td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Test-2</td>';
+$labInfo .= '<td style="width:' . $width . '%;"></td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-1</td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-2</td>';
 if ($optionalTest3 == 'no') {
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:22%">Test-3</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%">Test-3</td>';
+}
+if ($allowRepeatTests == "yes") {
+	if ($optionalTest3 == 'no') {
+		$labInfo .= '<td style="text-align:center;width:' . ($width * ($noOfTest + 1)) . '%;" colspan="' . ($noOfTest) . '"></td>';
+	} else {
+		$labInfo .= '<td style="text-align:center;width:' . ($width * ($noOfTest + 1)) . '%;" colspan="' . ($noOfTest + 1) . '"></td>';
+	}
 }
 $labInfo .= '</tr>';
 
@@ -212,14 +242,33 @@ $labInfo .= '</tr>';
 $labInfo .= '</table>';
 
 $labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
-$labInfo .= '<tr style="background-color:#CCCCCC;">';
-$labInfo .= '<td style="width:12%"></td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Result-1</td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Result-2</td>';
-if ($optionalTest3 == 'no') {
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:22%">Result-3</td>';
+if ($allowRepeatTests == "yes") {
+	$labInfo .= '<tr style="background-color:#CCCCCC;">';
+	if ($optionalTest3 == 'no') {
+		$labInfo .= '<td style="width:' . ($width * ($noOfTest + 1)) . '%;" colspan="' . ($noOfTest + 1) . '"></td>';
+	} else {
+		$labInfo .= '<td style="width:' . ($width * ($noOfTest + 1)) . '%;" colspan="' . ($noOfTest + 1) . '"></td>';
+	}
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . ($width * $noOfTest) . '%;" colspan="' . $noOfTest . '">Repeat Test</td>';
+	$labInfo .= '<td style="width:' . $width . '%;"></td>';
+	$labInfo .= '</tr>';
 }
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Final Result * </td>';
+
+$labInfo .= '<tr style="background-color:#CCCCCC;">';
+$labInfo .= '<td style="width:' . $width . '%;"></td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
+if ($optionalTest3 == 'no') {
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</td>';
+}
+if ($allowRepeatTests == "yes") {
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
+	if ($optionalTest3 == 'no') {
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</td>';
+	}
+}
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final Result* </td>';
 $labInfo .= '</tr>';
 
 foreach ($this->referenceDetails as $sample) {
@@ -229,6 +278,13 @@ foreach ($this->referenceDetails as $sample) {
 	$labInfo .= '<td></td>';
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td></td>';
+	}
+	if ($allowRepeatTests == "yes") {
+		$labInfo .= '<td></td>';
+		$labInfo .= '<td></td>';
+		if ($optionalTest3 == 'no') {
+			$labInfo .= '<td></td>';
+		}
 	}
 	$labInfo .= '<td></td>';
 	$labInfo .= '</tr>';

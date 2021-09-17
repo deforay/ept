@@ -120,10 +120,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         $width = 12.5;
 
         $dtsResultsMap = array(
+            'Positive'      => 'Pos',
             'Negative'      => 'Neg',
             'Reactive'      => 'R',
             'Nonreactive'   => 'NR',
-            'Invalid'       => 'I'
+            'Invalid'       => 'I',
+            'Indeterminate' => 'Ind'
         );
 
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
@@ -262,18 +264,23 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</tr>';
 
         if ($sampleConditionFields == 'yes') {
+            $conditionOfPTSamples = (isset($attributes['condition_pt_samples']) && $attributes['condition_pt_samples'] != "") ? ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) : "";
+            $refridgerator = (isset($attributes['refridgerator']) && $attributes['refridgerator'] != "") ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
+            $roomTemperature = (isset($attributes['room_temperature']) && $attributes['room_temperature'] != "") ? $attributes['room_temperature'] : "";
+            $stopWatch = (isset($attributes['stop_watch']) && $attributes['stop_watch'] != "") ? ucwords(str_replace('-', ' ', $attributes['stop_watch'])) : "";
+
             $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Condition of PT Samples</strong><br>' . ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) . '</td>';
-            $labInfo .= '	<td><strong>Refridgerator</strong><br>' . ucwords(str_replace('-', ' ', $attributes['refridgerator'])) . '</td>';
-            $labInfo .= '	<td><strong>Room Temperature</strong><br>' . $attributes['room_temperature'] . '</td>';
+            $labInfo .= '	<td><strong>Condition of PT Samples</strong><br>' . $conditionOfPTSamples . '</td>';
+            $labInfo .= '	<td><strong>Refridgerator</strong><br>' . $refridgerator . '</td>';
+            $labInfo .= '	<td><strong>Room Temperature</strong><br>' . $roomTemperature . '</td>';
             $labInfo .= '</tr>';
 
             $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Stop Watch</strong><br>' . ucwords(str_replace('-', ' ', $attributes['stop_watch'])) . '</td>';
-            $labInfo .= '</tr>';
+            $labInfo .= '	<td><strong>Stop Watch</strong><br>' . $stopWatch . '</td>';
+        } else {
+            $labInfo .= '<tr>';
         }
 
-        $labInfo .= '<tr>';
         $labInfo .= '	<td>';
         $labInfo .= '<strong>Supervisor Review</strong>';
         if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
@@ -515,7 +522,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 						  </tr>';
             }
             $labRes .= '</table>';
-            $labRes .= '<span style="font-size:10px;">(R = Reactive, NR = Non Reactive, Neg = Negative, I =Invalid)</span><br/>';
+            $labRes .= '<span style="font-size:10px;">(R = Reactive, NR = Non Reactive, Pos = Positive, Neg = Negative, I = Invalid, Ind = Indeterminate)</span><br/>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
 
@@ -794,7 +801,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         foreach ($loadpdf->pages as $page) {
             $pdfExtract = $extractor->clonePage($page);
-            //$pdfExtract->setFont($font, 8) ->drawText('Page '.$j.' / '.$totalPages, 280, 50);
+            $pdfExtract->setFont($font, 8)->drawText('Page ' . $j . ' / ' . $totalPages, 280, 50);
             $pdfNew->pages[] = $pdfExtract;
         }
         $shipmentCode = $result['shipment_code'];
