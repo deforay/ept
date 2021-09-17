@@ -120,8 +120,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         $width = 12.5;
 
         $dtsResultsMap = array(
-            'Positive'      => 'Pos',
-            'Negative'      => 'Neg',
+            'Positive'      => 'P',
+            'Negative'      => 'N',
             'Reactive'      => 'R',
             'Nonreactive'   => 'NR',
             'Invalid'       => 'I',
@@ -522,7 +522,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 						  </tr>';
             }
             $labRes .= '</table>';
-            $labRes .= '<span style="font-size:10px;">(R = Reactive, NR = Non Reactive, Pos = Positive, Neg = Negative, I = Invalid, Ind = Indeterminate)</span><br/>';
+            $labRes .= '<span style="font-size:10px;">(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, Ind = Indeterminate)</span><br/>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
 

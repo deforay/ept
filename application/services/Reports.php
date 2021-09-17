@@ -1512,6 +1512,9 @@ class Application_Service_Reports
                         ->joinLeft(array('r' => 'r_possibleresult'), 'r.id=rrdts.test_result_1', array('testResult1' => 'r.response'))
                         ->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id=rrdts.test_result_2', array('testResult2' => 'rp.response'))
                         ->joinLeft(array('rpr' => 'r_possibleresult'), 'rpr.id=rrdts.test_result_3', array('testResult3' => 'rpr.response'))
+                        ->joinLeft(array('rpr1' => 'r_possibleresult'), 'rpr1.id=rrdts.repeat_test_result_1', array('repeatTestResult1' => 'rpr1.response'))
+                        ->joinLeft(array('rpr2' => 'r_possibleresult'), 'rpr2.id=rrdts.repeat_test_result_2', array('repeatTestResult2' => 'rpr2.response'))
+                        ->joinLeft(array('rpr3' => 'r_possibleresult'), 'rpr3.id=rrdts.repeat_test_result_3', array('repeatTestResult3' => 'rpr3.response'))
                         ->joinLeft(array('fr' => 'r_possibleresult'), 'fr.id=rrdts.reported_result', array('finalResult' => 'fr.response'))
                         ->where("rrdts.shipment_map_id = ?", $aRow['map_id']);
                     $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
@@ -1548,7 +1551,17 @@ class Application_Service_Reports
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
                 array_push($reportHeadings, 'Test#3 Name', 'Kit Lot #', 'Expiry Date');
+                $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             }
+            /* Repeat test section */
+            if (isset($config->evaluation->dts->allow_repeat_tests) && $config->evaluation->dts->allow_repeat_tests == 'yes') {
+                $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+                $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+                if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+                    $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+                }
+            }
+            // For final result
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             array_push($reportHeadings, 'Comments');
         }
@@ -1559,21 +1572,39 @@ class Application_Service_Reports
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
-
         $colNo = 0;
+        $repeatCellNo = 0;
         $currentRow = 2;
         $n = count($reportHeadings);
+
         $finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
         $c = 1;
+        $repeatCell = 1;
         $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 1;
 
         $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn, 1)->getColumn();
         $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell, 1)->getColumn();
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle);
         $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle);
-
+        /* Repeat test section */
+        if (isset($config->evaluation->dts->allow_repeat_tests) && $config->evaluation->dts->allow_repeat_tests == 'yes') {
+            $repeatHeadingColumn = $n - (($result['number_of_samples'] * 3) + $result['number_of_controls'] + 1);
+            if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+                $repeatHeadingColumn = $n - (($result['number_of_samples'] * 4) + $result['number_of_controls'] + 1);
+            }
+            $endRepeatMergeCell = ($repeatHeadingColumn + ($result['number_of_samples'] * 2) + $result['number_of_controls']) - 1;
+            if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+                $endRepeatMergeCell = ($repeatHeadingColumn + ($result['number_of_samples'] * 3) + $result['number_of_controls']) - 1;
+            }
+            $repeatFirstCellName = $sheet->getCellByColumnAndRow($repeatHeadingColumn, 1)->getColumn();
+            $repeatSecondCellName = $sheet->getCellByColumnAndRow($endRepeatMergeCell, 1)->getColumn();
+            $sheet->mergeCells($repeatFirstCellName . "1:" . $repeatSecondCellName . "1");
+            $sheet->getStyle($repeatFirstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+            $sheet->getStyle($repeatFirstCellName . "1")->applyFromArray($borderStyle);
+            $sheet->getStyle($repeatSecondCellName . "1")->applyFromArray($borderStyle);
+        }
         foreach ($reportHeadings as $field => $value) {
 
             $sheet->getCellByColumnAndRow($colNo, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -1583,13 +1614,25 @@ class Application_Service_Reports
 
             $cellName = $sheet->getCellByColumnAndRow($colNo, 3)->getColumn();
             $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle);
+            /* Repeat test section */
+            if (isset($config->evaluation->dts->allow_repeat_tests) && $config->evaluation->dts->allow_repeat_tests == 'yes') {
+                if ($repeatCellNo >= $repeatHeadingColumn) {
+                    // Zend_Debug::dump($repeatCell);
+                    if ($repeatCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
+                        $sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("Repeat Tests", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                        $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
+                        $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                    }
+                    $repeatCell++;
+                }
+                $repeatCellNo++;
+            }
 
             if ($colNo >= $finalResColoumn) {
                 if ($c <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-
                     $sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
                     $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
                     $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
                 }
@@ -1942,6 +1985,19 @@ class Application_Service_Reports
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             //$row[] = $aRow[$k]['testResult3'];
                             $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        }
+                    }
+                    if (isset($config->evaluation->dts->allow_repeat_tests) && $config->evaluation->dts->allow_repeat_tests == 'yes') {
+                        for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        }
+                        for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        }
+                        if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+                            for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+                                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            }
                         }
                     }
 
