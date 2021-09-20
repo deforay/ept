@@ -163,11 +163,33 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> Clear</i>
 							</td>
 						</tr>
+						<tr class="dark">
+							<td><label>Viral Load Assay <span class="mandatory ptTestPerformed">*</span></label></td>
+							<td>
+								<select id="vlAssay" name="vlAssay" class="isRequired form-control" onchange="showHideOtherAssay(this.value)" title="Please select the Viral Load Assay">
+									<option value="">--Select--</option>
+									<?php
+									foreach ($this->vlAssay as $id => $name) {
+									?>
+										<option value="<?php echo $id; ?>" <?php echo ($this->shipment['attributes']['vl_assay'] == $id) ? "selected='selected'" : ""; ?>><?php echo $name; ?></option>
+									<?php
+									}
+									?>
+								</select>
+							</td>
+							<td class="hideOtherAssay"><label>Please specify Other Assay Name <span class="mandatory ptTestPerformed">*</span></label></td>
+							<td class="hideOtherAssay">
+								<input type="text" name="otherAssay" id="otherAssay" class="form-control" value="<?php echo html_entity_decode(isset($this->shipment['attributes']['other_assay']) && ($this->shipment['attributes']['other_assay'] != "")) ? $this->shipment['attributes']['other_assay'] : ""; ?>" title="Please specify Other Assay Name" />
+							</td>
+
+						</tr>						
 						<tr>
 							<td><label>Specimen Volume used for testing</label></td>
 							<td>
 								<input type="text" name="specimenVolume" id="specimenVolume" class="form-control" value="<?php echo $this->shipment['attributes']['specimen_volume']; ?>" />
 							</td>
+							<td></td>
+							<td></td>
 						</tr>
 
 						<?php if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes')) { ?>

@@ -1055,7 +1055,7 @@ class Application_Service_Shipments
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
         // $mandatoryFields = array('receiptDate', 'testDate', 'vlAssay', 'assayExpirationDate', 'assayLotNumber');
-        $mandatoryFields = array('receiptDate', 'testDate');
+        $mandatoryFields = array('receiptDate', 'testDate', 'vlAssay');
 
         $db->beginTransaction();
         try {
@@ -1166,7 +1166,7 @@ class Application_Service_Shipments
                         'contact_person_email'      => $params['contactPersonEmail'],
                         'contact_person_telephone'  => $params['contactPersonTelephone']
                     ),
-                    'participant_id = ' . $params['participantId']
+                    "participant_id = '" . $params['participantId'] . "'"
                 );
             }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
