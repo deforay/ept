@@ -49,7 +49,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $trainingInstanceText);
+        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $institutePostition);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -190,10 +190,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
         $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
-        if(isset($sampleRehydrationDate) && $sampleRehydrationDate != ""){
+        if (isset($sampleRehydrationDate) && $sampleRehydrationDate != "") {
             $labInfo .= '<br>' . $sampleRehydrationDate;
-        }else{
-            $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
+        } else {
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
         $labInfo .= '</td>';
         $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
@@ -209,24 +209,24 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
-            $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
-                $labInfo .= '<strong>Supervisor Review</strong>';
-                if(isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes"){
-                    $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
-                } else if(isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no"){
-                    $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
-                    $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
-                }else{
-                    $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
-                }
-            $labInfo .= '	</td><td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
-                $labInfo .= '	<strong>Supervisor Name</strong>';
-                if(isset($result['participant_supervisor']) && $result['participant_supervisor'] != ""){
-                    $labInfo .= '<br>' . ($result['participant_supervisor']);
-                }else{
-                    $labInfo .= '<img style="width:10px;" src="' . $flag .'"/>';
-                }
-            $labInfo .= '</td><td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"></td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
+        $labInfo .= '<strong>Supervisor Review</strong>';
+        if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
+            $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+        } else if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
+            $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+        } else {
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
+        }
+        $labInfo .= '	</td><td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
+        $labInfo .= '	<strong>Supervisor Name</strong>';
+        if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
+            $labInfo .= '<br>' . ($result['participant_supervisor']);
+        } else {
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
+        }
+        $labInfo .= '</td><td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"></td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
         $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;">';

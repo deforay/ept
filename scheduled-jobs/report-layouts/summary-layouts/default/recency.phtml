@@ -53,7 +53,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'],"",$trainingInstanceText);
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $institutePostition);
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------
@@ -113,7 +113,7 @@ if ($resultArray['shipment'] != "") {
         // JPGraph Charts
         foreach ($barPoints as $key => $val) {
             $dataX[] = $val;
-            $dataY[] = $key .' ('.$val.')';
+            $dataY[] = $key . ' (' . $val . ')';
         }
 
         // Create the graph. These two calls are always required
@@ -147,8 +147,8 @@ if ($resultArray['shipment'] != "") {
         // Setup the titles
         $graph->title->Set("Comparison of test performance between participating laboratories");
         $graph->yaxis->title->Set('% Score');
-        $graph->xaxis->title->Set('Number of participants','center');
-        
+        $graph->xaxis->title->Set('Number of participants', 'center');
+
         $graph->yaxis->SetTitleMargin(32);
         $graph->xaxis->SetTitleMargin(32);
         // Turn the tick mark out from the plot area
@@ -327,9 +327,9 @@ if ($resultArray['shipment'] != "") {
     $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
-    if($trainingInstance == "yes"){
+    if ($trainingInstance == "yes") {
         //Watermark section
-        $pdf= new PDF_Rotate();
+        $pdf = new PDF_Rotate();
     }
     //============================================================+
     // END OF FILE

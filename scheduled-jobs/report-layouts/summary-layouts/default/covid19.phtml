@@ -50,49 +50,49 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'],"",$trainingInstanceText);
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $institutePostition);
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------
     $y = 0;
-    
+
     if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
         $dataX = array();
         $dataY = array();
         $total = 0;
         foreach ($resultArray['shipment']['pieChart'] as $piechart) {
             $dataX[] = $piechart['testPlatform1Total'];
-            $dataY[] = $piechart['test_type_name'] .' (n='.$piechart['testPlatform1Total'].')';
-            $total +=$piechart['testPlatform1Total'];
+            $dataY[] = $piechart['test_type_name'] . ' (n=' . $piechart['testPlatform1Total'] . ')';
+            $total += $piechart['testPlatform1Total'];
         }
-        if($total > 0){
+        if ($total > 0) {
 
             // Create the graph. These two calls are always required
             $graph = new Graph(680, 600, 'auto');
             $graph->SetScale("textlin");
-    
+
             // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
             $graph->SetBox(false);
-            $graph->SetMargin(80,30,20,400);
-    
+            $graph->SetMargin(80, 30, 20, 400);
+
             $graph->ygrid->SetFill(false);
             $graph->xaxis->SetTickLabels($dataY);
             $graph->xaxis->SetLabelAngle(90);
             $graph->xaxis->SetLabelMargin(0);
-            $graph->xaxis->SetPos(0.5,0.97,'center','bottom');
-    
+            $graph->xaxis->SetPos(0.5, 0.97, 'center', 'bottom');
+
             $graph->yaxis->HideLine(false);
             $graph->yaxis->HideTicks(false, false);
-    
+
             // Create the bar plots
             $b1plot = new BarPlot($dataX);
             // Create the grouped bar plot
             $gbplot = new GroupBarPlot(array($b1plot));
             // ...and add it to the graPH
             $graph->Add($gbplot);
-            
+
             $b1plot->SetColor("white");
-            $graph->title->Set("Test platforms used for Covid19-based PT survey " . $resultArray['shipment']['distribution_code'] . "(N=".$total.")");
+            $graph->title->Set("Test platforms used for Covid19-based PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
             $graph->yaxis->title->Set('Number of Participants');
             $graph->xaxis->title->Set('Test Platform-1 Name');
             $graph->yaxis->SetTitleMargin(35);
@@ -100,7 +100,7 @@ if ($resultArray['shipment'] != "") {
             // Turn the tick mark out from the plot area
             $graph->xaxis->SetTickSide(SIDE_DOWN);
             $graph->yaxis->SetTickSide(SIDE_LEFT);
-    
+
             $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'pieChart.png';
             $graph->Stroke($piechart);
         }
@@ -119,7 +119,7 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
     }
-   
+
     if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
         $labCounter = 1;
         $pass = $config->evaluation->covid19->passPercentage;
@@ -158,57 +158,57 @@ if ($resultArray['shipment'] != "") {
 
             $scoringPer = round(($maxScore / $partCount) * 100, 2);
         }
-         // JPGraph Charts
+        // JPGraph Charts
         $dataX = array();
         $dataY = array();
         $total = 0;
-         foreach ($barPoints as $key => $val) {
-             $dataX[] = $val;
-             $dataY[] = $key .' (n='.$val.')';
-             $total+=$val;
-         }
- 
-         // Create the graph. These two calls are always required
-         $graph = new Graph(700, 400, 'auto');
-         $graph->SetScale("textlin");
- 
-         $theme_class = new UniversalTheme;
-         $graph->SetTheme($theme_class);
-         $graph->SetBox(false);
- 
-         $graph->ygrid->SetFill(false);
-         $graph->xaxis->SetTickLabels($dataY);
-         $graph->yaxis->HideLine(false);
-         $graph->yaxis->HideTicks(false, false);
- 
-         // Create the bar plots
-         $b1plot = new BarPlot($dataX);
- 
-         // Create the grouped bar plot
-         $gbplot = new GroupBarPlot(array($b1plot));
-         // ...and add it to the graPH
-         $graph->Add($gbplot);
- 
- 
-         $b1plot->SetColor("white");
-         $b1plot->SetFillColor(array('brown4', 'hotpink', 'yellow', 'darkgreen'));
- 
-         // Setup the titles
-         $graph->title->Set("Comparison of test performance between participating laboratories (N=".$total.")");
- 
-         $graph->xaxis->title->Set('% Score');
-         $graph->xaxis->SetTitleMargin(35);
-         // Turn the tick mark out from the plot area
-         $graph->xaxis->SetTickSide(SIDE_DOWN);
-         
-         $graph->yaxis->title->Set('Number of participants','center');
-         $graph->yaxis->SetTitleMargin(28);
-         // Turn the tick mark out from the plot area
-         $graph->yaxis->SetTickSide(SIDE_LEFT);
- 
-         // Display the graph
-         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
-         $graph->Stroke($image_file);
+        foreach ($barPoints as $key => $val) {
+            $dataX[] = $val;
+            $dataY[] = $key . ' (n=' . $val . ')';
+            $total += $val;
+        }
+
+        // Create the graph. These two calls are always required
+        $graph = new Graph(700, 400, 'auto');
+        $graph->SetScale("textlin");
+
+        $theme_class = new UniversalTheme;
+        $graph->SetTheme($theme_class);
+        $graph->SetBox(false);
+
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($dataY);
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false, false);
+
+        // Create the bar plots
+        $b1plot = new BarPlot($dataX);
+
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+        // ...and add it to the graPH
+        $graph->Add($gbplot);
+
+
+        $b1plot->SetColor("white");
+        $b1plot->SetFillColor(array('brown4', 'hotpink', 'yellow', 'darkgreen'));
+
+        // Setup the titles
+        $graph->title->Set("Comparison of test performance between participating laboratories (N=" . $total . ")");
+
+        $graph->xaxis->title->Set('% Score');
+        $graph->xaxis->SetTitleMargin(35);
+        // Turn the tick mark out from the plot area
+        $graph->xaxis->SetTickSide(SIDE_DOWN);
+
+        $graph->yaxis->title->Set('Number of participants', 'center');
+        $graph->yaxis->SetTitleMargin(28);
+        // Turn the tick mark out from the plot area
+        $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+        // Display the graph
+        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+        $graph->Stroke($image_file);
         // set font
         $pdf->SetFont('helvetica', 'B', 12);
 
@@ -345,37 +345,37 @@ if ($resultArray['shipment'] != "") {
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;
 
-        $passed = (isset($responseResult["number_passed"]) && $responseResult["number_passed"] > 0)?$responseResult["number_passed"]:0;
-        $failed = (isset($responseResult["number_failed"]) && $responseResult["number_failed"]>0)?$responseResult["number_failed"]:0;
-        $notResponded = (isset($responseResult["others"]) && $responseResult["others"] > 0)?$responseResult["others"]:0;
-        $excluded = (isset($responseResult["excluded"]) && $responseResult["excluded"] >0)?$responseResult["excluded"]:0;
+        $passed = (isset($responseResult["number_passed"]) && $responseResult["number_passed"] > 0) ? $responseResult["number_passed"] : 0;
+        $failed = (isset($responseResult["number_failed"]) && $responseResult["number_failed"] > 0) ? $responseResult["number_failed"] : 0;
+        $notResponded = (isset($responseResult["others"]) && $responseResult["others"] > 0) ? $responseResult["others"] : 0;
+        $excluded = (isset($responseResult["excluded"]) && $responseResult["excluded"] > 0) ? $responseResult["excluded"] : 0;
 
         $total = $passed + $failed + $notResponded + $excluded;
         // Some data
         $data = array($passed, $failed, $notResponded, $excluded);
-        if($total > 0){
+        if ($total > 0) {
 
             // Create the Pie Graph.
             $graph = new PieGraph(700, 400);
             $graph->SetShadow();
-            $graph->SetMargin(80,30,20,30);
-    
+            $graph->SetMargin(80, 30, 20, 30);
+
             // Set A title for the plot
-            $graph->title->Set("Shipment Participant Result Report (N=".$total.")");
+            $graph->title->Set("Shipment Participant Result Report (N=" . $total . ")");
             // $graph->title->SetFont(FF_FONT2,FS_BOLD);
-    
+
             $p1 = new PiePlot($data);
             $p1->SetLegends(array("Passed (N=$passed)", "Failed (N=$failed)", "Not Responded (N=$notResponded)", "Excluded (N=$excluded)"));
-            $graph->legend->SetPos(0.5,0.97,'center','bottom');
+            $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
             $graph->legend->SetColumns(3);
-    
+
             $graph->Add($p1);
-    
+
             $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'yellow'));
-    
+
             $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
             $graph->Stroke($performancePiechart);
-           
+
             $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 300);
             if (file_exists($performancePiechart)) {
                 unlink($performancePiechart);
@@ -383,8 +383,8 @@ if ($resultArray['shipment'] != "") {
         }
     }
 
-    if(isset($piechart) && $piechart != ""){
-        $pdf->Image($piechart, 5, $y+110, '', '', '', '', '', false, 300);
+    if (isset($piechart) && $piechart != "") {
+        $pdf->Image($piechart, 5, $y + 110, '', '', '', '', '', false, 300);
         if (file_exists($piechart)) {
             unlink($piechart);
         }
@@ -394,10 +394,10 @@ if ($resultArray['shipment'] != "") {
     $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
-    
-    if($trainingInstance == "yes"){
+
+    if ($trainingInstance == "yes") {
         //Watermark section
-        $pdf= new PDF_Rotate();
+        $pdf = new PDF_Rotate();
     }
     //============================================================+
     // END OF FILE

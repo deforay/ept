@@ -1,48 +1,60 @@
 <link href="<?php echo $this->baseUrl('css/editor.css'); ?>" rel="stylesheet">
 <link href="<?php echo $this->baseUrl('css/fileupload_style.css'); ?>" rel="stylesheet">
-<form class="form-horizontal" role="form" name="addReportConfig" id="addReportConfig"  method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>" autocomplete="off" enctype="multipart/form-data">
+<form class="form-horizontal" role="form" name="addReportConfig" id="addReportConfig" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>" autocomplete="off" enctype="multipart/form-data">
 	<legend>PDF Report Settings <span class="muted pull-right" style="font-size:15px;"><span class="mandatory">*</span> indicates required field</span></legend>
-  
-	<div class="container">
-		
-		
-		<label>Report Header Text (Please enter only one or two lines)</label>
-		<textarea rows="2" name="content" id="content" cols="60" style="display:block;" class="isRequired"><?php echo $this->result; ?></textarea>
-		<br/>
-		
+
+	<div class="row">
+		<div class="col-md-6">
+			<label>Report Header Text (Please enter only one or two lines)</label>
+			<textarea rows="2" name="content" id="content" cols="60" style="display:block;" class="form-control col-md-6 isRequired"><?php echo $this->result; ?></textarea>
+		</div>
 	</div>
-	
-	<div class="col-md-8">
-		<input type="hidden" name="existImage" value="<?php echo $this->logo;?>"/>
-		<div class="fileupload fileupload-new" data-provides="fileupload">
-			
-			<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
-				<?php if(trim($this->logo)!=""){ ?>
-					<img src="<?php echo $this->baseUrl('uploads/logo/'.$this->logo); ?>" />
-				<?php }else{ ?>
-					<img src="<?php echo $this->baseUrl('images/logo-generate.gif'); ?>" />
-				<?php } ?>
-				
-			</div>
-			
-			<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+	<div class="row">
+		<div class="col-md-6">
+			<label class="control-label" for="institutePostition">Institute Address Position</label>
 			<div>
-			  <span class="btn btn-file"><span class="fileupload-new">Select image</span><span class="fileupload-exists">Change</span>
-			       
-			      <input type="file" name="logo_image" id="logo_image"/></span>
-			  <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+				<select name="institutePostition" id="institutePostition" class="form-control" title="Please select the institute address position">
+					<option value="">--Select--</option>
+					<option value="header" <?php echo (isset($this->institutePostition) && $this->institutePostition == "header") ? "selected='selected'" : ""; ?>>Header</option>
+					<option value="footer" <?php echo (isset($this->institutePostition) && $this->institutePostition == "footer") ? "selected='selected'" : ""; ?>>Footer</option>
+				</select>
 			</div>
 		</div>
 	</div>
-	
+
+	<div class="row">
+		<div class="col-md-8">
+			<input type="hidden" name="existImage" value="<?php echo $this->logo; ?>" />
+			<div class="fileupload fileupload-new" data-provides="fileupload">
+
+				<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+					<?php if (trim($this->logo) != "") { ?>
+						<img src="<?php echo $this->baseUrl('uploads/logo/' . $this->logo); ?>" />
+					<?php } else { ?>
+						<img src="<?php echo $this->baseUrl('images/logo-generate.gif'); ?>" />
+					<?php } ?>
+
+				</div>
+
+				<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+				<div>
+					<span class="btn btn-file"><span class="fileupload-new">Select image</span><span class="fileupload-exists">Change</span>
+
+						<input type="file" name="logo_image" id="logo_image" /></span>
+					<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- <div class="col-md-8">
-		<input type="hidden" name="existImageRight" value="<?php echo $this->logoRight;?>"/>
+		<input type="hidden" name="existImageRight" value="<?php echo $this->logoRight; ?>"/>
 		<div class="fileupload fileupload-new" data-provides="fileupload">
 			
 			<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
-				<?php if(trim($this->logoRight)!=""){ ?>
-					<img src="<?php echo $this->baseUrl('uploads/logo/'.$this->logoRight); ?>" />
-				<?php }else{ ?>
+				<?php if (trim($this->logoRight) != "") { ?>
+					<img src="<?php echo $this->baseUrl('uploads/logo/' . $this->logoRight); ?>" />
+				<?php } else { ?>
 					<img src="<?php echo $this->baseUrl('images/logo-generate.gif'); ?>" />
 				<?php } ?>
 				
@@ -58,28 +70,32 @@
 		</div>
 	</div> -->
 	<div class="container">
-		<div class="col-md-6 form-group">
-			<label class="">Report Layout</label>
-			<select class="form-control" name="reportLayout" id="reportLayout" title="Please select the report layout">
-				<?php if(isset($this->reportLayouts) && count($this->reportLayouts) > 0){
-					foreach($this->reportLayouts as $folder){
-						if($folder != '.' && $folder != '..'){
-							$selected = (isset($this->reportLayoutsResult) && $this->reportLayoutsResult == str_replace('.phtml','',$folder))?'selected="selected"':"";
-							echo '<option value='.str_replace('.phtml','',$folder).' '.$selected.'>'.ucwords(str_replace('.phtml','',$folder)).'</option>';
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<label class="">Report Layout</label>
+				<select class="form-control" name="reportLayout" id="reportLayout" title="Please select the report layout">
+					<?php if (isset($this->reportLayouts) && count($this->reportLayouts) > 0) {
+						foreach ($this->reportLayouts as $folder) {
+							if ($folder != '.' && $folder != '..') {
+								$selected = (isset($this->reportLayoutsResult) && $this->reportLayoutsResult == str_replace('.phtml', '', $folder)) ? 'selected="selected"' : "";
+								echo '<option value=' . str_replace('.phtml', '', $folder) . ' ' . $selected . '>' . ucwords(str_replace('.phtml', '', $folder)) . '</option>';
+							}
 						}
-					}
-				}?>
-			</select>
+					} ?>
+				</select>
+			</div>
 		</div>
 	</div>
 	<hr>
-	<div class="form-group">
-	  <div class="col-lg-offset-2 col-lg-10">
-	      <input type="button" class="btn btn-info" value="Update" onclick="validateNow();return false;">
-	      <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>" class="btn btn-danger">Cancel</a>
-	  </div>
+	<div class="row">
+		<div class="form-group">
+			<div class="col-lg-offset-2 col-lg-10">
+				<input type="button" class="btn btn-info" value="Update" onclick="validateNow();return false;">
+				<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>" class="btn btn-danger">Cancel</a>
+			</div>
+		</div>
 	</div>
-	
+
 </form>
 
 <script src="<?php echo $this->baseUrl('js/jquery.hotkeys.js'); ?>"></script>
@@ -87,95 +103,104 @@
 <script src="<?php echo $this->baseUrl('js/bootstrap-fileupload.js'); ?>"></script>
 
 <script type="text/javascript">
-	duplicateName=true;
-	
-	
-	function validateNow(){
+	duplicateName = true;
+
+
+	function validateNow() {
 		desc = $("#editor").html();
 		$("#content").html(desc);
 		flag = deforayValidator.init({
-		    formId: 'addReportConfig'
+			formId: 'addReportConfig'
 		});
-		if(flag){
-		    if(duplicateName){
-			document.getElementById('addReportConfig').submit();
-		    }
+		if (flag) {
+			if (duplicateName) {
+				document.getElementById('addReportConfig').submit();
+			}
 		}
 	}
-	
-	
-	$(function(){
-		
+
+
+	$(function() {
+
 		$("#docListTable").dataTable();
-		
+
 		function initToolbarBootstrapBindings() {
-		var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier', 
-		    'Courier New', 'Comic Sans MS', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
-		    'Times New Roman', 'Verdana'],
-		    fontTarget = $('[title=Font]').siblings('.dropdown-menu');
-		$.each(fonts, function (idx, fontName) {
-		    fontTarget.append($('<li><a data-edit="fontName ' + fontName +'" style="font-family:\''+ fontName +'\'">'+fontName + '</a></li>'));
-		});
-		$('a[title]').tooltip({container:'body'});
-		$('.dropdown-menu input').click(function() {return false;})
-			
-		$('[data-role=magic-overlay]').each(function () { 
-		  var overlay = $(this), target = $(overlay.data('target')); 
-		  overlay.css('opacity', 0).css('position', 'absolute').offset(target.offset()).width(target.outerWidth()).height(target.outerHeight());
-		});
-	      
+			var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier',
+					'Courier New', 'Comic Sans MS', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
+					'Times New Roman', 'Verdana'
+				],
+				fontTarget = $('[title=Font]').siblings('.dropdown-menu');
+			$.each(fonts, function(idx, fontName) {
+				fontTarget.append($('<li><a data-edit="fontName ' + fontName + '" style="font-family:\'' + fontName + '\'">' + fontName + '</a></li>'));
+			});
+			$('a[title]').tooltip({
+				container: 'body'
+			});
+			$('.dropdown-menu input').click(function() {
+				return false;
+			})
+
+			$('[data-role=magic-overlay]').each(function() {
+				var overlay = $(this),
+					target = $(overlay.data('target'));
+				overlay.css('opacity', 0).css('position', 'absolute').offset(target.offset()).width(target.outerWidth()).height(target.outerHeight());
+			});
+
 		};
-		
-		function showErrorAlert (reason, detail) {
-			var msg='';
-			if (reason==='unsupported-file-type') { msg = "Unsupported format " +detail; }
-			else {
+
+		function showErrorAlert(reason, detail) {
+			var msg = '';
+			if (reason === 'unsupported-file-type') {
+				msg = "Unsupported format " + detail;
+			} else {
 				console.log("error uploading file", reason, detail);
 			}
-			$('<div class="alert"> <button type="button" class="close" data-dismiss="alert">&times;</button>'+ 
-			 '<strong>File upload error</strong> '+msg+' </div>').prependTo('#alerts');
+			$('<div class="alert"> <button type="button" class="close" data-dismiss="alert">&times;</button>' +
+				'<strong>File upload error</strong> ' + msg + ' </div>').prependTo('#alerts');
 		};
-	
-		initToolbarBootstrapBindings();  
-		$('#editor').wysiwyg({ fileUploadError: showErrorAlert});
-		
-		
-	
+
+		initToolbarBootstrapBindings();
+		$('#editor').wysiwyg({
+			fileUploadError: showErrorAlert
+		});
+
+
+
 	});
-	
-	
+
+
 	function pasteHtmlAtCaret(html) {
 		var sel, range;
 		if (window.getSelection) {
-		    // IE9 and non-IE
-		    sel = window.getSelection();
-		    if (sel.getRangeAt && sel.rangeCount) {
-			range = sel.getRangeAt(0);
-			range.deleteContents();
-			
-			// Range.createContextualFragment() would be useful here but is
-			// non-standard and not supported in all browsers (IE9, for one)
-			var el = document.createElement("div");
-			el.innerHTML = html;
-			var frag = document.createDocumentFragment(), node, lastNode;
-			while ( (node = el.firstChild) ) {
-			    lastNode = frag.appendChild(node);
+			// IE9 and non-IE
+			sel = window.getSelection();
+			if (sel.getRangeAt && sel.rangeCount) {
+				range = sel.getRangeAt(0);
+				range.deleteContents();
+
+				// Range.createContextualFragment() would be useful here but is
+				// non-standard and not supported in all browsers (IE9, for one)
+				var el = document.createElement("div");
+				el.innerHTML = html;
+				var frag = document.createDocumentFragment(),
+					node, lastNode;
+				while ((node = el.firstChild)) {
+					lastNode = frag.appendChild(node);
+				}
+				range.insertNode(frag);
+
+				// Preserve the selection
+				if (lastNode) {
+					range = range.cloneRange();
+					range.setStartAfter(lastNode);
+					range.collapse(true);
+					sel.removeAllRanges();
+					sel.addRange(range);
+				}
 			}
-			range.insertNode(frag);
-			
-			// Preserve the selection
-			if (lastNode) {
-			    range = range.cloneRange();
-			    range.setStartAfter(lastNode);
-			    range.collapse(true);
-			    sel.removeAllRanges();
-			    sel.addRange(range);
-			}
-		    }
 		} else if (document.selection && document.selection.type != "Control") {
-		    // IE < 9
-		    document.selection.createRange().pasteHTML(html);
+			// IE < 9
+			document.selection.createRange().pasteHTML(html);
 		}
 	}
-	
 </script>

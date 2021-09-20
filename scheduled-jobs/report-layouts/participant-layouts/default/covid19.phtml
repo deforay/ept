@@ -29,11 +29,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         $geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($result['map_id']);
 
         $geneDetails = array();
-        foreach($geneIdentifiedTypes as $gene){
-            $geneDetails[$gene['sample_id']][] = $allGeneTypes[$gene['gene_id']]." = ".$gene['ct_value'];
+        foreach ($geneIdentifiedTypes as $gene) {
+            $geneDetails[$gene['sample_id']][] = $allGeneTypes[$gene['gene_id']] . " = " . $gene['ct_value'];
         }
 
-        
+
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
@@ -51,7 +51,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'],"",$trainingInstanceText);
+        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $institutePostition);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -111,18 +111,18 @@ if (sizeof($resultArray['shipment']) > 0) {
         $score = 0;
         $testThreeOptionalDisplay = "";
         $testTwoDisplay = "";
-        
+
         if (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && ($config->evaluation->covid19->covid19MaximumTestAllowed == '1' || $config->evaluation->covid19->covid19MaximumTestAllowed == '2')) {
             $testThreeOptionalDisplay = "display:none;";
         }
-        
+
         if (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != '3' && $config->evaluation->covid19->covid19MaximumTestAllowed != '2') {
             $testTwoDisplay = "display:none;";
         }
-        
+
         /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
-       
+
         /* for Shipment attributes functionality end */
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
@@ -173,7 +173,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
         $labInfo .= '	<td><strong>Specimen Volume</strong><br>' . $result['specimen_volume'] . '</td>';
         $labInfo .= '	<td>';
-        
+
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
@@ -202,30 +202,30 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results : <br/></span><table border="1" style="font-size:12px;">';
             $labRes .= '<tr style="background-color:#dbe4ee;">
                             <td></td>';
-                            $labRes .= '<th style="text-align:center;font-weight:bold;">Test</th>';
-                            $labRes .= '<th colspan="5" style="border:none;"></th>
+            $labRes .= '<th style="text-align:center;font-weight:bold;">Test</th>';
+            $labRes .= '<th colspan="5" style="border:none;"></th>
                         </tr>';
             $labRes .= '<tr>
                             <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Test Platform</td>
                             <td>' . $result['responseResult'][0]['testPlatform1'] . '</td>';
-                            $labRes .= '<td colspan="5"></td>
+            $labRes .= '<td colspan="5"></td>
                                             </tr>';
-                            $labRes .= '<tr>
+            $labRes .= '<tr>
                                                 <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td>
                                                 <td>' . $result['responseResult'][0]['lot_no_1'] . '</td>';
-                            
-                            $labRes .= '<td colspan="5"></td>
+
+            $labRes .= '<td colspan="5"></td>
                         </tr>';
             $labRes .= '<tr>
                             <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>
                             <td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
-                            
-                            $labRes .= '<td colspan="5"></td>
+
+            $labRes .= '<td colspan="5"></td>
                         </tr>';
             $labRes .= '<tr style="background-color:#dbe4ee;">
                             <th style="text-align:center;font-weight:bold;width:14.66%;">Specimen Panel ID </th>';
-                            $labRes .= '<th style="text-align:center;font-weight:bold;width:10.66%;">Result</th>';
-                            $labRes .= '<th style="text-align:center;font-weight:bold;width:16.66%;">Expected Final Interpretation</th>
+            $labRes .= '<th style="text-align:center;font-weight:bold;width:10.66%;">Result</th>';
+            $labRes .= '<th style="text-align:center;font-weight:bold;width:16.66%;">Expected Final Interpretation</th>
                             <th style="text-align:center;font-weight:bold;width:14.66%;">Your Final Interpretation</th>
                             <th style="text-align:center;font-weight:bold;width:12.66%;" colspan="2">Score</th>
                             <th style="text-align:center;font-weight:bold;width:30.66%;">Gene Types</th>
@@ -286,7 +286,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                             <td>' . ucfirst(strtolower($response['labResult'])) . '</td>
                             <td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $score . '</td>
-							<td style="text-align:center;">'.(!empty($geneDetails[$response['sample_id']]) ? implode(", ", $geneDetails[$response['sample_id']]) : '').'</td>
+							<td style="text-align:center;">' . (!empty($geneDetails[$response['sample_id']]) ? implode(", ", $geneDetails[$response['sample_id']]) : '') . '</td>
 						  </tr>';
             }
             $labRes .= '</table>';
@@ -379,9 +379,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         $fileName = str_replace(" ", "-", $fileName);
         $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
-        if($trainingInstance == "yes"){
+        if ($trainingInstance == "yes") {
             //Watermark section
-            $pdf= new PDF_Rotate();
+            $pdf = new PDF_Rotate();
         }
 
         $loadpdf = Zend_Pdf::load($filePath);
