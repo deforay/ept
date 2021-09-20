@@ -8,6 +8,13 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 } else {
 	$testReceiptDate = date('d-M-Y');
 }
+
+
+$labDirectorName = (isset($this->shipment['lab_director_name']) && $this->shipment['lab_director_name'] != "") ? $this->shipment['lab_director_name'] : $this->participant['lab_director_name'];
+$labDirectorEmail = (isset($this->shipment['lab_director_email']) && $this->shipment['lab_director_email'] != "") ? $this->shipment['lab_director_email'] : $this->participant['lab_director_email'];
+$contactPersonName = (isset($this->shipment['contact_person_name']) && $this->shipment['contact_person_name'] != "") ? $this->shipment['contact_person_name'] : $this->participant['contact_person_name'];
+$contactPersonEmail = (isset($this->shipment['contact_person_email']) && $this->shipment['contact_person_email'] != "") ? $this->shipment['contact_person_email'] : $this->participant['contact_person_email'];
+$contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) && $this->shipment['contact_person_telephone'] != "") ? $this->shipment['contact_person_telephone'] : $this->participant['contact_person_telephone'];
 ?>
 <style>
 	th {
@@ -73,6 +80,62 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
 							<td style="width:20%;">
+								<label class="label-control" for="">Name of Laboratory: </label>
+							</td>
+							<td style="width:30%;">
+								<?php echo $this->participant['first_name'] . " " . $this->participant['last_name']; ?>
+							</td>
+							<td style="width:20%;">
+								<label class="label-control" for="">Laboratory ID: </label>
+							</td>
+							<td style="width:30%;">
+								<?php echo $this->participant['unique_identifier']; ?>
+							</td>
+						</tr>
+						<tr>
+							<td style="width:20%;">
+								<label class="label-control" for="labDirectorName">Laboratory Director Name: <span class='mandatory'>*</span></label>
+							</td>
+							<td style="width:30%;">
+								<input type="text" id="labDirectorName" name="labDirectorName" class="form-control isRequired" value="<?php echo $labDirectorName; ?>" placeholder="Enter the Laboratory Director Name" title="Please enter the laboratory director name">
+							</td>
+							<td style="width:20%;">
+								<label class="label-control" for="labDirectorEmail">Laboratory Director Email: <span class='mandatory'>*</span></label>
+							</td>
+							<td style="width:30%;">
+								<input type="hidden" id="labDirectorEmailChange" name="labDirectorEmailChange" value="<?php echo $labDirectorEmail; ?>" style="display:none;">
+								<input type="text" id="labDirectorEmail" name="labDirectorEmail" class="form-control isRequired" value="<?php echo $labDirectorEmail; ?>" placeholder="Enter the Laboratory Director email" title="Please enter the laboratory director email" onchange="changeEmail('#labDirectorEmail','#labDirectorEmailChange', '#confirmLabDirectorEmail');">
+								<input type="text" id="confirmLabDirectorEmail" name="confirmLabDirectorEmail" class="form-control" placeholder="Enter the confirm laboratory director email" title="Please enter the confirm laboratory director email" style="display: none;">
+							</td>
+						</tr>
+						<tr>
+							<td style="width:20%;">
+								<label class="label-control" for="contactPersonName">Contact Person Name: <span class='mandatory'>*</span></label>
+							</td>
+							<td style="width:30%;">
+								<input type="text" id="contactPersonName" name="contactPersonName" class="form-control isRequired" value="<?php echo $contactPersonName; ?>" placeholder="Enter the Contact Person name" title="Please enter the contact person name">
+							</td>
+							<td style="width:20%;">
+								<label class="label-control" for="contactPersonEmail">Contact Person Email: <span class='mandatory'>*</span></label>
+							</td>
+							<td style="width:30%;">
+								<input type="hidden" id="contactPersonEmailChange" name="contactPersonEmailChange" value="<?php echo $contactPersonEmail; ?>" style="display:none;">
+								<input type="text" id="contactPersonEmail" name="contactPersonEmail" class="form-control isRequired" value="<?php echo $contactPersonEmail; ?>" placeholder="Enter the Contact Person email" title="Please enter the contact person email" onchange="changeEmail('#contactPersonEmail','#contactPersonEmailChange','#confirmContactPersonEmail');">
+								<input type="text" id="confirmContactPersonEmail" name="confirmContactPersonEmail" class="form-control" placeholder="Enter the confirm contact person email" title="Please enter the confirm contact person email" style="display: none;">
+							</td>
+						</tr>
+						<tr>
+							<td style="width:20%;">
+								<label class="label-control" for="contactPersonTelephone">Contact Person Phone: <span class='mandatory'>*</span></label>
+							</td>
+							<td style="width:30%;">
+								<input type="text" id="contactPersonTelephone" name="contactPersonTelephone" class="form-control isRequired" value="<?php echo $contactPersonTelephone; ?>" placeholder="Enter the contact person telephone" title="Please enter the contact person telephone">
+							</td>
+						</tr>
+					</table>
+					<!-- <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+						<tr>
+							<td style="width:20%;">
 								<h4 class="text-info"> Participant Name </h4> <?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>
 							</td>
 							<td style="width:20%;">
@@ -88,7 +151,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 								<h4 class="text-info"> Mobile No </h4> <?php echo ($this->participant['mobile']); ?>
 							</td>
 						</tr>
-					</table>
+					</table> -->
 					<hr>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr class="dark">
@@ -104,21 +167,17 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('receiptDate')"> Clear</i>
 							</td>
 
-							<td><label>Sample Rehydration Date <span class='mandatory ptTestPerformed'>*</span></label></td>
+							<!-- <td><label>Sample Rehydration Date <span class='mandatory ptTestPerformed'>*</span></label></td>
 							<td>
 								<input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" style="width:180px;float:left;" value="<?php echo (isset($this->shipment['attributes']["sample_rehydration_date"]) && $this->shipment['attributes']["sample_rehydration_date"] != '') ? $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]) : ''; ?>" class="isRequired datepicker form-control" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('sampleRehydrationDate')"> Clear</i>
-							</td>
-						</tr>
-						<tr>
+							</td> -->
 							<td><label>Shipment Testing Date <span class='mandatory ptTestPerformed'>*</span></label></td>
 							<td>
 								<input type="text" id="testDate" name="testDate" style="width:180px;float:left;" maxlength="11" value="<?php echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>" class="datepicker form-control" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> Clear</i>
 							</td>
-							<td colspan="2"></td>
 						</tr>
-
 						<tr class="dark">
 							<td><label>Extraction Assay <span class='mandatory ptTestPerformed'>*</span></label></td>
 							<td>
@@ -133,6 +192,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 									?>
 								</select>
 							</td>
+						</tr>
+						<!-- 
+
 							<td><label>Detection Assay <span class='mandatory ptTestPerformed'>*</span></label></td>
 							<td>
 								<select id="detectionAssay" name="detectionAssay" class="form-control isRequired">
@@ -168,7 +230,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 								<input type="text" id="detectionAssayExpiryDate" name="detectionAssayExpiryDate" style="width:180px;float:left;" maxlength="11" value="<?php echo (isset($this->shipment['attributes']['detection_assay_expiry_date']) && $this->shipment['attributes']['detection_assay_expiry_date'] != "") ? $this->dateFormat($this->shipment['attributes']['detection_assay_expiry_date']) : ''; ?>" class="isRequired datepicker form-control" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('detectionAssayExpiryDate')"> Clear</i>
 							</td>
-						</tr>
+						</tr> -->
 
 						<?php
 						if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes')) {
@@ -405,6 +467,10 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 	</div>
 </section>
 <script>
+	var mailConfirmation = false;
+	var confirmEmailId = "";
+	var updateEmailId = "";
+
 	function goto_dashboard() {
 		window.history.back();
 	}
@@ -418,6 +484,25 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 	}
 
 	function validateNow() {
+		if (mailConfirmation) {
+			if ($("#confirmContactPersonEmail").is(":visible")) {
+				if ($("#contactPersonEmail").val() != $("#confirmContactPersonEmail").val()) {
+					$("#confirmContactPersonEmail").focus();
+					$("#confirmContactPersonEmail").css('border-color', 'red');
+					alert("Please enter the same email id for confirmation email");
+					return false;
+				}
+			}
+			if ($("#confirmLabDirectorEmail").is(":visible")) {
+				if ($("#labDirectorEmail").val() != $("#confirmLabDirectorEmail").val()) {
+					$("#confirmLabDirectorEmail").focus();
+					$("#confirmLabDirectorEmail").css('border-color', 'red');
+					alert("Please enter the same email id for confirmation email");
+					return false;
+				}
+			}
+		}
+
 		flag = deforayValidator.init({
 			formId: 'eidResponseForm'
 		});
@@ -526,4 +611,27 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 			$(".logValFormVl").html("");
 		}
 	});
+
+	function changeEmail(changeId, oldId, confirmId) {
+		if ($(oldId).val() != "") {
+
+			if ($(changeId).val() != $(oldId).val()) {
+				if (confirm("Do you want to update this email id?")) {
+					mailConfirmation = true;
+					confirmEmailId = confirmId;
+					updateEmailId = changeId;
+					$(confirmId).val('');
+					$(confirmId).show();
+				} else {
+					$(changeId).val($(oldId).val());
+					if (!$("#confirmContactPersonEmail").is(":visible") && !$("#confirmLabDirectorEmail").is(":visible")) {
+						mailConfirmation = false;
+					} else {
+						mailConfirmation = true;
+					}
+					$(confirmId).hide();
+				}
+			}
+		}
+	}
 </script>

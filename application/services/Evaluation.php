@@ -758,7 +758,8 @@ class Application_Service_Evaluation
 		} else if ($params['scheme'] == 'vl') {
 
 			$shipmentService = new Application_Service_Shipments();
-			$mandatoryFields = array('receiptDate', 'testDate', 'vlAssay', 'assayExpirationDate', 'assayLotNumber');
+			// $mandatoryFields = array('receiptDate', 'testDate', 'vlAssay', 'assayExpirationDate', 'assayLotNumber');
+			$mandatoryFields = array('receiptDate', 'testDate');
 			$mandatoryCheckErrors = $shipmentService->mandatoryFieldsCheck($params, $mandatoryFields);
 			if (count($mandatoryCheckErrors) > 0) {
 

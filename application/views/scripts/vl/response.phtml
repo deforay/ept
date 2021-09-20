@@ -648,17 +648,24 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 	});
 
 	function changeEmail(changeId, oldId, confirmId) {
-		if ($(changeId).val() != $(oldId).val()) {
-			if (confirm("Do you want to update this email id?")) {
-				mailConfirmation = true;
-				confirmEmailId = confirmId;
-				updateEmailId = changeId;
-				$(confirmId).val('');
-				$(confirmId).show();
-			} else {
-				$(changeId).val($(oldId).val());
-				mailConfirmation = false;
-				$(confirmId).hide();
+		if ($(oldId).val() != "") {
+
+			if ($(changeId).val() != $(oldId).val()) {
+				if (confirm("Do you want to update this email id?")) {
+					mailConfirmation = true;
+					confirmEmailId = confirmId;
+					updateEmailId = changeId;
+					$(confirmId).val('');
+					$(confirmId).show();
+				} else {
+					$(changeId).val($(oldId).val());
+					if (!$("#confirmContactPersonEmail").is(":visible") && !$("#confirmLabDirectorEmail").is(":visible")) {
+						mailConfirmation = false;
+					} else {
+						mailConfirmation = true;
+					}
+					$(confirmId).hide();
+				}
 			}
 		}
 	}
