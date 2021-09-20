@@ -9,7 +9,7 @@ public function IsgetDTSResponseEditable($evaluationStatus){
 
 	
 	public function saveResponse($data){
-		date_default_timezone_set('America/New_York');
+		
 		// Save all Shipment Information
 		// Shipment what we have ?
 		//Receipt Date, Testing Date, Rehydration Date
