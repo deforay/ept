@@ -11,16 +11,17 @@ class Admin_ReportConfigController extends Zend_Controller_Action
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->getAllParams();            
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $reportService->updateReportConfigs($params);
             $this->redirect("/admin/report-config/");
-        }else{
+        } else {
             $reportService = new Application_Service_Reports();
-            $this->view->logo=$reportService->getReportConfigValue('logo');
-            $this->view->logoRight=$reportService->getReportConfigValue('logo-right');
-            $this->view->result=$reportService->getReportConfigValue('report-header');
-            $this->view->reportLayouts = scandir(PARTICIPANT_REPORT_LAYOUT,true);
+            $this->view->logo = $reportService->getReportConfigValue('logo');
+            $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
+            $this->view->result = $reportService->getReportConfigValue('report-header');
+            $this->view->institutePostition = $reportService->getReportConfigValue('institute-postition');
+            $this->view->reportLayouts = scandir(PARTICIPANT_REPORT_LAYOUT, true);
             $this->view->reportLayoutsResult = $reportService->getReportConfigValue('report-layout');
         }
     }
@@ -32,4 +33,3 @@ class Admin_ReportConfigController extends Zend_Controller_Action
         // Zend_Debug::dump($this->view->filename);die;
     }
 }
-
