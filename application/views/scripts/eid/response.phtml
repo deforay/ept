@@ -48,7 +48,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
 				<input type="hidden" id="schemeCode" name="schemeCode" value="<?php echo $this->shipment['shipment_code']; ?>" />
 				<input type="hidden" id="participantName" name="participantName" value="<?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>" />
-				<input type="hidden" id="participantId" name="participantId" value="<?php echo ($this->participant['unique_identifier']); ?>" />
+				
 
 				<div id="view-content">
 					<?php
@@ -179,7 +179,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 							</td>
 						</tr>
 						<tr class="dark">
-							<td><label>Extraction Assay <span class='mandatory ptTestPerformed'>*</span></label></td>
+							<td><label>Assay <span class='mandatory ptTestPerformed'>*</span></label></td>
 							<td>
 								<select id="extractionAssay" name="extractionAssay" class="form-control isRequired">
 									<option value="">--Select--</option>

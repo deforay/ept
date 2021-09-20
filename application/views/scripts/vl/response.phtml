@@ -43,7 +43,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
 				<input type="hidden" id="schemeCode" name="schemeCode" value="<?php echo $this->shipment['shipment_code']; ?>" />
 				<input type="hidden" id="participantName" name="participantName" value="<?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>" />
-				<input type="hidden" id="participantId" name="participantId" value="<?php echo ($this->participant['unique_identifier']); ?>" />
+				
 				<input type="hidden" id="comingFrom" name="comingFrom" value="<?php echo $this->comingFrom; ?>" />
 				<?php $count = 0;
 				foreach ($this->allSamples as $sample) {
