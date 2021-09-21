@@ -43,7 +43,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
 				<input type="hidden" id="schemeCode" name="schemeCode" value="<?php echo $this->shipment['shipment_code']; ?>" />
 				<input type="hidden" id="participantName" name="participantName" value="<?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>" />
-				
+
 				<input type="hidden" id="comingFrom" name="comingFrom" value="<?php echo $this->comingFrom; ?>" />
 				<?php $count = 0;
 				foreach ($this->allSamples as $sample) {
@@ -182,7 +182,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 								<input type="text" name="otherAssay" id="otherAssay" class="form-control" value="<?php echo html_entity_decode(isset($this->shipment['attributes']['other_assay']) && ($this->shipment['attributes']['other_assay'] != "")) ? $this->shipment['attributes']['other_assay'] : ""; ?>" title="Please specify Other Assay Name" />
 							</td>
 
-						</tr>						
+						</tr>
 						<tr>
 							<td><label>Specimen Volume used for testing</label></td>
 							<td>
@@ -323,23 +323,31 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 
 						<?php } ?>
 						<tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-							<td colspan="3">
+							<td colspan="2">
 								<label>Reason for not testing the PT Panel</label> <span class="mandatory">*</span> :
-								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;">
+								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" onchange="collectPanelReceiptDate();">
 									<option value="">--Select--</option>
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {
 									?>
-										<option value="<?php echo $reason['vl_not_tested_reason_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['vl_not_tested_reason']); ?></option>
+										<option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?= $reason['vl_not_tested_reason_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['vl_not_tested_reason']); ?></option>
 									<?php } ?>
+								</select>
+							</td>
+
+							<td colspan="2"><label>Received the PT Panel? </label> <span class="mandatory">*</span>
+								<select id="receivedPtPanel" name="receivedPtPanel" class="form-control" title="Please select if you received the PT Panel">
+									<option value="">--Select--</option>
+									<option value="yes">Yes</option>
+									<option value="no">No</option>
 								</select>
 							</td>
 						</tr>
 						<tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-							<td colspan="3"><label>Your comments</label> <span class="mandatory">*</span> : <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
+							<td colspan="4"><label>Your comments</label> <span class="mandatory">*</span> : <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
 						</tr>
 						<tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-							<td colspan="3"><label>Do you need any support from the PT Provider ?</label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
+							<td colspan="4"><label>Do you need any support from the PT Provider ?</label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
 						</tr>
 					</table>
 					<hr>
@@ -479,6 +487,15 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 
 		$(".tnd").trigger("change");
 		$('#isPtTestNotPerformed').trigger("change");
+		$('#receivedPtPanel').on("change", function() {
+			if ($(this).val() == 'yes') {
+				$('#receiptDate').addClass('isRequired');
+			} else {
+				$('#receiptDate').removeClass('isRequired');
+			}
+		});
+
+
 	});
 
 
@@ -589,28 +606,26 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 			$('.ptNotPerformedSection').show();
 			$('.vlResultMandatory').css('visibility', 'hidden');
 			$('.vlResultValues').removeClass('isRequired');
+			$('#vlAssay').removeClass('isRequired');
 			$('#vlNotTestedReason').addClass('isRequired');
+			$('#receivedPtPanel').addClass('isRequired');
 			$('#ptNotTestedComments').addClass('isRequired');
 			$('#testDate').removeClass('isRequired');
 			$('#receiptDate').removeClass('isRequired');
-			$('#assayExpirationDate').removeClass('isRequired');
-			$('#assayLotNumber').removeClass('isRequired');
 			$('#supervisorApproval').removeClass('isRequired');
-			$('#sampleRehydrationDate').removeClass('isRequired');
 			$('.ptTestPerformed').hide();
 		} else {
 			$('.vlResultSection').show();
 			$('.ptNotPerformedSection').hide();
 			$('.vlResultMandatory').css('visibility', 'visible');
 			$('.vlResultValues').addClass('isRequired');
+			$('#vlAssay').addClass('isRequired');
 			$('#vlNotTestedReason').removeClass('isRequired');
+			$('#receivedPtPanel').removeClass('isRequired');
 			$('#ptNotTestedComments').removeClass('isRequired');
 			$('#receiptDate').addClass('isRequired');
 			$('#testDate').addClass('isRequired');
-			$('#assayExpirationDate').addClass('isRequired');
-			$('#assayLotNumber').addClass('isRequired');
 			$('#supervisorApproval').addClass('isRequired');
-			$('#sampleRehydrationDate').addClass('isRequired');
 			$('.ptTestPerformed').show();
 		}
 	});
@@ -668,6 +683,15 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 			$(".logValFormVl").html("");
 		}
 	});
+
+	function collectPanelReceiptDate() {
+		let collectReceiptDate = ($("#vlNotTestedReason").find(':selected').attr('data-collect-panel-receipt-date'));
+		if (collectReceiptDate == 'no') {
+			$("#receivedPtPanel").val('no');
+		} else {
+			$("#receivedPtPanel").val('');
+		}
+	}
 
 	function changeEmail(changeId, oldId, confirmId) {
 		if ($(oldId).val() != "") {
