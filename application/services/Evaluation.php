@@ -1584,6 +1584,34 @@ class Application_Service_Evaluation
 						->order('testkit1Total DESC');
 					$rQueryRes = $db->fetchAll($rQuery);
 					$shipmentResult['pieChart'] = $rQueryRes;
+
+					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(''))
+						->join(array('resdts' => 'response_result_dts'), 'resdts.shipment_map_id=spm.map_id', array(
+							'testkit2Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resdts.test_kit_name_2,resdts.shipment_map_id)))')
+						))
+						->join(array('rtdts' => 'r_testkitname_dts'), 'rtdts.TestKitName_ID=resdts.test_kit_name_2', array('TestKit_Name'))
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
+						->where("spm.is_excluded!='yes'")
+						->where("spm.shipment_id = ?", $shipmentId)
+						->group('resdts.test_kit_name_2')
+						->order('testkit2Total DESC');
+					$rQueryRes = $db->fetchAll($rQuery);
+					$shipmentResult['pieChart2'] = $rQueryRes;
+
+					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(''))
+						->join(array('resdts' => 'response_result_dts'), 'resdts.shipment_map_id=spm.map_id', array(
+							'testkit3Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resdts.test_kit_name_3,resdts.shipment_map_id)))')
+						))
+						->join(array('rtdts' => 'r_testkitname_dts'), 'rtdts.TestKitName_ID=resdts.test_kit_name_3', array('TestKit_Name'))
+						->where("spm.final_result IS NOT NULL")
+						->where("spm.final_result!=''")
+						->where("spm.is_excluded!='yes'")
+						->where("spm.shipment_id = ?", $shipmentId)
+						->group('resdts.test_kit_name_3')
+						->order('testkit3Total DESC');
+					$rQueryRes = $db->fetchAll($rQuery);
+					$shipmentResult['pieChart3'] = $rQueryRes;
 				}
 				// DTS Participants Perfomance chart
 				$sQuery = $db->select()->from(array('s' => 'shipment'), array('shipment_code'))

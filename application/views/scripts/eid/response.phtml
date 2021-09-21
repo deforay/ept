@@ -48,7 +48,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
 				<input type="hidden" id="schemeCode" name="schemeCode" value="<?php echo $this->shipment['shipment_code']; ?>" />
 				<input type="hidden" id="participantName" name="participantName" value="<?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>" />
-				
+
 
 				<div id="view-content">
 					<?php
@@ -326,8 +326,8 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 							<tr align="center" class="">
 								<th style="width:25%;text-align: center;">Control/Sample</th>
 								<th style="width:25%;text-align: center;">Your Results</th>
-								<th style="width:25%;text-align: center;">HIV CT/OD</th>
-								<th style="width:25%;text-align: center;">IC/QS Values</th>
+								<!-- <th style="width:25%;text-align: center;">HIV CT/OD</th> -->
+								<!-- <th style="width:25%;text-align: center;">IC/QS Values</th> -->
 							</tr>
 						</thead>
 						<tfoot>
@@ -354,14 +354,14 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 										<?php $this->dropdownSelection($possibleResults, $sample['reported_result'], true); ?>
 									</select>
 								</td>
-								<td>
+								<!-- <td>
 									<input type="text" name="hivCtOd[]" class="<?php //echo ($sample['mandatory'] == 1) ? " isRequired " : ""; 
 																				?> form-control" value="<?php echo $sample['hiv_ct_od']; ?>" title="Please enter the HIV CT/OD for <?php echo $sample['sample_label']; ?>" style="width:100px;" />
 								</td>
 								<td>
 									<input type="text" name="icQs[]" class="<?php //echo ($sample['mandatory'] == 1) ? " isRequired " : ""; 
 																			?> form-control" value="<?php echo $sample['ic_qs']; ?>" title="Please enter the IC/QS Values for <?php echo $sample['sample_label']; ?>" style="width:100px;" />
-								</td>
+								</td> -->
 							</tr>
 
 
