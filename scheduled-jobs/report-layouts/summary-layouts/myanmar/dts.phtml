@@ -53,6 +53,9 @@ if ($resultArray['shipment'] != "") {
     $pdf->AddPage('P', 'A4');
     /* Set Font */
     $pdf->SetFont('helvetica', 'B', 12);
+    $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? json_decode($resultArray['shipment']['shipment_attributes'], true) : array();
+    // Zend_Debug::dump($shipmentAttributes);
+    // die;
     if (count($resultArray['shipment']['referenceResult']) > 0) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
@@ -368,7 +371,11 @@ if ($resultArray['shipment'] != "") {
         $graph->Add($gbplot);
 
         $b1plot->SetColor("white");
-        $graph->title->Set("Test kits used for Test 1 PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
+        if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
+            $graph->title->Set("Test kits used for PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
+        } else {
+            $graph->title->Set("Test kits used for Test 1 PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
+        }
         $graph->yaxis->title->Set('Number of Participants');
         $graph->xaxis->title->Set('Testkit-1 Name');
         $graph->yaxis->SetTitleMargin(35);
@@ -385,108 +392,111 @@ if ($resultArray['shipment'] != "") {
             unlink($piechart);
         }
     }
-    if (isset($resultArray['shipment']['pieChart2']) && count($resultArray['shipment']['pieChart2']) > 0) {
-        $dataX = array();
-        $dataY = array();
-        $total = 0;
-        foreach ($resultArray['shipment']['pieChart2'] as $key => $val) {
-            $dataX[] = $val['testkit2Total'];
-            $dataY[] = $val['TestKit_Name'] . ' (n=' . $val['testkit2Total'] . ')';
-            $total += $val['testkit2Total'];
+    if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] != 'yes') {
+
+        if (isset($resultArray['shipment']['pieChart2']) && count($resultArray['shipment']['pieChart2']) > 0) {
+            $dataX = array();
+            $dataY = array();
+            $total = 0;
+            foreach ($resultArray['shipment']['pieChart2'] as $key => $val) {
+                $dataX[] = $val['testkit2Total'];
+                $dataY[] = $val['TestKit_Name'] . ' (n=' . $val['testkit2Total'] . ')';
+                $total += $val['testkit2Total'];
+            }
+            // Create the graph. These two calls are always required
+            $graph = new Graph(680, 800, 'auto');
+            $graph->SetScale("textlin");
+
+            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+            $graph->SetBox(false);
+            $graph->SetMargin(80, 30, 10, 320);
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($dataY);
+            $graph->xaxis->SetTextLabelInterval(1);
+            $graph->xaxis->SetLabelAngle(90);
+            $graph->xaxis->SetLabelMargin(0);
+            $graph->xaxis->SetPos(0.5, 0.97, 'center', 'bottom');
+
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            // Create the bar plots
+            $b1plot = new BarPlot($dataX);
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
+
+            $b1plot->SetColor("white");
+            $graph->title->Set("Test kits used for Test 2 PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
+            $graph->yaxis->title->Set('Number of Participants');
+            $graph->xaxis->title->Set('Testkit-2 Name');
+            $graph->yaxis->SetTitleMargin(35);
+            $graph->xaxis->SetTitleMargin(280);
+            // Turn the tick mark out from the plot area
+            $graph->xaxis->SetTickSide(SIDE_DOWN);
+            $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+            $piechart2 = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'testkit2_chart.png';
+            $graph->Stroke($piechart2);
+
+            $pdf->Image($piechart2, 5, ($pdf->getY() + 200), '', '', '', '', 'C', false, 200);
+            if (file_exists($piechart2)) {
+                unlink($piechart2);
+            }
         }
-        // Create the graph. These two calls are always required
-        $graph = new Graph(680, 800, 'auto');
-        $graph->SetScale("textlin");
+        if (isset($resultArray['shipment']['pieChart3']) && count($resultArray['shipment']['pieChart3']) > 0) {
+            $dataX = array();
+            $dataY = array();
+            $total = 0;
+            foreach ($resultArray['shipment']['pieChart3'] as $key => $val) {
+                $dataX[] = $val['testkit3Total'];
+                $dataY[] = $val['TestKit_Name'] . ' (n=' . $val['testkit3Total'] . ')';
+                $total += $val['testkit3Total'];
+            }
+            // Create the graph. These two calls are always required
+            $graph = new Graph(680, 800, 'auto');
+            $graph->SetScale("textlin");
 
-        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
-        $graph->SetBox(false);
-        $graph->SetMargin(80, 30, 10, 320);
+            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+            $graph->SetBox(false);
+            $graph->SetMargin(80, 30, 10, 320);
 
-        $graph->ygrid->SetFill(false);
-        $graph->xaxis->SetTickLabels($dataY);
-        $graph->xaxis->SetTextLabelInterval(1);
-        $graph->xaxis->SetLabelAngle(90);
-        $graph->xaxis->SetLabelMargin(0);
-        $graph->xaxis->SetPos(0.5, 0.97, 'center', 'bottom');
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($dataY);
+            $graph->xaxis->SetTextLabelInterval(1);
+            $graph->xaxis->SetLabelAngle(90);
+            $graph->xaxis->SetLabelMargin(0);
+            $graph->xaxis->SetPos(0.5, 0.97, 'center', 'bottom');
 
-        $graph->yaxis->HideLine(false);
-        $graph->yaxis->HideTicks(false, false);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
 
-        // Create the bar plots
-        $b1plot = new BarPlot($dataX);
-        // Create the grouped bar plot
-        $gbplot = new GroupBarPlot(array($b1plot));
-        // ...and add it to the graPH
-        $graph->Add($gbplot);
+            // Create the bar plots
+            $b1plot = new BarPlot($dataX);
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
 
-        $b1plot->SetColor("white");
-        $graph->title->Set("Test kits used for Test 2 PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
-        $graph->yaxis->title->Set('Number of Participants');
-        $graph->xaxis->title->Set('Testkit-2 Name');
-        $graph->yaxis->SetTitleMargin(35);
-        $graph->xaxis->SetTitleMargin(280);
-        // Turn the tick mark out from the plot area
-        $graph->xaxis->SetTickSide(SIDE_DOWN);
-        $graph->yaxis->SetTickSide(SIDE_LEFT);
+            $b1plot->SetColor("white");
+            $graph->title->Set("Test kits used for Test 3 PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
+            $graph->yaxis->title->Set('Number of Participants');
+            $graph->xaxis->title->Set('Testkit-3 Name');
+            $graph->yaxis->SetTitleMargin(35);
+            $graph->xaxis->SetTitleMargin(280);
+            // Turn the tick mark out from the plot area
+            $graph->xaxis->SetTickSide(SIDE_DOWN);
+            $graph->yaxis->SetTickSide(SIDE_LEFT);
 
-        $piechart2 = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'testkit2_chart.png';
-        $graph->Stroke($piechart2);
+            $piechart3 = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'testkit3_chart.png';
+            $graph->Stroke($piechart3);
 
-        $pdf->Image($piechart2, 5, ($pdf->getY() + 200), '', '', '', '', 'C', false, 200);
-        if (file_exists($piechart2)) {
-            unlink($piechart2);
-        }
-    }
-    if (isset($resultArray['shipment']['pieChart3']) && count($resultArray['shipment']['pieChart3']) > 0) {
-        $dataX = array();
-        $dataY = array();
-        $total = 0;
-        foreach ($resultArray['shipment']['pieChart3'] as $key => $val) {
-            $dataX[] = $val['testkit3Total'];
-            $dataY[] = $val['TestKit_Name'] . ' (n=' . $val['testkit3Total'] . ')';
-            $total += $val['testkit3Total'];
-        }
-        // Create the graph. These two calls are always required
-        $graph = new Graph(680, 800, 'auto');
-        $graph->SetScale("textlin");
-
-        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
-        $graph->SetBox(false);
-        $graph->SetMargin(80, 30, 10, 320);
-
-        $graph->ygrid->SetFill(false);
-        $graph->xaxis->SetTickLabels($dataY);
-        $graph->xaxis->SetTextLabelInterval(1);
-        $graph->xaxis->SetLabelAngle(90);
-        $graph->xaxis->SetLabelMargin(0);
-        $graph->xaxis->SetPos(0.5, 0.97, 'center', 'bottom');
-
-        $graph->yaxis->HideLine(false);
-        $graph->yaxis->HideTicks(false, false);
-
-        // Create the bar plots
-        $b1plot = new BarPlot($dataX);
-        // Create the grouped bar plot
-        $gbplot = new GroupBarPlot(array($b1plot));
-        // ...and add it to the graPH
-        $graph->Add($gbplot);
-
-        $b1plot->SetColor("white");
-        $graph->title->Set("Test kits used for Test 3 PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
-        $graph->yaxis->title->Set('Number of Participants');
-        $graph->xaxis->title->Set('Testkit-3 Name');
-        $graph->yaxis->SetTitleMargin(35);
-        $graph->xaxis->SetTitleMargin(280);
-        // Turn the tick mark out from the plot area
-        $graph->xaxis->SetTickSide(SIDE_DOWN);
-        $graph->yaxis->SetTickSide(SIDE_LEFT);
-
-        $piechart3 = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'testkit3_chart.png';
-        $graph->Stroke($piechart3);
-
-        $pdf->Image($piechart3, 5, ($pdf->getY() + 200), '', '', '', '', 'C', false, 200);
-        if (file_exists($piechart3)) {
-            unlink($piechart3);
+            $pdf->Image($piechart3, 5, ($pdf->getY() + 200), '', '', '', '', 'C', false, 200);
+            if (file_exists($piechart3)) {
+                unlink($piechart3);
+            }
         }
     }
 
