@@ -48,7 +48,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
 				<input type="hidden" id="schemeCode" name="schemeCode" value="<?php echo $this->shipment['shipment_code']; ?>" />
 				<input type="hidden" id="participantName" name="participantName" value="<?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>" />
-				
+
 
 				<div id="view-content">
 					<?php
@@ -367,15 +367,23 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 
 						<?php } ?>
 						<tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-							<td colspan="4">
+							<td colspan="2">
 								<label>Reason for not testing the PT Panel</label> <span class="mandatory">*</span> :
-								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;">
+								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" onchange="collectPanelReceiptDate();">
 									<option value="">--Select--</option>
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {
 									?>
-										<option value="<?php echo $reason['vl_not_tested_reason_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['vl_not_tested_reason']); ?></option>
+										<option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?= $reason['vl_not_tested_reason_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['vl_not_tested_reason']); ?></option>
 									<?php } ?>
+								</select>
+							</td>
+
+							<td colspan="2"><label>Received the PT Panel? </label> <span class="mandatory">*</span>
+								<select id="receivedPtPanel" name="receivedPtPanel" class="form-control" title="Please select if you received the PT Panel">
+									<option value="">--Select--</option>
+									<option value="yes">Yes</option>
+									<option value="no">No</option>
 								</select>
 							</td>
 						</tr>
@@ -532,6 +540,15 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 		<?php
 		}
 		?>
+
+		$('#isPtTestNotPerformed').trigger("change");
+		$('#receivedPtPanel').on("change", function() {
+			if ($(this).val() == 'yes') {
+				$('#receiptDate').addClass('isRequired');
+			} else {
+				$('#receiptDate').removeClass('isRequired');
+			}
+		});
 	});
 
 
@@ -611,6 +628,15 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 			$(".logValFormVl").html("");
 		}
 	});
+
+	function collectPanelReceiptDate() {
+		let collectReceiptDate = ($("#vlNotTestedReason").find(':selected').attr('data-collect-panel-receipt-date'));
+		if (collectReceiptDate == 'no') {
+			$("#receivedPtPanel").val('no');
+		} else {
+			$("#receivedPtPanel").val('');
+		}
+	}
 
 	function changeEmail(changeId, oldId, confirmId) {
 		if ($(oldId).val() != "") {
