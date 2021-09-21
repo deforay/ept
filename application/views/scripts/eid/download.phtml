@@ -3,23 +3,26 @@
 
 //Zend_Debug::dump($this->shipment);die;
 require_once('tcpdf/tcpdf.php');
-	
-class MYPDF extends TCPDF {
-	
-	public function setSchemeName($header,$logo,$logoRight) {
+
+class MYPDF extends TCPDF
+{
+
+	public function setSchemeName($header, $logo, $logoRight)
+	{
 		//$this->scheme_name = $schemeName;
 		$this->header = $header;
 		$this->logo = $logo;
 		$this->logoRight = $logoRight;
 	}
-	
+
 	//Page header
-	public function Header() {
-        // Logo
-        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
-		if(trim($this->logo)!=""){
-			if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo)) {
-				$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logo;
+	public function Header()
+	{
+		// Logo
+		//$image_file = K_PATH_IMAGES.'logo_example.jpg';
+		if (trim($this->logo) != "") {
+			if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
+				$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
 				$this->Image($image_file, 10, 10, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
 			}
 		}
@@ -29,193 +32,185 @@ class MYPDF extends TCPDF {
 		// 		$this->Image($image_file, 180, 10, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
 		// 	}
 		// }
-       
-        // Set font
+
+		// Set font
 		$this->SetFont('helvetica', '', 10);
 
-            $this->header = nl2br(trim($this->header));
-            $this->header = preg_replace('/<br>$/', "", $this->header);
-	
+		$this->header = nl2br(trim($this->header));
+		$this->header = preg_replace('/<br>$/', "", $this->header);
+
 		//error_log($this->header);
 		//$y = $this->getY();
-		$html=$this->header;
-	
-		$this->writeHTMLCell(0,0,25,10, $html, 0, 0, 0, true, 'C', true);
+		$html = $this->header;
 
-		$html='<p  style="font-weight: bold;text-align:center;">DRIED BLOOD SPOT -EARLY INFANT DIAGNOSIS TESTING (EID)</p>';
+		$this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
+
+		$html = '<p  style="font-weight: bold;text-align:center;">HIV-1 Qualitative Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spots</p>';
 		$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
-		$html='<hr/>';
+		$html = '<hr/>';
 		$this->writeHTMLCell(0, 0, 10, 45, $html, 0, 0, 0, true, 'J', true);
-    }
-
-    // Page footer
-    public function Footer() {
-		
-        // Position at 15 mm from bottom
-        $this->SetY(-15);
-        // Set font
-        $this->SetFont('helvetica', 'I', 8);
-        // Page number
-        $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-    }
-}
-
-	
-	// create new PDF document
-	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-	$pdf->setSchemeName($this->header,$this->logo,$this->logoRight);
-	// set document information
-	//$pdf->SetCreator(PDF_CREATOR);
-	//$pdf->SetAuthor('ePT');
-	//$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
-	//
-	//
-
-	// set default header data
-	$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
-	
-	// set header and footer fonts
-	$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-	$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-	
-	// set default monospaced font
-	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-	
-	// set margins
-	
-	$pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
-	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-	
-	// set auto page breaks
-	$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-	
-	// set image scale factor
-	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-	
-	// set some language-dependent strings (optional)
-	if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	    require_once(dirname(__FILE__).'/lang/eng.php');
-	    $pdf->setLanguageArray($l);
 	}
 
-	// ---------------------------------------------------------
-	
-	// set font
-	$pdf->SetFont('times', '', 12);
-	
-	// add a page
-	$pdf->AddPage();
-	
-	$labInfo='<span class="pull-right">Fields marked <span class="mandatory">*</span> are mandatory</span><br/>';
-	$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
-            $labInfo.='<tr style="background-color:#dbe4ee;">';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> Participant Name </span> </td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Participant Code </span> </td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Affiliation </span>  </td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Phone No </span> </td>';
-            $labInfo.='</tr>';
-	    $labInfo.='<tr>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['first_name'] . ' ' . $this->participant['last_name'].'</td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['unique_identifier'].'</td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['affiliation'].'</td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['mobile'] . ' <br/> ' . $this->participant['phone'].'</td>';
-        $labInfo.='</tr>';
-		
-		$labInfo.='<tr style="background-color:#dbe4ee;">';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> Contact Name </span> </td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Email Address </span> </td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Contact Phone Number </span>  </td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
-        $labInfo.='</tr>';
-		$labInfo.='<tr>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['contact_name'].'</td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['email'].'</td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%">'.$this->participant['phone'].'</td>';
-                $labInfo.='<td style="text-align:center;font-weight:bold;width:25%"></td>';
-        $labInfo.='</tr>';
-		
-        $labInfo.='</table><br/><br/>';
-	
-	 $labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
-            $labInfo.='<tr style="background-color:#F7F7F7;">';
-                $labInfo.='<td style="font-weight:bold;width:25%">Shipment Date</td>';
-                $labInfo.='<td style="font-weight:bold;width:25%">'.$this->dateFormat($this->shipment['shipment_date']).'</td>';
-                $labInfo.='<td style="font-weight:bold;width:25%">Result Due Date <?php ?></td>';
-                $labInfo.='<td style="font-weight:bold;width:25%">'.$this->dateFormat($this->shipment["lastdate_response"]).'</td>';
-            $labInfo.='</tr>';
-            
-            $labInfo.='<tr style="background-color:#CCCCCC;">';
-                $labInfo.='<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
-                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
-                $labInfo.='<td style="font-weight:bold;width:25%">Testing Date</td>';
-                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
-            $labInfo.='</tr>';
+	// Page footer
+	public function Footer()
+	{
 
-            $labInfo.='<tr style="background-color:#F7F7F7;">';
-                $labInfo.='<td style="font-weight:bold;width:25%">Extraction Assay</td> ';
-                $labInfo.='<td style="font-weight:bold;width:25%"></td>';		
-                $labInfo.='<td style="font-weight:bold;width:25%">Detection Assay</td>'; 
-                $labInfo.='<td style="font-weight:bold;width:25%"></td>';
-            $labInfo.='</tr>';
-			
-			$labInfo.='<tr style="background-color:#CCCCCC;">';
-                $labInfo.='<td style="font-weight:bold;width:25%">Sample Rehydration Date</td> ';
-                $labInfo.='<td style="font-weight:bold;" colspan="3"></td>';
-                
-            $labInfo.='</tr>';
-			
-			
-        $labInfo.='</table><br/><br/>';
-	
-		
-		
-		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
-			$labInfo.='<tr style="background-color:#CCCCCC;">';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Control/Sample</td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:25%">Your Results</td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:25%">HIV CT/OD</td>';
-				$labInfo.='<td style="text-align:center;font-weight:bold;width:25%">IC/QS Values</td>';
-			$labInfo.='</tr>';
-			
-			foreach($this->referenceDetails as $sample){
-				$labInfo.='<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
-					$labInfo.='<td style="font-weight:bold;">'.$sample['sample_label'];
-					if($sample['mandatory']==1){
-						$labInfo.='*';
-					}
-					$labInfo.='</td>';
-					$labInfo.='<td style="font-weight:bold;"></td>';
-					$labInfo.='<td style="font-weight:bold;"></td>';
-					$labInfo.='<td style="font-weight:bold;"></td>';
-				$labInfo.='</tr>';
-			}
-			
-		$labInfo.='</table><br/><br/>';
-		
-		$labInfo.='<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
-			$labInfo.='<tr style="background-color:#CCCCCC;">';
-				$labInfo.='<td style="font-weight:bold;">Supervisor Review</td>';
-				$labInfo.='<td></td>';
-				$labInfo.='<td style="font-weight:bold;">Supervisor Name</td>';
-				$labInfo.='<td></td>';
-			$labInfo.='</tr>';
-			
-			$labInfo.='<tr style="background-color:#F7F7F7;">';
-				$labInfo.='<td style="font-weight:bold;">Comments</td>';
-				$labInfo.='<td colspan="3"></td>';
-			$labInfo.='</tr>';
-		$labInfo.='</table>';
-	
-	$pdf->writeHTML($labInfo, true, false, true, false, '');
-	
-	$fileName=$this->shipment["shipment_code"].".pdf";
-	$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
-	$fileName = str_replace(" ", "-", $fileName);
-	$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR .$fileName;
-	//$created=$pdf->Output($filePath, "F");
-	
-	$pdf->Output($fileName, 'I');
+		// Position at 15 mm from bottom
+		$this->SetY(-15);
+		// Set font
+		$this->SetFont('helvetica', 'I', 8);
+		// Page number
+		$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+	}
+}
+
+
+// create new PDF document
+$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+$pdf->setSchemeName($this->header, $this->logo, $this->logoRight);
+// set document information
+//$pdf->SetCreator(PDF_CREATOR);
+//$pdf->SetAuthor('ePT');
+//$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
+//
+//
+
+// set default header data
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+// set header and footer fonts
+$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+// set default monospaced font
+$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+// set margins
+
+$pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+// set auto page breaks
+$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+// set image scale factor
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+// set some language-dependent strings (optional)
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+	require_once(dirname(__FILE__) . '/lang/eng.php');
+	$pdf->setLanguageArray($l);
+}
+
+// ---------------------------------------------------------
+
+// set font
+$pdf->SetFont('times', '', 12);
+
+// add a page
+$pdf->AddPage();
+
+$labInfo = '<h3 style="text-align:center;">Result Submission Form </h3><br/>';
+
+$labInfo .= '<table style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+$labInfo .= '<tr style="background-color:#F7F7F7;">';
+$labInfo .= '<td style="font-weight:bold;width:25%">Proficiency Test Panel:</td>';
+$labInfo .= '<td style="width:25%">' . $this->shipment['shipment_code'] . '</td>';
+$labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date <?php ?></td>';
+$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+$labInfo .= '</tr>';
+
+$labInfo .= '</table><br/><br/>';
+
+$labInfo .= '<table border="1" style="border-color:#CCCCCC;font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+$labInfo .= '<tr>';
+$labInfo .= '<td style="background-color:#CCCCCC;font-weight:bold;width:100%;text-align:justify;" colspan="2">THIS DOCUMENT SERVES AS A BACKUP FORM DURING ePT SITE OUTAGE ONLY. ALL INFOMATION MUST BE TYPED AND SUBMITTED ELECTRONICALLY VIA AN EXCEL FILE. ALL FIELDS ARE REQUIRED. If you are having trouble, be sure you have "enabled content" and enabled "edit mode". Please, check for transcription errors and save as ".xls, .xlsx, or .xlsm format".  Email this form as an email attachment to <gappt@cdc.gov>. Once PT Provider receives your email with the electronic result form attached, you will receive a confirmation email.  It is not necessary to sign the electronic copy of the Report Form, but it should be printed and signed by the laboratory’s director and retained in the lab for review by regulatory and accrediting agencies.</td>';
+$labInfo .= '</tr>';
+
+$labInfo .= '<tr>';
+$labInfo .= '<td style="background-color:#CCCCCC;font-weight:bold;width:35%">Name of laboratory:</td>';
+$labInfo .= '<td style="font-weight:bold;width:65%">' . $this->participant['first_name'] . " " . $this->participant['last_name'] . '</td>';
+$labInfo .= '</tr>';
+
+$labInfo .= '<tr>';
+$labInfo .= '<td style="background-color:#CCCCCC;font-weight:bold;width:35%">Labobratory ID (5xxx): </td>';
+$labInfo .= '<td style="font-weight:bold;width:65%">' . $this->participant['unique_identifier'] . '</td>';
+$labInfo .= '</tr>';
+
+$labInfo .= '<tr>';
+$labInfo .= '<td style="background-color:#CCCCCC;font-weight:bold;width:35%">Laboratory Director Name:  </td>';
+$labInfo .= '<td style="font-weight:bold;width:65%"></td>';
+$labInfo .= '</tr>';
+$labInfo .= '<tr>';
+$labInfo .= '<td style="background-color:#CCCCCC;font-weight:bold;width:35%">Contact person name:  </td>';
+$labInfo .= '<td style="font-weight:bold;width:65%"></td>';
+$labInfo .= '</tr>';
+$labInfo .= '<tr>';
+$labInfo .= '<td style="background-color:#CCCCCC;font-weight:bold;width:35%">Contact person e-mail: </td>';
+$labInfo .= '<td style="font-weight:bold;width:65%"></td>';
+$labInfo .= '</tr>';
+$labInfo .= '<tr>';
+$labInfo .= '<td style="background-color:#CCCCCC;font-weight:bold;width:35%">Contact person telephone: </td>';
+$labInfo .= '<td style="font-weight:bold;width:65%"></td>';
+$labInfo .= '</tr>';
+$labInfo .= '<tr>';
+$labInfo .= '<td style="background-color:#CCCCCC;font-weight:bold;width:35%">Date PT panel tested: </td>';
+$labInfo .= '<td style="font-weight:bold;width:65%"></td>';
+$labInfo .= '</tr>';
+$labInfo .= '<tr>';
+$labInfo .= '<td style="background-color:#CCCCCC;font-weight:bold;width:35%">Assay Name: </td>';
+$labInfo .= '<td style="font-weight:bold;width:65%"></td>';
+$labInfo .= '</tr>';
+$labInfo .= '</table><br/><br/>';
+
+
+$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+$labInfo .= '<tr style="background-color:#CCCCCC;">';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:35%">Sample or Control ID</td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:65%">Your Results</td>';
+// $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">HIV CT/OD</td>';
+// $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">IC/QS Values</td>';
+$labInfo .= '</tr>';
+
+foreach ($this->referenceDetails as $sample) {
+	$labInfo .= '<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
+	$labInfo .= '<td style="font-weight:bold;">' . $sample['sample_label'];
+	if ($sample['mandatory'] == 1) {
+		$labInfo .= '*';
+	}
+	$labInfo .= '</td>';
+	$labInfo .= '<td style="font-weight:bold;"></td>';
+	// $labInfo .= '<td style="font-weight:bold;"></td>';
+	// $labInfo .= '<td style="font-weight:bold;"></td>';
+	$labInfo .= '</tr>';
+}
+
+$labInfo .= '</table><br/><br/>';
+
+$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+$labInfo .= '<tr style="background-color:#CCCCCC;">';
+$labInfo .= '<td style="font-weight:bold;">Supervisor Review</td>';
+$labInfo .= '<td></td>';
+$labInfo .= '<td style="font-weight:bold;">Supervisor Name</td>';
+$labInfo .= '<td></td>';
+$labInfo .= '</tr>';
+
+$labInfo .= '<tr style="background-color:#F7F7F7;">';
+$labInfo .= '<td style="font-weight:bold;">Comments</td>';
+$labInfo .= '<td colspan="3"></td>';
+$labInfo .= '</tr>';
+$labInfo .= '</table>';
+
+$pdf->writeHTML($labInfo, true, false, true, false, '');
+
+$fileName = $this->shipment["shipment_code"] . ".pdf";
+$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
+$fileName = str_replace(" ", "-", $fileName);
+$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $fileName;
+//$created=$pdf->Output($filePath, "F");
+
+$pdf->Output($fileName, 'I');
 
 //============================================================+
 // END OF FILE
