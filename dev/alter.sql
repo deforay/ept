@@ -2884,4 +2884,4 @@ ALTER TABLE `shipment_participant_map` ADD `lab_director_name` VARCHAR(256) NULL
 INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (NULL, 'Please ensure all critical fields are reported in your PT Result Form', 'Please ensure all critical fields are reported in your PT Result Form');
 
 -- Thana 20 Sep 2021
-INSERT INTO `report_config` (`name`, `value`) VALUES ('institute-postition', 'header');
+INSERT INTO `report_config` (`name`, `value`) VALUES ('institute-address-postition', 'header');

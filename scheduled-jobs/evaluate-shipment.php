@@ -547,7 +547,7 @@ try {
 
 
         $header = $reportService->getReportConfigValue('report-header');
-        $instituteAddressPosition = $reportService->getReportConfigValue('institute-postition');
+        $instituteAddressPosition = $reportService->getReportConfigValue('institute-address-postition');
         $reportComment = $reportService->getReportConfigValue('report-comment');
         $logo = $reportService->getReportConfigValue('logo');
         $logoRight = $reportService->getReportConfigValue('logo-right');
