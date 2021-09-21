@@ -14,7 +14,7 @@ class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $institutePostition = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -27,7 +27,7 @@ class IndividualPDF extends TCPDF
         $this->config = $conf;
         $this->watermark = $watermark;
         $this->dateFinalised = $dateFinalised;
-        $this->institutePostition = $institutePostition;
+        $this->instituteAddressPosition = $instituteAddressPosition;
     }
 
     public function humanDateTimeFormat($date)
@@ -70,8 +70,10 @@ class IndividualPDF extends TCPDF
         if ($this->schemeType == 'vl') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
-                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>
-                <br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
+                if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                }
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span>';
@@ -81,8 +83,10 @@ class IndividualPDF extends TCPDF
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
-                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>
-                <br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
+                if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                }
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:13;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
@@ -174,7 +178,7 @@ class IndividualPDF extends TCPDF
         //$this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         $this->writeHTML("<hr>", true, false, true, false, '');
-        if ($this->institutePostition == "footer" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+        if ($this->instituteAddressPosition == "footer" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
             $this->writeHTML($this->config->instituteAddress, true, false, true, false, "L");
         }
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "") {
@@ -182,7 +186,7 @@ class IndividualPDF extends TCPDF
             // $this->Ln();
             $effectiveDate = new DateTime($showTime);
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->Cell(0, 05,  strtoupper($this->header), 0, false, 'C', 0, '', 0, false, 'T', 'M');
@@ -190,7 +194,7 @@ class IndividualPDF extends TCPDF
                 $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
             }
         }
-        $this->Cell(0, 8, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
     }
 }
 
@@ -198,7 +202,7 @@ class IndividualPDF extends TCPDF
 class SummaryPDF extends TCPDF
 {
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $institutePostition  = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition  = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -210,7 +214,7 @@ class SummaryPDF extends TCPDF
         $this->config = $conf;
         $this->watermark = $watermark;
         $this->dateFinalised = $dateFinalised;
-        $this->institutePostition = $institutePostition;
+        $this->instituteAddressPosition = $instituteAddressPosition;
     }
 
     public function humanDateTimeFormat($date)
@@ -258,8 +262,10 @@ class SummaryPDF extends TCPDF
         if ($this->schemeType == 'vl') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
-                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>
-                <br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
+                if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                }
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
@@ -269,8 +275,10 @@ class SummaryPDF extends TCPDF
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
-                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>
-                <br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
+                if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                }
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Results Report</span>';
             }
@@ -372,7 +380,7 @@ class SummaryPDF extends TCPDF
         // Page number
         //$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         $this->writeHTML("<hr>", true, false, true, false, "");
-        if ($this->institutePostition == "footer" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+        if ($this->instituteAddressPosition == "footer" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
             $this->writeHTML($this->config->instituteAddress, true, false, true, false, "L");
         }
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "") {
@@ -539,7 +547,7 @@ try {
 
 
         $header = $reportService->getReportConfigValue('report-header');
-        $institutePostition = $reportService->getReportConfigValue('institute-postition');
+        $instituteAddressPosition = $reportService->getReportConfigValue('institute-postition');
         $reportComment = $reportService->getReportConfigValue('report-comment');
         $logo = $reportService->getReportConfigValue('logo');
         $logoRight = $reportService->getReportConfigValue('logo-right');

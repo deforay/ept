@@ -33,8 +33,8 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
             $this->update(array('value' => $params['reportLayout']), "name='report-layout'");
         }
 
-        if (isset($params['institutePostition'])) {
-            $this->update(array('value' => $params['institutePostition']), "name='institute-postition'");
+        if (isset($params['instituteAddressPosition'])) {
+            $this->update(array('value' => $params['instituteAddressPosition']), "name='institute-postition'");
         }
         // if(isset($_FILES['logo_image_right']) && !file_exists($_FILES['logo_image_right']['tmp_name']) || !is_uploaded_file($_FILES['logo_image_right']['tmp_name'])){
 

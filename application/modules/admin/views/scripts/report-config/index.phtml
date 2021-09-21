@@ -11,12 +11,13 @@
 	</div>
 	<div class="row">
 		<div class="col-md-6">
-			<label class="control-label" for="institutePostition">Institute Address Position</label>
+			<label class="control-label" for="instituteAddressPosition">Institute Address Position</label>
 			<div>
-				<select name="institutePostition" id="institutePostition" class="form-control" title="Please select the institute address position">
+				<select name="instituteAddressPosition" id="instituteAddressPosition" class="form-control" title="Please select the institute address position">
 					<option value="">--Select--</option>
-					<option value="header" <?php echo (isset($this->institutePostition) && $this->institutePostition == "header") ? "selected='selected'" : ""; ?>>Header</option>
-					<option value="footer" <?php echo (isset($this->institutePostition) && $this->institutePostition == "footer") ? "selected='selected'" : ""; ?>>Footer</option>
+					<option value="dont-show" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "dont-show") ? "selected='selected'" : ""; ?>>Don't Show</option>
+					<option value="header" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "header") ? "selected='selected'" : ""; ?>>Header</option>
+					<option value="footer" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "footer") ? "selected='selected'" : ""; ?>>Footer</option>
 				</select>
 			</div>
 		</div>
