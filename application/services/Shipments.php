@@ -291,6 +291,32 @@ class Application_Service_Shipments
             if (!isset($params['modeOfReceipt']) || trim($params['modeOfReceipt']) == "") {
                 $params['modeOfReceipt'] = NULL;
             }
+
+            if (isset($params['extractionAssayOther']) && $params['extractionAssayOther'] != "") {
+                $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+                $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from(array('rea' => 'r_eid_extraction_assay'))->where('name LIKE "' . $params['extractionAssayOther'] . '%"'));
+                if ($ifExist && $ifExist['name'] != "") {
+                    $dbAdapter->update(
+                        'r_eid_extraction_assay',
+                        array(
+                            'name'        => $params['extractionAssayOther'],
+                            'status'  => 'active'
+                        ),
+                        'id = ' . $ifExist['id']
+                    );
+                    $lastInsertAssayId = $ifExist['id'];
+                } else {
+                    $dbAdapter->insert(
+                        'r_eid_extraction_assay',
+                        array(
+                            'name'        => $params['extractionAssayOther'],
+                            'status'  => 'active'
+                        )
+                    );
+                    $lastInsertAssayId = $dbAdapter->lastInsertId();
+                }
+                $params['extractionAssay'] = $lastInsertAssayId;
+            }
             $attributes = array(
                 "sample_rehydration_date" => $params['sampleRehydrationDate'],
                 "extraction_assay" => $params['extractionAssay'],

@@ -181,7 +181,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 						<tr class="dark">
 							<td><label>Assay <span class='mandatory ptTestPerformed'>*</span></label></td>
 							<td>
-								<select id="extractionAssay" name="extractionAssay" class="form-control isRequired">
+								<select id="extractionAssay" name="extractionAssay" class="form-control isRequired" onchange="ifOthers(this,'#extractionAssayOther');">
 									<option value="">--Select--</option>
 									<?php
 									foreach ($this->extractionAssay as $eAssayId => $eAssayName) {
@@ -191,6 +191,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 									}
 									?>
 								</select>
+								<input type="text" name="extractionAssayOther" id="extractionAssayOther" class="form-control" placeholder="Enter the assay name other" title="Please enter the assay name other" style="display: none;">
 							</td>
 						</tr>
 						<!-- 
@@ -510,6 +511,15 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 				}
 			}
 		}
+		var _value = $("#extractionAssay").find('option:selected').text();
+		if (_value.toLowerCase() == "other") {
+			if ($('#extractionAssayOther').val() == "") {
+				alert("Please enter the other assay name");
+				$('#extractionAssayOther').focus();
+				$('#extractionAssayOther').css('border-color', 'red');
+				return false;
+			}
+		}
 
 		flag = deforayValidator.init({
 			formId: 'eidResponseForm'
@@ -658,6 +668,15 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 					$(confirmId).hide();
 				}
 			}
+		}
+	}
+
+	function ifOthers(obj, otherId) {
+		var _value = $(obj).find('option:selected').text();
+		if (_value.toLowerCase() == "other") {
+			$(otherId).show();
+		} else {
+			$(otherId).hide();
 		}
 	}
 </script>
