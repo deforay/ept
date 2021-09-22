@@ -96,6 +96,8 @@ if ($resultArray['shipment'] != "") {
         }
         // JPGraph Charts
         $total = 0;
+        $dataX = array();
+        $dataY = array();
         foreach ($barPoints as $key => $val) {
             $dataX[] = $val;
             $dataY[] = $key . ' (n=' . $val . ')';

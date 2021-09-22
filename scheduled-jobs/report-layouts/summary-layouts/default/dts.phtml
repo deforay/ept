@@ -107,6 +107,8 @@ if ($resultArray['shipment'] != "") {
 
         // Zend_Debug::dump($barPoints);die;
         // JPGraph Charts
+        $dataX = array();
+        $dataY = array();
         foreach ($barPoints as $key => $val) {
             $dataX[] = $val;
             $dataY[] = $key . ' (' . $val . ')';
