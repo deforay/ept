@@ -603,6 +603,32 @@ class Application_Service_Evaluation
 		}
 		if ($params['scheme'] == 'eid') {
 
+			if (isset($params['extractionAssayOther']) && $params['extractionAssayOther'] != "") {
+				$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+				$ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from(array('rea' => 'r_eid_extraction_assay'))->where('name LIKE "' . $params['extractionAssayOther'] . '%"'));
+				if ($ifExist && $ifExist['name'] != "") {
+					$dbAdapter->update(
+						'r_eid_extraction_assay',
+						array(
+							'name'        => $params['extractionAssayOther'],
+							'status'  => 'active'
+						),
+						'id = ' . $ifExist['id']
+					);
+					$lastInsertAssayId = $ifExist['id'];
+				} else {
+					$dbAdapter->insert(
+						'r_eid_extraction_assay',
+						array(
+							'name'        => $params['extractionAssayOther'],
+							'status'  => 'active'
+						)
+					);
+					$lastInsertAssayId = $dbAdapter->lastInsertId();
+				}
+				$params['extractionAssay'] = $lastInsertAssayId;
+			}
+
 			$attributes = array(
 				"sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
 				"extraction_assay" => $params['extractionAssay'],
@@ -692,6 +718,34 @@ class Application_Service_Evaluation
 				} else {
 					$finalResult = 1;
 				}
+			}
+
+			if (isset($params['labDirectorName']) && $params['labDirectorName'] != "") {
+				$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+				/* Shipment Participant table updation */
+				$dbAdapter->update(
+					'shipment_participant_map',
+					array(
+						'lab_director_name'         => $params['labDirectorName'],
+						'lab_director_email'        => $params['labDirectorEmail'],
+						'contact_person_name'       => $params['contactPersonName'],
+						'contact_person_email'      => $params['contactPersonEmail'],
+						'contact_person_telephone'  => $params['contactPersonTelephone']
+					),
+					'map_id = ' . $params['smid']
+				);
+				/* Participant table updation */
+				$dbAdapter->update(
+					'participant',
+					array(
+						'lab_director_name'         => $params['labDirectorName'],
+						'lab_director_email'        => $params['labDirectorEmail'],
+						'contact_person_name'       => $params['contactPersonName'],
+						'contact_person_email'      => $params['contactPersonEmail'],
+						'contact_person_telephone'  => $params['contactPersonTelephone']
+					),
+					'participant_id = ' . $params['participantId']
+				);
 			}
 		} else if ($params['scheme'] == 'dts') {
 
