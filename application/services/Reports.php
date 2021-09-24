@@ -1544,7 +1544,9 @@ class Application_Service_Reports
         //------------- Participant List Details End ------>
         //<-------- Second sheet start
         $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
-
+        if ((isset($config->evaluation->dts->display_sample_condition_fields) && $config->evaluation->dts->display_sample_condition_fields == "yes")) {
+            $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
+        }
         if ($result['scheme_type'] == 'dts') {
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             array_push($reportHeadings, 'Test#2 Name', 'Kit Lot #', 'Expiry Date');
@@ -1861,18 +1863,31 @@ class Application_Service_Reports
                 if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                 }
-
                 if (trim($aRow['attributes']) != "") {
                     $attributes = json_decode($aRow['attributes'], true);
                     $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
+                    if (isset($config->evaluation->dts->display_sample_condition_fields) || $config->evaluation->dts->display_sample_condition_fields == 'yes') {
+                        $conditionOfPTSamples = (isset($attributes['condition_pt_samples']) && $attributes['condition_pt_samples'] != "") ? ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) : "";
+                        $refridgerator = (isset($attributes['refridgerator']) && $attributes['refridgerator'] != "") ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
+                        $roomTemperature = (isset($attributes['room_temperature']) && $attributes['room_temperature'] != "") ? $attributes['room_temperature'] : "";
+                        $stopWatch = (isset($attributes['stop_watch']) && $attributes['stop_watch'] != "") ? ucwords(str_replace('-', ' ', $attributes['stop_watch'])) : "";
+                    }
                 }
 
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReceiptDate, PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, PHPExcel_Cell_DataType::TYPE_STRING);
+                if (!isset($config->evaluation->dts->display_sample_condition_fields) || $config->evaluation->dts->display_sample_condition_fields != 'yes') {
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, PHPExcel_Cell_DataType::TYPE_STRING);
+                }
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReportDate, PHPExcel_Cell_DataType::TYPE_STRING);
 
+                if (isset($config->evaluation->dts->display_sample_condition_fields) || $config->evaluation->dts->display_sample_condition_fields == 'yes') {
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($conditionOfPTSamples, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($refridgerator, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($roomTemperature, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($stopWatch, PHPExcel_Cell_DataType::TYPE_STRING);
+                }
 
 
                 $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
