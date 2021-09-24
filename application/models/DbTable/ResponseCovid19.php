@@ -12,6 +12,8 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
         if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
             return $this->removeShipmentResults($params['smid']);
         }
+
+        $res = array();
         foreach ($sampleIds as $key => $sampleId) {
             // die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
@@ -32,21 +34,34 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
                 $params['test_type_3'] = $otherTestkitId3;
             }
             $data = array(
-                'test_type_1'       => $params['test_type_1'],
-                'lot_no_1'          => $params['lot_no_1'],
-                'exp_date_1'        => Pt_Commons_General::dateFormat($params['exp_date_1']),
-                'test_result_1'     => $params['test_result_1'][$key],
-                'test_type_2'       => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2)?$params['test_type_2']:null,
-                'lot_no_2'          => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2)?$params['lot_no_2']:null,
-                'exp_date_2'        => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2)?Pt_Commons_General::dateFormat($params['exp_date_2']):null,
-                'test_result_2'     => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2)?$params['test_result_2'][$key]:null,
-                'test_type_3'       => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3)?$params['test_type_3']:null,
-                'lot_no_3'          => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3)?$params['lot_no_3']:null,
-                'exp_date_3'        => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3)?Pt_Commons_General::dateFormat($params['exp_date_3']):null,
-                'test_result_3'     => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3)?$params['test_result_3'][$key]:null,
-                'reported_result'   => $params['reported_result'][$key],
+                'test_type_1'               => $params['test_type_1'],
+                'lot_no_1'                  => $params['lot_no_1'],
+                'exp_date_1'                => Pt_Commons_General::dateFormat($params['exp_date_1']),
+                'test_result_1'             => $params['test_result_1'][$key],
+                'test_type_2'               => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['test_type_2'] : null,
+                'lot_no_2'                  => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['lot_no_2'] : null,
+                'exp_date_2'                => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::dateFormat($params['exp_date_2']) : null,
+                'test_result_2'             => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['test_result_2'][$key] : null,
+                'test_type_3'               => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['test_type_3'] : null,
+                'lot_no_3'                  => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['lot_no_3'] : null,
+                'exp_date_3'                => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::dateFormat($params['exp_date_3']) : null,
+                'test_result_3'             => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['test_result_3'][$key] : null,
+
+                'name_of_pcr_reagent_1'     => $params['name_of_pcr_reagent_1'],
+                'name_of_pcr_reagent_2'     => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['name_of_pcr_reagent_2'] : null,
+                'name_of_pcr_reagent_3'     => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['name_of_pcr_reagent_3'] : null,
+
+                'pcr_reagent_lot_no_1'      => $params['pcr_reagent_lot_no_1'],
+                'pcr_reagent_lot_no_2'      => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['pcr_reagent_lot_no_2'] : null,
+                'pcr_reagent_lot_no_3'      => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['pcr_reagent_lot_no_3'] : null,
+
+                'pcr_reagent_exp_date_1'    => Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_1']),
+                'pcr_reagent_exp_date_2'    => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_2']) : null,
+                'pcr_reagent_exp_date_3'    => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_3']) : null,
+
+                'reported_result'           => $params['reported_result'][$key],
             );
-            
+
             // Zend_Debug::dump($params);die;
             if ($res == null || count($res) == 0) {
                 $data['shipment_map_id'] = $params['smid'];
@@ -93,17 +108,18 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
         }
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $testThreeOptional = false;$testTwoOptional = false;
+        $testThreeOptional = false;
+        $testTwoOptional = false;
 
         $testAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
         if (isset($testAllowed) && ($testAllowed == '1' || $testAllowed == '2')) {
             $testThreeOptional = true;
         }
-        
+
         if (isset($testAllowed) && $testAllowed != '3' && $testAllowed != '2') {
             $testTwoOptional = true;
         }
-        
+
         $sampleIds = $params['covid19Data']->Section5->data->samples->id;
         foreach ($sampleIds as $key => $sampleId) {
             $testPlatformDb = new Application_Model_DbTable_TestTypenameCovid19();
@@ -136,30 +152,30 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
                 $params['test_type_3'] = '';
                 $result3 = '';
             }
-            /* Fetching long data into the single variable */            
+            /* Fetching long data into the single variable */
             $noOfTest       = $params['covid19Data']->Section2->data->numberOfTestsSelected;
-            $lot1           = (isset($params['covid19Data']->Section4->data->lot[0]) && $params['covid19Data']->Section4->data->lot[0] != "")?$params['covid19Data']->Section4->data->lot[0]:null;
-            $lot2           = (isset($params['covid19Data']->Section4->data->lot[1]) && $params['covid19Data']->Section4->data->lot[1] != "")?$params['covid19Data']->Section4->data->lot[1]:null;
-            $lot3           = (isset($params['covid19Data']->Section4->data->lot[2]) && $params['covid19Data']->Section4->data->lot[2] != "")?$params['covid19Data']->Section4->data->lot[2]:null;
-            $expDate1       = (isset($params['covid19Data']->Section4->data->expDate[0]) && $params['covid19Data']->Section4->data->expDate[0] != "")?$params['covid19Data']->Section4->data->expDate[0]:null;
-            $expDate2       = (isset($params['covid19Data']->Section4->data->expDate[1]) && $params['covid19Data']->Section4->data->expDate[1] != "")?$params['covid19Data']->Section4->data->expDate[1]:null;
-            $expDate3       = (isset($params['covid19Data']->Section4->data->expDate[2]) && $params['covid19Data']->Section4->data->expDate[2] != "")?$params['covid19Data']->Section4->data->expDate[2]:null;
-            $result1        = (isset($params['covid19Data']->Section5->data->samples->result1[$key]->value) && $params['covid19Data']->Section5->data->samples->result1[$key]->value != "")?$params['covid19Data']->Section5->data->samples->result1[$key]->value:null;
+            $lot1           = (isset($params['covid19Data']->Section4->data->lot[0]) && $params['covid19Data']->Section4->data->lot[0] != "") ? $params['covid19Data']->Section4->data->lot[0] : null;
+            $lot2           = (isset($params['covid19Data']->Section4->data->lot[1]) && $params['covid19Data']->Section4->data->lot[1] != "") ? $params['covid19Data']->Section4->data->lot[1] : null;
+            $lot3           = (isset($params['covid19Data']->Section4->data->lot[2]) && $params['covid19Data']->Section4->data->lot[2] != "") ? $params['covid19Data']->Section4->data->lot[2] : null;
+            $expDate1       = (isset($params['covid19Data']->Section4->data->expDate[0]) && $params['covid19Data']->Section4->data->expDate[0] != "") ? $params['covid19Data']->Section4->data->expDate[0] : null;
+            $expDate2       = (isset($params['covid19Data']->Section4->data->expDate[1]) && $params['covid19Data']->Section4->data->expDate[1] != "") ? $params['covid19Data']->Section4->data->expDate[1] : null;
+            $expDate3       = (isset($params['covid19Data']->Section4->data->expDate[2]) && $params['covid19Data']->Section4->data->expDate[2] != "") ? $params['covid19Data']->Section4->data->expDate[2] : null;
+            $result1        = (isset($params['covid19Data']->Section5->data->samples->result1[$key]->value) && $params['covid19Data']->Section5->data->samples->result1[$key]->value != "") ? $params['covid19Data']->Section5->data->samples->result1[$key]->value : null;
             $reportedResult = (isset($params['covid19Data']->Section5->data->samples->finalResult[$key]->value) && $params['covid19Data']->Section5->data->samples->finalResult[$key]->value != '') ? $params['covid19Data']->Section5->data->samples->finalResult[$key]->value : '';
-            
+
             $data = array(
                 'test_type_1'       => $params['test_type_1'],
-                'lot_no_1'          => (isset($noOfTest) && $noOfTest >=1)?$lot1:null,
-                'exp_date_1'        => (isset($noOfTest) && $noOfTest >=1)?$expDate1:null,
-                'test_result_1'     => (isset($noOfTest) && $noOfTest >=1)?$result1:null,
+                'lot_no_1'          => (isset($noOfTest) && $noOfTest >= 1) ? $lot1 : null,
+                'exp_date_1'        => (isset($noOfTest) && $noOfTest >= 1) ? $expDate1 : null,
+                'test_result_1'     => (isset($noOfTest) && $noOfTest >= 1) ? $result1 : null,
                 'test_type_2'       => $params['test_type_2'],
-                'lot_no_2'          => (isset($noOfTest) && $noOfTest >=2)?$lot2:null,
-                'exp_date_2'        => (isset($noOfTest) && $noOfTest >=2)?$expDate2:null,
-                'test_result_2'     => (isset($noOfTest) && $noOfTest >=2)?$result2:null,
+                'lot_no_2'          => (isset($noOfTest) && $noOfTest >= 2) ? $lot2 : null,
+                'exp_date_2'        => (isset($noOfTest) && $noOfTest >= 2) ? $expDate2 : null,
+                'test_result_2'     => (isset($noOfTest) && $noOfTest >= 2) ? $result2 : null,
                 'test_type_3'       => $params['test_type_3'],
-                'lot_no_3'          => (isset($noOfTest) && $noOfTest >=3)?$lot3:null,
-                'exp_date_3'        => (isset($noOfTest) && $noOfTest >=3)?$expDate3:null,
-                'test_result_3'     => (isset($noOfTest) && $noOfTest >=3)?$result3:null,
+                'lot_no_3'          => (isset($noOfTest) && $noOfTest >= 3) ? $lot3 : null,
+                'exp_date_3'        => (isset($noOfTest) && $noOfTest >= 3) ? $expDate3 : null,
+                'test_result_3'     => (isset($noOfTest) && $noOfTest >= 3) ? $result3 : null,
                 'reported_result'   => $reportedResult,
             );
             // Zend_Debug::dump($data);die;

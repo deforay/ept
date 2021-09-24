@@ -353,6 +353,19 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             $lotNo1 = "";
                             $lotNo2 = "";
                             $lotNo3 = "";
+
+                            $nameOfPcrReagent1 = "";
+                            $nameOfPcrReagent2 = "";
+                            $nameOfPcrReagent3 = "";
+
+                            $pcrLotNo1 = "";
+                            $pcrLotNo2 = "";
+                            $pcrLotNo3 = "";
+
+                            $pcrExpDate1 = "";
+                            $pcrExpDate2 = "";
+                            $pcrExpDate3 = "";
+
                             if (isset($this->allSamples[0]["lot_no_1"]) && trim($this->allSamples[0]["lot_no_1"]) != "") {
                                 $lotNo1 = $this->allSamples[0]["lot_no_1"];
                             }
@@ -362,16 +375,63 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             if (isset($this->allSamples[0]["lot_no_3"]) && trim($this->allSamples[0]["lot_no_3"]) != "") {
                                 $lotNo3 = $this->allSamples[0]["lot_no_3"];
                             }
+
+                            if (isset($this->allSamples[0]["name_of_pcr_reagent_1"]) && trim($this->allSamples[0]["name_of_pcr_reagent_1"]) != "") {
+                                $nameOfPcrReagent1 = $this->allSamples[0]["name_of_pcr_reagent_1"];
+                            }
+                            if (isset($this->allSamples[0]["name_of_pcr_reagent_2"]) && trim($this->allSamples[0]["name_of_pcr_reagent_2"]) != "") {
+                                $nameOfPcrReagent2 = $this->allSamples[0]["name_of_pcr_reagent_2"];
+                            }
+                            if (isset($this->allSamples[0]["name_of_pcr_reagent_3"]) && trim($this->allSamples[0]["name_of_pcr_reagent_3"]) != "") {
+                                $nameOfPcrReagent3 = $this->allSamples[0]["name_of_pcr_reagent_3"];
+                            }
+
+                            if (isset($this->allSamples[0]["pcr_reagent_lot_no_1"]) && trim($this->allSamples[0]["pcr_reagent_lot_no_1"]) != "") {
+                                $pcrLotNo1 = $this->allSamples[0]["pcr_reagent_lot_no_1"];
+                            }
+                            if (isset($this->allSamples[0]["pcr_reagent_lot_no_2"]) && trim($this->allSamples[0]["pcr_reagent_lot_no_2"]) != "") {
+                                $pcrLotNo2 = $this->allSamples[0]["pcr_reagent_lot_no_2"];
+                            }
+                            if (isset($this->allSamples[0]["pcr_reagent_lot_no_3"]) && trim($this->allSamples[0]["pcr_reagent_lot_no_3"]) != "") {
+                                $pcrLotNo3 = $this->allSamples[0]["pcr_reagent_lot_no_3"];
+                            }
+
+                            if (isset($this->allSamples[0]["pcr_reagent_exp_date_1"]) && trim($this->allSamples[0]["pcr_reagent_exp_date_1"]) != "") {
+                                $pcrExpDate1 = $this->dateFormat($this->allSamples[0]["pcr_reagent_exp_date_1"]);
+                            }
+                            if (isset($this->allSamples[0]["pcr_reagent_exp_date_2"]) && trim($this->allSamples[0]["pcr_reagent_exp_date_2"]) != "") {
+                                $pcrExpDate2 = $this->dateFormat($this->allSamples[0]["pcr_reagent_exp_date_2"]);
+                            }
+                            if (isset($this->allSamples[0]["pcr_reagent_exp_date_3"]) && trim($this->allSamples[0]["pcr_reagent_exp_date_3"]) != "") {
+                                $pcrExpDate3 = $this->dateFormat($this->allSamples[0]["pcr_reagent_exp_date_3"]);
+                            }
                             ?>
                             <tr align="CENTER" class="dark">
+                                <th>Name of PCR reagent</th>
+                                <td><input type="text" placeholder="Enter name of PCR reagent 1" class="form-control" name="name_of_pcr_reagent_1" id="name_of_pcr_reagent_1" value="<?php echo ($nameOfPcrReagent1); ?>" style="width: 100%;" title="Please enter name of PCR reagent. 1" /></td>
+                                <td class='testTwo'><input type="text" placeholder="Enter name of PCR reagent 2" class="form-control" name="name_of_pcr_reagent_2" id="name_of_pcr_reagent_2" value="<?php echo ($nameOfPcrReagent2); ?>" style="width: 100%;" title="Please enter name of PCR reagent. 2" /></td>
+                                <td class='testThree'><input type="text" placeholder="Enter name of PCR reagent 3" class="form-control" name="name_of_pcr_reagent_3" id="name_of_pcr_reagent_3" value="<?php echo ($nameOfPcrReagent3); ?>" style="width: 100%;" title="Please enter name of PCR reagent. 3" /></td>
+                            </tr>
+
+                            <tr align="CENTER" class="light">
+                                <th>PCR reagent Lot number</th>
+                                <td><input type="text" placeholder="Enter PCR reagent Lot no 1" class="form-control" name="pcr_reagent_lot_no_1" id="pcr_reagent_lot_no_1" value="<?php echo ($pcrLotNo1); ?>" style="width: 100%;" title="Please enter PCR reagent Lot no. 1" /></td>
+                                <td class='testTwo'><input type="text" placeholder="Enter PCR reagent Lot no  2" class="form-control" name="pcr_reagent_lot_no_2" id="pcr_reagent_lot_no_2" value="<?php echo ($pcrLotNo2); ?>" style="width: 100%;" title="Please enter PCR reagent Lot no. 2" /></td>
+                                <td class='testThree'><input type="text" placeholder="Enter PCR reagent Lot no  3" class="form-control" name="pcr_reagent_lot_no_3" id="pcr_reagent_lot_no_3" value="<?php echo ($pcrLotNo3); ?>" style="width: 100%;" title="Please enter PCR reagent Lot no. 3" /></td>
+                            </tr>
+
+                            <tr align="CENTER" class="dark">
+                                <th>PCR reagent expiry date</th>
+                                <td><input type="text" placeholder="Enter PCR reagent expiry date 1" class="expDatepicker form-control" name="pcr_reagent_exp_date_1" id="pcr_reagent_exp_date_1" value="<?php echo ($pcrExpDate1); ?>" style="width: 100%;" title="Please enter PCR reagent expiry date. 1" readonly="readonly" /><i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('pcr_reagent_exp_date_1')"> Clear</i></td>
+                                <td class='testTwo'><input type="text" placeholder="Enter PCR reagent expiry date 2" class="expDatepicker form-control" name="pcr_reagent_exp_date_2" id="pcr_reagent_exp_date_2" value="<?php echo ($pcrExpDate2); ?>" style="width: 100%;" title="Please enter PCR reagent expiry date. 2" readonly="readonly" /><i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('pcr_reagent_exp_date_2')"> Clear</i></td>
+                                <td class='testThree'><input type="text" placeholder="Enter PCR reagent expiry date 3" class="expDatepicker form-control" name="pcr_reagent_exp_date_3" id="pcr_reagent_exp_date_3" value="<?php echo ($pcrExpDate3); ?>" style="width: 100%;" title="Please enter PCR reagent expiry date. 3" readonly="readonly" /><i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('pcr_reagent_exp_date_3')"> Clear</i></td>
+                            </tr>
+
+                            <tr align="CENTER" class="light">
                                 <th>Lot No.</th>
-                                <td><input type="text" class="form-control" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" style="width: 100%;" class="" title="Please enter Lot No. 1" /></td>
-                                <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" style="width: 100%;" class="" title="Please enter Lot No. 2" /></td>
-                                <td class='testThree'><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" style="width: 100%;" class="" title="Please enter Lot No. 3" /></td>
-
-
-
-
+                                <td><input type="text" placeholder="Enter lot no 1" class="form-control" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" style="width: 100%;" title="Please enter Lot No. 1" /></td>
+                                <td class='testTwo'><input type="text" placeholder="Enter lot no 2" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" style="width: 100%;" title="Please enter Lot No. 2" /></td>
+                                <td class='testThree'><input type="text" placeholder="Enter lot no 3" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" style="width: 100%;" title="Please enter Lot No. 3" /></td>
                             </tr>
                             <?php
                             $expDate1 = "";
@@ -387,16 +447,14 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 $expDate3 = $this->dateFormat($this->allSamples[0]["exp_date_3"]);
                             }
                             ?>
-                            <tr align="CENTER" class="light">
+                            <tr align="CENTER" class="dark">
                                 <th>Expiry Date</th>
-                                <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="width:71%;float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> Clear</i></td>
-                                <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="width:71%;float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> Clear</i></td>
-                                <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="width:71%;float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> Clear</i></td>
-
-
+                                <td><input id="exp_date1" placeholder="Enter expiry date 1" type="text" id="exp_date1" name="exp_date_1" style="width:71%;float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> Clear</i></td>
+                                <td class='testTwo'><input id="exp_date2" placeholder="Enter expiry date 2" type="text" id="exp_date2" name="exp_date_2" style="width:71%;float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> Clear</i></td>
+                                <td class='testThree'><input id="exp_date3" placeholder="Enter expiry date 3" type="text" id="exp_date3" name="exp_date_3" style="width:71%;float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> Clear</i></td>
                             </tr>
                             <thead>
-                                <tr align="CENTER" class="dark">
+                                <tr align="CENTER" class="light">
                                     <th>Sample Number</th>
                                     <th class='resultOne'>Result-1</th>
                                     <th class='testTwo'>Result-2</th>
@@ -410,8 +468,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             foreach ($this->allSamples as $sample) {
                                 $count++;
                             ?>
-
-                                <tr align="CENTER" class="light">
+                                <tr align="CENTER" class="dark">
 
                                     <th style="white-space: nowrap;">
                                         <span id="sampleLabel<?php echo $sample['sample_id']; ?>"><?php echo ($sample['sample_label']); ?></span>
