@@ -1679,7 +1679,7 @@ class Application_Service_Reports
 
             if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
                 $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getColumn();
-                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
             }
 
             $sheetThreeColNo++;
@@ -2093,8 +2093,8 @@ class Application_Service_Reports
 
     public function generateCovid19ExcelReport($shipmentId)
     {
+        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
         $excel = new PHPExcel();
         //$sheet = $excel->getActiveSheet();
 
@@ -2262,7 +2262,7 @@ class Application_Service_Reports
                     $resQuery = $db->select()->from(array('rrcovid19' => 'response_result_covid19'))
                         ->joinLeft(array('tt1' => 'r_test_type_covid19'), 'tt1.test_type_id=rrcovid19.test_type_1', array('testPlatformName1' => 'tt1.test_type_name'))
                         ->joinLeft(array('tt2' => 'r_test_type_covid19'), 'tt2.test_type_id=rrcovid19.test_type_2', array('testPlatformName2' => 'tt2.test_type_name'))
-                        ->joinLeft(array('tt3' => 'r_test_type_covid19'), 'tt3.test_type_id=rrcovid19.test_type_3', array('testPlatformName3' => 'tt3.test_type_name'))
+                        ->joinLeft(array('tt3' => 'r_test_type_covid19'), 'tt3.test_type_id=rrcovid19.test_type_3', array('test~PlatformName3' => 'tt3.test_type_name'))
                         ->joinLeft(array('r' => 'r_possibleresult'), 'r.id=rrcovid19.test_result_1', array('testResult1' => 'r.response'))
                         ->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id=rrcovid19.test_result_2', array('testResult2' => 'rp.response'))
                         ->joinLeft(array('rpr' => 'r_possibleresult'), 'rpr.id=rrcovid19.test_result_3', array('testResult3' => 'rpr.response'))
@@ -2295,14 +2295,18 @@ class Application_Service_Reports
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Type Lot #1', 'Expiry Date');
-
+        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Name of PCR reagent #1', 'PCR reagent Lot #1', 'PCR reagent expiry date #1', 'Type Lot #1', 'Expiry Date');
+        $maximumAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
         if ($result['scheme_type'] == 'covid19') {
             $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
-            array_push($reportHeadings, 'Test#2 Name', 'Type Lot #2', 'Expiry Date');
-            $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
-            array_push($reportHeadings, 'Test#3 Name', 'Type Lot #3', 'Expiry Date');
-            $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
+            if ($maximumAllowed >= 2) {
+                array_push($reportHeadings, 'Test#2 Name', 'Name of PCR reagent #2', 'PCR reagent Lot #2', 'PCR reagent expiry date #2', 'Type Lot #2', 'Expiry Date');
+                $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
+            }
+            if ($maximumAllowed == 3) {
+                array_push($reportHeadings, 'Test#3 Name', 'Name of PCR reagent #3', 'PCR reagent Lot #3', 'PCR reagent expiry date #3', 'Type Lot #3', 'Expiry Date');
+                $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
+            }
             $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
             array_push($reportHeadings, 'Comments');
         }
@@ -2324,7 +2328,7 @@ class Application_Service_Reports
         $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn, 1)->getColumn();
         $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell, 1)->getColumn();
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle);
         $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle);
 
@@ -2343,7 +2347,7 @@ class Application_Service_Reports
 
                     $sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
                     $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
                     $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
                 }
@@ -2388,7 +2392,7 @@ class Application_Service_Reports
 
             if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
                 $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getColumn();
-                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
             }
 
             $sheetThreeColNo++;
@@ -2633,10 +2637,11 @@ class Application_Service_Reports
                 } else {
                     $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
-
+                */
                 $documentScore = (($aRow['documentation_score'] / $config->evaluation->covid19->documentationScore) * 100);
+                /*
                 $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
- */
+                */
                 //-------------Document score sheet------------>
                 //<------------ Total score sheet ------------
 
@@ -2657,7 +2662,22 @@ class Application_Service_Reports
                         $aRow['response'][0]['exp_date_3'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['exp_date_3']);
                     }
 
+                    if (isset($aRow['response'][0]['pcr_reagent_exp_date_1']) && trim($aRow['response'][0]['pcr_reagent_exp_date_1']) != "") {
+                        $aRow['response'][0]['pcr_reagent_exp_date_1'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['pcr_reagent_exp_date_1']);
+                    }
+                    if (isset($aRow['response'][0]['pcr_reagent_exp_date_2']) && trim($aRow['response'][0]['pcr_reagent_exp_date_2']) != "") {
+                        $aRow['response'][0]['pcr_reagent_exp_date_2'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['pcr_reagent_exp_date_2']);
+                    }
+                    if (isset($aRow['response'][0]['pcr_reagent_exp_date_3']) && trim($aRow['response'][0]['pcr_reagent_exp_date_3']) != "") {
+                        $aRow['response'][0]['pcr_reagent_exp_date_3'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['pcr_reagent_exp_date_3']);
+                    }
+
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName1'], PHPExcel_Cell_DataType::TYPE_STRING);
+
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_1'], PHPExcel_Cell_DataType::TYPE_STRING);
+
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_1'], PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_1'], PHPExcel_Cell_DataType::TYPE_STRING);
 
@@ -2665,21 +2685,35 @@ class Application_Service_Reports
                         //$row[] = $aRow[$k]['testResult1'];
                         $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult1'], PHPExcel_Cell_DataType::TYPE_STRING);
                     }
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName2'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    if ($maximumAllowed >= 2) {
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName2'], PHPExcel_Cell_DataType::TYPE_STRING);
 
-                    for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                        //$row[] = $aRow[$k]['testResult2'];
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_2'], PHPExcel_Cell_DataType::TYPE_STRING);
+
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
+                            //$row[] = $aRow[$k]['testResult2'];
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        }
                     }
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName3'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], PHPExcel_Cell_DataType::TYPE_STRING);
 
-                    for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                        //$row[] = $aRow[$k]['testResult3'];
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    if ($maximumAllowed == 3) {
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName3'], PHPExcel_Cell_DataType::TYPE_STRING);
+
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_3'], PHPExcel_Cell_DataType::TYPE_STRING);
+
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], PHPExcel_Cell_DataType::TYPE_STRING);
+
+                        for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
+                            //$row[] = $aRow[$k]['testResult3'];
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        }
                     }
 
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
@@ -3844,27 +3878,27 @@ class Application_Service_Reports
                         $secondCellName = $sheet->getCellByColumnAndRow(($col + 2), 1)->getColumn();
 
                         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-                        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+                        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle);
                         $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle);
                         $sheet->getCellByColumnAndRow($col, 1)->setValueExplicit(html_entity_decode($sample, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
                         $colorCol = $col;
                         $cellNameBar = $sheet->getCellByColumnAndRow($colorCol, 1)->getColumn();
-                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                         $colorCol = $colorCol + 1;
 
                         $cellNameBar = $sheet->getCellByColumnAndRow($colorCol, 1)->getColumn();
-                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                         $colorCol = $colorCol + 1;
 
                         $cellNameBar = $sheet->getCellByColumnAndRow($colorCol, 1)->getColumn();
-                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
                         $col = $col + 3;
                     }
                     $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
                     $c++;
                     $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($refResult[$l]['reference_result'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -3910,7 +3944,7 @@ class Application_Service_Reports
 
             if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
                 $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getColumn();
-                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#00FF00');
+                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
             }
 
             $sheetThreeColNo++;

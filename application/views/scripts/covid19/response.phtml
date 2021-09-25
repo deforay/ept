@@ -252,7 +252,8 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <td>
                                     <select class="form-control" name="numberOfParticipantTest" id="numberOfParticipantTest" title="Please select number of participant test" onchange="showHideTest(this.value);">
                                         <option value="">--Select--</option>
-                                        <?php foreach (range(1, $maximumAllowed) as $no) {
+                                        <?php $selected = "";
+                                        foreach (range(1, $maximumAllowed) as $no) {
                                             $selected = (isset($this->shipment['number_of_tests']) && $this->shipment['number_of_tests'] == $no) ? "selected='selected'" : "";
                                             echo '<option value="' . $no . '" ' . $selected . '>' . $no . '</option>';
                                         } ?>
