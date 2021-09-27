@@ -2892,3 +2892,8 @@ UPDATE `r_response_vl_not_tested_reason` SET `collect_panel_receipt_date` = 'no'
 
 -- Amit 23-Sep-2021
 UPDATE `system_config` SET `value` = '7.3.0' WHERE `system_config`.`config` = 'app_version';
+
+-- Thana 24-Sep-2021
+ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_1` VARCHAR(256) NULL DEFAULT NULL AFTER `test_type_1`, ADD `pcr_reagent_lot_no_1` VARCHAR(256) NULL DEFAULT NULL AFTER `name_of_pcr_reagent_1`, ADD `pcr_reagent_exp_date_1` DATE NULL DEFAULT NULL AFTER `pcr_reagent_lot_no_1`;
+ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_2` VARCHAR(256) NULL DEFAULT NULL AFTER `test_type_2`, ADD `pcr_reagent_lot_no_2` VARCHAR(256) NULL DEFAULT NULL AFTER `name_of_pcr_reagent_2`, ADD `pcr_reagent_exp_date_2` DATE NULL DEFAULT NULL AFTER `pcr_reagent_lot_no_2`;
+ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_3` VARCHAR(256) NULL DEFAULT NULL AFTER `test_type_3`, ADD `pcr_reagent_lot_no_3` VARCHAR(256) NULL DEFAULT NULL AFTER `name_of_pcr_reagent_3`, ADD `pcr_reagent_exp_date_3` DATE NULL DEFAULT NULL AFTER `pcr_reagent_lot_no_3`;
