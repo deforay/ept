@@ -2890,3 +2890,5 @@ INSERT INTO `report_config` (`name`, `value`) VALUES ('institute-address-postiti
 ALTER TABLE `r_response_vl_not_tested_reason` ADD `collect_panel_receipt_date` VARCHAR(256) NULL DEFAULT 'yes' AFTER `vl_not_tested_reason`;
 UPDATE `r_response_vl_not_tested_reason` SET `collect_panel_receipt_date` = 'no' WHERE `r_response_vl_not_tested_reason`.`vl_not_tested_reason_id` = 8; UPDATE `r_response_vl_not_tested_reason` SET `collect_panel_receipt_date` = 'no' WHERE `r_response_vl_not_tested_reason`.`vl_not_tested_reason_id` = 9; UPDATE `r_response_vl_not_tested_reason` SET `collect_panel_receipt_date` = 'no' WHERE `r_response_vl_not_tested_reason`.`vl_not_tested_reason_id` = 10; UPDATE `r_response_vl_not_tested_reason` SET `collect_panel_receipt_date` = 'no' WHERE `r_response_vl_not_tested_reason`.`vl_not_tested_reason_id` = 11;
 
+-- Amit 23-Sep-2021
+UPDATE `system_config` SET `value` = '7.3.0' WHERE `system_config`.`config` = 'app_version';

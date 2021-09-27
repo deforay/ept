@@ -272,9 +272,6 @@ class Application_Service_Schemes
                 'lot_no_3',
                 'exp_date_3',
                 'test_result_3',
-                'repeat_test_result_1',
-                'repeat_test_result_2',
-                'repeat_test_result_3',
                 'reported_result',
             ))
             ->where('sp.shipment_id = ? ', $sId)
