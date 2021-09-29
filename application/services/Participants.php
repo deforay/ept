@@ -589,249 +589,33 @@ class Application_Service_Participants
 		return $participantDb->fetchParticipantSearch($search);
 	}
 
-	public function addBulkParticipant()
+	public function uploadBulkParticipants()
 	{
 		ini_set('memory_limit', -1);
 		ini_set('max_execution_time', -1);
 		try {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');
 			$adminSession = new Zend_Session_Namespace('administrators');
-			// $participantDb = new Application_Model_DbTable_Participants();
+			$participantDb = new Application_Model_DbTable_Participants();
 			// $userDb = new Application_Model_DbTable_DataManagers();
-			// $common = new Application_Service_Common();
-			$schemeDb = new Application_Model_DbTable_SchemeList();
-			$activeSchemes = $schemeDb->getAllSchemes();
+			$common = new Application_Service_Common();
+			// $schemeDb = new Application_Model_DbTable_SchemeList();
+			// $activeSchemes = $schemeDb->getAllSchemes();
 			// var_dump($activeSchemes);die;
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			// $rResult = $db->fetchAll();
 			$allowedExtensions = array('xls', 'xlsx', 'csv');
 			$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
 			$fileName = str_replace(" ", "-", $fileName);
-			$ranNumber1 = str_pad(rand(0, pow(10, 6) - 1), 6, '0', STR_PAD_LEFT);
-			$ranNumber2 = str_pad(rand(0, pow(10, 6) - 1), 6, '0', STR_PAD_LEFT);
+			$random = $common->generateRandomString(6);
 			$extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-			$fileName = $ranNumber1 . $ranNumber2 . "." . $extension;
+			$fileName = $random . "-" . $fileName;
 			$response = array();
-
+			$lastInsertedId = 0;
 			if (in_array($extension, $allowedExtensions)) {
-
 				if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-
 					if (move_uploaded_file($_FILES['fileName']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-
-						$objPHPExcel = \PhpOffice\PhpSpreadsheet\IOFactory::load(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
-						$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-
-						$authNameSpace = new Zend_Session_Namespace('administrators');
-						$count = count($sheetData);
-
-						for ($i = 2; $i <= $count; ++$i) {
-
-							$lastInsertedId = 0;
-
-							if (empty($sheetData[$i]['A']) && empty($sheetData[$i]['B']) && empty($sheetData[$i]['C']) && empty($sheetData[$i]['D'])) {
-								continue;
-							}
-
-
-							$sheetData[$i]['A'] = filter_var(trim($sheetData[$i]['A']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['B'] = filter_var(trim($sheetData[$i]['B']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['C'] = filter_var(trim($sheetData[$i]['C']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['D'] = filter_var(trim($sheetData[$i]['D']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['E'] = filter_var(trim($sheetData[$i]['E']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['F'] = filter_var(trim($sheetData[$i]['F']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['G'] = filter_var(trim($sheetData[$i]['G']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['H'] = filter_var(trim($sheetData[$i]['H']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['I'] = filter_var(trim($sheetData[$i]['I']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['J'] = filter_var(trim($sheetData[$i]['J']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['K'] = filter_var(trim($sheetData[$i]['K']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['L'] = filter_var(trim($sheetData[$i]['L']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['M'] = filter_var(trim($sheetData[$i]['M']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['N'] = filter_var(trim($sheetData[$i]['N']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['O'] = filter_var(trim($sheetData[$i]['O']), FILTER_SANITIZE_STRING);
-							$sheetData[$i]['Q'] = filter_var(trim($sheetData[$i]['Q']), FILTER_SANITIZE_STRING);
-
-
-							$sheetData[$i]['P'] = filter_var(trim($sheetData[$i]['P']), FILTER_SANITIZE_EMAIL);
-							$sheetData[$i]['R'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_EMAIL);
-
-							// if the unique_identifier is blank, we generate a new one
-							$useUniqueIDForDuplicateCheck = true;
-							if (empty($sheetData[$i]['B'])) {
-								$useUniqueIDForDuplicateCheck = false;
-								$sheetData[$i]['B'] = "PT-" . strtoupper(bin2hex(random_bytes(3)));
-							}
-
-							// if the email is blank, we generate a new one
-							$useEmailForDuplicateCheck = true;
-							if (empty($sheetData[$i]['P'])) {
-								$useEmailForDuplicateCheck = false;
-								$sheetData[$i]['P'] = $this->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
-							}
-
-							$dataForStatistics = array(
-								'serialNo' 	=> $sheetData[$i]['A'],
-								'identifier' => $sheetData[$i]['B'],
-								'email' 	=> $sheetData[$i]['P'],
-								'mobile' 	=> $sheetData[$i]['O'],
-								'first_name' => $sheetData[$i]['D'],
-								'last_name' => $sheetData[$i]['E'],
-								'city' 		=> $sheetData[$i]['I'],
-								'institute' => $sheetData[$i]['F'],
-								'country' => $sheetData[$i]['K']
-							);
-
-							if (!empty($sheetData[$i]['P']) && $sheetData[$i]['P'] != false) {
-
-								$dmId = 0;
-								$isIndividual = strtolower($sheetData[$i]['C']);
-								if (!in_array($isIndividual, array('yes', 'no'))) {
-									$isIndividual = 'yes'; // Default we treat testers as individuals
-								}
-
-								$presult = $dmresult = false;
-								if ($useUniqueIDForDuplicateCheck && $useEmailForDuplicateCheck) {
-									/* To check the duplication in participant table */
-									$psql = $db->select()->from('participant')
-										->where("unique_identifier LIKE ?", $sheetData[$i]['B'])
-										->orWhere("email LIKE ?", $sheetData[$i]['P']);
-									$presult = $db->fetchRow($psql);
-								} else if ($useUniqueIDForDuplicateCheck) {
-									/* To check the duplication in participant table */
-									$psql = $db->select()->from('participant')
-										->where("unique_identifier LIKE ?", $sheetData[$i]['B']);
-									$presult = $db->fetchRow($psql);
-								} else if ($useEmailForDuplicateCheck) {
-									/* To check the duplication in participant table */
-									$psql = $db->select()->from('participant')
-										->where("email LIKE ?", $sheetData[$i]['P']);
-									$presult = $db->fetchRow($psql);
-								} else {
-									$psql = $db->select()->from('participant')
-										->where("first_name LIKE ?", $sheetData[$i]['D'])
-										->where("last_name LIKE ?", $sheetData[$i]['E'])
-										->where("mobile LIKE ?", $sheetData[$i]['O'])
-										->where("city LIKE ?", $sheetData[$i]['I']);
-									$presult = $db->fetchRow($psql);
-								}
-
-								/* To check the duplication in data manager table */
-								$dmsql = $db->select()->from('data_manager')
-									->where("primary_email LIKE ?", $sheetData[$i]['P']);
-								$dmresult = $db->fetchRow($dmsql);
-
-
-								// if($dmresult !== false){
-								// 	$sheetData[$i]['P'] = $this->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
-								// 	$dmresult = false;
-								// }
-
-								/* To find the country id */
-								$cmsql = $db->select()->from('countries')
-									->where("iso_name LIKE ?", $sheetData[$i]['K'])
-									->orWhere("iso2 LIKE  ?", $sheetData[$i]['K'])
-									->orWhere("iso3 LIKE  ?", $sheetData[$i]['K']);
-
-								//echo $cmsql;	
-								$cresult = $db->fetchRow($cmsql);
-
-								if (!$cresult) {
-									$dataForStatistics['error'] = 'Could not add find country named ' . $sheetData[$i]['K'];
-									$response['error-data'][] = $dataForStatistics;
-									continue;
-								}
-
-								if (!$presult && !$dmresult) {
-
-									$db->beginTransaction();
-									try {
-										$lastInsertedId = $db->insert('participant', array(
-											'unique_identifier' => ($sheetData[$i]['B']),
-											'individual' 		=> $isIndividual,
-											'first_name' 		=> ($sheetData[$i]['D']),
-											'last_name' 		=> ($sheetData[$i]['E']),
-											'institute_name' 	=> ($sheetData[$i]['F']),
-											'department_name' 	=> ($sheetData[$i]['G']),
-											'address' 			=> ($sheetData[$i]['H']),
-											'city' 				=> ($sheetData[$i]['I']),
-											'state' 			=> ($sheetData[$i]['J']),
-											'country' 			=> (isset($cresult['id']) && $cresult['id'] != "") ? $cresult['id'] : 0,
-											'zip' 				=> ($sheetData[$i]['L']),
-											'long' 				=> ($sheetData[$i]['M']),
-											'lat' 				=> ($sheetData[$i]['N']),
-											'mobile' 			=> ($sheetData[$i]['O']),
-											'email' 			=> ($sheetData[$i]['P']),
-											'additional_email' 	=> ($sheetData[$i]['R']),
-											'created_by' 		=> $authNameSpace->admin_id,
-											'created_on' 		=> new Zend_Db_Expr('now()'),
-											'status'			=> 'active'
-										));
-
-										$pasql = $db->select()->from('participant')
-											->where("email LIKE ?", trim($sheetData[$i]['P']))
-											->orWhere("unique_identifier LIKE ?", trim($sheetData[$i]['B']));
-										$paresult = $db->fetchRow($pasql);
-										$lastInsertedId = $paresult['participant_id'];
-										if ($lastInsertedId > 0) {
-											$db->insert('data_manager', array(
-												'first_name' 		=> ($sheetData[$i]['D']),
-												'last_name' 		=> ($sheetData[$i]['E']),
-												'institute' 		=> ($sheetData[$i]['F']),
-												'mobile' 			=> ($sheetData[$i]['O']),
-												'secondary_email' 	=> ($sheetData[$i]['R']),
-												'primary_email' 	=> ($sheetData[$i]['P']),
-												'password' 			=> (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
-												'created_by' 		=> $authNameSpace->admin_id,
-												'created_on' 		=> new Zend_Db_Expr('now()'),
-												'status'			=> 'active'
-											));
-
-											$dmId = $db->lastInsertId();
-
-											if ($dmId != null && $dmId > 0) {
-												$db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
-												$response['data'][] = $dataForStatistics;
-											} else {
-												$dataForStatistics['error'] = 'Could not add Participant Login';
-												$response['error-data'][] = $dataForStatistics;
-												throw new Zend_Exception('Could not add Participant Login');
-											}
-										} else {
-											$dataForStatistics['error'] = 'Could not add Participant';
-											$response['error-data'][] = $dataForStatistics;
-											throw new Zend_Exception('Could not add Participant');
-										}
-										$db->commit();
-									} catch (Exception $e) {
-										// If any of the queries failed and threw an exception,
-										// we want to roll back the whole transaction, reversing
-										// changes made in the transaction, even those that succeeded.
-										// Thus all changes are committed together, or none are.
-										$db->rollBack();
-										error_log($e->getMessage());
-										error_log($e->getTraceAsString());
-										continue;
-									}
-								} else {
-									if ($useUniqueIDForDuplicateCheck || $useEmailForDuplicateCheck) {
-										$dataForStatistics['error'] = 'Possible duplicate of Participant Email or Unique ID.';
-									} else {
-										$dataForStatistics['error'] = 'Possible duplicate of Name, Location, Mobile combination';
-									}
-
-									$response['error-data'][] = $dataForStatistics;
-								}
-								// if ($lastInsertedId > 0 || $dmId > 0) {
-								// 	if (file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-								// 		unlink(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
-								// 	}
-								// 	$response['message'] = "File has expired please re-import again!";
-								// }
-							} else {
-								$dataForStatistics['error'] = 'Primary Email Missing';
-								$response['error-data'][] = $dataForStatistics;
-							}
-						}
+						$response = $participantDb->processBulkImport(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
 					} else {
 						$alertMsg->message = 'Data import failed';
 						return false;
@@ -844,9 +628,6 @@ class Application_Service_Participants
 				$alertMsg->message = 'File format not supported';
 				return false;
 			}
-			if ($lastInsertedId > 0) {
-				$alertMsg->message = 'Your file was imported successfully';
-			}
 		} catch (Exception $exc) {
 			error_log("IMPORT-PARTICIPANTS-DATA-EXCEL--" . $exc->getMessage());
 			error_log($exc->getTraceAsString());
@@ -856,16 +637,9 @@ class Application_Service_Participants
 		return $response;
 	}
 
-	public function generateFakeEmailId($uniqueId, $participantName)
-	{
-		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-		$eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
-		$uniqueId = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $uniqueId));
-		$participantName = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $participantName));
 
-		$fakeEmail = $uniqueId . "_" . $participantName . "@" . parse_url($eptDomain, PHP_URL_HOST);
-		return $fakeEmail;
-	}
+
+	
 
 	public function getFilterDetailsAPI($params)
 	{

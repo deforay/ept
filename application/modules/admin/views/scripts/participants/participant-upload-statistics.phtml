@@ -25,12 +25,12 @@
                 <tbody>
                     <?php foreach ($this->response['data'] as $key => $row) {
                         echo '<tr>
-                                <td>' . $row['serialNo'] . '</td>
-                                <td>' . $row['identifier'] . '</td>
-                                <td>' . $row['first_name'] . ' ' . $row['first_name'] . '</td>
-                                <td>' . $row['email'] . '</td>
-                                <td>' . $row['mobile'] . '</td>
-                                <td>' . $row['institute'] . '</td>
+                                <td>' . $row['s_no'] . '</td>
+                                <td>' . $row['participant_id'] . '</td>
+                                <td>' . $row['participant_lab_name'] . ' ' . $row['participant_last_name'] . '</td>
+                                <td>' . $row['participant_email'] . '</td>
+                                <td>' . $row['mobile_number'] . '</td>
+                                <td>' . $row['institute_name'] . '</td>
                                 <td>' . $row['city'] . '</td>
                                 <td>' . $row['country'] . '</td>
                             </tr>';
@@ -57,12 +57,12 @@
                 <tbody>
                     <?php foreach ($this->response['error-data'] as $key => $row) {
                         echo '<tr>
-                            <td>' . $row['serialNo'] . '</td>
-                            <td>' . $row['identifier'] . '</td>
-                            <td>' . $row['first_name'] . ' ' . $row['first_name'] . '</td>
-                            <td>' . $row['email'] . '</td>
-                            <td>' . $row['mobile'] . '</td>
-                            <td>' . $row['institute'] . '</td>
+                            <td>' . $row['s_no'] . '</td>
+                            <td>' . $row['participant_id'] . '</td>
+                            <td>' . $row['participant_lab_name'] . ' ' . $row['participant_last_name'] . '</td>
+                            <td>' . $row['participant_email'] . '</td>
+                            <td>' . $row['mobile_number'] . '</td>
+                            <td>' . $row['institute_name'] . '</td>
                             <td>' . $row['city'] . '</td>
                             <td>' . $row['country'] . '</td>
                             <td>' . $row['error'] . '</td>

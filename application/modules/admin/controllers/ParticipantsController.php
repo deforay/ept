@@ -47,7 +47,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     {
         $participantService = new Application_Service_Participants();
         if ($this->getRequest()->isPost()) {
-            $this->view->response = $participantService->addBulkParticipant();
+            $this->view->response = $participantService->uploadBulkParticipants();
         }
     }
     
@@ -55,7 +55,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     {
         $participantService = new Application_Service_Participants();
         if ($this->getRequest()->isPost()) {
-            $result = $participantService->addBulkParticipant();
+            $result = $participantService->uploadBulkParticipants();
             if(!$result){
                 $this->redirect("/admin/participants");
             }else{

@@ -729,9 +729,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
 
             if ($totalScore >= $passPercentage) {
-                $wishes = '<p style="font-size:12px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
+                $wishes = '<p style="font-size:14px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
             } else {
-                $wishes = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
+                $wishes = '<p style="font-size:14px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
             }
 
             $pdf->SetLeftMargin(15);

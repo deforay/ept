@@ -2897,3 +2897,32 @@ UPDATE `system_config` SET `value` = '7.3.0' WHERE `system_config`.`config` = 'a
 ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_1` VARCHAR(256) NULL DEFAULT NULL AFTER `test_type_1`, ADD `pcr_reagent_lot_no_1` VARCHAR(256) NULL DEFAULT NULL AFTER `name_of_pcr_reagent_1`, ADD `pcr_reagent_exp_date_1` DATE NULL DEFAULT NULL AFTER `pcr_reagent_lot_no_1`;
 ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_2` VARCHAR(256) NULL DEFAULT NULL AFTER `test_type_2`, ADD `pcr_reagent_lot_no_2` VARCHAR(256) NULL DEFAULT NULL AFTER `name_of_pcr_reagent_2`, ADD `pcr_reagent_exp_date_2` DATE NULL DEFAULT NULL AFTER `pcr_reagent_lot_no_2`;
 ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_3` VARCHAR(256) NULL DEFAULT NULL AFTER `test_type_3`, ADD `pcr_reagent_lot_no_3` VARCHAR(256) NULL DEFAULT NULL AFTER `name_of_pcr_reagent_3`, ADD `pcr_reagent_exp_date_3` DATE NULL DEFAULT NULL AFTER `pcr_reagent_lot_no_3`;
+
+
+
+-- Amit 29 Sep 2021
+  CREATE TABLE `participants_not_uploaded` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `s_no` text,
+  `participant_id` text,
+  `individual` text,
+  `participant_lab_name` text,
+  `participant_last_name` text,
+  `institute_name` text,
+  `department` text,
+  `address` text,
+  `district` text,
+  `province` text,
+  `country` text,
+  `zip` text,
+  `longitude` text,
+  `latitude` text,
+  `mobile_number` text,
+  `participant_email` text,
+  `participant_password` text,
+  `additional_email` text,
+  `filename` text,
+  `error` text,
+  `updated_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

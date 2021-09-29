@@ -17,6 +17,33 @@ class Application_Service_Common
         }
     }
 
+    public function getDateTime($returnFormat = 'Y-m-d H:i:s')
+    {
+        $date = new \DateTime(date('Y-m-d H:i:s'));
+        return $date->format($returnFormat);
+    }
+    public function generateRandomString($length = 8)
+    {
+        $random_string = '';
+        for ($i = 0; $i < $length; $i++) {
+            $number = random_int(0, 36);
+            $character = base_convert($number, 10, 36);
+            $random_string .= $character;
+        }
+
+        return $random_string;
+    }
+    public function generateFakeEmailId($uniqueId, $participantName)
+	{
+		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+		$eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
+		$uniqueId = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $uniqueId));
+		$participantName = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $participantName));
+
+		$fakeEmail = $uniqueId . "_" . $participantName . "@" . parse_url($eptDomain, PHP_URL_HOST);
+		return $fakeEmail;
+	}
+
     public function sendMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = array())
     {
         //Send to email
