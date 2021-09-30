@@ -812,7 +812,7 @@ class Application_Model_Dts
 				} else {
 					$failureReason[] = array(
 						'warning' => "Refridgerator availability not reported",
-						'correctiveAction' => $correctiveActions[18]
+						'correctiveAction' => $correctiveActions[19]
 					);
 					$correctiveActionList[] = 18;
 				}
@@ -821,7 +821,7 @@ class Application_Model_Dts
 				} else {
 					$failureReason[] = array(
 						'warning' => "Room Temperature not reported",
-						'correctiveAction' => $correctiveActions[18]
+						'correctiveAction' => $correctiveActions[20]
 					);
 					$correctiveActionList[] = 18;
 				}
@@ -830,7 +830,7 @@ class Application_Model_Dts
 				} else {
 					$failureReason[] = array(
 						'warning' => "Stop Watch Availability not reported",
-						'correctiveAction' => $correctiveActions[18]
+						'correctiveAction' => $correctiveActions[21]
 					);
 					$correctiveActionList[] = 18;
 				}

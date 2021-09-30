@@ -2881,7 +2881,11 @@ ALTER TABLE `shipment_participant_map` ADD `lab_director_name` VARCHAR(256) NULL
 
 
 -- Amit 16 Sep 2021
-INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (NULL, 'Please ensure all critical fields are reported in your PT Result Form', 'Please ensure all critical fields are reported in your PT Result Form');
+DELETE FROM `r_dts_corrective_actions` WHERE `r_dts_corrective_actions`.`action_id` = 18;
+INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (18, 'Please ensure condition of PT Samples is reported', 'Please ensure condition of PT Samples is reported');
+INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (19, 'Please ensure Refridgerator availability is reported', 'Please ensure Refridgerator availability is reported');
+INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (20, 'Please ensure Room Temperature is reported', 'Please ensure Room Temperature is reported');
+INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (21, 'Please ensure Stop Watch availability is reported', 'Please ensure Stop Watch availability is reported');
 
 -- Thana 20 Sep 2021
 INSERT INTO `report_config` (`name`, `value`) VALUES ('institute-address-postition', 'header');
