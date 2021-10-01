@@ -2931,7 +2931,7 @@ ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_3` VARCHAR(256) N
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-Thana 01-
+-- Thana 01-Oct-2021
 ALTER TABLE `response_result_dts` ADD `repeat_test_kit_name_1` VARCHAR(256) NULL DEFAULT NULL AFTER `test_kit_name_1`;
 ALTER TABLE `response_result_dts` ADD `repeat_test_kit_name_2` VARCHAR(256) NULL DEFAULT NULL AFTER `test_kit_name_2`;
 ALTER TABLE `response_result_dts` ADD `repeat_test_kit_name_3` VARCHAR(256) NULL DEFAULT NULL AFTER `test_kit_name_3`;
