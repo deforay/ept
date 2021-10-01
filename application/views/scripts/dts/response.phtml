@@ -78,9 +78,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                 <input type="hidden" id="test_kit_other_name_update_1" name="test_kit_other_name_update_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" />
                 <input type="hidden" id="test_kit_other_name_update_2" name="test_kit_other_name_update_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" />
                 <input type="hidden" id="test_kit_other_name_update_3" name="test_kit_other_name_update_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" />
-
-
-                <?php
+                <?php if ($allowRepeatTests == 'yes') { ?>
+                    <input type="hidden" id="retest_test_kit_other_name_update_1" name="retest_test_kit_other_name_update_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" />
+                    <input type="hidden" id="retest_test_kit_other_name_update_2" name="retest_test_kit_other_name_update_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" />
+                    <input type="hidden" id="retest_test_kit_other_name_update_3" name="retest_test_kit_other_name_update_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" />
+                <?php }
                 $date = (new DateTime())->setTime(0, 0, 0);
                 $lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0);
                 ?>
@@ -328,26 +330,30 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                     //echo $this->allSamples[0]["test_kit_name_1"];
                     ?>
 
-
-
                     <hr>
                     <table class="table table-bordered table-striped" style="margin:10px auto;">
                         <thead>
                             <?php
                             $width = 20;
                             if ($allowRepeatTests == 'yes') {
-                                $width = 12.5;
-                            }
-                            ?>
+                                $width = 12.5; ?>
+                                <tr align="CENTER" class="light">
+                                    <th style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
+                                    <th style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
+                                        Repeat-Tests
+                                    </th>
+                                    <th style="width: <?php echo $width; ?>%;"></th>
+                                </tr>
+                            <?php } ?>
                             <tr align="CENTER" class="dark">
                                 <th style="width: <?php echo $width; ?>%;"></th>
                                 <th style="width: <?php echo $width; ?>%;">Test-1</th>
                                 <th style="width: <?php echo $width; ?>%;" class='testTwo'>Test-2</th>
                                 <th style="width: <?php echo $width; ?>%;" class='testThree'>Test-3</th>
                                 <?php if ($allowRepeatTests == 'yes') { ?>
-                                    <th style="width: <?php echo ($width * 4); ?>%;" colspan="4"></th>
-                                <?php } else { ?>
-                                    <th style="width: <?php echo $width; ?>%;"></th>
+                                    <th style="width: <?php echo $width; ?>%;">Repeat Test-1</th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testTwo'>Repeat Test-2</th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testThree'>Repeat Test-3</th>
                                 <?php } ?>
                             </tr>
                         </thead>
@@ -403,9 +409,55 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                             </td>
                             <?php if ($allowRepeatTests == 'yes') { ?>
-                                <th style="width: <?php echo ($width * 4); ?>%;" colspan="4"></th>
-                            <?php } else { ?>
-                                <th style="width: <?php echo $width; ?>%;"></th>
+                                <td style="width: <?php echo $width; ?>%;" class="dark">
+                                    <select name="repeat_test_kit_name_1" id="repeat_test_kit_name_1" class="form-control" title="Please Choose Repeat Test Kit 1" onchange="selectTestKitName(this)">
+                                        <option value=""> ---Select Kit---</option>
+                                        <?php
+                                        foreach ($this->allTestKits as $key => $testkit) {
+                                            if ($testkit['testkit_1'] == '1') {
+                                        ?>
+                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                        <?php
+                                            }
+                                        }
+                                        ?>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_1" id="repeat_test_kit_other_name_1" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
+                                </td>
+                                <td style="width: <?php echo $width; ?>%;" class='testTwo'>
+                                    <select name="repeat_test_kit_name_2" id="repeat_test_kit_name_2" class="form-control" title="Please Choose Repeat Test Kit 2" onchange="selectTestKitName(this)">
+                                        <option value=""> ---Select Kit---</option>
+                                        <?php
+                                        foreach ($this->allTestKits as $key => $testkit) {
+                                            if ($testkit['testkit_2'] == '1') {
+                                        ?>
+                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                        <?php
+                                            }
+                                        }
+                                        ?>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_2" id="repeat_test_kit_other_name_2" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
+                                </td>
+
+                                <td style="width: <?php echo $width; ?>%;" class='testThree'>
+                                    <select name="repeat_test_kit_name_3" id="repeat_test_kit_name_3" class="form-control" title="Please Choose Repeat Test Kit 3" onchange="selectTestKitName(this)">
+                                        <option value=""> ---Select Kit---</option>
+                                        <?php
+                                        foreach ($this->allTestKits as $key => $testkit) {
+                                            if ($testkit['testkit_3'] == '1') {
+                                        ?>
+                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                        <?php
+                                            }
+                                        }
+                                        ?>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_3" id="repeat_test_kit_other_name_3" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
+                                </td>
                             <?php } ?>
                         </tr>
                         <?php
@@ -421,6 +473,20 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                         if (isset($this->allSamples[0]["lot_no_3"]) && trim($this->allSamples[0]["lot_no_3"]) != "") {
                             $lotNo3 = $this->allSamples[0]["lot_no_3"];
                         }
+                        if ($allowRepeatTests == 'yes') {
+                            $rlotNo1 = "";
+                            $rlotNo2 = "";
+                            $rlotNo3 = "";
+                            if (isset($this->allSamples[0]["repeat_lot_no_1"]) && trim($this->allSamples[0]["repeat_lot_no_1"]) != "") {
+                                $rlotNo1 = $this->allSamples[0]["repeat_lot_no_1"];
+                            }
+                            if (isset($this->allSamples[0]["repeat_lot_no_2"]) && trim($this->allSamples[0]["repeat_lot_no_2"]) != "") {
+                                $rlotNo2 = $this->allSamples[0]["repeat_lot_no_2"];
+                            }
+                            if (isset($this->allSamples[0]["repeat_lot_no_3"]) && trim($this->allSamples[0]["repeat_lot_no_3"]) != "") {
+                                $rlotNo3 = $this->allSamples[0]["repeat_lot_no_3"];
+                            }
+                        }
                         ?>
                         <tr align="CENTER" class="dark">
                             <th>Lot No.</th>
@@ -428,9 +494,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" class="" title="Please enter Lot No. 2" /></td>
                             <td class='testThree'><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" class="" title="Please enter Lot No. 3" /></td>
                             <?php if ($allowRepeatTests == 'yes') { ?>
-                                <th style="width: <?php echo ($width * 4); ?>%;" colspan="4"></th>
-                            <?php } else { ?>
-                                <th style="width: <?php echo $width; ?>%;"></th>
+                                <td><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_1" id="repeat_lot_no_1" value="<?php echo ($rlotNo1); ?>" class="" title="Please enter Repeat Lot No. 1" /></td>
+                                <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
+                                <td class='testThree'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
                             <?php } ?>
                         </tr>
                         <?php
@@ -446,6 +512,20 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                         if (isset($this->allSamples[0]["exp_date_3"]) && trim($this->allSamples[0]["exp_date_3"]) != "") {
                             $expDate3 = $this->dateFormat($this->allSamples[0]["exp_date_3"]);
                         }
+                        if ($allowRepeatTests == 'yes') {
+                            $rexpDate1 = "";
+                            $rexpDate2 = "";
+                            $rexpDate3 = "";
+                            if (isset($this->allSamples[0]["repeat_exp_date_1"]) && trim($this->allSamples[0]["repeat_exp_date_1"]) != "") {
+                                $rexpDate1 = $this->dateFormat($this->allSamples[0]["repeat_exp_date_1"]);
+                            }
+                            if (isset($this->allSamples[0]["repeat_exp_date_2"]) && trim($this->allSamples[0]["repeat_exp_date_2"]) != "") {
+                                $rexpDate2 = $this->dateFormat($this->allSamples[0]["repeat_exp_date_2"]);
+                            }
+                            if (isset($this->allSamples[0]["repeat_exp_date_3"]) && trim($this->allSamples[0]["repeat_exp_date_3"]) != "") {
+                                $rexpDate3 = $this->dateFormat($this->allSamples[0]["repeat_exp_date_3"]);
+                            }
+                        }
                         ?>
                         <tr align="CENTER" class="light">
                             <th>Expiry Date</th>
@@ -453,9 +533,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> Clear</i></td>
                             <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> Clear</i></td>
                             <?php if ($allowRepeatTests == 'yes') { ?>
-                                <th style="width: <?php echo ($width * 4); ?>%;" colspan="4"></th>
-                            <?php } else { ?>
-                                <th style="width: <?php echo $width; ?>%;"></th>
+                                <td><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;" value="<?php echo $rexpDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> Clear</i></td>
+                                <td class='testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> Clear</i></td>
+                                <td class='testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> Clear</i></td>
                             <?php } ?>
                         </tr>
                         <thead>

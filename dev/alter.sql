@@ -2930,3 +2930,14 @@ ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_3` VARCHAR(256) N
   `updated_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+Thana 01-
+ALTER TABLE `response_result_dts` ADD `repeat_test_kit_name_1` VARCHAR(256) NULL DEFAULT NULL AFTER `test_kit_name_1`;
+ALTER TABLE `response_result_dts` ADD `repeat_test_kit_name_2` VARCHAR(256) NULL DEFAULT NULL AFTER `test_kit_name_2`;
+ALTER TABLE `response_result_dts` ADD `repeat_test_kit_name_3` VARCHAR(256) NULL DEFAULT NULL AFTER `test_kit_name_3`;
+ALTER TABLE `response_result_dts` ADD `repeat_lot_no_1` VARCHAR(256) NULL DEFAULT NULL AFTER `lot_no_1`;
+ALTER TABLE `response_result_dts` ADD `repeat_lot_no_2` VARCHAR(256) NULL DEFAULT NULL AFTER `lot_no_2`;
+ALTER TABLE `response_result_dts` ADD `repeat_lot_no_3` VARCHAR(256) NULL DEFAULT NULL AFTER `lot_no_3`;
+ALTER TABLE `response_result_dts` ADD `repeat_exp_date_1` date NULL DEFAULT NULL AFTER `exp_date_1`;
+ALTER TABLE `response_result_dts` ADD `repeat_exp_date_2` date NULL DEFAULT NULL AFTER `exp_date_2`;
+ALTER TABLE `response_result_dts` ADD `repeat_exp_date_3` date NULL DEFAULT NULL AFTER `exp_date_3`;
