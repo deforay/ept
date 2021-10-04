@@ -76,8 +76,8 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 <div class="col-lg-6">
                     <select class="form-control" id="conditionOfPtSample" name="conditionOfPtSample" title="Please select sample condition fields on participant result form">
                         <option value="">--Select--</option>
-                        <option value="no" <?php echo (isset($this->config->evaluation->dts->display_sample_condition_fields) && $this->config->evaluation->dts->display_sample_condition_fields == "no") ? " selected='selected' " : ""; ?>>No</option>
-                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->display_sample_condition_fields) && $this->config->evaluation->dts->display_sample_condition_fields == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
+                        <option value="no" <?php echo (isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "no") ? " selected='selected' " : ""; ?>>No</option>
+                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
                     </select>
                 </div>
             </div>
@@ -87,8 +87,8 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 <div class="col-lg-6">
                     <select class="form-control" id="allowRepeatTest" name="allowRepeatTest" title="Please select sample condition fields on participant result form">
                         <option value="">--Select--</option>
-                        <option value="no" <?php echo (isset($this->config->evaluation->dts->allow_repeat_tests) && $this->config->evaluation->dts->allow_repeat_tests == "no") ? " selected='selected' " : ""; ?>>No</option>
-                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->allow_repeat_tests) && $this->config->evaluation->dts->allow_repeat_tests == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
+                        <option value="no" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "no") ? " selected='selected' " : ""; ?>>No</option>
+                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
                     </select>
                 </div>
             </div>

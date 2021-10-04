@@ -38,8 +38,8 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             $config->$sec->evaluation->dts->dtsEnforceAlgorithmCheck = $this->getRequest()->getPost('dtsEnforceAlgorithmCheck');
             $config->$sec->evaluation->dts->sampleRehydrateDays = $this->getRequest()->getPost('sampleRehydrateDays');
             $config->$sec->evaluation->dts->allowedAlgorithms = !empty($allowedAlgorithms) ? $allowedAlgorithms : '';
-            $config->$sec->evaluation->dts->display_sample_condition_fields = $this->getRequest()->getPost('conditionOfPtSample');
-            $config->$sec->evaluation->dts->allow_repeat_tests = $this->getRequest()->getPost('allowRepeatTest');
+            $config->$sec->evaluation->dts->displaySampleConditionFields = $this->getRequest()->getPost('conditionOfPtSample');
+            $config->$sec->evaluation->dts->allowRepeatTests = $this->getRequest()->getPost('allowRepeatTest');
 
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)

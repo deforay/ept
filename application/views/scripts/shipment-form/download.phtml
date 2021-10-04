@@ -162,7 +162,7 @@ $labInfo .= '</table><br/><br/>';
 if ($this->shipment["scheme_type"] == 'dts') {
 
 	$optionalTest3 = $this->customConfig->evaluation->dts->dtsOptionalTest3;
-	$allowRepeatTests = isset($this->customConfig->evaluation->dts->allow_repeat_tests) ? $this->customConfig->evaluation->dts->allow_repeat_tests : 'no';
+	$allowRepeatTests = isset($this->customConfig->evaluation->dts->allowRepeatTests) ? $this->customConfig->evaluation->dts->allowRepeatTests : 'no';
 	if ($optionalTest3 == 'no') {
 		$width = 22;
 	} else {

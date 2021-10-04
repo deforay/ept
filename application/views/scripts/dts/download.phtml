@@ -6,7 +6,7 @@ require_once('tcpdf/tcpdf.php');
 
 
 $optionalTest3 = $this->config->evaluation->dts->dtsOptionalTest3;
-$allowRepeatTests = isset($this->config->evaluation->dts->allow_repeat_tests) ? $this->config->evaluation->dts->allow_repeat_tests : 0;
+$allowRepeatTests = isset($this->config->evaluation->dts->allowRepeatTests) ? $this->config->evaluation->dts->allowRepeatTests : 0;
 if ($optionalTest3 == 'no') {
 	$width = 20;
 } else {
@@ -180,7 +180,7 @@ $labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 $labInfo .= '<td style="font-weight:bold;width:25%">Algorithm Used</td>';
 $labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 $labInfo .= '</tr>';
-if ((isset($this->config->evaluation->dts->display_sample_condition_fields) && $this->config->evaluation->dts->display_sample_condition_fields == "yes")) {
+if ((isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "yes")) {
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Condition Of PT Samples</td> ';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';

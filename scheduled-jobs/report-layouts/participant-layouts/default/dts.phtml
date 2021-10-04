@@ -129,7 +129,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         );
 
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
-        $allowRepeatTests = isset($config->evaluation->dts->allow_repeat_tests) ? $config->evaluation->dts->allow_repeat_tests : 0;
+        $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
         $testThreeOptionalDisplay = "";
         if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
@@ -194,7 +194,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
         $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
         $rehydrateHours = $sampleRehydrateDays * 24;
-        $sampleConditionFields = (isset($config->evaluation->dts->display_sample_condition_fields) && $config->evaluation->dts->display_sample_condition_fields != "") ? $config->evaluation->dts->display_sample_condition_fields : 'no';
+        $sampleConditionFields = (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : 'no';
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {

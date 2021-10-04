@@ -13,7 +13,7 @@ $testTwoHidden = false;
 $screeningTest = false;
 
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
-$allowRepeatTests = isset($this->config->evaluation->dts->allow_repeat_tests) ? $this->config->evaluation->dts->allow_repeat_tests : 0;
+$allowRepeatTests = isset($this->config->evaluation->dts->allowRepeatTests) ? $this->config->evaluation->dts->allowRepeatTests : 0;
 
 if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
     $testThreeHidden = true;
@@ -198,7 +198,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             </td>
                         </tr>
 
-                        <?php if ((isset($this->config->evaluation->dts->display_sample_condition_fields) && $this->config->evaluation->dts->display_sample_condition_fields == "yes")) { ?>
+                        <?php if ((isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "yes")) { ?>
 
                             <tr class="light malawiNationalDtsAlgo">
                                 <td><label for="conditionOfPTSamples" class="label-control">Condition Of PT Samples</label></td>

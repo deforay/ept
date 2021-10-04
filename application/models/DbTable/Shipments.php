@@ -2096,6 +2096,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
+
+        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
         /* To check the shipment details for the data managers mapped participants */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 's.updated_on_admin'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
@@ -2139,12 +2143,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $downloadSummaryReports .= '/api/participant/download-summary/' . $token['download_link'] . '/' . base64_encode($row['map_id']);
                 }
             }
-
+            if (isset($row['scheme_type']) && $row['scheme_type'] == "dts") {
+                $dtsOptionalTest3 = (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 != "") ? $config->evaluation->dts->dtsOptionalTest3 : "no";
+                $displaySampleConditionFields = (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : "no";
+                $allowRepeatTests = (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests != "") ? $config->evaluation->dts->allowRepeatTests : "no";
+            }
             $data[] = array(
                 'isSynced'         => '',
                 'schemeType'       => $row['scheme_type'],
                 'schemeName'       => ($row['scheme_name']),
-                'shipmentCode'       => ($row['shipment_code']),
+                'shipmentCode'     => ($row['shipment_code']),
                 'shipmentId'       => $row['shipment_id'],
                 'participantId'    => $row['participant_id'],
                 'evaluationStatus' => $row['evaluation_status'],
@@ -2172,6 +2180,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             );
             /* This API to get the shipments form using type form */
             if ($type == 'form') {
+
                 $formData[$key]['schemeType']       = $row['scheme_type'];
                 $formData[$key]['schemeName']       = ucwords($row['scheme_name']);
                 $formData[$key]['shipmentId']       = $row['shipment_id'];
@@ -2182,6 +2191,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $formData[$key]['updatedStatus']    = (isset($row['updated_on_user']) && $row['updated_on_user'] != '') ? true : false;
                 $formData[$key]['updatedOn']        = (isset($row['updated_on_user']) && $row['updated_on_user'] != '' && $row['RESPONSEDATE'] != '' && $row['RESPONSEDATE'] != '0000-00-00') ? $row['updated_on_user'] : '';
                 $formData[$key]['mapId']            = $row['map_id'];
+                if (isset($row['scheme_type']) && $row['scheme_type'] == "dts") {
+                    $formData[$key]['dtsOptionalTest3'] = (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 != "") ? $config->evaluation->dts->dtsOptionalTest3 : "no";
+                    $formData[$key]['displaySampleConditionFields'] = (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : "no";
+                    $formData[$key]['allowRepeatTests'] = (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests != "") ? $config->evaluation->dts->allowRepeatTests : "no";
+                }
+                if (isset($row['scheme_type']) && $row['scheme_type'] == "covid19") {
+                    $formData[$key]['covid19MaximumTestAllowed'] = (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "no";
+                }
 
                 $formData[$key][$row['scheme_type'] . 'Data'] = $this->fetchShipmentFormDetails($row, $aResult);
                 if (isset($formData[$key][$row['scheme_type'] . 'Data']) && count($formData[$key][$row['scheme_type'] . 'Data']) > 0) {
@@ -2335,7 +2352,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'sampleType'                => (isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != '') ? $shipment['shipment_attributes']["sampleType"] : '',
                     'screeningTest'             => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
                 );
-                if ((isset($config->evaluation->dts->display_sample_condition_fields) && $config->evaluation->dts->display_sample_condition_fields == "yes")) {
+                if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
                     $section2['conditionOfPTSamples'] = (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] != '') ? $shipment['attributes']["condition_pt_samples"] : '';
                     $section2['refridgerator'] = (isset($shipment['attributes']["refridgerator"]) && $shipment['attributes']["refridgerator"] != '') ? $shipment['attributes']["refridgerator"] : '';
                     $section2['roomTemperature'] = (isset($shipment['attributes']["room_temperature"]) && $shipment['attributes']["room_temperature"] != '') ? $shipment['attributes']["room_temperature"] : '';

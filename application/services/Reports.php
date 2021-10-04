@@ -1544,7 +1544,7 @@ class Application_Service_Reports
         //------------- Participant List Details End ------>
         //<-------- Second sheet start
         $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
-        if ((isset($config->evaluation->dts->display_sample_condition_fields) && $config->evaluation->dts->display_sample_condition_fields == "yes")) {
+        if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
             $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
         }
         if ($result['scheme_type'] == 'dts') {
@@ -1556,7 +1556,7 @@ class Application_Service_Reports
                 $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             }
             /* Repeat test section */
-            if (isset($config->evaluation->dts->allow_repeat_tests) && $config->evaluation->dts->allow_repeat_tests == 'yes') {
+            if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
                 $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
                 $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
                 if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
@@ -1591,7 +1591,7 @@ class Application_Service_Reports
         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle);
         $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle);
         /* Repeat test section */
-        if (isset($config->evaluation->dts->allow_repeat_tests) && $config->evaluation->dts->allow_repeat_tests == 'yes') {
+        if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
             $repeatHeadingColumn = $n - (($result['number_of_samples'] * 3) + $result['number_of_controls'] + 1);
             if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
                 $repeatHeadingColumn = $n - (($result['number_of_samples'] * 4) + $result['number_of_controls'] + 1);
@@ -1617,7 +1617,7 @@ class Application_Service_Reports
             $cellName = $sheet->getCellByColumnAndRow($colNo, 3)->getColumn();
             $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle);
             /* Repeat test section */
-            if (isset($config->evaluation->dts->allow_repeat_tests) && $config->evaluation->dts->allow_repeat_tests == 'yes') {
+            if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
                 if ($repeatCellNo >= $repeatHeadingColumn) {
                     // Zend_Debug::dump($repeatCell);
                     if ($repeatCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
@@ -1867,7 +1867,7 @@ class Application_Service_Reports
                     $attributes = json_decode($aRow['attributes'], true);
                     $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
-                    if (isset($config->evaluation->dts->display_sample_condition_fields) || $config->evaluation->dts->display_sample_condition_fields == 'yes') {
+                    if (isset($config->evaluation->dts->displaySampleConditionFields) || $config->evaluation->dts->displaySampleConditionFields == 'yes') {
                         $conditionOfPTSamples = (isset($attributes['condition_pt_samples']) && $attributes['condition_pt_samples'] != "") ? ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) : "";
                         $refridgerator = (isset($attributes['refridgerator']) && $attributes['refridgerator'] != "") ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
                         $roomTemperature = (isset($attributes['room_temperature']) && $attributes['room_temperature'] != "") ? $attributes['room_temperature'] : "";
@@ -1876,13 +1876,13 @@ class Application_Service_Reports
                 }
 
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReceiptDate, PHPExcel_Cell_DataType::TYPE_STRING);
-                if (!isset($config->evaluation->dts->display_sample_condition_fields) || $config->evaluation->dts->display_sample_condition_fields != 'yes') {
+                if (!isset($config->evaluation->dts->displaySampleConditionFields) || $config->evaluation->dts->displaySampleConditionFields != 'yes') {
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReportDate, PHPExcel_Cell_DataType::TYPE_STRING);
 
-                if (isset($config->evaluation->dts->display_sample_condition_fields) || $config->evaluation->dts->display_sample_condition_fields == 'yes') {
+                if (isset($config->evaluation->dts->displaySampleConditionFields) || $config->evaluation->dts->displaySampleConditionFields == 'yes') {
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($conditionOfPTSamples, PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($refridgerator, PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($roomTemperature, PHPExcel_Cell_DataType::TYPE_STRING);
@@ -2002,7 +2002,7 @@ class Application_Service_Reports
                             $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], PHPExcel_Cell_DataType::TYPE_STRING);
                         }
                     }
-                    if (isset($config->evaluation->dts->allow_repeat_tests) && $config->evaluation->dts->allow_repeat_tests == 'yes') {
+                    if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult1'], PHPExcel_Cell_DataType::TYPE_STRING);
                         }
