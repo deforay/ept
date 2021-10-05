@@ -2453,8 +2453,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"]) ? 'selected' : ''
                     );
-                    $testKitArray['repeatKitNameDropdown']['Repeat Test-1']['status'] = true;
-                    $testKitArray['repeatKitNameDropdown']['Repeat Test-1']['data'][] = array(
+                    $testKitArray['kitNameDropdown']['Repeat Test-1']['status'] = true;
+                    $testKitArray['kitNameDropdown']['Repeat Test-1']['data'][] = array(
                         'value'         => (string) $testkit['TESTKITNAMEID'],
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["repeat_test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_1"]) ? 'selected' : ''
@@ -2490,10 +2490,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ($testkit['testkit_2'] == '1') {
                     if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
                         $testKitArray['kitNameDropdown']['Test-2']['status'] = true;
-                        $testKitArray['repeatKitNameDropdown']['Repeat Test-2']['status'] = true;
+                        $testKitArray['kitNameDropdown']['Repeat Test-2']['status'] = true;
                     } else {
                         $testKitArray['kitNameDropdown']['Test-2']['status'] = false;
-                        $testKitArray['repeatKitNameDropdown']['Repeat Test-2']['status'] = false;
+                        $testKitArray['kitNameDropdown']['Repeat Test-2']['status'] = false;
                     }
                     $testKitArray['kitNameDropdown']['Test-2']['data'][] = array(
                         'value'         => (string) $testkit['TESTKITNAMEID'],
@@ -2501,7 +2501,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]) ? 'selected' : ''
                     );
 
-                    $testKitArray['repeatKitNameDropdown']['Repeat Test-2']['data'][] = array(
+                    $testKitArray['kitNameDropdown']['Repeat Test-2']['data'][] = array(
                         'value'         => (string) $testkit['TESTKITNAMEID'],
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["repeat_test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_2"]) ? 'selected' : ''
@@ -2516,14 +2516,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if (!$testThreeOptional) {
                     if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
                         $testKitArray['kitNameDropdown']['Test-3']['status'] = true;
-                        $testKitArray['repeatKitNameDropdown']['Repeat Test-3']['status'] = true;
+                        $testKitArray['kitNameDropdown']['Repeat Test-3']['status'] = true;
                     } else {
                         $testKitArray['kitNameDropdown']['Test-3']['status'] = false;
-                        $testKitArray['repeatKitNameDropdown']['Repeat Test-3']['status'] = false;
+                        $testKitArray['kitNameDropdown']['Repeat Test-3']['status'] = false;
                     }
                 } else {
                     $testKitArray['kitNameDropdown']['Test-3']['status'] = false;
-                    $testKitArray['repeatKitNameDropdown']['Repeat Test-3']['status'] = false;
+                    $testKitArray['kitNameDropdown']['Repeat Test-3']['status'] = false;
                 }
                 if ($testkit['testkit_3'] == '1') {
                     $testKitArray['kitNameDropdown']['Test-3']['data'][] = array(
@@ -2531,7 +2531,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]) ? 'selected' : ''
                     );
-                    $testKitArray['repeatKitNameDropdown']['Repeat Test-3']['data'][] = array(
+                    $testKitArray['kitNameDropdown']['Repeat Test-3']['data'][] = array(
                         'value'         => (string) $testkit['TESTKITNAMEID'],
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["repeat_test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_3"]) ? 'selected' : ''
@@ -2650,18 +2650,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 );
 
 
-                $testKitArray['repeatKitNameDropdown']['Repeat Test-1']['data'][]    = array(
+                $testKitArray['kitNameDropdown']['Repeat Test-1']['data'][]    = array(
                     'value'         => 'other',
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["repeat_test_kit_name_1"]) && 'other' == $allSamples[0]["repeat_test_kit_name_1"]) ? 'selected' : ''
                 );
-                $testKitArray['repeatKitNameDropdown']['Repeat Test-2']['data'][] = array(
+                $testKitArray['kitNameDropdown']['Repeat Test-2']['data'][] = array(
                     'value'         => 'other',
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["repeat_test_kit_name_2"]) && 'other' == $allSamples[0]["repeat_test_kit_name_2"]) ? 'selected' : ''
                 );
                 // if(!$testThreeOptional){
-                $testKitArray['repeatKitNameDropdown']['Repeat Test-3']['data'][] = array(
+                $testKitArray['kitNameDropdown']['Repeat Test-3']['data'][] = array(
                     'value'         => 'other',
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["repeat_test_kit_name_3"]) && 'other' == $allSamples[0]["repeat_test_kit_name_3"]) ? 'selected' : ''
