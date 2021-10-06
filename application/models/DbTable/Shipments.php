@@ -2357,7 +2357,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $section2['refridgerator'] = (isset($shipment['attributes']["refridgerator"]) && $shipment['attributes']["refridgerator"] != '') ? $shipment['attributes']["refridgerator"] : '';
                     $section2['roomTemperature'] = (isset($shipment['attributes']["room_temperature"]) && $shipment['attributes']["room_temperature"] != '') ? $shipment['attributes']["room_temperature"] : '';
                     $section2['stopWatch'] = (isset($shipment['attributes']["stop_watch"]) && $shipment['attributes']["stop_watch"] != '') ? $shipment['attributes']["stop_watch"] : '';
-                    /* 
+
                     $section2['conditionOfPTSamplesSelect'] = array(
                         array(
                             'value'     =>  'good',
@@ -2400,7 +2400,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             'show'      =>  'Not Available',
                             'selected'  => (isset($shipment['attributes']["stop_watch"]) && $shipment['attributes']["stop_watch"] == 'not-available') ? 'selected' : ''
                         )
-                    ); */
+                    );
                 }
                 if ((isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != 'serum' && $shipment['shipment_attributes']["sampleType"] != 'plasma')) {
                     $section2['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
