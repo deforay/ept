@@ -721,7 +721,7 @@ class Application_Model_Dts
 
 			$documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
 
-
+			
 			// D.1
 			if (isset($results[0]['shipment_receipt_date']) && !empty($results[0]['shipment_receipt_date'])) {
 				$documentationScore += $documentationScorePerItem;
@@ -732,6 +732,8 @@ class Application_Model_Dts
 				);
 				$correctiveActionList[] = 16;
 			}
+
+			//echo "Receipt Date : $documentationScore <br>";
 
 			//D.3
 			if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
@@ -757,6 +759,8 @@ class Application_Model_Dts
 				);
 				$correctiveActionList[] = 13;
 			}
+
+			//echo "Test Date : $documentationScore <br>";
 
 			//D.7
 			if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
@@ -785,7 +789,7 @@ class Application_Model_Dts
 
 			//D.8
 			// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
-			if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
+			//if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
 				if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
 					$documentationScore += $documentationScorePerItem;
 				} else {
@@ -795,7 +799,7 @@ class Application_Model_Dts
 					);
 					$correctiveActionList[] = 11;
 				}
-			}
+			//}
 
 			if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
 				if (!empty($attributes['condition_pt_samples'])) {
@@ -836,6 +840,7 @@ class Application_Model_Dts
 				}
 			}
 
+			$documentationScore = round($documentationScore);
 			$grandTotal = ($responseScore + $documentationScore);
 			if ($grandTotal < $config->evaluation->dts->passPercentage) {
 				$scoreResult = 'Fail';
