@@ -2763,6 +2763,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1) ? true : false;
                 foreach (range(1, 3) as $row) {
                     $possibleResults = array();
+                    $repeatPossibleResults = array();
                     if ($row == 3) {
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
@@ -4193,6 +4194,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function saveShipmentByType($params, $dm)
     {
+        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
         /* Save shipments form details */
         $schemeService  = new Application_Service_Schemes();
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
@@ -4312,6 +4316,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 // Zend_Debug::dump($params);die;
                 $attributes["sample_rehydration_date"] = (isset($params['dtsData']->Section2->data->sampleRehydrationDate) && $params['dtsData']->Section2->data->sampleRehydrationDate != '') ? date('Y-m-d', strtotime($params['dtsData']->Section2->data->sampleRehydrationDate)) : '';
                 $attributes["algorithm"] = (isset($params['dtsData']->Section2->data->algorithmUsedSelected) && $params['dtsData']->Section2->data->algorithmUsedSelected != '') ? $params['dtsData']->Section2->data->algorithmUsedSelected : '';
+                if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
+                    $attributes["condition_pt_samples"] = (isset($params['dtsData']->Section2->data->conditionOfPTSamples) && $params['dtsData']->Section2->data->conditionOfPTSamples != '') ? $params['dtsData']->Section2->data->conditionOfPTSamples : '';
+                    $attributes["refridgerator"] = (isset($params['dtsData']->Section2->data->refridgerator) && $params['dtsData']->Section2->data->refridgerator != '') ? $params['dtsData']->Section2->data->refridgerator : '';
+                    $attributes["room_temperature"] = (isset($params['dtsData']->Section2->data->roomTemperature) && $params['dtsData']->Section2->data->roomTemperature != '') ? $params['dtsData']->Section2->data->roomTemperature : '';
+                    $attributes["stop_watch"] = (isset($params['dtsData']->Section2->data->stopWatch) && $params['dtsData']->Section2->data->stopWatch != '') ? $params['dtsData']->Section2->data->stopWatch : '';
+                }
                 $attributes = json_encode($attributes);
 
                 $data = array(

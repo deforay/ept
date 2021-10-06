@@ -187,6 +187,26 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             } else {
                 $params['test_kit_name_3'] = (isset($params['dtsData']->Section3->data->kitValue[2]) && $params['dtsData']->Section3->data->kitValue[2] != '') ? $params['dtsData']->Section3->data->kitValue[2] : '';
             }
+
+            if (isset($params['dtsData']->Section3->data->repeatKitValue[0]) && trim($params['dtsData']->Section3->data->repeatKitValue[0]) == 'other') {
+                $otherTestkitId1 = $testkitsDb->addTestkitInParticipantByAPI($allSamples[0]["repeat_test_kit_name_1"], $params['dtsData']->Section3->data->repeatKitOther[0], 'dts', 1);
+                $params['repeat_test_kit_name_1'] = $otherTestkitId1;
+            } else {
+                $params['repeat_test_kit_name_1'] = (isset($params['dtsData']->Section3->data->repeatKitValue[0]) && $params['dtsData']->Section3->data->repeatKitValue[0] != '') ? $params['dtsData']->Section3->data->repeatKitValue[0] : '';
+            }
+            if (isset($params['dtsData']->Section3->data->repeatKitValue[1]) && trim($params['dtsData']->Section3->data->repeatKitValue[1]) == 'other') {
+                $otherTestkitId2 = $testkitsDb->addTestkitInParticipantByAPI($allSamples[1]["repeat_test_kit_name_2"], $params['dtsData']->Section3->data->repeatKitOther[1], 'dts', 2);
+                $params['repeat_test_kit_name_2'] = $otherTestkitId2;
+            } else {
+                $params['repeat_test_kit_name_2'] = (isset($params['dtsData']->Section3->data->repeatKitValue[1]) && $params['dtsData']->Section3->data->repeatKitValue[1] != '') ? $params['dtsData']->Section3->data->repeatKitValue[1] : '';
+            }
+            if (isset($params['dtsData']->Section3->data->repeatKitValue[2]) && trim($params['dtsData']->Section3->data->repeatKitValue[2]) == 'other') {
+                $otherTestkitId3 = $testkitsDb->addTestkitInParticipantByAPI($allSamples[2]["repeat_test_kit_name_3"], $params['dtsData']->Section3->data->repeatKitOther[2], 'dts', 3);
+                $params['repeat_test_kit_name_3'] = $otherTestkitId3;
+            } else {
+                $params['repeat_test_kit_name_3'] = (isset($params['dtsData']->Section3->data->repeatKitValue[2]) && $params['dtsData']->Section3->data->repeatKitValue[2] != '') ? $params['dtsData']->Section3->data->repeatKitValue[2] : '';
+            }
+
             $result3 = (isset($params['dtsData']->Section4->data->samples->result3[$key]->value) && $params['dtsData']->Section4->data->samples->result3[$key]->value != '') ? (string)$params['dtsData']->Section4->data->samples->result3[$key]->value : '';
             $repeatResult3 = (isset($params['dtsData']->Section4->data->samples->repeatResult3[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult3[$key]->value != '') ? (string)$params['dtsData']->Section4->data->samples->repeatResult3[$key]->value : '';
             if ($testThreeOptional) {
@@ -215,9 +235,12 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'repeat_test_kit_name_1'    => $params['repeat_test_kit_name_1'],
                     'repeat_test_kit_name_2'    => $params['repeat_test_kit_name_2'],
                     'repeat_test_kit_name_3'    => $params['repeat_test_kit_name_3'],
-                    'repeat_lot_no_1'           => (isset($params['dtsData']->Section3->data->repeatLot[0]) && $params['dtsData']->Section3->data->repeatLot[0] != '' && !$testThreeOptional) ? $params['dtsData']->Section3->data->repeatLot[0] : '',
-                    'repeat_lot_no_2'           => (isset($params['dtsData']->Section3->data->repeatLot[1]) && $params['dtsData']->Section3->data->repeatLot[1] != '' && !$testThreeOptional) ? $params['dtsData']->Section3->data->repeatLot[1] : '',
+                    'repeat_lot_no_1'           => (isset($params['dtsData']->Section3->data->repeatLot[0]) && $params['dtsData']->Section3->data->repeatLot[0] != '') ? $params['dtsData']->Section3->data->repeatLot[0] : '',
+                    'repeat_lot_no_2'           => (isset($params['dtsData']->Section3->data->repeatLot[1]) && $params['dtsData']->Section3->data->repeatLot[1] != '') ? $params['dtsData']->Section3->data->repeatLot[1] : '',
                     'repeat_lot_no_3'           => (isset($params['dtsData']->Section3->data->repeatLot[2]) && $params['dtsData']->Section3->data->repeatLot[2] != '' && !$testThreeOptional) ? $params['dtsData']->Section3->data->repeatLot[2] : '',
+                    'repeat_exp_date_1'         => (isset($params['dtsData']->Section3->data->repeatExpDate[0]) && $params['dtsData']->Section3->data->repeatExpDate[0] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->repeatExpDate[0])) : null,
+                    'repeat_exp_date_2'         => (isset($params['dtsData']->Section3->data->repeatExpDate[1]) && $params['dtsData']->Section3->data->repeatExpDate[1] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->repeatExpDate[1])) : null,
+                    'repeat_exp_date_3'         => (isset($params['dtsData']->Section3->data->repeatExpDate[2]) && $params['dtsData']->Section3->data->repeatExpDate[2] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->repeatExpDate[2])) : null,
                     'repeat_test_result_1'      => (isset($params['dtsData']->Section4->data->samples->repeatResult1[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult1[$key]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult1[$key]->value : '',
                     'repeat_test_result_2'      => (isset($params['dtsData']->Section4->data->samples->repeatResult2[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult2[$key]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult2[$key]->value : '',
                     'repeat_test_result_3'      => $repeatResult3,
@@ -242,12 +265,12 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'repeat_test_kit_name_1'    => $params['repeat_test_kit_name_1'],
                     'repeat_test_kit_name_2'    => $params['repeat_test_kit_name_2'],
                     'repeat_test_kit_name_3'    => $params['repeat_test_kit_name_3'],
-                    'repeat_lot_no_1'           => (isset($params['dtsData']->Section3->data->repeatLot[0]) && $params['dtsData']->Section3->data->repeatLot[0] != '' && !$testThreeOptional) ? $params['dtsData']->Section3->data->repeatLot[0] : '',
-                    'repeat_lot_no_2'           => (isset($params['dtsData']->Section3->data->repeatLot[1]) && $params['dtsData']->Section3->data->repeatLot[1] != '' && !$testThreeOptional) ? $params['dtsData']->Section3->data->repeatLot[1] : '',
+                    'repeat_lot_no_1'           => (isset($params['dtsData']->Section3->data->repeatLot[0]) && $params['dtsData']->Section3->data->repeatLot[0] != '') ? $params['dtsData']->Section3->data->repeatLot[0] : '',
+                    'repeat_lot_no_2'           => (isset($params['dtsData']->Section3->data->repeatLot[1]) && $params['dtsData']->Section3->data->repeatLot[1] != '') ? $params['dtsData']->Section3->data->repeatLot[1] : '',
                     'repeat_lot_no_3'           => (isset($params['dtsData']->Section3->data->repeatLot[2]) && $params['dtsData']->Section3->data->repeatLot[2] != '' && !$testThreeOptional) ? $params['dtsData']->Section3->data->repeatLot[2] : '',
-                    'repeat_exp_date_1'         => (isset($params['dtsData']->Section3->data->expDate[0]) && $params['dtsData']->Section3->data->repeatExpDate[0] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->repeatExpDate[0])) : null,
-                    'repeat_exp_date_2'         => (isset($params['dtsData']->Section3->data->expDate[1]) && $params['dtsData']->Section3->data->repeatExpDate[1] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->repeatExpDate[1])) : null,
-                    'repeat_exp_date_3'         => (isset($params['dtsData']->Section3->data->expDate[2]) && $params['dtsData']->Section3->data->repeatExpDate[2] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->repeatExpDate[2])) : null,
+                    'repeat_exp_date_1'         => (isset($params['dtsData']->Section3->data->repeatExpDate[0]) && $params['dtsData']->Section3->data->repeatExpDate[0] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->repeatExpDate[0])) : null,
+                    'repeat_exp_date_2'         => (isset($params['dtsData']->Section3->data->repeatExpDate[1]) && $params['dtsData']->Section3->data->repeatExpDate[1] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->repeatExpDate[1])) : null,
+                    'repeat_exp_date_3'         => (isset($params['dtsData']->Section3->data->repeatExpDate[2]) && $params['dtsData']->Section3->data->repeatExpDate[2] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->repeatExpDate[2])) : null,
                     'repeat_test_result_1'      => (isset($params['dtsData']->Section4->data->samples->repeatResult1[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult1[$key]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult1[$key]->value : '',
                     'repeat_test_result_2'      => (isset($params['dtsData']->Section4->data->samples->repeatResult2[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult2[$key]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult2[$key]->value : '',
                     'repeat_test_result_3'      => $repeatResult3,
