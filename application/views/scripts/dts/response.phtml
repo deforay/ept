@@ -360,7 +360,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                         <tr align="CENTER" class="light">
                             <th> Kit Name</th>
                             <td style="width: <?php echo $width; ?>%;" class="dark">
-                                <select name="test_kit_name_1" id="test_kit_name_1" class="form-control" title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
+                                <select name="test_kit_name_1" id="test_kit_name_1" class="testkit-change form-control" title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
                                     <option value=""> ---Select Kit---</option>
                                     <?php
                                     foreach ($this->allTestKits as $key => $testkit) {
@@ -376,7 +376,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                             </td>
                             <td style="width: <?php echo $width; ?>%;" class='testTwo'>
-                                <select name="test_kit_name_2" id="test_kit_name_2" class="form-control" title="Please Choose Test Kit 2" onchange="selectTestKitName(this)">
+                                <select name="test_kit_name_2" id="test_kit_name_2" class="testkit-change form-control" title="Please Choose Test Kit 2" onchange="selectTestKitName(this)">
                                     <option value=""> ---Select Kit---</option>
                                     <?php
                                     foreach ($this->allTestKits as $key => $testkit) {
@@ -393,7 +393,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             </td>
 
                             <td style="width: <?php echo $width; ?>%;" class='testThree'>
-                                <select name="test_kit_name_3" id="test_kit_name_3" class="form-control" title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
+                                <select name="test_kit_name_3" id="test_kit_name_3" class="testkit-change form-control" title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
                                     <option value=""> ---Select Kit---</option>
                                     <?php
                                     foreach ($this->allTestKits as $key => $testkit) {
@@ -780,6 +780,35 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
             $("#test_kit_other_name_3").val('');
             $("#test_kit_other_name_update_3").val('');
         }
+        /* For Repeat Test Kit Name */
+        if ($('#repeat_test_kit_name_1').val() == "") {
+            $('#repeat_test_kit_name_1').val('');
+            document.getElementById("repeat_test_kit_other_name_1").style.display = "none";
+        } else {
+            $("#repeat_test_kit_other_name_1").val('');
+            $("#retest_test_kit_other_name_update_1").val('');
+        }
+
+        if ($('#repeat_test_kit_name_2').val() == "") {
+            $('#repeat_test_kit_name_2').val('');
+            document.getElementById("repeat_test_kit_other_name_2").style.display = "none";
+        } else {
+            $("#repeat_test_kit_other_name_2").val('');
+            $("#retest_test_kit_other_name_update_2").val('');
+        }
+
+        if ($('#repeat_test_kit_name_3').val() == "") {
+            $('#repeat_test_kit_name_3').val('');
+            document.getElementById("repeat_test_kit_other_name_3").style.display = "none";
+        } else {
+            $("#repeat_test_kit_other_name_3").val('');
+            $("#retest_test_kit_other_name_update_3").val('');
+        }
+
+        $('.testkit-change').change(function() {
+            var id = $(this).attr("id");
+            $("#repeat_" + id).val(this.value);
+        });
     });
 
 
