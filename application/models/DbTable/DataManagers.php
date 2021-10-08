@@ -192,13 +192,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function getUserDetails($userId)
     {
         $sql = $this->select()->from('data_manager')->where("primary_email = ?", $userId);
-        return $this->fetchRow($sql);        
+        return $this->fetchRow($sql);
     }
 
     public function getUserDetailsBySystemId($userSystemId)
     {
         $sql = $this->select()->from('data_manager')->where("dm_id = ?", $userSystemId);
-        return $this->fetchRow($sql);                
+        return $this->fetchRow($sql);
     }
 
     public function updateUser($params)
@@ -268,7 +268,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
 
         $sql = $this->select()->from('data_manager')->where("primary_email = ?", $email);
-        return $this->fetchRow($sql);                
+        return $this->fetchRow($sql);
         /* if ($row != null && count($row) == 1) {
             $randompassword = Application_Service_Common::getRandomString(15);
             $row->password = $randompassword;
@@ -480,8 +480,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
+
         /* Check the login credential */
-        $result = $this->fetchRow("auth_token= ?", $params['authToken']);
+        $result = $this->fetchRow("auth_token= '" . $params['authToken'] . "'");
 
         $aResult = $this->fetchAuthToken($params);
         /* App version check */
@@ -492,7 +493,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
-
         /* Get push notification server json file */
         //$reader = file_get_contents(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json');
         $reader = null;
@@ -520,6 +520,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'fcmFileStatus'                 => !empty($reader) ? true : false,
             'fcmJsonFile'                   => !empty($reader) ? json_decode($reader, true) : null
         );
+
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
             return array('status' => 'fail', 'message' => 'Something went wrong please try again later');
