@@ -165,8 +165,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             }
         }
         $sampleIds = $params['dtsData']->Section4->data->samples->id;
-        $samplesCount = count($sampleIds);
-        // Zend_Debug::dump($samplesCount);die;
+        // Zend_Debug::dump($key);die;
 
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
@@ -211,7 +210,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             }
 
             $result3 = (isset($params['dtsData']->Section4->data->samples->result3[$key]->value) && $params['dtsData']->Section4->data->samples->result3[$key]->value != '') ? (string)$params['dtsData']->Section4->data->samples->result3[$key]->value : '';
-            $repeatResult3 = (isset($params['dtsData']->Section4->data->samples->repeatResult3[$samplesCount]->value) && $params['dtsData']->Section4->data->samples->repeatResult3[$samplesCount]->value != '') ? (string)$params['dtsData']->Section4->data->samples->repeatResult3[$samplesCount]->value : '';
+            $repeatResult3 = (isset($params['dtsData']->Section4->data->samples->repeatResult3[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult3[$key]->value != '') ? (string)$params['dtsData']->Section4->data->samples->repeatResult3[$key]->value : '';
             if ($testThreeOptional) {
                 $params['test_kit_name_3'] = '';
                 $result3 = '';
@@ -244,8 +243,8 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'repeat_exp_date_1'         => (isset($params['dtsData']->Section3->data->expDate[3]) && $params['dtsData']->Section3->data->expDate[3] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[3])) : null,
                     'repeat_exp_date_2'         => (isset($params['dtsData']->Section3->data->expDate[4]) && $params['dtsData']->Section3->data->expDate[4] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[4])) : null,
                     'repeat_exp_date_3'         => (isset($params['dtsData']->Section3->data->expDate[5]) && $params['dtsData']->Section3->data->expDate[5] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[5])) : null,
-                    'repeat_test_result_1'      => (isset($params['dtsData']->Section4->data->samples->repeatResult1[$samplesCount]->value) && $params['dtsData']->Section4->data->samples->repeatResult1[$samplesCount]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult1[$samplesCount]->value : '',
-                    'repeat_test_result_2'      => (isset($params['dtsData']->Section4->data->samples->repeatResult2[$samplesCount]->value) && $params['dtsData']->Section4->data->samples->repeatResult2[$samplesCount]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult2[$samplesCount]->value : '',
+                    'repeat_test_result_1'      => (isset($params['dtsData']->Section4->data->samples->repeatResult1[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult1[$key]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult1[$key]->value : '',
+                    'repeat_test_result_2'      => (isset($params['dtsData']->Section4->data->samples->repeatResult2[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult2[$key]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult2[$key]->value : '',
                     'repeat_test_result_3'      => $repeatResult3,
                     'reported_result'           => (isset($params['dtsData']->Section4->data->samples->finalResult[$key]->value) && $params['dtsData']->Section4->data->samples->finalResult[$key]->value != '') ? (string)$params['dtsData']->Section4->data->samples->finalResult[$key]->value : '',
                     'created_by'                => $dm['dm_id'],
@@ -274,15 +273,15 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'repeat_exp_date_1'         => (isset($params['dtsData']->Section3->data->expDate[3]) && $params['dtsData']->Section3->data->expDate[3] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[3])) : null,
                     'repeat_exp_date_2'         => (isset($params['dtsData']->Section3->data->expDate[4]) && $params['dtsData']->Section3->data->expDate[4] != '') ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[4])) : null,
                     'repeat_exp_date_3'         => (isset($params['dtsData']->Section3->data->expDate[5]) && $params['dtsData']->Section3->data->expDate[5] != '' && !$testThreeOptional) ? date('Y-m-d', strtotime($params['dtsData']->Section3->data->expDate[5])) : null,
-                    'repeat_test_result_1'      => (isset($params['dtsData']->Section4->data->samples->repeatResult1[$samplesCount]->value) && $params['dtsData']->Section4->data->samples->repeatResult1[$samplesCount]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult1[$samplesCount]->value : '',
-                    'repeat_test_result_2'      => (isset($params['dtsData']->Section4->data->samples->repeatResult2[$samplesCount]->value) && $params['dtsData']->Section4->data->samples->repeatResult2[$samplesCount]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult2[$samplesCount]->value : '',
+                    'repeat_test_result_1'      => (isset($params['dtsData']->Section4->data->samples->repeatResult1[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult1[$key]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult1[$key]->value : '',
+                    'repeat_test_result_2'      => (isset($params['dtsData']->Section4->data->samples->repeatResult2[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult2[$key]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult2[$key]->value : '',
                     'repeat_test_result_3'      => $repeatResult3,
                     'reported_result'           => (isset($params['dtsData']->Section4->data->samples->finalResult[$key]->value) && $params['dtsData']->Section4->data->samples->finalResult[$key]->value != '') ? $params['dtsData']->Section4->data->samples->finalResult[$key]->value : '',
                     'updated_by'                => $dm['dm_id'],
                     'updated_on'                => new Zend_Db_Expr('now()')
                 ), "shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
             }
-            $samplesCount++;
+            $key++;
         }
         return true;
     }
