@@ -331,8 +331,10 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                     ?>
 
                     <hr>
+                    <div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;">PT panel not tested<label></div>
+
                     <table class="table table-bordered table-striped" style="margin:10px auto;">
-                        <thead>
+                        <thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <?php
                             $width = 20;
                             if ($allowRepeatTests == 'yes') {
@@ -357,7 +359,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <?php } ?>
                             </tr>
                         </thead>
-                        <tr align="CENTER" class="light">
+                        <tr align="CENTER" class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <th> Kit Name</th>
                             <td style="width: <?php echo $width; ?>%;" class="dark">
                                 <select name="test_kit_name_1" id="test_kit_name_1" class="testkit-change form-control" title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
@@ -488,7 +490,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             }
                         }
                         ?>
-                        <tr align="CENTER" class="dark">
+                        <tr align="CENTER" class="dark vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <th>Lot No.</th>
                             <td><input type="text" class="form-control" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" class="" title="Please enter Lot No. 1" /></td>
                             <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" class="" title="Please enter Lot No. 2" /></td>
@@ -527,7 +529,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             }
                         }
                         ?>
-                        <tr align="CENTER" class="light">
+                        <tr align="CENTER" class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <th>Expiry Date</th>
                             <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> Clear</i></td>
                             <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> Clear</i></td>
@@ -538,7 +540,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <td class='testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> Clear</i></td>
                             <?php } ?>
                         </tr>
-                        <thead>
+                        <thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <?php
                             $width = 20;
                             if ($allowRepeatTests == 'yes') {
@@ -567,10 +569,13 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                         <?php
                         $count = 0;
                         foreach ($this->allSamples as $sample) {
+                            if (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') {
+                                $sample['mandatory'] = 0;
+                            }
                             $count++;
                         ?>
 
-                            <tr align="CENTER" class="light">
+                            <tr align="CENTER" class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 
                                 <th style="width: <?php echo $width; ?>%;white-space: nowrap;">
                                     <?php echo ($sample['sample_label']); ?>
@@ -578,6 +583,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 </th>
 
                                 <td style="width: <?php echo $width; ?>%;">
+                                    <hr>
                                     <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class="form-control">
                                         <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
                                     </select>
@@ -610,12 +616,40 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                     </td>
                                 <?php } ?>
                                 <td style="width: <?php echo $width; ?>%;">
-                                    <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" class="form-control" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" style="float: left;">
+                                    <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" class="vlResultValues form-control" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" style="float: left;">
                                         <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                                     </select> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                                 </td>
                             </tr>
                         <?php } ?>
+
+                        <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
+                            <td colspan="2">
+                                <label>Reason for not testing the PT Panel</label> <span class="mandatory">*</span> :
+                                <select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" onchange="collectPanelReceiptDate();">
+                                    <option value="">--Select--</option>
+                                    <?php
+                                    foreach ($this->allNotTestedReason as $reason) {
+                                    ?>
+                                        <option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?= $reason['vl_not_tested_reason_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['vl_not_tested_reason']); ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+
+                            <td colspan="2"><label>Received the PT Panel? </label> <span class="mandatory">*</span>
+                                <select id="receivedPtPanel" name="receivedPtPanel" class="form-control" title="Please select if you received the PT Panel">
+                                    <option value="">--Select--</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
+                            <td colspan="4"><label>Your comments</label> <span class="mandatory">*</span> : <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
+                        </tr>
+                        <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
+                            <td colspan="4"><label>Do you need any support from the PT Provider ?</label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
+                        </tr>
                     </table>
 
                     <?php if (isset($this->haveCustom) && $this->haveCustom == 'yes') {  ?>
@@ -854,4 +888,38 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
             $("#qcDoneBy").removeClass("isRequired");
         }
     }
+
+    //PT not performed case
+    $('#isPtTestNotPerformed').change(function() {
+        if ($(this).is(':checked')) {
+            $('.vlResultSection').hide();
+            $('.vlResultValues').val('');
+            $('.ptNotPerformedSection').show();
+            $('.vlResultMandatory').css('visibility', 'hidden');
+            $('.vlResultValues').removeClass('isRequired');
+            $('#vlNotTestedReason').addClass('isRequired');
+            $('#ptNotTestedComments').addClass('isRequired');
+            $('#extractionAssayLotNo').removeClass('isRequired');
+            $('#detectionAssayLotNo').removeClass('isRequired');
+            $('#extractionAssayExpiryDate').removeClass('isRequired');
+            $('#detectionAssayExpiryDate').removeClass('isRequired');
+            $('#testDate,#receiptDate,#sampleRehydrationDate,#extractionAssay,#detectionAssay,#extractionAssayLotNo,#detectionAssayLotNo,#supervisorApproval').removeClass('isRequired');
+            $('.ptTestPerformed').hide();
+        } else {
+            $('.vlResultSection').show();
+            $('.ptNotPerformedSection').hide();
+            $('.vlResultMandatory').css('visibility', 'visible');
+            $('.vlResultValues').addClass('isRequired');
+            $('#vlNotTestedReason').removeClass('isRequired');
+            $('#ptNotTestedComments').removeClass('isRequired');
+
+            $('#extractionAssayLotNo').addClass('isRequired');
+            $('#detectionAssayLotNo').addClass('isRequired');
+            $('#extractionAssayExpiryDate').addClass('isRequired');
+            $('#detectionAssayExpiryDate').addClass('isRequired');
+            $('#testDate,#receiptDate,#sampleRehydrationDate,#extractionAssay,#detectionAssay,#extractionAssayLotNo,#detectionAssayLotNo,#supervisorApproval').addClass('isRequired');
+            $('.ptTestPerformed').show();
+
+        }
+    });
 </script>

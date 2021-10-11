@@ -46,6 +46,7 @@ class DtsController extends Zend_Controller_Action
 			$this->view->participant = $participantService->getParticipantDetails($pID);
 			$response = $schemeService->getDtsSamples($sID, $pID);
 			$this->view->allSamples = $response;
+			$this->view->allNotTestedReason = $schemeService->getVlNotTestedReasons();
 
 			$shipment = $schemeService->getShipmentData($sID, $pID);
 			$shipment['attributes'] = json_decode($shipment['attributes'], true);
