@@ -1041,6 +1041,17 @@ class Application_Service_Schemes
         }
     }
 
+    public function getNotTestedReasons($testType = "")
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('r_response_not_tested_reasons'))
+            ->where('ntr_status = ? ', 'active');
+        if (isset($testType) && $testType != "") {
+            $sql = $sql->where("ntr_test_type = '" . $testType . "'");
+        }
+        return $db->fetchAll($sql);
+    }
+
     public function getVlNotTestedReasons()
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

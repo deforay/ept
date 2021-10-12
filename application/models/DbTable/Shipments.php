@@ -18,7 +18,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sql = $this->getAdapter()->select()->from(array('s' => $this->_name))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('r_vl_r' => 'r_response_vl_not_tested_reason'), 'r_vl_r.vl_not_tested_reason_id=sp.vl_not_tested_reason', array('vlNotTestedReason' => 'vl_not_tested_reason'))
+            // ->joinLeft(array('r_vl_r' => 'r_response_vl_not_tested_reason'), 'r_vl_r.vl_not_tested_reason_id=sp.vl_not_tested_reason', array('vlNotTestedReason' => 'vl_not_tested_reason'))
+            ->joinLeft(array('ntr' => 'r_response_not_tested_reasons'), 'ntr.ntr_id=sp.vl_not_tested_reason', array('notTestedReason' => 'ntr_reason'))
             ->where("s.shipment_id = ?", $sId)
             ->where("sp.participant_id = ?", $pId);
         return $this->getAdapter()->fetchRow($sql);
@@ -2097,9 +2098,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
         /* To check the shipment details for the data managers mapped participants */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 's.updated_on_admin'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
@@ -2187,14 +2185,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $formData[$key]['updatedStatus']    = (isset($row['updated_on_user']) && $row['updated_on_user'] != '') ? true : false;
                 $formData[$key]['updatedOn']        = (isset($row['updated_on_user']) && $row['updated_on_user'] != '' && $row['RESPONSEDATE'] != '' && $row['RESPONSEDATE'] != '0000-00-00') ? $row['updated_on_user'] : '';
                 $formData[$key]['mapId']            = $row['map_id'];
-                if (isset($row['scheme_type']) && $row['scheme_type'] == "dts") {
-                    $formData[$key]['dtsOptionalTest3'] = (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 != "") ? $config->evaluation->dts->dtsOptionalTest3 : "no";
-                    $formData[$key]['displaySampleConditionFields'] = (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : "no";
-                    $formData[$key]['allowRepeatTests'] = (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests != "") ? $config->evaluation->dts->allowRepeatTests : "no";
-                }
-                if (isset($row['scheme_type']) && $row['scheme_type'] == "covid19") {
-                    $formData[$key]['covid19MaximumTestAllowed'] = (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "no";
-                }
 
                 $formData[$key][$row['scheme_type'] . 'Data'] = $this->fetchShipmentFormDetails($row, $aResult);
                 if (isset($formData[$key][$row['scheme_type'] . 'Data']) && count($formData[$key][$row['scheme_type'] . 'Data']) > 0) {
@@ -2725,7 +2715,24 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         );
                     }
                 }
-                $dts['Section3']['data']    = $testKitArray;
+                $allNotTestedReason = $schemeService->getNotTestedReasons('dts');
+                $allNotTestedArray = array();
+                foreach ($allNotTestedReason as $reason) {
+                    $allNotTestedArray[] = array(
+                        'value'     => (string) $reason['ntr_id'],
+                        'show'      => ucwords($reason['ntr_reason']),
+                        'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
+                    );
+                }
+                $testKitArray['notTestedReasonText']     = 'Reason for not testing the PT Panel';
+                $testKitArray['notTestedReasons']        = $allNotTestedArray;
+                $testKitArray['notTestedReasonSelected'] = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
+                $testKitArray['ptNotTestedCommentsText'] = 'Your comments';
+                $testKitArray['ptNotTestedComments']     = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
+                $testKitArray['ptSupportCommentsText']   = 'Do you need any support from the PT Provider ?';
+                $testKitArray['ptSupportComments']       = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
+
+                $dts['Section3']['data']                  = $testKitArray;
             } else {
                 $dts['Section3']['status']  = false;
             }
@@ -2742,6 +2749,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $allSamplesResult = array();
             foreach ($allSamples as $sample) {
+                if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
+                    $sample['mandatory'] = 0;
+                }
                 $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
                 $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
 
@@ -3119,7 +3129,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //     // Section 2 end // Section 3 start
         //     $section3 = array();
         //     $section3['status'] = true;
-        //     $allNotTestedReason = $schemeService->getVlNotTestedReasons();
+        //     $allNotTestedReason = $schemeService->getNotTestedReasons('vl);
         //     if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
         //         $section3['data']['isPtTestNotPerformedRadio'] = 'no';
         //     } else {
@@ -3136,9 +3146,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //     $allNotTestedArray = array();
         //     foreach ($allNotTestedReason as $reason) {
         //         $allNotTestedArray[] = array(
-        //             'value'     => (string) $reason['vl_not_tested_reason_id'],
-        //             'show'      => ucwords($reason['vl_not_tested_reason']),
-        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']) ? 'selected' : ''
+        //             'value'     => (string) $reason['ntr_id'],
+        //             'show'      => ucwords($reason['ntr_reason']),
+        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
         //         );
         //     }
         //     $section3['data']['yes']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
@@ -3334,7 +3344,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         //     $eid['Section2'] = $section2;
         //     // Section 2 end // Section 3 start
-        //     $allNotTestedReason = $schemeService->getVlNotTestedReasons();
+        //     $allNotTestedReason = $schemeService->getNotTestedReasons('eid);
 
         //     $allSamplesResult = array();
         //     foreach ($allSamples as $sample) {
@@ -3367,9 +3377,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //     $allNotTestedArray = array();
         //     foreach ($allNotTestedReason as $reason) {
         //         $allNotTestedArray[] = array(
-        //             'value'     => (string) $reason['vl_not_tested_reason_id'],
-        //             'show'      => ucwords($reason['vl_not_tested_reason']),
-        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']) ? 'selected' : ''
+        //             'value'     => (string) $reason['ntr_id'],
+        //             'show'      => ucwords($reason['ntr_reason']),
+        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
         //         );
         //     }
 
@@ -3538,7 +3548,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         //     $recency['Section2'] = $section2;
         //     // Section 2 end // Section 3 start
-        //     $allNotTestedReason = $schemeService->getVlNotTestedReasons();
+        //     $allNotTestedReason = $schemeService->getNotTestedReasons('recency');
 
         //     $allSamplesResult = array();
         //     foreach ($allSamples as $sample) {
@@ -3590,9 +3600,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //     $allNotTestedArray = array();
         //     foreach ($allNotTestedReason as $reason) {
         //         $allNotTestedArray[] = array(
-        //             'value'     => (string) $reason['vl_not_tested_reason_id'],
-        //             'show'      => ucwords($reason['vl_not_tested_reason']),
-        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']) ? 'selected' : ''
+        //             'value'     => (string) $reason['ntr_id'],
+        //             'show'      => ucwords($reason['ntr_reason']),
+        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
         //         );
         //     }
 
@@ -3788,13 +3798,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //     } else {
         //         $covid19['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
         //     }
-        //     $allNotTestedReason = $schemeService->getCovid19NotTestedReasons();
+        //     $allNotTestedReason = $schemeService->getNotTestedReasons('covid19);
         //     $allNotTestedArray = array();
         //     foreach ($allNotTestedReason as $reason) {
         //         $allNotTestedArray[] = array(
-        //             'value'     => (string) $reason['covid19_not_tested_reason_id'],
-        //             'show'      => ucwords($reason['covid19_not_tested_reason']),
-        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['covid19_not_tested_reason_id']) ? 'selected' : ''
+        //             'value'     => (string) $reason['ntr_id'],
+        //             'show'      => ucwords($reason['ntr_reason']),
+        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
         //         );
         //     }
 

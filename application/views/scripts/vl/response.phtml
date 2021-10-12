@@ -330,7 +330,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {
 									?>
-										<option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?= $reason['vl_not_tested_reason_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['vl_not_tested_reason']); ?></option>
+										<option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
 									<?php } ?>
 								</select>
 							</td>

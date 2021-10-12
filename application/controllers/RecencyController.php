@@ -68,7 +68,7 @@ class RecencyController extends Zend_Controller_Action
 			$this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency');
 
 			$this->view->allSamples = $schemeService->getRecencySamples($sID, $pID);
-			$this->view->allNotTestedReason = $schemeService->getVlNotTestedReasons();
+			$this->view->allNotTestedReason = $schemeService->getNotTestedReasons("recency");
 			$shipment = $schemeService->getShipmentData($sID, $pID);
 			$shipment['attributes'] = json_decode($shipment['attributes'], true);
 			$this->view->shipment = $shipment;

@@ -2941,3 +2941,26 @@ ALTER TABLE `response_result_dts` ADD `repeat_lot_no_3` VARCHAR(256) NULL DEFAUL
 ALTER TABLE `response_result_dts` ADD `repeat_exp_date_1` date NULL DEFAULT NULL AFTER `exp_date_1`;
 ALTER TABLE `response_result_dts` ADD `repeat_exp_date_2` date NULL DEFAULT NULL AFTER `exp_date_2`;
 ALTER TABLE `response_result_dts` ADD `repeat_exp_date_3` date NULL DEFAULT NULL AFTER `exp_date_3`;
+
+-- Thana 12-Oct-2021
+CREATE TABLE `r_response_not_tested_reasons` (
+ `ntr_id` int NOT NULL AUTO_INCREMENT,
+ `ntr_reason` varchar(256) DEFAULT NULL,
+ `ntr_test_type` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'vl, eid, dts, covid19, recency, dbs',
+ `ntr_status` varchar(256) DEFAULT NULL,
+ PRIMARY KEY (`ntr_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_type`, `ntr_status`) VALUES
+(1, 'No reagents for testing of PT panel', 'vl', 'active'),
+(2, 'No lab personal for testing of PT panel', 'vl', 'active'),
+(3, ' Instrument down', 'vl', 'active'),
+(4, 'Laboratory facility under renovation', 'vl', 'active'),
+(5, 'Laboratory facility no longer perform testing', 'vl', 'active'),
+(6, 'The results were invalid for the entire run', 'vl', 'active'),
+(7, 'The PT panel testing failed during sample processing', 'vl', 'active'),
+(8, 'The PT panel shipment was lost/damage', 'vl', 'active'),
+(9, 'Not received PT panel shipment due to country custom clearance issue', 'vl', 'active'),
+(10, 'Not received PT panel shipment due to incorrect contact info on the shipment package', 'vl', 'active'),
+(11, 'Issue with Sample' ,'covid19', 'active'),
+(12, 'Machine not working' ,'covid19', 'active');

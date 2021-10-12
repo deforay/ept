@@ -204,11 +204,11 @@ $labInfo .= '<td style="text-align:left;font-weight:bold;width:25%;"> If Yes, &n
 $labInfo .= '<td style="text-align:left;width:75%;">';
 foreach ($this->allNotTestedReason as $reason) {
     $isCurrentCheckedReason = '';
-    if ($this->shipment['vl_not_tested_reason'] == $reason['vl_not_tested_reason_id']) {
+    if ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) {
         $isCurrentCheckedReason = 'checked="checked"';
     }
     $labInfo .= '<input type="radio" name="vlNotTestedReason" value="01" ' . $isCurrentCheckedReason . '/>';
-    $labInfo .= ucwords($reason['vl_not_tested_reason']) . '&nbsp;&nbsp;';
+    $labInfo .= ucwords($reason['ntr_reason']) . '&nbsp;&nbsp;';
 }
 $labInfo .= '</td>';
 $labInfo .= '</tr>';
