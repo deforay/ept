@@ -639,8 +639,8 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             <td colspan="2"><label>Received the PT Panel? </label> <span class="mandatory">*</span>
                                 <select id="receivedPtPanel" name="receivedPtPanel" class="form-control" title="Please select if you received the PT Panel">
                                     <option value="">--Select--</option>
-                                    <option value="yes">Yes</option>
-                                    <option value="no">No</option>
+                                    <option value="yes" <?php echo ($this->shipment['received_pt_panel'] == "yes") ? 'selected="selected"' : ''; ?>>Yes</option>
+                                    <option value="no" <?php echo ($this->shipment['received_pt_panel'] == "no") ? 'selected="selected"' : ''; ?>>No</option>
                                 </select>
                             </td>
                         </tr>

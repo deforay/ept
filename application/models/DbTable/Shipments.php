@@ -2724,6 +2724,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
                     );
                 }
+                if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
+                    $testKitArray['isPtTestNotPerformedRadio'] = 'no';
+                } else {
+                    $testKitArray['isPtTestNotPerformedRadio'] = 'yes';
+                }
+                $testKitArray['receivedPtPanel']         = (isset($shipment['received_pt_panel']) && $shipment['received_pt_panel'] != "") ? $shipment['received_pt_panel'] : "";
+                $testKitArray['receivedPtPanelSelect']   = array(
+                    array("value" => "yes", "show" => "Yes", "selected" => ($shipment['received_pt_panel'] == "yes") ? 'selected' : ''),
+                    array("value" => "no", "show" => "No", "selected" => ($shipment['received_pt_panel'] == "no") ? 'selected' : ''),
+                );
                 $testKitArray['notTestedReasonText']     = 'Reason for not testing the PT Panel';
                 $testKitArray['notTestedReasons']        = $allNotTestedArray;
                 $testKitArray['notTestedReasonSelected'] = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
@@ -4446,6 +4456,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "mode_id"                   => (isset($params['dtsData']->Section2->data->modeOfReceiptSelected) && $params['dtsData']->Section2->data->modeOfReceiptSelected != '' && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params['dtsData']->Section2->data->modeOfReceiptSelected : '',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
+
+                $data['is_pt_test_not_performed']       = (isset($params["dtsData"]->Section3->data->isPtTestNotPerformedRadio) && $params["dtsData"]->Section3->data->isPtTestNotPerformedRadio == 'yes') ? 'yes' : 'no';
+                if ($data['is_pt_test_not_performed'] == 'yes') {
+                    $data['received_pt_panel']              = $params["dtsData"]->Section3->data->receivedPtPanel;
+                    $data['vl_not_tested_reason']           = $params["dtsData"]->Section3->data->notTestedReasonSelected;
+                    $data['pt_test_not_performed_comments'] = $params["dtsData"]->Section3->data->ptNotTestedComments;
+                    $data['pt_support_comments']            = $params["dtsData"]->Section3->data->ptSupportComments;
+                } else {
+                    $data['vl_not_tested_reason']           = '';
+                    $data['pt_test_not_performed_comments'] = '';
+                    $data['pt_support_comments']            = '';
+                }
 
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
                     $data['qc_done'] = $params['dtsData']->Section2->data->qcData->qcRadioSelected;

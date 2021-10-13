@@ -2964,3 +2964,6 @@ INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_t
 (10, 'Not received PT panel shipment due to incorrect contact info on the shipment package', 'vl', 'active'),
 (11, 'Issue with Sample' ,'covid19', 'active'),
 (12, 'Machine not working' ,'covid19', 'active');
+
+-- Thana 13-Oct-2021
+ALTER TABLE `shipment_participant_map` ADD `received_pt_panel` VARCHAR(256) NULL DEFAULT NULL AFTER `vl_not_tested_reason`;
