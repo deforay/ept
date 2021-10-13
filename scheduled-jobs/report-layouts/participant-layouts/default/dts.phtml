@@ -281,6 +281,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '<tr>';
         }
 
+        
         $labInfo .= '	<td>';
         $labInfo .= '<strong>Supervisor Review</strong>';
         if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
@@ -545,6 +546,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 // for Non Dried Samples, we will NOT have rehydration documentation scores 
                 // there are 2 conditions for rehydration so 5 - 2 = 3
                 $totalDocumentationItems = 3;
+				// Myanmar does not have Supervisor scoring so it has one less documentation item
+				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+					$totalDocumentationItems -=1;
+				}                
             }
 
             if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {

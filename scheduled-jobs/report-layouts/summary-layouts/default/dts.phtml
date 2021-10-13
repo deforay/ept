@@ -75,8 +75,8 @@ if ($resultArray['shipment'] != "") {
         $abovePass = sprintf("above $pass");
         $barPoints[$abovePass] = 0;
         foreach ($resultArray['shipment']['summaryResult'] as $result) {
-            $maxScore = 0;
-            $belowScore = 0;
+            // $maxScore = 0;
+            // $belowScore = 0;
             $partCount = count($result) - 1;
             //Zend_Debug::dump($result['correctCount']);
             for ($i = 0; $i < $partCount; $i++) {
@@ -94,11 +94,11 @@ if ($resultArray['shipment'] != "") {
                     $barPoints[$abovePass]++;
                 } else {
                 }
-                if (($totalScore) >= $config->evaluation->dts->passPercentage) {
-                    $maxScore++;
-                } else {
-                    $belowScore++;
-                }
+                // if (($totalScore) >= $config->evaluation->dts->passPercentage) {
+                //     $maxScore++;
+                // } else {
+                //     $belowScore++;
+                // }
                 $labCounter++;
             }
 
@@ -169,9 +169,9 @@ if ($resultArray['shipment'] != "") {
 
 
         $overview .= '<tr>';
-        $overview .= '<td style="text-align:center;font-weight:normal;">' . $partCount . '</td>';
-        $overview .= '<td style="text-align:center;font-weight:normal;">' . $maxScore . ' (' . round(($maxScore / $partCount) * 100, 2) . '%)</td>';
-        $overview .= '<td style="text-align:center;font-weight:normal;">' . $belowScore . ' (' . round(($belowScore / $partCount) * 100, 2) . '%)</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_responses'] . '</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['number_passed'] . ' (' . round(($participantPerformance['number_passed'] / $participantPerformance['total_responses']) * 100, 2) . '%)</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['number_failed'] . ' (' . round(($participantPerformance['number_failed'] / $participantPerformance['total_responses']) * 100, 2) . '%)</td>';
 
         $overview .= '</tr>';
 

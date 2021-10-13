@@ -744,10 +744,18 @@ class Application_Service_Reports
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
-            ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array(
-                "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'), "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
-                "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00%' AND is_excluded != 'yes'))"),
-            ))
+            ->joinLeft(
+                array('sp' => 'shipment_participant_map'),
+                'sp.shipment_id=s.shipment_id',
+                array(
+                    "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
+                    "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
+                    "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
+                    "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00%' AND is_excluded != 'yes'))"),
+                    "number_failed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
+                    "number_passed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)")
+                )
+            )
             ->where("s.shipment_id = ?", $shipmentId);
         //echo $sQuery;die;
         return $dbAdapter->fetchRow($sQuery);
@@ -1692,14 +1700,20 @@ class Application_Service_Reports
             $config = new Zend_Config_Ini($file, APPLICATION_ENV);
             $shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
             if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
-                // for Dried Samples, we will have rehydration as one of the documentation scores
-                $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / 5), 2);
+                // for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
+				$totalDocumentationItems = 5;
             } else {
                 // for Non Dried Samples, we will NOT have rehydration documentation scores 
-                // there are 2 conditions for rehydration so 5 - 2 = 3
-                $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / 3), 2);
+				// there are 2 conditions for rehydration so 5 - 2 = 3
+				$totalDocumentationItems = 3;
+				// Myanmar does not have Supervisor scoring so it has one less documentation item
+				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+					$totalDocumentationItems -=1;
+				}
             }
         }
+
+        $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
 
         $docScoreSheet = new PHPExcel_Worksheet($excel, 'Documentation Score');
         $excel->addSheet($docScoreSheet, 4);
@@ -1906,7 +1920,7 @@ class Application_Service_Reports
 
                 // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', PHPExcel_Cell_DataType::TYPE_STRING);
                 } else {
                     if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
                         $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
@@ -1915,11 +1929,14 @@ class Application_Service_Reports
                     }
                 }
 
-
-                if (isset($rehydrationDate) && trim($rehydrationDate) != "") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
-                } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', PHPExcel_Cell_DataType::TYPE_STRING);
+                }else{
+                    if (isset($rehydrationDate) && trim($rehydrationDate) != "") {
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    } else {
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    }
                 }
 
                 if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
@@ -1928,7 +1945,7 @@ class Application_Service_Reports
                     $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
 
-                if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
+                if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
 
 
                     $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);

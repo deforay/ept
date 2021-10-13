@@ -79,9 +79,10 @@ if ($resultArray['shipment'] != "") {
 
         foreach ($resultArray['shipment']['summaryResult'] as $result) {
             $reported = (isset($result['correctCount'][0]['reported_count']) && $result['correctCount'][0]['reported_count'] > 0) ? $result['correctCount'][0]['reported_count'] : 0;
-            $maxScore = 0;
-            $belowScore = 0;
-            $partCount = count($result) - 1;
+            // $maxScore = 0;
+            // $belowScore = 0;
+            //$partCount = count($result) - 1;
+            $partCount = $participantPerformance['total_responses'];
             for ($i = 0; $i < $partCount; $i++) {
                 if ($result[$i]['is_excluded'] == 'yes') {
                     continue;
@@ -90,8 +91,8 @@ if ($resultArray['shipment'] != "") {
                 $barPoints["60 - 69"] += $result[$i]['60-69'];
                 $barPoints["70 - $pass"] += $result[$i]["70-$pass"];
                 $barPoints[$abovePass] += $result[$i][$abovePass];
-                $maxScore += $result[$i]['number_passed'];
-                $belowScore += $result[$i]['number_failed'];
+                // $maxScore += $result[$i]['number_passed'];
+                // $belowScore += $result[$i]['number_failed'];
             }
         }
         // JPGraph Charts
@@ -162,9 +163,9 @@ if ($resultArray['shipment'] != "") {
 
 
         $overview .= '<tr>';
-        $overview .= '<td style="text-align:center;font-weight:normal;">' . $reported . '</td>';
-        $overview .= '<td style="text-align:center;font-weight:normal;">' . $maxScore . ' (' . round(($maxScore / $reported) * 100, 2) . '%)</td>';
-        $overview .= '<td style="text-align:center;font-weight:normal;">' . $belowScore . ' (' . round(($belowScore / $reported) * 100, 2) . '%)</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_responses'] . '</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['number_passed'] . ' (' . round(($participantPerformance['number_passed'] / $participantPerformance['total_responses']) * 100, 2) . '%)</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['number_failed'] . ' (' . round(($participantPerformance['number_failed'] / $participantPerformance['total_responses']) * 100, 2) . '%)</td>';
 
         $overview .= '</tr>';
 

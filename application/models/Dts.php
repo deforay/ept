@@ -712,6 +712,10 @@ class Application_Model_Dts
 				// for Non Dried Samples, we will NOT have rehydration documentation scores 
 				// there are 2 conditions for rehydration so 5 - 2 = 3
 				$totalDocumentationItems = 3;
+				// Myanmar does not have Supervisor scoring so it has one less documentation item
+				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+					$totalDocumentationItems -=1;
+				}
 			}
 
 			if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
@@ -789,7 +793,7 @@ class Application_Model_Dts
 
 			//D.8
 			// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
-			//if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
+			if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
 				if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
 					$documentationScore += $documentationScorePerItem;
 				} else {
@@ -799,7 +803,7 @@ class Application_Model_Dts
 					);
 					$correctiveActionList[] = 11;
 				}
-			//}
+			}
 
 			if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
 				if (!empty($attributes['condition_pt_samples'])) {
