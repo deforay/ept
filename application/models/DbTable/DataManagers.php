@@ -245,7 +245,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         $dmId = $params['userSystemId'];
         $this->update($data, "dm_id = " . $params['userSystemId']);
-        if (isset($params['allparticipant']) && count($params['allparticipant'] > 0)) {
+        if (isset($params['allparticipant']) && count($params['allparticipant']) > 0) {
             $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
             foreach ($params['allparticipant'] as $participant) {
@@ -480,6 +480,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function fetchLoggedInDetails($params)
     {
+        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
         /* Check the app versions */
         /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
@@ -517,6 +519,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'enableChoosingModeOfReceipt'   => (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] != "") ? $aResult['enable_choosing_mode_of_receipt'] : 'no',
             'forcePasswordReset'            => (isset($aResult['force_password_reset']) && $aResult['force_password_reset'] != "" && $aResult['force_password_reset'] == 1) ? 'yes' : 'no',
             'forceProfileCheck'             => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != "") ? $aResult['force_profile_check'] : 'no',
+            'dtsOptionalTest3'              => (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 != "") ? $config->evaluation->dts->dtsOptionalTest3 : "no",
+            'displaySampleConditionFields'  => (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : "no",
+            'allowRepeatTests'              => (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests != "") ? $config->evaluation->dts->allowRepeatTests : "no",
+            'covid19MaximumTestAllowed'     => (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "1",
             'name'                          => $result['first_name'] . ' ' . $result['last_name'],
             'phone'                         => $result['phone'],
             'appVersion'                    => $aResult['app_version'],

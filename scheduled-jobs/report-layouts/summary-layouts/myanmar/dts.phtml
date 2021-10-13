@@ -511,7 +511,7 @@ if ($resultArray['shipment'] != "") {
         $passedN = $responseResult["number_passed"];
         $failedN = $responseResult["number_failed"];
         $notRespondedN = $responseResult["not_responded"];
-        $excludedN = $responseResult["excluded"];
+        $excludedN = $responseResult["excluded"] - $responseResult["not_responded"];
         // $late = $responseResult["number_late"];
         $total = $passedN + $failedN + $notRespondedN + $excludedN;
 

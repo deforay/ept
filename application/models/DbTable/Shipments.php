@@ -3030,1095 +3030,1095 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             return $dts;
         }
-        // if ($params['scheme_type'] == 'vl') {
-        //     $reportAccess = array();
-        //     $vl = array();
-        //     if ($isEditable && $dm['view_only_access'] != 'yes') {
-        //         if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
-        //             $reportAccess['status'] = 'fail';
-        //             $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-        //         } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
-        //             $reportAccess['status'] = 'success';
-        //             $reportAccess['message'] = 'Your response is late';
-        //         } else if ($responseAccess == 1) {
-        //             $reportAccess['status'] = 'fail';
-        //             $reportAccess['message'] = 'Your response is late';
-        //         } else if ($shipment['status'] == 'finalized') {
-        //             $reportAccess['status'] = 'fail';
-        //             $reportAccess['message'] = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
-        //         } else {
-        //             $reportAccess['status'] = 'success';
-        //         }
-        //     } else {
-        //         $reportAccess['status']     = 'fail';
-        //         $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
-        //     }
-        //     $vl['access'] = $reportAccess;
-        //     // Section 1 start
-        //     $section1 = array(
-        //         'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
-        //         'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
-        //         'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '') ? $participant['affiliation'] : '',
-        //         'phone'             => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
-        //         'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : ''
-        //     );
-        //     if (isset($participant) && count($participant) > 0) {
-        //         $vl['Section1']['status']   = true;
-        //         $vl['Section1']['data']     = $section1;
-        //     } else {
-        //         $vl['Section1']['status']   = false;
-        //         $vl['Section1']['data']     = $section1;
-        //     }
-        //     // Section1 end // Section2 start
-        //     $section2 = array();
-        //     $vlAssayArr = array();
-        //     $vlAssay = $schemeService->getVlAssay();
-        //     if (isset($shipment) && count($shipment) > 0) {
-        //         foreach ($vlAssay as $id => $name) {
-        //             $vlAssayArr[] = array(
-        //                 'value'     => (string) $id,
-        //                 'show'      => $name,
-        //                 'selected'  => (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] == $id) ? 'selected' : ''
-        //             );
-        //         }
-        //         $modeOfReceiptSelect = array();
-        //         foreach ($modeOfReceipt as $receipt) {
-        //             $modeOfReceiptSelect[] = array(
-        //                 'value'     =>  (string) $receipt['mode_id'],
-        //                 'show'      =>  $receipt['mode_name'],
-        //                 'selected'  => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
-        //             );
-        //         }
-        //         $section2['status']                         = true;
-        //         $section2['data']['shipmentDate']           = date('d-M-Y', strtotime($shipment['shipment_date']));
-        //         $section2['data']['resultDueDate']          = date('d-M-Y', strtotime($shipment['lastdate_response']));
-        //         $section2['data']['testReceiptDate']        = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
-        //         $section2['data']['sampleRehydrationDate']  = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
-        //         $section2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment["shipment_test_date"])) : '';
-        //         $section2['data']['specimenVolume']         = (isset($shipment['attributes']['specimen_volume']) && $shipment['attributes']['specimen_volume'] != "") ? $shipment['attributes']['specimen_volume'] : null;
-        //         $section2['data']['vlAssaySelect']          = $vlAssayArr;
-        //         $section2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "") ? (string) $shipment['attributes']['vl_assay'] : '';
-        //         $section2['data']['otherAssay']             = (isset($shipment['attributes']['other_assay']) && $shipment['attributes']['other_assay'] != '') ? $shipment['attributes']['other_assay'] : '';
-        //         $section2['data']['assayExpirationDate']    = (isset($shipment['attributes']['assay_expiration_date']) && $shipment['attributes']['assay_expiration_date'] != '' && $shipment['attributes']['assay_expiration_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']['assay_expiration_date'])) : '';
-        //         $section2['data']['assayLotNumber']         = !empty($shipment['attributes']['assay_lot_number']) ? $shipment['attributes']['assay_lot_number'] : null;
-        //         if ((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')) {
-        //             if (isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != '') {
-        //                 $section2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_report_date'])) : date('d-M-Y');
-        //             } else {
-        //                 $section2['data']['responseDate'] = null;
-        //             }
-        //             if (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') {
-        //                 $section2['data']['modeOfReceiptSelected']  = (isset($shipment['mode_id']) && $shipment['mode_id'] != "" && $shipment['mode_id'] != 0) ? $shipment['mode_id'] : '';
-        //             } else {
-        //                 $section2['data']['modeOfReceiptSelected']      = "";
-        //             }
-        //         } else {
-        //             $section2['data']['responseDate']               = "";
-        //             $section2['data']['modeOfReceiptSelected']      = "";
-        //         }
-        //         $section2['data']['modeOfReceiptSelect']    = $modeOfReceiptSelect;
-        //     }
+        if ($params['scheme_type'] == 'vl') {
+            $reportAccess = array();
+            $vl = array();
+            if ($isEditable && $dm['view_only_access'] != 'yes') {
+                if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                    $reportAccess['status'] = 'success';
+                    $reportAccess['message'] = 'Your response is late';
+                } else if ($responseAccess == 1) {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late';
+                } else if ($shipment['status'] == 'finalized') {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
+                } else {
+                    $reportAccess['status'] = 'success';
+                }
+            } else {
+                $reportAccess['status']     = 'fail';
+                $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
+            }
+            $vl['access'] = $reportAccess;
+            // Section 1 start
+            $section1 = array(
+                'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
+                'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
+                'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '') ? $participant['affiliation'] : '',
+                'phone'             => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
+                'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : ''
+            );
+            if (isset($participant) && count($participant) > 0) {
+                $vl['Section1']['status']   = true;
+                $vl['Section1']['data']     = $section1;
+            } else {
+                $vl['Section1']['status']   = false;
+                $vl['Section1']['data']     = $section1;
+            }
+            // Section1 end // Section2 start
+            $section2 = array();
+            $vlAssayArr = array();
+            $vlAssay = $schemeService->getVlAssay();
+            if (isset($shipment) && count($shipment) > 0) {
+                foreach ($vlAssay as $id => $name) {
+                    $vlAssayArr[] = array(
+                        'value'     => (string) $id,
+                        'show'      => $name,
+                        'selected'  => (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] == $id) ? 'selected' : ''
+                    );
+                }
+                $modeOfReceiptSelect = array();
+                foreach ($modeOfReceipt as $receipt) {
+                    $modeOfReceiptSelect[] = array(
+                        'value'     =>  (string) $receipt['mode_id'],
+                        'show'      =>  $receipt['mode_name'],
+                        'selected'  => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
+                    );
+                }
+                $section2['status']                         = true;
+                $section2['data']['shipmentDate']           = date('d-M-Y', strtotime($shipment['shipment_date']));
+                $section2['data']['resultDueDate']          = date('d-M-Y', strtotime($shipment['lastdate_response']));
+                $section2['data']['testReceiptDate']        = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
+                $section2['data']['sampleRehydrationDate']  = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
+                $section2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment["shipment_test_date"])) : '';
+                $section2['data']['specimenVolume']         = (isset($shipment['attributes']['specimen_volume']) && $shipment['attributes']['specimen_volume'] != "") ? $shipment['attributes']['specimen_volume'] : null;
+                $section2['data']['vlAssaySelect']          = $vlAssayArr;
+                $section2['data']['vlAssaySelected']        = (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] != "") ? (string) $shipment['attributes']['vl_assay'] : '';
+                $section2['data']['otherAssay']             = (isset($shipment['attributes']['other_assay']) && $shipment['attributes']['other_assay'] != '') ? $shipment['attributes']['other_assay'] : '';
+                $section2['data']['assayExpirationDate']    = (isset($shipment['attributes']['assay_expiration_date']) && $shipment['attributes']['assay_expiration_date'] != '' && $shipment['attributes']['assay_expiration_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']['assay_expiration_date'])) : '';
+                $section2['data']['assayLotNumber']         = !empty($shipment['attributes']['assay_lot_number']) ? $shipment['attributes']['assay_lot_number'] : null;
+                if ((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')) {
+                    if (isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != '') {
+                        $section2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_report_date'])) : date('d-M-Y');
+                    } else {
+                        $section2['data']['responseDate'] = null;
+                    }
+                    if (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') {
+                        $section2['data']['modeOfReceiptSelected']  = (isset($shipment['mode_id']) && $shipment['mode_id'] != "" && $shipment['mode_id'] != 0) ? $shipment['mode_id'] : '';
+                    } else {
+                        $section2['data']['modeOfReceiptSelected']      = "";
+                    }
+                } else {
+                    $section2['data']['responseDate']               = "";
+                    $section2['data']['modeOfReceiptSelected']      = "";
+                }
+                $section2['data']['modeOfReceiptSelect']    = $modeOfReceiptSelect;
+            }
 
-        //     $qcArray = array('yes', 'no');
-        //     $qc = array();
-        //     foreach ($qcArray as $row) {
-        //         $qcResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
-        //     }
-        //     $qc['qcRadio']          = $qcResponseArr;
-        //     $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '') ? 'no' : 'yes';
-        //     $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31') ? date('d-M-Y', strtotime($shipment['qc_date'])) : '';
-        //     $qc['qcDoneBy']         = (isset($shipment['qc_done_by']) && $shipment['qc_done_by'] != '') ? $shipment['qc_done_by'] : '';
-        //     if ($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes') {
-        //         $qc['status'] = false;
-        //     } else {
-        //         $qc['status'] = true;
-        //     }
-        //     $section2['data']['qcData'] = $qc;
+            $qcArray = array('yes', 'no');
+            $qc = array();
+            foreach ($qcArray as $row) {
+                $qcResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
+            }
+            $qc['qcRadio']          = $qcResponseArr;
+            $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '') ? 'no' : 'yes';
+            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31') ? date('d-M-Y', strtotime($shipment['qc_date'])) : '';
+            $qc['qcDoneBy']         = (isset($shipment['qc_done_by']) && $shipment['qc_done_by'] != '') ? $shipment['qc_done_by'] : '';
+            if ($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes') {
+                $qc['status'] = false;
+            } else {
+                $qc['status'] = true;
+            }
+            $section2['data']['qcData'] = $qc;
 
-        //     $vl['Section2'] = $section2;
-        //     // Section 2 end // Section 3 start
-        //     $section3 = array();
-        //     $section3['status'] = true;
-        //     $allNotTestedReason = $schemeService->getNotTestedReasons('vl);
-        //     if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
-        //         $section3['data']['isPtTestNotPerformedRadio'] = 'no';
-        //     } else {
-        //         $section3['data']['isPtTestNotPerformedRadio'] = 'yes';
-        //     }
-        //     $section3['data']['no']['note'][]               = "Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.";
-        //     $section3['data']['no']['note'][]               = "Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).";
-        //     $section3['data']['no']['note'][]               = "For negative or undetectable result (TND), please enter 0.00.";
-        //     $section3['data']['no']['note'][]               = "For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section.";
-        //     $section3['data']['no']['vlResultSectionLabel'] = "VL Calc (Convert copies/ml to Log<sub>10</sub>)";
-        //     $section3['data']['no']['tableSection'][]       = 'Control/Sample';
-        //     $section3['data']['no']['tableSection'][]       = 'Viral Load (log<sub>10</sub> copies/ml)';
-        //     $section3['data']['no']['tableSection'][]       = 'TND(Target Not Detected)';
-        //     $allNotTestedArray = array();
-        //     foreach ($allNotTestedReason as $reason) {
-        //         $allNotTestedArray[] = array(
-        //             'value'     => (string) $reason['ntr_id'],
-        //             'show'      => ucwords($reason['ntr_reason']),
-        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
-        //         );
-        //     }
-        //     $section3['data']['yes']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
-        //     $section3['data']['yes']['vlNotTestedReasonSelect']     = $allNotTestedArray;
-        //     $section3['data']['yes']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : '';
-        //     $section3['data']['yes']['commentsText']                = 'Your comments';
-        //     $section3['data']['yes']['commentsTextArea']            = $shipment['pt_test_not_performed_comments'];
-        //     $section3['data']['yes']['supportText']                 = 'Do you need any support from the PT Provider ?';
-        //     $section3['data']['yes']['supportTextArea']             = $shipment['pt_support_comments'];
-        //     // return $allSamples;
-        //     // Zend_Debug::dump($allSamples);die;
-        //     foreach ($allSamples as $key => $sample) {
-        //         /* if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
-        //             $sample['mandatory'] = 0;
-        //         } */
-        //         $vlArray = array('yes', 'no');
-        //         $vlResult = (isset($sample['reported_viral_load']) && $sample['reported_viral_load'] != "") ? $sample['reported_viral_load'] : '';
-        //         if ($sample['is_tnd'] == 'yes') {
-        //             $vlResult = 0.00;
-        //         }
-        //         $vlResponseArr = array();
-        //         foreach ($vlArray as $row) {
-        //             $vlResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => ($sample['is_tnd'] == $row || ($sample['is_tnd'] == '' && $row == 'no')) ? 'selected' : '');
-        //         }
-        //         $section3['data']['no']['tableRowTxt']['label'][]       = $sample['sample_label'];
-        //         $section3['data']['no']['tableRowTxt']['id'][]          = $sample['sample_id'];
-        //         $section3['data']['no']['tableRowTxt']['mandatory'][]   = ($sample['mandatory'] == 1) ? true : false;
-        //         $section3['data']['no']['vlResult'][]                   = $vlResult;
-        //         $section3['data']['no']['tndReferenceRadio'][]          = $vlResponseArr;
-        //         $section3['data']['no']['tndReferenceRadioSelected'][]  = (isset($sample['is_tnd']) && ($sample['is_tnd'] != '' && $sample['is_tnd'] == 'yes')) ? 'yes' : 'no';
-        //     }
-        //     $vl['Section3'] = $section3;
-        //     // Section 3 end // Section 4 Start
-        //     $reviewArray = array();
-        //     $commentArray = array('yes', 'no');
-        //     $revieArr = array();
-        //     foreach ($commentArray as $row) {
-        //         $revieArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
-        //     }
-        //     $reviewArray['supervisorReview']            = $revieArr;
-        //     $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '') ? $shipment['supervisor_approval'] : '';
-        //     $reviewArray['approvalLabel']               = 'Supervisor Name';
-        //     $reviewArray['approvalInputText']           = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '') ? $shipment['participant_supervisor'] : '';
-        //     $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '') ? $shipment['user_comment'] : '';
-        //     $vl['Section4']['status']                   = true;
-        //     $vl['Section4']['data']                     = $reviewArray;
-        //     // Section 4 End
-        //     $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-        //     $customField1 = $globalConfigDb->getValue('custom_field_1');
-        //     $customField2 = $globalConfigDb->getValue('custom_field_2');
-        //     $haveCustom = $globalConfigDb->getValue('custom_field_needed');
-        //     if (isset($haveCustom) && $haveCustom != 'no') {
-        //         $vl['customFields']['status'] = true;
-        //         if (isset($customField1) && trim($customField1) != "") {
-        //             $vl['customFields']['data']['customField1Text'] = $customField1;
-        //             $vl['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "") ? $shipment['custom_field_1'] : '';
-        //         }
+            $vl['Section2'] = $section2;
+            // Section 2 end // Section 3 start
+            $section3 = array();
+            $section3['status'] = true;
+            $allNotTestedReason = $schemeService->getNotTestedReasons('vl');
+            if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
+                $section3['data']['isPtTestNotPerformedRadio'] = 'no';
+            } else {
+                $section3['data']['isPtTestNotPerformedRadio'] = 'yes';
+            }
+            $section3['data']['no']['note'][]               = "Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.";
+            $section3['data']['no']['note'][]               = "Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).";
+            $section3['data']['no']['note'][]               = "For negative or undetectable result (TND), please enter 0.00.";
+            $section3['data']['no']['note'][]               = "For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section.";
+            $section3['data']['no']['vlResultSectionLabel'] = "VL Calc (Convert copies/ml to Log<sub>10</sub>)";
+            $section3['data']['no']['tableSection'][]       = 'Control/Sample';
+            $section3['data']['no']['tableSection'][]       = 'Viral Load (log<sub>10</sub> copies/ml)';
+            $section3['data']['no']['tableSection'][]       = 'TND(Target Not Detected)';
+            $allNotTestedArray = array();
+            foreach ($allNotTestedReason as $reason) {
+                $allNotTestedArray[] = array(
+                    'value'     => (string) $reason['ntr_id'],
+                    'show'      => ucwords($reason['ntr_reason']),
+                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
+                );
+            }
+            $section3['data']['yes']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
+            $section3['data']['yes']['vlNotTestedReasonSelect']     = $allNotTestedArray;
+            $section3['data']['yes']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : '';
+            $section3['data']['yes']['commentsText']                = 'Your comments';
+            $section3['data']['yes']['commentsTextArea']            = $shipment['pt_test_not_performed_comments'];
+            $section3['data']['yes']['supportText']                 = 'Do you need any support from the PT Provider ?';
+            $section3['data']['yes']['supportTextArea']             = $shipment['pt_support_comments'];
+            // return $allSamples;
+            // Zend_Debug::dump($allSamples);die;
+            foreach ($allSamples as $key => $sample) {
+                /* if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
+                    $sample['mandatory'] = 0;
+                } */
+                $vlArray = array('yes', 'no');
+                $vlResult = (isset($sample['reported_viral_load']) && $sample['reported_viral_load'] != "") ? $sample['reported_viral_load'] : '';
+                if ($sample['is_tnd'] == 'yes') {
+                    $vlResult = 0.00;
+                }
+                $vlResponseArr = array();
+                foreach ($vlArray as $row) {
+                    $vlResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => ($sample['is_tnd'] == $row || ($sample['is_tnd'] == '' && $row == 'no')) ? 'selected' : '');
+                }
+                $section3['data']['no']['tableRowTxt']['label'][]       = $sample['sample_label'];
+                $section3['data']['no']['tableRowTxt']['id'][]          = $sample['sample_id'];
+                $section3['data']['no']['tableRowTxt']['mandatory'][]   = ($sample['mandatory'] == 1) ? true : false;
+                $section3['data']['no']['vlResult'][]                   = $vlResult;
+                $section3['data']['no']['tndReferenceRadio'][]          = $vlResponseArr;
+                $section3['data']['no']['tndReferenceRadioSelected'][]  = (isset($sample['is_tnd']) && ($sample['is_tnd'] != '' && $sample['is_tnd'] == 'yes')) ? 'yes' : 'no';
+            }
+            $vl['Section3'] = $section3;
+            // Section 3 end // Section 4 Start
+            $reviewArray = array();
+            $commentArray = array('yes', 'no');
+            $revieArr = array();
+            foreach ($commentArray as $row) {
+                $revieArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
+            }
+            $reviewArray['supervisorReview']            = $revieArr;
+            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '') ? $shipment['supervisor_approval'] : '';
+            $reviewArray['approvalLabel']               = 'Supervisor Name';
+            $reviewArray['approvalInputText']           = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '') ? $shipment['participant_supervisor'] : '';
+            $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '') ? $shipment['user_comment'] : '';
+            $vl['Section4']['status']                   = true;
+            $vl['Section4']['data']                     = $reviewArray;
+            // Section 4 End
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+            $customField1 = $globalConfigDb->getValue('custom_field_1');
+            $customField2 = $globalConfigDb->getValue('custom_field_2');
+            $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+            if (isset($haveCustom) && $haveCustom != 'no') {
+                $vl['customFields']['status'] = true;
+                if (isset($customField1) && trim($customField1) != "") {
+                    $vl['customFields']['data']['customField1Text'] = $customField1;
+                    $vl['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "") ? $shipment['custom_field_1'] : '';
+                }
 
-        //         if (isset($customField2) && trim($customField2) != "") {
-        //             $vl['customFields']['data']['customField2Text'] = $customField2;
-        //             $vl['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "") ? $shipment['custom_field_2'] : '';
-        //         }
-        //     } else {
-        //         $vl['customFields']['status'] = false;
-        //     }
-        //     return $vl;
-        // }
-        // if ($params['scheme_type'] == 'eid') {
-        //     $eid = array();
-        //     $extractionAssay = $schemeService->getEidExtractionAssay();
-        //     $detectionAssay = $schemeService->getEidDetectionAssay();
-        //     $participant = $participantDb->getParticipant($params['participant_id']);
-        //     $eidPossibleResults = $schemeService->getPossibleResults('eid');
-        //     // return $eidPossibleResults;
-        //     $reportAccess = array();
-        //     $vl = array();
-        //     if ($isEditable && $dm['view_only_access'] != 'yes') {
-        //         if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
-        //             $reportAccess['status']         = 'fail';
-        //             $reportAccess['message']        = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-        //         } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
-        //             $reportAccess['status'] = 'success';
-        //             $reportAccess['message'] = 'Your response is late';
-        //         } else if ($responseAccess == 1) {
-        //             $reportAccess['status'] = 'fail';
-        //             $reportAccess['message'] = 'Your response is late';
-        //         } else if ($shipment['status'] == 'finalized') {
-        //             $reportAccess['status']         = 'fail';
-        //             $reportAccess['message']        = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
-        //         } else {
-        //             $reportAccess['status']         = 'success';
-        //         }
-        //     } else {
-        //         $reportAccess['status'] = 'fail';
-        //         $reportAccess['message'] = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
-        //     }
-        //     $eid['access'] = $reportAccess;
-        //     // Section 1 start
-        //     $section1 = array(
-        //         'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
-        //         'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
-        //         'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '') ? $participant['affiliation'] : '',
-        //         'phone'             => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
-        //         'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : ''
-        //     );
-        //     if (isset($participant) && count($participant) > 0) {
-        //         $eid['Section1']['status'] = true;
-        //         $eid['Section1']['data'] = $section1;
-        //     } else {
-        //         $eid['Section1']['status'] = false;
-        //         $eid['Section1']['data'] = $section1;
-        //     }
-        //     // Section1 end // Section2 start
-        //     $section2 = array();
-        //     if (isset($shipment) && count($shipment) > 0) {
-        //         $modeOfReceiptSelect = array();
-        //         foreach ($modeOfReceipt as $receipt) {
-        //             $modeOfReceiptSelect[] = array(
-        //                 'value'     =>  (string) $receipt['mode_id'],
-        //                 'show'      =>  $receipt['mode_name'],
-        //                 'selected'   => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
-        //             );
-        //         }
-        //         $extractionAssaySelect = array();
-        //         foreach ($extractionAssay as $eAssayId => $eAssayName) {
-        //             if (isset($eAssayName) && $eAssayName != "") {
-        //                 $extractionAssaySelect[] = array(
-        //                     'value'     =>  (string) $eAssayId,
-        //                     'show'      =>  $eAssayName,
-        //                     'selected'   => (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] == $eAssayId) ? 'selected' : ''
-        //                 );
-        //             }
-        //         }
-        //         $detectionAssaySelect = array();
-        //         foreach ($detectionAssay as $dAssayId => $dAssayName) {
-        //             if (isset($dAssayName) && $dAssayName != "") {
-        //                 $detectionAssaySelect[] = array(
-        //                     'value'     =>  (string) $dAssayId,
-        //                     'show'      =>  $dAssayName,
-        //                     'selected'   => (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] == $dAssayId) ? 'selected' : ''
-        //                 );
-        //             }
-        //         }
+                if (isset($customField2) && trim($customField2) != "") {
+                    $vl['customFields']['data']['customField2Text'] = $customField2;
+                    $vl['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "") ? $shipment['custom_field_2'] : '';
+                }
+            } else {
+                $vl['customFields']['status'] = false;
+            }
+            return $vl;
+        }
+        if ($params['scheme_type'] == 'eid') {
+            $eid = array();
+            $extractionAssay = $schemeService->getEidExtractionAssay();
+            $detectionAssay = $schemeService->getEidDetectionAssay();
+            $participant = $participantDb->getParticipant($params['participant_id']);
+            $eidPossibleResults = $schemeService->getPossibleResults('eid');
+            // return $eidPossibleResults;
+            $reportAccess = array();
+            $vl = array();
+            if ($isEditable && $dm['view_only_access'] != 'yes') {
+                if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
+                    $reportAccess['status']         = 'fail';
+                    $reportAccess['message']        = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                    $reportAccess['status'] = 'success';
+                    $reportAccess['message'] = 'Your response is late';
+                } else if ($responseAccess == 1) {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late';
+                } else if ($shipment['status'] == 'finalized') {
+                    $reportAccess['status']         = 'fail';
+                    $reportAccess['message']        = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
+                } else {
+                    $reportAccess['status']         = 'success';
+                }
+            } else {
+                $reportAccess['status'] = 'fail';
+                $reportAccess['message'] = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
+            }
+            $eid['access'] = $reportAccess;
+            // Section 1 start
+            $section1 = array(
+                'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
+                'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
+                'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '') ? $participant['affiliation'] : '',
+                'phone'             => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
+                'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : ''
+            );
+            if (isset($participant) && count($participant) > 0) {
+                $eid['Section1']['status'] = true;
+                $eid['Section1']['data'] = $section1;
+            } else {
+                $eid['Section1']['status'] = false;
+                $eid['Section1']['data'] = $section1;
+            }
+            // Section1 end // Section2 start
+            $section2 = array();
+            if (isset($shipment) && count($shipment) > 0) {
+                $modeOfReceiptSelect = array();
+                foreach ($modeOfReceipt as $receipt) {
+                    $modeOfReceiptSelect[] = array(
+                        'value'     =>  (string) $receipt['mode_id'],
+                        'show'      =>  $receipt['mode_name'],
+                        'selected'   => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
+                    );
+                }
+                $extractionAssaySelect = array();
+                foreach ($extractionAssay as $eAssayId => $eAssayName) {
+                    if (isset($eAssayName) && $eAssayName != "") {
+                        $extractionAssaySelect[] = array(
+                            'value'     =>  (string) $eAssayId,
+                            'show'      =>  $eAssayName,
+                            'selected'   => (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] == $eAssayId) ? 'selected' : ''
+                        );
+                    }
+                }
+                $detectionAssaySelect = array();
+                foreach ($detectionAssay as $dAssayId => $dAssayName) {
+                    if (isset($dAssayName) && $dAssayName != "") {
+                        $detectionAssaySelect[] = array(
+                            'value'     =>  (string) $dAssayId,
+                            'show'      =>  $dAssayName,
+                            'selected'   => (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] == $dAssayId) ? 'selected' : ''
+                        );
+                    }
+                }
 
-        //         $section2['status']    = true;
-        //         $section2['data']['shipmentDate']               = date('d-M-Y', strtotime($shipment['shipment_date']));
-        //         $section2['data']['resultDueDate']              = date('d-M-Y', strtotime($shipment['lastdate_response']));
-        //         $section2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
-        //         $section2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
-        //         $section2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment["shipment_test_date"])) : '';
-        //         $section2['data']['extractionAssaySelect']      = $extractionAssaySelect;
-        //         $section2['data']['extractionAssaySelected']    = (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] != "") ? (string) $shipment['attributes']['extraction_assay'] : '';
-        //         $section2['data']['detectionAssaySelect']       = $detectionAssaySelect;
-        //         $section2['data']['detectionAssaySelected']     = (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] != "") ? (string) $shipment['attributes']['extraction_assay'] : '';
-        //         $section2['data']['extractionLotNumber']        = (isset($shipment['attributes']['extraction_assay_lot_no']) && $shipment['attributes']['extraction_assay_lot_no'] != "") ? $shipment['attributes']['extraction_assay_lot_no'] : '';
-        //         $section2['data']['detectionLotNumber']         = (isset($shipment['attributes']['detection_assay_lot_no']) && $shipment['attributes']['detection_assay_lot_no'] != "") ? $shipment['attributes']['detection_assay_lot_no'] : '';
-        //         $section2['data']['extractionExpirationDate']   = (isset($shipment['attributes']['extraction_assay_expiry_date']) && $shipment['attributes']['extraction_assay_expiry_date'] != "" && $shipment['attributes']['extraction_assay_expiry_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']['extraction_assay_expiry_date'])) : '';
-        //         $section2['data']['detectionExpirationDate']    = (isset($shipment['attributes']['detection_assay_expiry_date']) && $shipment['attributes']['detection_assay_expiry_date'] != '' && $shipment['attributes']['detection_assay_expiry_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']['detection_assay_expiry_date'])) : '';
+                $section2['status']    = true;
+                $section2['data']['shipmentDate']               = date('d-M-Y', strtotime($shipment['shipment_date']));
+                $section2['data']['resultDueDate']              = date('d-M-Y', strtotime($shipment['lastdate_response']));
+                $section2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
+                $section2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
+                $section2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment["shipment_test_date"])) : '';
+                $section2['data']['extractionAssaySelect']      = $extractionAssaySelect;
+                $section2['data']['extractionAssaySelected']    = (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] != "") ? (string) $shipment['attributes']['extraction_assay'] : '';
+                $section2['data']['detectionAssaySelect']       = $detectionAssaySelect;
+                $section2['data']['detectionAssaySelected']     = (isset($shipment['attributes']['detection_assay']) && $shipment['attributes']['detection_assay'] != "") ? (string) $shipment['attributes']['extraction_assay'] : '';
+                $section2['data']['extractionLotNumber']        = (isset($shipment['attributes']['extraction_assay_lot_no']) && $shipment['attributes']['extraction_assay_lot_no'] != "") ? $shipment['attributes']['extraction_assay_lot_no'] : '';
+                $section2['data']['detectionLotNumber']         = (isset($shipment['attributes']['detection_assay_lot_no']) && $shipment['attributes']['detection_assay_lot_no'] != "") ? $shipment['attributes']['detection_assay_lot_no'] : '';
+                $section2['data']['extractionExpirationDate']   = (isset($shipment['attributes']['extraction_assay_expiry_date']) && $shipment['attributes']['extraction_assay_expiry_date'] != "" && $shipment['attributes']['extraction_assay_expiry_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']['extraction_assay_expiry_date'])) : '';
+                $section2['data']['detectionExpirationDate']    = (isset($shipment['attributes']['detection_assay_expiry_date']) && $shipment['attributes']['detection_assay_expiry_date'] != '' && $shipment['attributes']['detection_assay_expiry_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']['detection_assay_expiry_date'])) : '';
 
-        //         if ((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')) {
-        //             if (isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != '') {
-        //                 $section2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_report_date'])) : date('d-M-Y');
-        //             } else {
-        //                 $section2['data']['responseDate'] = null;
-        //             }
-        //             if (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') {
-        //                 $section2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0) ? $shipment["mode_id"] : '';
-        //             } else {
-        //                 $section2['data']['modeOfReceiptSelected'] = '';
-        //             }
-        //         } else {
-        //             $section2['data']['responseDate'] = null;
-        //             $section2['data']['modeOfReceiptSelected'] = '';
-        //         }
-        //         $section2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
-        //     }
+                if ((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')) {
+                    if (isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != '') {
+                        $section2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_report_date'])) : date('d-M-Y');
+                    } else {
+                        $section2['data']['responseDate'] = null;
+                    }
+                    if (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') {
+                        $section2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0) ? $shipment["mode_id"] : '';
+                    } else {
+                        $section2['data']['modeOfReceiptSelected'] = '';
+                    }
+                } else {
+                    $section2['data']['responseDate'] = null;
+                    $section2['data']['modeOfReceiptSelected'] = '';
+                }
+                $section2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+            }
 
-        //     $qcArray = array('yes', 'no');
-        //     $qc = array();
-        //     foreach ($qcArray as $row) {
-        //         $qcResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
-        //     }
-        //     $qc['qcRadio']          = $qcResponseArr;
-        //     $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '') ? 'no' : 'yes';
-        //     $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000-00-00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31') ? date('d-M-Y', strtotime($shipment['qc_date'])) : '';
-        //     $qc['qcDoneBy']         = (isset($shipment['qc_done_by']) && $shipment['qc_done_by'] != '') ? $shipment['qc_done_by'] : '';
-        //     if ($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes') {
-        //         $qc['status'] = false;
-        //     } else {
-        //         $qc['status'] = true;
-        //     }
-        //     $section2['data']['qcData'] = $qc;
+            $qcArray = array('yes', 'no');
+            $qc = array();
+            foreach ($qcArray as $row) {
+                $qcResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
+            }
+            $qc['qcRadio']          = $qcResponseArr;
+            $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '') ? 'no' : 'yes';
+            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000-00-00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31') ? date('d-M-Y', strtotime($shipment['qc_date'])) : '';
+            $qc['qcDoneBy']         = (isset($shipment['qc_done_by']) && $shipment['qc_done_by'] != '') ? $shipment['qc_done_by'] : '';
+            if ($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes') {
+                $qc['status'] = false;
+            } else {
+                $qc['status'] = true;
+            }
+            $section2['data']['qcData'] = $qc;
 
-        //     $eid['Section2'] = $section2;
-        //     // Section 2 end // Section 3 start
-        //     $allNotTestedReason = $schemeService->getNotTestedReasons('eid);
+            $eid['Section2'] = $section2;
+            // Section 2 end // Section 3 start
+            $allNotTestedReason = $schemeService->getNotTestedReasons('eid');
 
-        //     $allSamplesResult = array();
-        //     foreach ($allSamples as $sample) {
-        //         if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
-        //             $sample['mandatory'] = 0;
-        //         }
-        //         $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
-        //         $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
-        //         $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1) ? true : false;
-        //         $allSamplesResult['samples']['yourResults'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != "") ? $sample['reported_result'] : '';
-        //         $allSamplesResult['samples']['hivCtOd'][]       = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '') ? $sample['hiv_ct_od'] : '';
-        //         $allSamplesResult['samples']['IcQsValues'][]    = (isset($sample['ic_qs']) && $sample['ic_qs'] != '') ? $sample['ic_qs'] : '';
-        //         $possibleEIDResults = array();
-        //         foreach ($eidPossibleResults as $pr) {
-        //             if ($pr['scheme_sub_group'] == 'EID_FINAL') {
-        //                 $possibleEIDResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['reported_result'] == $pr['id']) ? 'selected' : '');
-        //             }
-        //         }
+            $allSamplesResult = array();
+            foreach ($allSamples as $sample) {
+                if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
+                    $sample['mandatory'] = 0;
+                }
+                $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
+                $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
+                $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1) ? true : false;
+                $allSamplesResult['samples']['yourResults'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != "") ? $sample['reported_result'] : '';
+                $allSamplesResult['samples']['hivCtOd'][]       = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '') ? $sample['hiv_ct_od'] : '';
+                $allSamplesResult['samples']['IcQsValues'][]    = (isset($sample['ic_qs']) && $sample['ic_qs'] != '') ? $sample['ic_qs'] : '';
+                $possibleEIDResults = array();
+                foreach ($eidPossibleResults as $pr) {
+                    if ($pr['scheme_sub_group'] == 'EID_FINAL') {
+                        $possibleEIDResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['reported_result'] == $pr['id']) ? 'selected' : '');
+                    }
+                }
 
-        //         $allSamplesResult['resultsText'] = array('Control/Sample', 'Your-Results', 'HIV-CT/OD', 'IC/QS-Values');
-        //         $allSamplesResult['resultStatus'] = array(true, true, true, true);
-        //         $allSamplesResult['sampleSelected'][$sample['sample_label']]['Your-Results']   = (isset($sample['reported_result']) && $sample['reported_result'] != "") ? $sample['reported_result'] : '';
-        //         $allSamplesResult['sampleSelected'][$sample['sample_label']]['HIV-CT/OD']      = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '') ? $sample['hiv_ct_od'] : '';
-        //         $allSamplesResult['sampleSelected'][$sample['sample_label']]['IC/QS-Values']   = (isset($sample['ic_qs']) && $sample['ic_qs'] != '') ? $sample['ic_qs'] : '';
-        //         $allSamplesResult['samplesList'][$sample['sample_label']]['Your-Results']      = $possibleEIDResults;
-        //         $allSamplesResult['samplesList'][$sample['sample_label']]['HIV-CT/OD']         = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '') ? $sample['hiv_ct_od'] : '';
-        //         $allSamplesResult['samplesList'][$sample['sample_label']]['IC/QS-Values']      = (isset($sample['ic_qs']) && $sample['ic_qs'] != '') ? $sample['ic_qs'] : '';
-        //     }
-        //     // return $eidPossibleResults;
-        //     $allNotTestedArray = array();
-        //     foreach ($allNotTestedReason as $reason) {
-        //         $allNotTestedArray[] = array(
-        //             'value'     => (string) $reason['ntr_id'],
-        //             'show'      => ucwords($reason['ntr_reason']),
-        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
-        //         );
-        //     }
+                $allSamplesResult['resultsText'] = array('Control/Sample', 'Your-Results', 'HIV-CT/OD', 'IC/QS-Values');
+                $allSamplesResult['resultStatus'] = array(true, true, true, true);
+                $allSamplesResult['sampleSelected'][$sample['sample_label']]['Your-Results']   = (isset($sample['reported_result']) && $sample['reported_result'] != "") ? $sample['reported_result'] : '';
+                $allSamplesResult['sampleSelected'][$sample['sample_label']]['HIV-CT/OD']      = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '') ? $sample['hiv_ct_od'] : '';
+                $allSamplesResult['sampleSelected'][$sample['sample_label']]['IC/QS-Values']   = (isset($sample['ic_qs']) && $sample['ic_qs'] != '') ? $sample['ic_qs'] : '';
+                $allSamplesResult['samplesList'][$sample['sample_label']]['Your-Results']      = $possibleEIDResults;
+                $allSamplesResult['samplesList'][$sample['sample_label']]['HIV-CT/OD']         = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '') ? $sample['hiv_ct_od'] : '';
+                $allSamplesResult['samplesList'][$sample['sample_label']]['IC/QS-Values']      = (isset($sample['ic_qs']) && $sample['ic_qs'] != '') ? $sample['ic_qs'] : '';
+            }
+            // return $eidPossibleResults;
+            $allNotTestedArray = array();
+            foreach ($allNotTestedReason as $reason) {
+                $allNotTestedArray[] = array(
+                    'value'     => (string) $reason['ntr_id'],
+                    'show'      => ucwords($reason['ntr_reason']),
+                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
+                );
+            }
 
-        //     if ((isset($allSamples) && count($allSamples) > 0) && (isset($eidPossibleResults) && count($eidPossibleResults) > 0)) {
-        //         $eid['Section3']['status'] = true;
-        //     } else {
-        //         $eid['Section3']['status'] = false;
-        //     }
-        //     $eid['Section3']['data'] = $allSamplesResult;
-        //     if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
-        //         $eid['Section3']['data']['isPtTestNotPerformedRadio'] = 'no';
-        //     } else {
-        //         $eid['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
-        //     }
-        //     $eid['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
-        //     $eid['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
-        //     $eid['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
-        //     $eid['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
-        //     $eid['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
-        //     $eid['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
-        //     $eid['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
-        //     // Section 3 End // Section 4 Start
-        //     $reviewArray = array();
-        //     $commentArray = array('yes', 'no');
-        //     $revieArr = array();
-        //     foreach ($commentArray as $row) {
-        //         $revieArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
-        //     }
-        //     $reviewArray['supervisorReview']            = $revieArr;
-        //     $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '') ? $shipment['supervisor_approval'] : '';
-        //     $reviewArray['approvalLabel']               = 'Supervisor Name';
-        //     $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes') ? $shipment['participant_supervisor'] : '';
-        //     $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '') ? $shipment['user_comment'] : '';
-        //     $eid['Section4']['status']                  = true;
-        //     $eid['Section4']['data']                    = $reviewArray;
-        //     // Section 4 end
-        //     $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-        //     $customField1 = $globalConfigDb->getValue('custom_field_1');
-        //     $customField2 = $globalConfigDb->getValue('custom_field_2');
-        //     $haveCustom = $globalConfigDb->getValue('custom_field_needed');
-        //     if (isset($haveCustom) && $haveCustom != 'no') {
-        //         $eid['customFields']['status'] = true;
-        //         if (isset($customField1) && trim($customField1) != "") {
-        //             $eid['customFields']['data']['customField1Text'] = $customField1;
-        //             $eid['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "") ? $shipment['custom_field_1'] : '';
-        //         }
+            if ((isset($allSamples) && count($allSamples) > 0) && (isset($eidPossibleResults) && count($eidPossibleResults) > 0)) {
+                $eid['Section3']['status'] = true;
+            } else {
+                $eid['Section3']['status'] = false;
+            }
+            $eid['Section3']['data'] = $allSamplesResult;
+            if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
+                $eid['Section3']['data']['isPtTestNotPerformedRadio'] = 'no';
+            } else {
+                $eid['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
+            }
+            $eid['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
+            $eid['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
+            $eid['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
+            $eid['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
+            $eid['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
+            $eid['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
+            $eid['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
+            // Section 3 End // Section 4 Start
+            $reviewArray = array();
+            $commentArray = array('yes', 'no');
+            $revieArr = array();
+            foreach ($commentArray as $row) {
+                $revieArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
+            }
+            $reviewArray['supervisorReview']            = $revieArr;
+            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '') ? $shipment['supervisor_approval'] : '';
+            $reviewArray['approvalLabel']               = 'Supervisor Name';
+            $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes') ? $shipment['participant_supervisor'] : '';
+            $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '') ? $shipment['user_comment'] : '';
+            $eid['Section4']['status']                  = true;
+            $eid['Section4']['data']                    = $reviewArray;
+            // Section 4 end
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+            $customField1 = $globalConfigDb->getValue('custom_field_1');
+            $customField2 = $globalConfigDb->getValue('custom_field_2');
+            $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+            if (isset($haveCustom) && $haveCustom != 'no') {
+                $eid['customFields']['status'] = true;
+                if (isset($customField1) && trim($customField1) != "") {
+                    $eid['customFields']['data']['customField1Text'] = $customField1;
+                    $eid['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "") ? $shipment['custom_field_1'] : '';
+                }
 
-        //         if (isset($customField2) && trim($customField2) != "") {
-        //             $eid['customFields']['data']['customField2Text'] = $customField2;
-        //             $eid['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "") ? $shipment['custom_field_2'] : '';
-        //         }
-        //     } else {
-        //         $eid['customFields']['status'] = false;
-        //     }
-        //     return $eid;
-        // }
-        // if ($params['scheme_type'] == 'recency') {
-        //     $recency = array();
-        //     $participant = $participantDb->getParticipant($params['participant_id']);
-        //     $recencyPossibleResults = $schemeService->getPossibleResults('recency');
-        //     $recencyAssay = $schemeService->getRecencyAssay();
+                if (isset($customField2) && trim($customField2) != "") {
+                    $eid['customFields']['data']['customField2Text'] = $customField2;
+                    $eid['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "") ? $shipment['custom_field_2'] : '';
+                }
+            } else {
+                $eid['customFields']['status'] = false;
+            }
+            return $eid;
+        }
+        if ($params['scheme_type'] == 'recency') {
+            $recency = array();
+            $participant = $participantDb->getParticipant($params['participant_id']);
+            $recencyPossibleResults = $schemeService->getPossibleResults('recency');
+            $recencyAssay = $schemeService->getRecencyAssay();
 
-        //     $reportAccess = array();
-        //     $vl = array();
+            $reportAccess = array();
+            $vl = array();
 
-        //     if ($isEditable && $dm['view_only_access'] != 'yes') {
-        //         if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
-        //             $reportAccess['status']         = 'fail';
-        //             $reportAccess['message']        = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-        //         } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
-        //             $reportAccess['status'] = 'success';
-        //             $reportAccess['message'] = 'Your response is late';
-        //         } else if ($responseAccess == 1) {
-        //             $reportAccess['status'] = 'fail';
-        //             $reportAccess['message'] = 'Your response is late';
-        //         } else if ($shipment['status'] == 'finalized') {
-        //             $reportAccess['status']         = 'fail';
-        //             $reportAccess['message']        = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications.';
-        //         } else {
-        //             $reportAccess['status']         = 'success';
-        //         }
-        //     } else {
-        //         $reportAccess['status'] = 'fail';
-        //         $reportAccess['message'] = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
-        //     }
-        //     $recency['access'] = $reportAccess;
-        //     // Section 1 start
-        //     $section1 = array(
-        //         'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
-        //         'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
-        //         'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '') ? $participant['affiliation'] : '',
-        //         'phone'             => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
-        //         'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : ''
-        //     );
-        //     if (isset($participant) && count($participant) > 0) {
-        //         $recency['Section1']['status'] = true;
-        //         $recency['Section1']['data'] = $section1;
-        //     } else {
-        //         $recency['Section1']['status'] = false;
-        //         $recency['Section1']['data'] = $section1;
-        //     }
-        //     // Section1 end // Section2 start
-        //     $section2 = array();
-        //     if (isset($shipment) && count($shipment) > 0) {
-        //         $modeOfReceiptSelect = array();
-        //         foreach ($modeOfReceipt as $receipt) {
-        //             $modeOfReceiptSelect[] = array(
-        //                 'value'     =>  (string) $receipt['mode_id'],
-        //                 'show'      =>  $receipt['mode_name'],
-        //                 'selected'   => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
-        //             );
-        //         }
-        //         $recencyAssaySelect = array();
-        //         foreach ($recencyAssay as $eAssayId => $eAssayName) {
-        //             $recencyAssaySelect[] = array(
-        //                 'value'     =>  (string) $eAssayId,
-        //                 'show'      =>  $eAssayName,
-        //                 'selected'   => (isset($shipment['attributes']['recency_assay']) && $shipment['attributes']['recency_assay'] == $eAssayId) ? 'selected' : ''
-        //             );
-        //         }
+            if ($isEditable && $dm['view_only_access'] != 'yes') {
+                if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
+                    $reportAccess['status']         = 'fail';
+                    $reportAccess['message']        = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                    $reportAccess['status'] = 'success';
+                    $reportAccess['message'] = 'Your response is late';
+                } else if ($responseAccess == 1) {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late';
+                } else if ($shipment['status'] == 'finalized') {
+                    $reportAccess['status']         = 'fail';
+                    $reportAccess['message']        = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications.';
+                } else {
+                    $reportAccess['status']         = 'success';
+                }
+            } else {
+                $reportAccess['status'] = 'fail';
+                $reportAccess['message'] = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
+            }
+            $recency['access'] = $reportAccess;
+            // Section 1 start
+            $section1 = array(
+                'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
+                'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
+                'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '') ? $participant['affiliation'] : '',
+                'phone'             => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
+                'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : ''
+            );
+            if (isset($participant) && count($participant) > 0) {
+                $recency['Section1']['status'] = true;
+                $recency['Section1']['data'] = $section1;
+            } else {
+                $recency['Section1']['status'] = false;
+                $recency['Section1']['data'] = $section1;
+            }
+            // Section1 end // Section2 start
+            $section2 = array();
+            if (isset($shipment) && count($shipment) > 0) {
+                $modeOfReceiptSelect = array();
+                foreach ($modeOfReceipt as $receipt) {
+                    $modeOfReceiptSelect[] = array(
+                        'value'     =>  (string) $receipt['mode_id'],
+                        'show'      =>  $receipt['mode_name'],
+                        'selected'   => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
+                    );
+                }
+                $recencyAssaySelect = array();
+                foreach ($recencyAssay as $eAssayId => $eAssayName) {
+                    $recencyAssaySelect[] = array(
+                        'value'     =>  (string) $eAssayId,
+                        'show'      =>  $eAssayName,
+                        'selected'   => (isset($shipment['attributes']['recency_assay']) && $shipment['attributes']['recency_assay'] == $eAssayId) ? 'selected' : ''
+                    );
+                }
 
-        //         $section2['status']    = true;
-        //         $section2['data']['shipmentDate']               = date('d-M-Y', strtotime($shipment['shipment_date']));
-        //         $section2['data']['resultDueDate']              = date('d-M-Y', strtotime($shipment['lastdate_response']));
-        //         $section2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
-        //         $section2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
-        //         $section2['data']['testDate']                   = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment["shipment_test_date"])) : '';
-        //         $section2['data']['recencyAssaySelect']         = $recencyAssaySelect;
-        //         $section2['data']['recencyAssaySelected']       = (isset($shipment['attributes']['recency_assay']) && $shipment['attributes']['recency_assay'] != "") ? (string) $shipment['attributes']['recency_assay'] : '';
-        //         $section2['data']['recencyAssayLotNumber']        = (isset($shipment['attributes']['recency_assay_lot_no']) && $shipment['attributes']['recency_assay_lot_no'] != "") ? $shipment['attributes']['recency_assay_lot_no'] : '';
-        //         $section2['data']['recencyAssayExpirayDate']   = (isset($shipment['attributes']['recency_assay_expiry_date']) && $shipment['attributes']['recency_assay_expiry_date'] != "" && $shipment['attributes']['recency_assay_expiry_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']['recency_assay_expiry_date'])) : '';
+                $section2['status']    = true;
+                $section2['data']['shipmentDate']               = date('d-M-Y', strtotime($shipment['shipment_date']));
+                $section2['data']['resultDueDate']              = date('d-M-Y', strtotime($shipment['lastdate_response']));
+                $section2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
+                $section2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
+                $section2['data']['testDate']                   = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment["shipment_test_date"])) : '';
+                $section2['data']['recencyAssaySelect']         = $recencyAssaySelect;
+                $section2['data']['recencyAssaySelected']       = (isset($shipment['attributes']['recency_assay']) && $shipment['attributes']['recency_assay'] != "") ? (string) $shipment['attributes']['recency_assay'] : '';
+                $section2['data']['recencyAssayLotNumber']        = (isset($shipment['attributes']['recency_assay_lot_no']) && $shipment['attributes']['recency_assay_lot_no'] != "") ? $shipment['attributes']['recency_assay_lot_no'] : '';
+                $section2['data']['recencyAssayExpirayDate']   = (isset($shipment['attributes']['recency_assay_expiry_date']) && $shipment['attributes']['recency_assay_expiry_date'] != "" && $shipment['attributes']['recency_assay_expiry_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']['recency_assay_expiry_date'])) : '';
 
-        //         if ((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')) {
-        //             if (isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != '') {
-        //                 $section2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_report_date'])) : date('d-M-Y');
-        //             } else {
-        //                 $section2['data']['responseDate'] = null;
-        //             }
-        //             if (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') {
-        //                 $section2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0) ? $shipment["mode_id"] : '';
-        //             } else {
-        //                 $section2['data']['modeOfReceiptSelected'] = '';
-        //             }
-        //         } else {
-        //             $section2['data']['responseDate'] = '';
-        //             $section2['data']['modeOfReceiptSelected'] = '';
-        //         }
-        //         $section2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
-        //     }
+                if ((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')) {
+                    if (isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != '') {
+                        $section2['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_report_date'])) : date('d-M-Y');
+                    } else {
+                        $section2['data']['responseDate'] = null;
+                    }
+                    if (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') {
+                        $section2['data']['modeOfReceiptSelected'] = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0) ? $shipment["mode_id"] : '';
+                    } else {
+                        $section2['data']['modeOfReceiptSelected'] = '';
+                    }
+                } else {
+                    $section2['data']['responseDate'] = '';
+                    $section2['data']['modeOfReceiptSelected'] = '';
+                }
+                $section2['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+            }
 
-        //     $qcArray = array('yes', 'no');
-        //     $qc = array();
-        //     foreach ($qcArray as $row) {
-        //         $qcResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
-        //     }
-        //     $qc['qcRadio']          = $qcResponseArr;
-        //     $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '') ? 'no' : 'yes';
-        //     $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000-00-00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31') ? date('d-M-Y', strtotime($shipment['qc_date'])) : '';
-        //     $qc['qcDoneBy']         = (isset($shipment['qc_done_by']) && $shipment['qc_done_by'] != '') ? $shipment['qc_done_by'] : '';
-        //     if ($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes') {
-        //         $qc['status'] = false;
-        //     } else {
-        //         $qc['status'] = true;
-        //     }
-        //     $section2['data']['qcData'] = $qc;
+            $qcArray = array('yes', 'no');
+            $qc = array();
+            foreach ($qcArray as $row) {
+                $qcResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
+            }
+            $qc['qcRadio']          = $qcResponseArr;
+            $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '') ? 'no' : 'yes';
+            $qc['qcDate']           = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000-00-00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31') ? date('d-M-Y', strtotime($shipment['qc_date'])) : '';
+            $qc['qcDoneBy']         = (isset($shipment['qc_done_by']) && $shipment['qc_done_by'] != '') ? $shipment['qc_done_by'] : '';
+            if ($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes') {
+                $qc['status'] = false;
+            } else {
+                $qc['status'] = true;
+            }
+            $section2['data']['qcData'] = $qc;
 
-        //     $recency['Section2'] = $section2;
-        //     // Section 2 end // Section 3 start
-        //     $allNotTestedReason = $schemeService->getNotTestedReasons('recency');
+            $recency['Section2'] = $section2;
+            // Section 2 end // Section 3 start
+            $allNotTestedReason = $schemeService->getNotTestedReasons('recency');
 
-        //     $allSamplesResult = array();
-        //     foreach ($allSamples as $sample) {
-        //         if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
-        //             $sample['mandatory'] = 0;
-        //         }
-        //         $recency['Section3']['data']['samples']['label'][]             = $sample['sample_label'];
-        //         $recency['Section3']['data']['samples']['id'][]                = $sample['sample_id'];
-        //         $recency['Section3']['data']['samples']['mandatory'][]         = ($sample['mandatory'] == 1) ? true : false;
-        //         $recency['Section3']['data']['samples']['controlLine'][]       = (isset($sample['control_line']) && $sample['control_line'] != "") ? $sample['control_line'] : '';
-        //         $recency['Section3']['data']['samples']['verificationLine'][]     = (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '') ? $sample['diagnosis_line'] : '';
-        //         $recency['Section3']['data']['samples']['longtermLine'][]      = (isset($sample['longterm_line']) && $sample['longterm_line'] != '') ? $sample['longterm_line'] : '';
-        //         $recency['Section3']['data']['samples']['yourResults'][]       = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
+            $allSamplesResult = array();
+            foreach ($allSamples as $sample) {
+                if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
+                    $sample['mandatory'] = 0;
+                }
+                $recency['Section3']['data']['samples']['label'][]             = $sample['sample_label'];
+                $recency['Section3']['data']['samples']['id'][]                = $sample['sample_id'];
+                $recency['Section3']['data']['samples']['mandatory'][]         = ($sample['mandatory'] == 1) ? true : false;
+                $recency['Section3']['data']['samples']['controlLine'][]       = (isset($sample['control_line']) && $sample['control_line'] != "") ? $sample['control_line'] : '';
+                $recency['Section3']['data']['samples']['verificationLine'][]     = (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '') ? $sample['diagnosis_line'] : '';
+                $recency['Section3']['data']['samples']['longtermLine'][]      = (isset($sample['longterm_line']) && $sample['longterm_line'] != '') ? $sample['longterm_line'] : '';
+                $recency['Section3']['data']['samples']['yourResults'][]       = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
 
-        //         $possibleRecencyResults = array();
-        //         foreach ($recencyPossibleResults as $pr) {
-        //             if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
-        //                 $possibleRecencyResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['reported_result'] == $pr['id']) ? 'selected' : '');
-        //             }
-        //         }
-        //         $possibleRecencyResults[] = array('value' => '', 'show' => '', 'resultCode' => '', 'selected' => '');
+                $possibleRecencyResults = array();
+                foreach ($recencyPossibleResults as $pr) {
+                    if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+                        $possibleRecencyResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['reported_result'] == $pr['id']) ? 'selected' : '');
+                    }
+                }
+                $possibleRecencyResults[] = array('value' => '', 'show' => '', 'resultCode' => '', 'selected' => '');
 
-        //         $ctlLineResults = array();
-        //         $verifyLineResults = array();
-        //         $longLineResults = array();
-        //         $resultArray = array('present', 'absent');
-        //         foreach ($resultArray as $pr) {
-        //             $ctlLineResults[] = array('value' => (string) $pr, 'show' => ucwords($pr), 'selected' => ($sample['control_line'] == $pr) ? 'selected' : '');
-        //         }
-        //         foreach ($resultArray as $pr) {
-        //             $verifyLineResults[] = array('value' => (string) $pr, 'show' => ucwords($pr), 'selected' => ($sample['diagnosis_line'] == $pr) ? 'selected' : '');
-        //         }
-        //         foreach ($resultArray as $pr) {
-        //             $longLineResults[] = array('value' => (string) $pr, 'show' => ucwords($pr), 'selected' => ($sample['longterm_line'] == $pr) ? 'selected' : '');
-        //         }
+                $ctlLineResults = array();
+                $verifyLineResults = array();
+                $longLineResults = array();
+                $resultArray = array('present', 'absent');
+                foreach ($resultArray as $pr) {
+                    $ctlLineResults[] = array('value' => (string) $pr, 'show' => ucwords($pr), 'selected' => ($sample['control_line'] == $pr) ? 'selected' : '');
+                }
+                foreach ($resultArray as $pr) {
+                    $verifyLineResults[] = array('value' => (string) $pr, 'show' => ucwords($pr), 'selected' => ($sample['diagnosis_line'] == $pr) ? 'selected' : '');
+                }
+                foreach ($resultArray as $pr) {
+                    $longLineResults[] = array('value' => (string) $pr, 'show' => ucwords($pr), 'selected' => ($sample['longterm_line'] == $pr) ? 'selected' : '');
+                }
 
-        //         $recency['Section3']['data']['resultsText'] = array('Control/Sample', 'Control Line', 'Verification Line', 'Longterm Line', 'Your Result');
-        //         $recency['Section3']['data']['resultStatus'] = array(true, true, true, true);
-        //         $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Control Line']     = (isset($sample['control_line']) && $sample['control_line'] != '') ? $sample['control_line'] : '';
-        //         $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Verification Line'] = (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '') ? $sample['diagnosis_line'] : '';
-        //         $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Longterm Line']    = (isset($sample['longterm_line']) && $sample['longterm_line'] != '') ? $sample['longterm_line'] : '';
-        //         $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Your Results']     = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
-        //         $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Control Line']        = $ctlLineResults;
-        //         $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Verification Line']   = $verifyLineResults;
-        //         $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Longterm Line']       = $longLineResults;
-        //         $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Your Result']        = $possibleRecencyResults;
-        //     }
+                $recency['Section3']['data']['resultsText'] = array('Control/Sample', 'Control Line', 'Verification Line', 'Longterm Line', 'Your Result');
+                $recency['Section3']['data']['resultStatus'] = array(true, true, true, true);
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Control Line']     = (isset($sample['control_line']) && $sample['control_line'] != '') ? $sample['control_line'] : '';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Verification Line'] = (isset($sample['diagnosis_line']) && $sample['diagnosis_line'] != '') ? $sample['diagnosis_line'] : '';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Longterm Line']    = (isset($sample['longterm_line']) && $sample['longterm_line'] != '') ? $sample['longterm_line'] : '';
+                $recency['Section3']['data']['sampleSelected'][$sample['sample_label']]['Your Results']     = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
+                $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Control Line']        = $ctlLineResults;
+                $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Verification Line']   = $verifyLineResults;
+                $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Longterm Line']       = $longLineResults;
+                $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Your Result']        = $possibleRecencyResults;
+            }
 
-        //     $allNotTestedArray = array();
-        //     foreach ($allNotTestedReason as $reason) {
-        //         $allNotTestedArray[] = array(
-        //             'value'     => (string) $reason['ntr_id'],
-        //             'show'      => ucwords($reason['ntr_reason']),
-        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
-        //         );
-        //     }
+            $allNotTestedArray = array();
+            foreach ($allNotTestedReason as $reason) {
+                $allNotTestedArray[] = array(
+                    'value'     => (string) $reason['ntr_id'],
+                    'show'      => ucwords($reason['ntr_reason']),
+                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
+                );
+            }
 
-        //     if (isset($allSamples) && count($allSamples) > 0) {
-        //         $recency['Section3']['status'] = true;
-        //     } else {
-        //         $recency['Section3']['status'] = false;
-        //     }
+            if (isset($allSamples) && count($allSamples) > 0) {
+                $recency['Section3']['status'] = true;
+            } else {
+                $recency['Section3']['status'] = false;
+            }
 
-        //     if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
-        //         $recency['Section3']['data']['isPtTestNotPerformedRadio'] = 'no';
-        //     } else {
-        //         $recency['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
-        //     }
-        //     $recency['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
-        //     $recency['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
-        //     $recency['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
-        //     $recency['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
-        //     $recency['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
-        //     $recency['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
-        //     $recency['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
-        //     // Section 3 End // Section 4 Start
-        //     $reviewArray = array();
-        //     $commentArray = array('yes', 'no');
-        //     $revieArr = array();
-        //     foreach ($commentArray as $row) {
-        //         $revieArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
-        //     }
-        //     $reviewArray['supervisorReview']            = $revieArr;
-        //     $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '') ? $shipment['supervisor_approval'] : '';
-        //     $reviewArray['approvalLabel']               = 'Supervisor Name';
-        //     $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes') ? $shipment['participant_supervisor'] : '';
-        //     $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '') ? $shipment['user_comment'] : '';
-        //     $recency['Section4']['status']                  = true;
-        //     $recency['Section4']['data']                    = $reviewArray;
-        //     // Section 4 end
-        //     $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-        //     $customField1 = $globalConfigDb->getValue('custom_field_1');
-        //     $customField2 = $globalConfigDb->getValue('custom_field_2');
-        //     $haveCustom = $globalConfigDb->getValue('custom_field_needed');
-        //     if (isset($haveCustom) && $haveCustom != 'no') {
-        //         $recency['customFields']['status'] = true;
-        //         if (isset($customField1) && trim($customField1) != "") {
-        //             $recency['customFields']['data']['customField1Text'] = $customField1;
-        //             $recency['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "") ? $shipment['custom_field_1'] : '';
-        //         }
+            if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
+                $recency['Section3']['data']['isPtTestNotPerformedRadio'] = 'no';
+            } else {
+                $recency['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
+            }
+            $recency['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
+            $recency['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
+            $recency['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
+            $recency['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
+            $recency['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
+            $recency['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
+            $recency['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
+            // Section 3 End // Section 4 Start
+            $reviewArray = array();
+            $commentArray = array('yes', 'no');
+            $revieArr = array();
+            foreach ($commentArray as $row) {
+                $revieArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
+            }
+            $reviewArray['supervisorReview']            = $revieArr;
+            $reviewArray['supervisorReviewSelected']    = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '') ? $shipment['supervisor_approval'] : '';
+            $reviewArray['approvalLabel']               = 'Supervisor Name';
+            $reviewArray['approvalInputText']           = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == 'yes') ? $shipment['participant_supervisor'] : '';
+            $reviewArray['comments']                    = (isset($shipment['user_comment']) && $shipment['user_comment'] != '') ? $shipment['user_comment'] : '';
+            $recency['Section4']['status']                  = true;
+            $recency['Section4']['data']                    = $reviewArray;
+            // Section 4 end
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+            $customField1 = $globalConfigDb->getValue('custom_field_1');
+            $customField2 = $globalConfigDb->getValue('custom_field_2');
+            $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+            if (isset($haveCustom) && $haveCustom != 'no') {
+                $recency['customFields']['status'] = true;
+                if (isset($customField1) && trim($customField1) != "") {
+                    $recency['customFields']['data']['customField1Text'] = $customField1;
+                    $recency['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "") ? $shipment['custom_field_1'] : '';
+                }
 
-        //         if (isset($customField2) && trim($customField2) != "") {
-        //             $recency['customFields']['data']['customField2Text'] = $customField2;
-        //             $recency['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "") ? $shipment['custom_field_2'] : '';
-        //         }
-        //     } else {
-        //         $recency['customFields']['status'] = false;
-        //     }
-        //     return $recency;
-        // }
+                if (isset($customField2) && trim($customField2) != "") {
+                    $recency['customFields']['data']['customField2Text'] = $customField2;
+                    $recency['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "") ? $shipment['custom_field_2'] : '';
+                }
+            } else {
+                $recency['customFields']['status'] = false;
+            }
+            return $recency;
+        }
 
-        // if ($params['scheme_type'] == 'covid19') {
-        //     $covid19 = array();
-        //     $testThreeOptional = false;
-        //     $testTwoOptional = false;
-        //     $testAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
-        //     if (isset($testAllowed) && ($testAllowed == '1' || $testAllowed == '2')) {
-        //         $testThreeOptional = true;
-        //     }
+        if ($params['scheme_type'] == 'covid19') {
+            $covid19 = array();
+            $testThreeOptional = false;
+            $testTwoOptional = false;
+            $testAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
+            if (isset($testAllowed) && ($testAllowed == '1' || $testAllowed == '2')) {
+                $testThreeOptional = true;
+            }
 
-        //     if (isset($testAllowed) && $testAllowed != '3' && $testAllowed != '2') {
-        //         $testTwoOptional = true;
-        //     }
+            if (isset($testAllowed) && $testAllowed != '3' && $testAllowed != '2') {
+                $testTwoOptional = true;
+            }
 
-        //     $reportAccess = array();
-        //     if ($isEditable && $dm['view_only_access'] != 'yes') {
-        //         if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
-        //             $reportAccess['status'] = 'fail';
-        //             $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-        //         } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
-        //             $reportAccess['status'] = 'success';
-        //             $reportAccess['message'] = 'Your response is late';
-        //         } else if ($responseAccess == 1) {
-        //             $reportAccess['status'] = 'fail';
-        //             $reportAccess['message'] = 'Your response is late';
-        //         } else if ($shipment['status'] == 'finalized') {
-        //             $reportAccess['status'] = 'fail';
-        //             $reportAccess['message'] = 'This shipment has already been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
-        //         } else {
-        //             $reportAccess['status'] = 'success';
-        //         }
-        //     } else {
-        //         $reportAccess['status']     = 'fail';
-        //         $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
-        //     }
-        //     $covid19['access'] = $reportAccess;
-        //     // Check the data manager having for access to the form
-        //     $access = $participantDb->checkParticipantAccess($params['participant_id'], $params['dm_id'], 'API');
-        //     if ($access == false) {
-        //         return 'Participant does not having the shipments';
-        //     }
+            $reportAccess = array();
+            if ($isEditable && $dm['view_only_access'] != 'yes') {
+                if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                    $reportAccess['status'] = 'success';
+                    $reportAccess['message'] = 'Your response is late';
+                } else if ($responseAccess == 1) {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late';
+                } else if ($shipment['status'] == 'finalized') {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'This shipment has already been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
+                } else {
+                    $reportAccess['status'] = 'success';
+                }
+            } else {
+                $reportAccess['status']     = 'fail';
+                $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
+            }
+            $covid19['access'] = $reportAccess;
+            // Check the data manager having for access to the form
+            $access = $participantDb->checkParticipantAccess($params['participant_id'], $params['dm_id'], 'API');
+            if ($access == false) {
+                return 'Participant does not having the shipments';
+            }
 
-        //     // Section 1 start // First participant details start
-        //     if (isset($participant) && count($participant) > 0) {
-        //         $covid19['Section1']['status'] = true;
-        //         $covid19['Section1']['data'] = array(
-        //             'participantName'   => $participant['first_name'] . ' ' . $participant['last_name'],
-        //             'participantCode'   => $participant['unique_identifier'],
-        //             'affiliation'       => $participant['affiliation'],
-        //             'phone'             => $participant['phone'],
-        //             'mobile'            => $participant['mobile']
-        //         );
-        //     } else {
-        //         $covid19['Section1']['status'] = false;
-        //     }
-        //     // First participant details end // Section 1 end // Section 2 start // Shipement Result start
-        //     $modeOfReceiptSelect = array();
-        //     foreach ($modeOfReceipt as $receipt) {
-        //         $modeOfReceiptSelect[] = array(
-        //             'value'     =>  (string) $receipt['mode_id'],
-        //             'show'      =>  $receipt['mode_name'],
-        //             'selected'  => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
-        //         );
-        //     }
+            // Section 1 start // First participant details start
+            if (isset($participant) && count($participant) > 0) {
+                $covid19['Section1']['status'] = true;
+                $covid19['Section1']['data'] = array(
+                    'participantName'   => $participant['first_name'] . ' ' . $participant['last_name'],
+                    'participantCode'   => $participant['unique_identifier'],
+                    'affiliation'       => $participant['affiliation'],
+                    'phone'             => $participant['phone'],
+                    'mobile'            => $participant['mobile']
+                );
+            } else {
+                $covid19['Section1']['status'] = false;
+            }
+            // First participant details end // Section 1 end // Section 2 start // Shipement Result start
+            $modeOfReceiptSelect = array();
+            foreach ($modeOfReceipt as $receipt) {
+                $modeOfReceiptSelect[] = array(
+                    'value'     =>  (string) $receipt['mode_id'],
+                    'show'      =>  $receipt['mode_name'],
+                    'selected'  => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
+                );
+            }
 
-        //     if (isset($participant) && count($participant) > 0) {
-        //         $covid19['Section2']['status'] = true;
-        //         $section2 = array(
-        //             'shipmentDate'              => date('d-M-Y', strtotime($shipment['shipment_date'])),
-        //             'resultDueDate'             => date('d-M-Y', strtotime($shipment['lastdate_response'])),
-        //             'testReceiptDate'           => (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '',
-        //             'testingDate'               => (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_date'])) : '',
-        //             // 'sampleType'                => (isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != '') ? $shipment['shipment_attributes']["sampleType"] : '',
-        //             // 'screeningTest'             => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
-        //         );
-        //         // if ((isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != 'serum' && $shipment['shipment_attributes']["sampleType"] != 'plasma')) {
-        //         $section2['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
-        //         // }
-        //         $covid19['Section2']['data'] = $section2;
-        //         if ((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')) {
-        //             if (isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != '') {
-        //                 $covid19['Section2']['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_report_date'])) : date('d-M-Y');
-        //             } else {
-        //                 $covid19['Section2']['data']['responseDate'] = '';
-        //             }
-        //             if (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') {
-        //                 $covid19['Section2']['data']['modeOfReceiptSelected']     = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0) ? $shipment["mode_id"] : '';
-        //             } else {
-        //                 $covid19['Section2']['data']['modeOfReceiptSelected']     = '';
-        //             }
-        //         } else {
-        //             $covid19['Section2']['data']['responseDate']            = '';
-        //             $covid19['Section2']['data']['modeOfReceiptSelected']     = '';
-        //         }
-        //         $covid19['Section2']['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
-        //         $qcArray = array('yes', 'no');
-        //         $qc = array();
-        //         foreach ($qcArray as $row) {
-        //             $qcResponseArr[] = array('value' => $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
-        //         }
-        //         $qc['qcRadio']          = $qcResponseArr;
-        //         $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '') ? 'no' : 'yes';
-        //         $qc['qcDate']   = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31') ? date('d-M-Y', strtotime($shipment['qc_date'])) : '';
-        //         $qc['qcDoneBy'] = (isset($shipment['qc_done_by']) && $shipment['qc_done_by'] != '') ? $shipment['qc_done_by'] : '';
-        //         if ($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes') {
-        //             $qc['status']                       = false;
-        //             $covid19['Section2']['data']['qcData']  = $qc;
-        //         } else {
-        //             $qc['status']                       = true;
-        //             $covid19['Section2']['data']['qcData']  = $qc;
-        //         }
+            if (isset($participant) && count($participant) > 0) {
+                $covid19['Section2']['status'] = true;
+                $section2 = array(
+                    'shipmentDate'              => date('d-M-Y', strtotime($shipment['shipment_date'])),
+                    'resultDueDate'             => date('d-M-Y', strtotime($shipment['lastdate_response'])),
+                    'testReceiptDate'           => (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '',
+                    'testingDate'               => (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_date'])) : '',
+                    // 'sampleType'                => (isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != '') ? $shipment['shipment_attributes']["sampleType"] : '',
+                    // 'screeningTest'             => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
+                );
+                // if ((isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != 'serum' && $shipment['shipment_attributes']["sampleType"] != 'plasma')) {
+                $section2['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
+                // }
+                $covid19['Section2']['data'] = $section2;
+                if ((isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes') || (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes')) {
+                    if (isset($dm['enable_adding_test_response_date']) && $dm['enable_adding_test_response_date'] == 'yes' && isset($shipment['updated_on_user']) && $shipment['updated_on_user'] != '') {
+                        $covid19['Section2']['data']['responseDate']        = (isset($shipment['shipment_test_report_date']) && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_report_date'])) : date('d-M-Y');
+                    } else {
+                        $covid19['Section2']['data']['responseDate'] = '';
+                    }
+                    if (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') {
+                        $covid19['Section2']['data']['modeOfReceiptSelected']     = (isset($shipment["mode_id"]) && $shipment["mode_id"] != "" && $shipment["mode_id"] != 0) ? $shipment["mode_id"] : '';
+                    } else {
+                        $covid19['Section2']['data']['modeOfReceiptSelected']     = '';
+                    }
+                } else {
+                    $covid19['Section2']['data']['responseDate']            = '';
+                    $covid19['Section2']['data']['modeOfReceiptSelected']     = '';
+                }
+                $covid19['Section2']['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
+                $qcArray = array('yes', 'no');
+                $qc = array();
+                foreach ($qcArray as $row) {
+                    $qcResponseArr[] = array('value' => $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
+                }
+                $qc['qcRadio']          = $qcResponseArr;
+                $qc['qcRadioSelected']  = (isset($shipment['qc_done']) && $shipment['qc_done'] == "no" || $shipment['qc_done'] == null || $shipment['qc_done'] == '') ? 'no' : 'yes';
+                $qc['qcDate']   = (isset($shipment['qc_date']) && $shipment['qc_date'] != '' && $shipment['qc_date'] != '0000:00:00' && $shipment['qc_date'] != null && $shipment['qc_date'] != '1969-12-31') ? date('d-M-Y', strtotime($shipment['qc_date'])) : '';
+                $qc['qcDoneBy'] = (isset($shipment['qc_done_by']) && $shipment['qc_done_by'] != '') ? $shipment['qc_done_by'] : '';
+                if ($globalQcAccess != 'yes' || $dm['qc_access'] != 'yes') {
+                    $qc['status']                       = false;
+                    $covid19['Section2']['data']['qcData']  = $qc;
+                } else {
+                    $qc['status']                       = true;
+                    $covid19['Section2']['data']['qcData']  = $qc;
+                }
 
-        //         if ($testAllowed > 1) {
-        //             foreach (range(1, $testAllowed) as $no) {
-        //                 // $default = (isset($testAllowed) && $testAllowed == $no)?"selected":"";
-        //                 $numberOfTestSelect[] = array(
-        //                     'value'     => (int) $no,
-        //                     'show'      => (int) $no,
-        //                     'selected'  => ($shipment['number_of_tests'] == $no) ? 'selected' : ""
-        //                 );
-        //             }
-        //         } else {
-        //             $numberOfTestSelect[] = array(
-        //                 'value'     => (int) 1,
-        //                 'show'      => (int) 1,
-        //                 'selected'  => 'selected'
-        //             );
-        //         }
-        //         $covid19['Section2']['data']['numberOfTestsSelected']        = $shipment['number_of_tests'];
-        //         $covid19['Section2']['data']['numberOfTestsSelect']          = $numberOfTestSelect;
-        //     } else {
-        //         $covid19['Section2']['status'] = false;
-        //     }
-        //     // Section 2 end // Section 3 start
-        //     if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
-        //         $covid19['Section3']['data']['isPtTestNotPerformedRadio'] = 'no';
-        //     } else {
-        //         $covid19['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
-        //     }
-        //     $allNotTestedReason = $schemeService->getNotTestedReasons('covid19);
-        //     $allNotTestedArray = array();
-        //     foreach ($allNotTestedReason as $reason) {
-        //         $allNotTestedArray[] = array(
-        //             'value'     => (string) $reason['ntr_id'],
-        //             'show'      => ucwords($reason['ntr_reason']),
-        //             'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
-        //         );
-        //     }
+                if ($testAllowed > 1) {
+                    foreach (range(1, $testAllowed) as $no) {
+                        // $default = (isset($testAllowed) && $testAllowed == $no)?"selected":"";
+                        $numberOfTestSelect[] = array(
+                            'value'     => (int) $no,
+                            'show'      => (int) $no,
+                            'selected'  => ($shipment['number_of_tests'] == $no) ? 'selected' : ""
+                        );
+                    }
+                } else {
+                    $numberOfTestSelect[] = array(
+                        'value'     => (int) 1,
+                        'show'      => (int) 1,
+                        'selected'  => 'selected'
+                    );
+                }
+                $covid19['Section2']['data']['numberOfTestsSelected']        = $shipment['number_of_tests'];
+                $covid19['Section2']['data']['numberOfTestsSelect']          = $numberOfTestSelect;
+            } else {
+                $covid19['Section2']['status'] = false;
+            }
+            // Section 2 end // Section 3 start
+            if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
+                $covid19['Section3']['data']['isPtTestNotPerformedRadio'] = 'no';
+            } else {
+                $covid19['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
+            }
+            $allNotTestedReason = $schemeService->getNotTestedReasons('covid19');
+            $allNotTestedArray = array();
+            foreach ($allNotTestedReason as $reason) {
+                $allNotTestedArray[] = array(
+                    'value'     => (string) $reason['ntr_id'],
+                    'show'      => ucwords($reason['ntr_reason']),
+                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
+                );
+            }
 
-        //     $covid19['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
-        //     $covid19['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
-        //     $covid19['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
-        //     $covid19['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
-        //     $covid19['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
-        //     $covid19['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
-        //     $covid19['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
-        //     $covid19['Section3']['status']                              = true;
+            $covid19['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
+            $covid19['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
+            $covid19['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
+            $covid19['Section3']['data']['ptNotTestedCommentsText']     = 'Your comments';
+            $covid19['Section3']['data']['ptNotTestedComments']         = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
+            $covid19['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
+            $covid19['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
+            $covid19['Section3']['status']                              = true;
 
-        //     // Section 3 end // Section 4 Start
-        //     $testPlatformArray = array();
-        //     $allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise(true);
-        //     foreach ($allTestTypes as $testtype) {
-        //         if ($testtype['test_type_1'] == '1') {
-        //             $testPlatformArray['testPlatformDropDown']['Test-1']['status'] = true;
-        //             $testPlatformArray['testPlatformDropDown']['Test-1']['data'][] = array(
-        //                 'value'         => (string) $testtype['test_type_id'],
-        //                 'show'          => $testtype['test_type_name'],
-        //                 'selected'      => (isset($allSamples[0]["test_type_1"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_1"]) ? 'selected' : ''
-        //             );
-        //             /* if(isset($allSamples[0]["test_type_1"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_1"]){
-        //                 $testPlatformArray['Test-1']['data'][] = array(
-        //                     'testPlatformDropDown'   => $testtype['test_type_name'],
-        //                     'typeValue'  => (string)$testtype['test_type_id']
-        //                 );
-        //             } */
-        //         }
-        //         if ($testtype['test_type_1'] == '1' && isset($allSamples[0]["test_type_1"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_1"]) {
-        //             $testPlatformArray['typeName'][0] = $testtype['test_type_name'];
-        //         }
+            // Section 3 end // Section 4 Start
+            $testPlatformArray = array();
+            $allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise(true);
+            foreach ($allTestTypes as $testtype) {
+                if ($testtype['test_type_1'] == '1') {
+                    $testPlatformArray['testPlatformDropDown']['Test-1']['status'] = true;
+                    $testPlatformArray['testPlatformDropDown']['Test-1']['data'][] = array(
+                        'value'         => (string) $testtype['test_type_id'],
+                        'show'          => $testtype['test_type_name'],
+                        'selected'      => (isset($allSamples[0]["test_type_1"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_1"]) ? 'selected' : ''
+                    );
+                    /* if(isset($allSamples[0]["test_type_1"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_1"]){
+                        $testPlatformArray['Test-1']['data'][] = array(
+                            'testPlatformDropDown'   => $testtype['test_type_name'],
+                            'typeValue'  => (string)$testtype['test_type_id']
+                        );
+                    } */
+                }
+                if ($testtype['test_type_1'] == '1' && isset($allSamples[0]["test_type_1"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_1"]) {
+                    $testPlatformArray['typeName'][0] = $testtype['test_type_name'];
+                }
 
-        //         if ($testtype['test_type_2'] == '1' && isset($allSamples[0]["test_type_2"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_2"]) {
-        //             $testPlatformArray['typeName'][1] = $testtype['test_type_name'];
-        //         }
-        //         if ($testtype['test_type_3'] == '1' && isset($allSamples[0]["test_type_3"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_3"]) {
-        //             $testPlatformArray['typeName'][2] = $testtype['test_type_name'];
-        //         }
+                if ($testtype['test_type_2'] == '1' && isset($allSamples[0]["test_type_2"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_2"]) {
+                    $testPlatformArray['typeName'][1] = $testtype['test_type_name'];
+                }
+                if ($testtype['test_type_3'] == '1' && isset($allSamples[0]["test_type_3"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_3"]) {
+                    $testPlatformArray['typeName'][2] = $testtype['test_type_name'];
+                }
 
-        //         if ($testtype['test_type_2'] == '1') {
-        //             // if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
-        //             if (!$testTwoOptional) {
-        //                 $testPlatformArray['testPlatformDropDown']['Test-2']['status'] = true;
-        //             } else {
-        //                 $testPlatformArray['testPlatformDropDown']['Test-2']['status'] = false;
-        //             }
-        //             $testPlatformArray['testPlatformDropDown']['Test-2']['data'][] = array(
-        //                 'value'         => (string) $testtype['test_type_id'],
-        //                 'show'          => $testtype['test_type_name'],
-        //                 'selected'      => (isset($allSamples[0]["test_type_2"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_2"]) ? 'selected' : ''
-        //             );
-        //         }
-        //         if (!$testThreeOptional) {
-        //             // if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
-        //             $testPlatformArray['testPlatformDropDown']['Test-3']['status'] = true;
-        //             /* } else {
-        //                 $testPlatformArray['testPlatformDropDown']['Test-3']['status'] = false;
-        //             } */
-        //         } else {
-        //             $testPlatformArray['testPlatformDropDown']['Test-3']['status'] = false;
-        //         }
-        //         if ($testtype['test_type_3'] == '1') {
-        //             $testPlatformArray['testPlatformDropDown']['Test-3']['data'][] = array(
-        //                 'value'         => (string) $testtype['test_type_id'],
-        //                 'show'          => $testtype['test_type_name'],
-        //                 'selected'      => (isset($allSamples[0]["test_type_3"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_3"]) ? 'selected' : ''
-        //             );
-        //         }
-        //     }
-        //     if (!isset($testPlatformArray['typeName'][0])) {
-        //         $testPlatformArray['typeName'][0] = '';
-        //     }
-        //     if (!isset($testPlatformArray['typeName'][1])) {
-        //         $testPlatformArray['typeName'][1] = '';
-        //     }
-        //     if (!isset($testPlatformArray['typeName'][2])) {
-        //         $testPlatformArray['typeName'][2] = '';
-        //     }
+                if ($testtype['test_type_2'] == '1') {
+                    // if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
+                    if (!$testTwoOptional) {
+                        $testPlatformArray['testPlatformDropDown']['Test-2']['status'] = true;
+                    } else {
+                        $testPlatformArray['testPlatformDropDown']['Test-2']['status'] = false;
+                    }
+                    $testPlatformArray['testPlatformDropDown']['Test-2']['data'][] = array(
+                        'value'         => (string) $testtype['test_type_id'],
+                        'show'          => $testtype['test_type_name'],
+                        'selected'      => (isset($allSamples[0]["test_type_2"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_2"]) ? 'selected' : ''
+                    );
+                }
+                if (!$testThreeOptional) {
+                    // if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
+                    $testPlatformArray['testPlatformDropDown']['Test-3']['status'] = true;
+                    /* } else {
+                        $testPlatformArray['testPlatformDropDown']['Test-3']['status'] = false;
+                    } */
+                } else {
+                    $testPlatformArray['testPlatformDropDown']['Test-3']['status'] = false;
+                }
+                if ($testtype['test_type_3'] == '1') {
+                    $testPlatformArray['testPlatformDropDown']['Test-3']['data'][] = array(
+                        'value'         => (string) $testtype['test_type_id'],
+                        'show'          => $testtype['test_type_name'],
+                        'selected'      => (isset($allSamples[0]["test_type_3"]) && $testtype['test_type_id'] == $allSamples[0]["test_type_3"]) ? 'selected' : ''
+                    );
+                }
+            }
+            if (!isset($testPlatformArray['typeName'][0])) {
+                $testPlatformArray['typeName'][0] = '';
+            }
+            if (!isset($testPlatformArray['typeName'][1])) {
+                $testPlatformArray['typeName'][1] = '';
+            }
+            if (!isset($testPlatformArray['typeName'][2])) {
+                $testPlatformArray['typeName'][2] = '';
+            }
 
-        //     $testPlatformArray['typeText'] = array('Test-1', 'Test-2', 'Test-3');
-        //     if (isset($allSamples) && count($allSamples) > 0) {
-        //         $covid19['Section4']['status'] = true;
-        //         $testPlatformArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] != "0000-00-00" && $allSamples[0]["exp_date_1"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_1"])) : '';
-        //         $testPlatformArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] != "0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_2"])) : '';
-        //         $testPlatformArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] != "0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_3"])) : '';
+            $testPlatformArray['typeText'] = array('Test-1', 'Test-2', 'Test-3');
+            if (isset($allSamples) && count($allSamples) > 0) {
+                $covid19['Section4']['status'] = true;
+                $testPlatformArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] != "0000-00-00" && $allSamples[0]["exp_date_1"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_1"])) : '';
+                $testPlatformArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] != "0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_2"])) : '';
+                $testPlatformArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] != "0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_3"])) : '';
 
-        //         $testPlatformArray['typeValue'][0] = (isset($allSamples[0]["test_type_1"]) && trim($allSamples[0]["test_type_1"]) != "") ? $allSamples[0]["test_type_1"] : '';
-        //         $testPlatformArray['typeValue'][1] = (isset($allSamples[0]["test_type_2"]) && trim($allSamples[0]["test_type_2"]) != "") ? $allSamples[0]["test_type_2"] : '';
-        //         $testPlatformArray['typeValue'][2] = (isset($allSamples[0]["test_type_3"]) && trim($allSamples[0]["test_type_3"]) != "") ? $allSamples[0]["test_type_3"] : '';
+                $testPlatformArray['typeValue'][0] = (isset($allSamples[0]["test_type_1"]) && trim($allSamples[0]["test_type_1"]) != "") ? $allSamples[0]["test_type_1"] : '';
+                $testPlatformArray['typeValue'][1] = (isset($allSamples[0]["test_type_2"]) && trim($allSamples[0]["test_type_2"]) != "") ? $allSamples[0]["test_type_2"] : '';
+                $testPlatformArray['typeValue'][2] = (isset($allSamples[0]["test_type_3"]) && trim($allSamples[0]["test_type_3"]) != "") ? $allSamples[0]["test_type_3"] : '';
 
-        //         $testPlatformArray['lot'][0]      = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "") ? $allSamples[0]["lot_no_1"] : '';
-        //         $testPlatformArray['lot'][1]      = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "") ? $allSamples[0]["lot_no_2"] : '';
-        //         $testPlatformArray['lot'][2]      = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "") ? $allSamples[0]["lot_no_3"] : '';
+                $testPlatformArray['lot'][0]      = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "") ? $allSamples[0]["lot_no_1"] : '';
+                $testPlatformArray['lot'][1]      = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "") ? $allSamples[0]["lot_no_2"] : '';
+                $testPlatformArray['lot'][2]      = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "") ? $allSamples[0]["lot_no_3"] : '';
 
-        //         $testPlatformArray['typeOther']   = array('', '', '');
-        //         if ($allSamples[0]["test_type_1"] == '') {
-        //             $testPlatformArray['typeName'][0] = '';
-        //         }
-        //         if ($allSamples[0]["test_type_2"] == '') {
-        //             $testPlatformArray['typeName'][1] = '';
-        //         }
-        //         if ($allSamples[0]["test_type_3"] == '') {
-        //             $testPlatformArray['typeName'][2] = '';
-        //         }
+                $testPlatformArray['typeOther']   = array('', '', '');
+                if ($allSamples[0]["test_type_1"] == '') {
+                    $testPlatformArray['typeName'][0] = '';
+                }
+                if ($allSamples[0]["test_type_2"] == '') {
+                    $testPlatformArray['typeName'][1] = '';
+                }
+                if ($allSamples[0]["test_type_3"] == '') {
+                    $testPlatformArray['typeName'][2] = '';
+                }
 
-        //         $testPlatformArray['testPlatformDropDown']['Test-1']['data'][]    = array(
-        //             'value'         => 'other',
-        //             'show'          => 'Other',
-        //             'selected'      => (isset($allSamples[0]["test_type_1"]) && 'other' == $allSamples[0]["test_type_1"]) ? 'selected' : ''
-        //         );
-        //         $testPlatformArray['testPlatformDropDown']['Test-2']['data'][] = array(
-        //             'value'         => 'other',
-        //             'show'          => 'Other',
-        //             'selected'      => (isset($allSamples[0]["test_type_2"]) && 'other' == $allSamples[0]["test_type_2"]) ? 'selected' : ''
-        //         );
-        //         $testPlatformArray['testPlatformDropDown']['Test-3']['data'][] = array(
-        //             'value'         => 'other',
-        //             'show'          => 'Other',
-        //             'selected'      => (isset($allSamples[0]["test_type_3"]) && 'other' == $allSamples[0]["test_type_3"]) ? 'selected' : ''
-        //         );
-        //         $covid19['Section4']['data']    = $testPlatformArray;
-        //     } else {
-        //         $covid19['Section4']['status']  = false;
-        //     }
-        //     // Zend_Debug::dump($allSamples);die;
-        //     // Section 4 end // Section 5 Start
-        //     $covid19PossibleResults = $schemeService->getPossibleResults('covid19');
-        //     $covid19PossibleResponse['code'] =  array();
-        //     $covid19PossibleResponse['result'] = array();
-        //     foreach ($covid19PossibleResults as $row) {
-        //         $covid19PossibleResponse['code'][$row['id']] = $row['result_code'];
-        //         $covid19PossibleResponse['result'][$row['id']] = $row['response'];
-        //     }
+                $testPlatformArray['testPlatformDropDown']['Test-1']['data'][]    = array(
+                    'value'         => 'other',
+                    'show'          => 'Other',
+                    'selected'      => (isset($allSamples[0]["test_type_1"]) && 'other' == $allSamples[0]["test_type_1"]) ? 'selected' : ''
+                );
+                $testPlatformArray['testPlatformDropDown']['Test-2']['data'][] = array(
+                    'value'         => 'other',
+                    'show'          => 'Other',
+                    'selected'      => (isset($allSamples[0]["test_type_2"]) && 'other' == $allSamples[0]["test_type_2"]) ? 'selected' : ''
+                );
+                $testPlatformArray['testPlatformDropDown']['Test-3']['data'][] = array(
+                    'value'         => 'other',
+                    'show'          => 'Other',
+                    'selected'      => (isset($allSamples[0]["test_type_3"]) && 'other' == $allSamples[0]["test_type_3"]) ? 'selected' : ''
+                );
+                $covid19['Section4']['data']    = $testPlatformArray;
+            } else {
+                $covid19['Section4']['status']  = false;
+            }
+            // Zend_Debug::dump($allSamples);die;
+            // Section 4 end // Section 5 Start
+            $covid19PossibleResults = $schemeService->getPossibleResults('covid19');
+            $covid19PossibleResponse['code'] =  array();
+            $covid19PossibleResponse['result'] = array();
+            foreach ($covid19PossibleResults as $row) {
+                $covid19PossibleResponse['code'][$row['id']] = $row['result_code'];
+                $covid19PossibleResponse['result'][$row['id']] = $row['response'];
+            }
 
-        //     $allSamplesResult = array();
-        //     foreach ($allSamples as $sample) {
-        //         $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
-        //         $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
+            $allSamplesResult = array();
+            foreach ($allSamples as $sample) {
+                $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
+                $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
 
-        //         $responseCode1 = (isset($covid19PossibleResponse['code'][$sample['test_result_1']]) && $covid19PossibleResponse['code'][$sample['test_result_1']] != '' && $covid19PossibleResponse['code'][$sample['test_result_1']] != null) ? $covid19PossibleResponse['code'][$sample['test_result_1']] : 'X';
-        //         $responseCode2 = (isset($covid19PossibleResponse['code'][$sample['test_result_2']]) && $covid19PossibleResponse['code'][$sample['test_result_2']] != '' && $covid19PossibleResponse['code'][$sample['test_result_2']] != null) ? $covid19PossibleResponse['code'][$sample['test_result_2']] : 'X';
-        //         $responseCode3 = (isset($covid19PossibleResponse['code'][$sample['test_result_3']]) && $covid19PossibleResponse['code'][$sample['test_result_3']] != '' && $covid19PossibleResponse['code'][$sample['test_result_3']] != null) ? $covid19PossibleResponse['code'][$sample['test_result_3']] : 'X';
-        //         $finalResponseCode = (isset($covid19PossibleResponse['code'][$sample['reported_result']]) && $covid19PossibleResponse['code'][$sample['reported_result']] != '' && $covid19PossibleResponse['code'][$sample['reported_result']] != null) ? $covid19PossibleResponse['code'][$sample['reported_result']] : 'X';
+                $responseCode1 = (isset($covid19PossibleResponse['code'][$sample['test_result_1']]) && $covid19PossibleResponse['code'][$sample['test_result_1']] != '' && $covid19PossibleResponse['code'][$sample['test_result_1']] != null) ? $covid19PossibleResponse['code'][$sample['test_result_1']] : 'X';
+                $responseCode2 = (isset($covid19PossibleResponse['code'][$sample['test_result_2']]) && $covid19PossibleResponse['code'][$sample['test_result_2']] != '' && $covid19PossibleResponse['code'][$sample['test_result_2']] != null) ? $covid19PossibleResponse['code'][$sample['test_result_2']] : 'X';
+                $responseCode3 = (isset($covid19PossibleResponse['code'][$sample['test_result_3']]) && $covid19PossibleResponse['code'][$sample['test_result_3']] != '' && $covid19PossibleResponse['code'][$sample['test_result_3']] != null) ? $covid19PossibleResponse['code'][$sample['test_result_3']] : 'X';
+                $finalResponseCode = (isset($covid19PossibleResponse['code'][$sample['reported_result']]) && $covid19PossibleResponse['code'][$sample['reported_result']] != '' && $covid19PossibleResponse['code'][$sample['reported_result']] != null) ? $covid19PossibleResponse['code'][$sample['reported_result']] : 'X';
 
-        //         $responseResult1 = (isset($covid19PossibleResponse['result'][$sample['test_result_1']]) && $covid19PossibleResponse['result'][$sample['test_result_1']] != '' && $covid19PossibleResponse['result'][$sample['test_result_1']] != null) ? $covid19PossibleResponse['result'][$sample['test_result_1']] : '';
-        //         $responseResult2 = (isset($covid19PossibleResponse['result'][$sample['test_result_2']]) && $covid19PossibleResponse['result'][$sample['test_result_2']] != '' && $covid19PossibleResponse['result'][$sample['test_result_2']] != null) ? $covid19PossibleResponse['result'][$sample['test_result_2']] : '';
-        //         $responseResult3 = (isset($covid19PossibleResponse['result'][$sample['test_result_3']]) && $covid19PossibleResponse['result'][$sample['test_result_3']] != '' && $covid19PossibleResponse['result'][$sample['test_result_3']] != null) ? $covid19PossibleResponse['result'][$sample['test_result_3']] : '';
-        //         $finalResponseResult = (isset($covid19PossibleResponse['result'][$sample['reported_result']]) && $covid19PossibleResponse['result'][$sample['reported_result']] != '' && $covid19PossibleResponse['result'][$sample['reported_result']] != null) ? $covid19PossibleResponse['result'][$sample['reported_result']] : '';
+                $responseResult1 = (isset($covid19PossibleResponse['result'][$sample['test_result_1']]) && $covid19PossibleResponse['result'][$sample['test_result_1']] != '' && $covid19PossibleResponse['result'][$sample['test_result_1']] != null) ? $covid19PossibleResponse['result'][$sample['test_result_1']] : '';
+                $responseResult2 = (isset($covid19PossibleResponse['result'][$sample['test_result_2']]) && $covid19PossibleResponse['result'][$sample['test_result_2']] != '' && $covid19PossibleResponse['result'][$sample['test_result_2']] != null) ? $covid19PossibleResponse['result'][$sample['test_result_2']] : '';
+                $responseResult3 = (isset($covid19PossibleResponse['result'][$sample['test_result_3']]) && $covid19PossibleResponse['result'][$sample['test_result_3']] != '' && $covid19PossibleResponse['result'][$sample['test_result_3']] != null) ? $covid19PossibleResponse['result'][$sample['test_result_3']] : '';
+                $finalResponseResult = (isset($covid19PossibleResponse['result'][$sample['reported_result']]) && $covid19PossibleResponse['result'][$sample['reported_result']] != '' && $covid19PossibleResponse['result'][$sample['reported_result']] != null) ? $covid19PossibleResponse['result'][$sample['reported_result']] : '';
 
-        //         $allSamplesResult['samples']['result1'][]       = array(
-        //             'resultCode'    => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? $responseCode1 : 'X',
-        //             'selected'      => (isset($sample['test_result_1']) && $sample['test_result_1'] != '') ? 'selected' : '',
-        //             'show'          => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? $responseResult1 : '',
-        //             'value'         => (isset($sample['test_result_1']) && $sample['test_result_1'] != '') ? $sample['test_result_1'] : '',
-        //         );
-        //         $allSamplesResult['samples']['result2'][]       = array(
-        //             'resultCode'    => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? $responseCode2 : 'X',
-        //             'selected'      => (isset($sample['test_result_2']) && $sample['test_result_2'] != '') ? 'selected' : '',
-        //             'show'          => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? $responseResult2 : '',
-        //             'value'         => (isset($sample['test_result_2']) && $sample['test_result_2'] != '') ? $sample['test_result_2'] : '',
-        //         );
-        //         $allSamplesResult['samples']['result3'][]       = array(
-        //             'resultCode'    => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $responseCode3 : 'X',
-        //             'selected'      => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? 'selected' : '',
-        //             'show'          => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $responseResult3 : '',
-        //             'value'         => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? $sample['test_result_3'] : '',
-        //         );
-        //         $allSamplesResult['samples']['finalResult'][]       = array(
-        //             'resultCode'    => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $finalResponseCode : 'X',
-        //             'selected'      => (isset($sample['reported_result']) && $sample['reported_result'] != '') ? 'selected' : '',
-        //             'show'          => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $finalResponseResult : '',
-        //             'value'         => (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '',
-        //         );
-        //         $allSamplesResult['samples']['result1Code'][]       = (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? $responseCode1 : 'X';
-        //         $allSamplesResult['samples']['result2Code'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? $responseCode2 : 'X';
-        //         $allSamplesResult['samples']['result3Code'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $responseCode3 : 'X';
-        //         $allSamplesResult['samples']['finalResultCode'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $finalResponseCode : 'X';
-        //         $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1) ? true : false;
-        //         foreach (range(1, 3) as $row) {
-        //             $possibleResults = array();
-        //             if ($row == 3) {
-        //                 foreach ($covid19PossibleResults as $pr) {
-        //                     if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
-        //                         $possibleResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['test_result_3'] == $pr['id']) ? 'selected' : '');
-        //                         // if($sample['test_result_3'] == $pr['id']){
-        //                         //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-3','resultValue'=>(string)$sample['test_result_3']);
-        //                         //     $sample3Select                                              = $sample['test_result_3'];
-        //                         // }
-        //                     }
-        //                 }
-        //                 if (!$testThreeOptional) {
-        //                     $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status'] = true;
-        //                 } else {
-        //                     $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status'] = false;
-        //                 }
-        //                 $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = $possibleResults;
-        //                 if (isset($sample['test_result_3']) && $sample['test_result_3'] != "") {
-        //                     $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_3'];
-        //                 } else {
-        //                     $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
-        //                 }
-        //             } else {
-        //                 foreach ($covid19PossibleResults as $pr) {
-        //                     if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
-        //                         $possibleResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => (($sample['test_result_1'] == $pr['id'] && $row == 1) || ($sample['test_result_2'] == $pr['id'] && $row == 2)) ? 'selected' : '');
-        //                         // if($sample['test_result_1'] == $pr['id'] && $row == 1){
-        //                         //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-1','resultValue'=>$sample['test_result_1']);
-        //                         //     $sample1Select                                              = $sample['test_result_1'];
-        //                         // }else if($sample['test_result_2'] == $pr['id'] && $row == 2){
-        //                         //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-2','resultValue'=>(string)$sample['test_result_2']);
-        //                         //     $sample2Select                                              = $sample['test_result_2'];
-        //                         // }
-        //                     }
-        //                 }
-        //                 if ((!$testTwoOptional && $row == 2) || $row == 1) {
-        //                     $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = true;
-        //                 } else if ($row == 2) {
-        //                     $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = false;
-        //                 }
-        //                 $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = $possibleResults;
+                $allSamplesResult['samples']['result1'][]       = array(
+                    'resultCode'    => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? $responseCode1 : 'X',
+                    'selected'      => (isset($sample['test_result_1']) && $sample['test_result_1'] != '') ? 'selected' : '',
+                    'show'          => (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? $responseResult1 : '',
+                    'value'         => (isset($sample['test_result_1']) && $sample['test_result_1'] != '') ? $sample['test_result_1'] : '',
+                );
+                $allSamplesResult['samples']['result2'][]       = array(
+                    'resultCode'    => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? $responseCode2 : 'X',
+                    'selected'      => (isset($sample['test_result_2']) && $sample['test_result_2'] != '') ? 'selected' : '',
+                    'show'          => (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? $responseResult2 : '',
+                    'value'         => (isset($sample['test_result_2']) && $sample['test_result_2'] != '') ? $sample['test_result_2'] : '',
+                );
+                $allSamplesResult['samples']['result3'][]       = array(
+                    'resultCode'    => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $responseCode3 : 'X',
+                    'selected'      => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? 'selected' : '',
+                    'show'          => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $responseResult3 : '',
+                    'value'         => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? $sample['test_result_3'] : '',
+                );
+                $allSamplesResult['samples']['finalResult'][]       = array(
+                    'resultCode'    => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $finalResponseCode : 'X',
+                    'selected'      => (isset($sample['reported_result']) && $sample['reported_result'] != '') ? 'selected' : '',
+                    'show'          => (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $finalResponseResult : '',
+                    'value'         => (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '',
+                );
+                $allSamplesResult['samples']['result1Code'][]       = (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? $responseCode1 : 'X';
+                $allSamplesResult['samples']['result2Code'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? $responseCode2 : 'X';
+                $allSamplesResult['samples']['result3Code'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $responseCode3 : 'X';
+                $allSamplesResult['samples']['finalResultCode'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $finalResponseCode : 'X';
+                $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1) ? true : false;
+                foreach (range(1, 3) as $row) {
+                    $possibleResults = array();
+                    if ($row == 3) {
+                        foreach ($covid19PossibleResults as $pr) {
+                            if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
+                                $possibleResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['test_result_3'] == $pr['id']) ? 'selected' : '');
+                                // if($sample['test_result_3'] == $pr['id']){
+                                //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-3','resultValue'=>(string)$sample['test_result_3']);
+                                //     $sample3Select                                              = $sample['test_result_3'];
+                                // }
+                            }
+                        }
+                        if (!$testThreeOptional) {
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status'] = true;
+                        } else {
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status'] = false;
+                        }
+                        $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = $possibleResults;
+                        if (isset($sample['test_result_3']) && $sample['test_result_3'] != "") {
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_3'];
+                        } else {
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
+                        }
+                    } else {
+                        foreach ($covid19PossibleResults as $pr) {
+                            if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
+                                $possibleResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => (($sample['test_result_1'] == $pr['id'] && $row == 1) || ($sample['test_result_2'] == $pr['id'] && $row == 2)) ? 'selected' : '');
+                                // if($sample['test_result_1'] == $pr['id'] && $row == 1){
+                                //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-1','resultValue'=>$sample['test_result_1']);
+                                //     $sample1Select                                              = $sample['test_result_1'];
+                                // }else if($sample['test_result_2'] == $pr['id'] && $row == 2){
+                                //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-2','resultValue'=>(string)$sample['test_result_2']);
+                                //     $sample2Select                                              = $sample['test_result_2'];
+                                // }
+                            }
+                        }
+                        if ((!$testTwoOptional && $row == 2) || $row == 1) {
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = true;
+                        } else if ($row == 2) {
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = false;
+                        }
+                        $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = $possibleResults;
 
-        //                 if (isset($sample['test_result_1']) && $sample['test_result_1'] != "" && $row == 1) {
-        //                     $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_1'];
-        //                 } else if (isset($sample['test_result_2']) && $sample['test_result_2'] != "" && $row == 2) {
-        //                     $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_2'];
-        //                 } else {
-        //                     if ($row == 1) {
-        //                         $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
-        //                     } else if ($row == 2) {
-        //                         $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //         $possibleFinalResults = array();
-        //         foreach ($covid19PossibleResults as $pr) {
-        //             if ($pr['scheme_sub_group'] == 'COVID19_FINAL') {
-        //                 $possibleFinalResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['reported_result'] == $pr['id']) ? 'selected' : '');
-        //                 /* if($sample['reported_result'] == $pr['id']){
-        //                     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Final-Result','resultValue'=>(string)$sample['reported_result']);
-        //                     $sampleFinalSelect                                          = $sample['reported_result'];
-        //                 } */
-        //             }
-        //         }
+                        if (isset($sample['test_result_1']) && $sample['test_result_1'] != "" && $row == 1) {
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_1'];
+                        } else if (isset($sample['test_result_2']) && $sample['test_result_2'] != "" && $row == 2) {
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_2'];
+                        } else {
+                            if ($row == 1) {
+                                $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
+                            } else if ($row == 2) {
+                                $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
+                            }
+                        }
+                    }
+                }
+                $possibleFinalResults = array();
+                foreach ($covid19PossibleResults as $pr) {
+                    if ($pr['scheme_sub_group'] == 'COVID19_FINAL') {
+                        $possibleFinalResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['reported_result'] == $pr['id']) ? 'selected' : '');
+                        /* if($sample['reported_result'] == $pr['id']){
+                            $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Final-Result','resultValue'=>(string)$sample['reported_result']);
+                            $sampleFinalSelect                                          = $sample['reported_result'];
+                        } */
+                    }
+                }
 
-        //         $allSamplesResult['resultsText'] = array('Result-1', 'Result-2', 'Result-3', 'Final-Result');
+                $allSamplesResult['resultsText'] = array('Result-1', 'Result-2', 'Result-3', 'Final-Result');
 
-        //         if (!$testThreeOptional) {
-        //             $allSamplesResult['resultStatus'] = array(true, true, true, true);
-        //         } else if (!$testTwoOptional) {
-        //             $allSamplesResult['resultStatus'] = array(true, false, false, true);
-        //         } else {
-        //             $allSamplesResult['resultStatus'] = array(true, true, false, true);
-        //         }
-        //         /* if ((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'yes')) {
-        //             $allSamplesResult['resultStatus'] = array(true, false, false, true);
-        //         } */
-        //         $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['status']    = true;
-        //         $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['data']      = $possibleFinalResults;
-        //         $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['value']     = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
-        //     }
-        //     if ((isset($allSamples) && count($allSamples) > 0) && (isset($covid19PossibleResults) && count($covid19PossibleResults) > 0)) {
-        //         $covid19['Section5']['status']  = true;
-        //     } else {
-        //         $covid19['Section5']['status']  = false;
-        //     }
-        //     $covid19['Section5']['data']        = $allSamplesResult;
-        //     // Section 5 End // Section 6 Start
-        //     $reviewArray = array();
-        //     $commentArray = array('yes', 'no');
-        //     $revieArr = array();
-        //     foreach ($commentArray as $row) {
-        //         $revieArr[] = array('value' => $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
-        //     }
-        //     $reviewArray['supervisorReview']        = $revieArr;
-        //     $reviewArray['supervisorReviewSelected'] = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '') ? $shipment['supervisor_approval'] : '';
-        //     $reviewArray['approvalLabel']           = 'Supervisor Name';
-        //     $reviewArray['approvalInputText']       = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '') ? $shipment['participant_supervisor'] : '';
-        //     $reviewArray['comments']                = (isset($shipment['user_comment']) && $shipment['user_comment'] != '') ? $shipment['user_comment'] : '';
-        //     $covid19['Section6']['status']              = true;
-        //     $covid19['Section6']['data']                = $reviewArray;
-        //     // Section 5 End
-        //     $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-        //     $customField1 = $globalConfigDb->getValue('custom_field_1');
-        //     $customField2 = $globalConfigDb->getValue('custom_field_2');
-        //     $haveCustom = $globalConfigDb->getValue('custom_field_needed');
-        //     if (isset($haveCustom) && $haveCustom != 'no') {
-        //         $covid19['customFields']['status'] = true;
-        //         if (isset($customField1) && trim($customField1) != "") {
-        //             $covid19['customFields']['data']['customField1Text'] = $customField1;
-        //             $covid19['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "") ? $shipment['custom_field_1'] : '';
-        //         }
+                if (!$testThreeOptional) {
+                    $allSamplesResult['resultStatus'] = array(true, true, true, true);
+                } else if (!$testTwoOptional) {
+                    $allSamplesResult['resultStatus'] = array(true, false, false, true);
+                } else {
+                    $allSamplesResult['resultStatus'] = array(true, true, false, true);
+                }
+                /* if ((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'yes')) {
+                    $allSamplesResult['resultStatus'] = array(true, false, false, true);
+                } */
+                $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['status']    = true;
+                $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['data']      = $possibleFinalResults;
+                $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['value']     = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
+            }
+            if ((isset($allSamples) && count($allSamples) > 0) && (isset($covid19PossibleResults) && count($covid19PossibleResults) > 0)) {
+                $covid19['Section5']['status']  = true;
+            } else {
+                $covid19['Section5']['status']  = false;
+            }
+            $covid19['Section5']['data']        = $allSamplesResult;
+            // Section 5 End // Section 6 Start
+            $reviewArray = array();
+            $commentArray = array('yes', 'no');
+            $revieArr = array();
+            foreach ($commentArray as $row) {
+                $revieArr[] = array('value' => $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
+            }
+            $reviewArray['supervisorReview']        = $revieArr;
+            $reviewArray['supervisorReviewSelected'] = (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] != '') ? $shipment['supervisor_approval'] : '';
+            $reviewArray['approvalLabel']           = 'Supervisor Name';
+            $reviewArray['approvalInputText']       = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '') ? $shipment['participant_supervisor'] : '';
+            $reviewArray['comments']                = (isset($shipment['user_comment']) && $shipment['user_comment'] != '') ? $shipment['user_comment'] : '';
+            $covid19['Section6']['status']              = true;
+            $covid19['Section6']['data']                = $reviewArray;
+            // Section 5 End
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+            $customField1 = $globalConfigDb->getValue('custom_field_1');
+            $customField2 = $globalConfigDb->getValue('custom_field_2');
+            $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+            if (isset($haveCustom) && $haveCustom != 'no') {
+                $covid19['customFields']['status'] = true;
+                if (isset($customField1) && trim($customField1) != "") {
+                    $covid19['customFields']['data']['customField1Text'] = $customField1;
+                    $covid19['customFields']['data']['customField1Val'] = (isset($shipment['custom_field_1']) && $shipment['custom_field_1'] != "") ? $shipment['custom_field_1'] : '';
+                }
 
-        //         if (isset($customField2) && trim($customField2) != "") {
-        //             $covid19['customFields']['data']['customField2Text'] = $customField2;
-        //             $covid19['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "") ? $shipment['custom_field_2'] : '';
-        //         }
-        //     } else {
-        //         $covid19['customFields']['status'] = false;
-        //     }
-        //     return $covid19;
-        // }
+                if (isset($customField2) && trim($customField2) != "") {
+                    $covid19['customFields']['data']['customField2Text'] = $customField2;
+                    $covid19['customFields']['data']['customField2Val'] = (isset($shipment['custom_field_2']) && $shipment['custom_field_2'] != "") ? $shipment['custom_field_2'] : '';
+                }
+            } else {
+                $covid19['customFields']['status'] = false;
+            }
+            return $covid19;
+        }
     }
 
     public function fetchIndividualReportAPI($params)
