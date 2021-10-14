@@ -3055,12 +3055,25 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $vl['access'] = $reportAccess;
             // Section 1 start
+            $labDirectorName = (isset($this->shipment['lab_director_name']) && $this->shipment['lab_director_name'] != "") ? $this->shipment['lab_director_name'] : $this->participant['lab_director_name'];
+            $labDirectorEmail = (isset($this->shipment['lab_director_email']) && $this->shipment['lab_director_email'] != "") ? $this->shipment['lab_director_email'] : $this->participant['lab_director_email'];
+            $contactPersonName = (isset($this->shipment['contact_person_name']) && $this->shipment['contact_person_name'] != "") ? $this->shipment['contact_person_name'] : $this->participant['contact_person_name'];
+            $contactPersonEmail = (isset($this->shipment['contact_person_email']) && $this->shipment['contact_person_email'] != "") ? $this->shipment['contact_person_email'] : $this->participant['contact_person_email'];
+            $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) && $this->shipment['contact_person_telephone'] != "") ? $this->shipment['contact_person_telephone'] : $this->participant['contact_person_telephone'];
+
             $section1 = array(
-                'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
-                'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
-                'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '') ? $participant['affiliation'] : '',
-                'phone'             => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
-                'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : ''
+                'participantName'           => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
+                'participantCode'           => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
+                'affiliation'               => (isset($participant['affiliation']) && $participant['affiliation'] != '') ? $participant['affiliation'] : '',
+                'phone'                     => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
+                'mobile'                    => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : '',
+                'laboratoryName'            => (isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] . $participant['last_name'] : '',
+                'laboratoryId'              => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
+                'labDirectorName'           => (isset($labDirectorName) && $labDirectorName != '') ? $labDirectorName : '',
+                'labDirectorEmail'          => (isset($labDirectorEmail) && $labDirectorEmail != '') ? $labDirectorEmail : '',
+                'contactPersonName'         => (isset($contactPersonName) && $contactPersonName != '') ? $contactPersonName : '',
+                'contactPersonEmail'        => (isset($contactPersonEmail) && $contactPersonEmail != '') ? $contactPersonEmail : '',
+                'contactPersonTelephone'    => (isset($contactPersonTelephone) && $contactPersonTelephone != '') ? $contactPersonTelephone : '',
             );
             if (isset($participant) && count($participant) > 0) {
                 $vl['Section1']['status']   = true;
@@ -3171,9 +3184,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // return $allSamples;
             // Zend_Debug::dump($allSamples);die;
             foreach ($allSamples as $key => $sample) {
-                /* if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
+                if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
-                } */
+                }
                 $vlArray = array('yes', 'no');
                 $vlResult = (isset($sample['reported_viral_load']) && $sample['reported_viral_load'] != "") ? $sample['reported_viral_load'] : '';
                 if ($sample['is_tnd'] == 'yes') {
@@ -3257,12 +3270,24 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $eid['access'] = $reportAccess;
             // Section 1 start
+            $labDirectorName = (isset($shipment['lab_director_name']) && $shipment['lab_director_name'] != "") ? $shipment['lab_director_name'] : $participant['lab_director_name'];
+            $labDirectorEmail = (isset($shipment['lab_director_email']) && $shipment['lab_director_email'] != "") ? $shipment['lab_director_email'] : $participant['lab_director_email'];
+            $contactPersonName = (isset($shipment['contact_person_name']) && $shipment['contact_person_name'] != "") ? $shipment['contact_person_name'] : $participant['contact_person_name'];
+            $contactPersonEmail = (isset($shipment['contact_person_email']) && $shipment['contact_person_email'] != "") ? $shipment['contact_person_email'] : $participant['contact_person_email'];
+            $contactPersonTelephone = (isset($shipment['contact_person_telephone']) && $shipment['contact_person_telephone'] != "") ? $shipment['contact_person_telephone'] : $participant['contact_person_telephone'];
             $section1 = array(
-                'participantName'   => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
-                'participantCode'   => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
-                'affiliation'       => (isset($participant['affiliation']) && $participant['affiliation'] != '') ? $participant['affiliation'] : '',
-                'phone'             => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
-                'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : ''
+                'participantName'           => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
+                'participantCode'           => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
+                'affiliation'               => (isset($participant['affiliation']) && $participant['affiliation'] != '') ? $participant['affiliation'] : '',
+                'phone'                     => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
+                'mobile'                    => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : '',
+                'laboratoryName'            => (isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] . $participant['last_name'] : '',
+                'laboratoryId'              => (isset($participant['unique_identifier']) && $participant['unique_identifier'] != '') ? $participant['unique_identifier'] : '',
+                'labDirectorName'           => (isset($labDirectorName) && $labDirectorName != '') ? $labDirectorName : '',
+                'labDirectorEmail'          => (isset($labDirectorEmail) && $labDirectorEmail != '') ? $labDirectorEmail : '',
+                'contactPersonName'         => (isset($contactPersonName) && $contactPersonName != '') ? $contactPersonName : '',
+                'contactPersonEmail'        => (isset($contactPersonEmail) && $contactPersonEmail != '') ? $contactPersonEmail : '',
+                'contactPersonTelephone'    => (isset($contactPersonTelephone) && $contactPersonTelephone != '') ? $contactPersonTelephone : '',
             );
             if (isset($participant) && count($participant) > 0) {
                 $eid['Section1']['status'] = true;
@@ -4404,7 +4429,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $data['qc_created_on'] = '';
                     }
                 }
-                // Zend_Debug::dump($data);die;
+                // Zend_Debug::dump($params['mapId']);
+                // die;
 
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
@@ -4418,7 +4444,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $data['custom_field_2'] = $params['vlData']->customFields->data->customField2Val;
                     // }
                 }
-
+                if (isset($params['vlData']->Section1->data->labDirectorName) && $params['vlData']->Section1->data->labDirectorName != "") {
+                    $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+                    /* Shipment Participant table updation */
+                    $sectionData = array(
+                        'lab_director_name'         => $params['vlData']->Section1->data->labDirectorName,
+                        'lab_director_email'        => $params['vlData']->Section1->data->labDirectorEmail,
+                        'contact_person_name'       => $params['vlData']->Section1->data->contactPersonName,
+                        'contact_person_email'      => $params['vlData']->Section1->data->contactPersonEmail,
+                        'contact_person_telephone'  => $params['vlData']->Section1->data->contactPersonTelephone
+                    );
+                    $dbAdapter->update('shipment_participant_map', $sectionData, 'map_id = ' . $params['mapId']);
+                    /* Participant table updation */
+                    $dbAdapter->update('participant', $sectionData, 'participant_id = ' . $params['participantId']);
+                }
                 $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data, $dm, $params);
 
                 $eidResponseDb = new Application_Model_DbTable_ResponseVl();
@@ -4569,6 +4608,21 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     // if (isset($params['eidData']->customFields->data->customField2Val) && trim($params['eidData']->customFields->data->customField2Val) != "") {
                     $data['custom_field_2'] = $params['eidData']->customFields->data->customField2Val;
                     // }
+                }
+
+                if (isset($params['eidData']->Section1->data->labDirectorName) && $params['eidData']->Section1->data->labDirectorName != "") {
+                    $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+                    /* Shipment Participant table updation */
+                    $sectionData = array(
+                        'lab_director_name'         => $params['eidData']->Section1->data->labDirectorName,
+                        'lab_director_email'        => $params['eidData']->Section1->data->labDirectorEmail,
+                        'contact_person_name'       => $params['eidData']->Section1->data->contactPersonName,
+                        'contact_person_email'      => $params['eidData']->Section1->data->contactPersonEmail,
+                        'contact_person_telephone'  => $params['eidData']->Section1->data->contactPersonTelephone
+                    );
+                    $dbAdapter->update('shipment_participant_map', $sectionData, 'map_id = ' . $params['mapId']);
+                    /* Participant table updation */
+                    $dbAdapter->update('participant', $sectionData, 'participant_id = ' . $params['participantId']);
                 }
 
                 $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data, $dm, $params);
