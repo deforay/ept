@@ -81,8 +81,8 @@ if ($resultArray['shipment'] != "") {
             $reported = (isset($result['correctCount'][0]['reported_count']) && $result['correctCount'][0]['reported_count'] > 0) ? $result['correctCount'][0]['reported_count'] : 0;
             // $maxScore = 0;
             // $belowScore = 0;
-            //$partCount = count($result) - 1;
-            $partCount = $participantPerformance['total_responses'];
+            $partCount = count($result) - 1;
+            //$partCount = $participantPerformance['total_responses'];
             for ($i = 0; $i < $partCount; $i++) {
                 if ($result[$i]['is_excluded'] == 'yes') {
                     continue;
@@ -313,7 +313,7 @@ if ($resultArray['shipment'] != "") {
             $b1plot->SetColor("white");
             // $b1plot->SetFillGradient("#4B0082","white",GRAD_LEFT_REFLECTION);
             // $b1plot->SetWidth(45);
-            $graph->title->Set("Participating laboratories in NEQAS for HIV antibody testing Panel 30 (" . date('m', strtotime($resultArray['shipment']['shipment_date'])) . "/" . date('y', strtotime($resultArray['shipment']['shipment_date'])) . ") (N=" . $lab . ")");
+            $graph->title->Set("Participating laboratories in NEQAS for HIV antibody testing (" . date('m', strtotime($resultArray['shipment']['shipment_date'])) . "/" . date('y', strtotime($resultArray['shipment']['shipment_date'])) . ") (N=" . $lab . ")");
             $graph->xaxis->title->Set('Department');
             $graph->yaxis->title->Set('Number of participants', 'center');
 
@@ -512,9 +512,10 @@ if ($resultArray['shipment'] != "") {
         $passedN = $responseResult["number_passed"];
         $failedN = $responseResult["number_failed"];
         $notRespondedN = $responseResult["not_responded"];
-        $excludedN = $responseResult["excluded"] - $responseResult["not_responded"];
+        $responseResult["excluded"] = abs($responseResult["excluded"] - $responseResult["not_responded"]);
+        $excludedN = $responseResult["excluded"];
         // $late = $responseResult["number_late"];
-        $total = $passedN + $failedN + $notRespondedN + $excludedN;
+        //$total = $passedN + $failedN + $notRespondedN + $excludedN;
 
         // Some data
         $passed = number_format((($responseResult["number_passed"] / $total) * 100), 2);
