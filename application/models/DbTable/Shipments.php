@@ -2428,88 +2428,121 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $dts['Section2']['status'] = false;
             }
             // Section 2 end // Section 3 start
-            $testKitArray = array();
+
+            $allNotTestedReason = $schemeService->getNotTestedReasons('dts');
+            $allNotTestedArray = array();
+            foreach ($allNotTestedReason as $reason) {
+                $allNotTestedArray[] = array(
+                    'value'     => (string) $reason['ntr_id'],
+                    'show'      => ucwords($reason['ntr_reason']),
+                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
+                );
+            }
+            if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
+                $dtsPtNotTested['isPtTestNotPerformedRadio'] = 'no';
+            } else {
+                $dtsPtNotTested['isPtTestNotPerformedRadio'] = 'yes';
+            }
+            $dtsPtNotTested['receivedPtPanel']         = (isset($shipment['received_pt_panel']) && $shipment['received_pt_panel'] != "") ? $shipment['received_pt_panel'] : "";
+            $dtsPtNotTested['receivedPtPanelSelect']   = array(
+                array("value" => "yes", "show" => "Yes", "selected" => ($shipment['received_pt_panel'] == "yes") ? 'selected' : ''),
+                array("value" => "no", "show" => "No", "selected" => ($shipment['received_pt_panel'] == "no") ? 'selected' : ''),
+            );
+            $dtsPtNotTested['collectShipmentReceiptDate'] = (isset($shipment['collect_panel_receipt_date']) && $shipment['collect_panel_receipt_date'] != "") ? $shipment['collect_panel_receipt_date'] : "yes";
+            $dtsPtNotTested['notTestedReasonText']     = 'Reason for not testing the PT Panel';
+            $dtsPtNotTested['notTestedReasons']        = $allNotTestedArray;
+            $dtsPtNotTested['notTestedReasonSelected'] = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
+            $dtsPtNotTested['ptNotTestedCommentsText'] = 'Your comments';
+            $dtsPtNotTested['ptNotTestedComments']     = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
+            $dtsPtNotTested['ptSupportCommentsText']   = 'Do you need any support from the PT Provider ?';
+            $dtsPtNotTested['ptSupportComments']       = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
+
+            $dts['Section3']['status']                 = true;
+            $dts['Section3']['data']                   = $dtsPtNotTested;
+            // Section 3 end // Section 4 Start
+
+            $teskitArray = array();
             $testKitKey = 0;
             $allTestKits = $schemeService->getAllDtsTestKitList(true);
             foreach ($allTestKits as $testKitKey => $testkit) {
                 if ($testkit['testkit_1'] == '1') {
-                    $testKitArray['kitNameDropdown']['Test-1']['status'] = true;
-                    $testKitArray['kitNameDropdown']['Test-1']['data'][] = array(
+                    $teskitArray['kitNameDropdown']['Test-1']['status'] = true;
+                    $teskitArray['kitNameDropdown']['Test-1']['data'][] = array(
                         'value'         => (string) $testkit['TESTKITNAMEID'],
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"]) ? 'selected' : ''
                     );
                     if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                        $testKitArray['kitNameDropdown']['Repeat Test-1']['status'] = true;
-                        $testKitArray['kitNameDropdown']['Repeat Test-1']['data'][] = array(
+                        $teskitArray['kitNameDropdown']['Repeat Test-1']['status'] = true;
+                        $teskitArray['kitNameDropdown']['Repeat Test-1']['data'][] = array(
                             'value'         => (string) $testkit['TESTKITNAMEID'],
                             'show'          => $testkit['TESTKITNAME'],
                             'selected'      => (isset($allSamples[0]["repeat_test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_1"]) ? 'selected' : ''
                         );
                     }
                     /* if(isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"]){
-                        $testKitArray['Test-1']['data'][] = array(
+                        $teskitArray['Test-1']['data'][] = array(
                             'kitNameDropdown'   => $testkit['TESTKITNAME'],
                             'kitValue'  => (string)$testkit['TESTKITNAMEID']
                         );
                     } */
                 }
                 if ($testkit['testkit_1'] == '1' && isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"]) {
-                    $testKitArray['kitName'][0] = $testkit['TESTKITNAMEID'];
+                    $teskitArray['kitName'][0] = $testkit['TESTKITNAMEID'];
                 }
                 if ($testkit['testkit_2'] == '1' && isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]) {
-                    $testKitArray['kitName'][1] = $testkit['TESTKITNAMEID'];
+                    $teskitArray['kitName'][1] = $testkit['TESTKITNAMEID'];
                 }
                 if (!$testThreeOptional) {
                     if ($testkit['testkit_3'] == '1' && isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]) {
-                        $testKitArray['kitName'][2] = $testkit['TESTKITNAMEID'];
+                        $teskitArray['kitName'][2] = $testkit['TESTKITNAMEID'];
                     }
                 }
 
                 if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
                     if ($testkit['testkit_1'] == '1' && isset($allSamples[0]["repeat_test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_1"]) {
-                        $testKitArray['kitName'][3] = $testkit['TESTKITNAME'];
+                        $teskitArray['kitName'][3] = $testkit['TESTKITNAME'];
                     }
                 }
                 if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
                     if ($testkit['testkit_2'] == '1' && isset($allSamples[0]["repeat_test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_2"]) {
-                        $testKitArray['kitName'][4] = $testkit['TESTKITNAME'];
+                        $teskitArray['kitName'][4] = $testkit['TESTKITNAME'];
                     }
                 }
                 if (!$testThreeOptional) {
                     if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
                         if ($testkit['testkit_3'] == '1' && isset($allSamples[0]["repeat_test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_3"]) {
-                            $testKitArray['kitName'][5] = $testkit['TESTKITNAME'];
+                            $teskitArray['kitName'][5] = $testkit['TESTKITNAME'];
                         }
                     }
                 }
 
                 if ($testkit['testkit_2'] == '1') {
                     if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
-                        $testKitArray['kitNameDropdown']['Test-2']['status'] = true;
+                        $teskitArray['kitNameDropdown']['Test-2']['status'] = true;
                         if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                            $testKitArray['kitNameDropdown']['Repeat Test-2']['status'] = true;
+                            $teskitArray['kitNameDropdown']['Repeat Test-2']['status'] = true;
                         }
                     } else {
-                        $testKitArray['kitNameDropdown']['Test-2']['status'] = false;
+                        $teskitArray['kitNameDropdown']['Test-2']['status'] = false;
                         if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                            $testKitArray['kitNameDropdown']['Repeat Test-2']['status'] = false;
+                            $teskitArray['kitNameDropdown']['Repeat Test-2']['status'] = false;
                         }
                     }
-                    $testKitArray['kitNameDropdown']['Test-2']['data'][] = array(
+                    $teskitArray['kitNameDropdown']['Test-2']['data'][] = array(
                         'value'         => (string) $testkit['TESTKITNAMEID'],
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]) ? 'selected' : ''
                     );
                     if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                        $testKitArray['kitNameDropdown']['Repeat Test-2']['data'][] = array(
+                        $teskitArray['kitNameDropdown']['Repeat Test-2']['data'][] = array(
                             'value'         => (string) $testkit['TESTKITNAMEID'],
                             'show'          => $testkit['TESTKITNAME'],
                             'selected'      => (isset($allSamples[0]["repeat_test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_2"]) ? 'selected' : ''
                         );
                     }
                     /* if(isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]){
-                        $testKitArray['Test-2']['data'][] = array(
+                        $teskitArray['Test-2']['data'][] = array(
                             'kitNameDropdown'   => $testkit['TESTKITNAME'],
                             'kitValue'  => (string)$testkit['TESTKITNAMEID']
                         );
@@ -2517,179 +2550,179 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 if (!$testThreeOptional) {
                     if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
-                        $testKitArray['kitNameDropdown']['Test-3']['status'] = true;
+                        $teskitArray['kitNameDropdown']['Test-3']['status'] = true;
                         if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                            $testKitArray['kitNameDropdown']['Repeat Test-3']['status'] = true;
+                            $teskitArray['kitNameDropdown']['Repeat Test-3']['status'] = true;
                         }
                     } else {
-                        $testKitArray['kitNameDropdown']['Test-3']['status'] = false;
+                        $teskitArray['kitNameDropdown']['Test-3']['status'] = false;
                         if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                            $testKitArray['kitNameDropdown']['Repeat Test-3']['status'] = false;
+                            $teskitArray['kitNameDropdown']['Repeat Test-3']['status'] = false;
                         }
                     }
                 } else {
-                    $testKitArray['kitNameDropdown']['Test-3']['status'] = false;
+                    $teskitArray['kitNameDropdown']['Test-3']['status'] = false;
                     if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                        $testKitArray['kitNameDropdown']['Repeat Test-3']['status'] = false;
+                        $teskitArray['kitNameDropdown']['Repeat Test-3']['status'] = false;
                     }
                 }
                 if ($testkit['testkit_3'] == '1') {
                     if (!$testThreeOptional) {
-                        $testKitArray['kitNameDropdown']['Test-3']['data'][] = array(
+                        $teskitArray['kitNameDropdown']['Test-3']['data'][] = array(
                             'value'         => (string) $testkit['TESTKITNAMEID'],
                             'show'          => $testkit['TESTKITNAME'],
                             'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]) ? 'selected' : ''
                         );
                         if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                            $testKitArray['kitNameDropdown']['Repeat Test-3']['data'][] = array(
+                            $teskitArray['kitNameDropdown']['Repeat Test-3']['data'][] = array(
                                 'value'         => (string) $testkit['TESTKITNAMEID'],
                                 'show'          => $testkit['TESTKITNAME'],
                                 'selected'      => (isset($allSamples[0]["repeat_test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_3"]) ? 'selected' : ''
                             );
                         }
                     } else {
-                        $testKitArray['kitNameDropdown']['Test-3']['data'] = array();
+                        $teskitArray['kitNameDropdown']['Test-3']['data'] = array();
                         if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                            $testKitArray['kitNameDropdown']['Repeat Test-3']['data'] = array();
+                            $teskitArray['kitNameDropdown']['Repeat Test-3']['data'] = array();
                         }
                     }
                 }
                 /* if(isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]){
-                    $testKitArray['Test-3']['data'][] = array(
+                    $teskitArray['Test-3']['data'][] = array(
                         'kitNameDropdown'   => $testkit['TESTKITNAME'],
                         'kitValue'  => (string)$testkit['TESTKITNAMEID']
                     );
                 } */
             }
-            if (!isset($testKitArray['kitName'][0])) {
-                $testKitArray['kitName'][0] = '';
+            if (!isset($teskitArray['kitName'][0])) {
+                $teskitArray['kitName'][0] = '';
             }
-            if (!isset($testKitArray['kitName'][1])) {
-                $testKitArray['kitName'][1] = '';
+            if (!isset($teskitArray['kitName'][1])) {
+                $teskitArray['kitName'][1] = '';
             }
             if (!$testThreeOptional) {
-                if (!isset($testKitArray['kitName'][2])) {
-                    $testKitArray['kitName'][2] = '';
+                if (!isset($teskitArray['kitName'][2])) {
+                    $teskitArray['kitName'][2] = '';
                 }
             }
             if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                if (!isset($testKitArray['kitName'][3])) {
-                    $testKitArray['kitName'][3] = '';
+                if (!isset($teskitArray['kitName'][3])) {
+                    $teskitArray['kitName'][3] = '';
                 }
-                if (!isset($testKitArray['kitName'][4])) {
-                    $testKitArray['kitName'][4] = '';
+                if (!isset($teskitArray['kitName'][4])) {
+                    $teskitArray['kitName'][4] = '';
                 }
                 if (!$testThreeOptional) {
-                    if (!isset($testKitArray['kitName'][5])) {
-                        $testKitArray['kitName'][5] = '';
+                    if (!isset($teskitArray['kitName'][5])) {
+                        $teskitArray['kitName'][5] = '';
                     }
                 }
             }
             // if($allSamples[0]["test_kit_name_1"] == ''){
-            //     $testKitArray['kitNameDropdown']['Test-1'] = array(
+            //     $teskitArray['kitNameDropdown']['Test-1'] = array(
             //         'kitNameDropdown'   => '',
             //         'kitValue'  => ''
             //     );
             // }
             // if($allSamples[0]["test_kit_name_2"] == ''){
-            //     $testKitArray['kitNameDropdown']['Test-2'] = array(
+            //     $teskitArray['kitNameDropdown']['Test-2'] = array(
             //         'kitNameDropdown'   => '',
             //         'kitValue'  => ''
             //     );
             // }
             // if($allSamples[0]["test_kit_name_3"] == ''){
-            //     $testKitArray['kitNameDropdown']['Test-3'] = array(
+            //     $teskitArray['kitNameDropdown']['Test-3'] = array(
             //         'kitNameDropdown'   => '',
             //         'kitValue'  => ''
             //     );
             // }
             if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
                 if (!$testThreeOptional) {
-                    $testKitArray['kitText'] = array('Test-1', 'Test-2', 'Test-3', 'Repeat Test-1', 'Repeat Test-2', 'Repeat Test-3');
+                    $teskitArray['kitText'] = array('Test-1', 'Test-2', 'Test-3', 'Repeat Test-1', 'Repeat Test-2', 'Repeat Test-3');
                 } else {
-                    $testKitArray['kitText'] = array('Test-1', 'Test-2', 'Repeat Test-1', 'Repeat Test-2');
+                    $teskitArray['kitText'] = array('Test-1', 'Test-2', 'Repeat Test-1', 'Repeat Test-2');
                 }
             } else {
-                $testKitArray['kitText'] = array('Test-1', 'Test-2', 'Test-3');
+                $teskitArray['kitText'] = array('Test-1', 'Test-2', 'Test-3');
             }
             if (isset($allSamples) && count($allSamples) > 0) {
-                $dts['Section3']['status'] = true;
-                $testKitArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] != "0000-00-00" && $allSamples[0]["exp_date_1"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_1"])) : '';
-                $testKitArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] != "0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_2"])) : '';
+                $dts['Section4']['status'] = true;
+                $teskitArray['expDate'][0]  = (isset($allSamples[0]["exp_date_1"]) && trim($allSamples[0]["exp_date_1"]) != "" && $allSamples[0]["exp_date_1"] != "0000-00-00" && $allSamples[0]["exp_date_1"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_1"])) : '';
+                $teskitArray['expDate'][1]  = (isset($allSamples[0]["exp_date_2"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_2"] != "0000-00-00" && $allSamples[0]["exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_2"])) : '';
                 if (!$testThreeOptional) {
-                    $testKitArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] != "0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_3"])) : '';
+                    $teskitArray['expDate'][2]  = (isset($allSamples[0]["exp_date_3"]) && trim($allSamples[0]["exp_date_2"]) != "" && $allSamples[0]["exp_date_3"] != "0000-00-00" && $allSamples[0]["exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["exp_date_3"])) : '';
                 }
 
-                $testKitArray['expDate'][3]  = (isset($allSamples[0]["repeat_exp_date_1"]) && trim($allSamples[0]["repeat_exp_date_1"]) != "" && $allSamples[0]["repeat_exp_date_1"] != "0000-00-00" && $allSamples[0]["repeat_exp_date_1"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["repeat_exp_date_1"])) : '';
-                $testKitArray['expDate'][4]  = (isset($allSamples[0]["repeat_exp_date_2"]) && trim($allSamples[0]["repeat_exp_date_2"]) != "" && $allSamples[0]["repeat_exp_date_2"] != "0000-00-00" && $allSamples[0]["repeat_exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["repeat_exp_date_2"])) : '';
+                $teskitArray['expDate'][3]  = (isset($allSamples[0]["repeat_exp_date_1"]) && trim($allSamples[0]["repeat_exp_date_1"]) != "" && $allSamples[0]["repeat_exp_date_1"] != "0000-00-00" && $allSamples[0]["repeat_exp_date_1"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["repeat_exp_date_1"])) : '';
+                $teskitArray['expDate'][4]  = (isset($allSamples[0]["repeat_exp_date_2"]) && trim($allSamples[0]["repeat_exp_date_2"]) != "" && $allSamples[0]["repeat_exp_date_2"] != "0000-00-00" && $allSamples[0]["repeat_exp_date_2"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["repeat_exp_date_2"])) : '';
                 if (!$testThreeOptional) {
-                    $testKitArray['expDate'][5]  = (isset($allSamples[0]["repeat_exp_date_3"]) && trim($allSamples[0]["repeat_exp_date_3"]) != "" && $allSamples[0]["repeat_exp_date_3"] != "0000-00-00" && $allSamples[0]["repeat_exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["repeat_exp_date_3"])) : '';
+                    $teskitArray['expDate'][5]  = (isset($allSamples[0]["repeat_exp_date_3"]) && trim($allSamples[0]["repeat_exp_date_3"]) != "" && $allSamples[0]["repeat_exp_date_3"] != "0000-00-00" && $allSamples[0]["repeat_exp_date_3"] != '1969-12-31') ? date('d-M-Y', strtotime($allSamples[0]["repeat_exp_date_3"])) : '';
                 }
 
-                $testKitArray['kitValue'][0] = (isset($allSamples[0]["test_kit_name_1"]) && trim($allSamples[0]["test_kit_name_1"]) != "") ? $allSamples[0]["test_kit_name_1"] : '';
-                $testKitArray['kitValue'][1] = (isset($allSamples[0]["test_kit_name_2"]) && trim($allSamples[0]["test_kit_name_2"]) != "") ? $allSamples[0]["test_kit_name_2"] : '';
+                $teskitArray['kitValue'][0] = (isset($allSamples[0]["test_kit_name_1"]) && trim($allSamples[0]["test_kit_name_1"]) != "") ? $allSamples[0]["test_kit_name_1"] : '';
+                $teskitArray['kitValue'][1] = (isset($allSamples[0]["test_kit_name_2"]) && trim($allSamples[0]["test_kit_name_2"]) != "") ? $allSamples[0]["test_kit_name_2"] : '';
                 if (!$testThreeOptional) {
-                    $testKitArray['kitValue'][2] = (isset($allSamples[0]["test_kit_name_3"]) && trim($allSamples[0]["test_kit_name_3"]) != "") ? $allSamples[0]["test_kit_name_3"] : '';
+                    $teskitArray['kitValue'][2] = (isset($allSamples[0]["test_kit_name_3"]) && trim($allSamples[0]["test_kit_name_3"]) != "") ? $allSamples[0]["test_kit_name_3"] : '';
                 }
 
-                $testKitArray['kitValue'][3] = (isset($allSamples[0]["repeat_test_kit_name_1"]) && trim($allSamples[0]["repeat_test_kit_name_1"]) != "") ? $allSamples[0]["repeat_test_kit_name_1"] : '';
-                $testKitArray['kitValue'][4] = (isset($allSamples[0]["repeat_test_kit_name_2"]) && trim($allSamples[0]["repeat_test_kit_name_2"]) != "") ? $allSamples[0]["repeat_test_kit_name_2"] : '';
+                $teskitArray['kitValue'][3] = (isset($allSamples[0]["repeat_test_kit_name_1"]) && trim($allSamples[0]["repeat_test_kit_name_1"]) != "") ? $allSamples[0]["repeat_test_kit_name_1"] : '';
+                $teskitArray['kitValue'][4] = (isset($allSamples[0]["repeat_test_kit_name_2"]) && trim($allSamples[0]["repeat_test_kit_name_2"]) != "") ? $allSamples[0]["repeat_test_kit_name_2"] : '';
                 if (!$testThreeOptional) {
-                    $testKitArray['kitValue'][5] = (isset($allSamples[0]["repeat_test_kit_name_3"]) && trim($allSamples[0]["repeat_test_kit_name_3"]) != "") ? $allSamples[0]["repeat_test_kit_name_3"] : '';
+                    $teskitArray['kitValue'][5] = (isset($allSamples[0]["repeat_test_kit_name_3"]) && trim($allSamples[0]["repeat_test_kit_name_3"]) != "") ? $allSamples[0]["repeat_test_kit_name_3"] : '';
                 }
 
-                $testKitArray['lot'][0]      = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "") ? $allSamples[0]["lot_no_1"] : '';
-                $testKitArray['lot'][1]      = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "") ? $allSamples[0]["lot_no_2"] : '';
+                $teskitArray['lot'][0]      = (isset($allSamples[0]["lot_no_1"]) && trim($allSamples[0]["lot_no_1"]) != "") ? $allSamples[0]["lot_no_1"] : '';
+                $teskitArray['lot'][1]      = (isset($allSamples[0]["lot_no_2"]) && trim($allSamples[0]["lot_no_2"]) != "") ? $allSamples[0]["lot_no_2"] : '';
                 if (!$testThreeOptional) {
-                    $testKitArray['lot'][2]      = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "") ? $allSamples[0]["lot_no_3"] : '';
+                    $teskitArray['lot'][2]      = (isset($allSamples[0]["lot_no_3"]) && trim($allSamples[0]["lot_no_3"]) != "") ? $allSamples[0]["lot_no_3"] : '';
                 }
 
-                $testKitArray['lot'][3]      = (isset($allSamples[0]["repeat_lot_no_1"]) && trim($allSamples[0]["repeat_lot_no_1"]) != "") ? $allSamples[0]["repeat_lot_no_1"] : '';
-                $testKitArray['lot'][4]      = (isset($allSamples[0]["repeat_lot_no_2"]) && trim($allSamples[0]["repeat_lot_no_2"]) != "") ? $allSamples[0]["repeat_lot_no_2"] : '';
+                $teskitArray['lot'][3]      = (isset($allSamples[0]["repeat_lot_no_1"]) && trim($allSamples[0]["repeat_lot_no_1"]) != "") ? $allSamples[0]["repeat_lot_no_1"] : '';
+                $teskitArray['lot'][4]      = (isset($allSamples[0]["repeat_lot_no_2"]) && trim($allSamples[0]["repeat_lot_no_2"]) != "") ? $allSamples[0]["repeat_lot_no_2"] : '';
                 if (!$testThreeOptional) {
-                    $testKitArray['lot'][5]      = (isset($allSamples[0]["repeat_lot_no_3"]) && trim($allSamples[0]["repeat_lot_no_3"]) != "") ? $allSamples[0]["repeat_lot_no_3"] : '';
+                    $teskitArray['lot'][5]      = (isset($allSamples[0]["repeat_lot_no_3"]) && trim($allSamples[0]["repeat_lot_no_3"]) != "") ? $allSamples[0]["repeat_lot_no_3"] : '';
                 }
                 if (!$testThreeOptional) {
-                    $testKitArray['kitOther']   = array('', '', '', '', '', '');
+                    $teskitArray['kitOther']   = array('', '', '', '', '', '');
                 } else {
-                    $testKitArray['kitOther']   = array('', '', '', '');
+                    $teskitArray['kitOther']   = array('', '', '', '');
                 }
                 if ($allSamples[0]["test_kit_name_1"] == '') {
-                    $testKitArray['kitName'][0] = '';
+                    $teskitArray['kitName'][0] = '';
                 }
                 if ($allSamples[0]["test_kit_name_2"] == '') {
-                    $testKitArray['kitName'][1] = '';
+                    $teskitArray['kitName'][1] = '';
                 }
                 if (!$testThreeOptional) {
                     if ($allSamples[0]["test_kit_name_3"] == '') {
-                        $testKitArray['kitName'][2] = '';
+                        $teskitArray['kitName'][2] = '';
                     }
                 }
                 if ($allSamples[0]["repeat_test_kit_name_1"] == '') {
-                    $testKitArray['kitName'][3] = '';
+                    $teskitArray['kitName'][3] = '';
                 }
                 if ($allSamples[0]["repeat_test_kit_name_2"] == '') {
-                    $testKitArray['kitName'][4] = '';
+                    $teskitArray['kitName'][4] = '';
                 }
                 if (!$testThreeOptional) {
                     if ($allSamples[0]["repeat_test_kit_name_3"] == '') {
-                        $testKitArray['kitName'][5] = '';
+                        $teskitArray['kitName'][5] = '';
                     }
                 }
-                // $testKitArray['testKitTextArray'] = array('Test-1','Test-2','Test-3');
+                // $teskitArray['testKitTextArray'] = array('Test-1','Test-2','Test-3');
 
-                $testKitArray['kitNameDropdown']['Test-1']['data'][]    = array(
+                $teskitArray['kitNameDropdown']['Test-1']['data'][]    = array(
                     'value'         => 'other',
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && 'other' == $allSamples[0]["test_kit_name_1"]) ? 'selected' : ''
                 );
-                $testKitArray['kitNameDropdown']['Test-2']['data'][] = array(
+                $teskitArray['kitNameDropdown']['Test-2']['data'][] = array(
                     'value'         => 'other',
                     'show'          => 'Other',
                     'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && 'other' == $allSamples[0]["test_kit_name_2"]) ? 'selected' : ''
                 );
                 if (!$testThreeOptional) {
-                    $testKitArray['kitNameDropdown']['Test-3']['data'][] = array(
+                    $teskitArray['kitNameDropdown']['Test-3']['data'][] = array(
                         'value'         => 'other',
                         'show'          => 'Other',
                         'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && 'other' == $allSamples[0]["test_kit_name_3"]) ? 'selected' : ''
@@ -2697,56 +2730,29 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
 
                 if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
-                    $testKitArray['kitNameDropdown']['Repeat Test-1']['data'][]    = array(
+                    $teskitArray['kitNameDropdown']['Repeat Test-1']['data'][]    = array(
                         'value'         => 'other',
                         'show'          => 'Other',
                         'selected'      => (isset($allSamples[0]["repeat_test_kit_name_1"]) && 'other' == $allSamples[0]["repeat_test_kit_name_1"]) ? 'selected' : ''
                     );
-                    $testKitArray['kitNameDropdown']['Repeat Test-2']['data'][] = array(
+                    $teskitArray['kitNameDropdown']['Repeat Test-2']['data'][] = array(
                         'value'         => 'other',
                         'show'          => 'Other',
                         'selected'      => (isset($allSamples[0]["repeat_test_kit_name_2"]) && 'other' == $allSamples[0]["repeat_test_kit_name_2"]) ? 'selected' : ''
                     );
                     if (!$testThreeOptional) {
-                        $testKitArray['kitNameDropdown']['Repeat Test-3']['data'][] = array(
+                        $teskitArray['kitNameDropdown']['Repeat Test-3']['data'][] = array(
                             'value'         => 'other',
                             'show'          => 'Other',
                             'selected'      => (isset($allSamples[0]["repeat_test_kit_name_3"]) && 'other' == $allSamples[0]["repeat_test_kit_name_3"]) ? 'selected' : ''
                         );
                     }
                 }
-                $allNotTestedReason = $schemeService->getNotTestedReasons('dts');
-                $allNotTestedArray = array();
-                foreach ($allNotTestedReason as $reason) {
-                    $allNotTestedArray[] = array(
-                        'value'     => (string) $reason['ntr_id'],
-                        'show'      => ucwords($reason['ntr_reason']),
-                        'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
-                    );
-                }
-                if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
-                    $testKitArray['isPtTestNotPerformedRadio'] = 'no';
-                } else {
-                    $testKitArray['isPtTestNotPerformedRadio'] = 'yes';
-                }
-                $testKitArray['receivedPtPanel']         = (isset($shipment['received_pt_panel']) && $shipment['received_pt_panel'] != "") ? $shipment['received_pt_panel'] : "";
-                $testKitArray['receivedPtPanelSelect']   = array(
-                    array("value" => "yes", "show" => "Yes", "selected" => ($shipment['received_pt_panel'] == "yes") ? 'selected' : ''),
-                    array("value" => "no", "show" => "No", "selected" => ($shipment['received_pt_panel'] == "no") ? 'selected' : ''),
-                );
-                $testKitArray['notTestedReasonText']     = 'Reason for not testing the PT Panel';
-                $testKitArray['notTestedReasons']        = $allNotTestedArray;
-                $testKitArray['notTestedReasonSelected'] = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
-                $testKitArray['ptNotTestedCommentsText'] = 'Your comments';
-                $testKitArray['ptNotTestedComments']     = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
-                $testKitArray['ptSupportCommentsText']   = 'Do you need any support from the PT Provider ?';
-                $testKitArray['ptSupportComments']       = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
-
-                $dts['Section3']['data']                  = $testKitArray;
+                $dts['Section4']['data'] = $teskitArray;
             } else {
-                $dts['Section3']['status']  = false;
+                $dts['Section4']['status'] = false;
             }
-            // Section 3 end // Section 4 Start
+            /* Section 4 end Section 5 start */
             $dtsPossibleResults = $schemeService->getPossibleResults('dts');
             $dtsPossibleArray = array();
             $dtsPossibleResponseArray = array();
@@ -2990,12 +2996,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['value']     = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
             }
             if ((isset($allSamples) && count($allSamples) > 0) && (isset($dtsPossibleResults) && count($dtsPossibleResults) > 0)) {
-                $dts['Section4']['status']  = true;
+                $dts['Section5']['status']  = true;
             } else {
-                $dts['Section4']['status']  = false;
+                $dts['Section5']['status']  = false;
             }
-            $dts['Section4']['data']        = $allSamplesResult;
-            // Section 4 End // Section 5 Start
+            $dts['Section5']['data']        = $allSamplesResult;
+            // Section 5 End // Section 6 Start
             $reviewArray = array();
             $commentArray = array('yes', 'no');
             $revieArr = array();
@@ -3007,9 +3013,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $reviewArray['approvalLabel']           = 'Supervisor Name';
             $reviewArray['approvalInputText']       = (isset($shipment['participant_supervisor']) && $shipment['participant_supervisor'] != '') ? $shipment['participant_supervisor'] : '';
             $reviewArray['comments']                = (isset($shipment['user_comment']) && $shipment['user_comment'] != '') ? $shipment['user_comment'] : '';
-            $dts['Section5']['status']              = true;
-            $dts['Section5']['data']                = $reviewArray;
-            // Section 5 End
+            $dts['Section6']['status']              = true;
+            $dts['Section6']['data']                = $reviewArray;
+            // Section 6 End
             $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
             $customField1 = $globalConfigDb->getValue('custom_field_1');
             $customField2 = $globalConfigDb->getValue('custom_field_2');
