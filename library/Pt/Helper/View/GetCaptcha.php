@@ -10,19 +10,21 @@
 
 
 
-class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
+class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract
+{
 
-    public function getCaptcha($config = array()) {
+    public function getCaptcha($config = array())
+    {
         if (!function_exists('gd_info')) {
             throw new Exception('Required GD library is missing');
         }
-        
+
         // Default values
         $captcha_config = array(
             'code' => '',
             'min_length' => 4,
             'max_length' => 5,
-            'png_backgrounds' => array(UPLOAD_PATH . '/../images/captchabg/default.png',UPLOAD_PATH . '/../images/captchabg/ravenna.png'),
+            'png_backgrounds' => array(UPLOAD_PATH . '/../images/captchabg/default.png', UPLOAD_PATH . '/../images/captchabg/ravenna.png'),
             'fonts' => array(UPLOAD_PATH . '/../fonts/Idolwild/idolwild.ttf'),
             //'characters' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
             //'characters' => 'czobnfuvpokh5rzt9avu51sv2s7acug9iymucuhvsy4ljo3iatzjmv6dyjnzfchkl4hmrcszqqnsnump3jerxy78wymkmbspvxh93c82kokbiuvvgrzk9qujizls8rwhvbkfbypb10sx2g4tkqrkkboizkudmmubxn2lnaxcdpecmbbdl3l9lyvu8qgbhh3sr5soj3xhhfsv8ynrfa5qmlr9oxloirbrlqz444eo8hebgd5vnzj7l5fa22',
@@ -60,12 +62,12 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
 
         // Use milliseconds instead of seconds
         srand((float) microtime() * 1000);
-        
+
         // if it is development environment, then let us keep it simple
         // if(APPLICATION_ENV == "development"){
         //     $captcha_config['code'] = "zaq";
         // }
-        
+
         // Generate CAPTCHA code if not set by user
         if (empty($captcha_config['code'])) {
             $captcha_config['code'] = '';
@@ -85,7 +87,8 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
 
         if (!function_exists('hex2rgb')) {
 
-            function hex2rgb($hex_str, $return_string = false, $separator = ',') {
+            function hex2rgb($hex_str, $return_string = false, $separator = ',')
+            {
                 $hex_str = preg_replace("/[^0-9A-Fa-f]/", '', $hex_str); // Gets a proper hex string
                 $rgb_array = array();
                 if (strlen($hex_str) == 6) {
@@ -102,7 +105,6 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
                 }
                 return $return_string ? implode($separator, $rgb_array) : $rgb_array;
             }
-
         }
 
         srand((float) microtime() * 1000);
@@ -156,5 +158,4 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract {
         header("Content-type: image/png");
         imagepng($captcha);
     }
-
 }
