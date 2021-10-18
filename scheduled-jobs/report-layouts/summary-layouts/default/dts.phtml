@@ -77,7 +77,7 @@ if ($resultArray['shipment'] != "") {
         foreach ($resultArray['shipment']['summaryResult'] as $result) {
             // $maxScore = 0;
             // $belowScore = 0;
-            $partCount = count($result) - 1;
+            $partCount = count($result - 1);
             //Zend_Debug::dump($result['correctCount']);
             for ($i = 0; $i < $partCount; $i++) {
                 if ($result[$i]['is_excluded'] == 'yes') {
