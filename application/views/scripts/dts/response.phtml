@@ -899,11 +899,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
             $('.vlResultValues').removeClass('isRequired');
             $('#vlNotTestedReason').addClass('isRequired');
             $('#ptNotTestedComments').addClass('isRequired');
-            $('#extractionAssayLotNo').removeClass('isRequired');
-            $('#detectionAssayLotNo').removeClass('isRequired');
-            $('#extractionAssayExpiryDate').removeClass('isRequired');
-            $('#detectionAssayExpiryDate').removeClass('isRequired');
-            $('#testDate,#receiptDate,#sampleRehydrationDate,#extractionAssay,#detectionAssay,#extractionAssayLotNo,#detectionAssayLotNo,#supervisorApproval').removeClass('isRequired');
+            $('#testDate,#receiptDate,#sampleRehydrationDate,#supervisorApproval').removeClass('isRequired');
             $('.ptTestPerformed').hide();
         } else {
             $('.vlResultSection').show();
@@ -912,12 +908,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
             $('.vlResultValues').addClass('isRequired');
             $('#vlNotTestedReason').removeClass('isRequired');
             $('#ptNotTestedComments').removeClass('isRequired');
-
-            $('#extractionAssayLotNo').addClass('isRequired');
-            $('#detectionAssayLotNo').addClass('isRequired');
-            $('#extractionAssayExpiryDate').addClass('isRequired');
-            $('#detectionAssayExpiryDate').addClass('isRequired');
-            $('#testDate,#receiptDate,#sampleRehydrationDate,#extractionAssay,#detectionAssay,#extractionAssayLotNo,#detectionAssayLotNo,#supervisorApproval').addClass('isRequired');
+            $('#testDate,#receiptDate,#sampleRehydrationDate,#supervisorApproval').addClass('isRequired');
             $('.ptTestPerformed').show();
 
         }

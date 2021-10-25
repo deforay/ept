@@ -3164,6 +3164,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             } else {
                 $section3['data']['isPtTestNotPerformedRadio'] = 'yes';
             }
+            $section3['data']['receivedPtPanel']         = (isset($shipment['received_pt_panel']) && $shipment['received_pt_panel'] != "") ? $shipment['received_pt_panel'] : "";
+            $section3['data']['receivedPtPanelSelect']   = array(
+                array("value" => "yes", "show" => "Yes", "selected" => ($shipment['received_pt_panel'] == "yes") ? 'selected' : ''),
+                array("value" => "no", "show" => "No", "selected" => ($shipment['received_pt_panel'] == "no") ? 'selected' : ''),
+            );
             $section3['data']['no']['note'][]               = "Viral Load must be entered in log<sub>10</sub> copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed.";
             $section3['data']['no']['note'][]               = "Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).";
             $section3['data']['no']['note'][]               = "For negative or undetectable result (TND), please enter 0.00.";
@@ -3339,7 +3344,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $section2['data']['resultDueDate']              = date('d-M-Y', strtotime($shipment['lastdate_response']));
                 $section2['data']['testReceiptDate']            = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
                 $section2['data']['sampleRehydrationDate']      = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
-                $section2['data']['testDate']               = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment["shipment_test_date"])) : '';
+                $section2['data']['testDate']                   = (isset($shipment["shipment_test_date"]) && $shipment["shipment_test_date"] != '' && $shipment["shipment_test_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment["shipment_test_date"])) : '';
                 $section2['data']['extractionAssaySelect']      = $extractionAssaySelect;
                 $section2['data']['extractionAssaySelected']    = (isset($shipment['attributes']['extraction_assay']) && $shipment['attributes']['extraction_assay'] != "") ? (string) $shipment['attributes']['extraction_assay'] : '';
                 $section2['data']['detectionAssaySelect']       = $detectionAssaySelect;
@@ -3435,6 +3440,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             } else {
                 $eid['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
             }
+            $eid['Section3']['data']['receivedPtPanel']         = (isset($shipment['received_pt_panel']) && $shipment['received_pt_panel'] != "") ? $shipment['received_pt_panel'] : "";
+            $eid['Section3']['data']['receivedPtPanelSelect']   = array(
+                array("value" => "yes", "show" => "Yes", "selected" => ($shipment['received_pt_panel'] == "yes") ? 'selected' : ''),
+                array("value" => "no", "show" => "No", "selected" => ($shipment['received_pt_panel'] == "no") ? 'selected' : ''),
+            );
             $eid['Section3']['data']['vlNotTestedReasonText']       = 'Reason for not testing the PT Panel';
             $eid['Section3']['data']['vlNotTestedReason']           = $allNotTestedArray;
             $eid['Section3']['data']['vlNotTestedReasonSelected']   = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != "") ? $shipment['vl_not_tested_reason'] : "";
