@@ -3423,9 +3423,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $allNotTestedArray = array();
             foreach ($allNotTestedReason as $reason) {
                 $allNotTestedArray[] = array(
-                    'value'     => (string) $reason['ntr_id'],
-                    'show'      => ucwords($reason['ntr_reason']),
-                    'selected'  => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
+                    'value'             => (string) $reason['ntr_id'],
+                    'show'              => ucwords($reason['ntr_reason']),
+                    'receivedPtPanel'   => (string) $reason['collect_panel_receipt_date'],
+                    'selected'          => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : ''
                 );
             }
 
