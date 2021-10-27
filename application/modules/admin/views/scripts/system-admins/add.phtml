@@ -54,17 +54,17 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="form-group">
                 <label class="col-lg-3 control-label">Privileges</label>
 
                 <div class="col-lg-5">
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="config-ept">Configure ePT</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="manage-participants">Manage Participants</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="manage-shipments">Manage Shipments</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="analyze-generate-reports">Analyze and Generate Reports</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="edit-participant-response">Edit Participant Responses</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="access-reports">Access Reports</label>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="configept value=" config-ept">Configure ePT</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="manage-participants value=" manage-participants">Manage Participants</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="manage-shipments" value="manage-shipments">Manage Shipments</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="analyze-generate-reports" value="analyze-generate-reports">Analyze and Generate Reports</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="edit-participant-response" value="edit-participant-response">Edit Participant Responses</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="access-reports" value="access-reports">Access Reports</label>
                 </div>
             </div>
 
@@ -80,6 +80,19 @@
 </div>
 <script type="text/javascript">
     var duplicated = false;
+
+
+    $(function() {
+
+        $('input[type=checkbox]').on('change', function() {
+            if ($('#config-ept').is(':checked')) {
+                $('#manage-participants').prop('checked', true);
+                $('#manage-participants').attr('disabled', true);
+            } else {
+                $('#manage-participants').attr('disabled', false);
+            }
+        });
+    });
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         objValue = document.getElementById(obj).value;

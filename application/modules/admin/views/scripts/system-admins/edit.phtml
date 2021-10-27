@@ -1,8 +1,8 @@
 <?php
-    if($this->admin['privileges'] != ""){
-        $pstatus = true;
-        $privileges = explode(',',$this->admin['privileges']);
-    }
+if ($this->admin['privileges'] != "") {
+    $pstatus = true;
+    $privileges = explode(',', $this->admin['privileges']);
+}
 ?>
 <div class="well">
     <form name="editSystemAdminForm" id="editSystemAdminForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "system-admins", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
@@ -66,12 +66,12 @@
                 <label class="col-lg-3 control-label">Privileges</label>
 
                 <div class="col-lg-5">
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="config-ept" <?php echo ($pstatus && in_array('config-ept',$privileges))?'checked':'';?>>Configure ePT</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="manage-participants" <?php echo ($pstatus && in_array('manage-participants',$privileges))?'checked':'';?>>Manage Participants</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="manage-shipments" <?php echo ($pstatus && in_array('manage-shipments',$privileges))?'checked':'';?>>Manage Shipments</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="analyze-generate-reports" <?php echo ($pstatus && in_array('analyze-generate-reports',$privileges))?'checked':'';?>>Analyze and Generate Reports</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="edit-participant-response" <?php echo ($pstatus && in_array('edit-participant-response',$privileges))?'checked':'';?>>Edit Participant Responses</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="access-reports" <?php echo ($pstatus && in_array('access-reports',$privileges))?'checked':'';?>>Access Reports</label>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="config-ept" value="config-ept" <?php echo ($pstatus && in_array('config-ept', $privileges)) ? 'checked' : ''; ?>>Configure ePT</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="manage-participants" value="manage-participants" <?php echo ($pstatus && in_array('manage-participants', $privileges)) ? 'checked' : ''; ?>>Manage Participants</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="manage-shipments" value="manage-shipments" <?php echo ($pstatus && in_array('manage-shipments', $privileges)) ? 'checked' : ''; ?>>Manage Shipments</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="analyze-generate-reports" value="analyze-generate-reports" <?php echo ($pstatus && in_array('analyze-generate-reports', $privileges)) ? 'checked' : ''; ?>>Analyze and Generate Reports</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="edit-participant-response" value="edit-participant-response" <?php echo ($pstatus && in_array('edit-participant-response', $privileges)) ? 'checked' : ''; ?>>Edit Participant Responses</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="access-reports" value="access-reports" <?php echo ($pstatus && in_array('access-reports', $privileges)) ? 'checked' : ''; ?>>Access Reports</label>
                 </div>
             </div>
 
@@ -84,6 +84,24 @@
 </div>
 <script type="text/javascript">
     var duplicated = false;
+    $(function() {
+        if ($('#config-ept').is(':checked')) {
+            $('#manage-participants').prop('checked', true);
+            $('#manage-participants').attr('disabled', true);
+        } else {
+            $('#manage-participants').attr('disabled', false);
+        }
+
+        $('input[type=checkbox]').on('change', function() {
+            if ($('#config-ept').is(':checked')) {
+                $('#manage-participants').prop('checked', true);
+                $('#manage-participants').attr('disabled', true);
+            } else {
+                $('#manage-participants').attr('disabled', false);
+            }
+        });
+    });
+
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         objValue = document.getElementById(obj).value;
