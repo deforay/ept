@@ -5,9 +5,18 @@ class Admin_DataManagersController extends Zend_Controller_Action
 
     public function init()
     {
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = explode(',', $adminSession->privileges);
+        if (!in_array('config-ept', $privileges) && !in_array('manage-participants', $privileges)) {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return null;
+            } else {
+                $this->redirect('/admin');
+            }
+        }
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-                    ->addActionContext('get-participants-names', 'html')
+            ->addActionContext('get-participants-names', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -29,7 +38,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $params = $this->_request->getPost();
             $userService->addUser($params);
             $this->redirect("/admin/data-managers");
-        }else{
+        } else {
             $this->view->participants = $participantService->getAllActiveParticipants();
         }
         if ($this->hasParam('contact')) {

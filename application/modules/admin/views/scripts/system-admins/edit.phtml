@@ -67,6 +67,7 @@
 
                 <div class="col-lg-5">
                     <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="config-ept" <?php echo ($pstatus && in_array('config-ept',$privileges))?'checked':'';?>>Configure ePT</label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="manage-participants" <?php echo ($pstatus && in_array('manage-participants',$privileges))?'checked':'';?>>Manage Participants</label><br>
                     <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="manage-shipments" <?php echo ($pstatus && in_array('manage-shipments',$privileges))?'checked':'';?>>Manage Shipments</label><br>
                     <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="analyze-generate-reports" <?php echo ($pstatus && in_array('analyze-generate-reports',$privileges))?'checked':'';?>>Analyze and Generate Reports</label><br>
                     <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" value="edit-participant-response" <?php echo ($pstatus && in_array('edit-participant-response',$privileges))?'checked':'';?>>Edit Participant Responses</label><br>

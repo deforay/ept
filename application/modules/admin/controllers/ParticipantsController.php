@@ -5,6 +5,15 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function init()
     {
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = explode(',', $adminSession->privileges);
+        if (!in_array('config-ept', $privileges) && !in_array('manage-participants', $privileges)) {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return null;
+            } else {
+                $this->redirect('/admin');
+            }
+        }
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('view-participants', 'html')
@@ -42,7 +51,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
         $this->view->siteType = $participantService->getSiteTypeList();
     }
-    
+
     public function bulkImportAction()
     {
         $participantService = new Application_Service_Participants();
@@ -50,18 +59,18 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->view->response = $participantService->uploadBulkParticipants();
         }
     }
-    
+
     public function participantUploadStatisticsAction()
     {
         $participantService = new Application_Service_Participants();
         if ($this->getRequest()->isPost()) {
             $result = $participantService->uploadBulkParticipants();
-            if(!$result){
+            if (!$result) {
                 $this->redirect("/admin/participants");
-            }else{
+            } else {
                 $this->view->response = $result;
             }
-        }else{
+        } else {
             $this->redirect("/admin/participants");
         }
     }

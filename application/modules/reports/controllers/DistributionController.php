@@ -5,6 +5,15 @@ class Reports_DistributionController extends Zend_Controller_Action
 
     public function init()
     {
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = explode(',', $adminSession->privileges);
+        if (!in_array('analyze-generate-reports', $privileges)) {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return null;
+            } else {
+                $this->redirect('/admin');
+            }
+        }
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-shipments', 'html')
@@ -42,7 +51,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $reEvaluate = false;
             $evalService = new Application_Service_Evaluation();
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id, $reEvaluate);
-            $this->view->shipmentStatus = $evalService->getReportStatus($id,'generateReport');
+            $this->view->shipmentStatus = $evalService->getReportStatus($id, 'generateReport');
             $this->view->responseCount = $evalService->getResponseCount($id, $shipment[0]['distribution_id']);
 
 
@@ -114,7 +123,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $reEvaluate = true;
             $evalService = new Application_Service_Evaluation();
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id, $reEvaluate);
-            $this->view->shipmentStatus = $evalService->getReportStatus($id,'finalized');
+            $this->view->shipmentStatus = $evalService->getReportStatus($id, 'finalized');
             $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
             $this->view->responseCount = $evalService->getResponseCount($id, $shipment[0]['distribution_id']);
         } else {

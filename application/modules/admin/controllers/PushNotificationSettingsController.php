@@ -3,16 +3,27 @@
 class Admin_PushNotificationSettingsController extends Zend_Controller_Action
 {
 
-    public function init() {
+    public function init()
+    {
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = explode(',', $adminSession->privileges);
+        if (!in_array('config-ept', $privileges)) {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return null;
+            } else {
+                $this->redirect('/admin');
+            }
+        }
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
-    public function indexAction() {
-        
+    public function indexAction()
+    {
+
         // config settings are in config file.
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($this->getRequest()->isPost()) {
-        //    Zend_Debug::dump($this->getRequest()->getPost('serverKey'));die;
+            //    Zend_Debug::dump($this->getRequest()->getPost('serverKey'));die;
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
 
@@ -27,8 +38,8 @@ class Admin_PushNotificationSettingsController extends Zend_Controller_Action
 
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)->setFilename($file)->write();
-            
-            if(isset($_FILES['googleServiceJson']['name']) && $_FILES['googleServiceJson']['name'] != ""){
+
+            if (isset($_FILES['googleServiceJson']['name']) && $_FILES['googleServiceJson']['name'] != "") {
                 $extension = strtolower(pathinfo($_FILES['googleServiceJson']['name'], PATHINFO_EXTENSION));
                 $fileName = "google-services." . $extension;
                 if (move_uploaded_file($_FILES['googleServiceJson']['tmp_name'], UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
@@ -38,5 +49,4 @@ class Admin_PushNotificationSettingsController extends Zend_Controller_Action
         }
         $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
     }
-
 }

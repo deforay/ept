@@ -5,6 +5,15 @@ class Reports_ShipmentsController extends Zend_Controller_Action
 
     public function init()
     {
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = explode(',', $adminSession->privileges);
+        if (!in_array('access-reports', $privileges)) {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return null;
+            } else {
+                $this->redirect('/admin');
+            }
+        }
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-shipment-participant-list', 'html')

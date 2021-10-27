@@ -5,9 +5,19 @@ class Admin_AnnouncementController extends Zend_Controller_Action
 
     public function init()
     {
+
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = explode(',', $adminSession->privileges);
+        if (!in_array('analyze-generate-reports', $privileges)) {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return null;
+            } else {
+                $this->redirect('/admin');
+            }
+        }
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-                ->initContext();
+            ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
     }
 
@@ -17,7 +27,7 @@ class Admin_AnnouncementController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $service = new Application_Service_Announcement();
             $service->getAllAnnouncementByGrid($params);
-        } 
+        }
     }
 
     public function composeAction()
@@ -30,10 +40,10 @@ class Admin_AnnouncementController extends Zend_Controller_Action
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
-        if(isset($_COOKIE['did']) && $_COOKIE['did']!='' && $_COOKIE['did']!=null && $_COOKIE['did']!='NULL') {
+        if (isset($_COOKIE['did']) && $_COOKIE['did'] != '' && $_COOKIE['did'] != null && $_COOKIE['did'] != 'NULL') {
             $shipmentService = new Application_Service_Shipments();
-            $this->view->shipmentDetails=$data=$shipmentService->getShipment($_COOKIE['did']);
-           $this->view->schemeDetails=$scheme->getScheme($data["scheme_type"]);
+            $this->view->shipmentDetails = $data = $shipmentService->getShipment($_COOKIE['did']);
+            $this->view->schemeDetails = $scheme->getScheme($data["scheme_type"]);
         }
         $participantService = new Application_Service_Participants();
         $this->view->participantCity    = $participantService->getUniqueCity();

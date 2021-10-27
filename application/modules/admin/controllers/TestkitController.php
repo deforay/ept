@@ -1,16 +1,28 @@
 <?php
 
-class Admin_TestkitController extends Zend_Controller_Action {
+class Admin_TestkitController extends Zend_Controller_Action
+{
 
-    public function init() {
+    public function init()
+    {
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = explode(',', $adminSession->privileges);
+        if (!in_array('config-ept', $privileges)) {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return null;
+            } else {
+                $this->redirect('/admin');
+            }
+        }
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-                ->addActionContext('get-testkit', 'html')
-                ->initContext();
+            ->addActionContext('get-testkit', 'html')
+            ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
-    public function indexAction() {
+    public function indexAction()
+    {
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
             $schemeService = new Application_Service_Schemes();
@@ -18,18 +30,19 @@ class Admin_TestkitController extends Zend_Controller_Action {
         }
     }
 
-    public function addAction() {
+    public function addAction()
+    {
         $schemeService = new Application_Service_Schemes();
         $this->view->schemeList = $schemeService->getAllSchemes();
         if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();            
+            $params = $this->getRequest()->getPost();
             $schemeService->addTestkit($params);
             $this->redirect("/admin/testkit");
         }
-        
     }
 
-    public function editAction() {
+    public function editAction()
+    {
         $schemeService = new Application_Service_Schemes();
         $this->view->schemeList = $schemeService->getAllSchemes();
         if ($this->getRequest()->isPost()) {
@@ -44,7 +57,8 @@ class Admin_TestkitController extends Zend_Controller_Action {
         }
     }
 
-    public function standardKitAction() {
+    public function standardKitAction()
+    {
         $schemeService = new Application_Service_Schemes();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
@@ -53,13 +67,13 @@ class Admin_TestkitController extends Zend_Controller_Action {
         }
     }
 
-    public function getTestkitAction() {
+    public function getTestkitAction()
+    {
         if ($this->hasParam('stage')) {
             $stage = $this->_getParam('stage');
             $schemeService = new Application_Service_Schemes();
             $this->view->testkitList = $schemeService->getAllDtsTestKitList(true);
-            $this->view->testkitStage =$stage;
+            $this->view->testkitStage = $stage;
         }
     }
-
 }
