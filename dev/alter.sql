@@ -2967,3 +2967,6 @@ INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_t
 
 -- Thana 13-Oct-2021
 ALTER TABLE `shipment_participant_map` ADD `received_pt_panel` VARCHAR(256) NULL DEFAULT NULL AFTER `vl_not_tested_reason`;
+
+-- Thana 27-Oct-2021
+ALTER TABLE `r_response_not_tested_reasons` ADD `collect_panel_receipt_date` VARCHAR(256) NOT NULL DEFAULT 'yes' AFTER `ntr_test_type`;
