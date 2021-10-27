@@ -2951,25 +2951,12 @@ CREATE TABLE `r_response_not_tested_reasons` (
  PRIMARY KEY (`ntr_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_type`, `ntr_status`) VALUES
-(1, 'No reagents for testing of PT panel', 'vl', 'active'),
-(2, 'No lab personal for testing of PT panel', 'vl', 'active'),
-(3, ' Instrument down', 'vl', 'active'),
-(4, 'Laboratory facility under renovation', 'vl', 'active'),
-(5, 'Laboratory facility no longer perform testing', 'vl', 'active'),
-(6, 'The results were invalid for the entire run', 'vl', 'active'),
-(7, 'The PT panel testing failed during sample processing', 'vl', 'active'),
-(8, 'The PT panel shipment was lost/damage', 'vl', 'active'),
-(9, 'Not received PT panel shipment due to country custom clearance issue', 'vl', 'active'),
-(10, 'Not received PT panel shipment due to incorrect contact info on the shipment package', 'vl', 'active'),
-(11, 'Issue with Sample' ,'vl', 'active'),
-(12, 'Machine not working' ,'vl', 'active');
 
 -- Thana 13-Oct-2021
 ALTER TABLE `shipment_participant_map` ADD `received_pt_panel` VARCHAR(256) NULL DEFAULT NULL AFTER `vl_not_tested_reason`;
 
 -- Thana 27-Oct-2021
-ALTER TABLE `r_response_not_tested_reasons` ADD `collect_panel_receipt_date` VARCHAR(256) NOT NULL DEFAULT 'yes' AFTER `ntr_test_type`;
+ALTER TABLE `r_response_not_tested_reasons` ADD `collect_panel_receipt_date` VARCHAR(256) NOT NULL DEFAULT 'no' AFTER `ntr_test_type`;
 ALTER TABLE `r_response_not_tested_reasons` CHANGE `ntr_test_type` `ntr_test_type` JSON NULL DEFAULT NULL;
 INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_type`, `ntr_status`) VALUES
 (1, 'No reagents for testing of PT panel', '["vl","eid","dts","covid19"]', 'active'),
