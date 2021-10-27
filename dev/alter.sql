@@ -2946,10 +2946,10 @@ ALTER TABLE `response_result_dts` ADD `repeat_exp_date_3` date NULL DEFAULT NULL
 CREATE TABLE `r_response_not_tested_reasons` (
  `ntr_id` int NOT NULL AUTO_INCREMENT,
  `ntr_reason` varchar(256) DEFAULT NULL,
- `ntr_test_type` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'vl, eid, dts, covid19, recency, dbs',
+ `ntr_test_type` varchar(256) DEFAULT NULL COMMENT 'vl, eid, dts, covid19, recency, dbs',
  `ntr_status` varchar(256) DEFAULT NULL,
  PRIMARY KEY (`ntr_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_type`, `ntr_status`) VALUES
 (1, 'No reagents for testing of PT panel', 'vl', 'active'),
