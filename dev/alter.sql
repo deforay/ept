@@ -2959,15 +2959,15 @@ ALTER TABLE `shipment_participant_map` ADD `received_pt_panel` VARCHAR(256) NULL
 ALTER TABLE `r_response_not_tested_reasons` ADD `collect_panel_receipt_date` VARCHAR(256) NOT NULL DEFAULT 'no' AFTER `ntr_test_type`;
 ALTER TABLE `r_response_not_tested_reasons` CHANGE `ntr_test_type` `ntr_test_type` JSON NULL DEFAULT NULL;
 INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_type`, `ntr_status`) VALUES
-(1, 'No reagents for testing of PT panel', '["vl","eid","dts","covid19"]', 'active'),
-(2, 'No lab personal for testing of PT panel', '["vl","eid","dts","covid19"]', 'active'),
-(3, ' Instrument down', '["vl","eid","dts","covid19"]', 'active'),
-(4, 'Laboratory facility under renovation', '["vl","eid","dts","covid19"]', 'active'),
-(5, 'Laboratory facility no longer perform testing', '["vl","eid","dts","covid19"]', 'active'),
-(6, 'The results were invalid for the entire run', '["vl","eid","dts","covid19"]', 'active'),
-(7, 'The PT panel testing failed during sample processing', '["vl","eid","dts","covid19"]', 'active'),
-(8, 'The PT panel shipment was lost/damage', '["vl","eid","dts","covid19"]', 'active'),
-(9, 'Not received PT panel shipment due to country custom clearance issue', '["vl","eid","dts","covid19"]', 'active'),
-(10, 'Not received PT panel shipment due to incorrect contact info on the shipment package', '["vl","eid","dts","covid19"]', 'active'),
-(11, 'Issue with Sample' ,'["vl","eid","dts","covid19"]', 'active'),
-(12, 'Machine not working' ,'["vl","eid","dts","covid19"]', 'active');
+(1, 'No reagents for testing of PT panel', '["vl","eid","dts","covid19", "recency"]', 'active'),
+(2, 'No lab personal for testing of PT panel', '["vl","eid","dts","covid19", "recency"]', 'active'),
+(3, ' Instrument down', '["vl","eid","dts","covid19", "recency"]', 'active'),
+(4, 'Laboratory facility under renovation', '["vl","eid","dts","covid19", "recency"]', 'active'),
+(5, 'Laboratory facility no longer perform testing', '["vl","eid","dts","covid19", "recency"]', 'active'),
+(6, 'The results were invalid for the entire run', '["vl","eid","dts","covid19", "recency"]', 'active'),
+(7, 'The PT panel testing failed during sample processing', '["vl","eid","dts","covid19", "recency"]', 'active'),
+(8, 'The PT panel shipment was lost/damage', '["vl","eid","dts","covid19", "recency"]', 'active'),
+(9, 'Not received PT panel shipment due to country custom clearance issue', '["vl","eid","dts","covid19", "recency"]', 'active'),
+(10, 'Not received PT panel shipment due to incorrect contact info on the shipment package', '["vl","eid","dts","covid19", "recency"]', 'active'),
+(11, 'Issue with Sample' ,'["vl","eid","dts","covid19", "recency"]', 'active'),
+(12, 'Machine not working' ,'["vl","eid","dts","covid19", "recency"]', 'active');
