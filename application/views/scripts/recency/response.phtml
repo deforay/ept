@@ -300,12 +300,10 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 						<tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
 							<td colspan="4">
 								<label>Reason for not testing the PT Panel</label> <span class="mandatory">*</span> :
-								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;">
+								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;" onchange="showHideTest(this.value);">
 									<option value="">--Select--</option>
-									<?php
-									foreach ($this->allNotTestedReason as $reason) {
-									?>
-										<option value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
+									<?php foreach ($this->allNotTestedReason as $reason) { ?>
+										<option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
 									<?php } ?>
 								</select>
 							</td>
@@ -409,6 +407,16 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 		}
 
 	}
+	$(document).ready(() => {
+		$('#isPtTestNotPerformed').trigger("change");
+		$('#receivedPtPanel').on("change", function() {
+			if ($(this).val() == 'yes') {
+				$('#receiptDate').addClass('isRequired');
+			} else {
+				$('#receiptDate').removeClass('isRequired');
+			}
+		});
+	});
 
 	function validateNow() {
 		flag = deforayValidator.init({
@@ -531,4 +539,13 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 			$(".logValFormVl").html("");
 		}
 	});
+
+	function collectPanelReceiptDate() {
+		let collectReceiptDate = ($("#vlNotTestedReason").find(':selected').attr('data-collect-panel-receipt-date'));
+		if (collectReceiptDate == 'no') {
+			$("#receivedPtPanel").val('no');
+		} else {
+			$("#receivedPtPanel").val('');
+		}
+	}
 </script>
