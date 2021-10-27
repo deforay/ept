@@ -510,12 +510,10 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                         <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
                             <td colspan="3">
                                 <label>Reason for not testing the PT Panel</label> <span class="mandatory">*</span> :
-                                <select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;">
+                                <select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;" onchange="collectPanelReceiptDate();">
                                     <option value="">--Select--</option>
-                                    <?php
-                                    foreach ($this->allNotTestedReason as $reason) {
-                                    ?>
-                                        <option value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
+                                    <?php foreach ($this->allNotTestedReason as $reason) { ?>
+                                        <option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
                                     <?php } ?>
                                 </select>
                             </td>
@@ -683,6 +681,14 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         <?php
         } ?>
 
+        $('#isPtTestNotPerformed').trigger("change");
+        $('#receivedPtPanel').on("change", function() {
+            if ($(this).val() == 'yes') {
+                $('#receiptDate').addClass('isRequired');
+            } else {
+                $('#receiptDate').removeClass('isRequired');
+            }
+        });
     });
     $(function() {
         <?php if ($maximumAllowed > 1) { ?>
@@ -1011,6 +1017,15 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
             $('#geneTypeAnchor' + sampleId).html('<i class="icon-beaker"></i> Add Gene Types')
             $('#geneTypeAnchor' + sampleId).addClass('btn-primary')
             $('#geneTypeAnchor' + sampleId).removeClass('btn-danger')
+        }
+    }
+
+    function collectPanelReceiptDate() {
+        let collectReceiptDate = ($("#vlNotTestedReason").find(':selected').attr('data-collect-panel-receipt-date'));
+        if (collectReceiptDate == 'no') {
+            $("#receivedPtPanel").val('no');
+        } else {
+            $("#receivedPtPanel").val('');
         }
     }
 </script>

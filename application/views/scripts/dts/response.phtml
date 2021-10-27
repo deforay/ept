@@ -763,6 +763,15 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         <?php if (count($allowedAlgorithms) == 1 && count($allowedAlgorithms) != 0) { ?>
             $('#algorithm').val('<?php echo $allowedAlgorithms[0]; ?>');
         <?php } ?>
+
+        $('#isPtTestNotPerformed').trigger("change");
+        $('#receivedPtPanel').on("change", function() {
+            if ($(this).val() == 'yes') {
+                $('#receiptDate').addClass('isRequired');
+            } else {
+                $('#receiptDate').removeClass('isRequired');
+            }
+        });
     });
     $(function() {
         showHideTest2();
@@ -913,4 +922,13 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 
         }
     });
+
+    function collectPanelReceiptDate() {
+        let collectReceiptDate = ($("#vlNotTestedReason").find(':selected').attr('data-collect-panel-receipt-date'));
+        if (collectReceiptDate == 'no') {
+            $("#receivedPtPanel").val('no');
+        } else {
+            $("#receivedPtPanel").val('');
+        }
+    }
 </script>
