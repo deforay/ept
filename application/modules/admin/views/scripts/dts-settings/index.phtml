@@ -71,7 +71,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group malawi-allowed" style="display: none;">
                 <label for="conditionOfPtSample" class="col-lg-3 control-label">Display Sample Condition Fields on Participant Result Form <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control" id="conditionOfPtSample" name="conditionOfPtSample" title="Please select sample condition fields on participant result form">
@@ -82,7 +82,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group malawi-allowed" style="display: none;">
                 <label for="allowRepeatTest" class="col-lg-3 control-label">Display Repeat Test Fields <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control" id="allowRepeatTest" name="allowRepeatTest" title="Please select sample condition fields on participant result form">
@@ -184,7 +184,22 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
         $('.multipleSelect').multiselect({
             includeSelectAllOption: true
         });
-        checkIfTest3IsMandatory();
+        // checkIfTest3IsMandatory();
+
+        $('#allowedAlgorithms :selected').each(function() {
+            if ($(this).val() == 'malawiNationalDtsAlgo') {
+                $('.malawi-allowed').show();
+            }
+        });
+
+        $('#allowedAlgorithms').change(function() {
+            var _val = $(this).val();
+            if (_val.indexOf("malawiNationalDtsAlgo") > -1) {
+                $('.malawi-allowed').show();
+            } else {
+                $('.malawi-allowed').hide();
+            }
+        });
     });
 
 
