@@ -102,9 +102,24 @@ if (count($this->shipment) > 0) {
     <div class="row" align="center">
         <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateBulkReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
     </div>
-    <?php if($reportQueue != 'disabled'){?>
-    <div class="summaryDivTop row" align="center"></div>
-    <?php }?>
+    <?php if ($reportQueue != 'disabled') { ?>
+        <div class="summaryDivTop row" align="center">
+
+            <?php
+            if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf")) {
+                $summaryFilePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
+            ?>
+                <a href=\"/d/<?php echo $summaryFilePath; ?>\" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Summary Report</a>
+            <?php }
+
+            if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . ".zip")) {
+                $zipFilePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . ".zip");
+            ?>
+                <br><a href=\"/d/<?php echo $zipFilePath; ?>\" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp Download All Reports</a><br>
+            <?php } ?>
+
+        </div>
+    <?php } ?>
     <br /><br />
     <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
         <thead>
@@ -208,13 +223,13 @@ if (count($this->shipment) > 0) {
                 }
             } ?>
         </div> -->
-        <?php if($reportQueue != 'disabled'){?>
-        <div class="row">
-            <div id="summaryDiv" class="col-md-12">
+        <?php if ($reportQueue != 'disabled') { ?>
+            <div class="row">
+                <div id="summaryDiv" class="col-md-12">
 
+                </div>
             </div>
-        </div>
-        <?php }?>
+        <?php } ?>
     </div>
     <script type="text/javascript" charset="utf-8">
         var oTable = null;
@@ -225,65 +240,11 @@ if (count($this->shipment) > 0) {
         if ($this->shipment[0]['distribution_date'] < $currentDate) {
         ?>
             checkReportDate = true;
-            <?php
+        <?php
         }
 
-        // if ($this->shipment[0]['report_generated'] == 'yes') {
-            if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf")) {
-                $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
-            ?>
-                //document.getElementById("summaryDiv").innerHTML = "<a href=\"/d/<?php echo $filePath; ?>\" id='summaryReport' class='btn btn-info btn-sm col-md-3' target='_blank' style='margin:10px 10px;'><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>";
-                $(".summaryDivTop").html("<a href=\"/d/<?php echo $filePath; ?>\" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download  Summary Report</a></a>");
-        <?php }
-        // } 
         ?>
         $(document).ready(function() {
-
-            <?php
-            // if ($this->shipment[0]['report_generated'] == 'yes') {
-
-                $buttonCount = (int) ceil($this->responseCount["reported_count"] / 50);
-                $responseCnt = $this->responseCount["reported_count"];
-                $start = 1;
-                if ($this->responseCount["reported_count"] >= 50) {
-                    $lastEnd = 50;
-                } else {
-                    $lastEnd = $this->responseCount["reported_count"];
-                }
-                for ($i = 1; $i <= $buttonCount; $i++) {
-                    if ($this->responseCount["reported_count"] >= 50) {
-                        $end = $i * 50;
-                    } else {
-                        $end = $this->responseCount["reported_count"];
-                    }
-                    if ($end > $this->responseCount["reported_count"]) {
-                        $sub = $this->responseCount["reported_count"] - $lastEnd;
-                        $start = $lastEnd + 1;
-                        $end = $lastEnd + $sub;
-                    } else {
-                        if ($i != 1) {
-                            $start = $lastEnd + 1;
-                            $lastEnd = $end;
-                        }
-                    }
-                    if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .
-                        "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] .
-                        "-" . $start .
-                        "-" . $end .
-                        "-bulk-participant-report.pdf")) {
-                        $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .
-                            "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] .
-                            "-" . $start .
-                            "-" . $end .
-                            "-bulk-participant-report.pdf");
-            ?>
-                        $("#summaryDiv").append("<a href=\"/d/<?php echo $filePath; ?>\" class='btn btn-info btn-sm col-md-3' target='_BLANK' id=\"<?php echo $start . " - " . $end . " - bulk - participant - report "; ?>\" style='margin:10px 10px;'><i class='icon-file-text'></i> Download <?php echo $start; ?> - <?php echo $end; ?> Participants Report</a> ");
-            <?php
-                    }
-                }
-            // } 
-            ?>
-
 
 
             $('#shipmentEvaluation').on('click', ".clicker", function() {

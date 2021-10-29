@@ -5,13 +5,15 @@
  *
  * @author Amit Dugar <amit@deforay.com>
  */
-class Pt_Commons_General {
+class Pt_Commons_General
+{
 
     /**
      * Used to format date from dd-mmm-yyyy to yyyy-mm-dd for storing in database
      *
      */
-    public static function dateFormat($date) {
+    public static function dateFormat($date)
+    {
         if (!isset($date) || $date == null || $date == "" || $date == "0000-00-00") {
             return "0000-00-00";
         } else {
@@ -38,7 +40,8 @@ class Pt_Commons_General {
         return strpos($haystack, $needle) !== false;
     }
 
-    public static function humanDateFormat($date) {
+    public static function humanDateFormat($date)
+    {
 
         if ($date == null || $date == "" || $date == "0000-00-00" || Pt_Commons_General::stringContains("0000-00-00", $date)) {
             return "";
@@ -53,7 +56,8 @@ class Pt_Commons_General {
         }
     }
 
-    public static function file_download($file, $name, $mime_type) {
+    public static function file_download($file, $name, $mime_type)
+    {
 
         if (!is_readable($file))
             die('File not found or inaccessible!');
@@ -124,7 +128,8 @@ class Pt_Commons_General {
         die();
     }
 
-    public function copyDirectoryContents($source, $destination, $deleteSource=false) {
+    public function copyDirectoryContents($source, $destination, $deleteSource = false)
+    {
         if (!is_dir($destination)) {
             $oldumask = umask(0);
             mkdir($destination, 01777); // so you get the sticky bit set 
@@ -138,7 +143,8 @@ class Pt_Commons_General {
         closedir($dir_handle);
     }
 
-    public function moveDirectoryContents($source, $destination, $deleteSource=false) {
+    public function moveDirectoryContents($source, $destination, $deleteSource = false)
+    {
         if (!is_dir($destination)) {
             $oldumask = umask(0);
             mkdir($destination, 01777); // so you get the sticky bit set 
@@ -157,7 +163,8 @@ class Pt_Commons_General {
         }
     }
 
-    function removeDirectory($dirname) {
+    function removeDirectory($dirname)
+    {
         // Sanity check
         if (!file_exists($dirname)) {
             return false;
@@ -185,18 +192,21 @@ class Pt_Commons_General {
         return rmdir($dirname);
     }
 
-    public static function getDateTime() {
+    public static function getDateTime()
+    {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone($conf->timezone));
         return $date->format('Y-m-d H:i:s');
     }
 
-    public static function getVersion() {
+    public static function getVersion()
+    {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         return $conf->app->version;
     }
-    
-    public static function excelDateFormat($date) {
+
+    public static function excelDateFormat($date)
+    {
 
         if ($date == null || $date == "" || $date == "0000-00-00") {
             return "";
@@ -205,23 +215,73 @@ class Pt_Commons_General {
             $time = isset($dateTimeArray[1]) ? " " . $dateTimeArray[1] : '';
             $dateArray = explode('-', $dateTimeArray[0]);
             $newDate = $dateArray[2] . "/";
-            return $newDate .= $dateArray[1] . "/" . $dateArray[0].$time;
+            return $newDate .= $dateArray[1] . "/" . $dateArray[0] . $time;
         }
     }
 
-    function getMonthsInRange($startDate, $endDate, $type = ""){
-		$months = array();
-		while (strtotime($startDate) <= strtotime($endDate)) {
-			//$monthYear=array('year' => date('Y', strtotime($startDate)),'month' => date('M', strtotime($startDate)),);
-			$monthYear = date('M', strtotime($startDate)) . "-" . date('Y', strtotime($startDate));
-			$months[$monthYear] = $monthYear;
-			$startDate = date('d M Y', strtotime($startDate . '+ 1 month'));
+    public function getMonthsInRange($startDate, $endDate, $type = "")
+    {
+        $months = array();
+        while (strtotime($startDate) <= strtotime($endDate)) {
+            //$monthYear=array('year' => date('Y', strtotime($startDate)),'month' => date('M', strtotime($startDate)),);
+            $monthYear = date('M', strtotime($startDate)) . "-" . date('Y', strtotime($startDate));
+            $months[$monthYear] = $monthYear;
+            $startDate = date('d M Y', strtotime($startDate . '+ 1 month'));
         }
-        if($type == "dashboard"){
+        if ($type == "dashboard") {
             $monthYear = date('M', strtotime($endDate)) . "-" . date('Y', strtotime($endDate));
             $months[$monthYear] = $monthYear;
         }
-		return $months;
-	}
-}
+        return $months;
+    }
 
+    public function zipFolder($source, $destination)
+    {
+        if (!extension_loaded('zip') || !file_exists($source)) {
+            return false;
+        }
+
+        $zip = new ZipArchive();
+        if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
+            return false;
+        }
+
+        $source = str_replace('\\', '/', realpath($source));
+
+        if (is_dir($source) === true) {
+            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
+
+            foreach ($files as $file) {
+                $file = str_replace('\\', '/', $file);
+
+                // Ignore "." and ".." folders
+                if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..')))
+                    continue;
+
+                $file = realpath($file);
+
+                if (is_dir($file) === true) {
+                    $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
+                } else if (is_file($file) === true) {
+                    $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
+                }
+            }
+        } else if (is_file($source) === true) {
+            $zip->addFromString(basename($source), file_get_contents($source));
+        }
+
+        return $zip->close();
+    }
+    public function rmdirRecursive($dir)
+    {
+        foreach (scandir($dir) as $file) {
+            if ('.' === $file || '..' === $file) continue;
+            if (is_dir("$dir/$file")) {
+                $this->rmdirRecursive("$dir/$file");
+            } else {
+                unlink("$dir/$file");
+            }
+        }
+        rmdir($dir);
+    }
+}

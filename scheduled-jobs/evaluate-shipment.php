@@ -394,32 +394,6 @@ class SummaryPDF extends TCPDF
         }
         $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . "    ", 0, false, 'R', 0, '', 0, false, 'T', 'M');
     }
-
-    function dateFormat($dateIn)
-    {
-
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-
-        // $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications'=>true, 'nestSeparator'=>"#"));
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications' => false));
-
-        $formatDate = $config->participant->dateformat;
-
-        if (empty($dateIn) && $dateIn == null || $dateIn == "" || $dateIn == "0000-00-00") {
-            return '';
-        } else {
-
-            $dateArray = explode('-', $dateIn);
-            $newDate = $dateArray[2] . "-";
-
-            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-            $mon = $monthsArray[$dateArray[1] - 1];
-            if ($formatDate == 'dd-M-yy')
-                return  $newDate . $mon . "-" . $dateArray[0];
-            else
-                return   $mon . "-" . $newDate  . $dateArray[0];
-        }
-    }
 }
 class PDF_Rotate extends FPDI
 {
@@ -509,18 +483,10 @@ class Pdf_concat extends FPDI
         }
     }
 }
-function rmdir_recursive($dir)
-{
-    foreach (scandir($dir) as $file) {
-        if ('.' === $file || '..' === $file) continue;
-        if (is_dir("$dir/$file")) {
-            rmdir_recursive("$dir/$file");
-        } else {
-            unlink("$dir/$file");
-        }
-    }
-    rmdir($dir);
-}
+
+$general = new Pt_Commons_General();
+
+
 try {
 
     $db = Zend_Db::factory($conf->resources->db);
@@ -552,8 +518,7 @@ try {
         $logo = $reportService->getReportConfigValue('logo');
         $logoRight = $reportService->getReportConfigValue('logo-right');
         $layout = $reportService->getReportConfigValue('report-layout');
-        $possibleDtsResults = $schemeService->getPossibleResults('dts');
-        $recencyPossibleResults = $schemeService->getPossibleResults('recency');
+        
         $passPercentage = $commonService->getConfig('pass_percentage');
         $trainingInstance = $commonService->getConfig('training_instance');
         $trainingInstanceText = $commonService->getConfig('training_instance_text');
@@ -562,14 +527,21 @@ try {
         $customField2 = $commonService->getConfig('custom_field_2');
         $haveCustom = $commonService->getConfig('custom_field_needed');
         $recencyAssay = $schemeService->getRecencyAssay();
-        if (isset($evalResult[0]['shipment_code']) && $evalResult[0]['shipment_code'] != "") {
-            $shipmentCodePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $evalResult[0]['shipment_code'];
-            if (file_exists($shipmentCodePath)) {
-                rmdir_recursive($shipmentCodePath);
-                mkdir($shipmentCodePath);
-            }
-        }
+        $reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
+
         foreach ($evalResult as $evalRow) {
+
+            if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "") {
+
+                $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
+                if (file_exists($shipmentCodePath)) {
+                    $general->rmdirRecursive($shipmentCodePath);
+                    mkdir($shipmentCodePath, 0777, true);
+                }
+                if (file_exists($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip")) {
+                    unlink($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
+                }
+            }
             // For Identify the geny types for covid-19 test type
             if (isset($evalRow['scheme_type']) && $evalRow['scheme_type'] == 'covid19') {
                 $allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
@@ -649,6 +621,8 @@ try {
                 }
                 include($summaryLayoutFile);
             }
+
+            $general->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
 
             $reportCompletedStatus = 'evaluated';
             $notifyType = 'individual_reports';

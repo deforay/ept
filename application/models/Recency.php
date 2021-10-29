@@ -21,7 +21,7 @@ class Application_Model_Recency
 
         $possibleResultsArray = $schemeService->getPossibleResults('recency');
         $possibleResults = array();
-        foreach ($possibleResultsArray as $pr) {
+        foreach ($possibleResultsArray as $possibleResults) {
             $possibleResults['result_code'] =  $possibleResults['id'];
         }
 
@@ -30,6 +30,8 @@ class Application_Model_Recency
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
         foreach ($shipmentResult as $shipment) {
+
+            $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
@@ -141,10 +143,10 @@ class Application_Model_Recency
                 $grandTotal = ($responseScore + $documentationScore);
                 if ($grandTotal < $config->evaluation->recency->passPercentage) {
                     $scoreResult = 'Fail';
-                    /* $this->failureReason[] = array(
+                    $this->failureReason[] = array(
                         'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $config->evaluation->recency->passPercentage . "</strong>)",
                         'correctiveAction' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $config->evaluation->recency->passPercentage . "</strong>)",
-                    ); */
+                    );
                     $correctiveActionList[] = 15;
                 } else {
                     $scoreResult = 'Pass';
@@ -212,8 +214,10 @@ class Application_Model_Recency
                 }
                 //$counter++;
             } else {
-                $this->failureReason[]['warning'] =  "Response was submitted after the last response date.";
-                $this->db->update('shipment_participant_map', array('failure_reason' => json_encode($this->failureReason)), "map_id = " . $shipment['map_id']);
+                $failureReason =  array(
+                    'warning' => "Response was submitted after the last response date."
+                );                
+                $this->db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
             $counter++;
         }

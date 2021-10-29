@@ -12,6 +12,8 @@ $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
 $dtsResults = array();
+
+$possibleDtsResults = $schemeService->getPossibleResults('dts');
 foreach ($possibleDtsResults as $pr) {
     $dtsResults[$pr['id']] = ucfirst(strtolower($pr['response']));
 }
@@ -536,13 +538,16 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (!empty($result['shipment_code'])) {
             $nameParts[] = $result['shipment_code'];
         }
-        if (!empty($result['state'])) {
+        if (!empty($result['unique_identifier']) && $result['unique_identifier'] != 'NULL') {
+            $nameParts[] = ucfirst($result['unique_identifier']);
+        }
+        if (!empty($result['state']) && $result['state'] != 'NULL') {
             $nameParts[] = ucfirst($result['state']);
         }
-        if (!empty($result['region'])) {
+        if (!empty($result['region']) && $result['region'] != 'NULL') {
             $nameParts[] = ucfirst($result['region']);
         }
-        if (!empty($result['city'])) {
+        if (!empty($result['city']) && $result['city'] != 'NULL') {
             $nameParts[] = ucfirst($result['city']);
         }
 

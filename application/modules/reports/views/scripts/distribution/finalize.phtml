@@ -101,8 +101,12 @@ if (count($this->shipment) > 0) {
         </div>
     <?php }
     ?>
-    <?php if($reportQueue != 'disabled'){?>
-    <div class="summaryDivTop row" align="center"></div>
+    <?php if ($reportQueue != 'disabled') { ?>
+        <div class="summaryDivTop row" align="center">
+            
+
+
+        </div>
     <?php } ?>
     <br /><br />
     <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
@@ -219,19 +223,20 @@ if (count($this->shipment) > 0) {
     <?php
     }
     ?>
-    <?php if($reportQueue != 'disabled'){?>
-    <div class="row">
-        <div id="summaryDiv" class="col-md-12">
-            <!-- <pre><?php 
-            $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");$filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
-            echo $filePath;
-            ?></pre>
+    <?php if ($reportQueue != 'disabled') { ?>
+        <div class="row">
+            <div id="summaryDiv" class="col-md-12">
+                <!-- <pre><?php
+                            $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
+                            $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
+                            echo $filePath;
+                            ?></pre>
             <a href="<?php echo $this->baseUrl("/d/" . $filePath); ?>">Download</a>
 
-            <pre><?php print_r($this->shipment[0]['report_generated']);?></pre> -->
+            <pre><?php print_r($this->shipment[0]['report_generated']); ?></pre> -->
+            </div>
         </div>
-    </div>
-    <?php }?>
+    <?php } ?>
     <div class="col-lg-12" align="center" id="finalizeBtn" style="display:none;clear: both;">
         <a href="javascript:void(0)" class="btn btn-primary col-lg-5" id="" style="margin:10px auto;float: none;" onclick="finalizeReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i> Finalize this Shipment</a> <br />
     </div>
@@ -252,15 +257,9 @@ if (count($this->shipment) > 0) {
 
             if (getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>summaryReportTab')) {
                 <?php
-                if ($this->shipment[0]['report_generated'] == 'yes') {
-                    if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf")) {
-                        $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
-                ?>
-                        document.getElementById("summaryDiv").innerHTML = "<a href=\"<?php echo $this->baseUrl("/d/" . $filePath); ?>\" id='summaryReport' class='btn btn-success btn-sm' target='_blank' style='margin:10px 10px;'><i class='icon-file-text'></i> &nbsp; Download Summary Report</a></a>";
-                        $(".summaryDivTop").html("<a href=\"<?php echo $this->baseUrl("/d/" . $filePath); ?>\" class='btn btn-success btn-sm' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp; Download Summary Report</a></a>");
-                <?php
-                    }
-                }
+
+
+
                 ?>
             }
 
