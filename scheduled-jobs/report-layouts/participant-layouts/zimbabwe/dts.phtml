@@ -532,9 +532,24 @@ if (sizeof($resultArray['shipment']) > 0) {
         //        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
         //    }
 
-        $fileName = $result['shipment_code'] . "-" . $result['map_id'] . ".pdf";
+        $nameParts = array();
+        if (!empty($result['shipment_code'])) {
+            $nameParts[] = $result['shipment_code'];
+        }
+        if (!empty($result['state'])) {
+            $nameParts[] = ucfirst($result['state']);
+        }
+        if (!empty($result['region'])) {
+            $nameParts[] = ucfirst($result['region']);
+        }
+        if (!empty($result['city'])) {
+            $nameParts[] = ucfirst($result['city']);
+        }
+
+        $fileName = implode("-", $nameParts) . "-" . $result['map_id'] . ".pdf";
         $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
         $fileName = str_replace(" ", "-", $fileName);
+        $fileName = trim(preg_replace('/-+/', '-', $fileName), '-');
         $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 
