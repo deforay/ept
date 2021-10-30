@@ -484,13 +484,15 @@ class Pdf_concat extends FPDI
     }
 }
 
-$general = new Pt_Commons_General();
+
 
 
 try {
 
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
+
+    $generalModel = new Pt_Commons_General();
 
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
@@ -535,7 +537,7 @@ try {
 
                 $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
                 if (file_exists($shipmentCodePath)) {
-                    $general->rmdirRecursive($shipmentCodePath);
+                    $generalModel->rmdirRecursive($shipmentCodePath);
                     mkdir($shipmentCodePath, 0777, true);
                 }
                 if (file_exists($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip")) {
@@ -622,7 +624,7 @@ try {
                 include($summaryLayoutFile);
             }
 
-            $general->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
+            $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
 
             $reportCompletedStatus = 'evaluated';
             $notifyType = 'individual_reports';

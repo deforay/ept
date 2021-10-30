@@ -85,16 +85,15 @@ if (count($this->shipment) > 0) {
     <div class="summaryDivTop row" align="center">
 
         <?php
-        if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . "-summary.pdf")) {
-            $summaryFilePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . "-summary.pdf");
+        $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
+        if (file_exists($summaryFilePath)) {
         ?>
-            <a href=\"/d/<?php echo $summaryFilePath; ?>\" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Summary Report</a>
+            <a href="<?= '/d/' . base64_encode($summaryFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Summary Report</a>
         <?php }
-
-        if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . ".zip")) {
-            $zipFilePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . ".zip");
+        $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . ".zip");
+        if (file_exists($zipFilePath)) {
         ?>
-            <br><a href=\"/d/<?php echo $zipFilePath; ?>\" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp Download All Reports</a><br>
+            <br><a href="<?= '/d/' . base64_encode($zipFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp Download All Reports</a><br>
         <?php } ?>
 
     </div>
