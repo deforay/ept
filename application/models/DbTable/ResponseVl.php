@@ -56,18 +56,18 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
 
     public function updateResultsByAPI($params, $dm)
     {
+
         $sampleIds = $params["vlData"]->Section3->data->no->tableRowTxt->id;
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = '" . $sampleId . "'");
             //Set tnd value if Yes
-            $tnd = NULL;
-            if (isset($params["vlData"]->Section3->data->isPtTestNotPerformedRadio) && $params["vlData"]->Section3->data->isPtTestNotPerformedRadio == 'yes') {
+            $tnd = null;
+            if ($params["vlData"]->Section3->data->isPtTestNotPerformedRadio == 'yes') {
                 $params["vlData"]->Section3->data->no->vlResult[$key] = '';
-            } else if (isset($params["vlData"]->Section3->data->no->tndReferenceRadioSelected[$key]) && $params["vlData"]->Section3->data->no->tndReferenceRadioSelected[$key] == 'yes') {
+            } else if ($params["vlData"]->Section3->data->no->tndReferenceRadioSelected[$key] == 'yes') {
                 $tnd = 'yes';
                 $params["vlData"]->Section3->data->no->vlResult[$key] = '0.00';
             }
-
             if ($res == null || $res === false) {
                 $this->insert(array(
                     'shipment_map_id'       =>  $params['mapId'],
