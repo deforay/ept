@@ -1037,6 +1037,19 @@ class Application_Service_Evaluation
 					'lot_no_3' => $params['lot_no_3'],
 					'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
 					'test_result_3' => $params['test_result_3'][$i],
+
+					'name_of_pcr_reagent_1'     => $params['name_of_pcr_reagent_1'],
+					'name_of_pcr_reagent_2'     => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['name_of_pcr_reagent_2'] : null,
+					'name_of_pcr_reagent_3'     => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['name_of_pcr_reagent_3'] : null,
+
+					'pcr_reagent_lot_no_1'      => $params['pcr_reagent_lot_no_1'],
+					'pcr_reagent_lot_no_2'      => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['pcr_reagent_lot_no_2'] : null,
+					'pcr_reagent_lot_no_3'      => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['pcr_reagent_lot_no_3'] : null,
+
+					'pcr_reagent_exp_date_1'    => Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_1']),
+					'pcr_reagent_exp_date_2'    => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_2']) : null,
+					'pcr_reagent_exp_date_3'    => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_3']) : null,
+
 					'reported_result' => $params['reported_result'][$i],
 					'updated_by' => $admin,
 					'updated_on' => new Zend_Db_Expr('now()')
