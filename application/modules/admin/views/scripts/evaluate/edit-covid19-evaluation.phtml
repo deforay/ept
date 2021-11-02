@@ -125,9 +125,9 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 	<thead>
 		<tr align="CENTER" class="dark">
 			<th></th>
-			<th style="text-align: center">Test-1</th>
-			<th style="text-align: center" class='testTwo'>Test-2</th>
-			<th style="text-align: center" class='testThree'>Test-3</th>
+			<th class='testOne' style="text-align: center">Test-1</th>
+			<th class='testTwo' style="text-align: center" class='testTwo'>Test-2</th>
+			<th class='testThree' style="text-align: center" class='testThree'>Test-3</th>
 
 		</tr>
 	</thead>
@@ -227,9 +227,9 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 	<thead>
 		<tr align="CENTER" class="dark">
 			<th style="text-align: center;">Sample Number</th>
-			<th style="text-align: center;width:14.2%;">Result-1</th>
-			<th style="text-align: center;width:14.2%;" class='testTwo'>Result-2</th>
-			<th style="text-align: center;width:14.2%;" class='testThree'>Result-3</th>
+			<th class='resultOne' style="text-align: center;width:14.2%;">Result-1</th>
+			<th class='testTwo' style="text-align: center;width:14.2%;" class='testTwo'>Result-2</th>
+			<th class='testThree' style="text-align: center;width:14.2%;" class='testThree'>Result-3</th>
 			<th style="text-align: center;width:14.2%;">Reported Result</th>
 			<th style="text-align: center;width:14.2%;">Reference Result</th>
 			<th style="text-align: center;width:14.2%;">Score</th>
@@ -374,7 +374,8 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 	});
 
 	function showHideTest(no) {
-
+		$('.testOne').html('Test-1');
+		$('.resultOne').html('Result-1');
 		if (no != "") {
 			$('.tests').show();
 		} else {
@@ -382,6 +383,8 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 		}
 		if (no == 1) {
 			$('.testTwo,.testThree').hide();
+			$('.testOne').html('Test');
+			$('.resultOne').html('Result');
 			test2Hidden = 'yes';
 			test3Hidden = 'yes';
 
