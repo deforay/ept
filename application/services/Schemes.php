@@ -611,7 +611,8 @@ class Application_Service_Schemes
                 ->where("sp.is_excluded = 'no' ")
                 //->where("sp.is_pt_test_not_performed != 'yes' ")
                 //->where("res.reported_viral_load != '' ")
-                ->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayId . '"%');
+                ->where('JSON_EXTRACT(sp.attributes, "$.vl_assay") = ' . $vlAssayId);
+                
             //echo $sql;die;
             $response = $db->fetchAll($sql);
 

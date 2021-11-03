@@ -2972,3 +2972,7 @@ INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_t
 (10, 'Not received PT panel shipment due to incorrect contact info on the shipment package', '["vl","eid","dts","covid19","recency"]', 'active'),
 (11, 'Issue with Sample' ,'["vl","eid","dts","covid19","recency"]', 'active'),
 (12, 'Machine not working' ,'["vl","eid","dts","covid19","recency"]', 'active');
+
+-- Amit 03 Nov 2021
+
+ALTER TABLE `shipment_participant_map` CHANGE `attributes` `attributes` JSON NULL DEFAULT NULL;

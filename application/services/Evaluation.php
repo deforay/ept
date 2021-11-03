@@ -2065,7 +2065,7 @@ class Application_Service_Evaluation
 						->where("vlCal.shipment_id=?", $shipmentId)
 						->where("vlCal.vl_assay=?", $vlAssayRow['id'])
 						->where("refVl.control!=1")
-						->where('sp.attributes like ? ', '%"vl_assay":"' . $vlAssayRow['id'] . '"%')
+						->where('JSON_EXTRACT(sp.attributes, "$.vl_assay") = ' . $vlAssayRow['id'])
 						->where("sp.is_excluded not like 'yes'")
 						->group('refVl.sample_id');
 					// die($vlQuery);
@@ -2074,7 +2074,7 @@ class Application_Service_Evaluation
 					if ($vlAssayRow['id'] == 6) {
 						$cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
 							->where("sp.is_excluded not like 'yes'")
-							->where('sp.attributes like ? ', '%"vl_assay":"6"%')
+							->where('JSON_EXTRACT(sp.attributes, "$.vl_assay") = 6')
 							->where('sp.shipment_id = ? ', $shipmentId);
 						$cResult = $db->fetchAll($cQuery);
 
