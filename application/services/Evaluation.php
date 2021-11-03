@@ -2048,7 +2048,8 @@ class Application_Service_Evaluation
 					))
 					->where("vlCal.shipment_id=?", $shipmentId)
 					->where("refVl.control!=1")
-					->where("(sp.attributes like CONCAT('%\"vl_assay\":\"', vlCal.vl_assay, '\"%') )")
+					//->where("(sp.attributes like CONCAT('%\"vl_assay\":\"', vlCal.vl_assay, '\"%') )")
+					->where('JSON_EXTRACT(sp.attributes, "$.vl_assay") = vlCal.vl_assay')
 					->where("sp.is_excluded not like 'yes'")
 					->group('rvla.name')
 					->order('vlCal.no_of_responses DESC');
