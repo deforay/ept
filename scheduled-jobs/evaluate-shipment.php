@@ -520,7 +520,7 @@ try {
         $logo = $reportService->getReportConfigValue('logo');
         $logoRight = $reportService->getReportConfigValue('logo-right');
         $layout = $reportService->getReportConfigValue('report-layout');
-        
+
         $passPercentage = $commonService->getConfig('pass_percentage');
         $trainingInstance = $commonService->getConfig('training_instance');
         $trainingInstanceText = $commonService->getConfig('training_instance_text');

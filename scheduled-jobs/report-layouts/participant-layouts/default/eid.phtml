@@ -236,7 +236,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($methodOfEvaluation == 'standard') {
                 $labRes = '<span style="font-weight: bold;font-size:13px;text-align:center;">Your laboratory test results : <br/></span>';
             } else if ($methodOfEvaluation == 'iso17043') {
-                $labRes = '<span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
+                $labRes = "";
+                // $labRes = '<span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
             }
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3">';
             if ($methodOfEvaluation == 'standard') {
@@ -326,7 +327,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tap under
             the Main Navigation.</span>';
 
-            $html .= '<h5>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h5>';
+            $html .= '<h5>Information with respect to compliance with standards ISO 13528:2015(E) </br>Preparation of Proficiency Test items:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods. Samples were tested for
             homogeneity prior to shipment and met program requirements.</span>';
 
@@ -335,8 +336,21 @@ if (sizeof($resultArray['shipment']) > 0) {
             COBAS Ampliprep/Taqman HIV-1 Qualitative Test.</span>';
 
             $html .= '<h5>Subcontracting:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the Proficiency Testing Program.  Each participant has been assigned a unique identification number for purpose of database management.</span>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The transport of PT items and the ePT site administration are subcontracted.</span>';
 
+            $html .= '<h4>Confidentiality:</h4>';
+            $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">The identity of participants is kept confidential and known only to the staff involved in the Proficiency Testing Program. Each participant has been assigned a unique identification number for database management purposes.</span>';
+
+            if (isset($resultArray['shipment'][0]['user_comment']) && $resultArray['shipment']['user_comment'] != "") {
+                $html .= '<br/><hr>';
+                $html .= '<table border="1" cellpadding="3">
+                            <tr>
+                                <td style="text-align:justify;font-size:12;font-weight:normal;">
+                                    NOTE: ' . $resultArray['shipment']['user_comment'] . '
+                                </td>
+                            </tr>
+                        </table>';
+            }
             if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
                 $html .= '<br/><hr>';
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';

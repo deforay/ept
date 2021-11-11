@@ -2,7 +2,7 @@
 require_once('tcpdf/tcpdf.php');
 require_once(CRON_PATH . '/General.php');
 $general = new General();
-// Zend_Debug::dump($resultArray);die;
+// Zend_Debug::dump($resultArray['shipment']['user_comment']);die;
 //require_once('libchart/classes/libchart.php');
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
@@ -183,7 +183,7 @@ if ($resultArray['shipment'] != "") {
 
             $k = count($resultArray['shipment']['avgAssayResult']);
 
-            //Zend_Debug::dump($resultArray['shipment']['avgAssayResult']);die;
+            // Zend_Debug::dump($resultArray['shipment']['avgAssayResult']);die;
 
             $avgAssay = "";
             if ($k > 0) {
@@ -195,7 +195,7 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay .= '<table border="1" cellpadding="4">';
 
                     $avgAssay .= '<tr style="background-color:#fff;">';
-                    $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . $assayResult['vlAssay'] . '</span></td>';
+                    $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . implode(",", $assayResult['vlAssay']) . '</span></td>';
                     $avgAssay .= '</tr>';
 
 
@@ -338,6 +338,8 @@ if ($resultArray['shipment'] != "") {
             //Zend_Debug::dump($resultArray['shipment']['avgAssayResult']);die;
 
             $avgAssay = "";
+            $assay = "";
+            $assayCount = 0;
             if ($k > 0) {
                 foreach ($resultArray['shipment']['avgAssayResult'] as $assayResult) {
                     $avgAssay = '';
@@ -347,7 +349,7 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay .= '<table border="1" cellpadding="4">';
 
                     $avgAssay .= '<tr style="background-color:#fff;">';
-                    $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . $assayResult['vlAssay'] . '</span></td>';
+                    $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . implode(",", $assayResult['vlAssay']) . '</span></td>';
                     $avgAssay .= '</tr>';
 
 
@@ -412,17 +414,37 @@ if ($resultArray['shipment'] != "") {
                     if ($pdf->getY() >= 250) {
                         $pdf->AddPage();
                     }
+                    $assay = implode(",", $assayResult['vlAssayWithCount']);
+                    $assayCount += $assayResult['participantCount'];
                 }
             }
-            $html = '<h4>Information with respect to compliance with standards ISO 13528:2015(E) Preparation of Proficiency Test items:</h4>';
+            $html = "";
+            if ($assay != "") {
+                $html .= '<h4>Number of Participants for each platform using Other platforms and In-House Assays (Total ' . $assayCount . '):</h4>';
+                $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">' . $assay . '</span>';
+            }
+
+            $html .= '<h4>Information with respect to compliance with standards ISO 13528:2015(E)<br>Preparation of Proficiency Test items:</h4>';
             $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods.  Samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
             $html .= '<h4>Procedures used to establish the assigned value:</h4>';
             $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Team using COBAS Ampliprep/Taqman HIV-1 Qualitative Test.</span>';
 
             $html .= '<h4>Subcontracting:</h4>';
-            $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">Only the transport of PT items is subcontracted. The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing. Each participant has been assigned a unique identification number for purpose of database management.</span>';
+            $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">The transport of PT items and the ePT site administration are subcontracted.</span>';
 
+            $html .= '<h4>Confidentiality:</h4>';
+            $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">The identity of participants is kept confidential and known only to the staff involved in the Proficiency Testing Program. Each participant has been assigned a unique identification number for database management purposes.</span>';
+            if (isset($resultArray['shipment']['user_comment']) && $resultArray['shipment']['user_comment'] != "") {
+                $html .= '<br/><hr>';
+                $html .= '<table border="1" cellpadding="3">
+                            <tr>
+                                <td style="text-align:justify;font-size:12;font-weight:normal;">
+                                    NOTE: ' . $resultArray['shipment']['user_comment'] . '
+                                </td>
+                            </tr>
+                        </table>';
+            }
             if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
                 $html .= '<br/><hr>';
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
