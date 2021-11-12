@@ -1252,7 +1252,6 @@ class Application_Service_Evaluation
 					$shipmentResult[$i]['extractionAssayVal'] = (isset($extractionAssay[$attributes['extraction_assay']]) ? $extractionAssay[$attributes['extraction_assay']] : "");
 				}
 				if (isset($attributes['detection_assay'])) {
-
 					$shipmentResult[$i]['detectionAssayVal'] = (isset($detectionAssay[$attributes['detection_assay']]) ? $detectionAssay[$attributes['detection_assay']] : "");
 				}
 
@@ -1274,6 +1273,7 @@ class Application_Service_Evaluation
 					if (isset($row['attributes'])) {
 						$attributes = json_decode($row['attributes'], true);
 					}
+					$row['extraction_assay_name'] = $extractionAssay[$attributes['extraction_assay']];
 					$row['vl_assay'] = $eidDetectionAssayResultSet[$attributes['extraction_assay']];
 					$response[$key] = $row;
 				}

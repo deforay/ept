@@ -18,7 +18,7 @@ if (sizeof($resultArray['shipment']) > 0) {
     $totalPages = count($resultArray['shipment']);
     $j = 1;
     //$resultArray['dmResult'];
-    // Zend_Debug::dump($recencyAssay[1]);die;
+    // Zend_Debug::dump($resultArray['shipment'][2]);die;
 
     foreach ($resultArray['shipment'] as $result) {
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
@@ -213,10 +213,9 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '	<td width="50%"><strong>Panel Tested Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
             $labInfo .= '</tr>';
 
-            if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
+            $machine = $result['extractionAssayVal'];
+            if (isset($attributes['extraction_assay']) && $attributes['extraction_assay'] == 6) {
                 $machine = 'Other' . " - " . $attributes['other_assay'];
-            } else {
-                $machine = $result['responseResult'][0]['vl_assay'];
             }
             $labInfo .= '<tr>';
             $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
