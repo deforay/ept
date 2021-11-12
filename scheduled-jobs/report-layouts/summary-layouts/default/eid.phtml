@@ -191,11 +191,15 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay = '';
                     $avgAssay .= '<br><div style="border: 1px solid #000000;">';
 
+                    $assay = $assayResult['vlAssay'];
+                    if (is_array($assayResult['vlAssay'])) {
+                        $assay = implode(", ", $assayResult['vlAssay']);
+                    }
 
                     $avgAssay .= '<table border="1" cellpadding="4">';
 
                     $avgAssay .= '<tr style="background-color:#fff;">';
-                    $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . implode(",", $assayResult['vlAssay']) . '</span></td>';
+                    $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . $assay . '</span></td>';
                     $avgAssay .= '</tr>';
 
 
@@ -335,7 +339,7 @@ if ($resultArray['shipment'] != "") {
 
             $k = count($resultArray['shipment']['avgAssayResult']);
 
-            //Zend_Debug::dump($resultArray['shipment']['avgAssayResult']);die;
+            // Zend_Debug::dump($resultArray['shipment']['avgAssayResult']);die;
 
             $avgAssay = "";
             $assay = "";
@@ -345,11 +349,15 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay = '';
                     $avgAssay .= '<div style="border: 1px solid #000000;">';
 
+                    $assay = $assayResult['vlAssay'];
+                    if (is_array($assayResult['vlAssay'])) {
+                        $assay = implode(", ", $assayResult['vlAssay']);
+                    }
 
                     $avgAssay .= '<table border="1" cellpadding="4">';
 
                     $avgAssay .= '<tr style="background-color:#fff;">';
-                    $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . implode(",", $assayResult['vlAssay']) . '</span></td>';
+                    $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . $assay . '</span></td>';
                     $avgAssay .= '</tr>';
 
 
