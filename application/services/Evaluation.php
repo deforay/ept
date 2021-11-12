@@ -1821,7 +1821,7 @@ class Application_Service_Evaluation
 			} else if ($shipmentResult['scheme_type'] == 'eid') {
 				$schemeService = new Application_Service_Schemes();
 				$extractionAssay = $schemeService->getEidExtractionAssay();
-				$detectionAssay = $schemeService->getEidDetectionAssay();
+				//$detectionAssay = $schemeService->getEidDetectionAssay();
 				$pQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.documentation_score', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")))
 					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
 					->where("spm.shipment_id = ?", $shipmentId)
