@@ -191,15 +191,15 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay = '';
                     $avgAssay .= '<br><div style="border: 1px solid #000000;">';
 
-                    $assay = $assayResult['vlAssay'];
-                    if (is_array($assayResult['vlAssay'])) {
-                        $assay = implode(", ", $assayResult['vlAssay']);
+                    $assay = $assayResult['eidAssay'];
+                    if (is_array($assayResult['eidAssay'])) {
+                        $assay = implode(", ", $assayResult['eidAssay']);
                     }
 
                     $avgAssay .= '<table border="1" cellpadding="4">';
 
                     $avgAssay .= '<tr style="background-color:#fff;">';
-                    $avgAssay .= '<td colspan="4"><span>Summary of All participants using ' . $assay . '</span></td>';
+                    $avgAssay .= '<td colspan="4"><span>Summary of All Participants using ' . $assay . '</span></td>';
                     $avgAssay .= '</tr>';
 
 
@@ -349,9 +349,9 @@ if ($resultArray['shipment'] != "") {
                     $avgAssay = '';
                     $avgAssay .= '<div style="border: 1px solid #000000;">';
 
-                    $assay = $assayResult['vlAssay'];
-                    if (is_array($assayResult['vlAssay'])) {
-                        $assay = implode(", ", $assayResult['vlAssay']);
+                    $assay = $assayResult['eidAssay'];
+                    if (is_array($assayResult['eidAssay'])) {
+                        $assay = implode(", ", $assayResult['eidAssay']);
                     }
 
                     $avgAssay .= '<table border="1" cellpadding="4">';
@@ -422,13 +422,13 @@ if ($resultArray['shipment'] != "") {
                     if ($pdf->getY() >= 250) {
                         $pdf->AddPage();
                     }
-                    $assay = implode(",", $assayResult['vlAssayWithCount']);
-                    $assayCount += $assayResult['participantCount'];
+                    $assay = implode(",", $assayResult['eidAssayWithCount']);
+                    $assayCount = $assayResult['participantCount'];
                 }
             }
             $html = "";
             if ($assay != "") {
-                $html .= '<h4>Number of Participants for each platform using Other platforms and In-House Assays (Total ' . $assayCount . '):</h4>';
+                $html .= '<h4>Number of Participants for each platform using other platforms and In-House Assays (Total ' . $assayCount . '):</h4>';
                 $html .= '<span style="text-align:justify;font-size:09;font-weight:normal;">' . $assay . '</span>';
             }
 
@@ -456,10 +456,11 @@ if ($resultArray['shipment'] != "") {
             if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
                 $html .= '<br/><hr>';
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
             }
+
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
             $pdf->writeHTML($html, true, false, true, false, '');
         }
     }

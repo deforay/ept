@@ -191,6 +191,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         } else if ($methodOfEvaluation == 'iso17043') {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
+            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
             $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
 
@@ -235,7 +237,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes = '<span style="font-weight: bold;font-size:13px;text-align:center;">Your laboratory test results : <br/></span>';
             } else if ($methodOfEvaluation == 'iso17043') {
                 $labRes = "";
-                // $labRes = '<span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
+                //$labRes = '<span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
             }
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3">';
             if ($methodOfEvaluation == 'standard') {
@@ -322,10 +324,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         } else if ($methodOfEvaluation == 'iso17043') {
             $html = '<h5>Participants with scores of less than 100%:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a Proficiency Testing Corrective Action Form within 30 days of report authorization date. Refer to Proficiency
-            Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tap under
+            Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tab under
             the Main Navigation.</span>';
 
-            $html .= '<h5>Information with respect to compliance with standards ISO 13528:2015(E) </br>Preparation of Proficiency Test items:</h5>';
+            $html .= '<h4>Information with respect to compliance with standards ISO 13528:2015(E):</h4>';
+            $html .= '<h5>Preparation of Proficiency Test items:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods. Samples were tested for
             homogeneity prior to shipment and met program requirements.</span>';
 

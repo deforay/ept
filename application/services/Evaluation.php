@@ -1886,7 +1886,7 @@ class Application_Service_Evaluation
 				//foreach ($extractionAssay as $eKey=>$extractionAssayVal) {
 				//	
 				//	$extAssayResult[$eKey]=array();
-				//	$extAssayResult[$eKey]['vlAssay']=$extractionAssayVal;
+				//	$extAssayResult[$eKey]['eidAssay']=$extractionAssayVal;
 				//	$extAssayResult[$eKey]['participantCount']=1;
 				//	if ($shipmentResult['max_score'] == $sVal['shipment_score']) {
 				//		$extAssayResult[$eKey]['maxScore']=1;
@@ -1919,7 +1919,7 @@ class Application_Service_Evaluation
 								}
 							} else {
 								$extAssayResult[$eKey] = array();
-								$extAssayResult[$eKey]['vlAssay'] = $extractionAssayVal;
+								$extAssayResult[$eKey]['eidAssay'] = $extractionAssayVal;
 								$extAssayResult[$eKey]['participantCount'] = 1;
 								if ($shipmentResult['max_score'] == $sVal['shipment_score']) {
 									$extAssayResult[$eKey]['maxScore'] = 1;
@@ -1946,8 +1946,8 @@ class Application_Service_Evaluation
 				foreach ($extAssayResult as $exid => $edata) {
 					if ($exid == 8) continue;
 					if ($edata['participantCount'] <= 5) {
-						$extAssayResult[8]['vlAssay'][] = $edata['vlAssay'];
-						$extAssayResult[8]['vlAssayWithCount'][] = $edata['vlAssay'] . '(n=' . $edata['participantCount'] . ')';
+						$extAssayResult[8]['eidAssay'][] = $edata['eidAssay'];
+						$extAssayResult[8]['eidAssayWithCount'][] = $edata['eidAssay'] . '(n=' . $edata['participantCount'] . ')';
 						$extAssayResult[8]['participantCount'] += $edata['participantCount'];
 						$extAssayResult[8]['maxScore'] += $edata['maxScore'];
 						//$extAssayResult[8]['belowScore'] += isset($edata['belowScore']) ? $edata['belowScore'] : 0;
@@ -2201,8 +2201,9 @@ class Application_Service_Evaluation
 		}
 		$result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'vlAssayRes' => $vlAssayRes, 'pendingAssay' => $penResult);
 
+		
+		//var_dump($shipmentResult);die;
 		return $result;
-		//Zend_Debug::dump($shipmentResult);die;
 		//return $shipmentResult;
 	}
 
