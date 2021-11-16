@@ -289,8 +289,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         //if(trim($result['distribution_date'])!=""){
         //    $result['distribution_date']=$general->humanDateFormat($result['distribution_date']);
         //}
-        if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
-            $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+        if (trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
+            $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
             if (trim($result['evaluationComments']) != "") {
                 $comment .= '<tr>';
@@ -303,12 +303,6 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $comment .= '<tr>';
                 $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
                 $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
-                $comment .= '</tr>';
-            }
-
-            if (trim($result['shipment_comment']) != "") {
-                $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
                 $comment .= '</tr>';
             }
 
@@ -352,14 +346,33 @@ if (sizeof($resultArray['shipment']) > 0) {
                             </tr>
                         </table>';
             }
-            if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
-                $html .= '<br/><hr>';
-                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
-            }
         }
+
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        if (!empty(trim($result['shipment_comment']))) {
+            $comment = '<table border="1" style="width:100%;font-size:11px;" cellpadding="3">';
+
+            if (trim($result['shipment_comment']) != "") {
+                $comment .= '<tr>';
+                $comment .= '<td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
+                $comment .= '</tr>';
+            }
+
+            $comment .= '</table>';
+            //$pdf->SetTopMargin(13);
+            $pdf->writeHTML($comment, true, false, true, false, '');
+        }
+
+        $html = '<br/><hr>';
+        if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
+        }
+
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
+
         $pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {
@@ -411,41 +424,4 @@ if (sizeof($resultArray['shipment']) > 0) {
         $shipmentCode = $result['shipment_code'];
         $j++;
     }
-
-    // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
-    // $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    // $pdfNew->save($mergeFilePath);
-
-    // foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
-    //     $pdfNew->pages = array();
-    //     $expRes = explode(",", $dmRes);
-    //     $resCount = count($expRes);
-    //     if ($resCount > 0) {
-    //         foreach ($expRes as $res) {
-    //             $expStrRes = explode("#", $res);
-    //             $dmFileName = $dmID . ".pdf";
-    //             $participantFileName = $expStrRes[1] . ".pdf";
-    //             $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
-    //             $participantFileName = str_replace(" ", "-", $participantFileName);
-    //             $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
-    //             if (file_exists($filePath)) {
-    //                 $loadpdf = Zend_Pdf::load($filePath);
-    //                 foreach ($loadpdf->pages as $page) {
-    //                     $pdfExtract = $extractor->clonePage($page);
-    //                     $pdfNew->pages[] = $pdfExtract;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
-    //     $dmFileName = str_replace(" ", "-", $dmFileName);
-
-    //     $mergePdf = $shipmentCode . "-" . $dmFileName;
-    //     $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    //     $pdfNew->save($mergeFilePath);
-    // }
-    //============================================================+
-    // END OF FILE
-    //============================================================+
 }
