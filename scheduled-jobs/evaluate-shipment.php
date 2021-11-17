@@ -177,9 +177,11 @@ class IndividualPDF extends TCPDF
         // Page number
         //$this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
-        $this->writeHTML("<hr>", true, false, true, false, '');
-        if ($this->instituteAddressPosition == "footer" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-            $this->writeHTML($this->config->instituteAddress, true, false, true, false, "L");
+        if ($this->schemeType == 'eid' || $this->schemeType == 'vl') {
+            $this->writeHTML("<hr>", true, false, true, false, '');
+            if ($this->instituteAddressPosition == "footer" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+                $this->writeHTML($this->config->instituteAddress, true, false, true, false, "L");
+            }
         }
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "") {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
