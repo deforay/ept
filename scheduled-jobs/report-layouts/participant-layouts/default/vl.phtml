@@ -334,7 +334,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
             if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
-                $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+                $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
                 if (trim($result['evaluationComments']) != "") {
                     $comment .= '<tr>';
@@ -363,15 +363,16 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             // $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
             // $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
-            $html = '';
+            $html = '<hr>';
             if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
-                $html .= '<br/><hr>';
                 $html .= '<span style="text-align:center;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
-                $html .= '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-                $html .= '<br/><span style="text-align:center;"><small><i>This is a system generated report. No signature required</i></small></span>';
-                $html .= '<br/><span style="text-align:center;"><small>– End of final report –</small></span>';
-                $pdf->writeHTML($html, true, false, true, false, '');
             }
+
+            $html .= '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+            $html .= '<br/><span style="text-align:center;"><small>This is a system generated report. No signature required</small></span>';
+            $html .= '<br/><span style="text-align:center;"><small>– End of final report –</small></span>';
+            $pdf->writeHTML($html, true, false, true, false, '');
+            
         } else if ($methodOfEvaluation == 'standard') {
             if (sizeof($result['responseResult']) > 0) {
 

@@ -444,7 +444,7 @@ if ($resultArray['shipment'] != "") {
             $html .= '<h4>Confidentiality:</h4>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The identity of participants is kept confidential and known only to the staff involved in the Proficiency Testing Program. Each participant has been assigned a unique identification number for database management purposes.</span>';
             if (isset($resultArray['shipment']['shipment_comment']) && $resultArray['shipment']['shipment_comment'] != "") {
-                $html .= '<br/><hr>';
+                $html .= '<hr>';
                 $html .= '<table border="1" cellpadding="3">
                             <tr>
                                 <td style="text-align:left;font-size:11;font-weight:normal;">' . $resultArray['shipment']['shipment_comment'] . '</td>
@@ -452,12 +452,12 @@ if ($resultArray['shipment'] != "") {
                         </table>';
             }
             if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
-                $html .= '<br/><hr>';
+                $html .= '<hr>';
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
             }
 
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
             $pdf->writeHTML($html, true, false, true, false, '');
         }

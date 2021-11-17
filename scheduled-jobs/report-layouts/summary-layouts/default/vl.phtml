@@ -411,22 +411,23 @@ if ($resultArray['shipment'] != "") {
         $note .= '<h5>Subcontracting:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted.<br/> The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing. Each participant has been assigned a unique identification number for the purposes of database management.</span>';
         if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
-            $html .= '<br/><hr>';
+            $html .= '<hr>';
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of Final Report –</small></span>';
         }
         $pdf->writeHTML($note, true, false, true, false, '');
-
+        
+        $html = '<hr>';
         if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
-            $html = '<br/><hr>';
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
-            $pdf->writeHTML($html, true, false, true, false, '');
         }
+
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
+        $pdf->writeHTML($html, true, false, true, false, '');
     }
 
 
