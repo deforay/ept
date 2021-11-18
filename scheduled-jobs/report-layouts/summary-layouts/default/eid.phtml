@@ -2,8 +2,7 @@
 require_once('tcpdf/tcpdf.php');
 require_once(CRON_PATH . '/General.php');
 $general = new General();
-// Zend_Debug::dump($resultArray['shipment']['user_comment']);die;
-//require_once('libchart/classes/libchart.php');
+
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
