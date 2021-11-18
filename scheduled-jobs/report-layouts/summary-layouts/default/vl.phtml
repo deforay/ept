@@ -418,7 +418,7 @@ if ($resultArray['shipment'] != "") {
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of Final Report –</small></span>';
         }
         $pdf->writeHTML($note, true, false, true, false, '');
-        
+
         $html = '<hr>';
         if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';

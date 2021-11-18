@@ -1168,7 +1168,7 @@ class Application_Service_Evaluation
 		$schemeService = new Application_Service_Schemes();
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment', 'shipment_attributes', 'pt_co_ordinator_name'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
-			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment'))
+			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.region', 'p.lab_name'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
@@ -1265,7 +1265,7 @@ class Application_Service_Evaluation
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
 
-				//error_log($sQuery);
+				//die($sQuery);
 				$eidDetectionAssayResultSet = $schemeService->getEidDetectionAssay();
 				$result = $db->fetchAll($sQuery);
 				$response = array();
@@ -1295,7 +1295,7 @@ class Application_Service_Evaluation
 
 				$sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('sample_id', 'ref.sample_label', 'control', 'mandatory'))
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('*'))
-					->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded'))
+					->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded', 'sp.shipment_test_report_date', 'sp.user_comment'))
 					->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
 					//->where("sp.is_pt_test_not_performed is NULL")
@@ -1396,6 +1396,8 @@ class Application_Service_Evaluation
 					$toReturn[$counter]['responseDate'] = $result['responseDate'];
 					$toReturn[$counter]['shipment_score'] = $result['shipment_score'];
 					$toReturn[$counter]['shipment_test_date'] = $result['shipment_test_date'];
+					$toReturn[$counter]['shipment_test_report_date'] = $result['shipment_test_report_date'];
+					$toReturn[$counter]['user_comment'] = $result['user_comment'];
 					$toReturn[$counter]['is_excluded'] = $result['is_excluded'];
 					$toReturn[$counter]['is_pt_test_not_performed'] = $result['is_pt_test_not_performed'];
 					$toReturn[$counter]['shipment_receipt_date'] = $result['shipment_receipt_date'];
@@ -2200,7 +2202,7 @@ class Application_Service_Evaluation
 		}
 		$result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'vlAssayRes' => $vlAssayRes, 'pendingAssay' => $penResult);
 
-		
+
 		//var_dump($shipmentResult);die;
 		return $result;
 		//return $shipmentResult;

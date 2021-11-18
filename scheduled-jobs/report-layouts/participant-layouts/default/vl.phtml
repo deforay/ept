@@ -124,7 +124,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['shipment_test_report_date']) && trim($result['responseResult'][0]['shipment_test_report_date']) != "") {
             $shipmentTestReportDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_report_date']);
         }
-
         //if($result['result_name']=='Fail'){
         //    $wishes="";
         //    $splStr=explode("###",$result['failure_reason']);
@@ -307,19 +306,35 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $zscorehtml .= '</table>';
                 // $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;"><i style="color:darkgreen;background-color:lightgreen;">NOTE: *Results due date was extended for ePT results validation from submitted participants to address discrepancies.</i></span>';
 
-                $zscorehtml .= '<br><br><strong  style="font-size:11;">Participants with scores of less than 100%</strong>';
-                $zscorehtml .= '<br><span style="text-align:justify;font-size:9;font-weight:normal;">Laboratory must complete a <em>Proficiency Testing Corrective Action Form</em> within 30 days of report authorization date. Refer to Proficiency Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the "Corrective Action" tab under the Main Navigation.</span>';
+                $zscorehtml .= '<br><br><strong style="font-size:10;">Participants with scores of less than 100%</strong>';
+                $zscorehtml .= '<br><span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a <em>Proficiency Testing Corrective Action Form</em> within 30 days of report authorization date. Refer to Proficiency Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the "Corrective Action" tab under the Main Navigation.</span>';
 
-                $zscorehtml .= '<br><br><strong  style="font-size:11;">Information with respect to compliance with standards ISO 13528:2015(E)</strong>';
-                $zscorehtml .= '<br><strong  style="font-size:10;">Preparation of Proficiency Test items:</strong>';
-                $zscorehtml .= '<br><span style="text-align:justify;font-size:9;font-weight:normal;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOP. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+                $zscorehtml .= '<br><br><strong style="font-size:10;">Information with respect to compliance with standards ISO 13528:2015(E)</strong>';
+                $zscorehtml .= '<br><strong style="font-size:10;">Preparation of Proficiency Test items:</strong>';
+                $zscorehtml .= '<br><span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOP. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
-                $zscorehtml .= '<br><strong  style="font-size:10;">Procedures used to establish the assigned value:</strong>';
-                $zscorehtml .= '<br><span style="text-align:justify;font-size:9;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the normalized InterQuartile Range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
+                $zscorehtml .= '<br><strong style="font-size:10;">Procedures used to establish the assigned value:</strong>';
+                $zscorehtml .= '<br><span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the normalized InterQuartile Range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
 
-                $zscorehtml .= '<br><strong  style="font-size:10;">Subcontracting:</strong>';
-                $zscorehtml .= '<br><span style="text-align:justify;font-size:9;font-weight:normal;">Only the transport of PT items is subcontracted.<br>The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
+                $zscorehtml .= '<br><strong style="font-size:10;">Subcontracting:</strong>';
+                $zscorehtml .= '<br><span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items and the ePT site administration are subcontracted.</span>';
+
+                $zscorehtml .= '<br><strong style="font-size:10;">Confidentiality:</strong>';
+                $zscorehtml .= '<br><span style="text-align:justify;font-size:10;font-weight:normal;">The identities of participants are kept confidential and known only to the staff involved in  the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
                 $pdf->writeHTML($zscorehtml, true, false, true, false, '');
+                if (!empty(trim($result['shipment_comment']))) {
+                    $comment = '<table border="1" style="width:100%;font-size:11px;" cellpadding="3">';
+
+                    if (trim($result['shipment_comment']) != "") {
+                        $comment .= '<tr>';
+                        $comment .= '<td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
+                        $comment .= '</tr>';
+                    }
+
+                    $comment .= '</table>';
+                    //$pdf->SetTopMargin(13);
+                    $pdf->writeHTML($comment, true, false, true, false, '');
+                }
             }
 
             if ($result['is_excluded'] == 'yes') {
@@ -372,7 +387,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $html .= '<br/><span style="text-align:center;"><small>This is a system generated report. No signature required</small></span>';
             $html .= '<br/><span style="text-align:center;"><small>– End of final report –</small></span>';
             $pdf->writeHTML($html, true, false, true, false, '');
-            
         } else if ($methodOfEvaluation == 'standard') {
             if (sizeof($result['responseResult']) > 0) {
 
