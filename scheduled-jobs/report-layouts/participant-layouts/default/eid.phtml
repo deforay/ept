@@ -336,7 +336,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $html .= '<h5>Confidentiality:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The identity of participants is kept confidential and known only to the staff involved in the Proficiency Testing Program. Each participant has been assigned a unique identification number for database management purposes.</span>';
 
-            /* if (isset($resultArray['shipment'][0]['user_comment']) && $resultArray['shipment'][0]['user_comment'] != "") {
+            if (isset($resultArray['shipment'][0]['user_comment']) && $resultArray['shipment'][0]['user_comment'] != "") {
                 $html .= '<hr>';
                 $html .= '<table border="1" cellpadding="3">
                             <tr>
@@ -345,7 +345,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                                 </td>
                             </tr>
                         </table>';
-            } */
+            }
         }
 
         $pdf->writeHTML($html, true, false, true, false, '');
