@@ -34,6 +34,8 @@ class Application_Model_Vl
 
         foreach ($shipmentResult as $shipment) {
 
+            $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
+
             $attributes = json_decode($shipment['attributes'], true);
             $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
 
@@ -149,6 +151,7 @@ class Application_Model_Vl
                     } else {
                         $totalScore = "N.A.";
                         $calcResult = "excluded";
+                        $shipment['is_excluded'] = 'yes';
                     }
 
                     $maxScore += $result['sample_score'];
@@ -184,11 +187,9 @@ class Application_Model_Vl
                     $finalResult = 3;
                     $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
                 } else {
-                    $shipment['is_excluded'] = 'no';
-
 
                     // checking if total score and maximum scores are the same
-                    if ($totalScore == 'N/A') {
+                    if ($totalScore == 'N.A.') {
                         $failureReason[]['warning'] = "Could not determine score. Not enough responses found in the chosen VL Assay.";
                         $scoreResult = 'Not Evaluated';
                         $shipment['is_excluded'] = 'yes';
@@ -247,12 +248,13 @@ class Application_Model_Vl
                     }
                 } else {
 
-                    $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
+                    $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
                 }
             } else {
                 $failureReason = array('warning' => "Response was submitted after the last response date.");
+                $shipment['is_excluded'] = 'yes';
 
-                $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
+                $db->update('shipment_participant_map', array('is_excluded' => 'yes','failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
             $counter++;
         }

@@ -340,13 +340,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($html, true, false, true, false, '');
 
         if (!empty(trim($result['shipment_comment']))) {
-            $comment = '<table border="1" style="width:100%;font-size:11px;" cellpadding="3">';
+            $comment = '<table border="1" style="width:100%;" cellpadding="3">';
 
-            if (trim($result['shipment_comment']) != "") {
                 $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
+                $comment .= '<td style="font-size:10px;font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
                 $comment .= '</tr>';
-            }
 
             $comment .= '</table>';
             //$pdf->SetTopMargin(13);

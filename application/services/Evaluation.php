@@ -1174,9 +1174,7 @@ class Application_Service_Evaluation
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId)
-			->where("sp.is_excluded = 'no'")
-			//->where("substring(sp.evaluation_status,4,1) != '0'")
-		;
+			->where("sp.is_excluded not like 'yes'");
 		if (isset($sLimit) && isset($sOffset)) {
 			$sql = $sql->limit($sLimit, $sOffset);
 		}
@@ -1299,7 +1297,7 @@ class Application_Service_Evaluation
 					->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
 					//->where("sp.is_pt_test_not_performed is NULL")
-					->where("sp.is_excluded ='no'")
+					->where("sp.is_excluded not like 'yes'")
 					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like '0000-00-00'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 
@@ -1342,7 +1340,7 @@ class Application_Service_Evaluation
 					->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
 					->where("sp.is_pt_test_not_performed is NULL")
-					->where("sp.is_excluded ='no'")
+					->where("sp.is_excluded not like 'yes'")
 					->where('sp.shipment_id = ? ', $shipmentId);
 
 				//echo $cQuery;die;

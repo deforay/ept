@@ -68,7 +68,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetFont('freesans', 'B', 11);
 
     if ($methodOfEvaluation == 'iso17043') {
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br><br><span style="font-weight: bold; font-size:12;text-align:center;">All Participants Results Summary Report</span><br>';
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br><br><span style="font-weight: bold; font-size:12;text-align:center;">All Participants Results Report</span><br>';
         // $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     }
@@ -175,7 +175,7 @@ if ($resultArray['shipment'] != "") {
                 } else {
                     $calRes = '<table border="1" style="font-weight:bold;width:650px;">
                                     <tr>
-                                        <th colspan="8" style="font-size:12px;"><strong>Platform/Assay Name: </strong><span style="font-weight:normal;">' . $vlCal['vlAssay'] . '</span></th>
+                                        <th colspan="8" cellpadding="8" style="font-size:12px;padding-top:5px;padding-bottom:5px;"><strong>Platform/Assay Name: </strong><span style="font-weight:normal;">' . $vlCal['vlAssay'] . '</span></th>
                                     </tr>
                                     <tr>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
@@ -217,7 +217,7 @@ if ($resultArray['shipment'] != "") {
                 $platform = 'VL platforms with < 18 participants';
                 $calRes = '<table border="1" style="font-weight:bold;width:650px;">
                                     <tr>
-                                        <th colspan="8" style="font-size:12px;font-weight:normal;"><strong>Platform/Assay Name: </strong>VL platforms with < 18 participants</th>
+                                        <th colspan="8" cellpadding="8" style="font-size:12px;font-weight:normal;padding-top:5px;padding-bottom:5px;"><strong>Platform/Assay Name: </strong>VL platforms with < 18 participants</th>
                                     </tr>
                                     <tr>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
@@ -258,7 +258,7 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->writeHTML($note, true, false, true, false, '');
 
-        $pdf->AddPage();
+        //$pdf->AddPage();
 
         /* JPGraph start */
 
@@ -415,7 +415,7 @@ if ($resultArray['shipment'] != "") {
         //$pdf->AddPage();
         /* JPGraph end */
 
-        $note = '<h5>Information with respect to compliance with standards ISO 13528:2015(E) </h5>';
+        $note = '<h4>Information with respect to compliance with standards ISO 13528:2015(E) </h4>';
 
         $note .= '<h5>Preparation of Proficiency Test items:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
@@ -424,11 +424,23 @@ if ($resultArray['shipment'] != "") {
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
 
         $note .= '<h5>Subcontracting:</h5>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items and the ePT site administration are subcontracted.</span>';
+        $note .= '<h5>Confidentiality:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted.<br/> The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing. Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
         $pdf->writeHTML($note, true, false, true, false, '');
 
-        $html = '<br><hr>';
+        if (isset($resultArray['shipment']['shipment_comment']) && $resultArray['shipment']['shipment_comment'] != "") {
+
+            $html = '<table border="1" cellpadding="3">
+                        <tr>
+                            <td style="text-align:left;font-size:10;font-weight:bold;">' . $resultArray['shipment']['shipment_comment'] . '</td>
+                        </tr>
+                    </table>';
+            $pdf->writeHTML($html, true, false, true, false, '');
+        }
+
+        $html = '<hr>';
         if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
         }
