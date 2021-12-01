@@ -36,6 +36,9 @@ class Application_Model_Vl
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
+            $db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $shipmentId");
+            $db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and is_pt_test_not_performed = 'yes'");
+
             $attributes = json_decode($shipment['attributes'], true);
             $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
 
@@ -254,7 +257,7 @@ class Application_Model_Vl
                 $failureReason = array('warning' => "Response was submitted after the last response date.");
                 $shipment['is_excluded'] = 'yes';
 
-                $db->update('shipment_participant_map', array('is_excluded' => 'yes','failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
+                $db->update('shipment_participant_map', array('is_excluded' => 'yes', 'failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
             $counter++;
         }

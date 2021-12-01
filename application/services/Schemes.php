@@ -592,8 +592,7 @@ class Application_Service_Schemes
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $sId");
-        $db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $sId and is_pt_test_not_performed = 'yes'");
+        
 
         $db->delete('reference_vl_calculation', "shipment_id=$sId");
 

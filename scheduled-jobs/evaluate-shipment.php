@@ -302,7 +302,7 @@ class SummaryPDF extends TCPDF
         $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
         $html = '<hr/>';
         $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
-        
+
         if (isset($this->watermark) && $this->watermark != "") {
             //Put the watermark
             $this->SetFont('', 'B', 120);
