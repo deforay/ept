@@ -184,7 +184,7 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < ± 3.0)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(z < ± 3.0)</th>
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
                         if (isset($val['median'])) {
@@ -226,7 +226,7 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < ± 3.0)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(z < ± 3.0)</th>
                                     </tr>';
                 foreach ($sample as $point => $label) {
                     $score = round((($label['NumberPassed'] / $label['response']) * 100));
@@ -308,29 +308,39 @@ if ($resultArray['shipment'] != "") {
             /* JPGraph start */
             // Create the graph and specify the scale for both Y-axis
             $graph = new Graph(900, 550, 'auto');
+            //$graph->graph_theme = null;
             $graph->SetScale("textlin");
             $graph->SetY2Scale("lin", 0, 100);
             $graph->SetY2OrderBack(false);
 
             $graph->img->SetMargin(70, 70, 90, 90);
-            //$graph->SetFrame(true,'black',1);
+            $graph->SetFrame(false);
 
             // Create the two linear plot
-            $scatterPlot = new ScatterPlot($avg);
-            $scatterPlot->SetCenter();
-            // $scatterPlot->mark->SetType(MARK_IMG, ROOT_PATH . '/images/scatter.gif', 1.0);
-            $scatterPlot->mark->SetType(MARK_FILLEDCIRCLE, '', 1.0);
-            $scatterPlot->mark->SetWeight(10);
-            $scatterPlot->mark->SetWidth(8);
-            $scatterPlot->mark->setColor("red");
-            $scatterPlot->mark->setFillColor("red");
-            $scatterPlot->mark->SetSize(5);
-            $scatterPlot->value->Show();
-            $scatterPlot->value->SetFont(FF_DEFAULT, FS_BOLD, 10);
-            $scatterPlot->value->SetColor("#000000");
-            $scatterPlot->value->SetMargin(14);
-            $scatterPlot->value->SetFormat("%.1f%%");
-            $scatterPlot->SetLegend('% of Participants scoring "100%"');
+            $percentPlot = new LinePlot($avg);
+            $graph->AddY2($percentPlot);
+            
+            $percentPlot->SetBarCenter(true);
+
+            $percentPlot->SetWeight(0);
+            $percentPlot->SetLineWeight(0);
+            
+            // $percentPlot->mark->SetType(MARK_IMG, ROOT_PATH . '/images/scatter.gif', 1.0);
+            $percentPlot->mark->SetType(MARK_FILLEDCIRCLE, '', 4.0);
+            $percentPlot->mark->SetWeight(10);
+            $percentPlot->mark->SetWidth(14);
+            $percentPlot->mark->setColor("red");
+            $percentPlot->mark->setFillColor("red");
+            $percentPlot->mark->SetSize(5);
+            $percentPlot->value->SetFormat("%.1f%%");
+            $percentPlot->value->SetMargin(14);
+
+            $percentPlot->value->Show();
+            $percentPlot->value->SetFont(FF_DEFAULT, FS_NORMAL, 10);
+            $percentPlot->value->SetColor("black");
+            //$percentPlot->value->SetMargin(5);
+            
+            $percentPlot->SetLegend('% of Participants scoring "100%"');
 
             $graph->title->Set("All Participants Results Summary");
             $graph->title->SetMargin(10);
@@ -358,6 +368,9 @@ if ($resultArray['shipment'] != "") {
 
             $graph->ygrid->SetFill(false);
             $graph->xaxis->SetTickLabels($allParticipantChartLabels);
+            $graph->xaxis->SetTextLabelInterval(1);
+            $graph->xaxis->HideLine(false);
+            $graph->xaxis->HideTicks(false, false);
 
             // $graph->xaxis->SetTextLabelInterval(sizeof($allParticipantChartLabels) + 2);
             $graph->xaxis->SetLabelAlign('center');
@@ -386,8 +399,10 @@ if ($resultArray['shipment'] != "") {
             $b3plot->SetLegend('Number of Participants Scoring Below "100%"');
 
             $gbplot->SetWidth(0.5);
+            
+            
+            
             $graph->Add($gbplot);
-            $graph->AddY2($scatterPlot);
 
             $b1plot->SetAbsWidth(33);
             $b2plot->SetAbsWidth(33);
@@ -433,7 +448,7 @@ if ($resultArray['shipment'] != "") {
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods. The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
         $note .= '<h5>Procedures used to establish the assigned value:</h5>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, |z| score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
 
         $note .= '<h5>Subcontracting:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items and the ePT site administration are subcontracted.</span>';

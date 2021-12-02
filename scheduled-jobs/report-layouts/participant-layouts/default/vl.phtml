@@ -188,7 +188,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                                         <td style="background-color:#8ECF64;"><br><br>Number of <br/>Participants</td>
                                         <td style="background-color:#8ECF64;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/ml)</td>
                                         <td style="background-color:#8ECF64;"><br>Robust <br/>Standard <br/>Deviation</td>
-                                        <td style="background-color:#8ECF64;"><br><br>|z| Score</td>
+                                        <td style="background-color:#8ECF64;"><br><br>z Score</td>
                                         <td style="background-color:#8ECF64;"><br><br>Your Grade</td>
                                         <td style="background-color:#8ECF64;"><br><br>Score</td>
                                     </tr>';
@@ -278,25 +278,25 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $zscorehtml = '<br><h4 style="text-align:center;">Results Interpretation and Recommended Actions</h4>';
                 $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">   ';
                 $zscorehtml .= '<tr>';
-                $zscorehtml .= '<th style="background-color:#8ECF64;"><strong>|z| Score</strong></th>';
+                $zscorehtml .= '<th style="background-color:#8ECF64;"><strong>z Score</strong></th>';
                 $zscorehtml .= '<th style="background-color:#8ECF64;"><strong>Results Interpretation</strong></th>';
                 $zscorehtml .= '<th style="background-color:#8ECF64;"><strong>Recommended Action</strong></th>';
                 $zscorehtml .= '</tr>';
 
                 $zscorehtml .= '<tr>';
-                $zscorehtml .= '<td>|z| ≤ ±2.0</td>';
+                $zscorehtml .= '<td>z ≤ ±2.0</td>';
                 $zscorehtml .= '<td>Acceptable</td>';
                 $zscorehtml .= '<td>No action required</td>';
                 $zscorehtml .= '</tr>';
 
                 $zscorehtml .= '<tr>';
-                $zscorehtml .= '<td>± 2.0 > |z| < ± 3.0</td>';
+                $zscorehtml .= '<td>± 2.0 > z < ± 3.0</td>';
                 $zscorehtml .= '<td>Warning</td>';
                 $zscorehtml .= '<td>No action required</td>';
                 $zscorehtml .= '</tr>';
 
                 $zscorehtml .= '<tr>';
-                $zscorehtml .= '<td>|z| ≥ ± 3.0</td>';
+                $zscorehtml .= '<td>z ≥ ± 3.0</td>';
                 $zscorehtml .= '<td style="color:red;">Unacceptable</td>';
                 $zscorehtml .= '<td style="color:red;">Perform corrective action</td>';
                 $zscorehtml .= '</tr>';

@@ -1,7 +1,13 @@
 <?php
 
 include_once 'CronInit.php';
-include("DOCx.php");
+
+
+
+use PhpOffice\PhpWord\TemplateProcessor;
+
+
+
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $common = new Application_Service_Common();
@@ -20,7 +26,7 @@ try {
 	$output = array();
 
 	$query = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
-		->where("shipment_id IN (3,4,5,6)")
+		->where("shipment_id IN (3,5)")
 		->order("s.scheme_type");
 
 
@@ -88,17 +94,17 @@ try {
 				if ($certificate && $participated) {
 					$attribs = $arrayVal['attribs'];
 					if ($schemeKey == 'dts') {
-						$doc = new DOCx("certificate-template/dts-e.docx");
+						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/dts-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
-						$doc->save("certificate/dts/excellence/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
+						$doc->saveAs(__DIR__ . "/certificate/dts/excellence/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
 					} else if ($schemeKey == 'eid') {
-						$doc = new DOCx("certificate-template/eid-e.docx");
+						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/eid-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						//$doc->setValue("DATE","23 December 2018");
-						//$doc->save("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '_', $participantUID).".docx");					
-						$doc->save("certificate/eid/excellence/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
+						//$doc->saveAs("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '_', $participantUID).".docx");					
+						$doc->saveAs(__DIR__ . "/certificate/eid/excellence/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
 					} else if ($schemeKey == 'vl') {
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
@@ -109,30 +115,30 @@ try {
 						} else {
 							$assay = (isset($attribs["vl_assay"]) && isset($vlAssayArray[$attribs["vl_assay"]])) ? $vlAssayArray[$attribs["vl_assay"]] : " Other ";
 						}
-						$doc = new DOCx("certificate-template/vl-e.docx");
+						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/vl-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						$doc->setValue("ASSAYNAME", $assay);
 						//$doc->setValue("DATE","23 December 2018");
-						//$doc->save("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '_', $participantUID).".docx");	
-						$doc->save("certificate/vl/excellence/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
+						//$doc->saveAs("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '_', $participantUID).".docx");	
+						$doc->saveAs(__DIR__ . "/certificate/vl/excellence/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
 					}
 				} else if ($participated) {
 
 					$attribs = $arrayVal['attribs'];
 
 					if ($schemeKey == 'dts') {
-						$doc = new DOCx("certificate-template/dts-p.docx");
+						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/dts-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
-						$doc->save("certificate/dts/participation/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
+						$doc->saveAs(__DIR__ . "/certificate/dts/participation/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
 					} else if ($schemeKey == 'eid') {
-						$doc = new DOCx("certificate-template/eid-p.docx");
+						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/eid-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						//$doc->setValue("DATE","09 January 2018");
-						//$doc->save("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '-', $participantUID).".docx");	
-						$doc->save("certificate/eid/participation/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
+						//$doc->saveAs("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '-', $participantUID).".docx");	
+						$doc->saveAs(__DIR__ . "/certificate/eid/participation/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
 					} else if ($schemeKey == 'vl') {
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
@@ -144,13 +150,13 @@ try {
 							$assay = (isset($attribs["vl_assay"]) && isset($vlAssayArray[$attribs["vl_assay"]])) ? $vlAssayArray[$attribs["vl_assay"]] : " Other ";
 						}
 
-						$doc = new DOCx("certificate-template/vl-p.docx");
+						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/vl-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						$doc->setValue("ASSAYNAME", $assay);
 						//$doc->setValue("DATE","09 January 2018");
-						//$doc->save("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '-', $participantUID).".docx");
-						$doc->save("certificate/vl/participation/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
+						//$doc->saveAs("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '-', $participantUID).".docx");
+						$doc->saveAs(__DIR__ . "/certificate/vl/participation/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
 					}
 				}
 			}

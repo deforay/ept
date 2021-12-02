@@ -53,6 +53,15 @@ private static $installed = array (
       ),
       'reference' => '08e27c97e4c6ed02f37c5b2b20488046c8d90d75',
     ),
+    'laminas/laminas-escaper' => 
+    array (
+      'pretty_version' => '2.9.0',
+      'version' => '2.9.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '891ad70986729e20ed2e86355fcf93c9dc238a5f',
+    ),
     'maennchen/zipstream-php' => 
     array (
       'pretty_version' => '2.1.0',
@@ -97,6 +106,15 @@ private static $installed = array (
       array (
       ),
       'reference' => '418cd304e8e6b417ea79c3b29126a25dc4b1170c',
+    ),
+    'phpoffice/phpword' => 
+    array (
+      'pretty_version' => '0.18.2',
+      'version' => '0.18.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'aca10785cf68dc95d7f6fac4fe854979fef3f8db',
     ),
     'psr/http-client' => 
     array (
