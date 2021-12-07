@@ -60,9 +60,9 @@ class Application_Model_Recency
 
                 foreach ($results as $result) {
 
-                    $controlLine = $result['control_line'];
-                    $verificationLine = $result['diagnosis_line'];
-                    $longtermLine = $result['longterm_line'];
+                    $controlLine = strtolower($result['control_line']);
+                    $verificationLine = strtolower($result['diagnosis_line']);
+                    $longtermLine = strtolower($result['longterm_line']);
 
                     // matching reported and reference results
                     if (isset($result['reported_result']) && $result['reported_result'] != null) {
@@ -87,24 +87,33 @@ class Application_Model_Recency
 
                     $isAlgoWrong = false;
 
-                    if (empty($controlLine) || empty($verificationLine) || empty($longtermLine)) {
+                    if (empty($controlLine) && empty($verificationLine) && empty($longtermLine)) {
                         $isAlgoWrong = true;
-                    } else if ($controlLine == 'absent') {
-                        $isAlgoWrong = true;
-                    } else if ($verificationLine == 'absent') {
+                    } else if (empty($controlLine) || $controlLine == 'absent') {
                         $isAlgoWrong = true;
                     }
+                    // else if ($verificationLine == 'absent') {
+                    //     $isAlgoWrong = true;
+                    // }
 
-                    // if final result was reported as Recent
-                    if ($result['reported_result'] == $possibleResults['R']) {
+                    // if final result was expected as Negative
+                    if ($result['reference_result'] == $possibleResults['N']) {
+                        if ($controlLine == 'present' && $verificationLine == 'absent' && $longtermLine == 'absent') {
+                        } else {
+                            $isAlgoWrong = true;
+                        }
+                    }
+
+                    // if final result was expected as Recent
+                    if ($result['reference_result'] == $possibleResults['R']) {
                         if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'absent') {
                         } else {
                             $isAlgoWrong = true;
                         }
                     }
 
-                    // if final result was reported as Long term
-                    if ($result['reported_result'] == $possibleResults['LT']) {
+                    // if final result was expected as Long term
+                    if ($result['reference_result'] == $possibleResults['LT']) {
                         if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'present') {
                         } else {
                             $isAlgoWrong = true;
@@ -168,8 +177,11 @@ class Application_Model_Recency
                     $shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
                     $shipmentResult[$counter]['documentation_score'] = 0;
                     $shipmentResult[$counter]['display_result'] = '';
-                    $shipmentResult[$counter]['is_followup'] = 'yes';
-                    // $this->failureReason[] = array('warning' => 'Excluded from Evaluation');
+                    //$shipmentResult[$counter]['is_followup'] = 'yes';
+                    $shipmentResult[$counter]['is_excluded'] = 'yes';
+                    $this->failureReason[] = array(
+                        'warning' => "Excluded from Evaluation"
+                    );
                     $finalResult = 3;
                     $shipmentResult[$counter]['failure_reason'] = $this->failureReason = json_encode($this->failureReason);
                 } else {
@@ -183,7 +195,7 @@ class Application_Model_Recency
                     }
                     $shipmentResult[$counter]['shipment_score'] = $responseScore = round($responseScore, 2);
                     $shipmentResult[$counter]['documentation_score'] = $documentationScore;
-                    $scoreHolder[$shipment['map_id']] = $responseScore + $documentationScore;
+                    $scoreHolder[$shipment['map_id']] = ($responseScore + $documentationScore);
                     $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
                     $shipmentResult[$counter]['final_result'] = $finalResult;
 
@@ -216,13 +228,20 @@ class Application_Model_Recency
             } else {
                 $failureReason =  array(
                     'warning' => "Response was submitted after the last response date."
-                );                
+                );
                 $this->db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
             $counter++;
         }
-        $this->db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
 
+        if (count($scoreHolder) > 0) {
+			$averageScore = round(array_sum($scoreHolder) / count($scoreHolder), 2);
+		} else {
+			$averageScore = 0;
+		}
+
+
+        $this->db->update('shipment', array('max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
 
         return $shipmentResult;
     }

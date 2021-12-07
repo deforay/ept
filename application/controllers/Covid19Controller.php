@@ -60,7 +60,7 @@ class Covid19Controller extends Zend_Controller_Action
 			$this->view->shipId = $sID;
 			$this->view->participantId = $pID;
 			$this->view->eID = $eID;
-			$this->view->allNotTestedReason = $schemeService->getCovid19NotTestedReasons();
+			$this->view->allNotTestedReason = $schemeService->getNotTestedReasons('covid19');
 			//
 			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 

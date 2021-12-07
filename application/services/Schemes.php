@@ -1065,10 +1065,7 @@ class Application_Service_Schemes
 
     public function getCovid19NotTestedReasons()
     {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('response_covid19_not_tested_reason'))
-            ->where('status = ? ', 'active');
-        return $db->fetchAll($sql);
+        return $this->getNotTestedReasons('covid19');
     }
 
     public function getAllCovid19GeneTypeInGrid($parameters)
