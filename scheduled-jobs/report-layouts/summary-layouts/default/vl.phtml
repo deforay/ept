@@ -356,14 +356,16 @@ if ($resultArray['shipment'] != "") {
             $graph->yaxis->HideTicks(false, false);
 
             $graph->y2axis->title->SetFont(FF_DEFAULT, FS_BOLD, 12);
-            $graph->y2axis->title->Set('% of Participants scoring "100%"');
-            $graph->y2axis->title->SetMargin(20);
+            $graph->y2axis->title->Set('Percent of Participants Scoring "100%"');
+            $graph->y2axis->title->SetMargin(30);
+            $graph->y2axis->SetLabelFormat('%.1f%%');
 
             $graph->y2axis->HideLine(false);
             $graph->y2axis->HideTicks(false, false);
 
             $graph->y2scale->SetAutoMax(100);
             $graph->y2scale->SetAutoMin(0);
+            
             // Add the plot to the graph
 
             $graph->ygrid->SetFill(false);
