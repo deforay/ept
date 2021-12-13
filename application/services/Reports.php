@@ -1699,17 +1699,18 @@ class Application_Service_Reports
             $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $config = new Zend_Config_Ini($file, APPLICATION_ENV);
             $shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
+            $attributes = json_decode($aRow['attributes'], true);
             if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
                 // for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
-				$totalDocumentationItems = 5;
+                $totalDocumentationItems = 5;
             } else {
                 // for Non Dried Samples, we will NOT have rehydration documentation scores 
-				// there are 2 conditions for rehydration so 5 - 2 = 3
-				$totalDocumentationItems = 3;
-				// Myanmar does not have Supervisor scoring so it has one less documentation item
-				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-					$totalDocumentationItems -=1;
-				}
+                // there are 2 conditions for rehydration so 5 - 2 = 3
+                $totalDocumentationItems = 3;
+                // Myanmar does not have Supervisor scoring so it has one less documentation item
+                if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+                    $totalDocumentationItems -= 1;
+                }
             }
         }
 
@@ -1913,9 +1914,9 @@ class Application_Service_Reports
                 $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
 
                 if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != "") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_NUMERIC);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
                 }
 
                 // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
@@ -1923,7 +1924,7 @@ class Application_Service_Reports
                     $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', PHPExcel_Cell_DataType::TYPE_STRING);
                 } else {
                     if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_NUMERIC);
                     } else {
                         $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                     }
@@ -1931,7 +1932,7 @@ class Application_Service_Reports
 
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
                     $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', PHPExcel_Cell_DataType::TYPE_STRING);
-                }else{
+                } else {
                     if (isset($rehydrationDate) && trim($rehydrationDate) != "") {
                         $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
                     } else {
@@ -1940,12 +1941,14 @@ class Application_Service_Reports
                 }
 
                 if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_NUMERIC);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
                 }
 
-                if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
+                if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', PHPExcel_Cell_DataType::TYPE_STRING);
+                } else if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
 
 
                     $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -1959,16 +1962,16 @@ class Application_Service_Reports
 
                     if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
 
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
                     } else {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_NUMERIC);
                     }
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
                 }
 
                 $documentScore = (($aRow['documentation_score'] / $config->evaluation->dts->documentationScore) * 100);
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
+                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_NUMERIC);
 
                 //-------------Document score sheet------------>
                 //<------------ Total score sheet ------------
@@ -2047,14 +2050,14 @@ class Application_Service_Reports
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_STRING);
 
                     $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_NUMERIC);
                 }
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), PHPExcel_Cell_DataType::TYPE_NUMERIC);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResult[$aRow['final_result']], PHPExcel_Cell_DataType::TYPE_STRING);
                 if (!empty($aRow['failure_reason'])) {
                     $failureReasonJson = $aRow['failure_reason'];
@@ -4003,7 +4006,6 @@ class Application_Service_Reports
         $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
 
         for ($r = 2; $r <= 7; $r++) {
-
             $secondRowcellName = $docScoreSheet->getCellByColumnAndRow($r, $docScoreRow);
             if ($r != 7) {
                 $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -5909,7 +5911,8 @@ class Application_Service_Reports
             $endDate = $params['endDate'];
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $query = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
+            $query = $db->select()
+                ->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
                 ->where("DATE(s.shipment_date) >= ?", $startDate)
                 ->where("DATE(s.shipment_date) <= ?", $endDate)
                 ->order("s.scheme_type");
@@ -5927,7 +5930,7 @@ class Application_Service_Reports
                 }
             }
             $shipmentResult = $db->fetchAll($query);
-            $shipmentIDArray = array();
+            $shipmentIdArray = array();
             foreach ($shipmentResult as $val) {
                 $shipmentIdArray[] = $val['shipment_id'];
                 $shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
@@ -5938,6 +5941,7 @@ class Application_Service_Reports
                 ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'institute_name'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('country_name' => 'iso_name'))
+                ->order("unique_identifier ASC")
                 ->order("scheme_type ASC");
 
             if (isset($params['shipmentId']) && !empty($params['shipmentId']) && count($params['shipmentId']) > 0) {
@@ -5998,7 +6002,7 @@ class Application_Service_Reports
 
         $shipmentPassResult = array();
         $shipmentFailResult = array();
-        $headings = array('Lab ID', 'Lab Name', 'Address', 'City', 'State', 'Country', 'Email', 'Additional Email');
+        $headings = array('Participant ID', 'Participant Name', 'Address', 'City', 'State', 'Country', 'Email', 'Additional Email');
         foreach ($schemeArray as $arrayVal) {
             //
             foreach ($arrayVal as $val) {
@@ -6076,13 +6080,15 @@ class Application_Service_Reports
                         if ($arrayVal[$schemeKey][$va]['result'] == 4) {
                             $firstSheetRow[] = 'Excluded';
                         } else {
+                            $arrayVal[$schemeKey][$va]['score'] = (float)$arrayVal[$schemeKey][$va]['score'];
                             $firstSheetRow[] = $arrayVal[$schemeKey][$va]['score'];
                         }
 
                         if ($arrayVal[$schemeKey][$va]['result'] != 1) {
                             $certificate = false;
                         }
-                        if (trim($arrayVal[$schemeKey][$va]['score']) != "") {
+
+                        if ($arrayVal[$schemeKey][$va]['score'] > 0) {
                             $participated = true;
                         }
                     } else {
@@ -6117,7 +6123,7 @@ class Application_Service_Reports
                 } else if ($participated) {
                     $firstSheetRow[] = 'Participation';
                 } else {
-                    $firstSheetRow[] = 'NA';
+                    $firstSheetRow[] = 'N.A.';
                 }
             }
 
@@ -6128,10 +6134,22 @@ class Application_Service_Reports
         foreach ($output as $rowNo => $rowData) {
             $colNo = 0;
             foreach ($rowData as $field => $value) {
-                if (!isset($value)) {
+                $decimalFormat = false;
+                if (empty($value)) {
                     $value = "";
+                    $cellDataType = PHPExcel_Cell_DataType::TYPE_STRING;
+                } else if (is_float($value)) {
+                    $cellDataType = PHPExcel_Cell_DataType::TYPE_NUMERIC;
+                    $decimalFormat = true;
+                } else if (is_numeric($value)) {
+                    $cellDataType = PHPExcel_Cell_DataType::TYPE_NUMERIC;
+                } else {
+                    $cellDataType = PHPExcel_Cell_DataType::TYPE_STRING;
                 }
-                $firstSheet->getCellByColumnAndRow($colNo, $rowNo + 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow($colNo, $rowNo + 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), $cellDataType);
+                if ($decimalFormat) {
+                    $firstSheet->getCellByColumnAndRow($colNo, $rowNo + 2)->getStyle()->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);;
+                }
                 if ($colNo == (sizeof($headings) - 1)) {
                     //$firstSheet->getColumnDimensionByColumn($colNo)->setWidth(100);
                     $firstSheet->getStyleByColumnAndRow($colNo, $rowNo + 2)->getAlignment()->setWrapText(true);
