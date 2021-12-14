@@ -5912,7 +5912,7 @@ class Application_Service_Reports
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $query = $db->select()
-                ->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
+                ->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response'))
                 ->where("DATE(s.shipment_date) >= ?", $startDate)
                 ->where("DATE(s.shipment_date) <= ?", $endDate)
                 ->order("s.scheme_type");
@@ -5937,8 +5937,9 @@ class Application_Service_Reports
                 $impShipmentId = implode(",", $shipmentIdArray);
             }
 
-            $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.final_result', 'spm.attributes'))
-                ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type'))
+            $sQuery = $db->select()
+                ->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_test_report_date', 'spm.shipment_score', 'spm.documentation_score' , 'spm.final_result', 'spm.attributes'))
+                ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'institute_name'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('country_name' => 'iso_name'))
                 ->order("unique_identifier ASC")
@@ -5979,9 +5980,11 @@ class Application_Service_Reports
                     $participants[$shipment['unique_identifier']]['additional_email'] = isset($shipment['additional_email']) ? $shipment['additional_email'] : '';
                     //					$participants[$shipment['unique_identifier']]['attributes']=$shipment['attributes'];
                     //$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = $shipment['shipment_score'];
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float)($shipment['shipment_score'] + $shipment['documentation_score']);
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'];
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['attributes'] = $shipment['attributes'];
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['lastdate_response'] = $shipment['lastdate_response'];
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'];
                     //$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
                 }
             }
@@ -5997,20 +6000,15 @@ class Application_Service_Reports
         //$shipmentParticipantResult=$db->fetchAll($sQuery);
 
         $schemeService = new Application_Service_Schemes();
-        $vlAssayList = $schemeService->getVlAssay();
-        $eidExtractionAssayList = $schemeService->getEidExtractionAssay();
 
-        $shipmentPassResult = array();
-        $shipmentFailResult = array();
         $headings = array('Participant ID', 'Participant Name', 'Address', 'City', 'State', 'Country', 'Email', 'Additional Email');
         foreach ($schemeArray as $arrayVal) {
             //
-            foreach ($arrayVal as $val) {
-                $headings[] = $val;
-                $headings[] = $val . ' Platform/Assay(if applicable)';
+            foreach ($arrayVal as $shipmentCode) {
+                $headings[] = $shipmentCode;
             }
 
-            $headings[] = 'Certificate';
+            $headings[] = 'Certificate Type';
         }
 
 
@@ -6019,50 +6017,32 @@ class Application_Service_Reports
         $cacheSettings = array('memoryCacheSize' => '80MB');
         PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
         $output = array();
-        $secondSheetOutput = array();
-        $thirdSheetOutput = array();
+
         $sheet = $excel->getActiveSheet();
         $firstSheet = new PHPExcel_Worksheet($excel, '');
         $excel->addSheet($firstSheet, 0);
         $firstSheet->getDefaultColumnDimension()->setWidth(20);
         $firstSheet->getDefaultRowDimension()->setRowHeight(18);
-        $firstSheet->setTitle('Annual Report');
-        $styleArray = array(
-            'font' => array(
-                'bold' => true,
-            ),
+        $firstSheet->setTitle('ePT Annual Report');
+
+        $colNo = 0;
+        $headingStyle = array(
             'alignment' => array(
                 'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-            ),
-            'borders' => array(
-                'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
-                ),
             )
         );
 
-        $colNo = 0;
-        //$firstSheet->mergeCells('A1:I1');
-        //$firstSheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Annual Report', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-
-        //$firstSheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        //$firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanDateFormat($startDate)." to ".Pt_Commons_General::humanDateFormat($endDate), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-
-        //$firstSheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
-        //$firstSheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
-        //$firstSheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
-
         foreach ($headings as $field => $value) {
             $firstSheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNo, 1)->applyFromArray($headingStyle);
             $firstSheet->getStyleByColumnAndRow($colNo, 1)->getFont()->setBold(true);
             $colNo++;
         }
 
 
-        foreach ($participants as $key => $arrayVal) {
+        foreach ($participants as $uniqueIdentifier => $arrayVal) {
             $firstSheetRow = array();
-            $firstSheetRow[] = $key;
+            $firstSheetRow[] = $uniqueIdentifier;
             $firstSheetRow[] = $arrayVal['labName'];
             $firstSheetRow[] = $arrayVal['address'];
             $firstSheetRow[] = $arrayVal['city'];
@@ -6076,47 +6056,34 @@ class Application_Service_Reports
                 $participated = false;
 
                 foreach ($scheme as $va) {
-                    if (isset($arrayVal[$schemeKey][$va]['score'])) {
-                        if ($arrayVal[$schemeKey][$va]['result'] == 4) {
-                            $firstSheetRow[] = 'Excluded';
-                        } else {
-                            $arrayVal[$schemeKey][$va]['score'] = (float)$arrayVal[$schemeKey][$va]['score'];
-                            $firstSheetRow[] = $arrayVal[$schemeKey][$va]['score'];
-                        }
+                    if (!empty($arrayVal[$schemeKey][$va]['score']) && !empty($arrayVal[$schemeKey][$va]['shipment_test_report_date']) && $arrayVal[$schemeKey][$va]['result'] != 3) {
+
+                        $firstSheetRow[] = $arrayVal[$schemeKey][$va]['score'];
 
                         if ($arrayVal[$schemeKey][$va]['result'] != 1) {
                             $certificate = false;
                         }
 
-                        if ($arrayVal[$schemeKey][$va]['score'] > 0) {
-                            $participated = true;
+                        if (!empty($arrayVal[$schemeKey][$va]['shipment_test_report_date'])) {
+                            $reportedDateTimeArray = explode(" ", $arrayVal[$schemeKey][$va]['shipment_test_report_date']);
+                            if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00") {
+
+                                $reportedDate = new DateTime($reportedDateTimeArray[0]);
+                                $lastDate = new DateTime($arrayVal[$schemeKey][$va]['lastdate_response']);
+                                if ($reportedDate <= $lastDate) {
+                                    $participated = true;
+                                }
+                            }
                         }
                     } else {
-                        $firstSheetRow[] = '';
+                        if ($arrayVal[$schemeKey][$va]['result'] == 3) {
+                            $firstSheetRow[] = 'Excluded';
+                        } else {
+                            $firstSheetRow[] = '-';
+                        }
+
                         $certificate = false;
                     }
-
-                    if (isset($arrayVal[$schemeKey]) && isset($arrayVal[$schemeKey][$va])) {
-                        $attributes = json_decode($arrayVal[$schemeKey][$va]['attributes'], true);
-                    } else {
-                        $attributes = array();
-                    }
-
-
-                    $platformName = '';
-                    if (isset($attributes['vl_assay'])) {
-                        if ($attributes['vl_assay'] == 6) {
-                            $platformName = $attributes['other_assay'];
-                        } else {
-                            $platformName = isset($vlAssayList[$attributes['vl_assay']]) ? $vlAssayList[$attributes['vl_assay']] : '';
-                        }
-                    }
-
-                    if (isset($attributes['extraction_assay'])) {
-                        $platformName = isset($eidExtractionAssayList[$attributes['extraction_assay']]) ? $eidExtractionAssayList[$attributes['extraction_assay']] : "";
-                    }
-
-                    $firstSheetRow[] = $platformName;
                 }
                 if ($certificate && $participated) {
                     $firstSheetRow[] = 'Excellence';
@@ -6135,17 +6102,33 @@ class Application_Service_Reports
             $colNo = 0;
             foreach ($rowData as $field => $value) {
                 $decimalFormat = false;
+                $cellStyle = array(
+                    'alignment' => array(
+                        'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
+                    )
+                );
                 if (empty($value)) {
                     $value = "";
                     $cellDataType = PHPExcel_Cell_DataType::TYPE_STRING;
                 } else if (is_float($value)) {
                     $cellDataType = PHPExcel_Cell_DataType::TYPE_NUMERIC;
                     $decimalFormat = true;
+                    $cellStyle = array(
+                        'alignment' => array(
+                            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
+                        )
+                    );
                 } else if (is_numeric($value)) {
                     $cellDataType = PHPExcel_Cell_DataType::TYPE_NUMERIC;
+                    $cellStyle = array(
+                        'alignment' => array(
+                            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
+                        )
+                    );
                 } else {
                     $cellDataType = PHPExcel_Cell_DataType::TYPE_STRING;
                 }
+                $firstSheet->getCellByColumnAndRow($colNo, $rowNo + 2)->getStyle()->applyFromArray($cellStyle);
                 $firstSheet->getCellByColumnAndRow($colNo, $rowNo + 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), $cellDataType);
                 if ($decimalFormat) {
                     $firstSheet->getCellByColumnAndRow($colNo, $rowNo + 2)->getStyle()->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);;
@@ -6169,7 +6152,7 @@ class Application_Service_Reports
         }
         $excel->setActiveSheetIndex(0);
         $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
-        $filename = 'ePT-Annual-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
+        $filename = 'ePT-Annual-Report-' . rand() . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }

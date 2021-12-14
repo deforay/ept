@@ -38,8 +38,8 @@ try {
 		$impShipmentId = implode(",", $shipmentIdArray);
 	}
 
-	$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.attributes', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.final_result'))
-		->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type'))
+	$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'))
+		->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
 		->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'institute_name'))
 		->where("spm.shipment_test_date!='0000-00-00'")
 		->order("scheme_type ASC");
@@ -59,8 +59,10 @@ try {
 		$participants[$shipment['unique_identifier']]['labName'] = $shipment['first_name'] . " " . $shipment['last_name'];
 		$participants[$shipment['unique_identifier']]['city'] = $shipment['city'];
 		//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
-		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = $shipment['shipment_score'];
+		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float) ($shipment['shipment_score'] + $shipment['documentation_score']);
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'];
+		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['lastdate_response'] = $shipment['lastdate_response'];
+		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'];
 		$participants[$shipment['unique_identifier']]['attribs'] = json_decode($shipment['attributes'], true);
 		//$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
 
@@ -72,20 +74,32 @@ try {
 		foreach ($shipmentCodeArray as $schemeKey => $scheme) {
 			if (isset($arrayVal[$schemeKey])) {
 				$certificate = true;
-				$participated = false;
+                $participated = false;
 
-				$query = $db->select()->from('scheme_list', array('scheme_name'))->where("scheme_id=?", $schemeKey);
-				$schemeResult = $db->fetchRow($query);
+				// $query = $db->select()->from('scheme_list', array('scheme_name'))->where("scheme_id=?", $schemeKey);
+				// $schemeResult = $db->fetchRow($query);
 
 				foreach ($scheme as $va) {
-					if (isset($arrayVal[$schemeKey][$va]['score'])) {
+					if (!empty($arrayVal[$schemeKey][$va]['score']) && !empty($arrayVal[$schemeKey][$va]['shipment_test_report_date']) && $arrayVal[$schemeKey][$va]['result'] != 3) {
+
+
 						if ($arrayVal[$schemeKey][$va]['result'] != 1) {
 							$certificate = false;
 						}
-						if (trim($arrayVal[$schemeKey][$va]['score']) != "") {
-							$participated = true;
+
+						if (!empty($arrayVal[$schemeKey][$va]['shipment_test_report_date'])) {
+							$reportedDateTimeArray = explode(" ", $arrayVal[$schemeKey][$va]['shipment_test_report_date']);
+							if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00") {
+
+								$reportedDate = new DateTime($reportedDateTimeArray[0]);
+								$lastDate = new DateTime($arrayVal[$schemeKey][$va]['lastdate_response']);
+								if ($reportedDate <= $lastDate) {
+									$participated = true;
+								}
+							}
 						}
 					} else {
+
 
 						$certificate = false;
 					}
