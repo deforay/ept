@@ -2977,3 +2977,7 @@ INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_t
 
 UPDATE `shipment_participant_map` SET attributes = NULL where attributes like '';
 ALTER TABLE `shipment_participant_map` CHANGE `attributes` `attributes` JSON NULL DEFAULT NULL;
+
+
+-- Amit 14-Dec-2021
+UPDATE `system_config` SET `value` = '7.2.1' WHERE `system_config`.`config` = 'app_version';

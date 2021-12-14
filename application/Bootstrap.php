@@ -4,7 +4,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
 	protected function _initAppSetup(){
 
-        define('APP_VERSION', '7.2.0');
+        define('APP_VERSION', '7.2.1');
 
 		Zend_Session::start();
 		date_default_timezone_set("America/New_York");
