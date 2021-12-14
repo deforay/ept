@@ -170,6 +170,15 @@ private static $installed = array (
       ),
       'reference' => 'f6711a95cba64db16e1a63e1b6195827a2150c93',
     ),
+    'shardj/zf1-future' => 
+    array (
+      'pretty_version' => '1.20.0',
+      'version' => '1.20.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '9b4211733e8c29b183e2d308116a47b7886d51cd',
+    ),
     'symfony/polyfill-mbstring' => 
     array (
       'pretty_version' => 'v1.23.0',
@@ -187,6 +196,13 @@ private static $installed = array (
       array (
       ),
       'reference' => '172540dcbfdf8dc983bc2fe78feff48ff7ec1c76',
+    ),
+    'zendframework/zendframework1' => 
+    array (
+      'replaced' => 
+      array (
+        0 => '>=1.12.20',
+      ),
     ),
   ),
 );

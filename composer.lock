@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ff6e7cf5292cb923b89ccb77f9e494b0",
+    "content-hash": "4242a55130cc71108e1bf5207353ad70",
     "packages": [
         {
             "name": "ezyang/htmlpurifier",
@@ -963,6 +963,61 @@
             },
             "abandoned": true,
             "time": "2020-02-19T11:40:30+00:00"
+        },
+        {
+            "name": "shardj/zf1-future",
+            "version": "1.20.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Shardj/zf1-future.git",
+                "reference": "9b4211733e8c29b183e2d308116a47b7886d51cd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Shardj/zf1-future/zipball/9b4211733e8c29b183e2d308116a47b7886d51cd",
+                "reference": "9b4211733e8c29b183e2d308116a47b7886d51cd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "replace": {
+                "zendframework/zendframework1": ">=1.12.20"
+            },
+            "require-dev": {
+                "php-parallel-lint/php-parallel-lint": "1.0.0",
+                "phpunit/dbunit": "1.3.*",
+                "zf1s/phpunit": "3.7.39"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.12.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Zend_": "library/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "include-path": [
+                "library/"
+            ],
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Zend Framework 1. The aim is to keep ZF1 working with the latest PHP versions",
+            "homepage": "http://framework.zend.com/",
+            "keywords": [
+                "ZF1",
+                "framework"
+            ],
+            "support": {
+                "issues": "https://github.com/Shardj/zf1-future/issues",
+                "source": "https://github.com/Shardj/zf1-future/tree/release-1.20.0"
+            },
+            "time": "2021-11-11T16:54:26+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",

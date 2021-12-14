@@ -158,6 +158,13 @@ class ComposerStaticInit659c8b96dbf0e6d63ed5a6e17212eace
     );
 
     public static $prefixesPsr0 = array (
+        'Z' => 
+        array (
+            'Zend_' => 
+            array (
+                0 => __DIR__ . '/..' . '/shardj/zf1-future/library',
+            ),
+        ),
         'H' => 
         array (
             'HTMLPurifier' => 
