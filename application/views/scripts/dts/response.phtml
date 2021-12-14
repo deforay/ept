@@ -583,7 +583,6 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 </th>
 
                                 <td style="width: <?php echo $width; ?>%;">
-                                    <hr>
                                     <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class="form-control">
                                         <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
                                     </select>
