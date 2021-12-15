@@ -1205,9 +1205,9 @@ class Application_Service_Evaluation
 				}
 			}
 			if ($res['scheme_type'] == 'dbs') {
-				$sQuery = $db->select()->from(array('resdbs' => 'response_result_dbs'), array('resdbs.shipment_map_id', 'resdbs.sample_id', 'resdbs.reported_result', 'responseDate' => 'resdbs.shipment_test_report_date'))
+				$sQuery = $db->select()->from(array('resdbs' => 'response_result_dbs'), array('resdbs.shipment_map_id', 'resdbs.sample_id', 'resdbs.reported_result'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resdbs.reported_result', array('labResult' => 'respr.response'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdbs.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.participant_supervisor'))
+					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdbs.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.participant_supervisor', 'responseDate' => 'sp.shipment_test_report_date'))
 					->join(array('refdbs' => 'reference_result_dbs'), 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', array('refdbs.reference_result', 'refdbs.sample_label', 'resdbs.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdbs.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("resdbs.shipment_map_id = ?", $res['map_id']);
@@ -1216,9 +1216,9 @@ class Application_Service_Evaluation
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 			} else if ($res['scheme_type'] == 'dts') {
 
-				$sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'responseDate' => 'resdts.shipment_test_report_date', 'calculated_score', 'test_kit_name_1', 'lot_no_1', 'exp_date_1', 'test_kit_name_2', 'lot_no_2', 'exp_date_2', 'test_kit_name_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3', 'repeat_test_result_1', 'repeat_test_result_2', 'repeat_test_result_3'))
+				$sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'calculated_score', 'test_kit_name_1', 'lot_no_1', 'exp_date_1', 'test_kit_name_2', 'lot_no_2', 'exp_date_2', 'test_kit_name_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3', 'repeat_test_result_1', 'repeat_test_result_2', 'repeat_test_result_3'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
+					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'responseDate' => 'sp.shipment_test_report_date', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
 					->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory', 'refdts.sample_score', 'refdts.control'))
 					->joinLeft(array('dtstk1' => 'r_testkitname_dts'), 'dtstk1.TestKitName_ID=resdts.test_kit_name_1', array('testkit1' => 'dtstk1.TestKit_Name'))
 					->joinLeft(array('dtstk2' => 'r_testkitname_dts'), 'dtstk2.TestKitName_ID=resdts.test_kit_name_2', array('testkit2' => 'dtstk2.TestKit_Name'))
@@ -1230,9 +1230,9 @@ class Application_Service_Evaluation
 				//Zend_Debug::dump($shipmentResult);
 			} else if ($res['scheme_type'] == 'recency') {
 
-				$sQuery = $db->select()->from(array('resrecency' => 'response_result_recency'), array('resrecency.shipment_map_id', 'resrecency.sample_id', 'resrecency.reported_result', 'responseDate' => 'resrecency.shipment_test_report_date', 'calculated_score', 'control_line', 'diagnosis_line', 'longterm_line'))
+				$sQuery = $db->select()->from(array('resrecency' => 'response_result_recency'), array('resrecency.shipment_map_id', 'resrecency.sample_id', 'resrecency.reported_result', 'calculated_score', 'control_line', 'diagnosis_line', 'longterm_line'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resrecency.reported_result', array('labResult' => 'respr.response'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resrecency.shipment_map_id', array('sp.shipment_score', 'sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
+					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resrecency.shipment_map_id', array('sp.shipment_score', 'sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'responseDate' => 'sp.shipment_test_report_date', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
 					->join(array('refrecency' => 'reference_result_recency'), 'refrecency.shipment_id=sp.shipment_id and refrecency.sample_id=resrecency.sample_id', array('refrecency.reference_result', 'refControlLine' => 'refrecency.reference_control_line', 'refverificationLine' => 'refrecency.reference_diagnosis_line', 'refLongTermLine' => 'refrecency.reference_longterm_line', 'refrecency.sample_label', 'refrecency.mandatory', 'refrecency.sample_score', 'refrecency.control'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refrecency.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("resrecency.shipment_map_id = ?", $res['map_id']);
@@ -1253,9 +1253,9 @@ class Application_Service_Evaluation
 					$shipmentResult[$i]['detectionAssayVal'] = (isset($detectionAssay[$attributes['detection_assay']]) ? $detectionAssay[$attributes['detection_assay']] : "");
 				}
 
-				$sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'responseDate' => 'reseid.shipment_test_report_date'))
+				$sQuery = $db->select()->from(array('reseid' => 'response_result_eid'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=reseid.reported_result', array('labResult' => 'respr.response'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'sp.shipment_test_report_date'))
+					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'))
 					->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("refeid.control = 0")
@@ -1467,9 +1467,9 @@ class Application_Service_Evaluation
 				$shipmentResult[$i]['responseResult'] = $toReturn;
 			} else if ($res['scheme_type'] == 'covid19') {
 
-				$sQuery = $db->select()->from(array('resc19' => 'response_result_covid19'), array('resc19.shipment_map_id', 'resc19.sample_id', 'resc19.reported_result', 'responseDate' => 'resc19.shipment_test_report_date', 'calculated_score', 'test_type_1', 'lot_no_1', 'exp_date_1', 'test_type_2', 'lot_no_2', 'exp_date_2', 'test_type_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3'))
+				$sQuery = $db->select()->from(array('resc19' => 'response_result_covid19'), array('resc19.shipment_map_id', 'resc19.sample_id', 'resc19.reported_result', 'calculated_score', 'test_type_1', 'lot_no_1', 'exp_date_1', 'test_type_2', 'lot_no_2', 'exp_date_2', 'test_type_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resc19.reported_result', array('labResult' => 'respr.response'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resc19.shipment_map_id', array('sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason', 'sp.specimen_volume'))
+					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resc19.shipment_map_id', array('sp.shipment_id', 'sp.shipment_receipt_date', 'responseDate' => 'sp.shipment_test_report_date', 'sp.participant_id', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason', 'sp.specimen_volume'))
 					->join(array('refc19' => 'reference_result_covid19'), 'refc19.shipment_id=sp.shipment_id and refc19.sample_id=resc19.sample_id', array('refc19.reference_result', 'refc19.sample_label', 'refc19.mandatory', 'refc19.sample_score', 'refc19.control'))
 					->joinLeft(array('c19tk1' => 'r_test_type_covid19'), 'c19tk1.test_type_id=resc19.test_type_1', array('testPlatform1' => 'c19tk1.test_type_name'))
 					->joinLeft(array('c19tk2' => 'r_test_type_covid19'), 'c19tk2.test_type_id=resc19.test_type_2', array('testPlatform2' => 'c19tk2.test_type_name'))
