@@ -919,7 +919,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-" . $aRow['map_id'] . ".pdf");
                 if (!file_exists($invididualFilePath)) {
                     // Search this file name using the map id
-                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $aRow['map_id'] . ".pdf");
+                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $aRow['map_id'] . ".pdf");
                     $invididualFilePath = isset($files[0]) ? $files[0] : '';
                 }
                 if (file_exists($invididualFilePath)) {
@@ -1267,7 +1267,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-" . $aRow['map_id'] . ".pdf");
                 if (!file_exists($invididualFilePath)) {
                     // Search this file name using the map id
-                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $aRow['map_id'] . ".pdf");
+                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $aRow['map_id'] . ".pdf");
                     $invididualFilePath = isset($files[0]) ? $files[0] : '';
                 }
                 if (file_exists($invididualFilePath)) {
@@ -2129,7 +2129,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $row['shipment_code'] . DIRECTORY_SEPARATOR . $row['shipment_code'] . "-" . $row['map_id'] . ".pdf");
                 if (!file_exists($invididualFilePath)) {
                     // Search this file name using the map id
-                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $row['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $row['map_id'] . ".pdf");
+                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $row['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $row['map_id'] . ".pdf");
                     $invididualFilePath = isset($files[0]) ? $files[0] : '';
                 }
                 if (file_exists($invididualFilePath) && trim($token['download_link']) != '') {
@@ -4207,7 +4207,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-" . $aRow['map_id'] . ".pdf");
                 if (!file_exists($invididualFilePath)) {
                     // Search this file name using the map id
-                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $aRow['map_id'] . ".pdf");
+                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $aRow['map_id'] . ".pdf");
                     $invididualFilePath = isset($files[0]) ? $files[0] : '';
                 }
                 if (file_exists($invididualFilePath) && trim($token['download_link']) != '') {

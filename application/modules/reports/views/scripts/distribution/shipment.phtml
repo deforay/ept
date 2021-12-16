@@ -169,7 +169,7 @@ if (count($this->shipment) > 0) {
                     $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $shipment['map_id'] . ".pdf");
                     if (!file_exists($invididualFilePath)) {
                         // Search this file name using the map id
-                        $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $shipment['map_id'] . ".pdf");
+                        $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $shipment['map_id'] . ".pdf");
                         $invididualFilePath = isset($files[0]) ? $files[0] : '';
                     }
                     if (file_exists($invididualFilePath) && $reportQueue != 'disabled') {

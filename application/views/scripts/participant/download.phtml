@@ -6,7 +6,7 @@ if ($this->result != "") {
 
 	if (!file_exists($file)) {
 		// Search this file name using the map id
-		$files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . "*" . $this->result['map_id'] . ".pdf");
+		$files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $this->result['map_id'] . ".pdf");
 		$file = (isset($files[0]) && trim($files[0]) != '') ? $files[0] : '';
 	}
 
