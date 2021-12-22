@@ -13,7 +13,7 @@ $testTwoHidden = false;
 $screeningTest = false;
 
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
-$allowRepeatTests = isset($this->config->evaluation->dts->allowRepeatTests) ? $this->config->evaluation->dts->allowRepeatTests : 0;
+$allowRepeatTests = (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests != "") ? $this->config->evaluation->dts->allowRepeatTests : 'no';
 
 if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
     $testThreeHidden = true;
