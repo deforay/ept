@@ -118,14 +118,14 @@ try {
 								$reportedDate = new DateTime($reportedDateTimeArray[0]);
 								$lastDate = new DateTime($arrayVal[$shipmentType][$shipmentCode]['lastdate_response']);
 								if ($reportedDate > $lastDate) {
-                                    $participated = false;
-                                }
+									$participated = false;
+								}
 							}
 						}
 					} else {
-						
-                        $participated = false;
-                        $certificate = false;
+
+						$participated = false;
+						$certificate = false;
 					}
 				}
 
@@ -138,14 +138,17 @@ try {
 					//Zend_Debug::dump($participationCertPath);die;
 
 					if ($shipmentType == 'dts') {
+						if (!file_exists(__DIR__ . "/certificate-template/dts-e.docx")) continue;
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/dts-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 					} else if ($shipmentType == 'eid') {
+						if (!file_exists(__DIR__ . "/certificate-template/eid-e.docx")) continue;
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/eid-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 					} else if ($shipmentType == 'vl') {
+						if (!file_exists(__DIR__ . "/certificate-template/vl-e.docx")) continue;
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
 								$assay = $attribs["other_assay"];
@@ -167,16 +170,19 @@ try {
 					$attribs = $arrayVal['attribs'];
 
 					if ($shipmentType == 'dts') {
+						if (!file_exists(__DIR__ . "/certificate-template/dts-p.docx")) continue;
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/dts-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 					} else if ($shipmentType == 'eid') {
+						if (!file_exists(__DIR__ . "/certificate-template/eid-p.docx")) continue;
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/eid-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						//$doc->setValue("DATE","09 January 2018");
 
 					} else if ($shipmentType == 'vl') {
+						if (!file_exists(__DIR__ . "/certificate-template/vl-p.docx")) continue;
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
 								$assay = $attribs["other_assay"];
