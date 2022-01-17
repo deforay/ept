@@ -1,11 +1,11 @@
 <?php
 
 /**
- * General functions
+ * Common functions
  *
  * @author Amit Dugar <amit@deforay.com>
  */
-class General {
+class Common {
 
 
     function humanDateFormat($dateIn, $showDateAndTime = false)

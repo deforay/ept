@@ -1,9 +1,9 @@
 <?php
 include_once 'CronInit.php';
 
-require_once(__DIR__ . "/General.php");
+require_once(__DIR__ . "/Common.php");
 
-$general = new General();
+$general = new Common();
 
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);

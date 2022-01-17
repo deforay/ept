@@ -480,7 +480,7 @@ try {
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
-    $generalModel = new Pt_Commons_General();
+    $generalModel = new Pt_Commons_Common();
 
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 

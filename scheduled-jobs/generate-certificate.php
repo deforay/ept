@@ -2,10 +2,33 @@
 
 include_once 'CronInit.php';
 
+$cliOptions = getopt("s:c:");
+$shipmentsToGenerate = $cliOptions['s'];
+$certificateName = (!empty($cliOptions['c']) ? $cliOptions['c'] : date('Y'));
+
+if (is_array($shipmentsToGenerate)) {
+	$shipmentsToGenerate = implode(",", $shipmentsToGenerate);
+}
+
+
+if (empty($shipmentsToGenerate)) {
+	echo ("Please specify the shipment ids with the -s flag");
+	exit();
+}
 
 
 use PhpOffice\PhpWord\TemplateProcessor;
 
+$certificatePaths = array();
+$certificatePaths[] = $excellenceCertPath = __DIR__ . "/certificates/$certificateName/excellence";
+$certificatePaths[] = $participationCertPath = __DIR__ . "/certificates/$certificateName/participation";
+
+if (!file_exists($excellenceCertPath)) {
+	mkdir($excellenceCertPath, 0777, true);
+}
+if (!file_exists($participationCertPath)) {
+	mkdir($participationCertPath, 0777, true);
+}
 
 
 
@@ -26,11 +49,12 @@ try {
 	$output = array();
 
 	$query = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
-		->where("shipment_id IN (3,5)")
+		->where("shipment_id IN (" . $shipmentsToGenerate . ")")
 		->order("s.scheme_type");
 
 
 	$shipmentResult = $db->fetchAll($query);
+
 	$shipmentIDArray = array();
 	foreach ($shipmentResult as $val) {
 		$shipmentIdArray[] = $val['shipment_id'];
@@ -41,7 +65,9 @@ try {
 	$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'))
 		->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
 		->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'institute_name'))
-		->where("spm.shipment_test_date!='0000-00-00'")
+		->where("spm.final_result = 1 OR spm.final_result = 2")
+		->where("spm.is_excluded NOT LIKE 'yes'")
+		->order("unique_identifier ASC")
 		->order("scheme_type ASC");
 
 	$sQuery->where('spm.shipment_id IN (' . $impShipmentId . ')');
@@ -50,10 +76,11 @@ try {
 	$shipmentParticipantResult = $db->fetchAll($sQuery);
 	//Zend_Debug::dump($shipmentParticipantResult);die;
 	$participants = array();
+
 	foreach ($shipmentParticipantResult as $shipment) {
 
 		//$assay = $vlAssayArray[$attribs]
-		//Zend_Debug::dump($attribs);die;
+		//Zend_Debug::dump($shipment);die;
 		//echo count($participants);
 
 		$participants[$shipment['unique_identifier']]['labName'] = $shipment['first_name'] . " " . $shipment['last_name'];
@@ -67,59 +94,58 @@ try {
 		//$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
 
 	}
-	//$this->generateAnnualReport($shipmentCodeArray,$participants,$startDate,$endDate);
+
 	//Zend_Debug::dump($participants);die;
-	//Zend_Debug::dump($shipmentCodeArray);die;
+
 	foreach ($participants as $participantUID => $arrayVal) {
-		foreach ($shipmentCodeArray as $schemeKey => $scheme) {
-			if (isset($arrayVal[$schemeKey])) {
+		foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
+			if (isset($arrayVal[$shipmentType])) {
 				$certificate = true;
-                $participated = false;
-
-				// $query = $db->select()->from('scheme_list', array('scheme_name'))->where("scheme_id=?", $schemeKey);
-				// $schemeResult = $db->fetchRow($query);
-
-				foreach ($scheme as $va) {
-					if (!empty($arrayVal[$schemeKey][$va]['score']) && !empty($arrayVal[$schemeKey][$va]['shipment_test_report_date']) && $arrayVal[$schemeKey][$va]['result'] != 3) {
+				$participated = true;
 
 
-						if ($arrayVal[$schemeKey][$va]['result'] != 1) {
+				foreach ($shipmentsList as $shipmentCode) {
+					if (!empty($arrayVal[$shipmentType][$shipmentCode]['score']) && !empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']) && $arrayVal[$shipmentType][$shipmentCode]['result'] != 3) {
+
+
+						if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
 							$certificate = false;
 						}
 
-						if (!empty($arrayVal[$schemeKey][$va]['shipment_test_report_date'])) {
-							$reportedDateTimeArray = explode(" ", $arrayVal[$schemeKey][$va]['shipment_test_report_date']);
+						if (!empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
+							$reportedDateTimeArray = explode(" ", $arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']);
 							if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00") {
-
 								$reportedDate = new DateTime($reportedDateTimeArray[0]);
-								$lastDate = new DateTime($arrayVal[$schemeKey][$va]['lastdate_response']);
-								if ($reportedDate <= $lastDate) {
-									$participated = true;
-								}
+								$lastDate = new DateTime($arrayVal[$shipmentType][$shipmentCode]['lastdate_response']);
+								if ($reportedDate > $lastDate) {
+                                    $participated = false;
+                                }
 							}
 						}
 					} else {
-
-
-						$certificate = false;
+						
+                        $participated = false;
+                        $certificate = false;
 					}
 				}
 
 				if ($certificate && $participated) {
 					$attribs = $arrayVal['attribs'];
-					if ($schemeKey == 'dts') {
+
+
+
+					//Zend_Debug::dump($excellenceCertPath);die;
+					//Zend_Debug::dump($participationCertPath);die;
+
+					if ($shipmentType == 'dts') {
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/dts-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
-						$doc->saveAs(__DIR__ . "/certificate/dts/excellence/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
-					} else if ($schemeKey == 'eid') {
+					} else if ($shipmentType == 'eid') {
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/eid-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
-						//$doc->setValue("DATE","23 December 2018");
-						//$doc->saveAs("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '_', $participantUID).".docx");					
-						$doc->saveAs(__DIR__ . "/certificate/eid/excellence/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
-					} else if ($schemeKey == 'vl') {
+					} else if ($shipmentType == 'vl') {
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
 								$assay = $attribs["other_assay"];
@@ -134,26 +160,23 @@ try {
 						$doc->setValue("CITY", $arrayVal['city']);
 						$doc->setValue("ASSAYNAME", $assay);
 						//$doc->setValue("DATE","23 December 2018");
-						//$doc->saveAs("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '_', $participantUID).".docx");	
-						$doc->saveAs(__DIR__ . "/certificate/vl/excellence/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
 					}
+					$doc->saveAs($excellenceCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".docx");
 				} else if ($participated) {
 
 					$attribs = $arrayVal['attribs'];
 
-					if ($schemeKey == 'dts') {
+					if ($shipmentType == 'dts') {
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/dts-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
-						$doc->saveAs(__DIR__ . "/certificate/dts/participation/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
-					} else if ($schemeKey == 'eid') {
+					} else if ($shipmentType == 'eid') {
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/eid-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						//$doc->setValue("DATE","09 January 2018");
-						//$doc->saveAs("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '-', $participantUID).".docx");	
-						$doc->saveAs(__DIR__ . "/certificate/eid/participation/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
-					} else if ($schemeKey == 'vl') {
+
+					} else if ($shipmentType == 'vl') {
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
 								$assay = $attribs["other_assay"];
@@ -168,12 +191,17 @@ try {
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						$doc->setValue("ASSAYNAME", $assay);
-						//$doc->setValue("DATE","09 January 2018");
-						//$doc->saveAs("certificate/2017 Certificate - ".strtoupper($schemeKey)." for Lab ".str_replace('/', '-', $participantUID).".docx");
-						$doc->saveAs(__DIR__ . "/certificate/vl/participation/" . str_replace('/', '_', $participantUID) . "-" . $va . ".docx");
 					}
+					$doc->saveAs($participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".docx");
 				}
 			}
+		}
+	}
+	if (!empty($certificatePaths)) {
+		$certificatePaths = array_unique($certificatePaths);
+		Zend_Debug::dump($certificatePaths);
+		foreach ($certificatePaths as $certPath) {
+			echo ("cd $certPath && /usr/bin/libreoffice --headless --convert-to pdf *.docx --outdir ./ >/dev/null 2>&1 &" . PHP_EOL);
 		}
 	}
 } catch (Exception $e) {

@@ -5946,6 +5946,8 @@ class Application_Service_Reports
                 ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'institute_name'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('country_name' => 'iso_name'))
+                ->where("spm.final_result = 1 OR spm.final_result = 2")
+                ->where("spm.is_excluded NOT LIKE 'yes'")
                 ->order("unique_identifier ASC")
                 ->order("scheme_type ASC");
 
@@ -5998,7 +6000,7 @@ class Application_Service_Reports
         }
     }
 
-    public function generateAnnualReport($schemeArray, $participants, $startDate, $endDate)
+    public function generateAnnualReport($shipmentCodeArray, $participants, $startDate, $endDate)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         //$shipmentParticipantResult=$db->fetchAll($sQuery);
@@ -6006,7 +6008,7 @@ class Application_Service_Reports
         $schemeService = new Application_Service_Schemes();
 
         $headings = array('Participant ID', 'Participant Name', 'Address', 'City', 'State', 'Country', 'Email', 'Additional Email');
-        foreach ($schemeArray as $arrayVal) {
+        foreach ($shipmentCodeArray as $arrayVal) {
             //
             foreach ($arrayVal as $shipmentCode) {
                 $headings[] = $shipmentCode;
@@ -6055,37 +6057,37 @@ class Application_Service_Reports
             $firstSheetRow[] = $arrayVal['email'];
             $firstSheetRow[] = $arrayVal['additional_email'];
 
-            foreach ($schemeArray as $schemeKey => $scheme) {
+            foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
                 $certificate = true;
-                $participated = false;
+                $participated = true;
 
-                foreach ($scheme as $va) {
-                    if (!empty($arrayVal[$schemeKey][$va]['score']) && !empty($arrayVal[$schemeKey][$va]['shipment_test_report_date']) && $arrayVal[$schemeKey][$va]['result'] != 3) {
+                foreach ($shipmentsList as $shipmentCode) {
+                    if (!empty($arrayVal[$shipmentType][$shipmentCode]['score']) && !empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']) && $arrayVal[$shipmentType][$shipmentCode]['result'] != 3) {
 
-                        $firstSheetRow[] = $arrayVal[$schemeKey][$va]['score'];
+                        $firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['score'];
 
-                        if ($arrayVal[$schemeKey][$va]['result'] != 1) {
+                        if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
                             $certificate = false;
                         }
 
-                        if (!empty($arrayVal[$schemeKey][$va]['shipment_test_report_date'])) {
-                            $reportedDateTimeArray = explode(" ", $arrayVal[$schemeKey][$va]['shipment_test_report_date']);
+                        if (!empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
+                            $reportedDateTimeArray = explode(" ", $arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']);
                             if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00") {
 
                                 $reportedDate = new DateTime($reportedDateTimeArray[0]);
-                                $lastDate = new DateTime($arrayVal[$schemeKey][$va]['lastdate_response']);
-                                if ($reportedDate <= $lastDate) {
-                                    $participated = true;
+                                $lastDate = new DateTime($arrayVal[$shipmentType][$shipmentCode]['lastdate_response']);
+                                if ($reportedDate > $lastDate) {
+                                    $participated = false;
                                 }
                             }
                         }
                     } else {
-                        if ($arrayVal[$schemeKey][$va]['result'] == 3) {
+                        if ($arrayVal[$shipmentType][$shipmentCode]['result'] == 3) {
                             $firstSheetRow[] = 'Excluded';
                         } else {
                             $firstSheetRow[] = '-';
                         }
-
+                        $participated = false;
                         $certificate = false;
                     }
                 }

@@ -5,9 +5,9 @@ ini_set('max_execution_time', -1);
 
 include_once 'CronInit.php';
 
-require_once(__DIR__ . "/General.php");
+require_once(__DIR__ . "/Common.php");
 
-$general = new General();
+$general = new Common();
 
 $directory = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'bulk-upload' . DIRECTORY_SEPARATOR;
 

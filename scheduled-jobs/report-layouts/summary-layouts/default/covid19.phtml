@@ -5,8 +5,8 @@ require_once('jpgraph/jpgraph_bar.php');
 require_once('jpgraph/jpgraph_pie.php');
 require_once('jpgraph/jpgraph_line.php');
 // require_once('libchart/classes/libchart.php');
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'General.php');
-$general = new General();
+require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
+$general = new Common();
 // Zend_Debug::dump($resultArray);die;
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);

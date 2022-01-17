@@ -25,7 +25,9 @@ try {
 
   $output = array();
 
-  $query = $db->select()->from(array('p' => 'participant'), array('unique_identifier'));
+  $query = $db->select()
+    ->from(array('p' => 'participant'), array('unique_identifier'))
+    ->where("status like 'active'");
   // ->where("shipment_id IN (13,14,15,16)")
   // ->order("s.scheme_type");
 
@@ -33,15 +35,18 @@ try {
   $pResult = $db->fetchCol($query);
 
   foreach ($pResult as $pRow) {
-    $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'certificate' . DIRECTORY_SEPARATOR . '*' . $pRow . '*' . '.pdf';
+    $filePath = realpath(__DIR__) . DIRECTORY_SEPARATOR . 'certificates' . DIRECTORY_SEPARATOR . "*" .  DIRECTORY_SEPARATOR . "*" .  DIRECTORY_SEPARATOR . "*" .  DIRECTORY_SEPARATOR . $pRow . '-*' . '.pdf';
     $files = glob_recursive($filePath);
+    Zend_Debug::dump($filePath);
+    Zend_Debug::dump($files);
+    continue;
     if (!empty($files)) {
 
 
       $participantFolder = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $pRow;
 
       if (!is_dir($participantFolder)) {
-        mkdir($participantFolder);
+        mkdir($participantFolder, 0777, true);
       }
 
       foreach ($files as $f) {
