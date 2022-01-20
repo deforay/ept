@@ -639,7 +639,7 @@ class Application_Service_Participants
 
 
 
-	
+
 
 	public function getFilterDetailsAPI($params)
 	{
@@ -657,5 +657,11 @@ class Application_Service_Participants
 	{
 		$dmDb = new Application_Model_DbTable_DataManagers();
 		return $dmDb->saveProfileDetailsByAPI($params);
+	}
+
+	public function deleteParticipant($participantId)
+	{
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->deleteParticipantBId($participantId);
 	}
 }

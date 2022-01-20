@@ -124,8 +124,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)"), 'mapCount' => new Zend_Db_Expr("COUNT(spm.map_id)")))
             ->join(array('c' => 'countries'), 'c.id=p.country')
+            ->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id', array())
             ->group("p.participant_id");
 
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
@@ -143,7 +144,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //echo($sQuery);die;
+        // echo ($sQuery);die;
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */
@@ -173,8 +174,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
 
-
         foreach ($rResult as $aRow) {
+            $edit = "";
+            $delete = "";
             $row = array();
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['participantName'];
@@ -184,8 +186,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
-
+            $edit = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            if ($aRow['mapCount'] == 0) {
+                $delete = '<a href="javascript:void(0);" onclick="deleteParticipant(' . $aRow['participant_id'] . ');" class="btn btn-danger btn-xs" style="margin-right: 2px;"><i class="icon-trash"></i> Delete</a>';
+            }
+            $row[] = $edit . $delete;
             $output['aaData'][] = $row;
         }
 
@@ -1637,5 +1642,23 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $alertMsg->message = 'Your file was imported successfully';
         return $response;
+    }
+
+    public function deleteParticipantBId($participantId)
+    {
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            if ($participantId > 0 && is_numeric($participantId)) {
+                // $id = $db->delete("participant", array("participant_id" => $participantId));
+                // $db->query("DELETE FROM `participant_manager_map` WHERE (participant_id = " . $participantId . ")");
+                $db->query("DELETE FROM `enrollments` WHERE (participant_id = " . $participantId . ")");
+                $id = $db->query("DELETE FROM `participant` WHERE (participant_id = " . $participantId . ")");
+                return $id;
+            }
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            echo ($e->getMessage()) . PHP_EOL;
+            error_log($e->getTraceAsString());
+        }
     }
 }

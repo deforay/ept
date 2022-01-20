@@ -20,6 +20,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             ->addActionContext('get-datamanager', 'html')
             ->addActionContext('get-datamanager-names', 'html')
             ->addActionContext('get-participant', 'html')
+            ->addActionContext('delete-participant', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -159,6 +160,15 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantList($datamanagerId);
         }
         $this->view->participants = $participantService->getAllActiveParticipants();
+    }
+
+    public function deleteParticipantAction()
+    {
+        $participantService = new Application_Service_Participants();
+        if ($this->hasParam('participantId')) {
+            $participantId = $this->_getParam('participantId');
+            $this->view->result = $participantService->deleteParticipant($participantId);
+        }
     }
 
     public function exportParticipantsDetailsAction()
