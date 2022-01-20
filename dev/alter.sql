@@ -2981,3 +2981,13 @@ ALTER TABLE `shipment_participant_map` CHANGE `attributes` `attributes` JSON NUL
 
 -- Amit 14-Dec-2021
 UPDATE `system_config` SET `value` = '7.2.1' WHERE `system_config`.`config` = 'app_version';
+
+-- Thana 20-Jan-2022
+CREATE TABLE `audit_log` (
+ `audit_log_id` int NOT NULL AUTO_INCREMENT,
+ `statement` text COLLATE utf8mb4_general_ci,
+ `created_by` VARCHAR(256) NULL DEFAULT NULL,
+ `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ `type` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+ PRIMARY KEY (`audit_log_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

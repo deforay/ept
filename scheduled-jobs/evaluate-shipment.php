@@ -632,7 +632,14 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+            $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+
+            if ($id > 0 && $reportCompletedStatus == 'finalized') {
+                $authNameSpace = new Zend_Session_Namespace('administrators');
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " finalized shipment " . $evalRow['shipment_code'], "shipment");
+            }
+
             $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
             $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
             /* New report push notification start */

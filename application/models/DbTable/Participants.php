@@ -330,7 +330,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $data['individual'] = 'no';
         }
 
-
         $participantId = $this->insert($data);
 
         $db = Zend_Db_Table_Abstract::getAdapter();
@@ -347,6 +346,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
+        if ($participantId > 0) {
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " added a new participant ", "participants");
+        }
         return $participantId;
     }
 
@@ -1649,10 +1652,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         try {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             if ($participantId > 0 && is_numeric($participantId)) {
-                // $id = $db->delete("participant", array("participant_id" => $participantId));
-                // $db->query("DELETE FROM `participant_manager_map` WHERE (participant_id = " . $participantId . ")");
+                $partcipant = $this->fetchRow(array("participant_id" => $participantId));
                 $db->query("DELETE FROM `enrollments` WHERE (participant_id = " . $participantId . ")");
                 $id = $db->query("DELETE FROM `participant` WHERE (participant_id = " . $participantId . ")");
+
+                if ($participantId > 0) {
+                    $authNameSpace = new Zend_Session_Namespace('administrators');
+                    $auditDb = new Application_Model_DbTable_AuditLog();
+                    $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " deleted a participant " . $partcipant['unique_identifier'], "participants");
+                }
                 return $id;
             }
         } catch (Exception $e) {
