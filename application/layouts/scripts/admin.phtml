@@ -161,10 +161,11 @@ if ($adminSession->privileges != "") {
 					<?php if (!$pstatus && in_array('config-ept', $privileges) || !$pstatus && in_array('manage-participants', $privileges)) { ?>
 						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'configMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i>&nbsp;&nbsp;Configure <b class="caret"></b></a>
-							<ul class="dropdown-menu" style="overflow-y:scroll;">
+							<ul class="dropdown-menu" style="overflow-y:scroll;height:500px;">
 								<?php if (!$pstatus && in_array('config-ept', $privileges)) { ?>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'system-admins'), 'default', true); ?>">PT Managers</a></li>
 								<?php } ?>
+								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'audit-log'), 'default', true); ?>">Audit Log</a></li>
 								<?php if (!$pstatus && in_array('config-ept', $privileges) || !$pstatus && in_array('manage-participants', $privileges)) { ?>
 									<li class="divider"></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants'), 'default', true); ?>">PT Participants</a></li>

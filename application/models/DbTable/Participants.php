@@ -173,7 +173,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             "iTotalDisplayRecords" => $iFilteredTotal,
             "aaData" => array()
         );
-
+        $adminSession = new Zend_Session_Namespace('administrators');
+        if ($adminSession->privileges != "") {
+            $pstatus = false;
+            $privileges = explode(',', $adminSession->privileges);
+        } else {
+            $pstatus = true;
+            $privileges = array();
+        }
+        $deleteStatus = false;
+        if (!$pstatus && in_array('delete-participants', $privileges)) {
+            $deleteStatus = true;
+        }
         foreach ($rResult as $aRow) {
             $edit = "";
             $delete = "";
@@ -187,7 +198,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
             $edit = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
-            if ($aRow['mapCount'] == 0) {
+            if ($aRow['mapCount'] == 0 && $deleteStatus) {
                 $delete = '<a href="javascript:void(0);" onclick="deleteParticipant(' . $aRow['participant_id'] . ');" class="btn btn-danger btn-xs" style="margin-right: 2px;"><i class="icon-trash"></i> Delete</a>';
             }
             $row[] = $edit . $delete;

@@ -1,12 +1,14 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
-<legend><h3>Shipment Report</h3></legend>
-<table  style="margin:20px 0;" class="table table-bordered">
+<legend>
+	<h3>Shipment Report</h3>
+</legend>
+<table style="margin:20px 0;" class="table table-bordered">
 	<tr>
-<td style="width:200px;text-align: center;font-weight:bold;">
+		<td style="width:200px;text-align: center;font-weight:bold;">
 			Pick a Date Range (Optional)
-		</td>		
-<td style="width:200px;text-align: center;font-weight:bold;">
+		</td>
+		<td style="width:200px;text-align: center;font-weight:bold;">
 			Select Scheme Type (Optional)
 		</td>
 		<td style="width:200px;text-align: center;font-weight:bold;">
@@ -16,69 +18,69 @@
 	</tr>
 	<tr>
 		<td>
-			<input type="text" id="dateRange" name="dateRange"  class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder ="Click here to pick a Date Range"/>
-		</td>		
+			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+		</td>
 		<td>
 			<select id="scheme" name="scheme" onchange="drawTable();" class="form-control input-sm">
 				<option value=""> -- Select Scheme Type --</option>
 				<?php
-				  foreach($this->schemes as $scheme){
-					?>
-						<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
-					<?php
-				  }
+				foreach ($this->schemes as $scheme) {
 				?>
-			</select>			
+					<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+				<?php
+				}
+				?>
+			</select>
 		</td>
 		<td>
 			<select id="dataManager" name="dataManager" onchange="drawTable();" class="form-control input-sm">
 				<option value=""> -- Select a PT Participant Login --</option>
 				<?php
-				foreach($this->dataManagers as $dm){
+				foreach ($this->dataManagers as $dm) {
 				?>
-					<option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name']. " " . $dm['last_name']; ?></option>	
+					<option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name'] . " " . $dm['last_name']; ?></option>
 				<?php
 				}
 				?>
-			</select>			
+			</select>
 		</td>
 		<td><button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button></td>
 	</tr>
 </table>
 
-<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentTable">
-    <thead>
-    <tr>
-		  <th style="text-align: center;">PT Survey Code</th>
-		  <th style="text-align: center;">PT Survey Date</th>
-		  <th style="text-align: center;">Shipment Code</th>
-		  <th style="text-align: center;">Result Due Date</th>
-		  <th style="text-align: center;">Scheme</th>
-		  <th style="text-align: center;">No. of Samples</th>
-		  <th style="text-align: center;">No. of Participants</th>
-		  <th style="text-align: center;">No. of Responses</th>
-		  <th style="text-align: center;">Response %</th>
-		  <th style="text-align: center;">Number Passed</th>
-		  <th style="text-align: center;">Shipment Status</th>
-		  <th style="text-align: center;">Download Summary Report</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td colspan="10" class="dataTables_empty">Loading data from server</td>
-    </tr>
-    </tbody>
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentTable">
+	<thead>
+		<tr>
+			<th style="text-align: center;">PT Survey Code</th>
+			<th style="text-align: center;">PT Survey Date</th>
+			<th style="text-align: center;">Shipment Code</th>
+			<th style="text-align: center;">Result Due Date</th>
+			<th style="text-align: center;">Scheme</th>
+			<th style="text-align: center;">No. of Samples</th>
+			<th style="text-align: center;">No. of Participants</th>
+			<th style="text-align: center;">No. of Responses</th>
+			<th style="text-align: center;">Response %</th>
+			<th style="text-align: center;">Number Passed</th>
+			<th style="text-align: center;">Shipment Status</th>
+			<th style="text-align: center;">Download Summary Report</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="10" class="dataTables_empty">Loading data from server</td>
+		</tr>
+	</tbody>
 </table>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript">
 	var startDate = "";
 	var endDate = "";
-	$(document).ready(function(){
+	$(document).ready(function() {
 		drawTable();
 		$('#dateRange').daterangepicker({
-			format: 'DD-MMM-YYYY',
-			ranges: {
+				format: 'DD-MMM-YYYY',
+				ranges: {
 					//'Today': [moment(), moment()],
 					//'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
 					//'Last 7 Days': [moment().subtract('days', 6), moment()],
@@ -89,83 +91,128 @@
 					'Last 120 Days': [moment().subtract('days', 119), moment()],
 					'Last 180 Days': [moment().subtract('days', 179), moment()]
 				}
-		},
-		function(start, end) {
-			startDate = start.format('YYYY-MM-DD');
-			endDate = end.format('YYYY-MM-DD');
-			drawTable()
-		});
+			},
+			function(start, end) {
+				startDate = start.format('YYYY-MM-DD');
+				endDate = end.format('YYYY-MM-DD');
+				drawTable()
+			});
 	});
-	
-	
-    function drawTable() {
+
+
+	function drawTable() {
 		$.blockUI;
-        oTable = $('#shipmentTable').dataTable( {
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page",
+		oTable = $('#shipmentTable').dataTable({
+			"oLanguage": {
+				"sLengthMenu": "_MENU_ records per page",
 				"sEmptyTable": "No data to show"
-            },
-            "bJQueryUI": false,
-            "bAutoWidth": false,
-            "bInfo": true,
-            "bScrollCollapse": true,
-            "sPaginationType": "bootstrap",
-            "bRetrieve": false,
-            "bDestroy": true,
-            "aoColumns": [
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center"},
-                {"sClass":"center","bSortable":false}
-            ],
-            "aaSorting": [[ 1, "desc" ]],
-            "bProcessing": true,
-            "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'index', 'format' => 'html')); ?>",
-			"fnServerParams": function ( aoData ) {
+			},
+			"bJQueryUI": false,
+			"bAutoWidth": false,
+			"bInfo": true,
+			"bScrollCollapse": true,
+			"sPaginationType": "bootstrap",
+			"bRetrieve": false,
+			"bDestroy": true,
+			"aoColumns": [{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center",
+					"bSortable": false
+				}
+			],
+			"aaSorting": [
+				[1, "desc"]
+			],
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'index', 'format' => 'html')); ?>",
+			"fnServerParams": function(aoData) {
 				schemeType = $("#scheme").val();
 				dateRange = $("#dateRange").val();
 				dataManager = $("#dataManager").val();
-				aoData.push( { "name": "dateRange", "value": dateRange } );
-				aoData.push( { "name": "scheme", "value": schemeType } );
-				aoData.push( { "name": "startDate", "value": startDate } );
-				aoData.push( { "name": "endDate", "value": endDate } );
-				aoData.push( { "name": "dataManager", "value": dataManager } );
-			},			
-            "fnServerData": function ( sSource, aoData, fnCallback ) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": fnCallback
-                });
-            },"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+				aoData.push({
+					"name": "dateRange",
+					"value": dateRange
+				});
+				aoData.push({
+					"name": "scheme",
+					"value": schemeType
+				});
+				aoData.push({
+					"name": "startDate",
+					"value": startDate
+				});
+				aoData.push({
+					"name": "endDate",
+					"value": endDate
+				});
+				aoData.push({
+					"name": "dataManager",
+					"value": dataManager
+				});
+			},
+			"fnServerData": function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": aoData,
+					"success": fnCallback
+				});
+			},
+			"fnRowCallback": function(nRow, aData, iDisplayIndex) {
 				$.unblockUI;
-	        },
-        });
+			},
+		});
 
 
 	};
-	
-	function generateShipmentParticipantList(shipmentId,schemeType){
+
+	function generateShipmentParticipantList(shipmentId, schemeType) {
 		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'get-shipment-participant-list')); ?>", {shipmentId: shipmentId,schemeType: schemeType, format: "html"},
-		function(data) {
-			if (data!="") {
-				//alert(data);$.unblockUI();return;
-				document.location.href = '/temporary/'+data;
-			}
-			$.unblockUI();
-		});
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'get-shipment-participant-list')); ?>", {
+				shipmentId: shipmentId,
+				schemeType: schemeType,
+				format: "html"
+			},
+			function(data) {
+				if (data != "") {
+					//alert(data);$.unblockUI();return;
+					document.location.href = '/temporary/' + data;
+				}
+				$.unblockUI();
+			});
 	}
-        
 </script>

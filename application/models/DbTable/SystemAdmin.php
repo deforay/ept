@@ -158,7 +158,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'password' => $params['password'],
             'phone' => $params['phone'],
             'status' => $params['status'],
-            'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0)?implode(',',$params['privileges']):'',
+            'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0) ? implode(',', $params['privileges']) : '',
             'force_password_reset' => 1,
             'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()')
@@ -181,7 +181,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'secondary_email' => $params['secondaryEmail'],
             'phone' => $params['phone'],
             'status' => $params['status'],
-            'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0)?implode(',',$params['privileges']):'',
+            'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0) ? implode(',', $params['privileges']) : '',
             'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
@@ -190,5 +190,10 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             $data['force_password_reset'] = 1;
         }
         return $this->update($data, "admin_id=" . $params['adminId']);
+    }
+
+    public function fetchSystemAllAdmin()
+    {
+        return $this->fetchAll($this->select());
     }
 }

@@ -34,15 +34,15 @@ class Application_Service_Common
         return $random_string;
     }
     public function generateFakeEmailId($uniqueId, $participantName)
-	{
-		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-		$eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
-		$uniqueId = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $uniqueId));
-		$participantName = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $participantName));
+    {
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
+        $uniqueId = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $uniqueId));
+        $participantName = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $participantName));
 
-		$fakeEmail = $uniqueId . "_" . $participantName . "@" . parse_url($eptDomain, PHP_URL_HOST);
-		return $fakeEmail;
-	}
+        $fakeEmail = $uniqueId . "_" . $participantName . "@" . parse_url($eptDomain, PHP_URL_HOST);
+        return $fakeEmail;
+    }
 
     public function sendMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = array())
     {
@@ -597,5 +597,11 @@ class Application_Service_Common
         }
 
         return $browser;
+    }
+
+    public function getAllAuditLogDetailsByGrid($params)
+    {
+        $auditLogDb = new Application_Model_DbTable_AuditLog();
+        return $auditLogDb->fetchAllAuditLogDetailsByGrid($params);
     }
 }
