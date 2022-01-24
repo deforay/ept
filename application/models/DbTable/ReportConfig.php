@@ -59,6 +59,9 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         // }
 
         //$imageName ="logo_example.jpg";
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " updated a report-config ", "config");
         return $this->update($data, "name='report-header'");
     }
 

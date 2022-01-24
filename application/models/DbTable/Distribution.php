@@ -175,7 +175,12 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             'created_by'        => $authNameSpace->admin_id,
             'created_on'        => new Zend_Db_Expr('now()')
         );
-        return $this->insert($data);
+        $distributionId = $this->insert($data);
+        if($distributionId >0){
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " added a new distribution ", "shipment");
+        }
+        return $distributionId;
     }
 
     public function shipDistribution($params)
@@ -201,7 +206,12 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
-        return $this->update($data, "distribution_id=" . base64_decode($params['distributionId']));
+        $distributionId = $this->update($data, "distribution_id=" . base64_decode($params['distributionId']));
+        if($distributionId >0){
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " updated a distribution ", "shipment");
+        }
+        return $distributionId;
     }
     public function getUnshippedDistributions()
     {

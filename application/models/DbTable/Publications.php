@@ -37,6 +37,9 @@ class Application_Model_DbTable_Publications extends Zend_Db_Table_Abstract
                     $this->update(array('file_name'=>$fileName),"publication_id = ".$publicationId);
                 }
             }
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " added a new publication ", "common");
         }
       return $publicationId;
     }
@@ -207,6 +210,11 @@ class Application_Model_DbTable_Publications extends Zend_Db_Table_Abstract
                           'status' =>$params['status']
                           );
             $this->update($data,"publication_id = ".$publicationId);
+        if($publicationId >0){
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " updated a publication ", "common");
+        }
             if(isset($params['sortOrder']) && trim($params['sortOrder'])!= ''){
 		$publicationOrderQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('p.publication_id','p.sort_order'))
                                               ->order("p.sort_order ASC");

@@ -210,6 +210,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function updateParticipant($params)
     {
+        $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] :  NULL;
+        $lastName =  isset($params['plname']) && $params['plname'] != '' ? $params['plname'] :  NULL;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
         $data = array(
@@ -300,11 +302,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $enrollDb->enrollParticipantToSchemes($params['participantId'], $params['scheme']);
         }
 
+        if ($noOfRows > 0) {
+            $name = $firstName . " " . $lastName;
+            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("User " . $userName . " updated a participant ", "participants");
+        }
+
         return $noOfRows;
     }
 
     public function addParticipant($params)
     {
+        $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] :  NULL;
+        $lastName =  isset($params['plname']) && $params['plname'] != '' ? $params['plname'] :  NULL;
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
             'unique_identifier' => $params['pid'],
@@ -358,8 +369,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         if ($participantId > 0) {
+            $name = $firstName . " " . $lastName;
+            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " added a new participant ", "participants");
+            $auditDb->addNewAuditLog("User " . $userName . " added a new participant ", "participants");
         }
         return $participantId;
     }
@@ -1631,6 +1644,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         error_log($e->getTraceAsString());
                         continue;
                     }
+                    $authNameSpace = new Zend_Session_Namespace('administrators');
+                    $auditDb = new Application_Model_DbTable_AuditLog();
+                    $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " imported a participant " , "participants");
                 } else {
                     if ($useUniqueIDForDuplicateCheck || $useEmailForDuplicateCheck) {
                         $dataForStatistics['error'] = 'Possible duplicate of Participant Email or Unique ID.';

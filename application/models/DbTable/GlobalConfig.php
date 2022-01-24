@@ -43,6 +43,9 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 $this->update(array('value' => $fieldValue), "name='" . $fieldName . "'");
             }
         }
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " updated a global-config ", "config");
     }
 
     public function getPTProgramName()

@@ -35,6 +35,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
             }
         }
+        if ($dmId > 0) {
+        $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  NULL;
+        $lastName =  isset($params['lname']) && $params['lname'] != '' ? $params['lname'] :  NULL;
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $name = $firstName . " " . $lastName;
+        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("User " . $userName . " added a new data-manager ", "participants");
+        }
         return $dmId;
     }
 
@@ -252,7 +261,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
             }
         }
-        return $dmId;
+        if ($dmId > 0) {
+        $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  NULL;
+        $lastName =  isset($params['lname']) && $params['lname'] != '' ? $params['lname'] :  NULL;
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $name = $firstName . " " . $lastName;
+        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("User " . $userName . " updated a data-manager ", "participants");
+    }
+          return $dmId;
     }
 
     public function updateForceProfileCheckByEmail($email, $result = "")

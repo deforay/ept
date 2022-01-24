@@ -150,6 +150,8 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     public function addSystemAdmin($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] :  NULL;
+        $lastName =  isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] :  NULL;
         $data = array(
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
@@ -163,7 +165,16 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()')
         );
-        return $this->insert($data);
+        $adminId = $this->insert($data);
+
+        if ($adminId > 0) {
+            $name = $firstName . " " . $lastName;
+            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("User " . $userName . " added a new admin ", "admin");
+        }
+
+        return $adminId;
     }
 
     public function getSystemAdminDetails($adminId)
@@ -174,6 +185,8 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     public function updateSystemAdmin($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] :  NULL;
+        $lastName =  isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] :  NULL;
         $data = array(
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
@@ -189,7 +202,16 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             $data['password'] = $params['password'];
             $data['force_password_reset'] = 1;
         }
-        return $this->update($data, "admin_id=" . $params['adminId']);
+        $adminId = $this->update($data, "admin_id=" . $params['adminId']);
+
+        if ($adminId > 0) {
+            $name = $firstName . " " . $lastName;
+            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("User " . $userName . " updated a admin ", "admin");
+        }
+
+        return $adminId;
     }
 
     public function fetchSystemAllAdmin()

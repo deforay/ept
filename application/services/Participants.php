@@ -411,6 +411,9 @@ class Application_Service_Participants
 				$filename = $params['shipmentCode'] . '-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xls';
 			}
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+			$authNameSpace = new Zend_Session_Namespace('administrators');
+            $auditDb = new Application_Model_DbTable_AuditLog();
+        	$auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " downloaded a participant ", "participants");
 			return $filename;
 		} catch (Exception $exc) {
 			return "";
