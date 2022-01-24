@@ -1663,10 +1663,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         try {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             if ($participantId > 0 && is_numeric($participantId)) {
+                $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('mapCount' => new Zend_Db_Expr("COUNT(pmm.dm_id)"), "pmm.dm_id"))
+                    ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                    ->where("pmm.participant_id", $participantId)
+                    ->group("pmm.participant_id");
+                $pmmCheck = $this->getAdapter()->fetchRow($sQuery);
+                if ($pmmCheck['mapCount'] <= 1) {
+                    $db->query("DELETE FROM `participant_manager_map` WHERE (participant_id = " . $participantId . ")");
+                    if ($pmmCheck['mapCount'] == 1 && $pmmCheck['dm_id'] > 0) {
+                        $db->query("DELETE FROM `data_manager` WHERE (dm_id = " . $pmmCheck['dm_id'] . ")");
+                    }
+                }
                 $partcipant = $this->fetchRow(array("participant_id" => $participantId));
                 $db->query("DELETE FROM `enrollments` WHERE (participant_id = " . $participantId . ")");
                 $id = $db->query("DELETE FROM `participant` WHERE (participant_id = " . $participantId . ")");
-
                 if ($participantId > 0) {
                     $authNameSpace = new Zend_Session_Namespace('administrators');
                     $auditDb = new Application_Model_DbTable_AuditLog();
