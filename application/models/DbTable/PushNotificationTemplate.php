@@ -19,6 +19,9 @@ class Application_Model_DbTable_PushNotificationTemplate extends Zend_Db_Table_A
           $data['purpose'] = str_replace(" ","-",$params['title']);
           return $this->insert($data);
       }
+      $authNameSpace = new Zend_Session_Namespace('administrators');
+      $auditDb = new Application_Model_DbTable_AuditLog();
+      $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " updated a push-notification-template " . $params['purpose'], "mail-template");
     }
     public function fetchPushTemplateByPurpose($purpose) {
         return $this->fetchRow("purpose='$purpose'");
