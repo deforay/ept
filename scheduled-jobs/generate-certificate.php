@@ -111,10 +111,12 @@ try {
 						if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
 							$certificate = false;
 						}
-
-						if (!empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
+						if (empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
+							$participated = false;
+						} else {
 							$reportedDateTimeArray = explode(" ", $arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']);
-							if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00") {
+							if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00" && trim($reportedDateTimeArray[0]) != "1970-01-01") {
+
 								$reportedDate = new DateTime($reportedDateTimeArray[0]);
 								$lastDate = new DateTime($arrayVal[$shipmentType][$shipmentCode]['lastdate_response']);
 								if ($reportedDate > $lastDate) {

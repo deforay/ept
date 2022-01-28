@@ -5913,6 +5913,7 @@ class Application_Service_Reports
         if (isset($params['startDate']) && trim($params['startDate']) != "" && trim($params['endDate']) != "") {
             $startDate = $params['startDate'];
             $endDate = $params['endDate'];
+            $schemesService = new Application_Service_Schemes();
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $query = $db->select()
@@ -5942,7 +5943,7 @@ class Application_Service_Reports
             }
 
             $sQuery = $db->select()
-                ->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_test_report_date', 'spm.shipment_score', 'spm.documentation_score' , 'spm.final_result', 'spm.attributes'))
+                ->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_test_report_date', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result', 'spm.attributes'))
                 ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'institute_name'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('country_name' => 'iso_name'))
@@ -5988,7 +5989,7 @@ class Application_Service_Reports
                     //$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float)($shipment['shipment_score'] + $shipment['documentation_score']);
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'];
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['attributes'] = $shipment['attributes'];
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['attributes'] = json_decode($shipment['attributes'], true);
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['lastdate_response'] = $shipment['lastdate_response'];
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'];
                     //$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
@@ -6007,11 +6008,15 @@ class Application_Service_Reports
 
         $schemeService = new Application_Service_Schemes();
 
+        $vlAssayArray = $schemeService->getVlAssay();
+        $eidAssayArray = $schemeService->getEidExtractionAssay();
+
         $headings = array('Participant ID', 'Participant Name', 'Address', 'City', 'State', 'Country', 'Email', 'Additional Email');
         foreach ($shipmentCodeArray as $arrayVal) {
             //
             foreach ($arrayVal as $shipmentCode) {
-                $headings[] = $shipmentCode;
+                $headings[] = "Assay/Platform - " . $shipmentCode;
+                $headings[] = "Score - " . $shipmentCode;
             }
 
             $headings[] = 'Certificate Type';
@@ -6062,6 +6067,13 @@ class Application_Service_Reports
                 $participated = true;
 
                 foreach ($shipmentsList as $shipmentCode) {
+                    $assayName = "";
+                    if ($shipmentType == 'vl' && !empty($arrayVal[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
+                        $assayName = $vlAssayArray[$arrayVal[$shipmentType][$shipmentCode]['attributes']['vl_assay']];
+                    } else if ($shipmentType == 'eid' && !empty($arrayVal[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
+                        $assayName = $eidAssayArray[$arrayVal[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
+                    }
+                    $firstSheetRow[] = $assayName;
                     if (!empty($arrayVal[$shipmentType][$shipmentCode]['score']) && !empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']) && $arrayVal[$shipmentType][$shipmentCode]['result'] != 3) {
 
                         $firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['score'];
@@ -6070,9 +6082,11 @@ class Application_Service_Reports
                             $certificate = false;
                         }
 
-                        if (!empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
+                        if (empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
+                            $participated = false;
+                        } else {
                             $reportedDateTimeArray = explode(" ", $arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']);
-                            if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00") {
+                            if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00" && trim($reportedDateTimeArray[0]) != "1970-01-01") {
 
                                 $reportedDate = new DateTime($reportedDateTimeArray[0]);
                                 $lastDate = new DateTime($arrayVal[$shipmentType][$shipmentCode]['lastdate_response']);
