@@ -65,8 +65,8 @@ try {
 	$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'))
 		->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
 		->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'institute_name'))
-		->where("spm.final_result = 1 OR spm.final_result = 2")
-		->where("spm.is_excluded NOT LIKE 'yes'")
+		// ->where("spm.final_result = 1 OR spm.final_result = 2")
+		// ->where("spm.is_excluded NOT LIKE 'yes'")
 		->order("unique_identifier ASC")
 		->order("scheme_type ASC");
 
@@ -82,8 +82,10 @@ try {
 		//$assay = $vlAssayArray[$attribs]
 		//Zend_Debug::dump($shipment);die;
 		//echo count($participants);
+		$participantName['first_name'] = utf8_encode($shipment['first_name']);
+		$participantName['last_name'] = utf8_encode($shipment['last_name']);
 
-		$participants[$shipment['unique_identifier']]['labName'] = $shipment['first_name'] . " " . $shipment['last_name'];
+		$participants[$shipment['unique_identifier']]['labName'] = implode(" ", $participantName);
 		$participants[$shipment['unique_identifier']]['city'] = $shipment['city'];
 		//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float) ($shipment['shipment_score'] + $shipment['documentation_score']);
@@ -101,33 +103,45 @@ try {
 		foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
 			if (isset($arrayVal[$shipmentType])) {
 				$certificate = true;
-				$participated = true;
-
+				$participated = false;
 
 				foreach ($shipmentsList as $shipmentCode) {
-					if (!empty($arrayVal[$shipmentType][$shipmentCode]['score']) && !empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']) && $arrayVal[$shipmentType][$shipmentCode]['result'] != 3) {
+					$assayName = "";
+					if ($shipmentType == 'vl' && !empty($arrayVal[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
+						$assayName = $vlAssayArray[$arrayVal[$shipmentType][$shipmentCode]['attributes']['vl_assay']];
+					} else if ($shipmentType == 'eid' && !empty($arrayVal[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
+						$assayName = $eidAssayArray[$arrayVal[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
+					}
+					$firstSheetRow[] = $assayName;
+					if (!empty($arrayVal[$shipmentType][$shipmentCode]['result']) && $arrayVal[$shipmentType][$shipmentCode]['result'] != 3) {
 
+						$firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['score'];
 
 						if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
 							$certificate = false;
 						}
-						if (empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
-							$participated = false;
+					} else {
+						if (!empty($arrayVal[$shipmentType][$shipmentCode]['result']) && $arrayVal[$shipmentType][$shipmentCode]['result'] == 3) {
+							$firstSheetRow[] = 'Excluded';
 						} else {
-							$reportedDateTimeArray = explode(" ", $arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']);
-							if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00" && trim($reportedDateTimeArray[0]) != "1970-01-01") {
+							$firstSheetRow[] = '-';
+						}
+						//$participated = false;
+						$certificate = false;
+					}
 
-								$reportedDate = new DateTime($reportedDateTimeArray[0]);
-								$lastDate = new DateTime($arrayVal[$shipmentType][$shipmentCode]['lastdate_response']);
-								if ($reportedDate > $lastDate) {
-									$participated = false;
-								}
+
+
+					if (!empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
+						$reportedDateTimeArray = explode(" ", $arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']);
+						if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00" && trim($reportedDateTimeArray[0]) != "1970-01-01") {
+
+							$reportedDate = new DateTime($reportedDateTimeArray[0]);
+							$lastDate = new DateTime($arrayVal[$shipmentType][$shipmentCode]['lastdate_response']);
+							if ($reportedDate <= $lastDate) {
+								$participated = true;
 							}
 						}
-					} else {
-
-						$participated = false;
-						$certificate = false;
 					}
 				}
 

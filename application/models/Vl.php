@@ -155,6 +155,7 @@ class Application_Model_Vl
                         $totalScore = "N.A.";
                         $calcResult = "excluded";
                         $shipment['is_excluded'] = 'yes';
+                        $failureReason[]['warning'] = "Excluded from Shipment.";
                     }
 
                     $maxScore += $result['sample_score'];

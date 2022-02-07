@@ -123,7 +123,7 @@ $reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report
 						echo "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
 						foreach ($warnings as $key => $warning) { ?>
 		<tr>
-			<td><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
+			<td class="text-danger"><?php echo (isset($warning['warning']) ? $warning['warning'] : $warning); ?></td>
 			<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
 			<!-- Manual result override changes -->
 			<td class="manualOverrideRow" style="display: <?php echo $show; ?>;"><input type="checkbox" id="manualCorrective<?php echo $key; ?>" name="manualCorrective[<?php echo $warning['warning']; ?>]" value="<?php echo $warning['correctiveAction']; ?>" checked><label for="manualCorrective<?php echo $key; ?>"> </label></td>

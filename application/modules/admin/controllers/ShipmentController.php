@@ -346,7 +346,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->result = $shipmentService->enrollShipmentParticipant($shipmentId, $participantId);
             }
         } else {
-            $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
+            $this->view->message = "Please try again later or contact system admin for help";
         }
     }
 

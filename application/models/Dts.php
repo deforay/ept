@@ -467,19 +467,25 @@ class Application_Model_Dts
 							$correctiveActionList[] = 2;
 						}
 					} else if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-						if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R') {
+						// NR-- => N
+						// R-R-R => P
+						// R-NR-NR => N
+						// R-NR-R => I
+						// R-R-NR => I
+
+						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $finalResultCode == 'N') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
+						} else if ($result1 == 'NR' && $result2 == 'NR' && $result3 == '-' && $finalResultCode == 'N') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R') {
+						} else if ($result1 == 'NR' && $result2 == 'NR' && $result3 == 'NR' && $finalResultCode == 'N') {
 							$algoResult = 'Pass';
-						} else if (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I')) {
+						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $finalResultCode == 'P') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'NR' && $result2 == '-' && $result3 == '-') {
+						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $finalResultCode == 'N') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'NR' && $result2 == 'NR' && $result3 == '-') {
+						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $finalResultCode == 'I') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'NR' && $result2 == 'NR' && $result3 == 'NR') {
+						} else if (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $finalResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $finalResultCode == 'I')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -714,7 +720,7 @@ class Application_Model_Dts
 				$totalDocumentationItems = 3;
 				// Myanmar does not have Supervisor scoring so it has one less documentation item
 				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-					$totalDocumentationItems -=1;
+					$totalDocumentationItems -= 1;
 				}
 			}
 
@@ -725,7 +731,7 @@ class Application_Model_Dts
 
 			$documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
 
-			
+
 			// D.1
 			if (isset($results[0]['shipment_receipt_date']) && !empty($results[0]['shipment_receipt_date'])) {
 				$documentationScore += $documentationScorePerItem;
