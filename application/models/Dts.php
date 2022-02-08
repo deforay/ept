@@ -137,7 +137,7 @@ class Application_Model_Dts
 					}
 				} else {
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test kit 1 expiry date is not reported with PT response.",
+						'warning' => "Result not evaluated : Test kit 1 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
 					);
 					$correctiveActionList[] = 6;
@@ -173,7 +173,7 @@ class Application_Model_Dts
 					}
 				} else {
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test kit 2 expiry date is not reported with PT response.",
+						'warning' => "Result not evaluated : Test kit 2 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
 					);
 					$correctiveActionList[] = 6;
@@ -210,7 +210,7 @@ class Application_Model_Dts
 				} else {
 
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test kit 3 expiry date is not reported with PT response.",
+						'warning' => "Result not evaluated : Test kit 3 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
 					);
 					$correctiveActionList[] = 6;
@@ -279,7 +279,7 @@ class Application_Model_Dts
 				if (isset($results[0]['test_result_1']) && $results[0]['test_result_1'] != "" && $results[0]['test_result_1'] != null) {
 					$lotResult = 'Fail';
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test Kit lot number 1 is not reported.",
+						'warning' => "Result not evaluated : Test Kit lot number 1 is not reported.",
 						'correctiveAction' => $correctiveActions[10]
 					);
 					$correctiveActionList[] = 10;
@@ -290,7 +290,7 @@ class Application_Model_Dts
 				if (isset($results[0]['test_result_2']) && $results[0]['test_result_2'] != "" && $results[0]['test_result_2'] != null) {
 					$lotResult = 'Fail';
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test Kit lot number 2 is not reported.",
+						'warning' => "Result not evaluated : Test Kit lot number 2 is not reported.",
 						'correctiveAction' => $correctiveActions[10]
 					);
 					$correctiveActionList[] = 10;
@@ -301,7 +301,7 @@ class Application_Model_Dts
 				if (isset($results[0]['test_result_3']) && $results[0]['test_result_3'] != "" && $results[0]['test_result_3'] != null) {
 					$lotResult = 'Fail';
 					$failureReason[] = array(
-						'warning' => "Result not evaluated – Test Kit lot number 3 is not reported.",
+						'warning' => "Result not evaluated : Test Kit lot number 3 is not reported.",
 						'correctiveAction' => $correctiveActions[10]
 					);
 					$correctiveActionList[] = 10;
@@ -360,7 +360,7 @@ class Application_Model_Dts
 					} else {
 						$repeatResult2 = '-';
 					}
-					if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+					if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
 						$result3 = 'X';
 						$repeatResult3 = 'X';
 					} else {
@@ -386,6 +386,7 @@ class Application_Model_Dts
 
 					//$algoString = "Wrongly reported in the pattern : <strong>" . $result1 . "</strong> <strong>" . $result2 . "</strong> <strong>" . $result3 . "</strong>";
 
+					$scorePercentageForAlgorithm = 0; // Most countries do not give score for getting algorithm right
 					if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
 						// no algorithm to check
 					} else if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
@@ -467,17 +468,17 @@ class Application_Model_Dts
 							$correctiveActionList[] = 2;
 						}
 					} else if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+
+						$scorePercentageForAlgorithm = 0.5; // Myanmar gives 50% score for getting algorithm right
 						// NR-- => N
 						// R-R-R => P
 						// R-NR-NR => N
 						// R-NR-R => I
 						// R-R-NR => I
 
+						//$rstring = $result1."-".$result2."-".$result3."-".$finalResultCode;
+
 						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $finalResultCode == 'N') {
-							$algoResult = 'Pass';
-						} else if ($result1 == 'NR' && $result2 == 'NR' && $result3 == '-' && $finalResultCode == 'N') {
-							$algoResult = 'Pass';
-						} else if ($result1 == 'NR' && $result2 == 'NR' && $result3 == 'NR' && $finalResultCode == 'N') {
 							$algoResult = 'Pass';
 						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $finalResultCode == 'P') {
 							$algoResult = 'Pass';
@@ -540,8 +541,11 @@ class Application_Model_Dts
 						}
 					} else {
 					}
+
+					// END OF SAMPLE CHECK
 				} else {
-					// If there are two kit used for the participants then the control
+					// CONTROLS
+					// If there are two kits used for the participants then the control
 					// needs to be tested with at least both kit.
 					// If three then all three kits required and one then atleast one.
 
@@ -549,7 +553,7 @@ class Application_Model_Dts
 						if (!isset($result['test_result_1']) || $result['test_result_1'] == "") {
 							$controlTesKitFail = 'Fail';
 							$failureReason[] = array(
-								'warning' => "For the Control Sample <strong>" . $result['sample_label'] . "</strong>, Test Kit 1 (<strong>$testKit1</strong>) was not used",
+								'warning' => "For the Control <strong>" . $result['sample_label'] . "</strong>, Test Kit 1 (<strong>$testKit1</strong>) was not used",
 								'correctiveAction' => $correctiveActions[2]
 							);
 							$correctiveActionList[] = 2;
@@ -560,7 +564,7 @@ class Application_Model_Dts
 						if (!isset($result['test_result_2']) || $result['test_result_2'] == "") {
 							$controlTesKitFail = 'Fail';
 							$failureReason[] = array(
-								'warning' => "For the Control Sample <strong>" . $result['sample_label'] . "</strong>, Test Kit 2 (<strong>$testKit2</strong>) was not used",
+								'warning' => "For the Control <strong>" . $result['sample_label'] . "</strong>, Test Kit 2 (<strong>$testKit2</strong>) was not used",
 								'correctiveAction' => $correctiveActions[2]
 							);
 							$correctiveActionList[] = 2;
@@ -572,15 +576,22 @@ class Application_Model_Dts
 						if (!isset($result['test_result_3']) || $result['test_result_3'] == "") {
 							$controlTesKitFail = 'Fail';
 							$failureReason[] = array(
-								'warning' => "For the Control Sample <strong>" . $result['sample_label'] . "</strong>, Test Kit 3 (<strong>$testKit3</strong>) was not used",
+								'warning' => "For the Control <strong>" . $result['sample_label'] . "</strong>, Test Kit 3 (<strong>$testKit3</strong>) was not used",
 								'correctiveAction' => $correctiveActions[2]
 							);
 							$correctiveActionList[] = 2;
 						}
 					}
+
+					// END OF CONTROLS
 				}
 
-				if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
+				// Matching reported and reference results
+				$correctResponse = false;
+
+
+				// If final resut was not reported then the participant is failed 
+				if (!isset($result['reported_result']) || empty(trim($result['reported_result']))) {
 					$mandatoryResult = 'Fail';
 					$shipment['is_excluded'] = 'yes';
 					$failureReason[] = array(
@@ -588,22 +599,32 @@ class Application_Model_Dts
 						'correctiveAction' => $correctiveActions[4]
 					);
 					$correctiveActionList[] = 4;
-				}
-
-				// matching reported and reference results
-				$correctResponse = false;
-				if (isset($result['reported_result']) && $result['reported_result'] != null) {
+				} else {
 					if ($controlTesKitFail != 'Fail') {
+
+						$scoreForSample = $result['sample_score'];
+						$scoreForAlgorithm = 0;
+						if ($scorePercentageForAlgorithm > 0 && $scorePercentageForAlgorithm < 1) {
+							$scoreForAlgorithm = $scorePercentageForAlgorithm * $result['sample_score'];
+							$scoreForSample = $result['sample_score'] - $scoreForAlgorithm;
+						}
+
 						if ($result['reference_result'] == $result['reported_result']) {
-							if ($algoResult != 'Fail' && $mandatoryResult != 'Fail') {
-								$totalScore += $result['sample_score'];
+							if ($algoResult != 'Fail') {
+								$totalScore += ($scoreForSample + $scoreForAlgorithm);
 								$correctResponse = true;
-							} else {
+							} else if ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail') {
+								$totalScore += $scoreForSample;
 								$correctResponse = false;
-								// $totalScore remains the same	
+							} else {
+								// $totalScore remains the same	if algoResult == fail and there is no score for algo
+								$correctResponse = false;
 							}
 						} else {
 							if ($result['sample_score'] > 0) {
+								if ($algoResult != 'Fail') {
+									$totalScore += ($scoreForAlgorithm);
+								}
 								$failureReason[] = array(
 									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported result does not match the expected result",
 									'correctiveAction' => $correctiveActions[3]
@@ -617,13 +638,14 @@ class Application_Model_Dts
 					}
 				}
 
+				// Calculating the max score -- will be used in calculations later
 				$maxScore += $result['sample_score'];
 
 				if (isset($result['test_result_1']) && !empty($result['test_result_1']) && trim($result['test_result_1']) != false) {
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit1 == "")) {
 						$failureReason[] = array(
-							'warning' => "Result not evaluated – name of Test kit 1 not reported.",
+							'warning' => "Result not evaluated : name of Test kit 1 not reported.",
 							'correctiveAction' => $correctiveActions[7]
 						);
 						$correctiveActionList[] = 7;
@@ -643,7 +665,7 @@ class Application_Model_Dts
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit2 == "")) {
 						$failureReason[] = array(
-							'warning' => "Result not evaluated – name of Test kit 2 not reported.",
+							'warning' => "Result not evaluated : name of Test kit 2 not reported.",
 							'correctiveAction' => $correctiveActions[7]
 						);
 						$correctiveActionList[] = 7;
@@ -663,7 +685,7 @@ class Application_Model_Dts
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit3 == "")) {
 						$failureReason[] = array(
-							'warning' => "Result not evaluated – name of Test kit 3 not reported.",
+							'warning' => "Result not evaluated : name of Test kit 3 not reported.",
 							'correctiveAction' => $correctiveActions[7]
 						);
 						$correctiveActionList[] = 7;

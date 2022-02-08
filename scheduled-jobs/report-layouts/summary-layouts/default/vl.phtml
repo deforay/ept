@@ -476,7 +476,7 @@ if ($resultArray['shipment'] != "") {
 
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
     }
 

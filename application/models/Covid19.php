@@ -136,7 +136,7 @@ class Application_Model_Covid19
 				// 	}
 				// } else {
 				// 	$failureReason[] = array(
-				// 		'warning' => "Result not evaluated – Test platform 1 expiry date is not reported with PT response.",
+				// 		'warning' => "Result not evaluated : Test platform 1 expiry date is not reported with PT response.",
 				// 		'correctiveAction' => $correctiveActions[6]
 				// 	);
 				// 	$correctiveActionList[] = 6;
@@ -170,7 +170,7 @@ class Application_Model_Covid19
 				// 	}
 				// } else {
 				// 	$failureReason[] = array(
-				// 		'warning' => "Result not evaluated – Test platform 2 expiry date is not reported with PT response.",
+				// 		'warning' => "Result not evaluated : Test platform 2 expiry date is not reported with PT response.",
 				// 		'correctiveAction' => $correctiveActions[6]
 				// 	);
 				// 	$correctiveActionList[] = 6;
@@ -207,7 +207,7 @@ class Application_Model_Covid19
 				// } else {
 
 				// 	$failureReason[] = array(
-				// 		'warning' => "Result not evaluated – Test platform 3 expiry date is not reported with PT response.",
+				// 		'warning' => "Result not evaluated : Test platform 3 expiry date is not reported with PT response.",
 				// 		'correctiveAction' => $correctiveActions[6]
 				// 	);
 				// 	$correctiveActionList[] = 6;
@@ -276,7 +276,7 @@ class Application_Model_Covid19
 			// 	if (isset($results[0]['test_result_1']) && $results[0]['test_result_1'] != "" && $results[0]['test_result_1'] != null) {
 			// 		$lotResult = 'Fail';
 			// 		$failureReason[] = array(
-			// 			'warning' => "Result not evaluated – Test Platform lot number 1 is not reported.",
+			// 			'warning' => "Result not evaluated : Test Platform lot number 1 is not reported.",
 			// 			'correctiveAction' => $correctiveActions[10]
 			// 		);
 			// 		$correctiveActionList[] = 10;
@@ -287,7 +287,7 @@ class Application_Model_Covid19
 			// 	if (isset($results[0]['test_result_2']) && $results[0]['test_result_2'] != "" && $results[0]['test_result_2'] != null) {
 			// 		$lotResult = 'Fail';
 			// 		$failureReason[] = array(
-			// 			'warning' => "Result not evaluated – Test Platform lot number 2 is not reported.",
+			// 			'warning' => "Result not evaluated : Test Platform lot number 2 is not reported.",
 			// 			'correctiveAction' => $correctiveActions[10]
 			// 		);
 			// 		$correctiveActionList[] = 10;
@@ -298,7 +298,7 @@ class Application_Model_Covid19
 			// 	if (isset($results[0]['test_result_3']) && $results[0]['test_result_3'] != "" && $results[0]['test_result_3'] != null) {
 			// 		$lotResult = 'Fail';
 			// 		$failureReason[] = array(
-			// 			'warning' => "Result not evaluated – Test Platform lot number 3 is not reported.",
+			// 			'warning' => "Result not evaluated : Test Platform lot number 3 is not reported.",
 			// 			'correctiveAction' => $correctiveActions[10]
 			// 		);
 			// 		$correctiveActionList[] = 10;

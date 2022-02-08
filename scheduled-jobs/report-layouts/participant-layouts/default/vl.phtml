@@ -380,7 +380,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $html .= '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
             $html .= '<br/><span style="text-align:center;"><small>This is a system generated report. No signature required</small></span>';
-            $html .= '<br/><span style="text-align:center;"><small>– End of final report –</small></span>';
+            $html .= '<br/><span style="text-align:center;"><small>- End of final report -</small></span>';
             $pdf->writeHTML($html, true, false, true, false, '');
         } else if ($methodOfEvaluation == 'standard') {
             if (sizeof($result['responseResult']) > 0) {
@@ -517,7 +517,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>– End of final report –</small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
             }
 
             $pdf->writeHTML($html, true, false, true, false, '');
