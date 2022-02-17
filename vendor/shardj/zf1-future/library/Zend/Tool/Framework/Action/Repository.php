@@ -83,7 +83,7 @@ class Zend_Tool_Framework_Action_Repository
     /**
      * process() - this is called when the client is done constructing (after init())
      *
-     * @return unknown
+     * @return unknown|null
      */
     public function process()
     {
@@ -120,6 +120,7 @@ class Zend_Tool_Framework_Action_Repository
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->_actions);
@@ -128,8 +129,9 @@ class Zend_Tool_Framework_Action_Repository
     /**
      * getIterator() - get all actions, this supports the IteratorAggregate interface
      *
-     * @return array
+     * @return ArrayIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->_actions);

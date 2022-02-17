@@ -54,7 +54,7 @@ class Zend_Service_WindowsAzure_Storage_Batch
     /**
      * Pending operations
      *
-     * @var unknown_type
+     * @var array
      */
     protected $_operations = [];
 

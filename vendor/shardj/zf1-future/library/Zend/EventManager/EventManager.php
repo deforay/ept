@@ -116,7 +116,7 @@ class Zend_EventManager_EventManager implements Zend_EventManager_EventCollectio
     /**
      * Get static collections container
      *
-     * @return false|Zend_EventManager_SharedEventCollection
+     * @return false|Zend_EventManager_StaticEventCollection|null
      */
     public function getSharedCollections()
     {
@@ -434,7 +434,7 @@ class Zend_EventManager_EventManager implements Zend_EventManager_EventCollectio
      * @param  string           $event Event name
      * @param  EventDescription $e
      * @param  null|callback    $callback
-     * @return ResponseCollection
+     * @return Zend_EventManager_ResponseCollection
      */
     protected function triggerListeners($event, Zend_EventManager_EventDescription $e, $callback = null)
     {

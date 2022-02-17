@@ -164,7 +164,7 @@ class Zend_Cloud_Infrastructure_Adapter_Ec2 extends Zend_Cloud_Infrastructure_Ad
      * Convert the attributes of EC2 into attributes of Infrastructure
      *
      * @param  array $attr
-     * @return array|boolean
+     * @return array
      */
     private function convertAttributes($attr)
     {
@@ -277,7 +277,7 @@ class Zend_Cloud_Infrastructure_Adapter_Ec2 extends Zend_Cloud_Infrastructure_Ad
      *
      * @param string $name
      * @param array $options
-     * @return Instance|boolean
+     * @return false|Zend_Cloud_Infrastructure_Instance
      */
     public function createInstance($name, $options)
     {
@@ -329,7 +329,7 @@ class Zend_Cloud_Infrastructure_Adapter_Ec2 extends Zend_Cloud_Infrastructure_Ad
     /**
      * Return a list of all the available instance images
      *
-     * @return ImageList
+     * @return Zend_Cloud_Infrastructure_ImageList
      */
     public function imagesInstance()
     {

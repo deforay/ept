@@ -354,7 +354,7 @@ class Zend_Locale_Math
      * @param  string  $op1
      * @param  string  $op2
      * @param  integer $scale
-     * @return string
+     * @return int
      */
     public static function Comp($op1, $op2, $scale = null)
     {

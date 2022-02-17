@@ -216,6 +216,7 @@ abstract class Zend_Mail_Storage_Abstract implements Countable, ArrayAccess, See
      *
      * @return   int
      */
+     #[\ReturnTypeWillChange]
      public function count()
      {
         return $this->countMessages();
@@ -228,6 +229,7 @@ abstract class Zend_Mail_Storage_Abstract implements Countable, ArrayAccess, See
       * @param    int     $id
       * @return   boolean
       */
+     #[\ReturnTypeWillChange]
      public function offsetExists($id)
      {
         try {
@@ -260,6 +262,7 @@ abstract class Zend_Mail_Storage_Abstract implements Countable, ArrayAccess, See
       * @throws   Zend_Mail_Storage_Exception
       * @return   void
       */
+     #[\ReturnTypeWillChange]
      public function offsetSet($id, $value)
      {
         /**
@@ -274,8 +277,9 @@ abstract class Zend_Mail_Storage_Abstract implements Countable, ArrayAccess, See
       * ArrayAccess::offsetUnset()
       *
       * @param    int   $id
-      * @return   boolean success
+      * @return   boolean|null success
       */
+     #[\ReturnTypeWillChange]
      public function offsetUnset($id)
      {
         return $this->removeMessage($id);
@@ -291,6 +295,7 @@ abstract class Zend_Mail_Storage_Abstract implements Countable, ArrayAccess, See
       *
       * @return   void
       */
+     #[\ReturnTypeWillChange]
      public function rewind()
      {
         $this->_iterationMax = $this->countMessages();
@@ -303,6 +308,7 @@ abstract class Zend_Mail_Storage_Abstract implements Countable, ArrayAccess, See
       *
       * @return   Zend_Mail_Message current message
       */
+     #[\ReturnTypeWillChange]
      public function current()
      {
         return $this->getMessage($this->_iterationPos);
@@ -314,6 +320,7 @@ abstract class Zend_Mail_Storage_Abstract implements Countable, ArrayAccess, See
       *
       * @return   int id of current position
       */
+     #[\ReturnTypeWillChange]
      public function key()
      {
         return $this->_iterationPos;
@@ -325,6 +332,7 @@ abstract class Zend_Mail_Storage_Abstract implements Countable, ArrayAccess, See
       *
       * @return   void
       */
+     #[\ReturnTypeWillChange]
      public function next()
      {
         ++$this->_iterationPos;
@@ -336,6 +344,7 @@ abstract class Zend_Mail_Storage_Abstract implements Countable, ArrayAccess, See
       *
       * @return   boolean
       */
+     #[\ReturnTypeWillChange]
      public function valid()
      {
         if ($this->_iterationMax === null) {

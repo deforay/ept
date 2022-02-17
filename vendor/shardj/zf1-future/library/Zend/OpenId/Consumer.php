@@ -405,7 +405,7 @@ class Zend_OpenId_Consumer
                     if (!empty($line)) {
                         $x = explode(':', $line, 2);
                         if (is_array($x) && count($x) === 2) {
-                            list($key, $value) = $x;
+                            [$key, $value] = $x;
                             $r[trim($key)] = trim($value);
                         }
                     }
@@ -464,7 +464,7 @@ class Zend_OpenId_Consumer
      * @param string &$macFunc HMAC function (sha1 or sha256)
      * @param string &$secret shared secret
      * @param integer &$expires expiration UNIX time
-     * @return void
+     * @return bool
      */
     protected function _getAssociation($url, &$handle, &$macFunc, &$secret, &$expires)
     {
@@ -497,7 +497,7 @@ class Zend_OpenId_Consumer
      * @param array $params additional qwery parameters to be passed with
      * @param int &$staus HTTP status code
      *  request
-     * @return mixed
+     * @return false|string|null
      */
     protected function _httpRequest($url, $method = 'GET', array $params = [], &$status = null)
     {
@@ -614,7 +614,7 @@ class Zend_OpenId_Consumer
                 if (!empty($line)) {
                     $x = explode(':', $line, 2);
                     if (is_array($x) && count($x) === 2) {
-                        list($key, $value) = $x;
+                        [$key, $value] = $x;
                         $r[trim($key)] = trim($value);
                     } else {
                         $bad_response = true;

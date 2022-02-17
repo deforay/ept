@@ -462,7 +462,7 @@ class Zend_Soap_Server implements Zend_Server_Interface
     /**
      * Retrieve classmap
      *
-     * @return mixed
+     * @return array
      */
     public function getClassmap()
     {
@@ -700,7 +700,7 @@ class Zend_Soap_Server implements Zend_Server_Interface
     /**
      * Get server persistence
      *
-     * @return Zend_Soap_Server
+     * @return int
      */
     public function getPersistence()
     {

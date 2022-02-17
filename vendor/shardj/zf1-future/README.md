@@ -18,7 +18,7 @@ Creators of [CommunityPlus+ PHP for IBM i](https://www.seidengroup.com/community
 
 # ZF1 is Now Version 1.20!
 ### Over 200 updates and bug fixes since 1.12!
-The ZF1 community has been hard at work updating Zend Framework with all of the latest features of PHP 7 and 8.0.
+The ZF1 community has been hard at work updating Zend Framework with all of the latest features of PHP 8.
 
 # Documentation
 New ZF1-Future Manual: [ZF1-Future Docs](https://zf1future.com/manual)
@@ -32,7 +32,7 @@ Installable through git clone or through
 `composer require shardj/zf1-future` https://packagist.org/packages/shardj/zf1-future  
 
 # System Requirements
-ZF1 Future runs on any version of PHP 7 as well as PHP 8.0!
+ZF1 Future runs on any version of PHP 8!
 
 # License
 The files in this archive are released under the Zend Framework license. You can find a copy of this license in [LICENSE.txt](LICENSE.txt).

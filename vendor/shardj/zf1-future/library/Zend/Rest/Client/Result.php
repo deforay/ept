@@ -84,7 +84,7 @@ class Zend_Rest_Client_Result implements IteratorAggregate {
      * Casts a SimpleXMLElement to its appropriate PHP value
      *
      * @param SimpleXMLElement $value
-     * @return mixed
+     * @return string|null
      */
     public function toValue(SimpleXMLElement $value)
     {
@@ -125,7 +125,7 @@ class Zend_Rest_Client_Result implements IteratorAggregate {
      *
      * @param string $method
      * @param array $args
-     * @return mixed
+     * @return array|string|null
      */
     public function __call($method, $args)
     {
@@ -169,8 +169,9 @@ class Zend_Rest_Client_Result implements IteratorAggregate {
     /**
      * Implement IteratorAggregate::getIterator()
      *
-     * @return SimpleXMLIterator
+     * @return bool|DomDocument|SimpleXMLElement|null
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return $this->_sxml;

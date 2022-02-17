@@ -479,7 +479,7 @@ abstract class Zend_Barcode_Object_ObjectAbstract
     /**
      * Retrieve color of the barcode and text
      *
-     * @return unknown
+     * @return int
      */
     public function getForeColor()
     {

@@ -324,7 +324,7 @@ class Zend_Service_Console_Command
 	 * Finds the value for a specific docComment.
 	 *
 	 * @param string $docCommentName Comment name
-	 * @param unknown_type $docComment Comment object
+	 * @param string $docComment Comment object
 	 * @return array
 	 */
 	protected static function _findValueForDocComment($docCommentName, $docComment)

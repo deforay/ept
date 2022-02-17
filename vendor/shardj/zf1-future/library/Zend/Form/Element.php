@@ -426,7 +426,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
     /**
      * Retrieve localization translator object
      *
-     * @return Zend_Translate_Adapter|null
+     * @return Zend_Translate|null
      */
     public function getTranslator()
     {
@@ -975,7 +975,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
      *
      * @param  string $key
      * @param  mixed $value
-     * @return voide
+     * @return void
      */
     public function __set($key, $value)
     {
@@ -1317,7 +1317,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
      * Remove a single validator by name
      *
      * @param  string $name
-     * @return bool
+     * @return Zend_Form_Element|Zend_Form_Element_File
      */
     public function removeValidator($name)
     {
@@ -2116,7 +2116,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
         } else {
             $r = new ReflectionClass($name);
             if ($r->hasMethod('__construct')) {
-                $instance = $r->newInstanceArgs((array) $filter['options']);
+                $instance = $r->newInstanceArgs((array) [$filter['options']]);
             } else {
                 $instance = $r->newInstance();
             }

@@ -585,7 +585,7 @@ class Application_Service_Schemes
         }
     }
 
-    
+
     public function setVlRange($sId)
     {
 
@@ -600,6 +600,22 @@ class Application_Service_Schemes
 
         $db->delete('reference_vl_calculation', "shipment_id=$sId");
 
+
+        $sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('shipment_id', 'sample_id'))
+            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array())
+            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')))
+            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
+            ->where('sp.shipment_id = ? ', $sId);
+
+        //echo $sql;die;
+
+        $response = $db->fetchAll($sql);
+
+        $sampleWise = array();
+        foreach ($response as $row) {
+            $sampleWise[$row['assay']][$row['sample_id']][] = ($row['reported_viral_load']);
+        }
+
         $vlAssayArray = $this->getVlAssay();
 
         $skippedAssays = array();
@@ -609,24 +625,7 @@ class Application_Service_Schemes
 
         foreach ($vlAssayArray as $vlAssayId => $vlAssayName) {
 
-            $sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('shipment_id', 'sample_id'))
-                ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array())
-                ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('participant_id'))
-                ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
-                ->where('sp.shipment_id = ? ', $sId)
-                //->where("sp.is_excluded = 'no' ")
-                //->where("sp.is_pt_test_not_performed != 'yes' ")
-                //->where("res.reported_viral_load != '' ")
-                ->where('sp.attributes->>"$.vl_assay" = ' . $vlAssayId);
 
-            //echo $sql;die;
-            
-            $response = $db->fetchAll($sql);
-
-            $sampleWise = array();
-            foreach ($response as $row) {
-                $sampleWise[$vlAssayId][$row['sample_id']][] = ($row['reported_viral_load']);
-            }
             if (!isset($sampleWise[$vlAssayId])) {
                 continue;
             }
@@ -635,7 +634,7 @@ class Application_Service_Schemes
             // echo ("<h1>$vlAssayId</h1>");
             // var_dump($sampleWise);
             // echo "</pre>";
-            
+
             if ('standard' == $method) {
                 $minimumRequiredSamples = 6;
             } else if ('iso17043' == $method) {
@@ -756,11 +755,11 @@ class Application_Service_Schemes
                     if (isset($rvcRow['use_range']) && $rvcRow['use_range'] != "") {
                         $data['use_range'] = $rvcRow['use_range'];
                     }
-                    $db->delete('reference_vl_calculation', "vl_assay = " . $vlAssayId . " and sample_id=$sample and shipment_id=$sId");
+                    $db->delete('reference_vl_calculation', "vl_assay = " . $vlAssayId . " AND sample_id=$sample AND shipment_id=$sId");
 
                     $db->insert('reference_vl_calculation', $data);
                 } else {
-                    $db->delete('reference_vl_calculation', "vl_assay = " . $vlAssayId . " and shipment_id=$sId");
+                    $db->delete('reference_vl_calculation', "vl_assay = " . $vlAssayId . " AND shipment_id=$sId");
                     $skippedAssays[] = $vlAssayId;
                     $skippedResponseCounter[$vlAssayId] = count($reportedVl);
                 }
@@ -798,7 +797,7 @@ class Application_Service_Schemes
                 // var_dump($row);
                 // echo "</pre>";
 
-                $db->delete('reference_vl_calculation', "vl_assay = " . $row['vl_assay'] . " and sample_id= " . $row['sample_id'] . " and shipment_id=  " . $row['shipment_id']);
+                $db->delete('reference_vl_calculation', "vl_assay = " . $row['vl_assay'] . " AND sample_id= " . $row['sample_id'] . " AND shipment_id=  " . $row['shipment_id']);
                 $db->insert('reference_vl_calculation', $row);
             }
         }

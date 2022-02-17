@@ -70,19 +70,10 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
      */
     protected $_sess = false;
 
-
-    /**
-     * Indicates the HELO command has been issues
-     *
-     * @var unknown_type
-     */
-    protected $_helo = false;
-
-
     /**
      * Indicates an smtp AUTH has been issued and authenticated
      *
-     * @var unknown_type
+     * @var bool
      */
     protected $_auth = false;
 
@@ -90,7 +81,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
     /**
      * Indicates a MAIL command has been issued
      *
-     * @var unknown_type
+     * @var bool
      */
     protected $_mail = false;
 
@@ -98,7 +89,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
     /**
      * Indicates one or more RCTP commands have been issued
      *
-     * @var unknown_type
+     * @var bool
      */
     protected $_rcpt = false;
 
@@ -106,7 +97,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
     /**
      * Indicates that DATA has been issued and sent
      *
-     * @var unknown_type
+     * @var bool|null
      */
     protected $_data = null;
 

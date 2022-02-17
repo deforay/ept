@@ -86,8 +86,8 @@ class Zend_Cloud_StorageService_Adapter_Rackspace
      *
      * @param  string $path
      * @param  array $options
-     * @return mixed
-     */
+     * @return false|string
+      */
     public function fetchItem($path, $options = null)
     {
         $item = $this->_rackspace->getObject($this->_container,$path, $options);
@@ -323,7 +323,7 @@ class Zend_Cloud_StorageService_Adapter_Rackspace
     /**
      * Get the concrete client.
      *
-     * @return Zend_Service_Rackspace_File
+     * @return Zend_Service_Rackspace_Files
      */
     public function getClient()
     {

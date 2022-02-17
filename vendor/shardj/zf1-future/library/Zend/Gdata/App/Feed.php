@@ -129,6 +129,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      *
      * @return integer Entry count.
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->_entry);
@@ -139,6 +140,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->_entryIndex = 0;
@@ -149,6 +151,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      *
      * @return mixed The current row, or null if no rows.
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->_entry[$this->_entryIndex];
@@ -157,8 +160,9 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
     /**
      * Required by the Iterator interface.
      *
-     * @return mixed The current row number (starts at 0), or NULL if no rows
+     * @return int The current row number (starts at 0), or NULL if no rows
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->_entryIndex;
@@ -167,8 +171,9 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
     /**
      * Required by the Iterator interface.
      *
-     * @return mixed The next row, or null if no more rows.
+     * @return void The next row, or null if no more rows.
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->_entryIndex;
@@ -179,6 +184,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      *
      * @return boolean Whether the iteration is valid
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return 0 <= $this->_entryIndex && $this->_entryIndex < $this->count();
@@ -228,6 +234,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      * @param Zend_Gdata_App_Entry $value The value to set
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
         $this->_entry[$key] = $value;
@@ -252,6 +259,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      * @param int $key The index to set
      * @param Zend_Gdata_App_Entry $value The value to set
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($key)
     {
         if (array_key_exists($key, $this->_entry)) {
@@ -265,6 +273,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      * @param int $key The index to check for existence
      * @return boolean
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($key)
     {
         return (array_key_exists($key, $this->_entry));
@@ -273,9 +282,9 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
    /**
      * Retrieve the next set of results from this feed.
      *
-     * @throws Zend_Gdata_App_Exception
-     * @return mixed|null Returns the next set of results as a feed of the same
+     * @return string|Zend_Gdata_App_Feed Returns the next set of results as a feed of the same
      *          class as this feed, or null if no results exist.
+     *@throws Zend_Gdata_App_Exception
      */
     public function getNextFeed()
     {
@@ -294,9 +303,9 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
    /**
      * Retrieve the previous set of results from this feed.
      *
-     * @throws Zend_Gdata_App_Exception
-     * @return mixed|null Returns the previous set of results as a feed of
+     * @return string|Zend_Gdata_App_Feed Returns the previous set of results as a feed of
      *          the same class as this feed, or null if no results exist.
+     *@throws Zend_Gdata_App_Exception
      */
     public function getPreviousFeed()
     {

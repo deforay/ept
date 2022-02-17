@@ -288,7 +288,7 @@ abstract class Zend_Service_Rackspace_Abstract
     /**
      * Get the error code of the last HTTP call
      *
-     * @return strig
+     * @return string
      */
     public function getErrorCode()
     {

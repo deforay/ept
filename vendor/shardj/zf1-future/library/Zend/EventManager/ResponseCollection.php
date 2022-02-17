@@ -100,6 +100,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          *
          * @return int
          */
+        #[\ReturnTypeWillChange]
         public function count()
         {
             return $this->count;
@@ -110,6 +111,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          *
          * @return mixed
          */
+        #[\ReturnTypeWillChange]
         public function current()
         {
             if (!$this->stack) {
@@ -141,8 +143,9 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
         /**
          * Iterator: return key of current item in the stack
          *
-         * @return mixed
+         * @return int|string|null
          */
+        #[\ReturnTypeWillChange]
         public function key()
         {
             if (!$this->stack) {
@@ -156,6 +159,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          *
          * @return void
          */
+        #[\ReturnTypeWillChange]
         public function next()
         {
             if (!$this->stack) {
@@ -170,6 +174,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          * @param  mixed $index
          * @return bool
          */
+        #[\ReturnTypeWillChange]
         public function offsetExists($index)
         {
             return array_key_exists($index, $this->data);
@@ -197,6 +202,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          * @param  mixed $newval
          * @return void
          */
+        #[\ReturnTypeWillChange]
         public function offsetSet($index, $newval)
         {
             $this->data[$index] = $newval;
@@ -211,6 +217,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          * @return void
          * @throws OutOfRangeException
          */
+        #[\ReturnTypeWillChange]
         public function offsetUnset($index)
         {
             if (!$this->offsetExists($index)) {
@@ -263,6 +270,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          *
          * @return void
          */
+        #[\ReturnTypeWillChange]
         public function rewind()
         {
             if (is_array($this->stack)) {
@@ -338,6 +346,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          *
          * @return bool
          */
+        #[\ReturnTypeWillChange]
         public function valid()
         {
             $key = key($this->stack);

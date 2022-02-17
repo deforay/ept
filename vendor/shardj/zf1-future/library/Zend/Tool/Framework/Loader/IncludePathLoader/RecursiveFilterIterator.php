@@ -49,7 +49,7 @@ class Zend_Tool_Framework_Loader_IncludePathLoader_RecursiveFilterIterator exten
     /**
      * accept() - Which iterable items to accept or deny, required by FilterInterface
      *
-     * @return unknown
+     * @return bool
      */
     public function accept()
     {
@@ -71,7 +71,7 @@ class Zend_Tool_Framework_Loader_IncludePathLoader_RecursiveFilterIterator exten
      * the $_denyDirectoryPattern and the $_acceptFilePattern when sub iterators of this filter
      * are needed to be created.
      *
-     * @return Zend_Tool_Framework_Loader_IncludePathLoader_RecursiveFilterIterator
+     * @return object
      */
     public function getChildren()
     {

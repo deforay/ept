@@ -745,7 +745,7 @@ class Zend_Amf_Server implements Zend_Server_Interface
     /**
      * get a reference to the Zend_Amf_response instance
      *
-     * @return Zend_Amf_Server_Response
+     * @return Zend_Amf_Response|null
      * @throws Zend_Amf_Server_Exception
      */
     public function getResponse()

@@ -67,7 +67,7 @@ class Zend_Tool_Project_Context_Zf_TestApplicationActionMethod implements Zend_T
     /**
      * init()
      *
-     * @return Zend_Tool_Project_Context_Zf_ActionMethod
+     * @return Zend_Tool_Project_Context_Zf_TestApplicationActionMethod
      */
     public function init()
     {
@@ -113,7 +113,7 @@ class Zend_Tool_Project_Context_Zf_TestApplicationActionMethod implements Zend_T
      * setResource()
      *
      * @param Zend_Tool_Project_Profile_Resource $resource
-     * @return Zend_Tool_Project_Context_Zf_ActionMethod
+     * @return Zend_Tool_Project_Context_Zf_TestApplicationActionMethod
      */
     public function setResource(Zend_Tool_Project_Profile_Resource $resource)
     {
@@ -134,7 +134,7 @@ class Zend_Tool_Project_Context_Zf_TestApplicationActionMethod implements Zend_T
     /**
      * create()
      *
-     * @return Zend_Tool_Project_Context_Zf_ActionMethod
+     * @return Zend_Tool_Project_Context_Zf_TestApplicationActionMethod
      */
     public function create()
     {
@@ -199,7 +199,7 @@ EOS
     /**
      * delete()
      *
-     * @return Zend_Tool_Project_Context_Zf_ActionMethod
+     * @return Zend_Tool_Project_Context_Zf_TestApplicationActionMethod
      */
     public function delete()
     {

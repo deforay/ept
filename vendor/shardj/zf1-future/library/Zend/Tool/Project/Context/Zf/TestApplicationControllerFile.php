@@ -70,7 +70,7 @@ class Zend_Tool_Project_Context_Zf_TestApplicationControllerFile extends Zend_To
     /**
      * getPersistentAttributes()
      *
-     * @return unknown
+     * @return array
      */
     public function getPersistentAttributes()
     {

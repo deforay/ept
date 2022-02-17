@@ -570,7 +570,6 @@ class Zend_Soap_AutoDiscover implements Zend_Server_Interface
     /**
      * Load Functions
      *
-     * @param unknown_type $definition
      * @throws Zend_Soap_AutoDiscover_Exception
      */
     public function loadFunctions($definition)

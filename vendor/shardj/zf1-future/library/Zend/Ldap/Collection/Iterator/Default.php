@@ -177,6 +177,7 @@ class Zend_Ldap_Collection_Iterator_Default implements Iterator, Countable
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->_itemCount;
@@ -189,6 +190,7 @@ class Zend_Ldap_Collection_Iterator_Default implements Iterator, Countable
      * @return array|null
      * @throws Zend_Ldap_Exception
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if (!is_resource($this->_current)) {
@@ -232,6 +234,7 @@ class Zend_Ldap_Collection_Iterator_Default implements Iterator, Countable
      *
      * @return string|null
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         if (!is_resource($this->_current)) {
@@ -256,6 +259,7 @@ class Zend_Ldap_Collection_Iterator_Default implements Iterator, Countable
      *
      * @throws Zend_Ldap_Exception
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         if (is_resource($this->_current) && $this->_itemCount > 0) {
@@ -282,6 +286,7 @@ class Zend_Ldap_Collection_Iterator_Default implements Iterator, Countable
      *
      * @throws Zend_Ldap_Exception
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         if (is_resource($this->_resultId)) {
@@ -302,6 +307,7 @@ class Zend_Ldap_Collection_Iterator_Default implements Iterator, Countable
      *
      * @return boolean
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return (is_resource($this->_current));
