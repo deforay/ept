@@ -2993,7 +2993,7 @@ CREATE TABLE `audit_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Thana 16-Feb-2022
-CREATE TABLE `certificate_template` (
+CREATE TABLE `certificate_templates` (
  `ct_id` int NOT NULL AUTO_INCREMENT,
  `scheme_type` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
  `participation_certificate` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,

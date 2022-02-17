@@ -5,17 +5,52 @@ class Application_Model_DbTable_CertificateTemplate extends Zend_Db_Table_Abstra
     protected $_name = 'certificate_template';
     protected $_primary = 'ct_id';
 
-    public function saveCertificateTemplate($params)
+    public function saveCertificateTemplateDetails($params)
     {
-        $authNameSpace = new Zend_Session_Namespace('administrators');
-        if (isset($params['sType']) && $params['sType'] != "") {
-            return $this->insert(array(
-                "scheme_type"               => $params['sType'],
-                "participation_certificate" => $params['pCertificate'],
-                "excellence_certificate"    => $params['eCertificate'],
-                "created_by"                => $authNameSpace->primary_email,
-                "updated_on"                => new Zend_Db_Expr('now()')
-            ));
+        try {
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            if (isset($params['scheme']) && $params['scheme'] != "") {
+
+                if (isset($params['ctId']) && $params['ctId'] != "") {
+                    $id = base64_decode($params['ctID']);
+                    $this->update(array(
+                        "scheme_type"               => $params['scheme'],
+                        "certificate_template"      => $params['templateType'],
+                        "created_by"                => $authNameSpace->primary_email,
+                        "updated_on"                => new Zend_Db_Expr('now()')
+                    ), array("ct_id" => $id));
+                } else {
+                    $id = $this->insert(array(
+                        "scheme_type"               => $params['scheme'],
+                        "certificate_template"      => $params['templateType'],
+                        "created_by"                => $authNameSpace->primary_email,
+                        "updated_on"                => new Zend_Db_Expr('now()')
+                    ));
+                }
+                if (isset($params['templateType']) && $params['templateType'] != "") {
+                    $pre = (isset($params['templateType']) && $params['templateType'] == "participation") ? "p" : "e";
+                    $file = (isset($params['templateType']) && $params['templateType'] == "participation") ? "pCertificate" : "eCertificate";
+                    $field = (isset($params['templateType']) && $params['templateType'] == "participation") ? "participation_certificate" : "excellence_certificate";
+                } else if (isset($_FILES['pCertificate']) && sizeof($_FILES['pCertificate']) > 0) {
+                    $pre = "p";
+                    $file = "pCertificate";
+                    $field = "participation_certificate";
+                } else if (isset($_FILES['eCertificate']) && sizeof($_FILES['eCertificate']) > 0) {
+                    $pre = "e";
+                    $file = "eCertificate";
+                    $field = "excellence_certificate";
+                }
+                if (!file_exists(APPLICATION_PATH . DIRECTORY_SEPARATOR . 'scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates') && !is_dir(APPLICATION_PATH . DIRECTORY_SEPARATOR . 'scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates')) {
+                    mkdir(APPLICATION_PATH . DIRECTORY_SEPARATOR . 'scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates');
+                }
+                $extension = strtolower(pathinfo(UPLOAD_PATH . DIRECTORY_SEPARATOR . $_FILES[$file]['name'], PATHINFO_EXTENSION));
+                $fileName = $params['scheme'] . '-' . $pre . "-certificate-id-" . $id . "." . $extension;
+                if (move_uploaded_file($_FILES[$file]["tmp_name"], APPLICATION_PATH . DIRECTORY_SEPARATOR . 'scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR . $fileName)) {
+                    $this->update(array($field => $fileName), "ct_id = " . $id);
+                }
+            }
+        } catch (Exception $e) {
+            echo 'Message: ' . $e->getMessage();
         }
     }
 

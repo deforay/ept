@@ -63,7 +63,7 @@
                     <select class="form-control isRequired" name="country" id="country" title="Please choose the country here">
                         <option value=""></option>
                         <?php foreach ($this->countriesList as $cou) {
-                            ?>
+                        ?>
                             <option value="<?php echo $cou['id']; ?>"><?php echo $cou['iso_name']; ?></option>
                         <?php
                         }
@@ -75,7 +75,8 @@
                 <label class="col-lg-4 control-label">Region <span class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
-                    <input type="text" id="region" name="region" size="50" maxlength="255" class="form-control isRequired" title="Please enter region here" placeholder="Please enter the region here" /></div>
+                    <input type="text" id="region" name="region" size="50" maxlength="255" class="form-control isRequired" title="Please enter region here" placeholder="Please enter the region here" />
+                </div>
             </div>
 
             <div class="form-group col-lg-6">
@@ -98,7 +99,8 @@
                 <label class="col-lg-4 control-label">Testing Volume</label>
 
                 <div class="col-lg-8">
-                    <input type="text" id="testingVolume" name="testingVolume" size="50" maxlength="255" class="form-control" title="Please enter testing volume here" placeholder="Please enter the testing volume here" /></div>
+                    <input type="text" id="testingVolume" name="testingVolume" size="50" maxlength="255" class="form-control" title="Please enter testing volume here" placeholder="Please enter the testing volume here" />
+                </div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Enrolled Programs </label>
@@ -106,7 +108,7 @@
                 <div class="col-lg-8">
                     <select name="enrolledProgram[]" id="enrolledProgram" multiple="multiple" class="form-control" data-selected-text-format="count>3" title="Please choose Enrolled Programs">
                         <?php foreach ($this->enrolledPrograms as $enrolledPrograms) {
-                            ?>
+                        ?>
                             <option value="<?php echo $enrolledPrograms['r_epid']; ?>"><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
                         <?php
                         }
@@ -120,7 +122,7 @@
                     <select name="siteType" id="siteType" class="form-control">
                         <option value="">--Select--</option>
                         <?php foreach ($this->siteType as $siteType) {
-                            ?>
+                        ?>
                             <option value="<?php echo $siteType['r_stid']; ?>"><?php echo $siteType['site_type']; ?></option>
                         <?php
                         }
@@ -168,7 +170,8 @@
                 <label class="col-lg-4 control-label">Cell/Mobile No.</label>
 
                 <div class="col-lg-8">
-                    <input id="phone1" type="text" id="pphone2" name="pphone2" size="50" maxlength="255" class="form-control isNumeric checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" /></div>
+                    <input id="phone1" type="text" id="pphone2" name="pphone2" size="50" maxlength="255" class="form-control isNumeric checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" />
+                </div>
             </div>
 
             <div class="form-group col-lg-6">
@@ -184,7 +187,7 @@
                     <select name="network" id="network" class="form-control isRequired" title="Please choose the network tier">
                         <option value="">--Select--</option>
                         <?php foreach ($this->networks as $nw) {
-                            ?>
+                        ?>
                             <option value="<?php echo $nw['network_id']; ?>"><?php echo $nw['network_name']; ?></option>
                         <?php }
                         ?>
@@ -198,7 +201,7 @@
                     <select name="partAff" id="partAff" class="form-control isRequired" title="Please choose the affiliation here">
                         <option value="">--Select--</option>
                         <?php foreach ($this->affiliates as $aff) {
-                            ?>
+                        ?>
                             <option value="<?php echo $aff['affiliate']; ?>"><?php echo $aff['affiliate']; ?></option>
                         <?php }
                         ?>
@@ -209,7 +212,8 @@
                 <label class="col-lg-4 control-label">Additional E-mail</label>
 
                 <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50" maxlength="255" class="form-control" title="Please enter the email id here" placeholder="Please enter the additional email id here" />
-                    <span class="help">(Please enter comma separated mutiple email)</span></div>
+                    <span class="help">(Please enter comma separated mutiple email)</span>
+                </div>
 
             </div>
             <div class="form-group col-lg-6">
