@@ -18,35 +18,34 @@ class Application_Model_Vl
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 
+        
+
+        $db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $shipmentId");
+        $db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and is_pt_test_not_performed = 'yes'");
+
+
 
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
         $passPercentage = $config->evaluation->vl->passPercentage;
 
         if ($reEvaluate) {
-            $vlRange = null; // when re-evaluating we will set the range to be null so that it gets regenerated
+            // when re-evaluating we will set the reset the range
+            $schemeService->setVlRange($shipmentId);
+            $vlRange = $schemeService->getVlRange($shipmentId);
         } else {
             $vlRange = $schemeService->getVlRange($shipmentId);
         }
 
 
-
-
         foreach ($shipmentResult as $shipment) {
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
-
-            $db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $shipmentId");
-            $db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and is_pt_test_not_performed = 'yes'");
-
             $attributes = json_decode($shipment['attributes'], true);
             $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
 
             $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
-            if ($vlRange == null || $vlRange == "" || count($vlRange) == 0) {
-                $schemeService->setVlRange($shipmentId, $methodOfEvaluation);
-                $vlRange = $schemeService->getVlRange($shipmentId);
-            }
+            
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 

@@ -306,7 +306,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $name = $firstName . " " . $lastName;
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("User " . $userName . " updated a participant ", "participants");
+            $auditDb->addNewAuditLog("Updated Participant - " . $userName, "participants");
         }
 
         return $noOfRows;
@@ -372,7 +372,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $name = $firstName . " " . $lastName;
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("User " . $userName . " added a new participant ", "participants");
+            $auditDb->addNewAuditLog("Added a new participant - " . $userName, "participants");
         }
         return $participantId;
     }
@@ -1646,7 +1646,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     }
                     $authNameSpace = new Zend_Session_Namespace('administrators');
                     $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " imported a participant " , "participants");
+                    $auditDb->addNewAuditLog("Bulk imported participants", "participants");
                 } else {
                     if ($useUniqueIDForDuplicateCheck || $useEmailForDuplicateCheck) {
                         $dataForStatistics['error'] = 'Possible duplicate of Participant Email or Unique ID.';
@@ -1696,7 +1696,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 if ($participantId > 0) {
                     $authNameSpace = new Zend_Session_Namespace('administrators');
                     $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " deleted a participant " . $partcipant['unique_identifier'], "participants");
+                    $auditDb->addNewAuditLog("Deleted a participant - " . $partcipant['unique_identifier'], "participants");
                 }
                 return $id;
             }

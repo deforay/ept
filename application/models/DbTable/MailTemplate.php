@@ -25,7 +25,7 @@ class Application_Model_DbTable_MailTemplate extends Zend_Db_Table_Abstract
         }
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " updated a mail-template " . $params['mailPurpose'], "mail-template");
+        $auditDb->addNewAuditLog("Updated a mail template - " . $params['mailPurpose'], "mail-template");
     }
     public function getEmailTemplateDetails($mailPurpose)
     {

@@ -7,7 +7,7 @@ $adminSession = new Zend_Session_Namespace('administrators');
     <div style="margin-top:10px;">
         <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New Test Kit</a>
         <?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
-            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'standard-kit'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right:10px;"><i class="icon-medkit"></i>&nbsp;&nbsp;National HIV Rapid Test</a>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'standard-kit'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right:10px;"><i class="icon-medkit"></i>&nbsp;&nbsp;Map Test kits to Tests</a>
         <?php } ?>
     </div>
 </h4>

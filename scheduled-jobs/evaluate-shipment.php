@@ -637,7 +637,7 @@ try {
             if ($id > 0 && $reportCompletedStatus == 'finalized') {
                 $authNameSpace = new Zend_Session_Namespace('administrators');
                 $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " finalized shipment " . $evalRow['shipment_code'], "shipment");
+                $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
             }
 
             $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);

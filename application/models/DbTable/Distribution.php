@@ -176,9 +176,9 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             'created_on'        => new Zend_Db_Expr('now()')
         );
         $distributionId = $this->insert($data);
-        if($distributionId >0){
+        if ($distributionId > 0) {
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " added a new distribution ", "shipment");
+            $auditDb->addNewAuditLog("Added a new PT Survey - " . $params['distributionCode'], "shipment");
         }
         return $distributionId;
     }
@@ -207,9 +207,9 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             'updated_on' => new Zend_Db_Expr('now()')
         );
         $distributionId = $this->update($data, "distribution_id=" . base64_decode($params['distributionId']));
-        if($distributionId >0){
+        if ($distributionId > 0) {
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " updated a distribution ", "shipment");
+            $auditDb->addNewAuditLog("Updated PT Survey - " . $params['distributionCode'], "shipment");
         }
         return $distributionId;
     }

@@ -165,7 +165,7 @@ if ($adminSession->privileges != "") {
 								<?php if (!$pstatus && in_array('config-ept', $privileges)) { ?>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'system-admins'), 'default', true); ?>">PT Managers</a></li>
 								<?php } ?>
-								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'audit-log'), 'default', true); ?>">Audit Log</a></li>
+								
 								<?php if (!$pstatus && in_array('config-ept', $privileges) || !$pstatus && in_array('manage-participants', $privileges)) { ?>
 									<li class="divider"></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants'), 'default', true); ?>">PT Participants</a></li>
@@ -187,7 +187,7 @@ if ($adminSession->privileges != "") {
 									<?php } ?>
 									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li class="divider"></li>
-										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>">DTS Settings</a></li>
+										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>">DTS HIV Serology Settings</a></li>
 									<?php } ?>
 									<?php if (in_array('covid19', $adminSession->activeSchemes)) { ?>
 										<li class="divider"></li>
@@ -215,6 +215,8 @@ if ($adminSession->privileges != "") {
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'publications'), 'default', true); ?>">Publications</a></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'partners'), 'default', true); ?>">Partners</a></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'contact-us'), 'default', true); ?>">Contact Messages</a></li>
+									<li class="divider"></li>
+									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'audit-log'), 'default', true); ?>">Audit Log</a></li>
 								<?php } ?>
 							</ul>
 						</li>
@@ -259,7 +261,7 @@ if ($adminSession->privileges != "") {
 								<?php } ?>
 								<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
 									<li class="divider"></li>
-									<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit'), 'default', true); ?>">Test Kit Report For DTS</a></li>
+									<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit'), 'default', true); ?>">Test Kit Report For DTS HIV Serology</a></li>
 								<?php } ?>
 
 								<?php if (in_array('vl', $adminSession->activeSchemes)) { ?>

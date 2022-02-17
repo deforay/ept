@@ -2,7 +2,7 @@
     <form name="bulkParticipantForm" id="bulkParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "participant-upload-statistics"), 'default', true) ?>" class="form-horizontal bs-example" enctype="multipart/form-data" role="form" onsubmit="validateNow();
             return false;">
         <fieldset>
-            <legend>Bulk Import Participant</legend>
+            <legend>Bulk Import Participants</legend>
 
             <div class="form-group col-lg-12">
                 <label class="col-lg-4 control-label">Select file to upload<span class="mandatory">*</span></label>
@@ -12,7 +12,7 @@
                 <div class="col-lg-5 ">
 
                     <ul>
-                        <li> <a class="text-danger" style="text-decoration:underline;" href="<?php echo $this->baseUrl('/files/Participant_Bulk_Import_Excel_Format.xlsx'); ?>" download><i class="fa fa-fw fa-download mr-1"></i> Click here to download the format for importing the excel</a> </li>
+                        <li> <a class="text-danger" style="text-decoration:underline;" href="<?php echo $this->baseUrl('/files/Participant_Bulk_Import_Excel_Format.xlsx'); ?>" download><i class="fa fa-fw fa-download mr-1"></i> Click here to download the Excel format for importing the participants</a> </li>
                         <li> Please note that the columns marked in <span class="mandatory">red</span> are mandatory. </li>
                         <li> The Unique Identifier field should have a unique id for the participant. </li>
                         <li> If the Participant is a Lab/Clinic, then put the Lab/Clinic Name in the place of First Name </li>
@@ -21,7 +21,7 @@
             </div>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Import Excel" />
                 <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants';" tabindex="8" value="Cancel" />
             </div>
         </fieldset>

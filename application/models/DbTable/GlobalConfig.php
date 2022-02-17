@@ -45,14 +45,14 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         }
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " updated a global-config ", "config");
+        $auditDb->addNewAuditLog("Updated global config ", "config");
     }
 
     public function getPTProgramName()
     {
         return $this->fetchRow('name = "pt_program_name"');
     }
-    
+
     public function getPTProgramShortName()
     {
         return $this->fetchRow('name = "pt_program_short_name"');

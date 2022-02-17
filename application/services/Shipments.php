@@ -1273,7 +1273,7 @@ class Application_Service_Shipments
         if ($lastId > 0) {
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " created new shipment " . $params['shipmentCode'], "shipment");
+            $auditDb->addNewAuditLog("Created new shipment " . $params['shipmentCode'], "shipment");
         }
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();

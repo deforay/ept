@@ -7,10 +7,10 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
 <div class="well">
     <form name="covid19SettingsForm" id="covid19SettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "covid19-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
-            <legend style=" margin-bottom: 0px; " class="title">Covid-19 Settings</legend>
+            <legend style=" margin-bottom: 0px; " class="title">SARS-CoV-2 Settings</legend>
             <div class="alert alert-success" style="display: none;">some text</div>
             <div class="form-group">
-                <label for="covid19PassPercentage" class="col-lg-3 control-label">Covid-19 Pass Percentage <span class="mandatory">*</span></label>
+                <label for="covid19PassPercentage" class="col-lg-3 control-label">Minimum Passing Percentage <span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
                     <input type="text" id="covid19PassPercentage" name="covid19PassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo (isset($this->config->evaluation->covid19->passPercentage) && $this->config->evaluation->covid19->passPercentage != "")?$this->config->evaluation->covid19->passPercentage:0; ?>" />
                     <span class="input-group-addon">%</span>
@@ -26,7 +26,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
             </div> -->
 
             <div class="form-group covid19MaximumTestAllowedDiv">
-                <label for="covid19MaximumTestAllowed" class="col-lg-3 control-label">Covid-19 Maximum Test Allowed <span class="mandatory">*</span></label>
+                <label for="covid19MaximumTestAllowed" class="col-lg-3 control-label">Maximum Tests Allowed <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="covid19MaximumTestAllowed" name="covid19MaximumTestAllowed" title="Please select if test 3 is optional">
                         <option value="">--Select--</option>
@@ -62,7 +62,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithm
                 <ul>
                     <li>If a response does not contain the following recommended Test Platforms, participants will not pass for the respective samples.</li>
                     <li>If you don't want to enforce the test type check, please leave the following 3 options blank</li>
-                    <li>Please set the <a href="/admin/test-platform/standard-type">Covid-19 Standard Test Platforms</a> before you do the below</li>
+                    <li>Please set the <a href="/admin/test-platform/standard-type">SARS-CoV-2 Standard Test Platforms</a> before you do the below</li>
                 </ul>
 
             </p>

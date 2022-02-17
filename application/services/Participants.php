@@ -412,8 +412,8 @@ class Application_Service_Participants
 			}
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			$authNameSpace = new Zend_Session_Namespace('administrators');
-            $auditDb = new Application_Model_DbTable_AuditLog();
-        	$auditDb->addNewAuditLog("User " . $authNameSpace->primary_email . " downloaded a participant ", "participants");
+			$auditDb = new Application_Model_DbTable_AuditLog();
+			$auditDb->addNewAuditLog("Downloaded a participant data", "participants");
 			return $filename;
 		} catch (Exception $exc) {
 			return "";

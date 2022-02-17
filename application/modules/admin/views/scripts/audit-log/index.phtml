@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Audit Log Details</div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Audit Log</div>
 </h4>
 
 <table style="margin:20px 0;" class="table table-bordered">
@@ -11,10 +11,10 @@
             Pick a Date Range (Optional)
         </td>
         <td style="width:200px;text-align: center;font-weight:bold;">
-            Select Scheme Type (Optional)
+            Select Context Type (Optional)
         </td>
         <td style="width:200px;text-align: center;font-weight:bold;">
-            Select PT Participant Login (Optional)
+            Select User (Optional)
         </td>
         <td style="width:40px;text-align: center;font-weight:bold;"></td>
     </tr>
@@ -24,14 +24,14 @@
         </td>
         <td>
             <select id="type" name="type" onchange="drawTable();" class="form-control input-sm">
-                <option value=""> -- Select Type --</option>
+                <option value=""> -- Select Context --</option>
                 <option value="participants">Participants</option>
                 <option value="Shipment">Shipments</option>
             </select>
         </td>
         <td>
             <select id="createdBy" name="createdBy" onchange="drawTable();" class="form-control input-sm">
-                <option value=""> -- Select a User to Created By --</option>
+                <option value=""> -- Select a User --</option>
                 <?php
                 foreach ($this->systemAdmin as $admin) {
                 ?>
@@ -48,10 +48,10 @@
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="auditLogTable">
     <thead>
         <tr>
-            <th>Statement</th>
-            <th>Created By</th>
-            <th>Created On</th>
-            <th>Type</th>
+            <th>Action</th>
+            <th>Action By</th>
+            <th>Action On</th>
+            <th>Context</th>
         </tr>
     </thead>
     <tbody>

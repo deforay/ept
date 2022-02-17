@@ -171,7 +171,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             $name = $firstName . " " . $lastName;
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("User " . $userName . " added a new admin ", "admin");
+            $auditDb->addNewAuditLog("Added a new admin - " . $name, "admin");
         }
 
         return $adminId;
@@ -208,7 +208,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             $name = $firstName . " " . $lastName;
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("User " . $userName . " updated a admin ", "admin");
+            $auditDb->addNewAuditLog("Updated admin - " . $name, "admin");
         }
 
         return $adminId;

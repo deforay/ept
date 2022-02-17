@@ -1287,7 +1287,7 @@ class Application_Service_Evaluation
 
 				$methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 				if ($vlRange == null || $vlRange == "" || count($vlRange) == 0) {
-					$schemeService->setVlRange($shipmentId, $methodOfEvaluation);
+					$schemeService->setVlRange($shipmentId);
 					$vlRange = $schemeService->getVlRange($shipmentId);
 				}
 
@@ -2050,7 +2050,7 @@ class Application_Service_Evaluation
 					->where("vlCal.shipment_id=?", $shipmentId)
 					->where("refVl.control!=1")
 					//->where("(sp.attributes like CONCAT('%\"vl_assay\":\"', vlCal.vl_assay, '\"%') )")
-					->where('JSON_EXTRACT(sp.attributes, "$.vl_assay") = vlCal.vl_assay')
+					->where('sp.attributes->>"$.vl_assay" = vlCal.vl_assay')
 					->where("sp.is_excluded not like 'yes'")
 					->group('rvla.name')
 					->order('vlCal.no_of_responses DESC');
@@ -2067,7 +2067,7 @@ class Application_Service_Evaluation
 						->where("vlCal.shipment_id=?", $shipmentId)
 						->where("vlCal.vl_assay=?", $vlAssayRow['id'])
 						->where("refVl.control!=1")
-						->where('JSON_EXTRACT(sp.attributes, "$.vl_assay") = ' . $vlAssayRow['id'])
+						->where('sp.attributes->>"$.vl_assay" = ' . $vlAssayRow['id'])
 						->where("sp.is_excluded not like 'yes'")
 						->group('refVl.sample_id');
 					//error_log($vlQuery);
@@ -2076,7 +2076,7 @@ class Application_Service_Evaluation
 					if ($vlAssayRow['id'] == 6) {
 						$cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
 							->where("sp.is_excluded not like 'yes'")
-							->where('JSON_EXTRACT(sp.attributes, "$.vl_assay") = 6')
+							->where('sp.attributes->>"$.vl_assay" = 6')
 							->where('sp.shipment_id = ? ', $shipmentId);
 						$cResult = $db->fetchAll($cQuery);
 

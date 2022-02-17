@@ -135,9 +135,9 @@ class Application_Service_Schemes
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $res = $db->fetchAll($db->select()
-                                    ->from('r_eid_extraction_assay')
-                                    ->where("`status` like 'active'")
-                                    ->order('sort_order'));
+            ->from('r_eid_extraction_assay')
+            ->where("`status` like 'active'")
+            ->order('sort_order'));
         $response = array();
         foreach ($res as $row) {
             $response[$row['id']] = $row['name'];
@@ -585,14 +585,18 @@ class Application_Service_Schemes
         }
     }
 
-    // $method = legacy is for the old way to calculate the VL Range
-    // $method = iso is for the ISO specific way to calculate the VL Range
-    public function setVlRange($sId, $method = 'standard')
+    
+    public function setVlRange($sId)
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('s' => 'shipment'))
+            ->where('shipment_id = ? ', $sId);
+        $shipment = $db->fetchRow($sql);
 
-        
+        $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
+
+        $method = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
         $db->delete('reference_vl_calculation', "shipment_id=$sId");
 
@@ -610,12 +614,13 @@ class Application_Service_Schemes
                 ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('participant_id'))
                 ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
                 ->where('sp.shipment_id = ? ', $sId)
-                ->where("sp.is_excluded = 'no' ")
+                //->where("sp.is_excluded = 'no' ")
                 //->where("sp.is_pt_test_not_performed != 'yes' ")
                 //->where("res.reported_viral_load != '' ")
-                ->where('JSON_EXTRACT(sp.attributes, "$.vl_assay") = ' . $vlAssayId);
-                
+                ->where('sp.attributes->>"$.vl_assay" = ' . $vlAssayId);
+
             //echo $sql;die;
+            
             $response = $db->fetchAll($sql);
 
             $sampleWise = array();
@@ -626,6 +631,11 @@ class Application_Service_Schemes
                 continue;
             }
 
+            // echo "<pre>";
+            // echo ("<h1>$vlAssayId</h1>");
+            // var_dump($sampleWise);
+            // echo "</pre>";
+            
             if ('standard' == $method) {
                 $minimumRequiredSamples = 6;
             } else if ('iso17043' == $method) {
