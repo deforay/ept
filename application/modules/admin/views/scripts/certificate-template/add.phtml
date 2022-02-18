@@ -1,8 +1,7 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
-    <form enctype="multipart/form-data" name="addCertificateTemplateForm" id="addCertificateTemplateForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "certificate-template", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();
-            return false;">
+    <form enctype="multipart/form-data" name="addCertificateTemplateForm" id="addCertificateTemplateForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "certificate-template", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
         <fieldset>
             <legend>Add New Certificate Template</legend>
 
