@@ -33,6 +33,7 @@ class Application_Model_DbTable_CertificateTemplate extends Zend_Db_Table_Abstra
                     if (move_uploaded_file($_FILES["pCertificate"]["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
                         $this->update(array("participation_certificate" => $fileName), "ct_id = " . $id);
                     }
+                    move_uploaded_file($_FILES["pCertificate"]["tmp_name"], UPLOAD_PATH . DIRECTORY_SEPARATOR . "certificate-template" . DIRECTORY_SEPARATOR . $fileName);
                 }
                 if (isset($_FILES['eCertificate']) && sizeof($_FILES['eCertificate']) > 0) {
                     // Define the path
@@ -40,8 +41,9 @@ class Application_Model_DbTable_CertificateTemplate extends Zend_Db_Table_Abstra
                     $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $_FILES["eCertificate"]['name'], PATHINFO_EXTENSION));
                     $fileName = $params['scheme'] . "-e." . $extension;
                     if (move_uploaded_file($_FILES["eCertificate"]["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
-                        $this->update(array("participation_certificate" => $fileName), "ct_id = " . $id);
+                        $this->update(array("excellence_certificate" => $fileName), "ct_id = " . $id);
                     }
+                    move_uploaded_file($_FILES["eCertificate"]["tmp_name"], UPLOAD_PATH . DIRECTORY_SEPARATOR . "certificate-template" . DIRECTORY_SEPARATOR . $fileName);
                 }
             }
         } catch (Exception $e) {
@@ -58,8 +60,7 @@ class Application_Model_DbTable_CertificateTemplate extends Zend_Db_Table_Abstra
                 "ct_id"                     => $ct["ct_id"],
                 "scheme_type"               => $ct["scheme_type"],
                 "participation_certificate" => $ct["participation_certificate"],
-                "excellence_certificate"    => $ct["excellence_certificate"],
-                "certificate_template"      => $ct["certificate_template"]
+                "excellence_certificate"    => $ct["excellence_certificate"]
             );
         }
         return $certificateTemplate;
