@@ -3,6 +3,7 @@
         "phpoffice/phpspreadsheet": "^1.14",
         "setasign/fpdi-tcpdf": "2.3",
         "phpoffice/phpword": "^0.18.2",
-        "shardj/zf1-future": "^1.20"
+        "shardj/zf1-future": "^1.20",
+        "lavary/crunz": "^3.2"
     }
 }

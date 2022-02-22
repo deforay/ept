@@ -6,10 +6,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 
         define('APP_VERSION', '7.2.1');
 
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $locale = (!empty($conf->locale) ? $conf->locale : "en_US");
+        $timezone = (!empty($conf->timezone) ? $conf->timezone : "UTC");
 		Zend_Session::start();
-		date_default_timezone_set("America/New_York");
-		$locale = new Zend_Locale('en_US');
-		Zend_Registry::set('Zend_Locale', $locale);
+		date_default_timezone_set($timezone);
+		$appLocale = new Zend_Locale($locale);
+		Zend_Registry::set('Zend_Locale', $appLocale);
 		
 		$router = Zend_Controller_Front::getInstance()->getRouter();
 		$router->addRoute("captchaRoute", new Zend_Controller_Router_Route('captcha/:r', array('controller' => 'captcha', 'action' => 'index', 'r'=>'')));
