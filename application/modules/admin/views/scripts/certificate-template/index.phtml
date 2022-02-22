@@ -1,168 +1,72 @@
-</style>
+<?php
+$ct = $this->certificateTemplates;
+?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Certificate Template</div>
 </h4>
-
-<table style="margin:20px 0;" class="table table-bordered">
-    <tr>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            Pick a Date Range (Optional)
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            Select Scheme Type (Optional)
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            Created By (Optional)
-        </td>
-        <td style="width:40px;text-align: center;font-weight:bold;"></td>
-    </tr>
-    <tr>
-        <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
-        </td>
-        <td>
-            <select id="type" name="type" onchange="drawTable();" class="form-control input-sm">
-                <option value=""> -- Select Type --</option>
-                <option value="participation">Participation</option>
-                <option value="excellence">Excellence</option>
-            </select>
-        </td>
-        <td>
-            <select id="createdBy" name="createdBy" onchange="drawTable();" class="form-control input-sm">
-                <option value=""> -- Select a User to Created By --</option>
-                <?php
-                foreach ($this->systemAdmin as $admin) {
-                ?>
-                    <option value="<?php echo $admin['primary_email']; ?>"><?php echo $admin['first_name'] . " " . $admin['last_name']; ?></option>
-                <?php
+<form enctype="multipart/form-data" name="addCertificateTemplateForm" id="addCertificateTemplateForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "certificate-template"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+    <table cellpadding=" 0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="auditLogTable">
+        <thead>
+            <tr>
+                <th>Scheme Type</th>
+                <th>Participation Certificate</th>
+                <th>Excellence Certificate</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($this->schemes as $scheme) {
+                $showPInput = "block";
+                $showPFile = "block";
+                $showEInput = "block";
+                $showEFile = "block";
+                $pfilePath = "";
+                $efilePath = "";
+                if (isset($ct[$scheme['scheme_id']]['participation_certificate']) && $ct[$scheme['scheme_id']]['participation_certificate'] != "") {
+                    $pfilePath = DIRECTORY_SEPARATOR . "uplaods/certificate-template" . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['participation_certificate'];
+                    $showPInput = "none";
+                } else {
+                    $showPFile = "none";
                 }
-                ?>
-            </select>
-        </td>
-        <td><button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button></td>
-    </tr>
-</table>
 
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="auditLogTable">
-    <thead>
-        <tr>
-            <th>Scheme Type</th>
-            <th>Participation Certificate</th>
-            <th>Excellence Certificate</th>
-            <th>Created By </th>
-            <th>Created On</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="5" class="dataTables_empty">Loading data from server</td>
-        </tr>
-    </tbody>
-</table>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+                if (isset($ct[$scheme['scheme_id']]['excellence_certificate']) && $ct[$scheme['scheme_id']]['excellence_certificate'] != "") {
+                    $efilePath = DIRECTORY_SEPARATOR . "uplaods/certificate-template" . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['excellence_certificate'];
+                    $showEInput = "none";
+                } else {
+                    $showEFile = "none";
+                }
+                $ctId = (isset($ct[$scheme['scheme_id']]['ct_id']) && $ct[$scheme['scheme_id']]['ct_id'] > 0) ? base64_encode($ct[$scheme['scheme_id']]['ct_id']) : "";
+            ?>
+                <tr>
+                    <th>
+                        <?php echo $scheme['scheme_name']; ?>
+                        <input type="hidden" name="scheme" id="scheme" value="<?php echo $scheme['scheme_id']; ?>">
+                        <input type="hidden" name="ctId" id="ctId" value="<?php echo $ctId; ?>">
+                    </th>
+                    <td>
+                        <div style="display: <?php echo $showPFile; ?>;" class="pFile<?php echo $scheme['scheme_id']; ?>"><a href="<?php echo $pfilePath; ?>" target="_blank" class="">Open Participation Template File</a><span onclick="removeFile('<?php echo $ctId; ?>', 'pCertificate<?php echo $scheme['scheme_id']; ?>', 'pFile<?php echo $scheme['scheme_id']; ?>');" style=" color: red; padding: 10px; cursor: pointer; " title="Remove the participation file and upload new template">X</span></div>
+                        <input style="display: <?php echo $showPInput; ?>;" type="file" id="pCertificate<?php echo $scheme['scheme_id']; ?>" name="pCertificate" class="form-control" title="Please upload the participation certificate" placeholder="Upload the participation certificate" />
+                    </td>
+                    <td>
+                        <div style="display: <?php echo $showEFile; ?>;" class="eFile<?php echo $scheme['scheme_id']; ?>"><a href="<?php echo $efilePath; ?>" target="_blank" class="">Open Excellence Template File</a><span onclick="removeFile('<?php echo $ctId; ?>', 'eCertificate<?php echo $scheme['scheme_id']; ?>', 'eFile<?php echo $scheme['scheme_id']; ?>');" style=" color: red; padding: 10px; cursor: pointer; " title="Remove the excellence file and upload new template">X</span></div>
+                        <input style="display: <?php echo $showEInput; ?>;" type="file" id="eCertificate<?php echo $scheme['scheme_id']; ?>" name="eCertificate" class="form-control" title="Please upload the excellence certificate" placeholder="Upload the excellence certificate" />
+                    </td>
+                    <td>
+                        <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Save" />
+                    </td>
+                </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+</form>
 <script type="text/javascript" charset="utf-8">
-    var startDate = "";
-    var endDate = "";
     $(document).ready(function() {
-        $.blockUI;
 
-        $('#dateRange').daterangepicker({
-                format: 'DD-MMM-YYYY',
-                ranges: {
-                    //'Today': [moment(), moment()],
-                    //'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
-                    //'Last 7 Days': [moment().subtract('days', 6), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')],
-                    'Last 30 Days': [moment().subtract('days', 29), moment()],
-                    'Last 90 Days': [moment().subtract('days', 89), moment()],
-                    'Last 120 Days': [moment().subtract('days', 119), moment()],
-                    'Last 180 Days': [moment().subtract('days', 179), moment()]
-                }
-            },
-            function(start, end) {
-                startDate = start.format('YYYY-MM-DD');
-                endDate = end.format('YYYY-MM-DD');
-                oTable.fnDraw();
-            });
-        oTable = $('#auditLogTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
-            "bJQueryUI": false,
-            "bAutoWidth": false,
-            "bInfo": true,
-            "bScrollCollapse": true,
-            "sPaginationType": "bootstrap",
-            "bRetrieve": true,
-            "aoColumns": [{
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                }
-            ],
-            "aaSorting": [
-                [0, "desc"]
-            ],
-            "bProcessing": true,
-            "bSortClasses": false,
-            "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-template', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function(aoData) {
-                type = $("#type").val();
-                dateRange = $("#dateRange").val();
-                createdBy = $("#createdBy").val();
-                aoData.push({
-                    "name": "dateRange",
-                    "value": dateRange
-                });
-                aoData.push({
-                    "name": "type",
-                    "value": type
-                });
-                aoData.push({
-                    "name": "startDate",
-                    "value": startDate
-                });
-                aoData.push({
-                    "name": "endDate",
-                    "value": endDate
-                });
-                aoData.push({
-                    "name": "createdBy",
-                    "value": createdBy
-                });
-            },
-            "fnServerData": function(sSource, aoData, fnCallback) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": function(json) {
-                        fnCallback(json);
-                    }
-                });
-            }
-        });
-        $.unblockUI;
     });
 
-    function drawTable() {
-        $.blockUI;
-        oTable.fnDraw();
-        $.unblockUI;
+    function removeFile(id, show, hide) {
+        $("#" + show).show();
+        $("." + hide).hide();
     }
 </script>
