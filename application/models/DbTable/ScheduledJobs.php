@@ -16,6 +16,7 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
             ->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response'))
             ->where("DATE(s.shipment_date) >=?", $startDate)
             ->where("DATE(s.shipment_date) <=?", $endDate)
+            ->where("s.status <= ?", 'finalized')
             ->order("s.scheme_type");
 
         if (isset($params['scheme']) && !empty($params['scheme']) && count($params['scheme']) > 0) {
