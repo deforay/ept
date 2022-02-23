@@ -12,7 +12,7 @@ if (is_array($shipmentsToGenerate)) {
 
 
 if (empty($shipmentsToGenerate)) {
-	error_log ("Please specify the shipment ids with the -s flag");
+	error_log("Please specify the shipment ids with the -s flag");
 	exit();
 }
 
@@ -20,8 +20,9 @@ if (empty($shipmentsToGenerate)) {
 use PhpOffice\PhpWord\TemplateProcessor;
 
 $certificatePaths = array();
-$certificatePaths[] = $excellenceCertPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName/excellence";
-$certificatePaths[] = $participationCertPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName/participation";
+$folderPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName";
+$certificatePaths[] = $excellenceCertPath = $folderPath . "/excellence";
+$certificatePaths[] = $participationCertPath = $folderPath . "/participation";
 
 if (!file_exists($excellenceCertPath)) {
 	mkdir($excellenceCertPath, 0777, true);
@@ -32,13 +33,17 @@ if (!file_exists($participationCertPath)) {
 
 
 
+
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $common = new Application_Service_Common();
 $participantsDb = new Application_Model_DbTable_Participants();
 $dataManagerDb = new Application_Model_DbTable_DataManagers();
 $schemesService = new Application_Service_Schemes();
 $vlAssayArray = $schemesService->getVlAssay();
+$generalModel = new Pt_Commons_General();
 
+
+$libreOfficePath = (!empty($conf->libreoffice->path) ? $conf->libreoffice->path : "/usr/bin/libreoffice");
 
 
 try {
@@ -219,11 +224,18 @@ try {
 			}
 		}
 	}
-	if (!empty($certificatePaths)) {
+	if (!empty($certificatePaths) && is_executable($libreOfficePath)) {
 		$certificatePaths = array_unique($certificatePaths);
 		Zend_Debug::dump($certificatePaths);
 		foreach ($certificatePaths as $certPath) {
-			echo ("cd $certPath && /usr/bin/libreoffice --headless --convert-to pdf *.docx --outdir ./ >/dev/null 2>&1 &" . PHP_EOL);
+			//echo ("cd $certPath && /usr/bin/libreoffice --headless --convert-to pdf *.docx --outdir ./ >/dev/null 2>&1 &" . PHP_EOL);
+			$files = $generalModel->recuriveSearch($certPath, "*.docx");
+			if (!empty($files)) {
+				foreach ($files as $f) {
+					$fileName = basename($f);
+					exec("/usr/bin/libreoffice --headless --convert-to pdf $f --outdir $certPath");
+				}
+			}
 		}
 	}
 } catch (Exception $e) {
