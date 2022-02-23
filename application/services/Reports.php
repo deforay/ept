@@ -6101,8 +6101,12 @@ class Application_Service_Reports
                             $lastDate = new DateTime($arrayVal[$shipmentType][$shipmentCode]['lastdate_response']);
                             if ($reportedDate <= $lastDate) {
                                 $participated = true;
+                            } else {
+                                $participated = false;
                             }
                         }
+                    } else {
+                        $participated = false;
                     }
                 }
                 if ($certificate && $participated) {
