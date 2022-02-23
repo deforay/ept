@@ -51,8 +51,6 @@ try {
 	$query = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
 		->where("shipment_id IN (" . $shipmentsToGenerate . ")")
 		->order("s.scheme_type");
-
-
 	$shipmentResult = $db->fetchAll($query);
 
 	$shipmentIDArray = array();

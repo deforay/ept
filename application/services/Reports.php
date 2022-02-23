@@ -5913,7 +5913,6 @@ class Application_Service_Reports
         if (isset($params['startDate']) && trim($params['startDate']) != "" && trim($params['endDate']) != "") {
             $startDate = $params['startDate'];
             $endDate = $params['endDate'];
-            $schemesService = new Application_Service_Schemes();
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $query = $db->select()
@@ -5938,6 +5937,7 @@ class Application_Service_Reports
             $shipmentIdArray = array();
             foreach ($shipmentResult as $val) {
                 $shipmentIdArray[] = $val['shipment_id'];
+                $shipmentId[$val['scheme_type']][] = $val['shipment_id'];
                 $shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
                 $impShipmentId = implode(",", $shipmentIdArray);
             }
@@ -5960,8 +5960,10 @@ class Application_Service_Reports
                     ->order("s.scheme_type");
                 $shipmentResult = $db->fetchAll($shQuery);
                 $shipmentCodeArray = array();
+
                 foreach ($shipmentResult as $val) {
                     $shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
+                    $shipmentId[$val['scheme_type']] = $val['shipment_id'];
                 }
             } else {
                 //$sQuery->where('spm.shipment_id IN(?)', $impShipmentId);
@@ -5995,8 +5997,7 @@ class Application_Service_Reports
                     //$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
                 }
             }
-            //Zend_Debug::dump($shipmentCodeArray);
-            //die;
+
             return $this->generateAnnualReport($shipmentCodeArray, $participants, $startDate, $endDate);
         }
     }
@@ -6061,11 +6062,9 @@ class Application_Service_Reports
             $firstSheetRow[] = $arrayVal['country_name'];
             $firstSheetRow[] = $arrayVal['email'];
             $firstSheetRow[] = $arrayVal['additional_email'];
-
             foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
                 $certificate = true;
                 $participated = false;
-
                 foreach ($shipmentsList as $shipmentCode) {
                     $assayName = "";
                     if ($shipmentType == 'vl' && !empty($arrayVal[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
@@ -6164,8 +6163,6 @@ class Application_Service_Reports
                 $colNo++;
             }
         }
-
-
 
         if (!file_exists(UPLOAD_PATH) && !is_dir(UPLOAD_PATH)) {
             mkdir(UPLOAD_PATH);

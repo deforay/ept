@@ -78,6 +78,11 @@
 			placeholder: "Select one or more shipment",
 			allowClear: true
 		});
+
+
+		$('#certificateName').on('input', function(event) {
+			allowOnlyAlphaNumericAndHyphen('#certificateName');
+		});
 	});
 
 	function getShipmentCodes() {
@@ -139,6 +144,8 @@
 			scheme = $("#scheme").select2("val");
 			shipmentId = $("#shipmentId").select2("val");
 			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'save-scheduled-jobs'), 'default', true); ?>", {
+					startDate: startDate,
+					endDate: endDate,
 					scheme: scheme,
 					shipmentId: shipmentId,
 					certificateName: _certificateName,
