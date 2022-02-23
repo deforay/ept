@@ -26,22 +26,21 @@
 				<option></option>
 			</select>
 		</td>
-		<td style="width:20%">
-			<input type="text" class="form-control input-sm" name="certificateName" id="certificateName" placeholder="Enter certificate name" title="Please enter certificate name to filter">
-		</td>
-
 		<td class="dontPrint" style="width:15%"><button class="btn btn-success btn-sm" onclick="getAnnualReport()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button></td>
 	</tr>
 </table>
 <br />
 <br />
-<div align="left" style="padding-top:3px;" class="col-lg-6">
+<div align="left" style="padding-top:3px;" class="col-lg-12">
 	<span id="summaryDiv">
 
 	</span>
 </div>
-<div align="right" style="padding-top:3px;display: none;" class="col-lg-6 certificate-btn">
-	<a href="javascript:void(0);" onclick="genarateCertificate(this);" class="btn btn-info certificate-anchor"><i class="icon-certificate"></i> Generate Certificates</a>
+<div align="left" style="margin-top: 3em;display: none;" class="col-lg-12 certificate-btn">
+	<div style="width: 74%;display: flex;">
+		<input type="text" style="width:30%;margin-right: 34px;" class="form-control input-sm" name="certificateName" id="certificateName" placeholder="Enter certificate name" title="Please enter certificate name to filter">
+		<a href="javascript:void(0);" onclick="genarateCertificate(this);" class="btn-sm btn btn-info certificate-anchor"><i class="icon-certificate"></i> Generate Certificates</a>
+	</div>
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>

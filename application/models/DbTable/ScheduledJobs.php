@@ -31,6 +31,11 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
                 $query = $query->where($sWhere);
             }
         }
+
+        if (isset($params['shipmentId']) && !empty($params['shipmentId']) && count($params['shipmentId']) > 0) {
+            $impShipmentId = implode(",", $params['shipmentId']);
+            $query = $query->where('s.shipment_id IN (' . $impShipmentId . ')');
+        }
         $shipmentResult = $db->fetchAll($query);
         foreach ($shipmentResult as $shipment) {
             $shipmentId[] = $shipment['shipment_id'];
