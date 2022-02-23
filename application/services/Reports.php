@@ -6076,20 +6076,20 @@ class Application_Service_Reports
                     $firstSheetRow[] = $assayName;
                     if (!empty($arrayVal[$shipmentType][$shipmentCode]['result']) && $arrayVal[$shipmentType][$shipmentCode]['result'] != 3) {
 
-						$firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['score'];
+                        $firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['score'];
 
-						if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
-							$certificate = false;
-						}
-					} else {
-						if (!empty($arrayVal[$shipmentType][$shipmentCode]['result']) && $arrayVal[$shipmentType][$shipmentCode]['result'] == 3) {
-							$firstSheetRow[] = 'Excluded';
-						} else {
-							$firstSheetRow[] = '-';
-						}
-						//$participated = false;
-						$certificate = false;
-					}
+                        if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
+                            $certificate = false;
+                        }
+                    } else {
+                        if (!empty($arrayVal[$shipmentType][$shipmentCode]['result']) && $arrayVal[$shipmentType][$shipmentCode]['result'] == 3) {
+                            $firstSheetRow[] = 'Excluded';
+                        } else {
+                            $firstSheetRow[] = '-';
+                        }
+                        //$participated = false;
+                        $certificate = false;
+                    }
 
 
 
@@ -6175,5 +6175,11 @@ class Application_Service_Reports
         $filename = 'ePT-Annual-Report-' . rand() . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename);
         return $filename;
+    }
+
+    public function saveScheduledJobs($params)
+    {
+        $scheduledDb = new Application_Model_DbTable_ScheduledJobs();
+        return $scheduledDb->saveScheduledJobsDetails($params);
     }
 }

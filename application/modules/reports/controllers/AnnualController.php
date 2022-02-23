@@ -17,6 +17,7 @@ class Reports_AnnualController extends Zend_Controller_Action
         /* Initialize action controller here */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
+            ->addActionContext('save-scheduled-jobs', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
@@ -31,5 +32,15 @@ class Reports_AnnualController extends Zend_Controller_Action
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
+    }
+
+    public function saveScheduledJobsAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->saveScheduledJobs($params);
+            $this->view->result = $response;
+        }
     }
 }
