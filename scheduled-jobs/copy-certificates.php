@@ -62,7 +62,7 @@ try {
 
   foreach ($pResult as $pRow) {
 
-    $filePath = realpath(__DIR__) . DIRECTORY_SEPARATOR . 'certificates' . DIRECTORY_SEPARATOR;
+    $filePath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'certificates' . DIRECTORY_SEPARATOR;
     $files = recuriveSearch($filePath, "$pRow-*.pdf");
     // Zend_Debug::dump("$pRow*.pdf");
     // Zend_Debug::dump($filePath);

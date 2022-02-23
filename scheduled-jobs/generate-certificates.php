@@ -20,8 +20,8 @@ if (empty($shipmentsToGenerate)) {
 use PhpOffice\PhpWord\TemplateProcessor;
 
 $certificatePaths = array();
-$certificatePaths[] = $excellenceCertPath = __DIR__ . "/certificates/$certificateName/excellence";
-$certificatePaths[] = $participationCertPath = __DIR__ . "/certificates/$certificateName/participation";
+$certificatePaths[] = $excellenceCertPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName/excellence";
+$certificatePaths[] = $participationCertPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName/participation";
 
 if (!file_exists($excellenceCertPath)) {
 	mkdir($excellenceCertPath, 0777, true);
@@ -148,23 +148,21 @@ try {
 				if ($certificate && $participated) {
 					$attribs = $arrayVal['attribs'];
 
-
-
 					//Zend_Debug::dump($excellenceCertPath);die;
 					//Zend_Debug::dump($participationCertPath);die;
 
 					if ($shipmentType == 'dts') {
-						if (!file_exists(__DIR__ . "/certificate-template/dts-e.docx")) continue;
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/dts-e.docx");
+						if (!file_exists(UPLOAD_PATH . "/certificate-templates/dts-e.docx")) continue;
+						$doc = new TemplateProcessor(UPLOAD_PATH . "/certificate-templates/dts-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 					} else if ($shipmentType == 'eid') {
-						if (!file_exists(__DIR__ . "/certificate-template/eid-e.docx")) continue;
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/eid-e.docx");
+						if (!file_exists(UPLOAD_PATH . "/certificate-templates/eid-e.docx")) continue;
+						$doc = new TemplateProcessor(UPLOAD_PATH . "/certificate-templates/eid-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 					} else if ($shipmentType == 'vl') {
-						if (!file_exists(__DIR__ . "/certificate-template/vl-e.docx")) continue;
+						if (!file_exists(UPLOAD_PATH . "/certificate-templates/vl-e.docx")) continue;
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
 								$assay = $attribs["other_assay"];
@@ -174,7 +172,7 @@ try {
 						} else {
 							$assay = (isset($attribs["vl_assay"]) && isset($vlAssayArray[$attribs["vl_assay"]])) ? $vlAssayArray[$attribs["vl_assay"]] : " Other ";
 						}
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/vl-e.docx");
+						$doc = new TemplateProcessor(UPLOAD_PATH . "/certificate-templates/vl-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						$doc->setValue("ASSAYNAME", $assay);
@@ -186,19 +184,19 @@ try {
 					$attribs = $arrayVal['attribs'];
 
 					if ($shipmentType == 'dts') {
-						if (!file_exists(__DIR__ . "/certificate-template/dts-p.docx")) continue;
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/dts-p.docx");
+						if (!file_exists(UPLOAD_PATH . "/certificate-templates/dts-p.docx")) continue;
+						$doc = new TemplateProcessor(UPLOAD_PATH . "/certificate-templates/dts-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 					} else if ($shipmentType == 'eid') {
-						if (!file_exists(__DIR__ . "/certificate-template/eid-p.docx")) continue;
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/eid-p.docx");
+						if (!file_exists(UPLOAD_PATH . "/certificate-templates/eid-p.docx")) continue;
+						$doc = new TemplateProcessor(UPLOAD_PATH . "/certificate-templates/eid-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						//$doc->setValue("DATE","09 January 2018");
 
 					} else if ($shipmentType == 'vl') {
-						if (!file_exists(__DIR__ . "/certificate-template/vl-p.docx")) continue;
+						if (!file_exists(UPLOAD_PATH . "/certificate-templates/vl-p.docx")) continue;
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
 								$assay = $attribs["other_assay"];
@@ -209,7 +207,7 @@ try {
 							$assay = (isset($attribs["vl_assay"]) && isset($vlAssayArray[$attribs["vl_assay"]])) ? $vlAssayArray[$attribs["vl_assay"]] : " Other ";
 						}
 
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-template/vl-p.docx");
+						$doc = new TemplateProcessor(UPLOAD_PATH . "/certificate-templates/vl-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						$doc->setValue("ASSAYNAME", $assay);

@@ -6,13 +6,25 @@ $schedule = new \Crunz\Schedule();
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $timezone = (!empty($conf->timezone) ? $conf->timezone : "UTC");
+$phpPath = (!empty($conf->php->path) ? $conf->php->path : PHP_BINARY);
 
-// Evaluate Shipment
+// Generate Shipment Reports
 
-$schedule->run(PHP_BINARY . " " . APPLICATION_PATH . "/../scheduled-jobs/evaluate-shipment.php")
+$schedule->run($phpPath . " " . APPLICATION_PATH . "/../scheduled-jobs/shipment-reports.php")
     ->everyMinute()
     ->timezone($timezone)
     ->preventOverlapping()
-    ->description('Running Shipment evaluations');
+    ->description('Generating Shipment reports');
+
+
+// Send Email Alerts
+$schedule->run($phpPath . " " . APPLICATION_PATH . "/../scheduled-jobs/send-emails.php")
+    ->everyMinute()
+    ->timezone($timezone)
+    ->preventOverlapping()
+    ->description('Sending Emails');
+
+
 
 return $schedule;
+
