@@ -35,7 +35,7 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
             $shipmentId[] = $shipment['shipment_id'];
         }
         return $this->insert(array(
-            "job" => "generate-certificate.php -s " . implode(",", $shipmentId) . " -c " . $params['certificateName'],
+            "job" => "generate-certificates.php -s " . implode(",", $shipmentId) . " -c " . $params['certificateName'],
             "requested_on" => new Zend_Db_Expr('now()'),
             "requested_by" => $authNameSpace->primary_email,
             "completed_on" => new Zend_Db_Expr('now()')
