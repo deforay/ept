@@ -39,12 +39,12 @@ Welcome to the Open Source repository of the e-Proficiency Testing (e-PT) softwa
 </VirtualHost>
 ```
 
-You also need to add a couple of cron or scheduled jobs. Following is an example on a Linux system
+You also need to add a scheduled job. Following is an example on a Linux system
 
 ```bash
 
-* * * * * /usr/bin/php -f /var/www/ept/scheduled-jobs/evaluate-shipment.php
-* * * * * /usr/bin/php -f /var/www/ept/scheduled-jobs/SendMailAlerts.php
+* * * * * cd /var/www/vlsm/ && ./vendor/bin/crunz schedule:run
+
 
 ```
 
