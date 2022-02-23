@@ -3001,3 +3001,14 @@ CREATE TABLE `certificate_templates` (
  `updated_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
  PRIMARY KEY (`ct_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Thana 22-Feb-2022
+CREATE TABLE `scheduled_jobs` (
+ `job_id` int NOT NULL AUTO_INCREMENT,
+ `job` text COLLATE utf8mb4_general_ci,
+ `requested_on` datetime DEFAULT NULL,
+ `requested_by` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+ `completed_on` datetime DEFAULT NULL,
+ `status` varchar(256) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pending',
+ PRIMARY KEY (`job_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
