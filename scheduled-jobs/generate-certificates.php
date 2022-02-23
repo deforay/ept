@@ -138,8 +138,12 @@ try {
 							$lastDate = new DateTime($arrayVal[$shipmentType][$shipmentCode]['lastdate_response']);
 							if ($reportedDate <= $lastDate) {
 								$participated = true;
+							} else {
+								$participated = false;
 							}
 						}
+					} else {
+						$participated = false;
 					}
 				}
 
