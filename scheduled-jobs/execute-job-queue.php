@@ -1,6 +1,6 @@
 <?php
 
-include_once 'CronInit.php';
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 
 try {
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -13,14 +13,12 @@ try {
     $scheduledResult = $scheduledDb->fetchAll("status = 'pending'");
     if (isset($scheduledResult)) {
         foreach ($scheduledResult as $key => $sj) {
-            $output = realpath($phpPath . " " . APPLICATION_PATH . "/ ../scheduled-jobs/" . $sj['job']);
-            if ($output) {
-                $scheduledDb->update(array("completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"), array("job_id" => $sj['job_id']));
-            }
+            exec($phpPath . " " . realpath(APPLICATION_PATH . "/../scheduled-jobs") . DIRECTORY_SEPARATOR . $sj['job']);
+            $scheduledDb->update(array("completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"), array("job_id" => $sj['job_id']));
         }
     }
 } catch (Exception $e) {
     error_log($e->getMessage());
     error_log($e->getTraceAsString());
-    error_log('whoops! Something went wrong in scheduled-jobs/GenerateCertificate.php');
+    error_log('whoops! Something went wrong in scheduled-jobs/execute-job-queue.php');
 }

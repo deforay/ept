@@ -24,7 +24,12 @@ $schedule->run($phpPath . " " . APPLICATION_PATH . "/../scheduled-jobs/send-emai
     ->preventOverlapping()
     ->description('Sending Emails');
 
-
+// Send Email Alerts
+$schedule->run($phpPath . " " . APPLICATION_PATH . "/../scheduled-jobs/execute-job-queue.php")
+    ->everyMinute()
+    ->timezone($timezone)
+    ->preventOverlapping()
+    ->description('Sending Emails');
 
 return $schedule;
 

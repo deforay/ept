@@ -1,6 +1,6 @@
 <?php
 
-include_once 'CronInit.php';
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
