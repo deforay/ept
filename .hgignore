@@ -6,9 +6,9 @@ syntax: regexp
 ^public/temporary/cache(?!index.php)
 ^scheduled-jobs/certificate/(?!index.php)
 ^scheduled-jobs/certificates/(?!index.php)
-^scheduled-jobs/certificate-template/(?!index.php)
-^scheduled-jobs/certificate-template/(?!index.php)
-^scheduled-jobs/certificate-template/(?!index.php)
+^scheduled-jobs/certificate-templates/(?!index.php)
+^scheduled-jobs/certificate-templates/(?!index.php)
+^scheduled-jobs/certificate-templates/(?!index.php)
 ^public/temporary/(?!index.php)
 ^downloads/(?!index.php)
 

@@ -1,5 +1,5 @@
 <?php
-include_once('CronInit.php');
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 require_once('tcpdf/tcpdf.php');
 
 use setasign\Fpdi\Tcpdf\Fpdi;

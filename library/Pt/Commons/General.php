@@ -284,4 +284,43 @@ class Pt_Commons_General
         }
         rmdir($dir);
     }
+
+    public function checkFolder($base, $pattern, $flags)
+    {
+        if (substr($base, -1) !== DIRECTORY_SEPARATOR) {
+            $base .= DIRECTORY_SEPARATOR;
+        }
+
+        $files = glob($base . $pattern, $flags);
+        if (!is_array($files)) {
+            $files = [];
+        }
+
+        $dirs = glob($base . '*', GLOB_ONLYDIR | GLOB_NOSORT | GLOB_MARK);
+        if (!is_array($dirs)) {
+            return $files;
+        }
+
+        foreach ($dirs as $dir) {
+            $dirFiles = $this->checkFolder($dir, $pattern, $flags);
+            $files = array_merge($files, $dirFiles);
+        }
+
+        return $files;
+    }
+
+
+    public function recuriveSearch($base, $pattern, $flags = 0)
+    {
+        $glob_nocheck = $flags & GLOB_NOCHECK;
+        $flags = $flags & ~GLOB_NOCHECK;
+
+        $files = $this->checkFolder($base, $pattern, $flags);
+
+        if ($glob_nocheck && count($files) === 0) {
+            return [$pattern];
+        }
+
+        return $files;
+    }
 }

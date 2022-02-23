@@ -1,47 +1,13 @@
 <?php
 
-include_once 'CronInit.php';
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
 
-function check_folder($base, $pattern, $flags)
-{
-  if (substr($base, -1) !== DIRECTORY_SEPARATOR) {
-    $base .= DIRECTORY_SEPARATOR;
-  }
 
-  $files = glob($base . $pattern, $flags);
-  if (!is_array($files)) {
-    $files = [];
-  }
 
-  $dirs = glob($base . '*', GLOB_ONLYDIR | GLOB_NOSORT | GLOB_MARK);
-  if (!is_array($dirs)) {
-    return $files;
-  }
-
-  foreach ($dirs as $dir) {
-    $dirFiles = check_folder($dir, $pattern, $flags);
-    $files = array_merge($files, $dirFiles);
-  }
-
-  return $files;
-}
-
-function recuriveSearch($base, $pattern, $flags = 0)
-{
-  $glob_nocheck = $flags & GLOB_NOCHECK;
-  $flags = $flags & ~GLOB_NOCHECK;
-
-  $files = check_folder($base, $pattern, $flags);
-
-  if ($glob_nocheck && count($files) === 0) {
-    return [$pattern];
-  }
-
-  return $files;
-}
+$generalModel = new Pt_Commons_General();
 
 
 try {
@@ -63,7 +29,7 @@ try {
   foreach ($pResult as $pRow) {
 
     $filePath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'certificates' . DIRECTORY_SEPARATOR;
-    $files = recuriveSearch($filePath, "$pRow-*.pdf");
+    $files = $generalModel->recuriveSearch($filePath, "$pRow-*.pdf");
     // Zend_Debug::dump("$pRow*.pdf");
     // Zend_Debug::dump($filePath);
     // Zend_Debug::dump($files);
