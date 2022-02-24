@@ -14,17 +14,22 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                     $id = base64_decode($params['ctId'][$key]);
                     if (isset($id) && $id > 0) {
                         $this->update(array(
-                            "scheme_type"               => $scheme,
-                            "created_by"                => $authNameSpace->primary_email,
                             "updated_on"                => new Zend_Db_Expr('now()')
                         ), array("ct_id" => $id));
                     } else {
                         $id = $this->insert(array(
                             "scheme_type"               => $scheme,
-                            "created_by"                => $authNameSpace->primary_email,
+                            "created_by"                => $authNameSpace->admin_id,
                             "updated_on"                => new Zend_Db_Expr('now()')
                         ));
                     }
+                    if (!file_exists(APPLICATION_PATH . '/../scheduled-jobs')) {
+                        mkdir(APPLICATION_PATH . '/../scheduled-jobs', 0777, true);
+                    }
+                    if (!file_exists(APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates')) {
+                        mkdir(APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates', 0777, true);
+                    }
+
                     if (!empty($_FILES['pCertificate']['name'][$key])) {
                         $pathPrefix = APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates';
                         $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $_FILES["pCertificate"]['name'][$key], PATHINFO_EXTENSION));

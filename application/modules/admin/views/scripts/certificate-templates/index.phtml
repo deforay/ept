@@ -21,17 +21,17 @@ $ct = $this->certificateTemplates;
                 $showPFile = "block";
                 $showEInput = "block";
                 $showEFile = "block";
-                $pfilePath = "";
-                $efilePath = "";
+                $pfilePath = "javascript:void(0);";
+                $efilePath = "javascript:void(0);";
                 if (isset($ct[$scheme['scheme_id']]['participation_certificate']) && $ct[$scheme['scheme_id']]['participation_certificate'] != "") {
-                    $pfilePath = DIRECTORY_SEPARATOR . "uplaods/certificate-template" . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['participation_certificate'];
+                    // $pfilePath = DIRECTORY_SEPARATOR . "uplaods/certificate-template" . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['participation_certificate'];
                     $showPInput = "none";
                 } else {
                     $showPFile = "none";
                 }
 
                 if (isset($ct[$scheme['scheme_id']]['excellence_certificate']) && $ct[$scheme['scheme_id']]['excellence_certificate'] != "") {
-                    $efilePath = DIRECTORY_SEPARATOR . "uplaods/certificate-template" . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['excellence_certificate'];
+                    // $efilePath = DIRECTORY_SEPARATOR . "uplaods/certificate-template" . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['excellence_certificate'];
                     $showEInput = "none";
                 } else {
                     $showEFile = "none";
@@ -41,16 +41,16 @@ $ct = $this->certificateTemplates;
                 <tr>
                     <th>
                         <?php echo $scheme['scheme_name']; ?>
-                        <input type="hidden" name="scheme[]" id="scheme" value="<?php echo $scheme['scheme_id']; ?>">
-                        <input type="hidden" name="ctId[]" id="ctId" value="<?php echo $ctId; ?>">
+                        <input type="hidden" name="scheme[<?php echo $scheme['scheme_id']; ?>]" id="scheme" value="<?php echo $scheme['scheme_id']; ?>">
+                        <input type="hidden" name="ctId[<?php echo $scheme['scheme_id']; ?>]" id="ctId" value="<?php echo $ctId; ?>">
                     </th>
                     <td>
-                        <div style="display: <?php echo $showPFile; ?>;" class="pFile<?php echo $scheme['scheme_id']; ?>"><a href="<?php echo $pfilePath; ?>" target="_blank" class="">Download Participation Template</a><span onclick="removeFile('<?php echo $ctId; ?>', 'pCertificate<?php echo $scheme['scheme_id']; ?>', 'pFile<?php echo $scheme['scheme_id']; ?>');" style=" color: red; padding: 10px; cursor: pointer; " title="Remove the participation file and upload new template">X</span></div>
-                        <input style="display: <?php echo $showPInput; ?>;" type="file" id="pCertificate<?php echo $scheme['scheme_id']; ?>" name="pCertificate[]" class="form-control" title="Please upload the participation certificate" placeholder="Upload the participation certificate" />
+                        <div style="display: <?php echo $showPFile; ?>;" class="pFile<?php echo $scheme['scheme_id']; ?>"><a href="<?php echo $pfilePath; ?>" class=""><?php echo $ct[$scheme['scheme_id']]['participation_certificate']; ?></a><span onclick="removeFile('<?php echo $ctId; ?>', 'pCertificate<?php echo $scheme['scheme_id']; ?>', 'pFile<?php echo $scheme['scheme_id']; ?>');" style=" color: red; padding: 10px; cursor: pointer; " title="Remove the participation file and upload new template">X</span></div>
+                        <input style="display: <?php echo $showPInput; ?>;" type="file" id="pCertificate<?php echo $scheme['scheme_id']; ?>" name="pCertificate[<?php echo $scheme['scheme_id']; ?>]" class="form-control" title="Please upload the participation certificate" placeholder="Upload the participation certificate" />
                     </td>
                     <td>
-                        <div style="display: <?php echo $showEFile; ?>;" class="eFile<?php echo $scheme['scheme_id']; ?>"><a href="<?php echo $efilePath; ?>" target="_blank" class="">Download Excellence Template</a><span onclick="removeFile('<?php echo $ctId; ?>', 'eCertificate<?php echo $scheme['scheme_id']; ?>', 'eFile<?php echo $scheme['scheme_id']; ?>');" style=" color: red; padding: 10px; cursor: pointer; " title="Remove the excellence file and upload new template">X</span></div>
-                        <input style="display: <?php echo $showEInput; ?>;" type="file" id="eCertificate<?php echo $scheme['scheme_id']; ?>" name="eCertificate[]" class="form-control" title="Please upload the excellence certificate" placeholder="Upload the excellence certificate" />
+                        <div style="display: <?php echo $showEFile; ?>;" class="eFile<?php echo $scheme['scheme_id']; ?>"><a href="<?php echo $efilePath; ?>" class=""><?php echo $ct[$scheme['scheme_id']]['excellence_certificate']; ?></a><span onclick="removeFile('<?php echo $ctId; ?>', 'eCertificate<?php echo $scheme['scheme_id']; ?>', 'eFile<?php echo $scheme['scheme_id']; ?>');" style=" color: red; padding: 10px; cursor: pointer; " title="Remove the excellence file and upload new template">X</span></div>
+                        <input style="display: <?php echo $showEInput; ?>;" type="file" id="eCertificate<?php echo $scheme['scheme_id']; ?>" name="eCertificate[<?php echo $scheme['scheme_id']; ?>]" class="form-control" title="Please upload the excellence certificate" placeholder="Upload the excellence certificate" />
                     </td>
                 </tr>
             <?php } ?>
