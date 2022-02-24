@@ -40,11 +40,14 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         foreach ($shipmentResult as $shipment) {
             $shipmentId[] = $shipment['shipment_id'];
         }
-        return $this->insert(array(
-            "job" => "generate-certificates.php -s " . implode(",", $shipmentId) . " -c " . $params['certificateName'],
-            "requested_on" => new Zend_Db_Expr('now()'),
-            "requested_by" => $authNameSpace->primary_email,
-            "completed_on" => new Zend_Db_Expr('now()')
-        ));
+        if (isset($shipmentId) && sizeof($shipmentId) > 0 && isset($params['certificateName']) && $params['certificateName'] != "") {
+            return $this->insert(array(
+                "job" => "generate-certificates.php -s " . implode(",", $shipmentId) . " -c " . $params['certificateName'],
+                "requested_on" => new Zend_Db_Expr('now()'),
+                "requested_by" => $authNameSpace->admin_id,
+            ));
+        } else {
+            return 0;
+        }
     }
 }

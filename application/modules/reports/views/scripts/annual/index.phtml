@@ -126,8 +126,11 @@
 				},
 				function(data) {
 					$("#summaryDiv").html("&nbsp;&nbsp;<a href='<?php echo $this->baseUrl("temporary/annual-reports/"); ?>" + data + "' class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download " + data + " </a>");
-					$(".certificate-btn").show();
-					$(".certificate-anchor").attr("disabled", false);
+					if (data != "") {
+
+						$(".certificate-btn").show();
+						$(".certificate-anchor").attr("disabled", false);
+					}
 					$.unblockUI();
 				});
 		} else {
@@ -152,13 +155,15 @@
 				},
 				function(data) {
 					if (data > 0) {
-						alert("Certificate genaration started.");
+						alert("Certificate generation will start shortly");
 						$(obj).attr("disabled", true);
+					} else {
+						alert("No matched shipment for selected date range.");
 					}
 					$.unblockUI();
 				});
 		} else {
-			alert("Please enter the certificate name to processed")
+			alert("Please enter the certificate name to proceed")
 		}
 	}
 </script>
