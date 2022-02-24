@@ -28,7 +28,7 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
                 $sWhere .= "s.scheme_type='" . $val . "'";
             }
             if (!empty($sWhere)) {
-                $query = $query->where($sWhere);
+                $query = $query->where("(" . $sWhere . ")");
             }
         }
 
@@ -39,7 +39,13 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         $shipmentResult = $db->fetchAll($query);
         foreach ($shipmentResult as $shipment) {
             $shipmentId[] = $shipment['shipment_id'];
+            if (!file_exists(APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR . $shipment['scheme_type'] . "-e.docx")) {
+                $directory[] = $shipment['scheme_type'];
+                return 9999999;
+            }
         }
+
+
         if (isset($shipmentId) && sizeof($shipmentId) > 0 && isset($params['certificateName']) && $params['certificateName'] != "") {
             return $this->insert(array(
                 "job" => "generate-certificates.php -s " . implode(",", $shipmentId) . " -c " . $params['certificateName'],

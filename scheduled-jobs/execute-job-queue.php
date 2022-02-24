@@ -13,7 +13,7 @@ try {
     $scheduledResult = $scheduledDb->fetchAll("status = 'pending'");
     if (isset($scheduledResult)) {
         foreach ($scheduledResult as $key => $sj) {
-            exec($phpPath . " " . realpath(APPLICATION_PATH . "/../scheduled-jobs") . DIRECTORY_SEPARATOR . $sj['job']);
+            exec($phpPath . " " . realpath(APPLICATION_PATH . "/../scheduled-jobs/certificate-templates") . DIRECTORY_SEPARATOR . $sj['job']);
             $scheduledDb->update(array("completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"), array("job_id" => $sj['job_id']));
         }
     }

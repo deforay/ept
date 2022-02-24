@@ -5964,7 +5964,6 @@ class Application_Service_Reports
 
                 foreach ($shipmentResult as $val) {
                     $shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
-                    $shipmentId[$val['scheme_type']] = $val['shipment_id'];
                 }
             } else {
                 //$sQuery->where('spm.shipment_id IN(?)', $impShipmentId);

@@ -3012,3 +3012,6 @@ CREATE TABLE `scheduled_jobs` (
  `status` varchar(256) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pending',
  PRIMARY KEY (`job_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Thana 24-Feb-2022
+ALTER TABLE `certificate_templates` ADD `created_by` VARCHAR(256) NULL DEFAULT NULL AFTER `excellence_certificate`;
