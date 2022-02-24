@@ -2998,6 +2998,7 @@ CREATE TABLE `certificate_templates` (
  `scheme_type` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
  `participation_certificate` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
  `excellence_certificate` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+ `created_by` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
  `updated_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
  PRIMARY KEY (`ct_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
