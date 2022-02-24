@@ -25,30 +25,28 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                             "updated_on"                => new Zend_Db_Expr('now()')
                         ));
                     }
-                    if (isset($_FILES['pCertificate']['name'][$key]) && $_FILES['pCertificate']['name'][$key] != "") {
-                        // Define the path
-                        $pathPrefix = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates';
+                    if (!empty($_FILES['pCertificate']['name'][$key])) {
+                        $pathPrefix = APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates';
                         $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $_FILES["pCertificate"]['name'][$key], PATHINFO_EXTENSION));
                         $fileName = $scheme . "-p." . $extension;
                         if (move_uploaded_file($_FILES["pCertificate"]["tmp_name"][$key], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
                             $this->update(array("participation_certificate" => $fileName), "ct_id = " . $id);
                         }
-                        move_uploaded_file($_FILES["pCertificate"]["tmp_name"][$key], UPLOAD_PATH . DIRECTORY_SEPARATOR . "certificate-template" . DIRECTORY_SEPARATOR . $fileName);
                     }
-                    if (isset($_FILES['eCertificate']['name'][$key]) && $_FILES['eCertificate']['name'][$key] != "") {
-                        // Define the path
-                        $pathPrefix = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates';
+                    if (!empty($_FILES['eCertificate']['name'][$key])) {
+                        $pathPrefix = APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates';
                         $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $_FILES["eCertificate"]['name'][$key], PATHINFO_EXTENSION));
                         $fileName = $scheme . "-e." . $extension;
                         if (move_uploaded_file($_FILES["eCertificate"]["tmp_name"][$key], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
                             $this->update(array("excellence_certificate" => $fileName), "ct_id = " . $id);
                         }
-                        move_uploaded_file($_FILES["eCertificate"]["tmp_name"][$key], UPLOAD_PATH . DIRECTORY_SEPARATOR . "certificate-template" . DIRECTORY_SEPARATOR . $fileName);
                     }
                 }
             }
         } catch (Exception $e) {
-            echo 'Message: ' . $e->getMessage();
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+            error_log('Whoops! Something went wrong while uploading certificate templates');
         }
     }
 
