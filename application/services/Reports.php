@@ -6064,7 +6064,7 @@ class Application_Service_Reports
             $firstSheetRow[] = $arrayVal['additional_email'];
             foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
                 $certificate = true;
-                $participated = false;
+                $participated = true;
                 foreach ($shipmentsList as $shipmentCode) {
                     $assayName = "";
                     if ($shipmentType == 'vl' && !empty($arrayVal[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
@@ -6090,21 +6090,7 @@ class Application_Service_Reports
                         $certificate = false;
                     }
 
-
-
-                    if (!empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
-                        $reportedDateTimeArray = explode(" ", $arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date']);
-                        if (trim($reportedDateTimeArray[0]) != "" && $reportedDateTimeArray[0] != null && trim($reportedDateTimeArray[0]) != "0000-00-00" && trim($reportedDateTimeArray[0]) != "1970-01-01") {
-
-                            $reportedDate = new DateTime($reportedDateTimeArray[0]);
-                            $lastDate = new DateTime($arrayVal[$shipmentType][$shipmentCode]['lastdate_response']);
-                            if ($reportedDate <= $lastDate) {
-                                $participated = true;
-                            } else {
-                                $participated = false;
-                            }
-                        }
-                    } else {
+                    if (empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
                         $participated = false;
                     }
                 }

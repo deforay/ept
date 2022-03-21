@@ -41,6 +41,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
 
 
 
+            $config->$sec->evaluation->dts = array();
             $config->$sec->evaluation->dts->passPercentage = $this->getRequest()->getPost('dtsPassPercentage');
             $config->$sec->evaluation->dts->panelScore = $this->getRequest()->getPost('dtsPanelScore');
             $config->$sec->evaluation->dts->documentationScore = $this->getRequest()->getPost('dtsDocumentationScore');

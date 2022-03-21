@@ -482,6 +482,8 @@ class Application_Model_Dts
 							$algoResult = 'Pass';
 						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $finalResultCode == 'P') {
 							$algoResult = 'Pass';
+						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $finalResultCode == 'R') {
+							$algoResult = 'Pass';
 						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $finalResultCode == 'N') {
 							$algoResult = 'Pass';
 						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $finalResultCode == 'I') {

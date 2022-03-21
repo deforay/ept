@@ -32,15 +32,15 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                     'created_on' => new Zend_Db_Expr('now()')
                 ));
             } else {
-                var_dump(array(
-                    'shipment_map_id' => $params['smid'],
-                    'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
-                    'sample_id' => $sampleId,
-                    'reported_viral_load' => (float)$params['vlResult'][$key],
-                    'is_tnd' => $tnd,
-                    'updated_by' => $authNameSpace->UserID,
-                    'updated_on' => new Zend_Db_Expr('now()')
-                ));
+                // var_dump(array(
+                //     'shipment_map_id' => $params['smid'],
+                //     'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
+                //     'sample_id' => $sampleId,
+                //     'reported_viral_load' => (float)$params['vlResult'][$key],
+                //     'is_tnd' => $tnd,
+                //     'updated_by' => $authNameSpace->UserID,
+                //     'updated_on' => new Zend_Db_Expr('now()')
+                // ));
                 $this->update(array(
                     'shipment_map_id' => $params['smid'],
                     'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,

@@ -4,7 +4,7 @@ ALTER TABLE  `users` ADD PRIMARY KEY (  `UserSystemID` );
 ALTER TABLE  `users` CHANGE  `UserSystemID`  `UserSystemID` INT NOT NULL AUTO_INCREMENT;
 ALTER TABLE  `users` CHANGE  `UserID`  `UserID` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 
--- By Amit on 17 Sep 2013
+--  By Amit on 17 Sep 2013
 
 CREATE TABLE IF NOT EXISTS `global_config` (
   `name` varchar(255) NOT NULL,
@@ -16,13 +16,13 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('admin-name', 'ePT Admin')
 ALTER TABLE  `users` ADD  `force_password_reset` INT NOT NULL DEFAULT  '0';
 
 
--- By Amit on 18 Sep 2013
+--  By Amit on 18 Sep 2013
 
--- ALTER TABLE  `schemelist` CHANGE  `schemeID`  `SchemeID` VARCHAR( 10 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
--- ALTER TABLE  `schemelist` ADD  `SchemeName` VARCHAR( 255 ) NOT NULL AFTER  `SchemeID`;
--- INSERT INTO `schemelist` (`SchemeID`, `SchemeName`, `ShipmentTable`, `ResponseTable`, `ReferanceResultTable`) VALUES ('DTS', 'Dried Tube Specimen', NULL, NULL, NULL), ('VL', 'Viral Load', NULL, NULL, NULL);
+--  ALTER TABLE  `schemelist` CHANGE  `schemeID`  `SchemeID` VARCHAR( 10 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+--  ALTER TABLE  `schemelist` ADD  `SchemeName` VARCHAR( 255 ) NOT NULL AFTER  `SchemeID`;
+--  INSERT INTO `schemelist` (`SchemeID`, `SchemeName`, `ShipmentTable`, `ResponseTable`, `ReferanceResultTable`) VALUES ('DTS', 'Dried Tube Specimen', NULL, NULL, NULL), ('VL', 'Viral Load', NULL, NULL, NULL);
 
--- By Amit on 19 Sep 2013
+--  By Amit on 19 Sep 2013
 
 
 CREATE TABLE IF NOT EXISTS `shipment_eid` (
@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS `eid_detection_assay` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
---
--- Dumping data for table `eid_detection_assay`
---
+-- 
+--  Dumping data for table `eid_detection_assay`
+-- 
 
 INSERT INTO `eid_detection_assay` (`id`, `name`) VALUES
 (1, 'COBAS Ampliprep/Taqman HIV-1 Qual Test'),
@@ -75,9 +75,9 @@ CREATE TABLE IF NOT EXISTS `eid_extraction_assay` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
---
--- Dumping data for table `eid_extraction_assay`
---
+-- 
+--  Dumping data for table `eid_extraction_assay`
+-- 
 
 INSERT INTO `eid_extraction_assay` (`id`, `name`) VALUES
 (1, 'COBAS Ampliprep/Taqman HIV-1 Qual Test'),
@@ -104,9 +104,9 @@ CREATE TABLE IF NOT EXISTS `r_vl_assay` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
---
--- Dumping data for table `r_vl_assay`
---
+-- 
+--  Dumping data for table `r_vl_assay`
+-- 
 
 INSERT INTO `r_vl_assay` (`id`, `name`) VALUES
 (1, 'Abbott - RealTime '),
@@ -117,7 +117,7 @@ INSERT INTO `r_vl_assay` (`id`, `name`) VALUES
 
 
 
--- By Amit on Sep 20 2013
+--  By Amit on Sep 20 2013
 
 CREATE  TABLE `r_control` (
   `control_id` INT NOT NULL AUTO_INCREMENT ,
@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `response_result_eid` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- By Amit on 23 Sep 2013
+--  By Amit on 23 Sep 2013
 
 ALTER TABLE  `shipment_eid` ADD  `extraction_assay` INT NULL AFTER  `shipment_test_report_date` ,
 ADD  `detection_assay` INT NULL AFTER  `extraction_assay`;
@@ -190,7 +190,7 @@ Select year(a.ShipmentDate) as SHIP_YEAR,
 b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.PARTICIPANTID,
 a.SHIPMENTDATE,
--- a.ShipmentTestReportDate as RESPONSEDATE,
+--  a.ShipmentTestReportDate as RESPONSEDATE,
 DATE_FORMAT(a.ShipmentTestReportDate,'%Y-%m-%d')  as RESPONSEDATE,
 a.LASTDATERESPONSE,
 a.ParticipantID as PARTICIPANT_ID,
@@ -219,7 +219,7 @@ Select year(a.shipment_date) as SHIP_YEAR,
 b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.participant_id,
 a.shipment_date,
--- a.shipment_test_report_date as RESPONSEDATE,
+--  a.shipment_test_report_date as RESPONSEDATE,
 DATE_FORMAT(a.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
 a.lastdate_response,
 a.participant_id as PARTICIPANT_ID,
@@ -246,7 +246,7 @@ Select year(a.shipment_date) as SHIP_YEAR,
 b.ParticipantFName as FNAME,b.ParticipantLName as LNAME,
 a.participant_id,
 a.shipment_date,
--- a.shipment_test_report_date as RESPONSEDATE,
+--  a.shipment_test_report_date as RESPONSEDATE,
 DATE_FORMAT(a.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
 a.lastdate_response,
 a.participant_id as PARTICIPANT_ID,
@@ -267,7 +267,7 @@ from shipment_eid  as a
 left join participant as b on a.participant_id = b.ParticipantSystemID where year(a.shipment_date)  + 5 > year(CURDATE())
 
 order by SHIP_YEAR, ParticipantID ;
--- LIMIT valFrom, valTo;
+--  LIMIT valFrom, valTo;
 END$$
 
 
@@ -276,7 +276,7 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS `SHIPMENT_OVERVIEW`$$
 CREATE PROCEDURE `SHIPMENT_OVERVIEW`()
 BEGIN
--- Select shipment for last five year
+--  Select shipment for last five year
 Select year(ShipmentDate) as SHIP_YEAR,
 'DTS' AS SCHEME,
 count(substr(EvaluationStatus,1,1)) as TOTALSHIPMEN,
@@ -503,7 +503,7 @@ CREATE TABLE IF NOT EXISTS `shipment_vl` (
 ) ENGINE=InnoDB;
 
 
--- By Amit on Sep 25 2013
+--  By Amit on Sep 25 2013
 
 CREATE TABLE IF NOT EXISTS `admin` (
   `admin_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -518,7 +518,7 @@ CREATE TABLE IF NOT EXISTS `admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 
--- By Amit on Sep 26 2013
+--  By Amit on Sep 26 2013
 
 ALTER TABLE  `users` ADD  `status` VARCHAR( 255 ) NOT NULL;
 ALTER TABLE  `users` DROP PRIMARY KEY , ADD PRIMARY KEY (  `UserSystemID` );
@@ -540,7 +540,7 @@ ALTER TABLE  `participant` CHANGE  `ParticipantSystemID`  `ParticipantSystemID` 
 ALTER TABLE  `participant` ADD UNIQUE (`ParticipantID`);
 
 
--- By Amit on Sep 30 2013
+--  By Amit on Sep 30 2013
 
 RENAME TABLE  `vl_assay` TO  `r_vl_assay` ;
 
@@ -580,8 +580,8 @@ select count(*) into  SampleCount from response_result_dts where
 	DTSSampleID = SampID;
 
 IF (SampleCount > 0) THEN
--- Use update
--- select * from response_result_dts;
+--  Use update
+--  select * from response_result_dts;
 	update response_result_dts set
 
 		TestKitName1 = KITName1,
@@ -671,7 +671,7 @@ END IF;
 END$$
 
 
--- By Amit on Oct 01 2013
+--  By Amit on Oct 01 2013
 
 CREATE TABLE IF NOT EXISTS `scheme_list` (
   `scheme_id` varchar(10) NOT NULL,
@@ -692,7 +692,7 @@ CREATE TABLE IF NOT EXISTS `enrollments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- By Amit on Oct 02 2013
+--  By Amit on Oct 02 2013
 
 ALTER TABLE `shipment_dts` CHANGE `DTSShipmentID` `dts_shipment_id` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `ParticipantID` `participant_id` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `ShipmentDate` `shipment_date` DATE NULL DEFAULT NULL, CHANGE `EvaluationStatus` `evaluation_status` VARCHAR(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Shipment Status					\\nUse this to flag - 					\\nABCDEFG					\\nA = 9 Not shipped 1 shipped					\\nB = 1 Sample Received 9 Not recieved					\\nC = 1 = Responded 9 = Not responded					\\nD = 1= Timeely response 2= Late					\\nE = 1 - via Web user 2 - via web Provider 3 - Scanning 					\\nF = 9 Not eligille for evaluation 1 eligible for evaluation					\\nG = 1 = Evaluated  9= not evaluated					\\n', CHANGE `ShipmentScore` `shipment_score` INT(11) NULL DEFAULT NULL, CHANGE `LastDateResponse` `lastdate_response` DATE NULL DEFAULT NULL, CHANGE `ShipmentTestDate` `shipment_test_date` DATE NULL DEFAULT NULL, CHANGE `ShipmentReceiptDate` `shipment_receipt_date` DATE NULL DEFAULT NULL, CHANGE `ShipmentTestReportDate` `shipment_test_report_date` DATETIME NULL DEFAULT NULL, CHANGE `ParticipantSupervisor` `participant_supervisor` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL, CHANGE `supervisorApproval` `supervisor_approval` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL, CHANGE `ReviewDate` `review_date` DATE NULL DEFAULT NULL, CHANGE `SampleRehydrationDate` `sample_rehydration_date` DATE NULL DEFAULT NULL, CHANGE `NumberOfSample` `number_of_sample` INT(11) NULL DEFAULT NULL, CHANGE `UserComment` `user_comment` VARCHAR(90) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL, CHANGE `Create_on_admin` `created_on_admin` DATETIME NULL DEFAULT NULL, CHANGE `Update_on_admin` `updated_on_admin` DATETIME NULL DEFAULT NULL, CHANGE `Update_by_admin` `updated_by_admin` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL, CHANGE `Update_on_user` `updated_on_user` DATETIME NULL DEFAULT NULL, CHANGE `Updated_by_user` `updated_by_user` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL, CHANGE `created_by_admin` `created_by_admin` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 
@@ -701,16 +701,16 @@ ALTER TABLE `response_result_dts` CHANGE `ShipmentID` `shipment_id` VARCHAR(45) 
 RENAME TABLE  `eid_detection_assay` TO  `r_eid_detection_assay` ;
 RENAME TABLE  `eid_extraction_assay` TO  `r_eid_extraction_assay` ;
 
--- By Amit on Oct 04
+--  By Amit on Oct 04
 
--- Loads of changes done .. cannot put them here :)
+--  Loads of changes done .. cannot put them here :)
 
 
--- By Amit on Oct 07 2013
+--  By Amit on Oct 07 2013
 
 ALTER TABLE  `admin` ADD  `status` VARCHAR( 255 ) NOT NULL DEFAULT  'inactive';
 
--- By Amit on Oct 08 2013
+--  By Amit on Oct 08 2013
 
 CREATE TABLE IF NOT EXISTS `distributions` (
   `distribution_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -725,7 +725,7 @@ ALTER TABLE  `shipment_eid` ADD  `distribution_id` INT NOT NULL AFTER  `shipment
 ALTER TABLE  `shipment_vl` ADD  `distribution_id` INT NOT NULL AFTER  `shipment_date`;
 
 
--- By Amit on Oct 09 2013
+--  By Amit on Oct 09 2013
 
 CREATE TABLE IF NOT EXISTS `shipment` (
   `shipment_id` varchar(255) NOT NULL,
@@ -755,7 +755,7 @@ CREATE TABLE IF NOT EXISTS `shipment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- by Amit on Oct 10 2013
+--  by Amit on Oct 10 2013
 
 ALTER TABLE  `shipment_dts` CHANGE  `number_of_sample`  `number_of_samples` INT( 11 ) NULL DEFAULT NULL;
 ALTER TABLE  `shipment_eid` ADD  `shipment_code` VARCHAR( 255 ) NOT NULL AFTER  `eid_shipment_id`;
@@ -766,14 +766,14 @@ INSERT INTO `r_possibleresult` (`ID`, `SchemeCode`, `SchemeSubgroup`, `Response`
 INSERT INTO `r_possibleresult` (`ID`, `SchemeCode`, `SchemeSubgroup`, `Response`) VALUES (NULL, 'EID', 'EID_FINAL', 'Equivocal');
 
 
--- by Amit on Oct 15 2013
+--  by Amit on Oct 15 2013
 
 ALTER TABLE  `shipment_eid` CHANGE  `eid_shipment_id`  `eid_shipment_id` INT NOT NULL;
 ALTER TABLE  `shipment_vl` CHANGE  `vl_shipment_id`  `vl_shipment_id` INT NOT NULL;
 ALTER TABLE  `shipment_dts` CHANGE  `dts_shipment_id`  `dts_shipment_id` INT NOT NULL;
 
 
--- by Amit on Oct 22 2013
+--  by Amit on Oct 22 2013
 
 ALTER TABLE  `participant` ADD  `email` VARCHAR( 255 ) NOT NULL AFTER  `phone`;
 ALTER TABLE  `reference_result_vl` CHANGE  `vl_sample_label`  `sample_label` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
@@ -781,7 +781,7 @@ ALTER TABLE  `reference_result_vl` CHANGE  `vl_sample_label`  `sample_label` VAR
 
 
 
--- by Amit on Oct 28 2013
+--  by Amit on Oct 28 2013
 DELIMITER $$
 DROP PROCEDURE IF EXISTS `SHIPMENT_OVERVIEW` $$
 CREATE PROCEDURE `SHIPMENT_OVERVIEW`(IN uId varchar(255) )
@@ -1203,7 +1203,7 @@ Select year(a.shipment_date) as SHIP_YEAR,
 b.first_name as FNAME,b.last_name as LNAME,
 a.shipment_date,
 a.shipment_code,
--- spm.shipment_test_report_date as RESPONSEDATE,
+--  spm.shipment_test_report_date as RESPONSEDATE,
 DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
 a.lastdate_response,
 spm.participant_id as PARTICIPANT_ID,
@@ -1235,7 +1235,7 @@ Select year(a.shipment_date) as SHIP_YEAR,
 b.first_name as FNAME,b.last_name as LNAME,
 a.shipment_date,
 a.shipment_code,
--- spm.shipment_test_report_date as RESPONSEDATE,
+--  spm.shipment_test_report_date as RESPONSEDATE,
 DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
 a.lastdate_response,
 spm.participant_id as PARTICIPANT_ID,
@@ -1266,7 +1266,7 @@ Select year(a.shipment_date) as SHIP_YEAR,
 b.first_name as FNAME,b.last_name as LNAME,
 a.shipment_date,
 a.shipment_code,
--- spm.shipment_test_report_date as RESPONSEDATE,
+--  spm.shipment_test_report_date as RESPONSEDATE,
 DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
 a.lastdate_response,
 spm.participant_id as PARTICIPANT_ID,
@@ -1297,7 +1297,7 @@ Select year(a.shipment_date) as SHIP_YEAR,
 b.first_name as FNAME,b.last_name as LNAME,
 a.shipment_date,
 a.shipment_code,
--- spm.shipment_test_report_date as RESPONSEDATE,
+--  spm.shipment_test_report_date as RESPONSEDATE,
 DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')  as RESPONSEDATE,
 a.lastdate_response,
 spm.participant_id as PARTICIPANT_ID,
@@ -1322,20 +1322,20 @@ and scheme_type = 'eid'
 and a.status = 'shipped'
 and pmm.dm_id = uId
 order by SHIP_YEAR, participant_id ;
--- LIMIT valFrom, valTo;
+--  LIMIT valFrom, valTo;
 END $$
 
 Delimiter ;
 
 
- -- by Amit on Nov 4 2013
+ --  by Amit on Nov 4 2013
 
  ALTER TABLE  `response_result_eid` CHANGE  `eid_sample_id`  `sample_id` VARCHAR( 45 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
  ALTER TABLE  `response_result_vl` CHANGE  `vl_sample_id`  `sample_id` VARCHAR( 45 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
  ALTER TABLE  `response_result_dts` CHANGE  `dts_sample_id`  `sample_id` INT( 11 ) NOT NULL;
 
 
- -- by Amit on Nov 7 2013
+ --  by Amit on Nov 7 2013
 
  ALTER TABLE  `participant` ADD  `lab_name` VARCHAR( 255 ) NULL AFTER  `data_manager`;
  ALTER TABLE `participant`  ADD `institute_name` VARCHAR(255) NULL AFTER `lab_name`;
@@ -1370,7 +1370,7 @@ Delimiter ;
  CHANGE `Updated_by` `updated_by` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
  CHANGE `Updated_on` `updated_on` DATETIME NULL DEFAULT NULL;
 
- -- by Amit on 13 Nov 2013
+ --  by Amit on 13 Nov 2013
 
  ALTER TABLE  `shipment` ADD  `status` VARCHAR( 255 ) NOT NULL DEFAULT  'pending';
  ALTER TABLE  `shipment_participant_map` ADD UNIQUE (
@@ -1379,11 +1379,11 @@ Delimiter ;
 );
 
 
- -- by Amit on 19 Nov 2013
+ --  by Amit on 19 Nov 2013
   alter table participant drop foreign key participant_ibfk_1;
   ALTER TABLE `participant` DROP `data_manager`;
 
-  -- by Amit Nov 24 2013
+  --  by Amit Nov 24 2013
 
 CREATE TABLE IF NOT EXISTS `r_results` (
   `result_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1394,7 +1394,7 @@ CREATE TABLE IF NOT EXISTS `r_results` (
 INSERT INTO  `r_results` (`result_id` ,`result_name`) VALUES ('1',  'Pass'), ('2',  'Fail');
 
 
--- by Amit Nov 27 2013
+--  by Amit Nov 27 2013
 
 ALTER TABLE  `reference_result_dts` ADD  `mandatory` INT NOT NULL DEFAULT  '0',
 ADD  `sample_score` INT NOT NULL DEFAULT  '1';
@@ -1407,7 +1407,7 @@ ALTER TABLE  `shipment_participant_map` ADD  `final_result` VARCHAR( 255 ) NOT N
 ALTER TABLE  `shipment_participant_map` ADD  `failure_reason` TEXT NOT NULL AFTER  `final_result`;
 
 
--- by Amit Dec 03 2013
+--  by Amit Dec 03 2013
 
 CREATE TABLE IF NOT EXISTS `r_evaluation_comments` (
   `comment_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1425,31 +1425,31 @@ ALTER TABLE  `shipment` ADD  `max_score` INT NOT NULL AFTER  `number_of_samples`
 
 
 
--- by Amit Dec 06 2013
+--  by Amit Dec 06 2013
 ALTER TABLE  `reference_result_dts` ADD  `control` INT NOT NULL AFTER  `reference_result`;
 ALTER TABLE  `reference_result_eid` ADD  `control` INT NOT NULL AFTER  `reference_result`;
 ALTER TABLE  `reference_result_vl` ADD  `control` INT NOT NULL AFTER  `reference_result`;
 
 
--- by Amit Dec 09 2013
+--  by Amit Dec 09 2013
 
 ALTER TABLE  `shipment_participant_map` CHANGE  `final_result`  `final_result` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
 
--- by Amit Dec 16 2013
+--  by Amit Dec 16 2013
 ALTER TABLE  `shipment_participant_map` CHANGE  `final_result`  `final_result` INT NULL DEFAULT NULL
 
 
 
--- by Amit Dec 17 2013
+--  by Amit Dec 17 2013
 CREATE TABLE IF NOT EXISTS `r_network_tiers` ( `network_id` int(11) NOT NULL AUTO_INCREMENT, `network_name` varchar(255) DEFAULT NULL, PRIMARY KEY (`network_id`)) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ALTER TABLE  `participant` ADD  `network_tier` INT NOT NULL AFTER  `affiliation`;
 ALTER TABLE  `data_manager` ADD  `institute` VARCHAR( 500 ) NULL DEFAULT NULL AFTER  `password`;
 
--- by Amit Dec 30 2013
+--  by Amit Dec 30 2013
 ALTER TABLE  `scheme_list` ADD  `status` VARCHAR( 255 ) NULL DEFAULT NULL;
 
---by Ilahir JAN 22 2014
+-- by Ilahir JAN 22 2014
 
 CREATE TABLE IF NOT EXISTS `reference_dbs_wb` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1503,37 +1503,37 @@ CREATE TABLE IF NOT EXISTS `reference_dts_wb` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
 
---ilahir 8-Feb-2014
+-- ilahir 8-Feb-2014
 
 ALTER TABLE  `shipment_participant_map` ADD  `report_generated` VARCHAR( 100 ) NULL DEFAULT NULL;
 
---ilahir 12-Feb-2014
+-- ilahir 12-Feb-2014
 
 CREATE TABLE IF NOT EXISTS `report_config` (
   `name` varchar(255) DEFAULT NULL,
   `value` text
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---ilahir 24-Feb-2014
+-- ilahir 24-Feb-2014
 
 INSERT INTO `report_config` (`name`, `value`) VALUES
 ('report-header', '<div style=""><div style="text-align: center;"><b>DEPARTMENT OF HEALTH AND HUMAN SERVICES</b></div><div style="text-align: center;">International Laboratory Branch - Division of Global HIV/AIDS, CDC-Atlanta</div></div>\r\n\r\n'),
 ('logo', '');
 
---Guna 25-Mar-2014
+-- Guna 25-Mar-2014
 ALTER TABLE  `shipment_participant_map` CHANGE  `participant_supervisor`  `participant_supervisor` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
 
---Ilahir 27-Mar-2014
+-- Ilahir 27-Mar-2014
 ALTER TABLE  `shipment_participant_map` ADD  `created_on_user` DATETIME NULL DEFAULT NULL AFTER  `created_by_admin`;
 
---Ilahir 07-Apr-2014
+-- Ilahir 07-Apr-2014
 
 INSERT INTO `global_config` (`name`, `value`) VALUES ('map-center', '0,0'), ('map-zoom', '2');
 
 
 ALTER TABLE  `shipment_participant_map` CHANGE  `evaluation_comment`  `evaluation_comment` INT( 11 ) NULL DEFAULT 0;
 
---Guna 28-may-2014
+-- Guna 28-may-2014
 CREATE TABLE IF NOT EXISTS `countries` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `iso_name` varchar(255) COLLATE utf8_bin NOT NULL,
@@ -1544,9 +1544,9 @@ CREATE TABLE IF NOT EXISTS `countries` (
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=256 ;
 
---
--- Dumping data for table `countries`
---
+-- 
+--  Dumping data for table `countries`
+-- 
 
 INSERT INTO `countries` (`id`, `iso_name`, `iso2`, `iso3`, `numeric_code`) VALUES
 (1, 'Afghanistan', 'AF', 'AFG', 4),
@@ -1805,7 +1805,7 @@ ALTER TABLE  `participant` ADD  `funding_source` VARCHAR( 255 ) NULL DEFAULT NUL
 ADD  `testing_volume` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `funding_source` ,
 ADD  `region` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `testing_volume`;
 
---Guna 11-june-2014
+-- Guna 11-june-2014
 ALTER TABLE  `data_manager` ADD  `created_on` DATETIME NULL DEFAULT NULL AFTER  `status` ,
 ADD  `created_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `created_on` ,
 ADD  `updated_on` DATETIME NULL DEFAULT NULL AFTER  `created_by` ,
@@ -1823,11 +1823,11 @@ ADD  `updated_by` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `updated_on`;
 
 
 
---- Amit 15-Jul-2014
+-- - Amit 15-Jul-2014
 
 ALTER TABLE  `shipment_participant_map` ADD  `is_followup` VARCHAR( 255 ) NULL DEFAULT  'no' AFTER  `optional_eval_comment`;
 
----Guna 22-july-2014
+-- -Guna 22-july-2014
 ALTER TABLE  `participant` ADD  `enrolled_programs` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `testing_volume` ,
 ADD  `site_type` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `enrolled_programs`;
 
@@ -1865,13 +1865,13 @@ INSERT INTO `r_enrolled_programs` (`enrolled_programs`) VALUES
 ('PEPFAR');
 
 
--- Amit Jul 25 2014
+--  Amit Jul 25 2014
 
 ALTER TABLE `shipment_participant_map` ADD `is_excluded` VARCHAR(255) NOT NULL DEFAULT 'no' AFTER `is_followup`;
 
---Guna Agu 23 2014
+-- Guna Agu 23 2014
 ALTER TABLE  `participant` ADD  `individual` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `unique_identifier`;
---Guna oct 2 2014
+-- Guna oct 2 2014
 CREATE TABLE IF NOT EXISTS `reference_dts_rapid_hiv` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `shipment_id` varchar(255) NOT NULL,
@@ -1883,19 +1883,19 @@ CREATE TABLE IF NOT EXISTS `reference_dts_rapid_hiv` (
   PRIMARY KEY (`id`)
 );
 
---Guna Oct 24 2014
+-- Guna Oct 24 2014
 UPDATE  `global_config` SET  `name` =  'admin_email' WHERE  `global_config`.`name` =  'admin-email';
 INSERT INTO `global_config` (`name`, `value`) VALUES ('response_after_evaluate', 'yes');
 
 
---Amit Nov 06 2014
+-- Amit Nov 06 2014
 ALTER TABLE  `shipment_participant_map` ADD  `documentation_score` DECIMAL( 5, 2 ) NULL AFTER  `shipment_score` ;
 ALTER TABLE  `shipment_participant_map` CHANGE  `shipment_score`  `shipment_score` DECIMAL( 5, 2 ) NULL DEFAULT NULL ;
 
---Guna Nov 29 2014
+-- Guna Nov 29 2014
 ALTER TABLE `r_testkitname_dts`  ADD `testkit_1` INT(11) NOT NULL DEFAULT '0' AFTER `CountryAdapted`,  ADD `testkit_2` INT(11) NOT NULL DEFAULT '0' AFTER `testkit_1`,  ADD `testkit_3` INT(11) NOT NULL DEFAULT '0' AFTER `testkit_2`;
 
--- Amit Nov 30 2014
+--  Amit Nov 30 2014
 
 CREATE TABLE IF NOT EXISTS `r_dts_corrective_actions` (
   `action_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1904,9 +1904,9 @@ CREATE TABLE IF NOT EXISTS `r_dts_corrective_actions` (
   PRIMARY KEY (`action_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 
---
--- Dumping data for table `r_dts_corrective_actions`
---
+-- 
+--  Dumping data for table `r_dts_corrective_actions`
+-- 
 
 INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES
 (1, 'Please submit response before last date', 'Late response, response not evaluated.\r\nYour response reported after last date and hence you are result is evaluated. Reference result for PT panel is provided for your reference. '),
@@ -1925,14 +1925,14 @@ INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `descr
 (14, 'You should perform testing within 24 hours of rehydration.', 'Difference between testing and rehydration date is more than 24 hours'),
 (15, 'Please review your corrective action for improvement.\r\n', 'Participant did not meet the score criteria (Participant Score is 80 and Required Score is 95)');
 
--- Amit Dec 01 2014
+--  Amit Dec 01 2014
 
 CREATE TABLE IF NOT EXISTS `dts_shipment_corrective_action_map` (
   `shipment_map_id` int(11) NOT NULL,
   `corrective_action_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Amit Dec 04 2014
+--  Amit Dec 04 2014
 
 ALTER TABLE  `dts_shipment_corrective_action_map` ADD UNIQUE (
 `shipment_map_id` ,
@@ -1940,7 +1940,7 @@ ALTER TABLE  `dts_shipment_corrective_action_map` ADD UNIQUE (
 );
 
 
--- Amit Mar 18 2015
+--  Amit Mar 18 2015
 
 
 CREATE TABLE IF NOT EXISTS `reference_result_tb` (
@@ -1981,7 +1981,7 @@ CREATE TABLE IF NOT EXISTS `response_result_tb` (
   `updated_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---Guna 16-May-2015---
+-- Guna 16-May-2015-- -
 
 CREATE TABLE IF NOT EXISTS `mail_template` (
   `mail_temp_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1995,7 +1995,7 @@ CREATE TABLE IF NOT EXISTS `mail_template` (
   `mail_footer` text,
   PRIMARY KEY (`mail_temp_id`)
 );
----Guna 18-Apirl-2015----
+-- -Guna 18-Apirl-2015-- -- 
 CREATE TABLE IF NOT EXISTS `temp_mail` (
   `temp_id` int(11) NOT NULL AUTO_INCREMENT,
   `message` text,
@@ -2016,35 +2016,35 @@ ALTER TABLE  `shipment_participant_map` ADD  `last_not_participated_mailed_on` D
 ADD  `last_not_participated_mail_count` INT( 11 ) NOT NULL DEFAULT  '0' AFTER  `last_not_participated_mailed_on` ;
 
 
--- Amit 18 April 2015
+--  Amit 18 April 2015
 
 INSERT INTO `report_config` (`name`, `value`) VALUES ('logo-right', NULL);
 
--- Guna 20 April 2015
+--  Guna 20 April 2015
 
 ALTER TABLE  `shipment_participant_map` CHANGE  `final_result`  `final_result` INT( 11 ) NULL DEFAULT  '0';
 
---Guna 21 Apirl 2015
+-- Guna 21 Apirl 2015
 ALTER TABLE  `shipment_participant_map` CHANGE  `shipment_test_date`  `shipment_test_date` DATE NULL DEFAULT  '0000-00-00';
 
---Amit 22 April 2015
+-- Amit 22 April 2015
 INSERT INTO `r_results` (`result_id`, `result_name`) VALUES ('3', 'Excluded');
 ALTER TABLE `shipment` ADD `average_score` VARCHAR(255) NULL DEFAULT '0' AFTER `max_score`;
 
--- Amit May 8 2015
+--  Amit May 8 2015
 ALTER TABLE `r_testkitname_dts` ADD `scheme_type` VARCHAR(255) NOT NULL AFTER `TestKitName_ID`;
 UPDATE `r_testkitname_dts` SET `scheme_type`='dts'; # RUN THIS only the first time
 
--- Amit Jun 4 2015
+--  Amit Jun 4 2015
 INSERT INTO `global_config` (`name`, `value`) VALUES ('custom_field_1', '');
 INSERT INTO `global_config` (`name`, `value`) VALUES ('custom_field_needed', 'no');
 ALTER TABLE `shipment_participant_map` ADD `custom_field_1` TEXT NULL DEFAULT NULL AFTER `user_comment`;
 
--- Amit Jun 8 2015
+--  Amit Jun 8 2015
 ALTER TABLE `shipment_participant_map` ADD `custom_field_2` TEXT NULL DEFAULT NULL AFTER `custom_field_1`;
 INSERT INTO `global_config` (`name`, `value`) VALUES ('custom_field_2', '');
 
--- Amit Jun 10 2015
+--  Amit Jun 10 2015
 
 CREATE TABLE IF NOT EXISTS `participant_enrolled_programs_map` (
   `participant_id` int(11) NOT NULL,
@@ -2052,12 +2052,12 @@ CREATE TABLE IF NOT EXISTS `participant_enrolled_programs_map` (
   PRIMARY KEY (`participant_id`,`ep_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Amit Jun 23 2015
+--  Amit Jun 23 2015
 INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES ('16', 'Please specify the Panel Receipt Date .', 'Please specify the Panel Receipt Date .');
 
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`) VALUES (NULL, 'dts', 'DTS_FINAL', 'NOT TESTED');
 
--- Amit Jul 17 2015
+--  Amit Jul 17 2015
 ALTER TABLE `shipment` ADD `response_switch` VARCHAR(255) NOT NULL DEFAULT 'off' AFTER `number_of_samples`;
 
 CREATE TABLE IF NOT EXISTS `dts_recommended_testkits` (
@@ -2069,7 +2069,7 @@ ALTER TABLE `dts_recommended_testkits`
  ADD PRIMARY KEY (`test_no`,`testkit`);
 
 
- -- Amit Jul 21 2015
+ --  Amit Jul 21 2015
 
 
 INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES
@@ -2092,7 +2092,7 @@ INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `descr
 (17, 'Please test DTS sample as per National HIV Testing algorithm. Review and refer to SOP for testing.', 'For Test (1/2/3) testing is not performed with country approved test kit.');
 
 
--- Amit Aug 26 2015
+--  Amit Aug 26 2015
 
 
 CREATE TABLE IF NOT EXISTS `reference_vl_methods` (
@@ -2106,20 +2106,20 @@ ALTER TABLE `reference_vl_methods`
  ADD PRIMARY KEY (`shipment_id`,`sample_id`,`assay`);
 
 
- -- Amit Sep 03 2015
+ --  Amit Sep 03 2015
 
  ALTER TABLE  `r_vl_assay` ADD  `short_name` VARCHAR( 255 ) NOT NULL AFTER  `name` ;
  INSERT INTO `r_vl_assay` (`id`, `name`, `short_name`) VALUES (NULL, 'Other', 'Other');
 
- -- Amit 13 Sep 2015
+ --  Amit 13 Sep 2015
 
  ALTER TABLE `participant` ADD `contact_name` VARCHAR(255) NULL DEFAULT NULL AFTER `phone`;
 
- -- Amit 23 Sep 2015
+ --  Amit 23 Sep 2015
 
 ALTER TABLE `shipment` ADD `number_of_controls` INT NOT NULL AFTER `number_of_samples`;
 
--- Amit 28 Sep 2015
+--  Amit 28 Sep 2015
 
 ALTER TABLE `reference_vl_calculation` ADD `calculated_on` DATETIME NULL DEFAULT NULL AFTER `high_limit`, ADD `manual_low_limit` DOUBLE(10,2) NOT NULL DEFAULT '0' AFTER `calculated_on`, ADD `manual_high_limit` DOUBLE(10,2) NOT NULL DEFAULT '0' AFTER `manual_low_limit`, ADD `updated_on` DATETIME NULL DEFAULT NULL AFTER `manual_high_limit`, ADD `updated_by` INT NULL DEFAULT NULL AFTER `updated_on`;
 
@@ -2127,7 +2127,7 @@ ALTER TABLE `reference_vl_calculation` ADD PRIMARY KEY( `shipment_id`, `sample_i
 ALTER TABLE `reference_vl_calculation` ADD `use_range` VARCHAR(255) NOT NULL DEFAULT 'calculated' ;
 
 
---ilahir 07-JUN-2016
+-- ilahir 07-JUN-2016
 
 INSERT INTO `global_config` (`name`, `value`) VALUES ('qc_access', 'yes');
 ALTER TABLE  `data_manager` ADD  `qc_access` VARCHAR( 100 ) NULL DEFAULT NULL AFTER  `force_password_reset` ;
@@ -2143,9 +2143,9 @@ CREATE TABLE IF NOT EXISTS `r_modes_of_receipt` (
   PRIMARY KEY (`mode_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
---
--- Dumping data for table `r_modes_of_receipt`
---
+-- 
+--  Dumping data for table `r_modes_of_receipt`
+-- 
 
 INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 (1, 'Courier'),
@@ -2156,19 +2156,19 @@ INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 
 ALTER TABLE  `shipment_participant_map` ADD  `mode_id` INT NULL DEFAULT NULL ;
 
---Pal 24th-JUN-2016
+-- Pal 24th-JUN-2016
 ALTER TABLE `data_manager` ADD `enable_adding_test_response_date` VARCHAR(45) NULL DEFAULT NULL AFTER `qc_access`;
 
 INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES (NULL, 'Online Response');
 
---Pal 25th-JUN-2016
+-- Pal 25th-JUN-2016
 ALTER TABLE `shipment_participant_map` CHANGE `qc_done_by` `qc_done_by` VARCHAR(255) NULL DEFAULT NULL;
 
 ALTER TABLE `shipment_participant_map` ADD `qc_done` VARCHAR(45) NULL DEFAULT NULL AFTER `last_not_participated_mail_count`;
 
 ALTER TABLE `shipment_participant_map` CHANGE `qc_done` `qc_done` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'no';
 
--- Re-ordered mode--
+--  Re-ordered mode-- 
 Delete from `r_modes_of_receipt`;
 INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 (1, 'Online Response'),
@@ -2177,7 +2177,7 @@ INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 (4, 'Scan'),
 (5, 'SMS');
 
---Pal 2nd-JUL-2016
+-- Pal 2nd-JUL-2016
 INSERT INTO `global_config` (`name`, `value`) VALUES ('text_under_logo', '');
 
 CREATE TABLE IF NOT EXISTS `publications` (
@@ -2199,7 +2199,7 @@ CREATE TABLE IF NOT EXISTS `home_banner` (
 INSERT INTO `home_banner` (`banner_id`, `image`) VALUES
 (1, '');
 
---Pal 4th-JUL-2016
+-- Pal 4th-JUL-2016
 
 ALTER TABLE `data_manager` ADD `enable_choosing_mode_of_receipt` VARCHAR(45) NULL DEFAULT NULL AFTER `enable_adding_test_response_date`;
 
@@ -2216,16 +2216,16 @@ CREATE TABLE IF NOT EXISTS `partners` (
 INSERT INTO `partners` (`partner_id`, `partner_name`, `link`, `added_by`, `added_on`, `status`) VALUES
 (1, 'CDC-Centers for Disease Control and Prevention', '', 1, '2016-07-04 17:58:43', 'active');
 
--- Amit Jul 5 2016
+--  Amit Jul 5 2016
 ALTER TABLE `data_manager` ADD `last_login` DATETIME NULL DEFAULT NULL AFTER `updated_by`;
 
---ilahir Jul 19 2016
+-- ilahir Jul 19 2016
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_mean` DOUBLE( 20, 10 ) NOT NULL AFTER  `calculated_on` ;
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_sd` DOUBLE( 20, 10 ) NOT NULL AFTER  `manual_mean` ;
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_cv` DOUBLE( 20, 10 ) NOT NULL AFTER  `manual_sd` ;
 
 
---ilahir Jul 25 2016
+-- ilahir Jul 25 2016
 
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_q1` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `calculated_on` ;
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_q3` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `manual_q1` ,
@@ -2235,30 +2235,30 @@ ALTER TABLE  `reference_vl_calculation` ADD  `manual_quartile_low` DOUBLE( 20, 1
 ALTER TABLE  `reference_vl_calculation` ADD  `manual_quartile_high` DOUBLE( 20, 10 ) NULL DEFAULT NULL AFTER  `manual_quartile_low` ;
 
 
--- Amit Jul 29 2016
+--  Amit Jul 29 2016
 INSERT INTO `r_eid_detection_assay` (`id`, `name`) VALUES (NULL, 'Abbott RealTime HIV-1 Qualitative Assay');
 INSERT INTO `r_eid_extraction_assay` (`id`, `name`) VALUES (NULL, 'Abbott RealTime HIV-1 Qualitative Assay');
 INSERT INTO `r_eid_detection_assay` (`id`, `name`) VALUES (NULL, 'Other');
 INSERT INTO `r_eid_extraction_assay` (`id`, `name`) VALUES (NULL, 'Other');
 INSERT INTO `r_results` (`result_id`, `result_name`) VALUES ('4', 'Not Evaluated');
 
---Ilahir Aug 25 2016
+-- Ilahir Aug 25 2016
 ALTER TABLE  `data_manager` ADD  `view_only_access` VARCHAR( 45 ) NULL DEFAULT NULL AFTER  `enable_choosing_mode_of_receipt` ;
 
---Pal 12th-Sep-2016
+-- Pal 12th-Sep-2016
 ALTER TABLE `publications` ADD `sort_order` INT(11) NULL DEFAULT NULL AFTER `file_name`;
 
 ALTER TABLE `partners` ADD `sort_order` INT(11) NULL DEFAULT NULL AFTER `link`;
 
---Pal 15th-Sep-2016
+-- Pal 15th-Sep-2016
 ALTER TABLE `r_eid_detection_assay` ADD `status` VARCHAR(45) NOT NULL DEFAULT 'active' AFTER `name`;
 
 ALTER TABLE `r_eid_extraction_assay` ADD `status` VARCHAR(45) NOT NULL DEFAULT 'active' AFTER `name`;
 
---Pal 28th-OCT-2016
+-- Pal 28th-OCT-2016
 ALTER TABLE `shipment_participant_map` CHANGE `participant_supervisor` `participant_supervisor` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
 
---Pal 21st-DEC-2016
+-- Pal 21st-DEC-2016
 ALTER TABLE `response_result_vl` ADD `is_tnd` VARCHAR(45) NULL DEFAULT NULL AFTER `calculated_score`;
 
 ALTER TABLE `shipment_participant_map` ADD `is_pt_test_not_performed` VARCHAR(45) NULL DEFAULT NULL AFTER `shipment_test_date`, ADD `vl_not_tested_reason`INT(11) NULL DEFAULT NULL AFTER `is_pt_test_not_performed`, ADD `pt_test_not_performed_comments` TEXT NULL DEFAULT NULL AFTER `vl_not_tested_reason`;
@@ -2288,22 +2288,22 @@ ALTER TABLE `r_response_vl_not_tested_reason`
 ALTER TABLE `r_response_vl_not_tested_reason`
   MODIFY `vl_not_tested_reason_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
--- Pal 24th-DEC-2016
+--  Pal 24th-DEC-2016
 ALTER TABLE `shipment_participant_map` ADD `pt_support_comments` TEXT NULL DEFAULT NULL AFTER `pt_test_not_performed_comments`;
 
 
 
--- Ilahir 17-JAN-2017
+--  Ilahir 17-JAN-2017
 
 ALTER TABLE  `participant` ADD  `additional_email` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `email` ;
 
 
--- Ilahir 08-FEB-2017
+--  Ilahir 08-FEB-2017
 
 ALTER TABLE  `participant` ADD  `force_profile_updation` INT( 1 ) NOT NULL DEFAULT  '1' AFTER  `updated_by` ;
 
 
--- Amit 28 June 2017
+--  Amit 28 June 2017
 
 
 
@@ -2332,7 +2332,7 @@ UPDATE `r_eid_detection_assay` SET `sort_order` = '7' WHERE `r_eid_detection_ass
 UPDATE `r_eid_detection_assay` SET `sort_order` = '3' WHERE `r_eid_detection_assay`.`id` = 7;
 UPDATE `r_eid_detection_assay` SET `sort_order` = '8' WHERE `r_eid_detection_assay`.`id` = 8;
 
--- Pal 27 Nov 2017
+--  Pal 27 Nov 2017
 CREATE TABLE `announcements` (
   `announcement_id` int(11) NOT NULL,
   `announcement_msg` text,
@@ -2351,12 +2351,12 @@ ALTER TABLE `shipment_participant_map` ADD `show_announcement` VARCHAR(45) NOT N
 
 
 
--- Amit 18 Sep 2018
+--  Amit 18 Sep 2018
 
 INSERT INTO `report_config` (`name`, `value`) VALUES ('report-comment', '');
 
 
--- Amit 21 Feb 2019
+--  Amit 21 Feb 2019
 
 ALTER TABLE `participant` CHANGE `lab_name` `lab_name` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 ALTER TABLE `participant` CHANGE `first_name` `first_name` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
@@ -2368,7 +2368,7 @@ ALTER TABLE `participant` CHANGE `lab_name` `lab_name` VARCHAR(255) CHARACTER SE
 ALTER TABLE `data_manager` CHANGE `institute` `institute` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 
 
--- Amit 1 July 2019
+--  Amit 1 July 2019
 
 CREATE TABLE `evaluation_queue` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -2382,22 +2382,22 @@ CREATE TABLE `evaluation_queue` (
 
 
 
--- Amit Nov 15 2019
+--  Amit Nov 15 2019
 
 ALTER TABLE `response_result_vl` CHANGE `reported_viral_load` `reported_viral_load` DOUBLE(10,2) NULL DEFAULT NULL;
 
 
--- Version 5.0 Dec 11 2019
+--  Version 5.0 Dec 11 2019
 
--- Thanaseelan 23-Dec-2019
+--  Thanaseelan 23-Dec-2019
 ALTER TABLE `system_admin` ADD `privileges` VARCHAR(255) NULL DEFAULT NULL AFTER `status`;
--- Reference
+--  Reference
 UPDATE system_admin SET privileges = 'config-ept,manage-shipments,analyze-generate-reports,edit-participant-response,access-reports';
 
--- Sriram 11-Feb-2020
+--  Sriram 11-Feb-2020
 ALTER TABLE `data_manager` ADD `auth_token` VARCHAR(255) NULL DEFAULT NULL AFTER `last_login`;
 
---Sriram 17Feb2020
+-- Sriram 17Feb2020
 CREATE TABLE `system_config` (
   `system_id` int(1) NOT NULL AUTO_INCREMENT,
   `display_name` varchar(255) NOT NULL,
@@ -2407,17 +2407,17 @@ CREATE TABLE `system_config` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 INSERT INTO `system_config` (`system_id`, `display_name`, `name`, `value`) VALUES (NULL, 'App-Version', 'app_version', '0.0.1');
--- Thanaseelan 03 Feb, 2020
+--  Thanaseelan 03 Feb, 2020
 ALTER TABLE `shipment_participant_map` ADD `synced` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `show_announcement`;
 ALTER TABLE `shipment_participant_map` ADD `synced_on` DATETIME NULL DEFAULT NULL AFTER `synced`;
--- Thanaseelan 25 Mar, 2020
+--  Thanaseelan 25 Mar, 2020
 ALTER TABLE `data_manager` ADD `download_link` VARCHAR(255) NULL DEFAULT NULL AFTER `auth_token`;
--- Thanaseelan 29 Apr, 2020
+--  Thanaseelan 29 Apr, 2020
 ALTER TABLE `shipment` ADD `report_in_queue` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `status`;
 ALTER TABLE `evaluation_queue` ADD FOREIGN KEY (`shipment_id`) REFERENCES `shipment`(`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
--- Thanaseelan 30 Apr, 2020
+--  Thanaseelan 30 Apr, 2020
 INSERT INTO `report_config` (`name`, `value`) VALUES ('report-layout', 'default');
--- Thanaseelan 04 May, 2020
+--  Thanaseelan 04 May, 2020
 ALTER TABLE `evaluation_queue` ADD `report_type` VARCHAR(50) NULL DEFAULT NULL AFTER `shipment_id`;
 
 CREATE TABLE `notify` (
@@ -2429,9 +2429,9 @@ CREATE TABLE `notify` (
  `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'current insertion date time',
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
--- Thanaseelan 15 May, 2020
+--  Thanaseelan 15 May, 2020
 ALTER TABLE `data_manager` ADD `force_profile_check` VARCHAR(20) NULL DEFAULT 'no' AFTER `force_password_reset`;
--- Thanaseelan 22 May, 2020
+--  Thanaseelan 22 May, 2020
 ALTER TABLE `r_possibleresult` ADD `result_code` VARCHAR(20) NULL DEFAULT NULL AFTER `response`;
 UPDATE `r_possibleresult` SET `result_code` = 'R' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_TEST' AND `r_possibleresult`.`response` = 'REACTIVE';
 UPDATE `r_possibleresult` SET `result_code` = 'NR' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_TEST' AND `r_possibleresult`.`response` = 'NONREACTIVE';
@@ -2448,7 +2448,7 @@ UPDATE `r_possibleresult` SET `result_code` = 'NT' WHERE `r_possibleresult`.`sch
 UPDATE `r_possibleresult` SET `result_code` = 'NT' WHERE `r_possibleresult`.`scheme_sub_group` = 'DTS_FINAL' AND `r_possibleresult`.`response` = 'NOT TESTED';
 
 
---- Amit 3 June, 2020
+-- - Amit 3 June, 2020
 
 
 INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) 
@@ -2498,11 +2498,11 @@ VALUES (NULL, 'recency', 'RECENCY_FINAL', 'Recent', 'R'),
 (NULL, 'recency', 'RECENCY_FINAL', 'Long Term','LT'), 
 (NULL, 'recency', 'RECENCY_FINAL', 'Invalid', 'I'),
 (NULL, 'recency', 'RECENCY_FINAL', 'Negative', 'N');
--- Thana 4 Jun, 2020
--- ALTER TABLE `reference_result_recency` CHANGE `reference_verification_line` `reference_diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
--- ALTER TABLE `response_result_recency` CHANGE `verification_line` `diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+--  Thana 4 Jun, 2020
+--  ALTER TABLE `reference_result_recency` CHANGE `reference_verification_line` `reference_diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+--  ALTER TABLE `response_result_recency` CHANGE `verification_line` `diagnosis_line` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 
--- Thana 3 Jul, 2020
+--  Thana 3 Jul, 2020
 ALTER TABLE `data_manager` ADD `push_notify_token` TEXT NULL DEFAULT NULL;
 CREATE TABLE `push_notification` (
  `id` int NOT NULL AUTO_INCREMENT,
@@ -2517,9 +2517,9 @@ CREATE TABLE `push_notification` (
 ALTER TABLE `push_notification` CHANGE `notification_json` `notification_json` TEXT NULL DEFAULT NULL COMMENT 'create notify message (title body and icon) and convert into json and store here', CHANGE `data_json` `data_json` TEXT NULL DEFAULT NULL COMMENT 'create notify data message and convert into Json then store here', CHANGE `push_status` `push_status` VARCHAR(50) NULL DEFAULT NULL COMMENT 'refuse, pending, send, not-send', CHANGE `token_identify_id` `token_identify_id` INT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM', CHANGE `identify_type` `identify_type` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Type of identify id either shipment, people(DM), General and not-responded people.';
 ALTER TABLE `push_notification` ADD `notification_type` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Reports, Shipment, General' AFTER `identify_type`;
 ALTER TABLE `push_notification` CHANGE `token_identify_id` `token_identify_id` TEXT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM';
--- Thana 6 Jul, 2020
+--  Thana 6 Jul, 2020
 ALTER TABLE `data_manager` ADD `push_status` VARCHAR(50) NULL DEFAULT 'not-send' AFTER `push_notify_token`;
--- Thana 7 Jul, 2020
+--  Thana 7 Jul, 2020
 CREATE TABLE `push_notification_template` (
  `id` int NOT NULL AUTO_INCREMENT,
  `purpose` varchar(255) DEFAULT NULL,
@@ -2531,7 +2531,7 @@ CREATE TABLE `push_notification_template` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `push_notification_template` (`id`, `purpose`, `notify_title`, `notify_body`, `data_msg`, `icon`) VALUES (NULL, 'announcement', 'Announcement', 'Announcement Body', 'Announcement message', 'ic_launcher'), (NULL, 'report', 'Report', 'Report Body', 'Report Data Message', 'ic_launcher'), (NULL, 'not_participated', 'Not Participated', 'Not Participated Body', 'Not Participated Data Message', 'ic_launcher'), (NULL, 'new_shipment', 'New Shipment', 'New Shipment Body', 'New Shipment Data Message', 'ic_launcher');
--- Thana 9 Jul, 2020
+--  Thana 9 Jul, 2020
 CREATE TABLE `announcements_notification` (
  `id` int NOT NULL AUTO_INCREMENT,
  `subject` varchar(255) DEFAULT NULL,
@@ -2541,43 +2541,43 @@ CREATE TABLE `announcements_notification` (
  `created_by` int DEFAULT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
--- Thana 13 Jul, 2020
+--  Thana 13 Jul, 2020
 ALTER TABLE `evaluation_queue` ADD `date_finalised` DATETIME NULL DEFAULT NULL AFTER `last_updated_on`;
--- Version 6.0 14-July-2020
+--  Version 6.0 14-July-2020
 
--- Thana 15 Jul, 2020
+--  Thana 15 Jul, 2020
 ALTER TABLE `data_manager` ADD `marked_push_notify` text NULL DEFAULT NULL AFTER `push_status`;
--- Thana 16 Jul, 2020
+--  Thana 16 Jul, 2020
 ALTER TABLE `push_notification` ADD `announcement_id` INT NULL DEFAULT NULL AFTER `notification_type`;
 ALTER TABLE `push_notification` CHANGE `token_identify_id` `token_identify_id` TEXT NULL DEFAULT NULL COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM';
 
 
--- Amit 29 July 2020
+--  Amit 29 July 2020
 
 ALTER TABLE `shipment` ADD `shipment_attributes` JSON NULL DEFAULT NULL AFTER `average_score`;
 UPDATE `shipment` SET `shipment_attributes` = '{\r\n \"sampleType\": \"dried\",\r\n \"screeningTest\": \"no\"\r\n}' WHERE `scheme_type` = 'dts' and `shipment_attributes` is null;
 
 
--- Version 6.1.0 Amit 11 Aug 2020
+--  Version 6.1.0 Amit 11 Aug 2020
 
 
--- Amit 18 Aug 2020
+--  Amit 18 Aug 2020
 ALTER TABLE `countries` CHANGE `iso_name` `iso_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE `data_manager` CHANGE `dm_id` `dm_id` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `password` `password` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `institute` `institute` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL, CHANGE `first_name` `first_name` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `last_name` `last_name` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `phone` `phone` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `secondary_email` `secondary_email` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `UserFld1` `UserFld1` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `UserFld2` `UserFld2` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `UserFld3` `UserFld3` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `mobile` `mobile` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `force_profile_check` `force_profile_check` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT 'no', CHANGE `qc_access` `qc_access` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `enable_adding_test_response_date` `enable_adding_test_response_date` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `enable_choosing_mode_of_receipt` `enable_choosing_mode_of_receipt` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `view_only_access` `view_only_access` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `created_on` `created_on` DATETIME NULL DEFAULT NULL, CHANGE `created_by` `created_by` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `updated_on` `updated_on` DATETIME NULL DEFAULT NULL, CHANGE `updated_by` `updated_by` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `last_login` `last_login` DATETIME NULL DEFAULT NULL, CHANGE `auth_token` `auth_token` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `download_link` `download_link` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `push_notify_token` `push_notify_token` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `push_status` `push_status` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT 'not-send', CHANGE `marked_push_notify` `marked_push_notify` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
--- Thana 16 Sep 2020
+--  Thana 16 Sep 2020
 ALTER TABLE `notify` CHANGE `status` `status` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'unread' COMMENT 'read, readed for notify status';
 
--- Amit 09 Oct 2020
+--  Amit 09 Oct 2020
 ALTER TABLE `shipment_participant_map` CHANGE `user_comment` `user_comment` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
 
--- Thana 27-Oct-2020
+--  Thana 27-Oct-2020
 ALTER TABLE `data_manager` ADD `new_email` VARCHAR(255) NULL DEFAULT NULL AFTER `marked_push_notify`;
 
--- Thana 02-Nov-2020
+--  Thana 02-Nov-2020
 ALTER TABLE `shipment_participant_map` ADD `mode_of_response` VARCHAR(50) NULL DEFAULT NULL COMMENT 'web,app,api' AFTER `synced_on`;
 INSERT INTO `global_config` (`name`, `value`) VALUES ('disable_push_notification', 'yes');
 
--- Thana 24-Dec-2020
+--  Thana 24-Dec-2020
 INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) 
       VALUES ('covid19', 'SARS-CoV-2', 'response_result_covid19', 'reference_result_covid19', NULL, 'inactive');
 
@@ -2602,10 +2602,10 @@ CREATE TABLE `r_test_type_covid19` (
  `test_type_3` int NOT NULL DEFAULT '0',
  PRIMARY KEY (`test_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
--- Thana 28-Dec-2020
+--  Thana 28-Dec-2020
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'covid19', 'COVID19_FINAL', 'Postive', 'P'), (NULL, 'covid19', 'COVID19_FINAL', 'Negative', 'N'), (NULL, 'covid19', 'COVID19_FINAL', 'Interminate', 'I');
 
--- Thana 29-Dec-2020
+--  Thana 29-Dec-2020
 UPDATE `r_possibleresult` SET `response` = 'Invalid' WHERE `r_possibleresult`.`id` = 20;
 
 CREATE TABLE `reference_result_covid19` (
@@ -2653,7 +2653,7 @@ CREATE TABLE `covid19_recommended_test_types` (
 
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'covid19', 'COVID19_TEST', 'Postive', 'P'), (NULL, 'covid19', 'COVID19_TEST', 'Negative', 'N'), (NULL, 'covid19', 'COVID19_TEST', 'Invalid', 'I');
 
--- Thana 30-Dec-2020
+--  Thana 30-Dec-2020
 CREATE TABLE `r_covid19_corrective_actions` (
  `action_id` int NOT NULL AUTO_INCREMENT,
  `corrective_action` text NOT NULL,
@@ -2680,7 +2680,7 @@ INSERT INTO `r_covid19_corrective_actions` (`action_id`, `corrective_action`, `d
 (16, 'Ensure to provide to provide panel receipt date. ', 'Panel receipt date missing in PT report form.'),
 (17, 'Please test Covid19 sample as per National Covid-19 Testing lab. Review and refer to SOP for testing.', 'For Test (1/2/3) testing is not performed with country approved test type.');
 
--- Thana 06-Jan-2021
+--  Thana 06-Jan-2021
 CREATE TABLE `reference_covid19_test_type` (
  `id` int NOT NULL AUTO_INCREMENT,
  `shipment_id` varchar(255) NOT NULL,
@@ -2692,7 +2692,7 @@ CREATE TABLE `reference_covid19_test_type` (
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Thana 11-Jan-2021
+--  Thana 11-Jan-2021
 CREATE TABLE `response_covid19_not_tested_reason` (
  `covid19_not_tested_reason_id` int NOT NULL AUTO_INCREMENT,
  `covid19_not_tested_reason` varchar(500) DEFAULT NULL,
@@ -2707,38 +2707,38 @@ INSERT INTO `response_covid19_not_tested_reason` (`covid19_not_tested_reason_id`
 
 ALTER TABLE `shipment_participant_map` ADD `number_of_tests` INT(11) NULL DEFAULT NULL AFTER `shipment_test_date`;
 
--- Amit 1 Jan 2021
+--  Amit 1 Jan 2021
 
 ALTER TABLE `shipment_participant_map` CHANGE `shipment_test_date` `shipment_test_date` DATE NULL DEFAULT NULL;
 
--- Thana 22-Jan-2021
+--  Thana 22-Jan-2021
 ALTER TABLE `data_manager` ADD `api_token_generated_datetime` DATETIME NULL DEFAULT NULL AFTER `auth_token`;
 
 
--- Amit 01-Feb-2021
+--  Amit 01-Feb-2021
 ALTER TABLE `reference_vl_calculation` ADD `standard_uncertainty` DOUBLE(20,10) NULL DEFAULT NULL AFTER `sd`;
 ALTER TABLE `reference_vl_calculation` ADD `is_uncertainty_acceptable` VARCHAR(255) NULL DEFAULT NULL AFTER `standard_uncertainty`;
 
 ALTER TABLE `reference_vl_calculation` ADD `median` DOUBLE(20,10) NULL DEFAULT NULL AFTER `mean`;
 
--- Amit 05-Feb-2021
+--  Amit 05-Feb-2021
 
 ALTER TABLE `response_result_vl` ADD `z_score` DOUBLE(20,10) NULL DEFAULT NULL AFTER `reported_viral_load`;
 ALTER TABLE `reference_vl_calculation` ADD `no_of_responses` INT NULL DEFAULT NULL AFTER `vl_assay`;
 
--- Amit 09-Feb-2021
+--  Amit 09-Feb-2021
 
 ALTER TABLE `reference_vl_calculation` ADD `manual_standard_uncertainty` DOUBLE(20,10) NULL DEFAULT NULL AFTER `manual_sd`;
 ALTER TABLE `reference_vl_calculation` ADD `manual_is_uncertainty_acceptable` VARCHAR(255) NULL DEFAULT NULL AFTER `manual_standard_uncertainty`;
 ALTER TABLE `reference_vl_calculation` ADD `manual_median` DOUBLE(20,10) NULL DEFAULT NULL AFTER `manual_mean`;
 
--- Thana 11-Feb-2021
+--  Thana 11-Feb-2021
 ALTER TABLE `response_result_vl` ADD `vl_assay` VARCHAR(255) NULL DEFAULT NULL AFTER `calculated_score`;
 
--- Thana 12-Feb-2021
+--  Thana 12-Feb-2021
 ALTER TABLE `shipment` ADD `pt_co_ordinator_name` TEXT NULL DEFAULT NULL AFTER `shipment_comment`;
 
--- Thana 04-Mar-2021
+--  Thana 04-Mar-2021
 CREATE TABLE `r_covid19_gene_types` (
  `gene_id` int NOT NULL AUTO_INCREMENT,
  `gene_name` varchar(255) DEFAULT NULL,
@@ -2762,31 +2762,31 @@ CREATE TABLE `covid19_identified_genes` (
  CONSTRAINT `covid19_identified_genes_ibfk_2` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Thana 08-Mar-2021
+--  Thana 08-Mar-2021
 UPDATE `global_config` SET `name` = 'pt_program_name' WHERE `global_config`.`name` = 'text_under_logo';
 UPDATE `global_config` SET `value` = 'EQA Proficiency Testing' WHERE `global_config`.`name` = 'pt_program_name';
 INSERT INTO `global_config` (`name`, `value`) VALUES ('pt_program_short_name', 'EQA PT');
--- Thana 09-Mar-2021
+--  Thana 09-Mar-2021
 ALTER TABLE `shipment_participant_map` ADD `specimen_volume` VARCHAR(255) NULL DEFAULT NULL AFTER `number_of_tests`;
--- Thana 16-Mar-2021
+--  Thana 16-Mar-2021
 INSERT INTO `global_config` (`name`, `value`) VALUES ('training_instance', 'no'), ('training_instance_text', '');
--- Thana 17-Mar-2021
+--  Thana 17-Mar-2021
 ALTER TABLE `covid19_identified_genes` ADD FOREIGN KEY (`gene_id`) REFERENCES `r_covid19_gene_types`(`gene_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE `covid19_identified_genes` ADD `gene_map_id` INT(11) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`gene_map_id`);
 
 
--- Amit 19-April-2021
+--  Amit 19-April-2021
 
 UPDATE `scheme_list` SET `scheme_name` = 'Rapid Test for Recent Infection (RTRI)' WHERE `scheme_list`.`scheme_id` = 'recency';
 
 
--- Amit 14-May-2021
+--  Amit 14-May-2021
 
 ALTER TABLE `r_vl_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'active' AFTER `short_name`;
 ALTER TABLE `r_eid_detection_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'active' AFTER `sort_order`;
 ALTER TABLE `r_eid_extraction_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'active' AFTER `sort_order`;
 
--- Thana 18-Jun-2021
+--  Thana 18-Jun-2021
 ALTER TABLE `reference_dts_wb` ADD `result` VARCHAR(256) NULL DEFAULT NULL AFTER `17`; 
 ALTER TABLE `reference_dts_eia` ADD `result` VARCHAR(556) NULL DEFAULT NULL AFTER `cutoff`; 
 
@@ -2800,7 +2800,7 @@ CREATE TABLE `reference_dts_geenius` (
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Thana 22-Jun-2021
+--  Thana 22-Jun-2021
 CREATE TABLE `reference_recency_assay` (
  `id` int NOT NULL AUTO_INCREMENT,
  `shipment_id` int DEFAULT NULL,
@@ -2813,12 +2813,12 @@ CREATE TABLE `reference_recency_assay` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- Amit 07 July 2021
+--  Amit 07 July 2021
 ALTER TABLE `shipment_participant_map` ADD `user_client_info` JSON NULL DEFAULT NULL AFTER `mode_of_response`;
--- Thana 12-July-2021
+--  Thana 12-July-2021
 ALTER TABLE `shipment_participant_map` ADD `manual_override` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `mode_id`; 
 
--- Amit 20-July-2021
+--  Amit 20-July-2021
 UPDATE `shipment_participant_map` set shipment_test_date = NULL WHERE is_pt_test_not_performed = 'yes';
 
 
@@ -2832,32 +2832,32 @@ CREATE TABLE `system_config` (
 
 INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES
 ('app_version', '7.0.0', 'App Version');
--- Version 7.0.0 Amit 20-July-2020
+--  Version 7.0.0 Amit 20-July-2020
 
--- Thana 23-July-2021
+--  Thana 23-July-2021
 INSERT INTO `global_config` (`name`, `value`) VALUES ('theme_color', 'blue');
 
--- Amit 28-July-2021
+--  Amit 28-July-2021
 UPDATE `system_config` SET `value` = '7.1.0' WHERE `system_config`.`config` = 'app_version';
 
--- Amit 04-Aug-2021
+--  Amit 04-Aug-2021
 UPDATE `system_config` SET `value` = '7.2.0' WHERE `system_config`.`config` = 'app_version';
 
--- Thana 10-Aug-2021
+--  Thana 10-Aug-2021
 ALTER TABLE `shipment` ADD `corrective_action_file` VARCHAR(256) NULL DEFAULT NULL AFTER `report_in_queue`;
 
--- Thana 07-Sep-2021
+--  Thana 07-Sep-2021
 ALTER TABLE `response_result_dts` ADD `repeat_test_result_1` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_1`;
 ALTER TABLE `response_result_dts` ADD `repeat_test_result_2` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_2`;
 ALTER TABLE `response_result_dts` ADD `repeat_test_result_3` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_3`;
 
 
--- Amit 09-Sep-2021
+--  Amit 09-Sep-2021
 RENAME TABLE `response_vl_not_tested_reason` TO `r_response_vl_not_tested_reason`;
 
 
 
--- Thana 09-Sep-2021
+--  Thana 09-Sep-2021
 CREATE TABLE `enrollment_lists_names` (
  `eln_id` int NOT NULL AUTO_INCREMENT,
  `eln_unique_id` varchar(256) NOT NULL,
@@ -2871,40 +2871,40 @@ CREATE TABLE `enrollment_lists_names` (
 
 ALTER TABLE `enrollment_lists_names` ADD `added_by` INT(11) NULL DEFAULT NULL AFTER `participant_id`, ADD `added_on` DATETIME NULL DEFAULT NULL AFTER `added_by`, ADD `updated_by` INT(11) NULL DEFAULT NULL AFTER `added_on`, ADD `updated_on` DATETIME NULL DEFAULT NULL AFTER `updated_by`;
 
--- Amit 14-Sep-2021
+--  Amit 14-Sep-2021
 ALTER TABLE `r_possibleresult` ADD UNIQUE( `scheme_sub_group`, `result_code`);
 
--- Thana 15-Sep-2021
+--  Thana 15-Sep-2021
 ALTER TABLE `participant` ADD `lab_director_name` VARCHAR(256) NULL DEFAULT NULL AFTER `department_name`, ADD `lab_director_email` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_name`;
 ALTER TABLE `participant` ADD `contact_person_name` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_email`, ADD `contact_person_email` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_name`, ADD `contact_person_telephone` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_email`;
 ALTER TABLE `shipment_participant_map` ADD `lab_director_name` VARCHAR(256) NULL DEFAULT NULL AFTER `participant_id`, ADD `lab_director_email` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_name`, ADD `contact_person_name` VARCHAR(256) NULL DEFAULT NULL AFTER `lab_director_email`, ADD `contact_person_email` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_name`, ADD `contact_person_telephone` VARCHAR(256) NULL DEFAULT NULL AFTER `contact_person_email`;
 
 
--- Amit 16 Sep 2021
+--  Amit 16 Sep 2021
 DELETE FROM `r_dts_corrective_actions` WHERE `r_dts_corrective_actions`.`action_id` = 18;
 INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (18, 'Please ensure condition of PT Samples is reported', 'Please ensure condition of PT Samples is reported');
 INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (19, 'Please ensure Refridgerator availability is reported', 'Please ensure Refridgerator availability is reported');
 INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (20, 'Please ensure Room Temperature is reported', 'Please ensure Room Temperature is reported');
 INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES (21, 'Please ensure Stop Watch availability is reported', 'Please ensure Stop Watch availability is reported');
 
--- Thana 20 Sep 2021
+--  Thana 20 Sep 2021
 INSERT INTO `report_config` (`name`, `value`) VALUES ('institute-address-postition', 'header');
 
--- Amit 21 Sep 2021
+--  Amit 21 Sep 2021
 ALTER TABLE `r_response_vl_not_tested_reason` ADD `collect_panel_receipt_date` VARCHAR(256) NULL DEFAULT 'yes' AFTER `vl_not_tested_reason`;
 UPDATE `r_response_vl_not_tested_reason` SET `collect_panel_receipt_date` = 'no' WHERE `r_response_vl_not_tested_reason`.`vl_not_tested_reason_id` = 8; UPDATE `r_response_vl_not_tested_reason` SET `collect_panel_receipt_date` = 'no' WHERE `r_response_vl_not_tested_reason`.`vl_not_tested_reason_id` = 9; UPDATE `r_response_vl_not_tested_reason` SET `collect_panel_receipt_date` = 'no' WHERE `r_response_vl_not_tested_reason`.`vl_not_tested_reason_id` = 10; UPDATE `r_response_vl_not_tested_reason` SET `collect_panel_receipt_date` = 'no' WHERE `r_response_vl_not_tested_reason`.`vl_not_tested_reason_id` = 11;
 
--- Amit 23-Sep-2021
+--  Amit 23-Sep-2021
 UPDATE `system_config` SET `value` = '7.3.0' WHERE `system_config`.`config` = 'app_version';
 
--- Thana 24-Sep-2021
+--  Thana 24-Sep-2021
 ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_1` VARCHAR(256) NULL DEFAULT NULL AFTER `test_type_1`, ADD `pcr_reagent_lot_no_1` VARCHAR(256) NULL DEFAULT NULL AFTER `name_of_pcr_reagent_1`, ADD `pcr_reagent_exp_date_1` DATE NULL DEFAULT NULL AFTER `pcr_reagent_lot_no_1`;
 ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_2` VARCHAR(256) NULL DEFAULT NULL AFTER `test_type_2`, ADD `pcr_reagent_lot_no_2` VARCHAR(256) NULL DEFAULT NULL AFTER `name_of_pcr_reagent_2`, ADD `pcr_reagent_exp_date_2` DATE NULL DEFAULT NULL AFTER `pcr_reagent_lot_no_2`;
 ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_3` VARCHAR(256) NULL DEFAULT NULL AFTER `test_type_3`, ADD `pcr_reagent_lot_no_3` VARCHAR(256) NULL DEFAULT NULL AFTER `name_of_pcr_reagent_3`, ADD `pcr_reagent_exp_date_3` DATE NULL DEFAULT NULL AFTER `pcr_reagent_lot_no_3`;
 
 
 
--- Amit 29 Sep 2021
+--  Amit 29 Sep 2021
   CREATE TABLE `participants_not_uploaded` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `s_no` text,
@@ -2931,7 +2931,7 @@ ALTER TABLE `response_result_covid19` ADD `name_of_pcr_reagent_3` VARCHAR(256) N
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Thana 01-Oct-2021
+--  Thana 01-Oct-2021
 ALTER TABLE `response_result_dts` ADD `repeat_test_kit_name_1` VARCHAR(256) NULL DEFAULT NULL AFTER `test_kit_name_1`;
 ALTER TABLE `response_result_dts` ADD `repeat_test_kit_name_2` VARCHAR(256) NULL DEFAULT NULL AFTER `test_kit_name_2`;
 ALTER TABLE `response_result_dts` ADD `repeat_test_kit_name_3` VARCHAR(256) NULL DEFAULT NULL AFTER `test_kit_name_3`;
@@ -2942,7 +2942,7 @@ ALTER TABLE `response_result_dts` ADD `repeat_exp_date_1` date NULL DEFAULT NULL
 ALTER TABLE `response_result_dts` ADD `repeat_exp_date_2` date NULL DEFAULT NULL AFTER `exp_date_2`;
 ALTER TABLE `response_result_dts` ADD `repeat_exp_date_3` date NULL DEFAULT NULL AFTER `exp_date_3`;
 
--- Thana 12-Oct-2021
+--  Thana 12-Oct-2021
 CREATE TABLE `r_response_not_tested_reasons` (
  `ntr_id` int NOT NULL AUTO_INCREMENT,
  `ntr_reason` varchar(256) DEFAULT NULL,
@@ -2952,10 +2952,10 @@ CREATE TABLE `r_response_not_tested_reasons` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- Thana 13-Oct-2021
+--  Thana 13-Oct-2021
 ALTER TABLE `shipment_participant_map` ADD `received_pt_panel` VARCHAR(256) NULL DEFAULT NULL AFTER `vl_not_tested_reason`;
 
--- Thana 27-Oct-2021
+--  Thana 27-Oct-2021
 ALTER TABLE `r_response_not_tested_reasons` ADD `collect_panel_receipt_date` VARCHAR(256) NOT NULL DEFAULT 'no' AFTER `ntr_test_type`;
 ALTER TABLE `r_response_not_tested_reasons` CHANGE `ntr_test_type` `ntr_test_type` JSON NULL DEFAULT NULL;
 DELETE FROM `r_response_not_tested_reasons`;
@@ -2973,16 +2973,16 @@ INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_t
 (11, 'Issue with Sample' ,'["vl","eid","dts","covid19","recency"]', 'active'),
 (12, 'Machine not working' ,'["vl","eid","dts","covid19","recency"]', 'active');
 
--- Amit 03 Nov 2021
+--  Amit 03 Nov 2021
 
 UPDATE `shipment_participant_map` SET attributes = NULL where attributes like '';
 ALTER TABLE `shipment_participant_map` CHANGE `attributes` `attributes` JSON NULL DEFAULT NULL;
 
 
--- Amit 14-Dec-2021
+--  Amit 14-Dec-2021
 UPDATE `system_config` SET `value` = '7.2.1' WHERE `system_config`.`config` = 'app_version';
 
--- Thana 20-Jan-2022
+--  Thana 20-Jan-2022
 CREATE TABLE `audit_log` (
  `audit_log_id` int NOT NULL AUTO_INCREMENT,
  `statement` text COLLATE utf8mb4_general_ci,
@@ -2992,7 +2992,7 @@ CREATE TABLE `audit_log` (
  PRIMARY KEY (`audit_log_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Thana 16-Feb-2022
+--  Thana 16-Feb-2022
 CREATE TABLE `certificate_templates` (
  `ct_id` int NOT NULL AUTO_INCREMENT,
  `scheme_type` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
@@ -3003,7 +3003,7 @@ CREATE TABLE `certificate_templates` (
  PRIMARY KEY (`ct_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Thana 22-Feb-2022
+--  Thana 22-Feb-2022
 CREATE TABLE `scheduled_jobs` (
  `job_id` int NOT NULL AUTO_INCREMENT,
  `job` text COLLATE utf8mb4_general_ci,
@@ -3014,5 +3014,5 @@ CREATE TABLE `scheduled_jobs` (
  PRIMARY KEY (`job_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Thana 24-Feb-2022
-ALTER TABLE `certificate_templates` ADD `created_by` VARCHAR(256) NULL DEFAULT NULL AFTER `excellence_certificate`;
+-- Amit 02-Mar-2022
+ALTER TABLE `r_test_type_covid19` CHANGE `test_type_id` `test_type_id` INT NOT NULL AUTO_INCREMENT;

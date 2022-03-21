@@ -27,6 +27,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
             // Zend_Debug::dump($this->getAllParams());die;
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
+            $config->$sec->map = array();
             $config->$sec->map->center = $this->getRequest()->getPost('mapCenter');
             $config->$sec->map->zoom = $this->getRequest()->getPost('mapZoom');
             $config->$sec->instituteName = $this->getRequest()->getPost('instituteName');

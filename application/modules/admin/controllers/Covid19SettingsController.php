@@ -32,13 +32,13 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
             $testPlatforms[3] = $this->getRequest()->getPost('testPlatform3');
 
             $schemeService->setRecommededCovid19TestTypes($testPlatforms);
-            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+            $config = new Zend_Config_Ini($file, null, array('skipExtends' => true, 'allowModifications' => true));
             $sec = APPLICATION_ENV;
 
 
             // $allowedAlgorithms = $this->getRequest()->getPost('allowedAlgorithms');
             // $allowedAlgorithms = implode(",",$allowedAlgorithms);
-
+            $config->$sec->evaluation->covid19 = array();
             $config->$sec->evaluation->covid19->passPercentage = $this->getRequest()->getPost('covid19PassPercentage');
             $config->$sec->evaluation->covid19->documentationScore = $this->getRequest()->getPost('covid19DocumentationScore');
             $config->$sec->evaluation->covid19->covid19MaximumTestAllowed = $this->getRequest()->getPost('covid19MaximumTestAllowed');
@@ -46,10 +46,12 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
             $config->$sec->evaluation->covid19->sampleRehydrateDays = $this->getRequest()->getPost('sampleRehydrateDays');
             $config->$sec->evaluation->covid19->allowedAlgorithms = !empty($allowedAlgorithms) ? $allowedAlgorithms : '';
 
-            $writer = new Zend_Config_Writer_Ini();
-            $writer->setConfig($config)
-                ->setFilename($file)
-                ->write();
+            $writer = new Zend_Config_Writer_Ini(array(
+                'config'   => $config,
+                'filename' => $file
+            ));
+
+            $writer->write();
 
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
             $alertMsg = new Zend_Session_Namespace('alertSpace');
