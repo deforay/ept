@@ -43,7 +43,7 @@ You also need to add a scheduled job. Following is an example on a Linux system
 
 ```bash
 
-* * * * * cd /var/www/vlsm/ && ./vendor/bin/crunz schedule:run
+* * * * * cd /var/www/ept/ && ./vendor/bin/crunz schedule:run
 
 
 ```

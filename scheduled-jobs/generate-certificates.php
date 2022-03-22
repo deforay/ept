@@ -213,7 +213,7 @@ try {
 	}
 	if (!empty($certificatePaths) && is_executable($libreOfficePath)) {
 		$certificatePaths = array_unique($certificatePaths);
-		Zend_Debug::dump($certificatePaths);
+		//Zend_Debug::dump($certificatePaths);
 		foreach ($certificatePaths as $certPath) {
 			//echo ("cd $certPath && /usr/bin/libreoffice --headless --convert-to pdf *.docx --outdir ./ >/dev/null 2>&1 &" . PHP_EOL);
 			$files = $generalModel->recuriveSearch($certPath, "*.docx");
