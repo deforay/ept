@@ -29,7 +29,7 @@ $schedule->run($phpPath . " " . APPLICATION_PATH . "/../scheduled-jobs/execute-j
     ->everyMinute()
     ->timezone($timezone)
     ->preventOverlapping()
-    ->description('Sending Emails');
+    ->description('Executing Jobs');
 
 return $schedule;
 

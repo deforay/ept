@@ -67,7 +67,7 @@ try {
 
 	$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'))
 		->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
-		->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'institute_name'))
+		->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'country', 'institute_name'))
 		// ->where("spm.final_result = 1 OR spm.final_result = 2")
 		// ->where("spm.is_excluded NOT LIKE 'yes'")
 		->order("unique_identifier ASC")
@@ -90,6 +90,7 @@ try {
 
 		$participants[$shipment['unique_identifier']]['labName'] = implode(" ", $participantName);
 		$participants[$shipment['unique_identifier']]['city'] = $shipment['city'];
+		$participants[$shipment['unique_identifier']]['country'] = $shipment['country'];
 		//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float) ($shipment['shipment_score'] + $shipment['documentation_score']);
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'];
@@ -150,11 +151,13 @@ try {
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/dts-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
+						$doc->setValue("COUNTRY", $arrayVal['country']);
 					} else if ($shipmentType == 'eid') {
 						if (!file_exists(__DIR__ . "/certificate-templates/eid-e.docx")) continue;
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/eid-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
+						$doc->setValue("COUNTRY", $arrayVal['country']);
 					} else if ($shipmentType == 'vl') {
 						if (!file_exists(__DIR__ . "/certificate-templates/vl-e.docx")) continue;
 						if ($attribs["vl_assay"] == 6) {
@@ -169,6 +172,7 @@ try {
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/vl-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
+						$doc->setValue("COUNTRY", $arrayVal['country']);
 						$doc->setValue("ASSAYNAME", $assay);
 						//$doc->setValue("DATE","23 December 2018");
 					}
@@ -182,11 +186,13 @@ try {
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/dts-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
+						$doc->setValue("COUNTRY", $arrayVal['country']);
 					} else if ($shipmentType == 'eid') {
 						if (!file_exists(__DIR__ . "/certificate-templates/eid-p.docx")) continue;
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/eid-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
+						$doc->setValue("COUNTRY", $arrayVal['country']);
 						//$doc->setValue("DATE","09 January 2018");
 
 					} else if ($shipmentType == 'vl') {
@@ -204,6 +210,7 @@ try {
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/vl-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
+						$doc->setValue("COUNTRY", $arrayVal['country']);
 						$doc->setValue("ASSAYNAME", $assay);
 					}
 					$doc->saveAs($participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".docx");

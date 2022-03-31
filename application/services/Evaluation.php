@@ -1339,8 +1339,8 @@ class Application_Service_Evaluation
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('s.*'))
 					->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded'))
 					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
-					->where("sp.is_pt_test_not_performed is NULL")
-					->where("sp.is_excluded not like 'yes'")
+					->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE")
+					->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
 					->where('sp.shipment_id = ? ', $shipmentId);
 
 				//echo $cQuery;die;
@@ -2008,10 +2008,10 @@ class Application_Service_Evaluation
 
 				$vlQuery = $db->select()->from(array('spm' => 'shipment_participant_map'))
 					->where("`attributes` NOT LIKE  $regexp ")
-					->where("is_excluded!='yes'")
-					->where("is_pt_test_not_performed is NULL")
+					->where("(spm.is_excluded LIKE 'yes') IS NOT TRUE")
+					->where("(spm.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE")
 					->where("spm.shipment_id = ?", $shipmentId);
-
+				//error_log($vlQuery);
 				// echo($vlQuery);die;
 				$pendingResult =  $db->fetchAll($vlQuery);
 

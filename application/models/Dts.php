@@ -590,7 +590,12 @@ class Application_Model_Dts
 
 				// Matching reported and reference results
 				$correctResponse = false;
-
+				$scoreForSample = $result['sample_score'];
+				$scoreForAlgorithm = 0;
+				if ($scorePercentageForAlgorithm > 0 && $scorePercentageForAlgorithm < 1) {
+					$scoreForAlgorithm = $scorePercentageForAlgorithm * $result['sample_score'];
+					$scoreForSample = $result['sample_score'] - $scoreForAlgorithm;
+				}
 
 				// If final resut was not reported then the participant is failed 
 				if (!isset($result['reported_result']) || empty(trim($result['reported_result']))) {
@@ -603,14 +608,6 @@ class Application_Model_Dts
 					$correctiveActionList[] = 4;
 				} else {
 					if ($controlTesKitFail != 'Fail') {
-
-						$scoreForSample = $result['sample_score'];
-						$scoreForAlgorithm = 0;
-						if ($scorePercentageForAlgorithm > 0 && $scorePercentageForAlgorithm < 1) {
-							$scoreForAlgorithm = $scorePercentageForAlgorithm * $result['sample_score'];
-							$scoreForSample = $result['sample_score'] - $scoreForAlgorithm;
-						}
-
 						if ($result['reference_result'] == $result['reported_result']) {
 							if ($algoResult != 'Fail') {
 								$totalScore += ($scoreForSample + $scoreForAlgorithm);
@@ -658,9 +655,13 @@ class Application_Model_Dts
 					if ((isset($tk1Expired) && $tk1Expired) || (isset($tk1RecommendedUsed) && !$tk1RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
 						if ($correctResponse) {
-							$totalScore -= $result['sample_score'];
+							$totalScore -= ($scoreForSample);
+						}
+						if ($algoResult == 'Pass') {
+							$totalScore -= ($scoreForAlgorithm);
 						}
 						$correctResponse = false;
+						$algoResult = 'Fail';
 					}
 				}
 				if (isset($result['test_result_2']) && !empty($result['test_result_2']) && trim($result['test_result_2']) != false) {
@@ -678,9 +679,13 @@ class Application_Model_Dts
 					if ((isset($tk2Expired) && $tk2Expired) || (isset($tk2RecommendedUsed) && !$tk2RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
 						if ($correctResponse) {
-							$totalScore -= $result['sample_score'];
+							$totalScore -= ($scoreForSample);
+						}
+						if ($algoResult == 'Pass') {
+							$totalScore -= ($scoreForAlgorithm);
 						}
 						$correctResponse = false;
+						$algoResult = 'Fail';
 					}
 				}
 				if (isset($result['test_result_3']) && !empty($result['test_result_3']) && trim($result['test_result_3']) != false) {
@@ -698,9 +703,13 @@ class Application_Model_Dts
 					if ((isset($tk3Expired) && $tk3Expired) || (isset($tk3RecommendedUsed) && !$tk3RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
 						if ($correctResponse) {
-							$totalScore -= $result['sample_score'];
+							$totalScore -= ($scoreForSample);
+						}
+						if ($algoResult == 'Pass') {
+							$totalScore -= ($scoreForAlgorithm);
 						}
 						$correctResponse = false;
+						$algoResult = 'Fail';
 					}
 				}
 

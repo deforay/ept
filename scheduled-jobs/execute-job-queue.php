@@ -14,7 +14,7 @@ try {
     if (isset($scheduledResult)) {
         foreach ($scheduledResult as $key => $sj) {
             exec($phpPath . " " . realpath(APPLICATION_PATH . "/../scheduled-jobs") . DIRECTORY_SEPARATOR .  $sj['job']);
-            // $scheduledDb->update(array("completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"), array("job_id" => $sj['job_id']));
+            $db->update('scheduled_jobs', array("completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"), "job_id = " . $sj['job_id']);
         }
     }
 } catch (Exception $e) {

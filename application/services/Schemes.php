@@ -605,7 +605,10 @@ class Application_Service_Schemes
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array())
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')))
             ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
-            ->where('sp.shipment_id = ? ', $sId);
+            ->where('sp.shipment_id = ? ', $sId)
+            ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
+            //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
+            ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
 
         //echo $sql;die;
 
