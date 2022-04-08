@@ -3016,3 +3016,6 @@ CREATE TABLE `scheduled_jobs` (
 
 -- Amit 02-Mar-2022
 ALTER TABLE `r_test_type_covid19` CHANGE `test_type_id` `test_type_id` INT NOT NULL AUTO_INCREMENT;
+
+-- Thana 08-Apr-2022
+ALTER TABLE `participant` ADD `district` VARCHAR(256) NULL DEFAULT NULL AFTER `state`;

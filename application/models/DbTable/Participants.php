@@ -219,9 +219,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'institute_name' => $params['instituteName'],
             'department_name' => $params['departmentName'],
             'address' => $params['address'],
-            'city' => $params['city'],
-            'state' => $params['state'],
             'country' => $params['country'],
+            'region' => $params['region'],
+            'state' => $params['state'],
+            'district' => $params['district'],
+            'city' => $params['city'],
             'zip' => $params['zip'],
             'long' => $params['long'],
             'lat' => $params['lat'],
@@ -238,7 +240,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'testing_volume' => $params['testingVolume'],
             'funding_source' => $params['fundingSource'],
             'site_type' => $params['siteType'],
-            'region' => $params['region'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
         if (isset($params['comingFrom']) && $params['comingFrom'] == 'participant') {
@@ -322,9 +323,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'institute_name' => $params['instituteName'],
             'department_name' => $params['departmentName'],
             'address' => $params['address'],
-            'city' => $params['city'],
-            'state' => $params['state'],
             'country' => $params['country'],
+            'region' => $params['region'],
+            'state' => $params['state'],
+            'district' => $params['district'],
+            'city' => $params['city'],
             'zip' => $params['zip'],
             'long' => $params['long'],
             'lat' => $params['lat'],
@@ -341,7 +344,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'testing_volume' => $params['testingVolume'],
             'funding_source' => $params['fundingSource'],
             'site_type' => $params['siteType'],
-            'region' => $params['region'],
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->primary_email,
             'status' => $params['status']

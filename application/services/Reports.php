@@ -1475,7 +1475,7 @@ class Application_Service_Reports
         }
         //<------------ Participant List Details Start -----
 
-        $headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Address', 'Region', 'City', 'Facility Telephone', 'Email');
+        $headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Address', 'Region', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
 
         $sheet = new PHPExcel_Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 1);
@@ -1483,7 +1483,7 @@ class Application_Service_Reports
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment'))
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status'))
+            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
@@ -1535,10 +1535,12 @@ class Application_Service_Reports
                 $sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['institute_name'], PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['department_name'], PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['address'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['mobile'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit(strtolower($aRow['email']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['province'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['district'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit($aRow['mobile'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(10, $currentRow)->setValueExplicit(strtolower($aRow['email']), PHPExcel_Cell_DataType::TYPE_STRING);
 
                 for ($i = 0; $i <= 8; $i++) {
                     $cellName = $sheet->getCellByColumnAndRow($i, $currentRow)->getColumn();
@@ -1764,7 +1766,7 @@ class Application_Service_Reports
         $totalScoreSheet->setTitle('Total Score');
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension(1)->setRowHeight(30);
-        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'City', 'Region', 'Country', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance', 'Warnings OR Reasons for Failure');
+        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'Region', 'Province', 'District', 'City', 'Country', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance', 'Warnings OR Reasons for Failure');
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
@@ -1979,8 +1981,10 @@ class Application_Service_Reports
 
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['province'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['district'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['iso_name'], PHPExcel_Cell_DataType::TYPE_STRING);
 
                 //------------ Total score sheet ------------>
@@ -2253,7 +2257,7 @@ class Application_Service_Reports
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status'))
+            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
             ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
@@ -3789,7 +3793,7 @@ class Application_Service_Reports
 
         //<------------ Participant List Details Start -----
 
-        $headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Address', 'Region', 'City', 'Facility Telephone', 'Email');
+        $headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Address', 'Region', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
 
         $sheet = new PHPExcel_Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 1);
@@ -3797,7 +3801,7 @@ class Application_Service_Reports
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status'))
+            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
             ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
@@ -3839,10 +3843,12 @@ class Application_Service_Reports
                 $sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['institute_name'], PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['department_name'], PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['address'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['mobile'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit(strtolower($aRow['email']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['province'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['district'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit($aRow['mobile'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(10, $currentRow)->setValueExplicit(strtolower($aRow['email']), PHPExcel_Cell_DataType::TYPE_STRING);
 
                 for ($i = 0; $i <= 8; $i++) {
                     $cellName = $sheet->getCellByColumnAndRow($i, $currentRow)->getColumn();

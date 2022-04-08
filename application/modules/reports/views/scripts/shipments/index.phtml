@@ -23,13 +23,9 @@
 		<td>
 			<select id="scheme" name="scheme" onchange="drawTable();" class="form-control input-sm">
 				<option value=""> -- Select Scheme Type --</option>
-				<?php
-				foreach ($this->schemes as $scheme) {
-				?>
+				<?php foreach ($this->schemes as $scheme) { ?>
 					<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-				<?php
-				}
-				?>
+				<?php } ?>
 			</select>
 		</td>
 		<td>
