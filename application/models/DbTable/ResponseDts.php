@@ -42,72 +42,49 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 $params['repeat_test_kit_name_3'] = $otherRepeatTestkitId3;
             }
 
-            // Zend_Debug::dump($params);die;
+            $data = array(
+                'shipment_map_id'           => $params['smid'],
+                'sample_id'                 => $sampleId,
+                'test_kit_name_1'           => $params['test_kit_name_1'],
+                'lot_no_1'                  => $params['lot_no_1'],
+                'exp_date_1'                => Pt_Commons_General::dateFormat($params['exp_date_1']),
+                'test_result_1'             => $params['test_result_1'][$key],
+                'syphilis_result'           => $params['syphilis_result'][$key],
+                'test_kit_name_2'           => $params['test_kit_name_2'],
+                'lot_no_2'                  => $params['lot_no_2'],
+                'exp_date_2'                => Pt_Commons_General::dateFormat($params['exp_date_2']),
+                'test_result_2'             => $params['test_result_2'][$key],
+                'test_kit_name_3'           => $params['test_kit_name_3'],
+                'lot_no_3'                  => $params['lot_no_3'],
+                'exp_date_3'                => Pt_Commons_General::dateFormat($params['exp_date_3']),
+                'test_result_3'             => $params['test_result_3'][$key],
+                'repeat_test_kit_name_1'    => $params['repeat_test_kit_name_1'],
+                'repeat_test_kit_name_2'    => $params['repeat_test_kit_name_2'],
+                'repeat_test_kit_name_3'    => $params['repeat_test_kit_name_3'],
+                'repeat_lot_no_1'           => $params['repeat_lot_no_1'],
+                'repeat_lot_no_2'           => $params['repeat_lot_no_2'],
+                'repeat_lot_no_3'           => $params['repeat_lot_no_3'],
+                'repeat_exp_date_1'         => $params['repeat_exp_date_1'],
+                'repeat_exp_date_2'         => $params['repeat_exp_date_2'],
+                'repeat_exp_date_3'         => $params['repeat_exp_date_3'],
+                'repeat_test_result_1'      => $params['repeat_test_result_1'][$key],
+                'repeat_test_result_2'      => $params['repeat_test_result_2'][$key],
+                'repeat_test_result_3'      => $params['repeat_test_result_3'][$key],
+                'reported_result'           => $params['reported_result'][$key],
+                'syphilis_final'            => $params['syphilis_final'][$key],
+                'if_this_is_retest'         => $params['if_this_is_retest'][$key],
+            );
+            /* Zend_Debug::dump($data);
+            die; */
+
             if ($res == null || count($res) == 0) {
-                $this->insert(array(
-                    'shipment_map_id'           => $params['smid'],
-                    'sample_id'                 => $sampleId,
-                    'test_kit_name_1'           => $params['test_kit_name_1'],
-                    'lot_no_1'                  => $params['lot_no_1'],
-                    'exp_date_1'                => Pt_Commons_General::dateFormat($params['exp_date_1']),
-                    'test_result_1'             => $params['test_result_1'][$key],
-                    'test_kit_name_2'           => $params['test_kit_name_2'],
-                    'lot_no_2'                  => $params['lot_no_2'],
-                    'exp_date_2'                => Pt_Commons_General::dateFormat($params['exp_date_2']),
-                    'test_result_2'             => $params['test_result_2'][$key],
-                    'test_kit_name_3'           => $params['test_kit_name_3'],
-                    'lot_no_3'                  => $params['lot_no_3'],
-                    'exp_date_3'                => Pt_Commons_General::dateFormat($params['exp_date_3']),
-                    'test_result_3'             => $params['test_result_3'][$key],
-                    'repeat_test_kit_name_1'    => $params['repeat_test_kit_name_1'],
-                    'repeat_test_kit_name_2'    => $params['repeat_test_kit_name_2'],
-                    'repeat_test_kit_name_3'    => $params['repeat_test_kit_name_3'],
-                    'repeat_lot_no_1'           => $params['repeat_lot_no_1'],
-                    'repeat_lot_no_2'           => $params['repeat_lot_no_2'],
-                    'repeat_lot_no_3'           => $params['repeat_lot_no_3'],
-                    'repeat_exp_date_1'         => $params['repeat_exp_date_1'],
-                    'repeat_exp_date_2'         => $params['repeat_exp_date_2'],
-                    'repeat_exp_date_3'         => $params['repeat_exp_date_3'],
-                    'repeat_test_result_1'      => $params['repeat_test_result_1'][$key],
-                    'repeat_test_result_2'      => $params['repeat_test_result_2'][$key],
-                    'repeat_test_result_3'      => $params['repeat_test_result_3'][$key],
-                    'reported_result'           => $params['reported_result'][$key],
-                    'created_by'                => $authNameSpace->dm_id,
-                    'created_on'                => new Zend_Db_Expr('now()')
-                ));
+                $data['created_by'] = $authNameSpace->dm_id;
+                $data['created_on'] = new Zend_Db_Expr('now()');
+                $this->insert($data);
             } else {
-                $this->update(array(
-                    'test_kit_name_1'           => $params['test_kit_name_1'],
-                    'lot_no_1'                  => $params['lot_no_1'],
-                    'exp_date_1'                => Pt_Commons_General::dateFormat($params['exp_date_1']),
-                    'test_result_1'             => $params['test_result_1'][$key],
-                    'test_kit_name_2'           => $params['test_kit_name_2'],
-                    'lot_no_2'                  => $params['lot_no_2'],
-                    'exp_date_2'                => Pt_Commons_General::dateFormat($params['exp_date_2']),
-                    'test_result_2'             => $params['test_result_2'][$key],
-                    'test_kit_name_3'           => $params['test_kit_name_3'],
-                    'lot_no_3'                  => $params['lot_no_3'],
-                    'exp_date_3'                => Pt_Commons_General::dateFormat($params['exp_date_3']),
-                    'test_result_3'             => $params['test_result_3'][$key],
-                    'repeat_test_kit_name_1'    => $params['repeat_test_kit_name_1'],
-                    'repeat_test_kit_name_2'    => $params['repeat_test_kit_name_2'],
-                    'repeat_test_kit_name_3'    => $params['repeat_test_kit_name_3'],
-                    'repeat_lot_no_1'           => $params['repeat_lot_no_1'],
-                    'repeat_lot_no_2'           => $params['repeat_lot_no_2'],
-                    'repeat_lot_no_3'           => $params['repeat_lot_no_3'],
-                    'repeat_exp_date_1'         => Pt_Commons_General::dateFormat($params['repeat_exp_date_1']),
-                    'repeat_exp_date_2'         => Pt_Commons_General::dateFormat($params['repeat_exp_date_2']),
-                    'repeat_exp_date_3'         => Pt_Commons_General::dateFormat($params['repeat_exp_date_3']),
-                    'repeat_test_result_1'      => $params['repeat_test_result_1'][$key],
-                    'repeat_test_result_2'      => $params['repeat_test_result_2'][$key],
-                    'repeat_test_result_3'      => $params['repeat_test_result_3'][$key],
-                    'repeat_test_result_1'      => $params['repeat_test_result_1'][$key],
-                    'repeat_test_result_2'      => $params['repeat_test_result_2'][$key],
-                    'repeat_test_result_3'      => $params['repeat_test_result_3'][$key],
-                    'reported_result'           => $params['reported_result'][$key],
-                    'updated_by'                => $authNameSpace->dm_id,
-                    'updated_on'                => new Zend_Db_Expr('now()')
-                ), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+                $data['updated_by'] = $authNameSpace->dm_id;
+                $data['updated_on'] = new Zend_Db_Expr('now()');
+                $this->update($data, "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             }
         }
     }

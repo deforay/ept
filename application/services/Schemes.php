@@ -236,6 +236,7 @@ class Application_Service_Schemes
                 'lot_no_1',
                 'exp_date_1',
                 'test_result_1',
+                'syphilis_result',
                 'test_kit_name_2',
                 'lot_no_2',
                 'exp_date_2',
@@ -257,6 +258,8 @@ class Application_Service_Schemes
                 'repeat_test_result_2',
                 'repeat_test_result_3',
                 'reported_result',
+                'syphilis_final',
+                'if_this_is_retest'
             ))
             ->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
             ->where('sp.shipment_id = ? ', $sId)

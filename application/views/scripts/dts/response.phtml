@@ -1,8 +1,4 @@
 <?php
-
-//
-
-
 // Zend_Debug::dump($this->config->evaluation->dts->dtsOptionalTest3);die;
 // Zend_Debug::dump($this->allSamples);die;
 
@@ -23,8 +19,12 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
     $testThreeHidden = true;
     $screeningTest = true;
 }
+if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms) && sizeof($allowedAlgorithms) == 1) {
+    $testThreeHidden = false;
+    $testTwoHidden = false;
+    $screeningTest = false;
+}
 if (($testTwoHidden)) {
-
     $noTest = 1;
 } else if ($testThreeHidden) {
     $noTest = 2;
@@ -40,9 +40,12 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 } else {
     $testReceiptDate = date('d-M-Y');
 }
-
-
-
+$syphilisActive = false;
+if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+    $syphilisActive = true;
+}
+// Zend_Debug::dump($this->allSamples);
+// die;
 ?>
 
 <style>
@@ -337,133 +340,117 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                     <div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;" for="isPtTestNotPerformed">PT panel not tested<label></div>
 
                     <table class="table table-bordered table-striped" style="margin:10px auto;">
-                        <thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                        <thead class="vlResultSection vl-results-top" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <?php
                             $width = 20;
                             if ($allowRepeatTests == 'yes') {
                                 $width = 12.5; ?>
                                 <tr align="CENTER" class="light">
-                                    <th style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
-                                    <th style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
+                                    <th class="4-span" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
+                                    <th class="3-span" style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
                                         Repeat-Tests
                                     </th>
-                                    <th style="width: <?php echo $width; ?>%;"></th>
+                                    <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
                                 </tr>
                             <?php } ?>
                             <tr align="CENTER" class="dark">
-                                <th style="width: <?php echo $width; ?>%;"></th>
-                                <th style="width: <?php echo $width; ?>%;">Test-1</th>
-                                <th style="width: <?php echo $width; ?>%;" class='testTwo'>Test-2</th>
-                                <th style="width: <?php echo $width; ?>%;" class='testThree'>Test-3</th>
+                                <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                                <th style="width: <?php echo $width; ?>%;" class="colwidth">Test-1</th>
+                                <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>Test-2</th>
+                                <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'>Test-3</th>
                                 <?php if ($allowRepeatTests == 'yes') { ?>
-                                    <th style="width: <?php echo $width; ?>%;">Repeat Test-1</th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testTwo'>Repeat Test-2</th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testThree'>Repeat Test-3</th>
+                                    <th style="width: <?php echo $width; ?>%;" class="colwidth">Repeat Test-1</th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>Repeat Test-2</th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'>Repeat Test-3</th>
                                 <?php } ?>
+                                <th class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></th>
                             </tr>
                         </thead>
                         <tr align="CENTER" class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
-                            <th> Kit Name</th>
-                            <td style="width: <?php echo $width; ?>%;" class="dark">
+                            <th class="colwidth"> Kit Name</th>
+                            <td style="width: <?php echo $width; ?>%;" class="dark colwidth">
                                 <select name="test_kit_name_1" id="test_kit_name_1" class="testkit-change form-control" title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
                                     <option value=""> ---Select Kit---</option>
                                     <?php
                                     foreach ($this->allTestKits as $key => $testkit) {
-                                        if ($testkit['testkit_1'] == '1') {
-                                    ?>
+                                        if ($testkit['testkit_1'] == '1') { ?>
                                             <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                    <?php
-                                        }
-                                    }
-                                    ?>
+                                    <?php }
+                                    } ?>
                                     <option value="other">Other</option>
                                 </select>
                                 <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                             </td>
-                            <td style="width: <?php echo $width; ?>%;" class='testTwo'>
+                            <td style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>
                                 <select name="test_kit_name_2" id="test_kit_name_2" class="testkit-change form-control" title="Please Choose Test Kit 2" onchange="selectTestKitName(this)">
                                     <option value=""> ---Select Kit---</option>
                                     <?php
                                     foreach ($this->allTestKits as $key => $testkit) {
-                                        if ($testkit['testkit_2'] == '1') {
-                                    ?>
+                                        if ($testkit['testkit_2'] == '1') { ?>
                                             <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                    <?php
-                                        }
-                                    }
-                                    ?>
+                                    <?php }
+                                    } ?>
                                     <option value="other">Other</option>
                                 </select>
                                 <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                             </td>
 
-                            <td style="width: <?php echo $width; ?>%;" class='testThree'>
+                            <td style="width: <?php echo $width; ?>%;" class='testThree colwidth'>
                                 <select name="test_kit_name_3" id="test_kit_name_3" class="testkit-change form-control" title="Please Choose Test Kit 3" onchange="selectTestKitName(this)">
                                     <option value=""> ---Select Kit---</option>
                                     <?php
                                     foreach ($this->allTestKits as $key => $testkit) {
-                                        if ($testkit['testkit_3'] == '1') {
-                                    ?>
+                                        if ($testkit['testkit_3'] == '1') { ?>
                                             <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                    <?php
-                                        }
-                                    }
-                                    ?>
+                                    <?php }
+                                    } ?>
                                     <option value="other">Other</option>
                                 </select>
                                 <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                             </td>
                             <?php if ($allowRepeatTests == 'yes') { ?>
-                                <td style="width: <?php echo $width; ?>%;" class="dark">
+                                <td style="width: <?php echo $width; ?>%;" class="dark colwidth">
                                     <select name="repeat_test_kit_name_1" id="repeat_test_kit_name_1" class="form-control" title="Please Choose Repeat Test Kit 1" onchange="selectTestKitName(this)">
                                         <option value=""> ---Select Kit---</option>
                                         <?php
                                         foreach ($this->allTestKits as $key => $testkit) {
-                                            if ($testkit['testkit_1'] == '1') {
-                                        ?>
+                                            if ($testkit['testkit_1'] == '1') { ?>
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                        <?php
-                                            }
-                                        }
-                                        ?>
+                                        <?php }
+                                        } ?>
                                         <option value="other">Other</option>
                                     </select>
                                     <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_1" id="repeat_test_kit_other_name_1" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
-                                <td style="width: <?php echo $width; ?>%;" class='testTwo'>
+                                <td style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>
                                     <select name="repeat_test_kit_name_2" id="repeat_test_kit_name_2" class="form-control" title="Please Choose Repeat Test Kit 2" onchange="selectTestKitName(this)">
                                         <option value=""> ---Select Kit---</option>
                                         <?php
                                         foreach ($this->allTestKits as $key => $testkit) {
-                                            if ($testkit['testkit_2'] == '1') {
-                                        ?>
+                                            if ($testkit['testkit_2'] == '1') { ?>
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                        <?php
-                                            }
-                                        }
-                                        ?>
+                                        <?php }
+                                        } ?>
                                         <option value="other">Other</option>
                                     </select>
                                     <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_2" id="repeat_test_kit_other_name_2" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
 
-                                <td style="width: <?php echo $width; ?>%;" class='testThree'>
+                                <td style="width: <?php echo $width; ?>%;" class='testThree colwidth'>
                                     <select name="repeat_test_kit_name_3" id="repeat_test_kit_name_3" class="form-control" title="Please Choose Repeat Test Kit 3" onchange="selectTestKitName(this)">
                                         <option value=""> ---Select Kit---</option>
                                         <?php
                                         foreach ($this->allTestKits as $key => $testkit) {
-                                            if ($testkit['testkit_3'] == '1') {
-                                        ?>
+                                            if ($testkit['testkit_3'] == '1') { ?>
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                        <?php
-                                            }
-                                        }
-                                        ?>
+                                        <?php }
+                                        } ?>
                                         <option value="other">Other</option>
                                     </select>
                                     <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_3" id="repeat_test_kit_other_name_3" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
                             <?php } ?>
+                            <td class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
                         </tr>
                         <?php
                         $lotNo1 = "";
@@ -503,6 +490,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
                                 <td class='testThree'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
                             <?php } ?>
+                            <td class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
                         </tr>
                         <?php
                         $expDate1 = "";
@@ -542,31 +530,40 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                 <td class='testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> Clear</i></td>
                                 <td class='testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> Clear</i></td>
                             <?php } ?>
+                            <td class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
                         </tr>
-                        <thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                        <thead class="vlResultSection vl-results" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <?php
                             $width = 20;
                             if ($allowRepeatTests == 'yes') {
                                 $width = 12.5; ?>
-                                <tr align="CENTER" class="light">
-                                    <th style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
-                                    <th style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
+                                <tr align="CENTER" class="light auto-width">
+                                    <?php if ($syphilisActive) { ?>
+                                        <th class="4-span colwidth" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 2); ?>"></th>
+                                    <?php } else { ?>
+                                        <th class="4-span colwidth" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
+                                    <?php } ?>
+                                    <th class="3-span colwidth" style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
                                         Repeat-Tests
                                     </th>
-                                    <th style="width: <?php echo $width; ?>%;"></th>
+                                    <th class="3-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th>
                                 </tr>
                             <?php } ?>
-                            <tr align="CENTER" class="dark">
-                                <th style="width: <?php echo $width; ?>%;"></th>
-                                <th style="width: <?php echo $width; ?>%;">Result-1</th>
-                                <th style="width: <?php echo $width; ?>%;" class='testTwo'>Result-2</th>
-                                <th style="width: <?php echo $width; ?>%;" class='testThree'>Result-3</th>
-                                <?php if ($allowRepeatTests == 'yes') { ?>
-                                    <th style="width: <?php echo $width; ?>%;">Result-1</th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testTwo'>Result-2</th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testThree'>Result-3</th>
+                            <tr align="CENTER" class="dark auto-width">
+                                <th style="width: <?php echo $width; ?>%;" class="colwidth">PT Panel Identifier</th>
+                                <?php if ($syphilisActive) { ?>
+                                    <th style="width: <?php echo $width; ?>%;" class="syphilis-fields colwidth">Type of Test</th>
                                 <?php } ?>
-                                <th style="width: <?php echo $width; ?>%;">Final Result</th>
+                                <th class="colwidth" style="width: <?php echo $width; ?>%;">Result-1</th>
+                                <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>Result-2</th>
+                                <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'>Result-3</th>
+                                <?php if ($allowRepeatTests == 'yes') { ?>
+                                    <th class="colwidth" style="width: <?php echo $width; ?>%;">Result-1</th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>Result-2</th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'>Result-3</th>
+                                <?php } ?>
+                                <th class="colwidth" style="width: <?php echo $width; ?>%;">Final Result</th>
+                                <th class="colwidth" style="width: <?php echo $width; ?>%;">Is this a Retest?</th>
                             </tr>
                         </thead>
                         <?php
@@ -575,52 +572,79 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                             if (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') {
                                 $sample['mandatory'] = 0;
                             }
-                            $count++;
-                        ?>
-
+                            $count++; ?>
                             <tr align="CENTER" class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
-
-                                <th style="width: <?php echo $width; ?>%;white-space: nowrap;">
-                                    <?php echo ($sample['sample_label']); ?>
+                                <th style="width: <?php echo $width; ?>%;white-space: nowrap;" class="colwidth">
+                                    <?php echo ($sample['sample_label']);
+                                    echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                                     <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                                 </th>
+                                <?php if ($syphilisActive) { ?>
+                                    <th style="text-align:left;" class="syphilis-fields colwidth">
+                                        <ul style="list-style:none;padding: 0px;">
+                                            <li style="padding: 5% 4%;border-bottom: 1px solid gray;">HIV</li>
+                                            <li style="padding: 5% 4%;">SYPHILIS</li>
+                                        </ul>
+                                    </th>
+                                <?php } ?>
 
-                                <td style="width: <?php echo $width; ?>%;">
+                                <td style="width: <?php echo $width; ?>%;" class="colwidth">
                                     <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class="form-control">
                                         <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
                                     </select>
+                                    <?php if ($syphilisActive) { ?>
+                                        <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;" class="syphilis-fields">
+                                            <select name="syphilis_result[]" id="<?php echo "syphilis_result_" . $count; ?>" class="form-control">
+                                                <?php $this->dropdownSelection($possibleResults, $sample['syphilis_result'], true); ?>
+                                            </select>
+                                        </div>
+                                    <?php } ?>
                                 </td>
-                                <td style="width: <?php echo $width; ?>%;" class='testTwo'>
+                                <td style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>
                                     <select name="test_result_2[]" id="<?php echo "testresult2_" . $count; ?>" class="form-control">
                                         <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
                                     </select>
                                 </td>
-                                <td style="width: <?php echo $width; ?>%;" class='testThree'>
+                                <td style="width: <?php echo $width; ?>%;" class='testThree colwidth'>
                                     <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" class="form-control">
                                         <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
                                     </select>
                                 </td>
                                 <?php if ($allowRepeatTests == 'yes') { ?>
-                                    <td style="width: <?php echo $width; ?>%;">
+                                    <td style="width: <?php echo $width; ?>%;" class="colwidth">
                                         <select name="repeat_test_result_1[]" id="<?php echo "repeat_test_result_1_" . $count; ?>" class="form-control">
                                             <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_1'], true); ?>
                                         </select>
                                     </td>
-                                    <td style="width: <?php echo $width; ?>%;" class='testTwo'>
+                                    <td style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>
                                         <select name="repeat_test_result_2[]" id="<?php echo "repeat_test_result_2_" . $count; ?>" class="form-control">
                                             <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_2'], true); ?>
                                         </select>
                                     </td>
-                                    <td style="width: <?php echo $width; ?>%;" class='testThree'>
+                                    <td style="width: <?php echo $width; ?>%;" class='testThree colwidth'>
                                         <select name="repeat_test_result_3[]" id="<?php echo "repeat_test_result_3_" . $count; ?>" class="form-control">
                                             <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_3'], true); ?>
                                         </select>
                                     </td>
                                 <?php } ?>
-                                <td style="width: <?php echo $width; ?>%;">
-                                    <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" class="vlResultValues form-control" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result" style="float: left;">
+                                <td style="width: <?php echo $width; ?>%;" class="colwidth">
+                                    <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" class="vlResultValues form-control" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please select the result" style="float: left;">
                                         <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
-                                    </select> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+                                    </select>
+                                    <?php if ($syphilisActive) { ?>
+                                        <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;" class="syphilis-fields">
+                                            <select name="syphilis_final[]" id="<?php echo "syphilis_final_" . $count; ?>" class="form-control">
+                                                <?php $this->dropdownSelection($possibleFinalResults, $sample['syphilis_final'], true); ?>
+                                            </select>
+                                        </div>
+                                    <?php } ?>
+                                </td>
+                                <td style="width: <?php echo $width; ?>%;" class="colwidth">
+                                    <select name="if_this_is_retest[]" id="<?php echo "if_this_is_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
+                                        <option value="">--Select--</option>
+                                        <option value="yes" <?php echo (isset($sample['if_this_is_retest']) && $sample['if_this_is_retest'] == "yes") ? "selected='selected'" : "" ?>>Yes</option>
+                                        <option value="no" <?php echo (isset($sample['if_this_is_retest']) && $sample['if_this_is_retest'] == "no") ? "selected='selected'" : "" ?>>No</option>
+                                    </select>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -776,6 +800,12 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         });
     });
     $(function() {
+        var totalCols = $(".vl-results > tr:nth-child(1) > th").length;
+        var _width = (100 / totalCols);
+        $(".colwidth").css('width', _width + "%");
+        $(".4-span").css('width', (_width * 4) + "%");
+        $(".3-span").css('width', (_width * 3) + "%");
+        $(".2-span").css('width', (_width * 2) + "%");
         showHideTest2();
         showHideTest3();
         //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
