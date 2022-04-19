@@ -246,7 +246,7 @@ if (count($this->shipment) > 0) {
         checkReportDate = false;
         <?php
         $currentDate = date('Y-m-d');
-        if ($this->shipment[0]['distribution_date'] < $currentDate) {
+        if ($this->shipment[0]['distribution_date'] <= $currentDate) {
         ?>
             checkReportDate = true;
         <?php

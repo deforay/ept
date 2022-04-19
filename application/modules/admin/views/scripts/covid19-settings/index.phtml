@@ -1,9 +1,3 @@
-<?php
-
-$allowedAlgorithms = !empty($this->config->evaluation->covid19->allowedAlgorithms) ? explode(",", $this->config->evaluation->covid19->allowedAlgorithms) : null;
-// Zend_Debug::dump($this->allTestTypes);die;
-
-?>
 <div class="well">
     <form name="covid19SettingsForm" id="covid19SettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "covid19-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>

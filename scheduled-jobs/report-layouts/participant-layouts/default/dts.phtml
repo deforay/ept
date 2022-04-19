@@ -258,6 +258,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
             } else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
                 $labInfo .= '	<strong>Algorithm</strong><br>Malawi National Algorithm';
+            } else if ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
+                $labInfo .= '	<strong>Algorithm</strong><br>Ghana National Algorithm';
             } else {
                 $labInfo .= '	<strong>Algorithm</strong><br>' . ucfirst($attributes['algorithm']);
             }
