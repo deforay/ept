@@ -62,7 +62,6 @@
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Region <span class="mandatory">*</span></label>
-
                 <div class="col-lg-8">
                     <input type="text" id="region" name="region" size="50" maxlength="255" class="form-control isRequired" title="Please enter region here" placeholder="Please enter the region here" />
                 </div>
@@ -78,7 +77,6 @@
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">City <span class="mandatory">*</span></label>
-
                 <div class="col-lg-8"><input type="text" id="city" name="city" size="50" maxlength="255" class="isRequired form-control" title="Please enter the city here" placeholder="Please enter the city here" /></div>
             </div>
 
@@ -90,32 +88,25 @@
 
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Longitude </label>
-
                 <div class="col-lg-8"><input type="text" id="long" name="long" size="50" maxlength="255" class="form-control" title="Please enter the longitude here" placeholder="Please enter the longitude here" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Funding Source</label>
-
                 <div class="col-lg-8"><input type="text" id="fundingSource" name="fundingSource" size="50" maxlength="255" class="form-control" title="Please enter the funding source here" placeholder="Please enter the funding source here" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Testing Volume</label>
-
                 <div class="col-lg-8">
                     <input type="text" id="testingVolume" name="testingVolume" size="50" maxlength="255" class="form-control" title="Please enter testing volume here" placeholder="Please enter the testing volume here" />
                 </div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Enrolled Programs </label>
-
                 <div class="col-lg-8">
                     <select name="enrolledProgram[]" id="enrolledProgram" multiple="multiple" class="form-control" data-selected-text-format="count>3" title="Please choose Enrolled Programs">
-                        <?php foreach ($this->enrolledPrograms as $enrolledPrograms) {
-                        ?>
+                        <?php foreach ($this->enrolledPrograms as $enrolledPrograms) { ?>
                             <option value="<?php echo $enrolledPrograms['r_epid']; ?>"><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
-                        <?php
-                        }
-                        ?>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -124,16 +115,22 @@
                 <div class="col-lg-8">
                     <select name="siteType" id="siteType" class="form-control">
                         <option value="">--Select--</option>
-                        <?php foreach ($this->siteType as $siteType) {
-                        ?>
+                        <?php foreach ($this->siteType as $siteType) { ?>
                             <option value="<?php echo $siteType['r_stid']; ?>"><?php echo $siteType['site_type']; ?></option>
-                        <?php
-                        }
-                        ?>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
-
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">ANC </label>
+                <div class="col-lg-8">
+                    <select name="anc" id="anc" class="form-control" title="Please choose ANC">
+                        <option value="">-- Select --</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+            </div>
             <hr style="border:1px solid #ccc;background: #ccc;width:95%; clear:both;" />
 
             <div class="form-group col-lg-12">

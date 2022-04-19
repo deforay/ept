@@ -240,6 +240,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'testing_volume' => $params['testingVolume'],
             'funding_source' => $params['fundingSource'],
             'site_type' => $params['siteType'],
+            'anc' => $params['anc'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
         if (isset($params['comingFrom']) && $params['comingFrom'] == 'participant') {
@@ -344,6 +345,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'testing_volume' => $params['testingVolume'],
             'funding_source' => $params['fundingSource'],
             'site_type' => $params['siteType'],
+            'anc' => $params['anc'],
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->primary_email,
             'status' => $params['status']
