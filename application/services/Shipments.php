@@ -2611,7 +2611,7 @@ class Application_Service_Shipments
 
     public function getShipmentListBasedOnScheme()
     {
-        $response = array();
+        $total = $name = $response = array();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response', 'max_score', 'average_score'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score' => new Zend_Db_Expr("SUM(sp.shipment_score)"), 'documentation_score' => new Zend_Db_Expr("SUM(sp.documentation_score)"), 'participantCount' => new Zend_Db_Expr("count(sp.participant_id)"), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))
@@ -2620,7 +2620,7 @@ class Application_Service_Shipments
             ->group("s.shipment_id")
             ->order("s.shipment_id");
         $result =  $db->fetchAll($sQuery);
-        $total = array();
+
         if (count($result) > 0) {
 
             foreach ($result as $key => $row) {
