@@ -89,6 +89,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $scheme = new Application_Service_Schemes();
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
                 $this->view->allTestKits = $scheme->getAllDtsTestKit();
+                
+                $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+                $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
@@ -196,6 +199,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->eia = $schemeService->getDbsEia();
                     $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts');
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
+                    $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+                    $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
                 } else if ($response['shipment']['scheme_type'] == 'covid19') {
                     $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19');
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();

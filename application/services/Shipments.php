@@ -1254,6 +1254,9 @@ class Application_Service_Shipments
         if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];
         }
+        if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
+            $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
+        }
         $data = array(
             'shipment_code'         => $params['shipmentCode'],
             'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
@@ -2165,6 +2168,9 @@ class Application_Service_Shipments
         }
         if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];
+        }
+        if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
+            $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
         }
         /* Method Of Evaluation for vl form */
         if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
