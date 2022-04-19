@@ -3019,3 +3019,6 @@ ALTER TABLE `r_test_type_covid19` CHANGE `test_type_id` `test_type_id` INT NOT N
 
 -- Thana 08-Apr-2022
 ALTER TABLE `participant` ADD `district` VARCHAR(256) NULL DEFAULT NULL AFTER `state`;
+
+-- Thana 19-Apr-2022
+ALTER TABLE `participant` ADD `anc` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `site_type`;
