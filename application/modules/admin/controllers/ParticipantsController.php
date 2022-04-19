@@ -87,8 +87,8 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->redirect("/admin/participants");
         } else {
             if ($this->hasParam('id')) {
-                $userId = (int) $this->_getParam('id');
-                $this->view->participant = $participantService->getParticipantDetails($userId);
+                $partSysId = (int) $this->_getParam('id');
+                $this->view->participant = $participantService->getParticipantDetails($partSysId);
             }
             $this->view->affiliates = $participantService->getAffiliateList();
             $dataManagerService = new Application_Service_DataManagers();
@@ -100,7 +100,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
-        $this->view->participantSchemes = $participantService->getSchemesByParticipantId($userId);
+        $this->view->participantSchemes = $participantService->getSchemesByParticipantId($partSysId);
     }
 
     public function pendingAction()
