@@ -280,6 +280,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 										<li>Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).</li>
 										<li>For negative or undetectable result (TND), please enter 0.00.</li>
 										<li>For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section</li>
+										<li>Enter the assay lower limit of quantification value for result  &lt;LLQ and enter 0.00 for Not Detected, negative or undetectable result</li>
 									</ul>
 									<div class="vlResultSection" style="width:100%;padding-left:20%;"><label style="font-size:16px;">Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)<label></div>
 									<div class="vlResultSection" style="width:100%;padding-left:20%;"><input type="text" class="form-control checkNum" id="vlResultToLog" name="vlResultToLog" placeholder="Enter a result value to calculate the log value" style="width:80%;" /><span class="mandatory logValFormVl" style="font-size:16px;display:none;"></span></div>
