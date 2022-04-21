@@ -181,23 +181,22 @@ if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableS
                             <td><label>Algorithm Used <span class='mandatory'>*</span></label></td>
                             <td>
                                 <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;" onchange="showHideTest3();">
-
                                     <?php if (count($allowedAlgorithms) > 1) { ?>
                                         <option value="">--Select--</option>
-                                    <?php } ?>
-                                    <?php if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
+                                    <?php }
+                                    if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
                                         <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>
-                                    <?php } ?>
-                                    <?php if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
+                                    <?php }
+                                    if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
                                         <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
-                                    <?php } ?>
-                                    <?php if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                                    <?php }
+                                    if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="myanmarNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Myanmar National Algorithm</option>
-                                    <?php } ?>
-                                    <?php if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                                    <?php }
+                                    if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="malawiNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Malawi National Algorithm</option>
-                                    <?php } ?>
-                                    <?php if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                                    <?php }
+                                    if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="ghanaNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'ghanaNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Ghana National Algorithm</option>
                                     <?php } ?>
                                 </select>

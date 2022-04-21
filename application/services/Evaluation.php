@@ -779,24 +779,27 @@ class Application_Service_Evaluation
 
 			for ($i = 0; $i < $size; $i++) {
 				$db->update('response_result_dts', array(
-					'test_kit_name_1' => $params['test_kit_name_1'],
-					'lot_no_1' => $params['lot_no_1'],
-					'exp_date_1' => Pt_Commons_General::dateFormat($params['exp_date_1']),
-					'test_result_1' => $params['test_result_1'][$i],
-					'repeat_test_result_1' => $params['repeat_test_result_1'][$i],
-					'test_kit_name_2' => $params['test_kit_name_2'],
-					'lot_no_2' => $params['lot_no_2'],
-					'exp_date_2' => Pt_Commons_General::dateFormat($params['exp_date_2']),
-					'test_result_2' => $params['test_result_2'][$i],
-					'repeat_test_result_2' => $params['repeat_test_result_2'][$i],
-					'test_kit_name_3' => $params['test_kit_name_3'],
-					'lot_no_3' => $params['lot_no_3'],
-					'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
-					'test_result_3' => $params['test_result_3'][$i],
-					'repeat_test_result_3' => $params['repeat_test_result_3'][$i],
-					'reported_result' => $params['reported_result'][$i],
-					'updated_by' => $admin,
-					'updated_on' => new Zend_Db_Expr('now()')
+					'test_kit_name_1' 		=> $params['test_kit_name_1'],
+					'lot_no_1' 				=> $params['lot_no_1'],
+					'exp_date_1' 			=> Pt_Commons_General::dateFormat($params['exp_date_1']),
+					'test_result_1' 		=> $params['test_result_1'][$i],
+					'syphilis_result'       => $params['syphilis_result'][$i],
+					'repeat_test_result_1' 	=> $params['repeat_test_result_1'][$i],
+					'test_kit_name_2' 		=> $params['test_kit_name_2'],
+					'lot_no_2' 				=> $params['lot_no_2'],
+					'exp_date_2' 			=> Pt_Commons_General::dateFormat($params['exp_date_2']),
+					'test_result_2' 		=> $params['test_result_2'][$i],
+					'repeat_test_result_2'	=> $params['repeat_test_result_2'][$i],
+					'test_kit_name_3' 		=> $params['test_kit_name_3'],
+					'lot_no_3' 				=> $params['lot_no_3'],
+					'exp_date_3' 			=> Pt_Commons_General::dateFormat($params['exp_date_3']),
+					'test_result_3' 		=> $params['test_result_3'][$i],
+					'repeat_test_result_3' 	=> $params['repeat_test_result_3'][$i],
+					'reported_result' 		=> $params['reported_result'][$i],
+					'syphilis_final'        => $params['syphilis_final'][$i],
+					'if_this_is_retest'     => $params['if_this_is_retest'][$i],
+					'updated_by' 			=> $admin,
+					'updated_on' 			=> new Zend_Db_Expr('now()')
 				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
 			}
 			/* Manual result override changes */

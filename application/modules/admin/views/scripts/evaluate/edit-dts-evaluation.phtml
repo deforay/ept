@@ -21,13 +21,22 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
     $testThreeHidden = true;
     $screeningTest = true;
 }
+if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms) && sizeof($allowedAlgorithms) == 1) {
+    $testThreeHidden = false;
+    $testTwoHidden = false;
+    $screeningTest = false;
+}
 if (($testTwoHidden)) {
-
     $noTest = 1;
 } else if ($testThreeHidden) {
     $noTest = 2;
 } else {
     $noTest = 3;
+}
+
+$syphilisActive = false;
+if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+    $syphilisActive = true;
 }
 ?>
 
@@ -65,21 +74,25 @@ if (($testTwoHidden)) {
         <td>
             <select name="algorithm" id="algorithm" class="isRequired form-control" title="Please choose the Algorithm used" onchange="showHideTest3();">
 
+                <?php if (count($allowedAlgorithms) > 1) { ?>
+                <?php } ?>
                 <option value="">--Select--</option>
-                <?php if (!empty($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->dtsEnforceAlgorithmCheck == 'yes') { ?>
-
-                <?php } ?>
-                <?php if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
+                <?php if (!empty($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->dtsEnforceAlgorithmCheck == 'yes') {
+                }
+                if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
                     <option value="serial" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>
-                <?php } ?>
-                <?php if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
+                <?php }
+                if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
                     <option value="parallel" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
-                <?php } ?>
-                <?php if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                <?php }
+                if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
                     <option value="myanmarNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Myanmar National Algorithm</option>
-                <?php } ?>
-                <?php if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                <?php }
+                if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
                     <option value="malawiNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Malawi National Algorithm</option>
+                <?php }
+                if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                    <!-- <option value="ghanaNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'ghanaNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Ghana National Algorithm</option> -->
                 <?php } ?>
             </select>
         </td>
@@ -163,48 +176,47 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     <thead>
         <tr align="CENTER" class="dark">
             <th></th>
-            <th style="text-align: center">Test-1</th>
-            <th style="text-align: center" class='testTwo'>Test-2</th>
-            <th style="text-align: center" class='testThree'>Test-3</th>
-
+            <th style="text-align: center" class="colwidth">Test-1</th>
+            <th style="text-align: center" class='testTwo colwidth'>Test-2</th>
+            <th style="text-align: center" class='testThree colwidth'>Test-3</th>
+            <!-- <th class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 4 : 3; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 4 : 3; ?>"></th> -->
         </tr>
     </thead>
-    <tr style="text-align:center">
+    <tr style="text-align:center" class="colwidth">
         <th style="width:10%;"> Kit Name</th>
         <td>
             <select name="test_kit_name_1" id="test_kit_name_1" class="isRequired form-control" title="Please Choose Test Kit 1">
                 <?php $this->dropdownSelection($this->allTestKits, $this->evaluateData['results'][0]["test_kit_name_1"], true); ?>
             </select>
         </td>
-        <td class='testTwo'>
+        <td class='testTwo colwidth'>
             <select name="test_kit_name_2" id="test_kit_name_2" class="<?php echo (isset($testTwoHidden) && $testTwoHidden) ? "" : "isRequired"; ?> form-control" title="Please Choose Test Kit 2">
                 <?php $this->dropdownSelection($this->allTestKits, $this->evaluateData['results'][0]["test_kit_name_2"], true); ?>
             </select>
         </td>
-        <td class='testThree'>
+        <td class='testThree colwidth'>
             <select name="test_kit_name_3" id="test_kit_name_3" class="<?php echo (isset($testThreeHidden) && $testThreeHidden) ? "" : "isRequired"; ?> form-control" title="Please Choose Test Kit 3">
                 <?php $this->dropdownSelection($this->allTestKits, $this->evaluateData['results'][0]["test_kit_name_3"], true); ?>
             </select>
         </td>
-
-
-
+        <!-- <td class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 4 : 3; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 4 : 3; ?>"></td> -->
     </tr>
-    <tr align="CENTER" class="dark">
+    <tr align="CENTER" class="dark colwidth">
         <th>Lot No.</th>
         <td><input type="text" size="40" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_1"]) ? $this->evaluateData['results'][0]["lot_no_1"] : ""); ?>" class="isRequired form-control" title="Please enter Lot No. 1" /></td>
         <td class='testTwo'><input type="text" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_2"]) ? $this->evaluateData['results'][0]["lot_no_2"] : ""); ?>" class="<?php echo (isset($testTwoHidden) && $testTwoHidden) ? "" : "isRequired"; ?> form-control" title="Please enter Lot No. 2" /></td>
         <td class='testThree'><input type="text" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_3"]) ? $this->evaluateData['results'][0]["lot_no_3"] : ""); ?>" class="<?php echo (isset($testThreeHidden) && $testThreeHidden) ? "" : "isRequired"; ?> form-control" title="Please enter Lot No. 3" /></td>
+        <!-- <td class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 4 : 3; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 4 : 3; ?>"></td> -->
     </tr>
 
-    <tr style="text-align:center">
+    <tr style="text-align:center" class="colwidth">
         <th>Expiry Date</th>
         <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_1"]) && $this->evaluateData['results'][0]["exp_date_1"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_1"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_1"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
         <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_2"]) && $this->evaluateData['results'][0]["exp_date_2"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_2"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_2"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
         <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_3"]) && $this->evaluateData['results'][0]["exp_date_3"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_3"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_3"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
-
+        <!-- <td class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 4 : 3; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 4 : 3; ?>"></td> -->
     </tr>
-    <thead>
+    <thead class="vl-results">
         <?php if ($allowRepeatTests == 'yes') { ?>
             <tr align="CENTER" class="light">
                 <th style="text-align: center;" colspan="<?php echo ($noTest + 1); ?>"></th>
@@ -216,17 +228,21 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
             </tr>
         <?php } ?>
         <tr align="CENTER" class="dark">
-            <th></th>
-            <th style="text-align: center">Result-1</th>
-            <th style="text-align: center" class='testTwo'>Result-2</th>
-            <th style="text-align: center" class='testThree'>Result-3</th>
-            <?php if ($allowRepeatTests == 'yes') { ?>
-                <th style="text-align: center;">Result-1</th>
-                <th style="text-align: center;" class='testTwo'>Result-2</th>
-                <th style="text-align: center;" class='testThree'>Result-3</th>
+            <th class="colwidth">PT Panel Identifier</th>
+            <?php if ($syphilisActive) { ?>
+                <!-- <th style="width: <?php echo $width; ?>%;" class="syphilis-fields colwidth">Type of Test</th> -->
             <?php } ?>
-            <th style="text-align: center">Reported Result</th>
-            <th style="text-align: center">Reference Result</th>
+            <th style="text-align: center" class="colwidth">Result-1</th>
+            <th style="text-align: center" class='testTwo colwidth'>Result-2</th>
+            <th style="text-align: center" class='testThree colwidth'>Result-3</th>
+            <?php if ($allowRepeatTests == 'yes') { ?>
+                <th style="text-align: center;" class="colwidth">Result-1</th>
+                <th style="text-align: center;" class='testTwo colwidth'>Result-2</th>
+                <th style="text-align: center;" class='testThree colwidth'>Result-3</th>
+            <?php } ?>
+            <th style="text-align: center" class="colwidth">Reported Result</th>
+            <th style="text-align: center" class="colwidth">Reference Result</th>
+            <!-- <th class="colwidth" style="width: <?php echo $width; ?>%;">Is this a Retest?</th> -->
             <!--<th style="text-align: center">Score</th>-->
         </tr>
     </thead>
@@ -249,22 +265,22 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 
         <tr style="text-align:center;vertical-align: middle;">
 
-            <th style="white-space: nowrap;vertical-align: middle;">
+            <th style="white-space: nowrap;vertical-align: middle;" class="colwidth">
                 <?php echo ($sample['sample_label']); ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                 <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
             </th>
 
-            <td>
+            <td class="colwidth">
                 <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class=" form-control">
                     <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
                 </select>
             </td>
-            <td class='testTwo'>
+            <td class='testTwo colwidth'>
                 <select name="test_result_2[]" id="<?php echo "testresult2_" . $count; ?>" class=" form-control">
                     <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
                 </select>
             </td>
-            <td class='testThree'>
+            <td class='testThree colwidth'>
                 <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" class=" form-control">
                     <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
                 </select>
@@ -286,24 +302,20 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                     </select>
                 </td>
             <?php } ?>
-            <td>
+            <td class="colwidth">
                 <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired form-control'" : "class=' form-control'"; ?> title="Please enter the result">
                     <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                 </select>
             </td>
-
-            <td style="vertical-align: middle;">
-
+            <td style="vertical-align: middle;" class="colwidth">
                 <?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?>
-
             </td>
-            <td style="vertical-align: middle;">-</td>
         </tr>
     <?php } ?>
 
 
     <tr>
-        <td colspan="7" style="text-align: center;">
+        <td colspan="8" style="text-align: center;">
             <strong>Samples</strong>
         </td>
     </tr>
@@ -317,22 +329,36 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 
         <tr style="text-align:center">
 
-            <th style="white-space: nowrap;vertical-align: middle;">
+            <th style="white-space: nowrap;vertical-align: middle;" class="colwidth">
                 <?php echo ($sample['sample_label']); ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                 <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
             </th>
-
-            <td>
+            <?php if ($syphilisActive) { ?>
+                <!-- <th style="text-align:left;" class="syphilis-fields colwidth">
+                    <ul style="list-style:none;padding: 0px;">
+                        <li style="padding: 5% 4%;border-bottom: 1px solid gray;">HIV</li>
+                        <li style="padding: 5% 4%;">SYPHILIS</li>
+                    </ul>
+                </th> -->
+            <?php } ?>
+            <td class="colwidth">
                 <select name="test_result_1[]" id="<?php echo "testresult1_" . $count; ?>" class=" form-control">
                     <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
                 </select>
+                <?php if ($syphilisActive) { ?>
+                    <!-- <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;" class="syphilis-fields">
+                        <select name="syphilis_result[]" id="<?php echo "syphilis_result_" . $count; ?>" class="form-control">
+                            <?php $this->dropdownSelection($possibleResults, $sample['syphilis_result'], true); ?>
+                        </select>
+                    </div> -->
+                <?php } ?>
             </td>
-            <td class='testTwo'>
+            <td class='testTwo colwidth'>
                 <select name="test_result_2[]" id="<?php echo "testresult2_" . $count; ?>" class=" form-control">
                     <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
                 </select>
             </td>
-            <td class='testThree'>
+            <td class='testThree colwidth'>
                 <select name="test_result_3[]" id="<?php echo "testresult3_" . $count; ?>" class=" form-control">
                     <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
                 </select>
@@ -354,17 +380,29 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                     </select>
                 </td>
             <?php } ?>
-            <td>
+            <td class="colwidth">
                 <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired form-control'" : "class=' form-control'"; ?> title="Please enter the result">
                     <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                 </select>
+                <?php if ($syphilisActive) { ?>
+                    <!-- <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;" class="syphilis-fields">
+                        <select name="syphilis_final[]" id="<?php echo "syphilis_final_" . $count; ?>" class="form-control">
+                            <?php $this->dropdownSelection($possibleFinalResults, $sample['syphilis_final'], true); ?>
+                        </select>
+                    </div> -->
+                <?php } ?>
             </td>
 
-            <td style="vertical-align: middle;">
-
+            <td style="vertical-align: middle;" class="colwidth">
                 <?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?>
-
             </td>
+            <!-- <td style="width: <?php echo $width; ?>%;" class="colwidth">
+                <select name="if_this_is_retest[]" id="<?php echo "if_this_is_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
+                    <option value="">--Select--</option>
+                    <option value="yes" <?php echo (isset($sample['if_this_is_retest']) && $sample['if_this_is_retest'] == "yes") ? "selected='selected'" : "" ?>>Yes</option>
+                    <option value="no" <?php echo (isset($sample['if_this_is_retest']) && $sample['if_this_is_retest'] == "no") ? "selected='selected'" : "" ?>>No</option>
+                </select>
+            </td> -->
             <!--		<td style="vertical-align: middle;">
             <?php echo $score = ($sample['reference_result'] == $sample['reported_result']) ? $sample['sample_score'] : 0;
             $total += $score;
@@ -405,6 +443,13 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     }
 
     $(function() {
+        var totalCols = $(".vl-results > tr:nth-child(1) > th").length;
+        var _width = (100 / totalCols);
+        $(".colwidth").css('width', _width + "%");
+        $(".4-span").css('width', (_width * 4) + "%");
+        $(".3-span").css('width', (_width * 3) + "%");
+        $(".2-span").css('width', (_width * 2) + "%");
+
         showHideTest2();
         showHideTest3();
     });
