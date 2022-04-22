@@ -39,6 +39,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('p' => $this->_name))
             ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
             ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array('enrolled_prog' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pe.ep_id SEPARATOR ', ')")))
+            ->joinLeft(array('site' => 'r_site_type'), 'site.r_stid=p.site_type', array('site_type'))
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
             ->where("p.participant_id = ?", $partSysId)
             ->group('p.participant_id'));
     }
