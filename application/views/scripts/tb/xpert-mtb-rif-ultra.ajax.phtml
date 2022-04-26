@@ -95,12 +95,21 @@ $dtFormat =  $genderHelper->getDateFormat();
 
     </tr>
     <tr>
-
         <th>Comments </th>
         <td colspan="3">
             <textarea name="userComments" id="userComments" class="form-control" size="120" maxlength="40"><?php echo $this->shipment['user_comment']; ?></textarea>
-
         </td>
     </tr>
-
 </table>
+<script type="text/javascript">
+    $(function() {
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>',
+            maxDate: '0',
+            minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>')
+        });
+        $(".expDatepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+    });
+</script>

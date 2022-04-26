@@ -163,7 +163,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 							</td>
 							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo">Assay Expiration</label></td>
 							<td style="width:30%;">
-								<input type="text" id="expiryDate" name="expiryDate" style="width:180px;float:left;" title="Please select the assay expiration" class="form-control isRequired datepicker" value="<?php echo $this->shipment['attributes']['expiry_date']; ?>" readonly="readonly" />
+								<input type="text" id="expiryDate" name="expiryDate" style="width:180px;float:left;" placeholder="Assay Expiration" title="Please select the assay expiration" class="form-control isRequired datepicker" value="<?php echo $this->shipment['attributes']['expiry_date']; ?>" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('expiryDate')"> Clear</i>
 							</td>
 						</tr>
