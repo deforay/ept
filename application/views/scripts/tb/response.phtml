@@ -311,7 +311,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 
 	function loadAssayFields(value) {
 		if (value != "") {
-			$.post("/tb/" + value + "?sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>", {
+			$.post("/tb/assay-formats?type=" + value + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>", {
 					format: "html"
 				},
 				function(data) {

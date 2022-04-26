@@ -7,13 +7,7 @@ class TbController extends Zend_Controller_Action
     {
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-            ->addActionContext('tcmt', 'html')
-            ->addActionContext('xpert-mtb-rif', 'html')
-            ->addActionContext('xpert-mtb-rif-ultra', 'html')
-            ->addActionContext('ref-xpert-xdr', 'html')
-            ->addActionContext('molbio-truenat-tb', 'html')
-            ->addActionContext('molbio-truenat-plus', 'html')
-            ->addActionContext('ref-molbio-tb-rif-dx', 'html')
+            ->addActionContext('assay-formats', 'html')
             ->initContext();
     }
 
@@ -61,11 +55,12 @@ class TbController extends Zend_Controller_Action
         }
     }
 
-    public function tcmtAction()
+    public function assayFormatsAction()
     {
         $sID = $this->getRequest()->getParam('sid');
         $pID = $this->getRequest()->getParam('pid');
         $eID = $this->getRequest()->getParam('eid');
+        $type = $this->getRequest()->getParam('type');
 
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
@@ -79,156 +74,7 @@ class TbController extends Zend_Controller_Action
         $this->view->shipId = $sID;
         $this->view->participantId = $pID;
         $this->view->eID = $eID;
-
-        $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
-
-        $commonService = new Application_Service_Common();
-        $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-        $this->view->globalQcAccess = $commonService->getConfig('qc_access');
-    }
-    public function xpertMtbRifAction()
-    {
-        $sID = $this->getRequest()->getParam('sid');
-        $pID = $this->getRequest()->getParam('pid');
-        $eID = $this->getRequest()->getParam('eid');
-
-        $schemeService = new Application_Service_Schemes();
-        $shipmentService = new Application_Service_Shipments();
-
-        $participantService = new Application_Service_Participants();
-        $this->view->participant = $participantService->getParticipantDetails($pID);
-        $this->view->allSamples = $schemeService->getTbSamples($sID, $pID);
-        $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
-        $this->view->shipment = $shipment;
-        $this->view->shipId = $sID;
-        $this->view->participantId = $pID;
-        $this->view->eID = $eID;
-
-        $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
-
-        $commonService = new Application_Service_Common();
-        $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-        $this->view->globalQcAccess = $commonService->getConfig('qc_access');
-    }
-    public function xpertMtbRifUltraAction()
-    {
-        $sID = $this->getRequest()->getParam('sid');
-        $pID = $this->getRequest()->getParam('pid');
-        $eID = $this->getRequest()->getParam('eid');
-
-        $schemeService = new Application_Service_Schemes();
-        $shipmentService = new Application_Service_Shipments();
-
-        $participantService = new Application_Service_Participants();
-        $this->view->participant = $participantService->getParticipantDetails($pID);
-        $this->view->allSamples = $schemeService->getTbSamples($sID, $pID);
-        $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
-        $this->view->shipment = $shipment;
-        $this->view->shipId = $sID;
-        $this->view->participantId = $pID;
-        $this->view->eID = $eID;
-
-        $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
-
-        $commonService = new Application_Service_Common();
-        $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-        $this->view->globalQcAccess = $commonService->getConfig('qc_access');
-    }
-    public function refXpertXdrAction()
-    {
-        $sID = $this->getRequest()->getParam('sid');
-        $pID = $this->getRequest()->getParam('pid');
-        $eID = $this->getRequest()->getParam('eid');
-
-        $schemeService = new Application_Service_Schemes();
-        $shipmentService = new Application_Service_Shipments();
-
-        $participantService = new Application_Service_Participants();
-        $this->view->participant = $participantService->getParticipantDetails($pID);
-        $this->view->allSamples = $schemeService->getTbSamples($sID, $pID);
-        $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
-        $this->view->shipment = $shipment;
-        $this->view->shipId = $sID;
-        $this->view->participantId = $pID;
-        $this->view->eID = $eID;
-
-        $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
-
-        $commonService = new Application_Service_Common();
-        $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-        $this->view->globalQcAccess = $commonService->getConfig('qc_access');
-    }
-    public function molbioTruenatTbAction()
-    {
-        $sID = $this->getRequest()->getParam('sid');
-        $pID = $this->getRequest()->getParam('pid');
-        $eID = $this->getRequest()->getParam('eid');
-
-        $schemeService = new Application_Service_Schemes();
-        $shipmentService = new Application_Service_Shipments();
-
-        $participantService = new Application_Service_Participants();
-        $this->view->participant = $participantService->getParticipantDetails($pID);
-        $this->view->allSamples = $schemeService->getTbSamples($sID, $pID);
-        $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
-        $this->view->shipment = $shipment;
-        $this->view->shipId = $sID;
-        $this->view->participantId = $pID;
-        $this->view->eID = $eID;
-
-        $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
-
-        $commonService = new Application_Service_Common();
-        $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-        $this->view->globalQcAccess = $commonService->getConfig('qc_access');
-    }
-    public function molbioTruenatPlusAction()
-    {
-        $sID = $this->getRequest()->getParam('sid');
-        $pID = $this->getRequest()->getParam('pid');
-        $eID = $this->getRequest()->getParam('eid');
-
-        $schemeService = new Application_Service_Schemes();
-        $shipmentService = new Application_Service_Shipments();
-
-        $participantService = new Application_Service_Participants();
-        $this->view->participant = $participantService->getParticipantDetails($pID);
-        $this->view->allSamples = $schemeService->getTbSamples($sID, $pID);
-        $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
-        $this->view->shipment = $shipment;
-        $this->view->shipId = $sID;
-        $this->view->participantId = $pID;
-        $this->view->eID = $eID;
-
-        $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
-
-        $commonService = new Application_Service_Common();
-        $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-        $this->view->globalQcAccess = $commonService->getConfig('qc_access');
-    }
-    public function refMolbioTbRifDxAction()
-    {
-        $sID = $this->getRequest()->getParam('sid');
-        $pID = $this->getRequest()->getParam('pid');
-        $eID = $this->getRequest()->getParam('eid');
-
-        $schemeService = new Application_Service_Schemes();
-        $shipmentService = new Application_Service_Shipments();
-
-        $participantService = new Application_Service_Participants();
-        $this->view->participant = $participantService->getParticipantDetails($pID);
-        $this->view->allSamples = $schemeService->getTbSamples($sID, $pID);
-        $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
-        $this->view->shipment = $shipment;
-        $this->view->shipId = $sID;
-        $this->view->participantId = $pID;
-        $this->view->eID = $eID;
+        $this->view->type = $type;
 
         $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
