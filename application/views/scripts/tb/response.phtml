@@ -140,9 +140,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 							</td>
 						</tr>
 						<tr class="light">
-							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo">Assay Name</label></td>
+							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo">Assay Name <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
-								<select class="form-control" name="assayName" id="assayName" title="Please select the assay name" onchange="loadAssayFields(this.value);">
+								<select class="form-control isRequired" name="assayName" id="assayName" title="Please select the assay name" onchange="loadAssayFields(this.value);">
 									<option value="">--Select--</option>
 									<option value="tcmt">TCMT</option>
 									<option value="xpert-mtb-rif">Xpert MTB RIF</option>
@@ -157,11 +157,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 							<td></td>
 						</tr>
 						<tr>
-							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo">Assay Lot</label></td>
+							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo">Assay Lot <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
 								<input type="text" id="assayLot" name="assayLot" style="float:left;" value="<?php echo ""; ?>" class="form-control isRequired" placeholder="Enter assay lot" title="Please enter assay lot" />
 							</td>
-							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo">Assay Expiration</label></td>
+							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo">Assay Expiration <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
 								<input type="text" id="expiryDate" name="expiryDate" style="width:180px;float:left;" placeholder="Assay Expiration" title="Please select the assay expiration" class="form-control isRequired datepicker" value="<?php echo $this->shipment['attributes']['expiry_date']; ?>" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('expiryDate')"> Clear</i>
@@ -171,6 +171,39 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 					<div class="loadAssay">
 
 					</div>
+					<br>
+					<hr>
+					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+						<tr>
+							<th style="width:20%;">Attestation statement</th>
+							<td style="width:20%;">
+								<select name="attestation" id="attestation" class="form-control">
+									<option value="">--Select--</option>
+									<option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>Yes</option>
+									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>No</option>
+								</select>
+							</td>
+							<td colspan="2"></td>
+						</tr>
+						<tr>
+							<th style="width:20%;">Supervisor Review <span class="mandatory">*</span></th>
+							<td style="width:20%;">
+								<select name="supervisorApproval" id="supervisorApproval" class="form-control isRequired">
+									<option value="">--Select--</option>
+									<option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>Yes</option>
+									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>No</option>
+								</select>
+							</td>
+							<th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>Supervisor Name</label></th>
+							<td><input name="participantSupervisor" id="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> type="text" class="form-control" value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
+						</tr>
+						<tr>
+							<th>Comments </th>
+							<td colspan="3">
+								<textarea name="userComments" id="userComments" class="form-control" size="120" maxlength="40"><?php echo $this->shipment['user_comment']; ?></textarea>
+							</td>
+						</tr>
+					</table>
 					<?php if ($this->isEditable) { ?>
 						<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 							<p>
