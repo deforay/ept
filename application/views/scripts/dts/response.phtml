@@ -562,7 +562,9 @@ if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableS
                                     <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'>Result-3</th>
                                 <?php } ?>
                                 <th class="colwidth" style="width: <?php echo $width; ?>%;">Final Result</th>
-                                <th class="colwidth" style="width: <?php echo $width; ?>%;">Is this a Retest?</th>
+                                <?php if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) { ?>
+                                    <th class="colwidth" style="width: <?php echo $width; ?>%;">Is this a Retest?</th>
+                                <?php } ?>
                             </tr>
                         </thead>
                         <?php
@@ -638,13 +640,15 @@ if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableS
                                         </div>
                                     <?php } ?>
                                 </td>
-                                <td style="width: <?php echo $width; ?>%;" class="colwidth">
-                                    <select name="if_this_is_retest[]" id="<?php echo "if_this_is_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
-                                        <option value="">--Select--</option>
-                                        <option value="yes" <?php echo (isset($sample['if_this_is_retest']) && $sample['if_this_is_retest'] == "yes") ? "selected='selected'" : "" ?>>Yes</option>
-                                        <option value="no" <?php echo (isset($sample['if_this_is_retest']) && $sample['if_this_is_retest'] == "no") ? "selected='selected'" : "" ?>>No</option>
-                                    </select>
-                                </td>
+                                <?php if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) { ?>
+                                    <td style="width: <?php echo $width; ?>%;" class="colwidth">
+                                        <select name="if_this_is_retest[]" id="<?php echo "if_this_is_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
+                                            <option value="">--Select--</option>
+                                            <option value="yes" <?php echo (isset($sample['if_this_is_retest']) && $sample['if_this_is_retest'] == "yes") ? "selected='selected'" : "" ?>>Yes</option>
+                                            <option value="no" <?php echo (isset($sample['if_this_is_retest']) && $sample['if_this_is_retest'] == "no") ? "selected='selected'" : "" ?>>No</option>
+                                        </select>
+                                    </td>
+                                <?php } ?>
                             </tr>
                         <?php } ?>
 
