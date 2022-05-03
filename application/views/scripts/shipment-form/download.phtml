@@ -160,13 +160,13 @@ $labInfo .= '</tr>';
 $labInfo .= '</table><br/><br/>';
 
 if ($this->shipment["scheme_type"] == 'dts') {
-
+	$width = 25;
 	$optionalTest3 = $this->customConfig->evaluation->dts->dtsOptionalTest3;
 	$allowRepeatTests = isset($this->customConfig->evaluation->dts->allowRepeatTests) ? $this->customConfig->evaluation->dts->allowRepeatTests : 'no';
 	if ($optionalTest3 == 'no') {
 		$width = 22;
 	} else {
-		$width = 30;
+		$width = 25;
 	}
 
 	if ($allowRepeatTests == 'yes') {
@@ -187,7 +187,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $width . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';

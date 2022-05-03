@@ -82,4 +82,31 @@ class TbController extends Zend_Controller_Action
         $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
         $this->view->globalQcAccess = $commonService->getConfig('qc_access');
     }
+
+    public function downloadAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $sID = $this->getRequest()->getParam('sid');
+        $pID = $this->getRequest()->getParam('pid');
+        $eID = $this->getRequest()->getParam('eid');
+
+        $reportService = new Application_Service_Reports();
+        $this->view->header = $reportService->getReportConfigValue('report-header');
+        $this->view->logo = $reportService->getReportConfigValue('logo');
+        $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
+
+
+        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
+
+        $participantService = new Application_Service_Participants();
+        $this->view->participant = $participantService->getParticipantDetails($pID);
+        $schemeService = new Application_Service_Schemes();
+        $this->view->referenceDetails = $schemeService->getDtsReferenceData($sID);
+
+        $shipment = $schemeService->getShipmentData($sID, $pID);
+        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $this->view->shipment = $shipment;
+    }
 }

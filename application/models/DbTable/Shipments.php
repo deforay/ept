@@ -483,11 +483,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
 
-            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-success" style="margin:3px 0;"> <i class="icon icon-edit"></i>  ' . $buttonText . ' </a>'
-                . $delete
-                . $download;
-
-
+            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-success" style="margin:3px 0;"> <i class="icon icon-edit"></i>  ' . $buttonText . ' </a>' . $delete . $download;
             $output['aaData'][] = $row;
         }
 

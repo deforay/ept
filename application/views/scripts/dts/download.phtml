@@ -4,7 +4,7 @@
 //Zend_Debug::dump($this->shipment);die;
 require_once('tcpdf/tcpdf.php');
 
-
+$allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
 $optionalTest3 = $this->config->evaluation->dts->dtsOptionalTest3;
 $allowRepeatTests = isset($this->config->evaluation->dts->allowRepeatTests) ? $this->config->evaluation->dts->allowRepeatTests : 0;
 if ($optionalTest3 == 'no') {
@@ -21,7 +21,8 @@ if ($allowRepeatTests == "yes") {
 		$width = 12.5;
 	}
 }
-
+if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+}
 class MYPDF extends TCPDF
 {
 
@@ -269,6 +270,9 @@ if ($allowRepeatTests == "yes") {
 	}
 }
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final Result* </td>';
+if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final Result* </td>';
+}
 $labInfo .= '</tr>';
 
 foreach ($this->referenceDetails as $sample) {
@@ -286,6 +290,7 @@ foreach ($this->referenceDetails as $sample) {
 			$labInfo .= '<td></td>';
 		}
 	}
+	$labInfo .= '<td></td>';
 	$labInfo .= '<td></td>';
 	$labInfo .= '</tr>';
 }
