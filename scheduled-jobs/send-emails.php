@@ -8,23 +8,23 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
-try {
 
-    $db = Zend_Db::factory($conf->resources->db);
-    Zend_Db_Table::setDefaultAdapter($db);
+$db = Zend_Db::factory($conf->resources->db);
+Zend_Db_Table::setDefaultAdapter($db);
 
-    $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
-    $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
+$smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
-    $limit = '100';
-    $sQuery = $db->select()->from(array('tm' => 'temp_mail'))->where("tm.status=?", 'pending')->limit($limit);
-    $mailResult = $db->fetchAll($sQuery);
+$limit = '100';
+$sQuery = $db->select()->from(array('tm' => 'temp_mail'))->where("tm.status=?", 'pending')->limit($limit);
+$mailResult = $db->fetchAll($sQuery);
 
-    //error_log('RUNNING CRON TO SEND MAIL PA');
+//error_log('RUNNING CRON TO SEND MAIL PA');
 
-    if (count($mailResult) > 0) {
-        foreach ($mailResult as $result) {
+if (count($mailResult) > 0) {
+    foreach ($mailResult as $result) {
+        try {
             $alertMail = new Zend_Mail();
             $id = "temp_id=" . $result['temp_id'];
             $db->update('temp_mail', array('status' => 'not-sent'), 'temp_id=' . $result['temp_id']);
@@ -79,12 +79,13 @@ try {
             if ($sendResult == true) {
                 $db->delete('temp_mail', $id);
             }
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            //echo ($e->getMessage()) . PHP_EOL;
+            error_log($e->getTraceAsString());
+            //echo ('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
+            error_log('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
+            continue;
         }
     }
-} catch (Exception $e) {
-    error_log($e->getMessage());
-    //echo ($e->getMessage()) . PHP_EOL;
-    error_log($e->getTraceAsString());
-    //echo ('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
-    error_log('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
 }

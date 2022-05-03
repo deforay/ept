@@ -51,7 +51,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)"), 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -126,7 +126,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)"), 'mapCount' => new Zend_Db_Expr("COUNT(spm.map_id)")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'mapCount' => new Zend_Db_Expr("COUNT(spm.map_id)")))
             ->join(array('c' => 'countries'), 'c.id=p.country')
             ->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id', array())
             ->group("p.participant_id");
@@ -867,7 +867,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
         */
-        $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)"), 'institute_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         //  $sIndexColumn = "participant_id";
@@ -1028,7 +1028,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)"), 'p.institute_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'p.institute_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         //  $sIndexColumn = "participant_id";
@@ -1180,7 +1180,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name', 'unique_identifier', new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)"), 'institute_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'p.status');
+        $aColumns = array('first_name', 'unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'p.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         //  $sIndexColumn = "participant_id";

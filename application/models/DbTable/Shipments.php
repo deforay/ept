@@ -297,7 +297,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'unique_identifier', new Zend_Db_Expr("CONCAT(p.first_name,' ',p.last_name)"), 'p.institute_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $aColumns = array('DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'p.institute_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
         $orderColumns = array('shipment_date', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'p.institute_name', 'lastdate_response', 'spm.shipment_test_report_date');
 
         /* Indexed column (used for fast and accurate table cardinality) */
