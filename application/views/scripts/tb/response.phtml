@@ -124,7 +124,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 						</tr>
 					</table>
 
-					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+					<table class="vlResultSection table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr class="dark">
 							<!-- <td style="width:20%;"> <label>Shipment Date</label></td>
 							<td style="width:30%;"><?php echo $this->dateFormat($this->shipment['shipment_date']); ?></td> -->
@@ -142,7 +142,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 						<tr class="light">
 							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo">Assay Name <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
-								<select class="form-control isRequired" name="assayName" id="assayName" title="Please select the assay name" onchange="loadAssayFields(this.value);">
+								<select class="form-control vlResultValues isRequired" name="assayName" id="assayName" title="Please select the assay name" onchange="loadAssayFields(this.value);">
 									<option value="">--Select--</option>
 									<option value="tcmt">TCMT</option>
 									<option value="xpert-mtb-rif">Xpert MTB RIF</option>
@@ -159,16 +159,16 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 						<tr>
 							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo">Assay Lot <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
-								<input type="text" id="assayLot" name="assayLot" style="float:left;" value="<?php echo ""; ?>" class="form-control isRequired" placeholder="Enter assay lot" title="Please enter assay lot" />
+								<input type="text" id="assayLot" name="assayLot" style="float:left;" value="<?php echo ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter assay lot" title="Please enter assay lot" />
 							</td>
 							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo">Assay Expiration <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
-								<input type="text" id="expiryDate" name="expiryDate" style="width:180px;float:left;" placeholder="Assay Expiration" title="Please select the assay expiration" class="form-control isRequired datepicker" value="<?php echo $this->shipment['attributes']['expiry_date']; ?>" readonly="readonly" />
+								<input type="text" id="expiryDate" name="expiryDate" style="width:180px;float:left;" placeholder="Assay Expiration" title="Please select the assay expiration" class="form-control vlResultValues isRequired datepicker" value="<?php echo $this->shipment['attributes']['expiry_date']; ?>" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('expiryDate')"> Clear</i>
 							</td>
 						</tr>
 					</table>
-					<div class="loadAssay">
+					<div class="vlResultSection vlResultBlock loadAssay">
 
 					</div>
 					<br>
@@ -242,7 +242,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 	$(function() {
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',
-			maxDate: '0',
+			// maxDate: '0',
 			minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>')
 		});
 		$(".expDatepicker").datepicker({
@@ -321,6 +321,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 		if ($(this).is(':checked')) {
 			$('.vlResultSection').hide();
 			$('.vlResultValues').val('');
+			$('.vlResultBlock').html('');
 			$('.ptNotPerformedSection').show();
 			$('.vlResultMandatory').css('visibility', 'hidden');
 			$('.vlResultValues').removeClass('isRequired');

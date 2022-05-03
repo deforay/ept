@@ -1690,21 +1690,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     ->where("pmm.participant_id", $participantId)
                     ->group("pmm.participant_id");
                 $pmmCheck = $this->getAdapter()->fetchRow($sQuery);
+                // $id = $db->query("SET FOREIGN_KEY_CHECKS=0");
                 if ($pmmCheck['mapCount'] <= 1) {
-                    $db->query("DELETE FROM `participant_manager_map` WHERE (participant_id = " . $participantId . ")");
+                    $id = $db->delete("shipment_participant_map", array("participant_id = " . $participantId));
+                    $id = $db->delete("participant_manager_map", array("participant_id = " . $participantId));
                     if ($pmmCheck['mapCount'] == 1 && $pmmCheck['dm_id'] > 0) {
-                        $db->query("DELETE FROM `data_manager` WHERE (dm_id = " . $pmmCheck['dm_id'] . ")");
+                        $id = $db->delete("data_manager", array("dm_id" => $pmmCheck['dm_id']));
                     }
                 }
-                $partcipant = $this->fetchRow(array("participant_id" => $participantId));
-                $db->query("DELETE FROM `enrollments` WHERE (participant_id = " . $participantId . ")");
-                $id = $db->query("DELETE FROM `participant` WHERE (participant_id = " . $participantId . ")");
+                $partcipant = $this->fetchRow(array("participant_id = " . $participantId));
+                $id = $db->delete("enrollments", array("participant_id = " . $participantId));
+                $id = $db->delete("participant", array("participant_id = " . $participantId));
+                // $id = $db->query("SET FOREIGN_KEY_CHECKS=1");
                 if ($participantId > 0) {
-                    $authNameSpace = new Zend_Session_Namespace('administrators');
                     $auditDb = new Application_Model_DbTable_AuditLog();
                     $auditDb->addNewAuditLog("Deleted a participant - " . $partcipant['unique_identifier'], "participants");
                 }
-                return $id;
+
+                return count($id);
             }
         } catch (Exception $e) {
             error_log($e->getMessage());

@@ -1,9 +1,7 @@
 <?php
 //Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
-
-//Zend_Debug::dump($this->shipment);die;
 require_once('tcpdf/tcpdf.php');
-
+$shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
 $optionalTest3 = $this->config->evaluation->dts->dtsOptionalTest3;
 $allowRepeatTests = isset($this->config->evaluation->dts->allowRepeatTests) ? $this->config->evaluation->dts->allowRepeatTests : 0;
@@ -205,12 +203,18 @@ $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%
 if ($optionalTest3 == 'no') {
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%">Test-3</td>';
 }
+if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+	$noOfTest = $noOfTest + 1;
+}
 if ($allowRepeatTests == "yes") {
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td style="text-align:center;width:' . ($width * ($noOfTest + 1)) . '%;" colspan="' . ($noOfTest) . '"></td>';
 	} else {
 		$labInfo .= '<td style="text-align:center;width:' . ($width * ($noOfTest + 1)) . '%;" colspan="' . ($noOfTest + 1) . '"></td>';
 	}
+}
+if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+	$noOfTest = $noOfTest - 1;
 }
 $labInfo .= '</tr>';
 
@@ -257,7 +261,7 @@ if ($allowRepeatTests == "yes") {
 
 $labInfo .= '<tr style="background-color:#CCCCCC;">';
 $labInfo .= '<td style="width:' . $width . '%;"></td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">' . $noOfTest . ' Result-1</td>';
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
 if ($optionalTest3 == 'no') {
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</td>';
@@ -271,7 +275,7 @@ if ($allowRepeatTests == "yes") {
 }
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final Result* </td>';
 if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final Result* </td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Is this a Retest? </td>';
 }
 $labInfo .= '</tr>';
 
