@@ -19,10 +19,11 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
     $testThreeHidden = true;
     $screeningTest = true;
 }
-if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms) && sizeof($allowedAlgorithms) == 1) {
+if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
     $testThreeHidden = false;
     $testTwoHidden = false;
     $screeningTest = false;
+    $allowRepeatTests = "no";
 }
 if (($testTwoHidden)) {
     $noTest = 1;

@@ -20,6 +20,13 @@ if ($allowRepeatTests == "yes") {
 	}
 }
 if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+	$noOfTest = 2;
+	$width = 20;
+	if ($optionalTest3 == 'no') {
+		$noOfTest = 3;
+		$width = 16.66;
+	}
+	$allowRepeatTests = "no";
 }
 class MYPDF extends TCPDF
 {
@@ -206,7 +213,7 @@ if ($optionalTest3 == 'no') {
 if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 	$noOfTest = $noOfTest + 1;
 }
-if ($allowRepeatTests == "yes") {
+if ($allowRepeatTests == "yes" && !in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td style="text-align:center;width:' . ($width * ($noOfTest + 1)) . '%;" colspan="' . ($noOfTest) . '"></td>';
 	} else {
@@ -247,7 +254,7 @@ $labInfo .= '</tr>';
 $labInfo .= '</table>';
 
 $labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
-if ($allowRepeatTests == "yes") {
+if ($allowRepeatTests == "yes" && !in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td style="width:' . ($width * ($noOfTest + 1)) . '%;" colspan="' . ($noOfTest + 1) . '"></td>';
@@ -260,13 +267,13 @@ if ($allowRepeatTests == "yes") {
 }
 
 $labInfo .= '<tr style="background-color:#CCCCCC;">';
-$labInfo .= '<td style="width:' . $width . '%;"></td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">' . $noOfTest . ' Result-1</td>';
+$labInfo .= '<td style="width:' . $width . '%;">PT Panel Identifier</td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
 if ($optionalTest3 == 'no') {
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</td>';
 }
-if ($allowRepeatTests == "yes") {
+if (!in_array("ghanaNationalDtsAlgo", $allowedAlgorithms) && $allowRepeatTests == "yes") {
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
 	if ($optionalTest3 == 'no') {
@@ -287,7 +294,7 @@ foreach ($this->referenceDetails as $sample) {
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td></td>';
 	}
-	if ($allowRepeatTests == "yes") {
+	if (!in_array("ghanaNationalDtsAlgo", $allowedAlgorithms) && $allowRepeatTests == "yes") {
 		$labInfo .= '<td></td>';
 		$labInfo .= '<td></td>';
 		if ($optionalTest3 == 'no') {
