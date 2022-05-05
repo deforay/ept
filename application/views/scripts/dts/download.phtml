@@ -5,6 +5,10 @@ $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decod
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
 $optionalTest3 = $this->config->evaluation->dts->dtsOptionalTest3;
 $allowRepeatTests = isset($this->config->evaluation->dts->allowRepeatTests) ? $this->config->evaluation->dts->allowRepeatTests : 0;
+$syphilisActive = false;
+if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+	$syphilisActive = true;
+}
 if ($optionalTest3 == 'no') {
 	$width = 20;
 } else {
@@ -25,6 +29,12 @@ if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 	if ($optionalTest3 == 'no') {
 		$noOfTest = 3;
 		$width = 16.66;
+	}
+	if ($syphilisActive) {
+		$width = 16.67;
+		if ($optionalTest3 == 'no') {
+			$width = 14.29;
+		}
 	}
 	$allowRepeatTests = "no";
 }
@@ -267,29 +277,42 @@ if ($allowRepeatTests == "yes" && !in_array("ghanaNationalDtsAlgo", $allowedAlgo
 }
 
 $labInfo .= '<tr style="background-color:#CCCCCC;">';
-$labInfo .= '<td style="width:' . $width . '%;">PT Panel Identifier</td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
+$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">PT Panel Identifier</th>';
+if ($syphilisActive) {
+	$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Type of Test</th>';
+}
+$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</th>';
+$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</th>';
 if ($optionalTest3 == 'no') {
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</td>';
+	$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</th>';
 }
 if (!in_array("ghanaNationalDtsAlgo", $allowedAlgorithms) && $allowRepeatTests == "yes") {
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
+	$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</th>';
+	$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</th>';
 	if ($optionalTest3 == 'no') {
-		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</td>';
+		$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</th>';
 	}
 }
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final Result* </td>';
+$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Final Result* </th>';
 if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Is this a Retest? </td>';
+	$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Is this a Retest? </th>';
 }
 $labInfo .= '</tr>';
 
 foreach ($this->referenceDetails as $sample) {
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;">' . $sample['sample_label'] . '</td>';
-	$labInfo .= '<td></td>';
+	$labInfo .= '<td style="text-align:center;display:flex;align-items:center;font-weight:bold;">' . $sample['sample_label'] . '</td>';
+	if ($syphilisActive) {
+		$labInfo .= '<th>
+			<span style="border-bottom: 1px solid gray;">HIV</span><hr>
+			<span>SYPHILIS</span>
+		</th>';
+	}
+	$labInfo .= '<td>';
+	if ($syphilisActive) {
+		$labInfo .= '<br><hr>';
+	}
+	$labInfo .= '</td>';
 	$labInfo .= '<td></td>';
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td></td>';
@@ -301,8 +324,14 @@ foreach ($this->referenceDetails as $sample) {
 			$labInfo .= '<td></td>';
 		}
 	}
-	$labInfo .= '<td></td>';
-	$labInfo .= '<td></td>';
+	$labInfo .= '<td>';
+	if ($syphilisActive) {
+		$labInfo .= '<br><hr>';
+	}
+	$labInfo .= '</td>';
+	if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+		$labInfo .= '<td></td>';
+	}
 	$labInfo .= '</tr>';
 }
 $labInfo .= '</table><br/><br/>';
