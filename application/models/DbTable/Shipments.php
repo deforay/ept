@@ -28,9 +28,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function getShipmentRowInfo($sId)
     {
         $result = $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('s' => 'shipment'))
-            ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('map_id', 'number_of_tests'))
-            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
+            ->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+            ->joinLeft(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('map_id', 'number_of_tests'))
+            ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
             ->group('s.shipment_id')
             ->where("s.shipment_id = ?", $sId));
         if ($result != "") {

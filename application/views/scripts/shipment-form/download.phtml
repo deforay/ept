@@ -112,7 +112,6 @@ $pdf->SetFont('times', '', 12);
 
 // add a page
 $pdf->AddPage();
-
 $labInfo = '<span class="pull-right">Fields marked <span class="mandatory">*</span> are mandatory</span><br/>';
 
 $labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
@@ -160,9 +159,16 @@ $labInfo .= '</tr>';
 $labInfo .= '</table><br/><br/>';
 
 if ($this->shipment["scheme_type"] == 'dts') {
+	$shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
+	$allowedAlgorithms = isset($this->customConfig->evaluation->dts->allowedAlgorithms) ? explode(",", $this->customConfig->evaluation->dts->allowedAlgorithms) : array();
 	$width = 25;
 	$optionalTest3 = $this->customConfig->evaluation->dts->dtsOptionalTest3;
 	$allowRepeatTests = isset($this->customConfig->evaluation->dts->allowRepeatTests) ? $this->customConfig->evaluation->dts->allowRepeatTests : 'no';
+
+	$syphilisActive = false;
+	if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+		$syphilisActive = true;
+	}
 	if ($optionalTest3 == 'no') {
 		$width = 22;
 	} else {
@@ -175,6 +181,20 @@ if ($this->shipment["scheme_type"] == 'dts') {
 			$width = 16.6;
 		}
 	}
+	if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+		$width = 20;
+		if ($optionalTest3 == 'no') {
+			$width = 16.66;
+		}
+		if ($syphilisActive) {
+			$width = 16.67;
+			if ($optionalTest3 == 'no') {
+				$width = 14.29;
+			}
+		}
+		$allowRepeatTests = "no";
+	}
+
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
@@ -187,7 +207,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">' . $width . '</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';
@@ -209,7 +229,8 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-3</td>';
 	}
-	if ($allowRepeatTests == 'yes') {
+
+	if ($allowRepeatTests == 'yes' && !in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 		if ($optionalTest3 == 'no') {
 			$labInfo .= '<td colspan="4" style="width:' . ($width * 4) . '%;"></td>';
 		} else {
@@ -217,7 +238,6 @@ if ($this->shipment["scheme_type"] == 'dts') {
 		}
 	}
 	$labInfo .= '</tr>';
-
 	$labInfo .= '<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<td style="font-weight:bold;">Kit Name</td>';
 	$labInfo .= '<td></td>';
@@ -225,7 +245,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td></td>';
 	}
-	if ($allowRepeatTests == 'yes') {
+	if ($allowRepeatTests == 'yes' && !in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 		if ($optionalTest3 == 'no') {
 			$labInfo .= '<td colspan="4"></td>';
 		} else {
@@ -241,7 +261,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td></td>';
 	}
-	if ($allowRepeatTests == 'yes') {
+	if ($allowRepeatTests == 'yes' && !in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 		if ($optionalTest3 == 'no') {
 			$labInfo .= '<td colspan="4"></td>';
 		} else {
@@ -257,7 +277,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td></td>';
 	}
-	if ($allowRepeatTests == 'yes') {
+	if ($allowRepeatTests == 'yes' && !in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 		if ($optionalTest3 == 'no') {
 			$labInfo .= '<td colspan="4"></td>';
 		} else {
@@ -269,7 +289,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 
-	if ($allowRepeatTests == 'yes') {
+	if ($allowRepeatTests == 'yes' && !in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 		$labInfo .= '<tr style="background-color:#CCCCCC;">';
 		if ($optionalTest3 == 'no') {
 			$labInfo .= '<td colspan="4" style="width:' . ($width * 4) . '%;"></td>';
@@ -286,13 +306,16 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	}
 
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
-	$labInfo .= '<td style="width:' . $width . '%;"></td>';
+	$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">PT Panel Identifier</th>';
+	if ($syphilisActive) {
+		$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Type of Test</th>';
+	}
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
 	if ($optionalTest3 == 'no') {
 		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</td>';
 	}
-	if ($allowRepeatTests == 'yes') {
+	if ($allowRepeatTests == 'yes' && !in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
 		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
 		if ($optionalTest3 == 'no') {
@@ -300,23 +323,43 @@ if ($this->shipment["scheme_type"] == 'dts') {
 		}
 	}
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final Result* </td>';
+	if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+		$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Is this a Retest? </th>';
+	}
 	$labInfo .= '</tr>';
 	foreach ($this->shipment["referenceResult"] as $sample) {
 		$labInfo .= '<tr style="background-color:#F7F7F7;">';
 		$labInfo .= '<td style="font-weight:bold;">' . $sample['sample_label'] . '</td>';
-		$labInfo .= '<td></td>';
+		if ($syphilisActive) {
+			$labInfo .= '<th>
+				<span style="border-bottom: 1px solid gray;">HIV</span><hr>
+				<span>SYPHILIS</span>
+			</th>';
+		}
+		$labInfo .= '<td>';
+		if ($syphilisActive) {
+			$labInfo .= '<br><hr>';
+		}
+		$labInfo .= '</td>';
 		$labInfo .= '<td></td>';
 		if ($optionalTest3 == 'no') {
 			$labInfo .= '<td></td>';
 		}
-		if ($allowRepeatTests == 'yes') {
+		if (!in_array("ghanaNationalDtsAlgo", $allowedAlgorithms) && $allowRepeatTests == 'yes') {
 			$labInfo .= '<td></td>';
 			$labInfo .= '<td></td>';
 			if ($optionalTest3 == 'no') {
 				$labInfo .= '<td></td>';
 			}
 		}
-		$labInfo .= '<td></td>';
+		$labInfo .= '<td>';
+		if ($syphilisActive) {
+			$labInfo .= '<br><hr>';
+		}
+		$labInfo .= '</td>';
+		if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+			$labInfo .= '<td></td>';
+		}
 		$labInfo .= '</tr>';
 	}
 	$labInfo .= '</table><br/><br/>';
@@ -584,12 +627,12 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
 	$labInfo .= '<td style="width:12%"></td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">' . $test1Text . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:">' . $test1Text . '</td>';
 	if ($maximumAllowed >= 2) {
-		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Test-2</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:">Test-2</td>';
 	}
 	if ($maximumAllowed == 3) {
-		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Test-3</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:">Test-3</td>';
 	}
 	$labInfo .= '</tr>';
 
@@ -630,12 +673,12 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
 	$labInfo .= '<td style="width:12%"></td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">' . $resul1Text . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:">' . $resul1Text . '</td>';
 	if ($maximumAllowed >= 2) {
-		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Result-2</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:">Result-2</td>';
 	}
 	if ($maximumAllowed == 3) {
-		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '">Result-3</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:">Result-3</td>';
 	}
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:18%">Final Result * </td>';
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $genwidth . '">Gene Types </td>';
