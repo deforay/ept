@@ -39,8 +39,6 @@ class ShipmentFormController extends Zend_Controller_Action
             $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipment = $shipment = $shipmentService->getShipmentRowData($id);
-            // Zend_Debug::dump($shipment);
-            // die;
             $configFile = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $this->view->customConfig = new Zend_Config_Ini($configFile, APPLICATION_ENV);
         }

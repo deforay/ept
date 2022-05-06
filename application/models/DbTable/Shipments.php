@@ -30,6 +30,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $result = $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('s' => 'shipment'))
             ->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
             ->joinLeft(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('map_id', 'number_of_tests'))
+            ->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('participant_id', 'unique_identifier', 'institute_name', 'anc'))
             ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
             ->group('s.shipment_id')
             ->where("s.shipment_id = ?", $sId));
