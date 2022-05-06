@@ -24,17 +24,11 @@ if ($allowRepeatTests == "yes") {
 	}
 }
 if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
-	$noOfTest = 2;
-	$width = 20;
-	if ($optionalTest3 == 'no') {
-		$noOfTest = 3;
-		$width = 16.66;
-	}
+	$noOfTest = 3;
+	$width = 16.66;
+	$optionalTest3 = "no";
 	if ($syphilisActive) {
-		$width = 16.67;
-		if ($optionalTest3 == 'no') {
-			$width = 14.29;
-		}
+		$width = 14.29;
 	}
 	$allowRepeatTests = "no";
 }

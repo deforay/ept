@@ -182,15 +182,10 @@ if ($this->shipment["scheme_type"] == 'dts') {
 		}
 	}
 	if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
-		$width = 20;
-		if ($optionalTest3 == 'no') {
-			$width = 16.66;
-		}
+		$width = 16.66;
+		$optionalTest3 = "no";
 		if ($syphilisActive) {
-			$width = 16.67;
-			if ($optionalTest3 == 'no') {
-				$width = 14.29;
-			}
+			$width = 14.29;
 		}
 		$allowRepeatTests = "no";
 	}
