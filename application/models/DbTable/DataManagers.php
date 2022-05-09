@@ -569,7 +569,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchAuthToken($params)
     {
         $configDb = new Application_Model_DbTable_SystemConfig();
-        $appVersion = $configDb->getValue($params['appVersion']);
+        // $appVersion = $configDb->getValue($params['appVersion']);
         /* Check the app versions */
         /*if (!$appVersion) {
             return 'app-version-failed';
