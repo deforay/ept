@@ -51,6 +51,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             $config->$sec->evaluation->dts->allowedAlgorithms = !empty($allowedAlgorithms) ? $allowedAlgorithms : '';
             $config->$sec->evaluation->dts->displaySampleConditionFields = $this->getRequest()->getPost('conditionOfPtSample');
             $config->$sec->evaluation->dts->allowRepeatTests = $this->getRequest()->getPost('allowRepeatTest');
+            $config->$sec->evaluation->dts->dtsSchemeType = $this->getRequest()->getPost('dtsSchemeType');
 
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)
@@ -60,7 +61,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated DTS HIV Serology Settings", "config");            
+            $auditDb->addNewAuditLog("Updated DTS HIV Serology Settings", "config");
         }
 
 
