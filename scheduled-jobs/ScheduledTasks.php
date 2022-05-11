@@ -10,7 +10,7 @@ $phpPath = (!empty($conf->php->path) ? $conf->php->path : PHP_BINARY);
 
 // Generate Shipment Reports
 
-$schedule->run($phpPath . " " . APPLICATION_PATH . "/../scheduled-jobs/shipment-reports.php")
+$schedule->run($phpPath . " " . APPLICATION_PATH . "/../scheduled-jobs/generate-shipment-reports.php")
     ->everyMinute()
     ->timezone($timezone)
     ->preventOverlapping()
