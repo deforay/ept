@@ -3,16 +3,16 @@
 class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
 {
     protected $_name = 'announcements_notification';
-    
+
     public function fetchAllAnnouncementByGrid($parameters)
     {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
-	
+
         $aColumns = array("subject", "message", 'DATE_FORMAT(created_on,"%d-%b-%Y")', 'pn.push_status');
         $orderColumns = array("id", "subject", "message", "created_on", "pn.push_status");
-	
+
         /*
          * Paging
          */
@@ -21,7 +21,7 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
-	
+
         /*
          * Ordering
          */
@@ -34,10 +34,10 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
 				 	" . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
-	    
+
             $sOrder = substr_replace($sOrder, "", -2);
         }
-	
+
         /*
          * Filtering
          * NOTE this does not match the built-in DataTables filtering which does it
@@ -55,9 +55,9 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
                     $sWhereSub .= " AND (";
                 }
                 $colSize = count($aColumns);
-		
+
                 for ($i = 0; $i < $colSize; $i++) {
-                    if($aColumns[$i] == "" || $aColumns[$i] == null){
+                    if ($aColumns[$i] == "" || $aColumns[$i] == null) {
                         continue;
                     }
                     if ($i < $colSize - 1) {
@@ -70,7 +70,7 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
             }
             $sWhere .= $sWhereSub;
         }
-	
+
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
@@ -81,40 +81,40 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
                 }
             }
         }
-	
+
         /*
          * SQL queries
          * Get data to display
          */
-		
-		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('a' => $this->_name))
-                            ->join(array('pn' => 'push_notification'),'a.id = pn.announcement_id',array('push_status'));
-				
+            ->join(array('pn' => 'push_notification'), 'a.id = pn.announcement_id', array('push_status'));
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
-	
+
         if (isset($sOrder) && $sOrder != "") {
             $sQuery = $sQuery->order($sOrder);
         }
-	
+
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-		// die($sQuery);
+        // die($sQuery);
         $rResult = $dbAdapter->fetchAll($sQuery);
-	
+
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
         $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
-	
+
         /* Total data set length */
         $aResultTotal = $dbAdapter->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
-		
+
         /*
          * Output
          */
@@ -124,13 +124,13 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
             "iTotalDisplayRecords" => $iFilteredTotal,
             "aaData" => array()
         );
-        
+
         foreach ($rResult as $aRow) {
-           
+
             $row = array();
             $row[] = $aRow['subject'];
             $row[] = $aRow['message'];
-            $row[] = date('d-M-Y h:i:s a',strtotime($aRow['created_on']));
+            $row[] = date('d-M-Y h:i:s a', strtotime($aRow['created_on']));
             $row[] = str_replace("-", " ", ucwords($aRow['push_status']));
             $output['aaData'][] = $row;
         }
@@ -150,4 +150,3 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
         ));
     }
 }
-
