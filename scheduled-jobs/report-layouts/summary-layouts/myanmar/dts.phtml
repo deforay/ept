@@ -87,10 +87,10 @@ if ($resultArray['shipment'] != "") {
                 if ($result[$i]['is_excluded'] == 'yes') {
                     continue;
                 }
-                $barPoints["0 - 59"] += $result[$i]['0-59'];
-                $barPoints["60 - 69"] += $result[$i]['60-69'];
-                $barPoints["70 - $pass"] += $result[$i]["70-$pass"];
-                $barPoints[$abovePass] += $result[$i][$abovePass];
+                $barPoints["0 - 59"] += ($result[$i]['0-59'] > 0) ? $result[$i]['0-59'] : 0;
+                $barPoints["60 - 69"] += ($result[$i]['60-69'] > 0) ? $result[$i]['60-69'] : 0;
+                $barPoints["70 - $pass"] += ($result[$i]["70-$pass"] > 0) ? $result[$i]["70-$pass"] : 0;
+                $barPoints[$abovePass] += ($result[$i][$abovePass] > 0) ? $result[$i][$abovePass] : 0;
                 // $maxScore += $result[$i]['number_passed'];
                 // $belowScore += $result[$i]['number_failed'];
             }
@@ -100,9 +100,9 @@ if ($resultArray['shipment'] != "") {
         $dataX = array();
         $dataY = array();
         foreach ($barPoints as $key => $val) {
-            $dataX[] = $val;
+            $dataX[] = ($val > 0) ? $val : 0;
             $dataY[] = $key . ' (n=' . $val . ')';
-            $total += $val;
+            $total += ($val > 0) ? $val : 0;
         }
 
         // Create the graph. These two calls are always required
@@ -279,9 +279,9 @@ if ($resultArray['shipment'] != "") {
             $dataX = array();
             $dataY = array();
             foreach ($resultArray['shipment']['siteChart'] as $key => $val) {
-                $dataX[] = $val['totalSites'];
+                $dataX[] = ($val['totalSites'] > 0) ? $val['totalSites'] : 0;
                 $dataY[] = $val['department_name'] . ' (n=' . $val['totalSites'] . ')';
-                $lab += $val['totalSites'];
+                $lab += ($val['totalSites'] > 0) ? $val['totalSites'] : 0;
             }
 
             // Create the graph. These two calls are always required
@@ -344,9 +344,9 @@ if ($resultArray['shipment'] != "") {
         $dataY = array();
         $total = 0;
         foreach ($resultArray['shipment']['pieChart'] as $key => $val) {
-            $dataX[] = $val['testkit1Total'];
+            $dataX[] = ($val['testkit1Total'] > 0) ? $val['testkit1Total'] : 0;
             $dataY[] = $val['TestKit_Name'] . ' (n=' . $val['testkit1Total'] . ')';
-            $total += $val['testkit1Total'];
+            $total += ($val['testkit1Total'] > 0) ? $val['testkit1Total'] : 0;
         }
         // Create the graph. These two calls are always required
         $graph = new Graph(680, 800, 'auto');
@@ -402,9 +402,9 @@ if ($resultArray['shipment'] != "") {
             $dataY = array();
             $total = 0;
             foreach ($resultArray['shipment']['pieChart2'] as $key => $val) {
-                $dataX[] = $val['testkit2Total'];
+                $dataX[] = ($val['testkit2Total'] > 0) ? $val['testkit2Total'] : 0;
                 $dataY[] = $val['TestKit_Name'] . ' (n=' . $val['testkit2Total'] . ')';
-                $total += $val['testkit2Total'];
+                $total += ($val['testkit2Total'] > 0) ? $val['testkit2Total'] : 0;
             }
             // Create the graph. These two calls are always required
             $graph = new Graph(680, 800, 'auto');
@@ -454,9 +454,9 @@ if ($resultArray['shipment'] != "") {
             $dataY = array();
             $total = 0;
             foreach ($resultArray['shipment']['pieChart3'] as $key => $val) {
-                $dataX[] = $val['testkit3Total'];
+                $dataX[] = ($val['testkit3Total'] > 0) ? $val['testkit3Total'] : 0;
                 $dataY[] = $val['TestKit_Name'] . ' (n=' . $val['testkit3Total'] . ')';
-                $total += $val['testkit3Total'];
+                $total += ($val['testkit3Total'] > 0) ? $val['testkit3Total'] : 0;
             }
             // Create the graph. These two calls are always required
             $graph = new Graph(680, 800, 'auto');
@@ -509,8 +509,8 @@ if ($resultArray['shipment'] != "") {
         $y = $pdf->getY() + 5;
         $total = $responseResult["total_shipped"];
 
-        $passedN = $responseResult["number_passed"];
-        $failedN = $responseResult["number_failed"];
+        $passedN = ($responseResult["number_passed"] > 0) ? $responseResult["number_passed"] : 0;
+        $failedN = ($responseResult["number_failed"] > 0) ? $responseResult["number_failed"] : 0;
         $notRespondedN = $responseResult["not_responded"];
         $responseResult["excluded"] = abs($responseResult["excluded"] - $responseResult["not_responded"]);
         $excludedN = $responseResult["excluded"];
@@ -518,8 +518,8 @@ if ($resultArray['shipment'] != "") {
         //$total = $passedN + $failedN + $notRespondedN + $excludedN;
 
         // Some data
-        $passed = number_format((($responseResult["number_passed"] / $total) * 100), 2);
-        $failed = number_format((($responseResult["number_failed"] / $total) * 100), 2);
+        $passed = number_format((($passedN / $total) * 100), 2);
+        $failed = number_format((($failedN / $total) * 100), 2);
         $notResponded = number_format((($responseResult["not_responded"] / $total) * 100), 2);
         $excluded = number_format((($responseResult["excluded"] / $total) * 100), 2);
         $data = array($passed, $failed, $notResponded, $excluded);

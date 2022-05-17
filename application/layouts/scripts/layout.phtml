@@ -7,7 +7,7 @@ $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->active
 $text = $this->PTProgramShortName();
 $shortName = "";
 if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
-  $shortName = ucwords($text['value']);
+	$shortName = ucwords($text['value']);
 }
 $configData = $this->getGlobalConfig();
 $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_color'] != "") ? $configData['theme_color'] : 'blue';
@@ -16,268 +16,268 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Online Lab Proficiency Testing</title>
-  <!-- Tell the browser to be responsive to screen width -->
-  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  <!-- Bootstrap 3.3.5 -->
-  <link rel="stylesheet" href="<?php echo $this->baseUrl('assets/bootstrap/css/bootstrap.min.css'); ?>">
-  <link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
-  <!--[if IE 7]>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title><?php echo _("Online Lab Proficiency Testing"); ?></title>
+	<!-- Tell the browser to be responsive to screen width -->
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<!-- Bootstrap 3.3.5 -->
+	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/bootstrap/css/bootstrap.min.css'); ?>">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
+	<!--[if IE 7]>
       <link rel="stylesheet" href="<?php echo $this->baseUrl("css/font-awesome-ie7.min.css"); ?>" type="text/css" media="all">
       <![endif]-->
-  <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery-ui.min.css"); ?>" type="text/css" media="all">
-  <link rel="stylesheet" href="<?php echo $this->baseUrl('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
-  <link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
-  <link rel="stylesheet" href="<?php echo $this->baseUrl("css/common.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery-ui.min.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/common.css"); ?>" type="text/css" media="all">
 
-  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-  <!--[if lt IE 9]>
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
       <script src="<?php echo $this->baseUrl('js/html5shiv.min.js'); ?>"></script>
       <script src="<?php echo $this->baseUrl('js/respond.min.js'); ?>"></script>
     <![endif]-->
-  <!-- Theme style -->
-  <link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/AdminLTE.min.css'); ?>">
-  <!-- AdminLTE Skins. Choose a skin from the css/skins
+	<!-- Theme style -->
+	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/AdminLTE.min.css'); ?>">
+	<!-- AdminLTE Skins. Choose a skin from the css/skins
          folder instead of downloading all of them to reduce the load. -->
-  <link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/skins/_all-skins.min.css'); ?>">
-  <style>
-    .center {
-      text-align: center;
-    }
+	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/skins/_all-skins.min.css'); ?>">
+	<style>
+		.center {
+			text-align: center;
+		}
 
-    .mandatory {
-      color: red;
-    }
-  </style>
+		.mandatory {
+			color: red;
+		}
+	</style>
 
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-  <script src="<?php echo $this->baseUrl('assets/plugins/jQuery/jQuery-2.1.4.min.js'); ?>"></script>
+	<script src="<?php echo $this->baseUrl('assets/plugins/jQuery/jQuery-2.1.4.min.js'); ?>"></script>
 </head>
 
 <body class="hold-transition skin-<?= $skinColorFromConfig ?> sidebar-mini">
-  <div class="wrapper">
-    <?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
-      <div class="marquee">
-        <p><?php echo ($configData['training_instance_text']); ?></p>
-      </div>
-    <?php } ?>
-    <header class="main-header">
-      <!-- Logo -->
-      <a href="/" class="logo">
-        <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini"><b>e</b>PT</span>
-        <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>e</b>PT</span>
-      </a>
-      <!-- Header Navbar: style can be found in header.less -->
-      <nav class="navbar navbar-static-top" role="navigation">
-        <!-- Sidebar toggle button-->
-        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-          <span class="sr-only">Toggle navigation</span>
-        </a>
-        <div class="navbar-custom-menu">
-          <ul class="nav navbar-nav">
-            <?php if (isset($authNameSpace->dm_id)) { ?>
-              <li class="dropdown user user-menu">
-                <a href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
-                  <i class="icon icon-dashboard"></i> <span class=""><?php echo $authNameSpace->first_name . " " . $authNameSpace->last_name; ?></span>
-                </a>
-              </li>
-            <?php } else { ?>
-              <li>
-                <a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName; ?> Enrollment</span></a>
-              </li>
-              <li>
-                <a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span>Participant Login</span></a>
-              </li>
-            <?php } ?>
-          </ul>
-        </div>
-      </nav>
-    </header>
-    <!-- Left side column. contains the logo and sidebar -->
-    <aside class="main-sidebar">
-      <!-- sidebar: style can be found in sidebar.less -->
-      <section class="sidebar">
-        <!-- sidebar menu: : style can be found in sidebar.less -->
-        <ul class="sidebar-menu">
-          <li class="header">MAIN NAVIGATION</li>
-          <li class="<?php echo ($activeMenu == 'home') ? ' active ' : '';  ?>">
-            <a href="/">
-              <i class="icon icon-home"></i> <span>Program Information</span>
-            </a>
-          </li>
+	<div class="wrapper">
+		<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
+			<div class="marquee">
+				<p><?php echo ($configData['training_instance_text']); ?></p>
+			</div>
+		<?php } ?>
+		<header class="main-header">
+			<!-- Logo -->
+			<a href="/" class="logo">
+				<!-- mini logo for sidebar mini 50x50 pixels -->
+				<span class="logo-mini"><b>e</b>PT</span>
+				<!-- logo for regular state and mobile devices -->
+				<span class="logo-lg"><b>e</b>PT</span>
+			</a>
+			<!-- Header Navbar: style can be found in header.less -->
+			<nav class="navbar navbar-static-top" role="navigation">
+				<!-- Sidebar toggle button-->
+				<a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+					<span class="sr-only">Toggle navigation</span>
+				</a>
+				<div class="navbar-custom-menu">
+					<ul class="nav navbar-nav">
+						<?php if (isset($authNameSpace->dm_id)) { ?>
+							<li class="dropdown user user-menu">
+								<a href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
+									<i class="icon icon-dashboard"></i> <span class=""><?php echo $authNameSpace->first_name . " " . $authNameSpace->last_name; ?></span>
+								</a>
+							</li>
+						<?php } else { ?>
+							<li>
+								<a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName; ?> Enrollment</span></a>
+							</li>
+							<li>
+								<a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span>Participant Login</span></a>
+							</li>
+						<?php } ?>
+					</ul>
+				</div>
+			</nav>
+		</header>
+		<!-- Left side column. contains the logo and sidebar -->
+		<aside class="main-sidebar">
+			<!-- sidebar: style can be found in sidebar.less -->
+			<section class="sidebar">
+				<!-- sidebar menu: : style can be found in sidebar.less -->
+				<ul class="sidebar-menu">
+					<li class="header">MAIN NAVIGATION</li>
+					<li class="<?php echo ($activeMenu == 'home') ? ' active ' : '';  ?>">
+						<a href="/">
+							<i class="icon icon-home"></i> <span><?php echo _("Program Information"); ?></span>
+						</a>
+					</li>
 
 
 
-          <?php if (isset($authNameSpace->dm_id)) { ?>
-            <li class="<?php echo ($activeMenu == 'dashboard') ? ' active ' : '';  ?>">
-              <a href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
-                <i class="icon icon-dashboard"></i> <span>Dashboard</span>
-              </a>
-            </li>
-            <li class="<?php echo ($activeMenu == 'current-schemes') ? ' active ' : '';  ?>">
-              <a href="<?php echo $this->url(array("controller" => "participant", "action" => "current-schemes"), null, true) ?>">
-                <i class="icon icon-list-ul"></i> <span>PT Result Submission</span>
-              </a>
-            </li>
-            <li class="treeview <?php echo ($activeMenu == 'view-reports') ? ' active ' : '';  ?>">
-              <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span>View PT Result </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
-              <ul class="treeview-menu">
-                <li class="<?php echo ($activeSubMenu == 'individual-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "report"), null, true) ?>"> Individual Report</a></li>
-                <li class="<?php echo ($activeSubMenu == 'summary-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>"> Summary Report</a></li>
-              </ul>
-            </li>
-            <li class="<?php echo ($activeMenu == 'corrective-action') ? ' active ' : '';  ?>">
-              <a href="<?php echo $this->url(array("controller" => "participant", "action" => "corrective"), null, true) ?>">
-                <i class="icon icon-check"></i> <span>Corrective Actions</span>
-              </a>
-            </li>
-            <li class="<?php echo ($activeMenu == 'all-schemes') ? ' active ' : '';  ?>">
-              <a href="<?php echo $this->url(array("controller" => "participant", "action" => "all-schemes"), null, true) ?>">
-                <i class="icon icon-list-ul"></i> <span>All Schemes</span>
-              </a>
-            </li>
-            <li class="<?php echo ($activeMenu == 'defaulted-schemes') ? ' active ' : '';  ?>">
-              <a href="<?php echo $this->url(array("controller" => "participant", "action" => "defaulted-schemes"), null, true) ?>">
-                <i class="icon icon-exclamation"></i> <span>Defaulted Schemes</span>
-              </a>
-            </li>
+					<?php if (isset($authNameSpace->dm_id)) { ?>
+						<li class="<?php echo ($activeMenu == 'dashboard') ? ' active ' : '';  ?>">
+							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
+								<i class="icon icon-dashboard"></i> <span><?php echo _("Dashboard"); ?></span>
+							</a>
+						</li>
+						<li class="<?php echo ($activeMenu == 'current-schemes') ? ' active ' : '';  ?>">
+							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "current-schemes"), null, true) ?>">
+								<i class="icon icon-list-ul"></i> <span>PT Result Submission</span>
+							</a>
+						</li>
+						<li class="treeview <?php echo ($activeMenu == 'view-reports') ? ' active ' : '';  ?>">
+							<a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span>View PT Result </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
+							<ul class="treeview-menu">
+								<li class="<?php echo ($activeSubMenu == 'individual-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "report"), null, true) ?>"> Individual Report</a></li>
+								<li class="<?php echo ($activeSubMenu == 'summary-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>"> Summary Report</a></li>
+							</ul>
+						</li>
+						<li class="<?php echo ($activeMenu == 'corrective-action') ? ' active ' : '';  ?>">
+							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "corrective"), null, true) ?>">
+								<i class="icon icon-check"></i> <span>Corrective Actions</span>
+							</a>
+						</li>
+						<li class="<?php echo ($activeMenu == 'all-schemes') ? ' active ' : '';  ?>">
+							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "all-schemes"), null, true) ?>">
+								<i class="icon icon-list-ul"></i> <span>All Schemes</span>
+							</a>
+						</li>
+						<li class="<?php echo ($activeMenu == 'defaulted-schemes') ? ' active ' : '';  ?>">
+							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "defaulted-schemes"), null, true) ?>">
+								<i class="icon icon-exclamation"></i> <span>Defaulted Schemes</span>
+							</a>
+						</li>
 
-            <li class="treeview <?php echo ($activeMenu == 'my-account') ? ' active ' : '';  ?>">
-              <a href="#" class="" data-toggle="" role="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-user"></i> <span>My Account</span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
-              <ul class="treeview-menu">
-                <li class="<?php echo ($activeSubMenu == 'user-info') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">My Login Information</a></li>
-                <li class="<?php echo ($activeSubMenu == 'testers') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>">PT Participant Info</a></li>
-                <li class="<?php echo ($activeSubMenu == 'scheme') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>">Scheme Information</a></li>
-                <li class="<?php echo ($activeSubMenu == 'change-password') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "password"), null, true) ?>">Change Password</a></li>
-              </ul>
-            </li>
-            <li class="<?php echo ($activeMenu == 'file-downloads') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "file-downloads"), null, true) ?>"><i class="icon icon-download-alt"></i> <span> Downloads </span></a></li>
-            <li class="<?php echo ($activeMenu == 'contact-us') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "contact-us"), null, true) ?>"><i class="icon icon-envelope"></i> <span>Contact Us </span></a></li>
-          <?php } ?>
+						<li class="treeview <?php echo ($activeMenu == 'my-account') ? ' active ' : '';  ?>">
+							<a href="#" class="" data-toggle="" role="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-user"></i> <span>My Account</span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
+							<ul class="treeview-menu">
+								<li class="<?php echo ($activeSubMenu == 'user-info') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">My Login Information</a></li>
+								<li class="<?php echo ($activeSubMenu == 'testers') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>">PT Participant Info</a></li>
+								<li class="<?php echo ($activeSubMenu == 'scheme') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>">Scheme Information</a></li>
+								<li class="<?php echo ($activeSubMenu == 'change-password') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "password"), null, true) ?>">Change Password</a></li>
+							</ul>
+						</li>
+						<li class="<?php echo ($activeMenu == 'file-downloads') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "file-downloads"), null, true) ?>"><i class="icon icon-download-alt"></i> <span> Downloads </span></a></li>
+						<li class="<?php echo ($activeMenu == 'contact-us') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "contact-us"), null, true) ?>"><i class="icon icon-envelope"></i> <span>Contact Us </span></a></li>
+					<?php } ?>
 
 
-          <?php if (!isset($authNameSpace->dm_id)) { ?>
-            <li>
-              <a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName; ?> Enrollment</span></a>
-            </li>
-            <li>
-              <a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span>Participant Login</span></a>
-            </li>
-          <?php } else { ?>
-            <li>
-              <a class="" href="<?php echo $this->url(array("controller" => "auth", "action" => "logout"), null, true) ?>"><i class="icon icon-signout"></i> <span>Logout</span></a>
-            </li>
-          <?php } ?>
+					<?php if (!isset($authNameSpace->dm_id)) { ?>
+						<li>
+							<a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName; ?> Enrollment</span></a>
+						</li>
+						<li>
+							<a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span>Participant Login</span></a>
+						</li>
+					<?php } else { ?>
+						<li>
+							<a class="" href="<?php echo $this->url(array("controller" => "auth", "action" => "logout"), null, true) ?>"><i class="icon icon-signout"></i> <span>Logout</span></a>
+						</li>
+					<?php } ?>
 
-        </ul>
-      </section>
-      <!-- /.sidebar -->
-    </aside>
+				</ul>
+			</section>
+			<!-- /.sidebar -->
+		</aside>
 
-    <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-      <?php if (isset($authNameSpace->announcementMsg) && trim($authNameSpace->announcementMsg) != '') { ?>
-        <div class="marquee">
-          <p><?php echo ($authNameSpace->announcementMsg); ?></p>
-        </div>
-      <?php } ?>
+		<!-- Content Wrapper. Contains page content -->
+		<div class="content-wrapper">
+			<?php if (isset($authNameSpace->announcementMsg) && trim($authNameSpace->announcementMsg) != '') { ?>
+				<div class="marquee">
+					<p><?php echo ($authNameSpace->announcementMsg); ?></p>
+				</div>
+			<?php } ?>
 
-      <!-- Content Header (Page header) -->
-      <section class="content">
-        <?php echo $this->layout()->content; ?>
-        <br />
-      </section>
+			<!-- Content Header (Page header) -->
+			<section class="content">
+				<?php echo $this->layout()->content; ?>
+				<br />
+			</section>
 
-    </div><!-- /.content-wrapper -->
+		</div><!-- /.content-wrapper -->
 
-    <div id="dDiv" class="dialog">
-      <div style="text-align:center"><span onclick="closeLayoutModal();" style="float:right;clear:both;" class="closeModal"></span></div>
-      <iframe id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0'>some problem</iframe>
-    </div>
+		<div id="dDiv" class="dialog">
+			<div style="text-align:center"><span onclick="closeLayoutModal();" style="float:right;clear:both;" class="closeModal"></span></div>
+			<iframe id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0'>some problem</iframe>
+		</div>
 
-    <footer class="main-footer">
-      <div class="pull-right hidden-xs">
-        <span>ver. <?php echo APP_VERSION; ?></span>
-      </div>
-      <span>This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC).</span>
-    </footer>
+		<footer class="main-footer">
+			<div class="pull-right hidden-xs">
+				<span>ver. <?php echo APP_VERSION; ?></span>
+			</div>
+			<span>This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC).</span>
+		</footer>
 
-    <div class="control-sidebar-bg"></div>
-  </div><!-- ./wrapper -->
+		<div class="control-sidebar-bg"></div>
+	</div><!-- ./wrapper -->
 
-  <!-- jQuery 2.1.4 -->
+	<!-- jQuery 2.1.4 -->
 
-  <!-- jQuery UI 1.11.4 -->
-  <script src="<?php echo $this->baseUrl("assets/plugins/jQueryUI/jquery-ui.min.js"); ?>"></script>
-  <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-  <script>
-    $.widget.bridge('uibutton', $.ui.button);
-  </script>
-  <!-- Bootstrap 3.3.5 -->
-  <script src="<?php echo $this->baseUrl('assets/bootstrap/js/bootstrap.min.js'); ?>"></script>
-  <script type="text/javascript" src="<?php echo $this->baseUrl("js/hoverIntent.js"); ?>"></script>
+	<!-- jQuery UI 1.11.4 -->
+	<script src="<?php echo $this->baseUrl("assets/plugins/jQueryUI/jquery-ui.min.js"); ?>"></script>
+	<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+	<script>
+		$.widget.bridge('uibutton', $.ui.button);
+	</script>
+	<!-- Bootstrap 3.3.5 -->
+	<script src="<?php echo $this->baseUrl('assets/bootstrap/js/bootstrap.min.js'); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl("js/hoverIntent.js"); ?>"></script>
 
-  <script src="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.min.js"); ?>"></script>
-  <script src="<?php echo $this->baseUrl("assets/plugins/datatables/dataTables.bootstrap.min.js"); ?>"></script>
-  <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
-  <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
-  <script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
-  <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayModal.js"); ?>"></script>
-  <script type="text/javascript" src="<?php echo $this->baseUrl("js/bootbox.min.js"); ?>"></script>
-  <link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-multiselect.css"); ?>" type="text/css" media="all">
-  <script type="text/javascript" src="<?php echo $this->baseUrl("js/bootstrap-multiselect.js"); ?>"></script>
-  <!-- AdminLTE App -->
-  <script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
+	<script src="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.min.js"); ?>"></script>
+	<script src="<?php echo $this->baseUrl("assets/plugins/datatables/dataTables.bootstrap.min.js"); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayModal.js"); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl("js/bootbox.min.js"); ?>"></script>
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-multiselect.css"); ?>" type="text/css" media="all">
+	<script type="text/javascript" src="<?php echo $this->baseUrl("js/bootstrap-multiselect.js"); ?>"></script>
+	<!-- AdminLTE App -->
+	<script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
 
-  <script type="text/javascript">
-    $(document).ready(function() {
-      <?php
-      $alertMsg = new Zend_Session_Namespace('alertSpace');
-      if (isset($alertMsg->message) && $alertMsg->message != "") {
-      ?>
-        alert("<?php echo $alertMsg->message; ?>");
-      <?php
-        $alertMsg->message = "";
-        unset($alertMsg->message);
-      }
-      ?>
-    });
+	<script type="text/javascript">
+		$(document).ready(function() {
+			<?php
+			$alertMsg = new Zend_Session_Namespace('alertSpace');
+			if (isset($alertMsg->message) && $alertMsg->message != "") {
+			?>
+				alert("<?php echo $alertMsg->message; ?>");
+			<?php
+				$alertMsg->message = "";
+				unset($alertMsg->message);
+			}
+			?>
+		});
 
-    function layoutModal(url, w, h) {
-      showdefModal('dDiv', w, h);
-      document.getElementById('dFrame').style.height = h + 'px';
-      document.getElementById('dFrame').style.width = w + 'px';
-      document.getElementById('dFrame').src = url;
-    }
+		function layoutModal(url, w, h) {
+			showdefModal('dDiv', w, h);
+			document.getElementById('dFrame').style.height = h + 'px';
+			document.getElementById('dFrame').style.width = w + 'px';
+			document.getElementById('dFrame').src = url;
+		}
 
-    function closeLayoutModal() {
-      document.getElementById('dFrame').src = "";
-      //window.location.reload(true);
-      hidedefModal();
-    }
+		function closeLayoutModal() {
+			document.getElementById('dFrame').src = "";
+			//window.location.reload(true);
+			hidedefModal();
+		}
 
-    Array.prototype.remove = function() {
-      var what, a = arguments,
-        L = a.length,
-        ax;
-      while (L && this.length) {
-        what = a[--L];
-        while ((ax = this.indexOf(what)) != -1) {
-          this.splice(ax, 1);
-        }
-      }
-      return this;
-    }
-  </script>
+		Array.prototype.remove = function() {
+			var what, a = arguments,
+				L = a.length,
+				ax;
+			while (L && this.length) {
+				what = a[--L];
+				while ((ax = this.indexOf(what)) != -1) {
+					this.splice(ax, 1);
+				}
+			}
+			return this;
+		}
+	</script>
 </body>
 
 </html>
