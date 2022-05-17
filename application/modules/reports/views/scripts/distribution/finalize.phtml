@@ -103,7 +103,7 @@ if (count($this->shipment) > 0) {
     ?>
     <?php if ($reportQueue != 'disabled') { ?>
         <div class="summaryDivTop row" align="center">
-            
+
 
 
         </div>
@@ -115,6 +115,8 @@ if (count($this->shipment) > 0) {
                 <th style="width:40px;"></th>
                 <th>Participant/Tester ID</th>
                 <th>Participant/Tester</th>
+                <th>Province</th>
+                <th>District</th>
                 <th>Response Score</th>
                 <th>Documentation Score</th>
                 <th>Result</th>
@@ -167,6 +169,8 @@ if (count($this->shipment) > 0) {
                     <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['unique_identifier'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?></td>
+                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['state'] ?></td>
+                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['district'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
@@ -348,6 +352,12 @@ if (count($this->shipment) > 0) {
                 "aoColumns": [{
                         "bSortable": false,
                         "aTargets": [0]
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
                     },
                     {
                         "sClass": "center"

@@ -1146,7 +1146,7 @@ class Application_Service_Evaluation
 			->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id')
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
-			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('first_name', 'last_name', 'lab_name', 'unique_identifier', 'country'))
+			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('first_name', 'last_name', 'lab_name', 'unique_identifier', 'country', 'state', 'district'))
 			->join(array('c' => 'countries'), 'p.country=c.id', array('country_name' => 'iso_name'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result')
 			->where("s.shipment_id = ?", $shipmentId);
