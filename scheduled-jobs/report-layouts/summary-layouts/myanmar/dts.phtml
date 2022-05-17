@@ -298,6 +298,7 @@ if ($resultArray['shipment'] != "") {
             $graph->xaxis->SetTickLabels($dataY);
             $graph->xaxis->SetTextLabelInterval(1);
             $graph->xaxis->SetLabelAngle(15);
+            $graph->xaxis->SetLabelAlign(0, 'top', 'middle');
             $graph->yaxis->HideLine(false);
             $graph->yaxis->HideTicks(false, false);
 
