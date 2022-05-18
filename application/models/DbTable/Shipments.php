@@ -2316,8 +2316,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     array_push($algorithmUsedSelectOptions, 'myanmarNationalDtsAlgo');
                 }
             }
+            if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) {
+                array_push($algorithmUsedSelectOptions, 'ghanaNationalDtsAlgo');
+            }
             foreach ($algorithmUsedSelectOptions as $row) {
-                $algorithmUsedSelect[]      = array('value' => $row, 'show' => ($row != 'myanmarNationalDtsAlgo') ? ucwords($row) : 'Myanmar National Algorithm', 'selected' => (isset($shipment['attributes']["algorithm"]) && ($shipment['attributes']["algorithm"] == $row) ? 'selected' : ''));
+                $algorithmUsedSelect[]      = array(
+                    'value' => $row,
+                    'show' => ($row != 'myanmarNationalDtsAlgo') ? ucwords($row) : 'Myanmar National Algorithm',
+                    'selected' => (isset($shipment['attributes']["algorithm"]) && ($shipment['attributes']["algorithm"] == $row) ? 'selected' : '')
+                );
             }
 
             if (isset($participant) && count($participant) > 0) {
@@ -2331,7 +2338,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'testingDate'               => (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_date'])) : '',
                     'algorithmUsedSelect'       => $algorithmUsedSelect,
                     'algorithmUsedSelected'     => (isset($shipment['attributes']["algorithm"]) && $shipment['attributes']["algorithm"] != '') ? $shipment['attributes']["algorithm"] : '',
-
                     'sampleType'                => (isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != '') ? $shipment['shipment_attributes']["sampleType"] : '',
                     'screeningTest'             => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
                 );
