@@ -2340,57 +2340,65 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'algorithmUsedSelected'     => (isset($shipment['attributes']["algorithm"]) && $shipment['attributes']["algorithm"] != '') ? $shipment['attributes']["algorithm"] : '',
                     'sampleType'                => (isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != '') ? $shipment['shipment_attributes']["sampleType"] : '',
                     'screeningTest'             => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
+                    // 'conditionOfPTSamples'      => '',
+                    // 'refridgerator'      => '',
+                    // 'roomTemperature'      => '',
+                    // 'stopWatch'      => '',
+                    // 'conditionOfPTSamplesSelect'      => '',
+                    // 'refridgeratorSelect'      => '',
+                    // 'stopWatchSelect'      => '',
+                    // 'sampleRehydrationDate' => ''
                 );
-                // if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
-                $section2['conditionOfPTSamples'] = (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] != '') ? $shipment['attributes']["condition_pt_samples"] : '';
-                $section2['refridgerator'] = (isset($shipment['attributes']["refridgerator"]) && $shipment['attributes']["refridgerator"] != '') ? $shipment['attributes']["refridgerator"] : '';
-                $section2['roomTemperature'] = (isset($shipment['attributes']["room_temperature"]) && $shipment['attributes']["room_temperature"] != '') ? $shipment['attributes']["room_temperature"] : '';
-                $section2['stopWatch'] = (isset($shipment['attributes']["stop_watch"]) && $shipment['attributes']["stop_watch"] != '') ? $shipment['attributes']["stop_watch"] : '';
+                if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
+                    $section2['conditionOfPTSamples'] = (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] != '') ? $shipment['attributes']["condition_pt_samples"] : '';
+                    $section2['refridgerator'] = (isset($shipment['attributes']["refridgerator"]) && $shipment['attributes']["refridgerator"] != '') ? $shipment['attributes']["refridgerator"] : '';
+                    $section2['roomTemperature'] = (isset($shipment['attributes']["room_temperature"]) && $shipment['attributes']["room_temperature"] != '') ? $shipment['attributes']["room_temperature"] : '';
+                    $section2['stopWatch'] = (isset($shipment['attributes']["stop_watch"]) && $shipment['attributes']["stop_watch"] != '') ? $shipment['attributes']["stop_watch"] : '';
 
-                $section2['conditionOfPTSamplesSelect'] = array(
-                    array(
-                        'value'     =>  'good',
-                        'show'      =>  'Good',
-                        'selected'  => (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] == 'good') ? 'selected' : ''
-                    ),
-                    array(
-                        'value'     =>  'bad',
-                        'show'      =>  'Bad',
-                        'selected'  => (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] == 'bad') ? 'selected' : ''
-                    ),
-                    array(
-                        'value'     =>  'not-sure',
-                        'show'      =>  'Not Sure',
-                        'selected'  => (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] == 'not-sure') ? 'selected' : ''
-                    )
-                );
+                    $section2['conditionOfPTSamplesSelect'] = array(
+                        array(
+                            'value'     =>  'good',
+                            'show'      =>  'Good',
+                            'selected'  => (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] == 'good') ? 'selected' : ''
+                        ),
+                        array(
+                            'value'     =>  'bad',
+                            'show'      =>  'Bad',
+                            'selected'  => (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] == 'bad') ? 'selected' : ''
+                        ),
+                        array(
+                            'value'     =>  'not-sure',
+                            'show'      =>  'Not Sure',
+                            'selected'  => (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] == 'not-sure') ? 'selected' : ''
+                        )
+                    );
 
-                $section2['refridgeratorSelect'] = array(
-                    array(
-                        'value'     =>  'available',
-                        'show'      =>  'Available',
-                        'selected'  => (isset($shipment['attributes']["refridgerator"]) && $shipment['attributes']["refridgerator"] == 'available') ? 'selected' : ''
-                    ),
-                    array(
-                        'value'     =>  'not-available',
-                        'show'      =>  'Not Available',
-                        'selected'  => (isset($shipment['attributes']["refridgerator"]) && $shipment['attributes']["refridgerator"] == 'not-available') ? 'selected' : ''
-                    )
-                );
+                    $section2['refridgeratorSelect'] = array(
+                        array(
+                            'value'     =>  'available',
+                            'show'      =>  'Available',
+                            'selected'  => (isset($shipment['attributes']["refridgerator"]) && $shipment['attributes']["refridgerator"] == 'available') ? 'selected' : ''
+                        ),
+                        array(
+                            'value'     =>  'not-available',
+                            'show'      =>  'Not Available',
+                            'selected'  => (isset($shipment['attributes']["refridgerator"]) && $shipment['attributes']["refridgerator"] == 'not-available') ? 'selected' : ''
+                        )
+                    );
 
-                $section2['stopWatchSelect'] = array(
-                    array(
-                        'value'     =>  'available',
-                        'show'      =>  'Available',
-                        'selected'  => (isset($shipment['attributes']["stop_watch"]) && $shipment['attributes']["stop_watch"] == 'available') ? 'selected' : ''
-                    ),
-                    array(
-                        'value'     =>  'not-available',
-                        'show'      =>  'Not Available',
-                        'selected'  => (isset($shipment['attributes']["stop_watch"]) && $shipment['attributes']["stop_watch"] == 'not-available') ? 'selected' : ''
-                    )
-                );
-                // }
+                    $section2['stopWatchSelect'] = array(
+                        array(
+                            'value'     =>  'available',
+                            'show'      =>  'Available',
+                            'selected'  => (isset($shipment['attributes']["stop_watch"]) && $shipment['attributes']["stop_watch"] == 'available') ? 'selected' : ''
+                        ),
+                        array(
+                            'value'     =>  'not-available',
+                            'show'      =>  'Not Available',
+                            'selected'  => (isset($shipment['attributes']["stop_watch"]) && $shipment['attributes']["stop_watch"] == 'not-available') ? 'selected' : ''
+                        )
+                    );
+                }
                 if ((isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != 'serum' && $shipment['shipment_attributes']["sampleType"] != 'plasma')) {
                     $section2['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
                 }
@@ -2972,26 +2980,74 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
                     $allSamplesResult['resultsText'] = array('Result-1', 'Result-2', 'Result-3', 'Repeat Result-1', 'Repeat Result-2', 'Repeat Result-3', 'Final-Result');
                 } else {
-                    $allSamplesResult['resultsText'] = array('Result-1', 'Result-2', 'Result-3', 'Final-Result');
+                    $allSamplesResult['resultsText'] = array('Result-1', 'Result-2', 'Result-3', 'Repeat Result-1', 'Repeat Result-2', 'Repeat Result-3', 'Final-Result');
                 }
                 // }
 
                 if (!$testThreeOptional) {
-                    $allSamplesResult['resultStatus'] = array(true, true, true, true);
+                    $allSamplesResult['resultStatus'] = array(
+                        true, // Result-1
+                        true, // Result-2 
+                        false, // Result-3
+                        false, // Repeat Result-1
+                        false, // Repeat Result-2
+                        false, // Repeat Result-3
+                        true  // Final Result
+                    );
                 } else {
-                    $allSamplesResult['resultStatus'] = array(true, true, false, true);
+                    $allSamplesResult['resultStatus'] = array(
+                        true, // Result-1
+                        true, // Result-2 
+                        true, // Result-3
+                        false, // Repeat Result-1
+                        false, // Repeat Result-2
+                        false, // Repeat Result-3
+                        true  // Final Result
+                    );
                 }
                 if ((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'yes')) {
-                    $allSamplesResult['resultStatus'] = array(true, false, false, true);
+                    $allSamplesResult['resultStatus'] = array(
+                        true, // Result-1
+                        false, // Result-2 
+                        false, // Result-3
+                        false, // Repeat Result-1
+                        false, // Repeat Result-2
+                        false, // Repeat Result-3
+                        true  // Final Result
+                    );
                 }
                 if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
                     if (!$testThreeOptional) {
-                        $allSamplesResult['resultStatus'] = array(true, true, true, true, true, true, true);
+                        $allSamplesResult['resultStatus'] = array(
+                            true, // Result-1
+                            true, // Result-2 
+                            true, // Result-3
+                            true, // Repeat Result-1
+                            true, // Repeat Result-2
+                            true, // Repeat Result-3
+                            true  // Final Result
+                        );
                     } else {
-                        $allSamplesResult['resultStatus'] = array(true, true, false, true, true, false, true);
+                        $allSamplesResult['resultStatus'] = array(
+                            true, // Result-1
+                            true, // Result-2 
+                            false, // Result-3
+                            true, // Repeat Result-1
+                            true, // Repeat Result-2
+                            false, // Repeat Result-3
+                            true  // Final Result
+                        );
                     }
                     if ((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'yes')) {
-                        $allSamplesResult['resultStatus'] = array(true, false, false, true, false, false, true);
+                        $allSamplesResult['resultStatus'] = array(
+                            true, // Result-1
+                            false, // Result-2 
+                            false, // Result-3
+                            true, // Repeat Result-1
+                            false, // Repeat Result-2
+                            false, // Repeat Result-3
+                            true  // Final Result
+                        );
                     }
                 }
                 $allSamplesResult['sampleList'][$sample['sample_label']]['Final-Result']['status']    = true;
