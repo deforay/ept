@@ -10,6 +10,7 @@ $screeningTest = false;
 
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
 $allowRepeatTests = (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests != "") ? $this->config->evaluation->dts->allowRepeatTests : 'no';
+$dtsSchemeType = (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType != "") ? $this->config->evaluation->dts->dtsSchemeType : 'standard';
 
 if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
     $testThreeHidden = true;
@@ -18,12 +19,6 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
     $testTwoHidden = true;
     $testThreeHidden = true;
     $screeningTest = true;
-}
-if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
-    $testThreeHidden = false;
-    $testTwoHidden = false;
-    $screeningTest = false;
-    $allowRepeatTests = "no";
 }
 if (($testTwoHidden)) {
     $noTest = 1;
@@ -42,12 +37,32 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     $testReceiptDate = date('d-M-Y');
 }
 $syphilisActive = false;
-// if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
-if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
-    $syphilisActive = true;
-}
+
 // Zend_Debug::dump($this->allSamples);
 // die;
+
+if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
+    $testThreeHidden = false;
+    $testTwoHidden = false;
+    $screeningTest = false;
+}
+$displaySampleConditionFields = false;
+if ($dtsSchemeType == 'malawi') {
+    $displaySampleConditionFields = true;
+}
+$ghanaNationalDtsAlgo = false;
+if ($dtsSchemeType == 'ghana') {
+    $ghanaNationalDtsAlgo = true;
+}
+// if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && $ghanaNationalDtsAlgo) {
+if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && $ghanaNationalDtsAlgo) {
+    $syphilisActive = true;
+}
+$repeatTest = false;
+if ($dtsSchemeType == 'ghana' && $syphilisActive) {
+    $repeatTest = true;
+}
+// then show the test 3
 ?>
 
 <style>
@@ -205,7 +220,7 @@ if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableS
                             </td>
                         </tr>
 
-                        <?php if ((isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "yes")) { ?>
+                        <?php if ((isset($displaySampleConditionFields) && $displaySampleConditionFields == true)) { ?>
 
                             <tr class="light malawiNationalDtsAlgo">
                                 <td><label for="conditionOfPTSamples" class="label-control">Condition Of PT Samples</label></td>
@@ -564,7 +579,7 @@ if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableS
                                     <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'>Result-3</th>
                                 <?php } ?>
                                 <th class="colwidth" style="width: <?php echo $width; ?>%;">Final Result</th>
-                                <?php if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) { ?>
+                                <?php if ($ghanaNationalDtsAlgo) { ?>
                                     <th class="colwidth" style="width: <?php echo $width; ?>%;">Is this a Retest?</th>
                                 <?php } ?>
                             </tr>
@@ -642,7 +657,7 @@ if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableS
                                         </div>
                                     <?php } ?>
                                 </td>
-                                <?php if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) { ?>
+                                <?php if ($ghanaNationalDtsAlgo) { ?>
                                     <td style="width: <?php echo $width; ?>%;" class="colwidth">
                                         <select name="if_this_is_retest[]" id="<?php echo "if_this_is_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
                                             <option value="">--Select--</option>
