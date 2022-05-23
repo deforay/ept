@@ -2340,6 +2340,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'algorithmUsedSelected'     => (isset($shipment['attributes']["algorithm"]) && $shipment['attributes']["algorithm"] != '') ? $shipment['attributes']["algorithm"] : '',
                     'sampleType'                => (isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != '') ? $shipment['shipment_attributes']["sampleType"] : '',
                     'screeningTest'             => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
+                    'dtsSchemeType'             => (isset($shipment['shipment_attributes']["dtsSchemeType"]) && $shipment['shipment_attributes']["dtsSchemeType"] != '') ? $shipment['shipment_attributes']["dtsSchemeType"] : '',
                     // 'conditionOfPTSamples'      => '',
                     // 'refridgerator'      => '',
                     // 'roomTemperature'      => '',
