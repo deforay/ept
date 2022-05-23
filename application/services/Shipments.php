@@ -544,9 +544,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
-
         $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate', 'algorithm');
-
         $db->beginTransaction();
         try {
 
@@ -572,6 +570,8 @@ class Application_Service_Shipments
             $attributes["refridgerator"] = (isset($params['refridgerator']) && !empty($params['refridgerator'])) ? $params['refridgerator'] : '';
             $attributes["room_temperature"] = (isset($params['roomTemperature']) && !empty($params['roomTemperature'])) ? $params['roomTemperature'] : '';
             $attributes["stop_watch"] = (isset($params['stopWatch']) && !empty($params['stopWatch'])) ? $params['stopWatch'] : '';
+            if ($params['']) {
+            }
             $attributes = json_encode($attributes);
 
             $data = array(
@@ -1234,6 +1234,9 @@ class Application_Service_Shipments
         $db = new Application_Model_DbTable_Shipments();
         $distroService = new Application_Service_Distribution();
         $distro = $distroService->getDistribution($params['distribution']);
+        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+        $sec = APPLICATION_ENV;
 
         $controlCount = 0;
         foreach ($params['control'] as $control) {
@@ -1256,6 +1259,10 @@ class Application_Service_Shipments
         }
         if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
             $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
+        }
+
+        if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "") {
+            $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
         }
         $data = array(
             'shipment_code'         => $params['shipmentCode'],
@@ -1807,7 +1814,9 @@ class Application_Service_Shipments
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s' => 'shipment'))->where('shipment_id = ' . $params['shipmentId']));
-
+        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+        $sec = APPLICATION_ENV;
         $scheme = $shipmentRow['scheme_type'];
 
         $size = count($params['sampleName']);
@@ -2171,6 +2180,9 @@ class Application_Service_Shipments
         }
         if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
             $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
+        }
+        if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "") {
+            $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
         }
         /* Method Of Evaluation for vl form */
         if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
