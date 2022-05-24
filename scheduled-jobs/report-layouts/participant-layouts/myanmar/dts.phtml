@@ -220,7 +220,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
         $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
         $rehydrateHours = $sampleRehydrateDays * 24;
-        $sampleConditionFields = (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : 'no';
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
@@ -290,27 +289,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
-
-        if ($sampleConditionFields == 'yes') {
-            $conditionOfPTSamples = (isset($attributes['condition_pt_samples']) && $attributes['condition_pt_samples'] != "") ? ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) : "";
-            $refridgerator = (isset($attributes['refridgerator']) && $attributes['refridgerator'] != "") ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
-            $roomTemperature = (isset($attributes['room_temperature']) && $attributes['room_temperature'] != "") ? $attributes['room_temperature'] : "";
-            $stopWatch = (isset($attributes['stop_watch']) && $attributes['stop_watch'] != "") ? ucwords(str_replace('-', ' ', $attributes['stop_watch'])) : "";
-
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Condition of PT Samples</strong><br>' . $conditionOfPTSamples . '</td>';
-            $labInfo .= '	<td><strong>Refridgerator</strong><br>' . $refridgerator . '</td>';
-            $labInfo .= '	<td><strong>Room Temperature</strong><br>' . $roomTemperature . '</td>';
-            $labInfo .= '</tr>';
-
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Stop Watch</strong><br>' . $stopWatch . '</td>';
-        } else {
-            $labInfo .= '<tr>';
-        }
-
-
-        $labInfo .= '	<td>';
+        $labInfo .= '<tr><td>';
         $labInfo .= '<strong>Supervisor Review</strong>';
         if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
@@ -670,13 +649,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                 <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>';
                 $docRes .= '</tr>';
 
-                if (!empty($attributes['refridgerator'])) {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
-                }
+                $scoreDoc = 0;
+                $img = $imgFail;
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>';
