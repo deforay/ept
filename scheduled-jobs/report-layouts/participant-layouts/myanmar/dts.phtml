@@ -158,38 +158,20 @@ if (sizeof($resultArray['shipment']) > 0) {
             $allowRepeatTests = "no";
             $shipmentAttributesScreeningTestDisplay = "";
             $testThreeOptionalDisplay = "";
-            if (isset($result['manual_override']) && $result['manual_override'] == "yes") {
-                $dwidth = 100;
-                $width = 15;
-                $dswidth = 0;
+            $dswidth = 20;
+            $dwidth = 100;
+            $width = 15;
+        } else {
+            if (($testTwoHidden)) {
+                $width = 16.7;
+            } else if ($testThreeHidden) {
+                $width = 14.3;
             } else {
-                $dswidth = 20;
-                $dwidth = 80;
                 $width = 12.5;
             }
-        } else {
-            if (isset($result['manual_override']) && $result['manual_override'] == "yes") {
-                if (($testTwoHidden)) {
-                    $width = 33.8;
-                } else if ($testThreeHidden) {
-                    $width = 22.5;
-                } else {
-                    $width = 16.9;
-                }
-                $dwidth = 100;
-                $dswidth = 0;
-            } else {
-                if (($testTwoHidden)) {
-                    $width = 16.7;
-                } else if ($testThreeHidden) {
-                    $width = 14.3;
-                } else {
-                    $width = 12.5;
-                }
 
-                $dwidth = 80;
-                $dswidth = 20;
-            }
+            $dwidth = 100;
+            $dswidth = 20;
         }
 
 
@@ -330,14 +312,10 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $labInfo .= '	<td>';
         $labInfo .= '<strong>Supervisor Review</strong>';
-        if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
-            $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
-        } else if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
-            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
-            $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
-        } else {
+        if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
+        $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
         $labInfo .= '</td><td>';
         $labInfo .= '	<strong>Supervisor Name</strong>';
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
@@ -490,14 +468,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $sWidth = (($width - 5) * 2);
                 }
             }
-            if (isset($result['manual_override']) && $result['manual_override'] == "yes") {
-                $width = 11.2;
-            }
             $labRes .= '<th style="text-align:center;font-weight:bold;width:' . ($width + 2) . '%;">Expected Result</th>
                         <th style="text-align:center;font-weight:bold;width:' . ($width + 2) . '%;">Your Result</th>';
-            if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $sWidth . '%;" colspan="2">Score</th>';
-            }
             $labRes .= '</tr>';
 
             $nonMandatorySamples = array();
@@ -569,10 +541,6 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
                 $labRes .= '<td style="text-align:center;">' . $dtsResultsMap[ucfirst(strtolower($response['referenceResult']))] . '</td>
                             <td style="text-align:center;">' . $dtsResultsMap[ucfirst(strtolower($response['labResult']))] . '</td>';
-                if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                    $labRes .= '<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $score . '</td>';
-                }
                 $labRes .= '</tr>';
             }
             $labRes .= '</table>';
@@ -622,9 +590,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 					<table border="1" style="font-size:12px;">
 						<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;width:' . $dwidth . '%;">Documentation Item</td>';
-            if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                $docRes .= '<td style="text-align:center;font-weight:bold;width:' . $dswidth . '%;" colspan="2">Score</td>';
-            }
             $docRes .= '</tr>';
 
 
@@ -638,10 +603,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr>
 							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>';
-            if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
-            }
             $docRes .= '</tr>';
 
             if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "" && $shipmentAttributesSampleTypeDisplay == "") {
@@ -654,10 +615,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
 							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>';
-            if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
-            }
             $docRes .= '</tr>';
 
             if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
@@ -670,10 +627,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr>
 							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>';
-            if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
-            }
             $docRes .= '</tr>';
 
 
@@ -687,10 +640,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
 							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
-            if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                $docRes .= '<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
-            }
             $docRes .= '</tr>';
 
             // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
@@ -705,10 +654,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>';
-                if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                    $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                    <td style="text-align:center;">' . $scoreDoc . '</td>';
-                }
                 $docRes .= '</tr>';
             }
 
@@ -723,10 +668,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>';
-                if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                    $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
-                }
                 $docRes .= '</tr>';
 
                 if (!empty($attributes['refridgerator'])) {
@@ -739,10 +680,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>';
-                if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                    $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
-                }
                 $docRes .= '</tr>';
 
                 if (!empty($attributes['room_temperature'])) {
@@ -755,10 +692,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>';
-                if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                    $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
-                }
                 $docRes .= '</tr>';
 
 
@@ -772,10 +705,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>';
-                if (isset($result['manual_override']) && $result['manual_override'] != "yes") {
-                    $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
-                }
                 $docRes .= '</tr>';
             }
 
