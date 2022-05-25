@@ -151,6 +151,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $width = 16.7;
         }
 
+        $dwidth = 80;
         if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
             $testThreeHidden = false;
             $testTwoHidden = false;
@@ -159,7 +160,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $shipmentAttributesScreeningTestDisplay = "";
             $testThreeOptionalDisplay = "";
             $dswidth = 20;
-            $dwidth = 100;
             $width = 15;
         } else {
             if (($testTwoHidden)) {
@@ -170,7 +170,6 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $width = 12.5;
             }
 
-            $dwidth = 100;
             $dswidth = 20;
         }
 
@@ -565,13 +564,12 @@ if (sizeof($resultArray['shipment']) > 0) {
             $imgPass = UPLOAD_PATH . '/../images/check.jpg';
             $imgFail = UPLOAD_PATH . '/../images/cross.jpg';
 
-            $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>
-					<table border="1" style="font-size:12px;">
+            // $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>
+            $docRes = '<table border="1" style="font-size:12px;">
 						<tr style="background-color:#dbe4ee;">
-							<td style="text-align:center;font-weight:bold;width:' . $dwidth . '%;">Documentation Item</td>';
-            $docRes .= '</tr>';
-
-
+							<td style="text-align:center;font-weight:bold;width:' . $dwidth . '%;">Documentation Item</td>
+                            <td style="text-align:center;font-weight:bold;width:' . $dswidth . '%;">Score</td>
+                        </tr>';
             if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
                 $scoreDoc = $documentationScorePerItem;
                 $img = $imgPass;
@@ -581,8 +579,9 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $docRes .= '<tr>
-							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>';
-            $docRes .= '</tr>';
+							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>
+                            <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                        </tr>';
 
             if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "" && $shipmentAttributesSampleTypeDisplay == "") {
                 $scoreDoc = $documentationScorePerItem;
@@ -593,8 +592,9 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
-							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>';
-            $docRes .= '</tr>';
+							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>
+                            <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                        </tr>';
 
             if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
                 $scoreDoc = $documentationScorePerItem;
@@ -605,10 +605,9 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $docRes .= '<tr>
-							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>';
-            $docRes .= '</tr>';
-
-
+                            <td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
+                            <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                        </tr>';
             if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
                 $scoreDoc = 0;
                 $img = $imgFail;
@@ -618,8 +617,9 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
-							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
-            $docRes .= '</tr>';
+							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>
+                            <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                        </tr>';
 
             // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
             if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
@@ -632,8 +632,9 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>';
-                $docRes .= '</tr>';
+                                <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
+                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                            </tr>';
             }
 
             if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
@@ -646,15 +647,17 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>';
-                $docRes .= '</tr>';
+                                <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>
+                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                            </tr>';
 
                 $scoreDoc = 0;
                 $img = $imgFail;
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>';
-                $docRes .= '</tr>';
+                                <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>
+                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                            </tr>';
 
                 if (!empty($attributes['room_temperature'])) {
                     $scoreDoc = $documentationScorePerItem;
@@ -665,9 +668,9 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>';
-                $docRes .= '</tr>';
-
+                                <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>
+                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                            </tr>';
 
                 if (!empty($attributes['stop_watch'])) {
                     $scoreDoc = $documentationScorePerItem;
@@ -678,10 +681,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>';
-                $docRes .= '</tr>';
+                                <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>
+                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                            </tr>';
             }
-
 
             $docRes .= '</table>';
 
