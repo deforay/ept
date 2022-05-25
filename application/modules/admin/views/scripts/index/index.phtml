@@ -484,7 +484,7 @@ if (count($this->pendingParticipants) > 0) {
 						$n = 0;
 						foreach ($this->ptchart['total']['participants'] as $scheme => $total) {
 							echo "{
-							name: '" . $this->ptchart['name'][$scheme] . "',
+							name: '" . addslashes($this->ptchart['name'][$scheme]) . "',
 							y: " . $total . ",
 							drilldown: 'a-" . $scheme . "',
 						}";

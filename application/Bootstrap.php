@@ -53,18 +53,21 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $session = new Zend_Session_Namespace('session');
         $langLocale = isset($session->lang) ? $session->lang : $locale;
 
-        // Set up and load the translations (all of them!)
         $translate = new Zend_Translate(
             'gettext',
-            APPLICATION_PATH . DIRECTORY_SEPARATOR . 'languages',
-            $langLocale,
-            array('disableNotices' => true)
+            APPLICATION_PATH . DIRECTORY_SEPARATOR . "languages/$langLocale/$langLocale.mo",
+            $langLocale
         );
 
-        //$translate->setLocale($langLocale); // Use this if you only want to load the translation matching current locale, experiment.
+        $translate = new Zend_Translate(array(
+            'adapter' => 'gettext',
+            'content' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "languages/$langLocale/$langLocale.mo",
+            'locale'  => $langLocale
+        ));        
 
-        // Save it for later
-        $registry = Zend_Registry::getInstance();
-        $registry->set('Zend_Translate', $translate);
+        Zend_Registry::set('translate', $translate);
+        $this->bootstrap('view');
+        $view = $this->getResource('view');
+        $view->translate = $translate;     
     }
 }
