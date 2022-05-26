@@ -5,7 +5,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $text = $this->PTProgramShortName();
 $shortName = "";
 if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
-	$shortName = ucwords($text['value']);
+    $shortName = ucwords($text['value']);
 }
 ?>
 <div class="col-lg-12">
@@ -17,47 +17,45 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 </div>
 <?php if (!isset($authNameSpace->dm_id)) { ?>
     <div class="col-lg-12" style="margin-top:30px;">
-        <a class="btn btn-success btn-lg col-lg-6" style="color:#fff;" href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span>Click here for Participant Login</span></a>
+        <a class="btn btn-success btn-lg col-lg-6" style="color:#fff;" href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span><?= $this->translate->_("Click here for Participant Login"); ?></span></a>
         <span class="col-lg-1"></span>
-        <a class="btn btn-success btn-lg  col-lg-5" style="color:#fff;" href="<?php echo $this->url(array("controller" => "pt-request-enrollment", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName;?> Enrollment</span></a>
+        <a class="btn btn-success btn-lg  col-lg-5" style="color:#fff;" href="<?php echo $this->url(array("controller" => "pt-request-enrollment", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span><?= $this->translate->_("Request for"); ?> <?php echo $shortName; ?> <?= $this->translate->_("Enrollment"); ?></span></a>
         <br>
     </div>
 <?php } ?>
 <div class="col-lg-12" style="float: left;margin-top:30px;">
     <div class="col-lg-8">
-        <h1>Welcome to <strong> [ <img src="<?php echo $this->baseUrl("images/ept.jpg"); ?>" width="50" height="40" /> ]</strong>!</h1>
-        <p>
-            Proficiency Testing enable laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.
-        </p>
+        <h1><?= $this->translate->_("Welcome to"); ?> <strong> [ <img src="<?php echo $this->baseUrl("images/ept.jpg"); ?>" width="50" height="40" /> ]</strong>!</h1>
+        <p><?= $this->translate->_("Proficiency Testing enable laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT."); ?></p>
         <br><br>
-        <h3 class="p2">What Can We Do For You Through ePT?</h3>
+        <h3 class="p2"><?= $this->translate->_("What Can We Do For You Through ePT?"); ?></h3>
         <div class="row">
             <div class="col-lg-12">
                 <div class="col-lg-6">
 
-                    <h3 class="txt">Training</h3>
+                    <h3 class="txt"><?= $this->translate->_("Training"); ?></h3>
                     <div style="float:left;">
                         <img alt="" src="<?php echo $this->baseUrl("images/1page_img4.jpg"); ?>" class="img-left" />
                     </div>
                     <div style="margin-left:5px;float:left;width:210px;">
                         <ul style="float:left;">
-                            <li>Panel preparation</li>
-                            <li>e-pt database training; results entry and validation, reports viewing and reports download</li>
-                            <li>Corrective actions</li>
+                            <li><?= $this->translate->_("Panel preparation"); ?></li>
+                            <li><?= $this->translate->_("e-pt database training; results entry and validation, reports viewing and reports download"); ?></li>
+                            <li><?= $this->translate->_("Corrective actions"); ?></li>
                         </ul>
                     </div>
                     <br class="clear" />
                 </div>
                 <div class="col-lg-6">
 
-                    <h3 class="txt">Participation in PT</h3>
+                    <h3 class="txt"><?= $this->translate->_("Participation in PT"); ?></h3>
                     <div style="float:left;">
                         <img alt="" src="<?php echo $this->baseUrl("images/1page_img7.jpg"); ?>" class="img-left" />
                     </div>
                     <div style="margin-left:5px;float:left;width:210px;">
                         <ul style="float:left;">
-                            <li>List of all PT sites enrolled in the current pt event with site's unique number, names of contact persons, e-mail address, phone numbers of contact persons</li>
-                            <li>List of pt events with the number of sites enrolled</li>
+                            <li><?= $this->translate->_("List of all PT sites enrolled in the current pt event with site's unique number, names of contact persons, e-mail address, phone numbers of contact persons"); ?></li>
+                            <li><?= $this->translate->_("List of pt events with the number of sites enrolled"); ?></li>
                         </ul>
                     </div>
                     <br class="clear" />
@@ -67,30 +65,30 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
             <div class="col-lg-12">
                 <div class="col-lg-6">
 
-                    <h3 class="txt">Technical Assistance</h3>
+                    <h3 class="txt"><?= $this->translate->_("Technical Assistance"); ?></h3>
                     <div style="float:left;">
                         <img alt="" src="<?php echo $this->baseUrl("images/1page_img6.jpg"); ?>" class="img-left" />
                     </div>
                     <div style="margin-left:5px;float:left;width:210px;">
                         <ul style="float:left;">
-                            <li>Panel preparation assistance</li>
-                            <li>Results entry and validation, reports viewing and reports download assistance (remote technical assistance and on-site technical assistance for using e-pt database)</li>
+                            <li><?= $this->translate->_("Panel preparation assistance"); ?></li>
+                            <li><?= $this->translate->_("Results entry and validation, reports viewing and reports download assistance (remote technical assistance and on-site technical assistance for using e-pt database)"); ?></li>
                         </ul>
                     </div>
                     <br class="clear" />
                 </div>
                 <div class="col-lg-6">
 
-                    <h3 class="txt">Evaluation</h3>
+                    <h3 class="txt"><?= $this->translate->_("Evaluation"); ?></h3>
                     <div style="float:left;">
                         <img alt="" src="<?php echo $this->baseUrl("images/1page_img5.jpg"); ?>" class="img-left" />
                     </div>
                     <div style="margin-left:5px;float:left;width:210px;">
                         <ul style="float:left;">
-                            <li>Monitoring and evaluation</li>
-                            <li>Graphs of previous rounds of pt results</li>
-                            <li>Performance of various regions in the pt event</li>
-                            <li>Feedback reports to participants at the end of every pt event</li>
+                            <li><?= $this->translate->_("Monitoring and evaluation"); ?></li>
+                            <li><?= $this->translate->_("Graphs of previous rounds of pt results"); ?></li>
+                            <li><?= $this->translate->_("Performance of various regions in the pt event"); ?></li>
+                            <li><?= $this->translate->_("Feedback reports to participants at the end of every pt event"); ?></li>
                         </ul>
                     </div>
                     <br class="clear" />
@@ -99,14 +97,13 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
             <div class="col-lg-12">
                 <div class="col-lg-6">
 
-                    <h3 class="txt">Download PT Forms</h3>
+                    <h3 class="txt"><?= $this->translate->_("Download PT Forms"); ?></h3>
                     <div style="float:left;">
                         <img alt="" src="<?php echo $this->baseUrl("images/1page_img6.jpg"); ?>" class="img-left" />
                     </div>
                     <div style="margin-left:5px;float:left;width:210px;">
                         <ul style="float:left;">
-                            <li><a href="<?php echo $this->url(array('controller' => 'shipment-form', 'action' => 'index')); ?>">Download the PT Forms to submit responses offline </a>
-                            </li>
+                            <li><a href="<?php echo $this->url(array('controller' => 'shipment-form', 'action' => 'index')); ?>"><?= $this->translate->_("Download the PT Forms to submit responses offline"); ?></a></li>
                         </ul>
                     </div>
                     <br class="clear" />
@@ -120,7 +117,7 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
     <div class="col-lg-4 omega">
         <?php
         if (isset($this->publications) && count($this->publications) > 0) { ?>
-            <h2>Publications/Resources</h2>
+            <h2><?= $this->translate->_("Publications/Resources"); ?></h2>
             <ul class="list">
                 <?php
                 foreach ($this->publications as $publication) {
@@ -139,21 +136,17 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
         <?php
         if (isset($this->partners) && count($this->partners) > 0) { ?>
             <div class="indent">
-                <h2>Partners</h2>
+                <h2><?= $this->translate->_("Partners"); ?></h2>
                 <ul>
-                    <?php
-                    foreach ($this->partners as $partner) {
+                    <?php foreach ($this->partners as $partner) {
                         $text = ucwords($partner['partner_name']);
                         if (isset($partner['link']) && trim($partner['link']) != '') {
                             $text = '<a href="' . $partner['link'] . '" target="_blank">' . ucwords($partner['partner_name']) . '</a>';
-                        }
-                    ?>
+                        } ?>
                         <li><?php echo $text; ?></li>
                     <?php } ?>
                 </ul>
             </div>
         <?php } ?>
     </div>
-
-
 </div>

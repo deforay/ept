@@ -87,24 +87,24 @@ foreach ($this->participants as $row) {
 	}
 </style>
 <section class="content-header">
-	<h1> Dashboard </h1>
+	<h1> <?= $this->translate->_("Dashboard"); ?> </h1>
 </section>
 <section class="content">
 	<div class="box all" style="display: none;">
 
 		<div class="box-body">
 			<!-- <h3 class="txt text-info"></h3> -->
-			<span class="filter btn btn-warning btn-xs pull-right" onclick="showFilter(this)" style=" top: -34px !important; position: relative; ">Show/Filters</span>
+			<span class="filter btn btn-warning btn-xs pull-right" onclick="showFilter(this)" style=" top: -34px !important; position: relative; "><?= $this->translate->_("Show/Filters"); ?></span>
 			<fieldset class="show-filter" style="display: none;">
 				<div class="form-group col-lg-6" style=" top: 8px; ">
-					<label class="col-lg-4 control-label" for="dateRange" style=" top: 5px; ">Shipment Date</label>
+					<label class="col-lg-4 control-label" for="dateRange" style=" top: 5px; "><?= $this->translate->_("Shipment Date"); ?></label>
 					<div class="col-lg-8">
 						<input type="text" id="dateRange" name="dateRange" value="<?php echo date('d-M-Y', strtotime('- 2 YEARS')) . ' ' . date('d-M-Y') ?>" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
 					</div>
 				</div>
 				<?php if (count($this->participants) > 1) { ?>
 					<div class="form-group col-lg-6" style=" top: 8px; ">
-						<label class="col-lg-4 control-label" for="participant" style=" top: 5px; ">Pariticipants</label>
+						<label class="col-lg-4 control-label" for="participant" style=" top: 5px; "><?= $this->translate->_("Pariticipants"); ?></label>
 						<div class="col-lg-8" style=" text-align: left; ">
 							<select id="participant" name="participant[]" class="form-control multipleSelect" multiple="multiple" title="Select one or more participants">
 
@@ -122,27 +122,27 @@ foreach ($this->participants as $row) {
 				</div>
 			</fieldset>
 			<?php if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) { ?>
-				<h3 class="txt text-info vl" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for VL Scheme</h3>
+				<h3 class="txt text-info vl" style=" text-align: left; margin: 3%; display: none; "><?= $this->translate->_("Participant Shipment Score for VL Scheme"); ?></h3>
 				<div id="participantChartContainerVl" class="vl" style="display: none;"></div>
 			<?php }
 			if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) { ?>
-				<h3 class="txt text-info eid" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for EId Scheme</h3>
+				<h3 class="txt text-info eid" style=" text-align: left; margin: 3%; display: none; "><?= $this->translate->_("Participant Shipment Score for EId Scheme"); ?></h3>
 				<div id="participantChartContainerEid" class="eid" style="display: none;"></div>
 			<?php }
 			if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) { ?>
-				<h3 class="txt text-info dts" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for DTS Scheme</h3>
+				<h3 class="txt text-info dts" style=" text-align: left; margin: 3%; display: none; "><?= $this->translate->_("Participant Shipment Score for DTS Scheme"); ?></h3>
 				<div id="participantChartContainerDts" class="dts" style="display: none;"></div>
 			<?php }
 			if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
-				<h3 class="txt text-info dbs" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for DBS Scheme</h3>
+				<h3 class="txt text-info dbs" style=" text-align: left; margin: 3%; display: none; "><?= $this->translate->_("Participant Shipment Score for DBS Scheme"); ?></h3>
 				<div id="participantChartContainerDbs" class="dbs" style="display: none;"></div>
 			<?php }
 			if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
-				<h3 class="txt text-info recency" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for Recency Scheme</h3>
+				<h3 class="txt text-info recency" style=" text-align: left; margin: 3%; display: none; "><?= $this->translate->_("Participant Shipment Score for Recency Scheme"); ?></h3>
 				<div id="participantChartContainerRecency" class="recency" style="display: none;"></div>
 			<?php }
 			if (count($activeSchemes) > 0 && in_array('covid19', $activeSchemes)) { ?>
-				<h3 class="txt text-info covid19" style=" text-align: left; margin: 3%; display: none; ">Participant Shipment Score for SARS-CoV-2 Scheme</h3>
+				<h3 class="txt text-info covid19" style=" text-align: left; margin: 3%; display: none; "><?= $this->translate->_("Participant Shipment Score for SARS-CoV-2 Scheme"); ?></h3>
 				<div id="participantChartContainerCovid19" class="covid19" style="display: none;"></div>
 			<?php } ?>
 		</div>
@@ -152,21 +152,21 @@ foreach ($this->participants as $row) {
 	?>
 		<div class="box">
 			<div class="box-body">
-				<h3 class="txt text-info">Dried Tube Specimen - HIV Viral Load</h3>
+				<h3 class="txt text-info"><?= $this->translate->_("Dried Tube Specimen - HIV Viral Load"); ?></h3>
 				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsViralLoadTable">
 					<thead>
 						<tr>
-							<th>Shipment Date</th>
-							<th>Shipment Code</th>
-							<th>Participant Id</th>
-							<th>Participant</th>
-							<th>Response Date</th>
-							<th>Performance</th>
+							<th><?= $this->translate->_("Shipment Date"); ?></th>
+							<th><?= $this->translate->_("Shipment Code"); ?></th>
+							<th><?= $this->translate->_("Participant Id"); ?></th>
+							<th><?= $this->translate->_("Participant"); ?></th>
+							<th><?= $this->translate->_("Response Date"); ?></th>
+							<th><?= $this->translate->_("Performance"); ?></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td colspan="6" class="dataTables_empty text-center">Loading data from server</td>
+							<td colspan="6" class="dataTables_empty text-center"><?= $this->translate->_("Loading data from server"); ?></td>
 						</tr>
 					</tbody>
 				</table>
@@ -178,21 +178,21 @@ foreach ($this->participants as $row) {
 	?>
 		<div class="box">
 			<div class="box-body">
-				<h3 class="txt text-info">Dried Tube Specimen - Tuberculosis</h3>
+				<h3 class="txt text-info"><?= $this->translate->_("Dried Tube Specimen - Tuberculosis"); ?></h3>
 				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsTuberculosisTable">
 					<thead>
 						<tr>
-							<th>Shipment Date</th>
-							<th>Shipment Code</th>
-							<th>Participant Id</th>
-							<th>Participant</th>
-							<th>Response Date</th>
-							<th>Performance</th>
+							<th><?= $this->translate->_("Shipment Date"); ?></th>
+							<th><?= $this->translate->_("Shipment Code"); ?></th>
+							<th><?= $this->translate->_("Participant Id"); ?></th>
+							<th><?= $this->translate->_("Participant"); ?></th>
+							<th><?= $this->translate->_("Response Date"); ?></th>
+							<th><?= $this->translate->_("Performance"); ?></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td colspan="6" class="dataTables_empty text-center">Loading data from server</td>
+							<td colspan="6" class="dataTables_empty text-center"><?= $this->translate->_("Loading data from server"); ?></td>
 						</tr>
 					</tbody>
 				</table>
@@ -204,21 +204,21 @@ foreach ($this->participants as $row) {
 	?>
 		<div class="box">
 			<div class="box-body">
-				<h3 class="txt text-info">Dried Blood Spot - Early Infant Diagnosis</h3>
+				<h3 class="txt text-info"><?= $this->translate->_("Dried Blood Spot - Early Infant Diagnosis"); ?></h3>
 				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="earlyInfantDiagnosisTable">
 					<thead>
 						<tr>
-							<th>Shipment Date</th>
-							<th>Shipment Code</th>
-							<th>Participant Id</th>
-							<th>Participant</th>
-							<th>Response Date</th>
-							<th>Performance</th>
+							<th><?= $this->translate->_("Shipment Date"); ?></th>
+							<th><?= $this->translate->_("Shipment Code"); ?></th>
+							<th><?= $this->translate->_("Participant Id"); ?></th>
+							<th><?= $this->translate->_("Participant"); ?></th>
+							<th><?= $this->translate->_("Response Date"); ?></th>
+							<th><?= $this->translate->_("Performance"); ?></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td colspan="6" class="dataTables_empty text-center">Loading data from server</td>
+							<td colspan="6" class="dataTables_empty text-center"><?= $this->translate->_("Loading data from server"); ?></td>
 						</tr>
 					</tbody>
 				</table>
@@ -230,21 +230,21 @@ foreach ($this->participants as $row) {
 	?>
 		<div class="box">
 			<div class="box-body">
-				<h3 class="txt text-info">Dried Tube Specimen - HIV Serology</h3>
+				<h3 class="txt text-info"><?= $this->translate->_("Dried Tube Specimen - HIV Serology"); ?></h3>
 				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dtsHIVSerologyTable">
 					<thead>
 						<tr>
-							<th>Shipment Date</th>
-							<th>Shipment Code</th>
-							<th>Participant Id</th>
-							<th>Participant</th>
-							<th>Response Date</th>
-							<th>Performance</th>
+							<th><?= $this->translate->_("Shipment Date"); ?></th>
+							<th><?= $this->translate->_("Shipment Code"); ?></th>
+							<th><?= $this->translate->_("Participant Id"); ?></th>
+							<th><?= $this->translate->_("Participant"); ?></th>
+							<th><?= $this->translate->_("Response Date"); ?></th>
+							<th><?= $this->translate->_("Performance"); ?></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td colspan="6" class="dataTables_empty text-center">Loading data from server</td>
+							<td colspan="6" class="dataTables_empty text-center"><?= $this->translate->_("Loading data from server"); ?></td>
 						</tr>
 					</tbody>
 				</table>
@@ -256,21 +256,21 @@ foreach ($this->participants as $row) {
 	?>
 		<div class="box">
 			<div class="box-body">
-				<h3 class="txt text-info">Dried Blood Spot - HIV Serology</h3>
+				<h3 class="txt text-info"><?= $this->translate->_("Dried Blood Spot - HIV Serology"); ?></h3>
 				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="dbsHIVSerologyTable">
 					<thead>
 						<tr>
-							<th>Shipment Date</th>
-							<th>Shipment Code</th>
-							<th>Participant Id</th>
-							<th>Participant</th>
-							<th>Response Date</th>
-							<th>Performance</th>
+							<th><?= $this->translate->_("Shipment Date"); ?></th>
+							<th><?= $this->translate->_("Shipment Code"); ?></th>
+							<th><?= $this->translate->_("Participant Id"); ?></th>
+							<th><?= $this->translate->_("Participant"); ?></th>
+							<th><?= $this->translate->_("Response Date"); ?></th>
+							<th><?= $this->translate->_("Performance"); ?></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td colspan="6" class="dataTables_empty text-center">Loading data from server</td>
+							<td colspan="6" class="dataTables_empty text-center"><?= $this->translate->_("Loading data from server"); ?></td>
 						</tr>
 					</tbody>
 				</table>
@@ -281,20 +281,20 @@ foreach ($this->participants as $row) {
 
 	<div class="box" style="display:none;">
 		<div class="box-body">
-			<h3 class="txt text-info">Schemes Overview</h3>
+			<h3 class="txt text-info"><?= $this->translate->_("Schemes Overview"); ?></h3>
 			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="overviewTable">
 				<thead>
 					<tr>
-						<th>Year</th>
-						<th>Scheme Type</th>
-						<th>Total Schemes <br>Shipped</th>
-						<th>Reported Within <br>Due Date</th>
-						<th>Responses <br>not received yet</th>
+						<th><?= $this->translate->_("Yea"); ?>r</th>
+						<th><?= $this->translate->_("Scheme Type"); ?></th>
+						<th><?= $this->translate->_("Total Schemes <br>Shipped"); ?></th>
+						<th><?= $this->translate->_("Reported Within <br>Due Date"); ?></th>
+						<th><?= $this->translate->_("Responses <br>not received yet"); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td colspan="5" class="dataTables_empty text-center">Loading data from server</td>
+						<td colspan="5" class="dataTables_empty text-center"><?= $this->translate->_("Loading data from server"); ?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -303,7 +303,7 @@ foreach ($this->participants as $row) {
 
 	<div class="box">
 		<div class="box-body">
-			<h3 class="txt text-info">All Shipments</h3>
+			<h3 class="txt text-info"><?= $this->translate->_("All Shipments"); ?></h3>
 
 			<?php
 			if ($this->globalQcAccess == 'yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes')) {
@@ -312,16 +312,16 @@ foreach ($this->participants as $row) {
 					<tr>
 						<td style="width:100%;">
 							<select id="qualityChecked" name="qualityChecked" onchange="schemeTable.fnDraw()" class="form-control">
-								<option value=""> -- Filter QC Checked Responses --</option>
-								<option value="yes">Show QC Checked Responses</option>
-								<option value="no">Show Not QC Checked Responses</option>
+								<option value=""> -- <?= $this->translate->_("Filter QC Checked Responses"); ?> --</option>
+								<option value="yes"><?= $this->translate->_("Show QC Checked Responses"); ?></option>
+								<option value="no"><?= $this->translate->_("Show Not QC Checked Responses"); ?></option>
 							</select>
 						</td>
 					</tr>
 				</table>
 				<input type="hidden" name="participantMapId" id="participantMapId" />
 				<div style="padding-top:20px;display:none;" id="qcTopButton">
-					<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) Selected for Bulk Quality Check</b></a>
+					<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) <?= $this->translate->_("Selected for Bulk Quality Check"); ?></b></a>
 				</div>
 			<?php
 			}
@@ -330,21 +330,21 @@ foreach ($this->participants as $row) {
 				<thead>
 					<tr>
 						<th></th>
-						<th style="width:30px;">Year</th>
-						<th style="width:100px;">Shipment<br />Date</th>
-						<th style="width:50px;">Scheme</th>
-						<th style="width:100px;">Shipment Code</th>
-						<th>Participant Id</th>
-						<th>Participant</th>
-						<th style="width:100px;">Response<br />Date</th>
-						<th style="width:100px;">Action</th>
+						<th style="width:30px;"><?= $this->translate->_("Year"); ?></th>
+						<th style="width:100px;"><?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
+						<th style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
+						<th style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
+						<th><?= $this->translate->_("Participant Id"); ?></th>
+						<th><?= $this->translate->_("Participant"); ?></th>
+						<th style="width:100px;"><?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
+						<th style="width:100px;"><?= $this->translate->_("Action"); ?></th>
 						<th>Report</th>
 
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td colspan="10" class="dataTables_empty text-center">Loading data from server</td>
+						<td colspan="10" class="dataTables_empty text-center"><?= $this->translate->_("Loading data from server"); ?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -357,16 +357,16 @@ foreach ($this->participants as $row) {
 <div class="deleteAction dialog" id="migrateBox">
 	<div style="padding:10px;">
 		<span onClick="hidedefModal()" class="closeModal"></span>
-		<h3>Quality Check Done</h3>
+		<h3><?= $this->translate->_("Quality Check Done"); ?></h3>
 		<table class="display datatable table table-bordered table-hover table-striped ">
 			<tr>
-				<th>QC Done on : </th>
+				<th><?= $this->translate->_("QC Done on"); ?> </th>
 				<td><input type="text" id="qcDate" name="qcDate" style="width:180px;float:left;" maxlength="11" value="" class="isRequired form-control" readonly="readonly" /></td>
 			</tr>
 		</table>
 
 		<div class="box-footer" style="text-align: center">
-			<button class="btn btn-primary" onclick="submitQcForm();return false;">Submit</button>
+			<button class="btn btn-primary" onclick="submitQcForm();return false;"><?= $this->translate->_("Submit"); ?></button>
 		</div>
 	</div>
 </div>

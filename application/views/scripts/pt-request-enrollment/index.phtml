@@ -3,9 +3,11 @@
         padding-top: 0px;
         overflow-y: scroll;
     }
+
     li.select2-selection__choice {
         color: black !important;
     }
+
     span.mandatory {
         color: red;
     }
@@ -18,47 +20,47 @@
             <div class="col-lg-4"></div>
             <div class="col-lg-8">
                 <input type="checkbox" name="individualParticipant" id="individualParticipant" onclick="checkIndividualParticipant(this)">
-                <label class="control-label" for="individualParticipant"><b> Individual Participant</b></label>
+                <label class="control-label" for="individualParticipant"><b> <?= $this->translate->_("Individual Participant"); ?></b></label>
             </div>
         </div>
         <div class="form-group col-lg-6" id="firstNameDiv">
-            <label class="col-lg-4 control-label">First Name<span class="mandatory">*</span></label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label>
             <div class="col-lg-8">
                 <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name or First Name here" placeholder="Please enter the Lab Name or First Name here" />
             </div>
         </div>
         <div class="form-group col-lg-6" id="lastNameDiv">
-            <label class="col-lg-4 control-label">Last Name</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Last Name"); ?></label>
 
             <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="Please enter the last name here" /></div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Institute Name <span class="mandatory">*</span></label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label>
 
             <div class="col-lg-8"><input type="text" id="instituteName" name="instituteName" size="50" maxlength="25" class="isRequired form-control" title="Please enter the Institute Name here" placeholder="Please enter the Institute Name here" /></div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Department Name <span class="mandatory">*</span></label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Department Name"); ?> <span class="mandatory">*</span></label>
 
             <div class="col-lg-8"><input type="text" id="departmentName" name="departmentName" size="50" maxlength="25" class="isRequired form-control" title="Please enter the Department Name here" placeholder="Please enter the Department Name here" /></div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Physical Address</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Physical Address"); ?></label>
 
             <div class="col-lg-8"><textarea id="address" name="address" size="50" class="form-control" title="Please enter the address here" placeholder="Please enter the address here"></textarea></div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">City <span class="mandatory">*</span></label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("City"); ?> <span class="mandatory">*</span></label>
 
             <div class="col-lg-8"><input type="text" id="city" name="city" size="50" maxlength="25" class="isRequired form-control" title="Please enter the city here" placeholder="Please enter the city here" /></div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">State (if applicable)</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("State (if applicable)"); ?></label>
 
             <div class="col-lg-8"><input type="text" id="state" name="state" size="50" maxlength="25" class="form-control" title="Please enter the state here" placeholder="Please enter the state here" /></div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Country <span class="mandatory">*</span></label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Country"); ?> <span class="mandatory">*</span></label>
             <div class="col-lg-8">
                 <select class="form-control isRequired" name="country" id="country" title="Please choose the country here">
                     <option value=""></option>
@@ -69,36 +71,38 @@
             </div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Region <span class="mandatory">*</span></label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Region"); ?> <span class="mandatory">*</span></label>
 
             <div class="col-lg-8">
-                <input type="text" id="region" name="region" size="50" maxlength="25" class="form-control isRequired" title="Please enter region here" placeholder="Please enter the region here" /></div>
+                <input type="text" id="region" name="region" size="50" maxlength="25" class="form-control isRequired" title="Please enter region here" placeholder="Please enter the region here" />
+            </div>
         </div>
 
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Latitude </label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Latitude"); ?> </label>
 
             <div class="col-lg-8"><input type="text" id="lat" name="lat" size="50" maxlength="25" class="form-control" title="Please enter the latitude here" placeholder="Please enter the latitude here" /></div>
         </div>
 
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Longitude </label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Longitude"); ?> </label>
 
             <div class="col-lg-8"><input type="text" id="long" name="long" size="50" maxlength="25" class="form-control" title="Please enter the longitude here" placeholder="Please enter the longitude here" /></div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Funding Source</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Funding Source"); ?></label>
 
             <div class="col-lg-8"><input type="text" id="fundingSource" name="fundingSource" size="50" maxlength="25" class="form-control" title="Please enter the funding source here" placeholder="Please enter the funding source here" /></div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Testing Volume</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Testing Volume"); ?></label>
 
             <div class="col-lg-8">
-                <input type="text" id="testingVolume" name="testingVolume" size="50" maxlength="25" class="form-control" title="Please enter testing volume here" placeholder="Please enter the testing volume here" /></div>
+                <input type="text" id="testingVolume" name="testingVolume" size="50" maxlength="25" class="form-control" title="Please enter testing volume here" placeholder="Please enter the testing volume here" />
+            </div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Enrolled Programs </label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Enrolled Programs"); ?> </label>
 
             <div class="col-lg-8">
                 <select name="enrolledProgram[]" id="enrolledProgram" multiple="multiple" class="form-control" data-selected-text-format="count>3" title="Please choose Enrolled Programs">
@@ -109,7 +113,7 @@
             </div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Site Type</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Site Type"); ?></label>
             <div class="col-lg-8">
                 <select name="siteType" id="siteType" class="form-control">
                     <option value="">--Select--</option>
@@ -123,45 +127,46 @@
         <hr style="border:1px solid #ccc;background: #ccc;width:95%; clear:both;" />
 
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Contact Name </label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Name"); ?> </label>
 
             <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="Please enter the contact name here" /></div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">E-mail <span class="mandatory">*</span></label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("E-mail"); ?> <span class="mandatory">*</span></label>
 
             <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" placeholder="Please enter the email id here" /></div>
         </div>
 
 
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Shipping Address (include city and country)</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Shipping Address (include city and country)"); ?></label>
 
             <div class="col-lg-8"><textarea id="shippingAddress" name="shippingAddress" size="50" class="form-control" title="Please enter the address here" placeholder="Please enter the Shipping Address here"></textarea></div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Zip/Postal Code (if applicable)</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Zip/Postal Code (if applicable)"); ?></label>
 
             <div class="col-lg-8"><input type="text" id="zip" name="zip" size="50" maxlength="255" class="form-control" title="Please enter the Zip/Postal here" placeholder="Please enter the Zip/Postal here" /></div>
         </div>
 
 
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Cell/Mobile No.</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Cell/Mobile No."); ?></label>
 
             <div class="col-lg-8">
-                <input id="phone1" type="text" id="pphone2" name="pphone2" size="50" maxlength="255" class="form-control isNumeric checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" /></div>
+                <input id="phone1" type="text" id="pphone2" name="pphone2" size="50" maxlength="255" class="form-control isNumeric checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" />
+            </div>
         </div>
 
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Phone Number</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Phone Number"); ?></label>
             <div class="col-lg-8">
                 <input id="phone2" type="text" id="pphone1" name="pphone1" size="50" maxlength="255" placeholder="Please enter phone number here" class="form-control isNumeric checkNum" />
             </div>
         </div>
 
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Network Tier <span class="mandatory">*</span></label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Network Tier"); ?> <span class="mandatory">*</span></label>
             <div class="col-lg-8">
                 <select name="network" id="network" class="form-control isRequired" title="Please choose the network tier">
                     <option value="">--Select--</option>
@@ -172,7 +177,7 @@
             </div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Affiliation<span class="mandatory">*</span></label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Affiliation"); ?><span class="mandatory">*</span></label>
 
             <div class="col-lg-8">
                 <select name="partAff" id="partAff" class="form-control isRequired" title="Please choose the affiliation here">
@@ -184,10 +189,11 @@
             </div>
         </div>
         <div class="form-group col-lg-6">
-            <label class="col-lg-4 control-label">Additional E-mail</label>
+            <label class="col-lg-4 control-label"><?= $this->translate->_("Additional E-mail"); ?></label>
 
             <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50" maxlength="255" class="form-control" title="Please enter the email id here" placeholder="Please enter the additional email id here" />
-                <span class="help">(Please enter comma separated mutiple email)</span></div>
+                <span class="help"><?= $this->translate->_("(Please enter comma separated mutiple email)"); ?></span>
+            </div>
 
         </div>
         <br>
@@ -204,7 +210,7 @@
                         <td style="padding-top:3px;" align="center">
                             <input type="text" style="margin:0;width:200px;padding:3px;margin-top:8px" id="challengeResponse" class="form-control" placeholder="Enter text from image on left" class="isRequired" title="Please enter the text from the image." maxlength="40">
 
-                            <button onclick="getCaptcha('capChaw');return false;" class="btn btn-small btn-info" style="font-size:12px;margin-top:5px;"><i class="icon-refresh icon-white"></i> Get New Image</button>
+                            <button onclick="getCaptcha('capChaw');return false;" class="btn btn-small btn-info" style="font-size:12px;margin-top:5px;"><i class="icon-refresh icon-white"></i><?= $this->translate->_("Get New Image"); ?></button>
                         </td>
 
                     </tr>
@@ -213,7 +219,7 @@
         </div>
 
         <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
-            <input class="btn btn-primary" type="button" tabindex="7" value="Request" onclick="validateNow();"/>
+            <input class="btn btn-primary" type="button" tabindex="7" value="Request" onclick="validateNow();" />
             <input class="btn btn-default" type="button" onclick="window.location.href = '/';" tabindex="8" value="Cancel" />
         </div>
     </form>
