@@ -80,7 +80,7 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 			<nav class="navbar navbar-static-top" role="navigation">
 				<!-- Sidebar toggle button-->
 				<a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-					<span class="sr-only">Toggle navigation</span>
+					<span class="sr-only"><?= $this->translate->_("Toggle navigation"); ?></span>
 				</a>
 				<div class="navbar-custom-menu">
 					<ul class="nav navbar-nav">
@@ -92,10 +92,10 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 							</li>
 						<?php } else { ?>
 							<li>
-								<a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName; ?> Enrollment</span></a>
+								<a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span><?= $this->translate->_("Request for"); ?> <?php echo $shortName; ?> <?= $this->translate->_("Enrollment"); ?></span></a>
 							</li>
 							<li>
-								<a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span>Participant Login</span></a>
+								<a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span><?= $this->translate->_("Participant Login"); ?></span></a>
 							</li>
 						<?php } ?>
 					</ul>
@@ -108,10 +108,10 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 			<section class="sidebar">
 				<!-- sidebar menu: : style can be found in sidebar.less -->
 				<ul class="sidebar-menu">
-					<li class="header">MAIN NAVIGATION</li>
+					<li class="header"><?= $this->translate->_("MAIN NAVIGATION"); ?></li>
 					<li class="<?php echo ($activeMenu == 'home') ? ' active ' : '';  ?>">
 						<a href="/">
-							<i class="icon icon-home"></i> <span><?php echo _("Program Information"); ?></span>
+							<i class="icon icon-home"></i> <span><?= $this->translate->_("Program Information"); ?></span>
 						</a>
 					</li>
 
@@ -120,61 +120,61 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 					<?php if (isset($authNameSpace->dm_id)) { ?>
 						<li class="<?php echo ($activeMenu == 'dashboard') ? ' active ' : '';  ?>">
 							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
-								<i class="icon icon-dashboard"></i> <span><?php echo _("Dashboard"); ?></span>
+								<i class="icon icon-dashboard"></i> <span><?= $this->translate->_("Dashboard"); ?></span>
 							</a>
 						</li>
 						<li class="<?php echo ($activeMenu == 'current-schemes') ? ' active ' : '';  ?>">
 							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "current-schemes"), null, true) ?>">
-								<i class="icon icon-list-ul"></i> <span>PT Result Submission</span>
+								<i class="icon icon-list-ul"></i> <span><?= $this->translate->_("PT Result Submission"); ?></span>
 							</a>
 						</li>
 						<li class="treeview <?php echo ($activeMenu == 'view-reports') ? ' active ' : '';  ?>">
-							<a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span>View PT Result </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
+							<a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span><?= $this->translate->_("View PT Result"); ?> </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
 							<ul class="treeview-menu">
-								<li class="<?php echo ($activeSubMenu == 'individual-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "report"), null, true) ?>"> Individual Report</a></li>
-								<li class="<?php echo ($activeSubMenu == 'summary-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>"> Summary Report</a></li>
+								<li class="<?php echo ($activeSubMenu == 'individual-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "report"), null, true) ?>"> <?= $this->translate->_("Individual Report"); ?></a></li>
+								<li class="<?php echo ($activeSubMenu == 'summary-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>"> <?= $this->translate->_("Summary Report"); ?></a></li>
 							</ul>
 						</li>
 						<li class="<?php echo ($activeMenu == 'corrective-action') ? ' active ' : '';  ?>">
 							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "corrective"), null, true) ?>">
-								<i class="icon icon-check"></i> <span>Corrective Actions</span>
+								<i class="icon icon-check"></i> <span><?= $this->translate->_("Corrective Actions"); ?></span>
 							</a>
 						</li>
 						<li class="<?php echo ($activeMenu == 'all-schemes') ? ' active ' : '';  ?>">
 							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "all-schemes"), null, true) ?>">
-								<i class="icon icon-list-ul"></i> <span>All Schemes</span>
+								<i class="icon icon-list-ul"></i> <span><?= $this->translate->_("All Schemes"); ?></span>
 							</a>
 						</li>
 						<li class="<?php echo ($activeMenu == 'defaulted-schemes') ? ' active ' : '';  ?>">
 							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "defaulted-schemes"), null, true) ?>">
-								<i class="icon icon-exclamation"></i> <span>Defaulted Schemes</span>
+								<i class="icon icon-exclamation"></i> <span><?= $this->translate->_("Defaulted Schemes"); ?></span>
 							</a>
 						</li>
 
 						<li class="treeview <?php echo ($activeMenu == 'my-account') ? ' active ' : '';  ?>">
-							<a href="#" class="" data-toggle="" role="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-user"></i> <span>My Account</span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
+							<a href="#" class="" data-toggle="" role="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-user"></i> <span><?= $this->translate->_("My Account"); ?></span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
 							<ul class="treeview-menu">
-								<li class="<?php echo ($activeSubMenu == 'user-info') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">My Login Information</a></li>
-								<li class="<?php echo ($activeSubMenu == 'testers') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>">PT Participant Info</a></li>
-								<li class="<?php echo ($activeSubMenu == 'scheme') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>">Scheme Information</a></li>
-								<li class="<?php echo ($activeSubMenu == 'change-password') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "password"), null, true) ?>">Change Password</a></li>
+								<li class="<?php echo ($activeSubMenu == 'user-info') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>"><?= $this->translate->_("My Login Information"); ?></a></li>
+								<li class="<?php echo ($activeSubMenu == 'testers') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>"><?= $this->translate->_("PT Participant Info"); ?></a></li>
+								<li class="<?php echo ($activeSubMenu == 'scheme') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>"><?= $this->translate->_("Scheme Information"); ?></a></li>
+								<li class="<?php echo ($activeSubMenu == 'change-password') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "password"), null, true) ?>"><?= $this->translate->_("Change Password"); ?></a></li>
 							</ul>
 						</li>
-						<li class="<?php echo ($activeMenu == 'file-downloads') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "file-downloads"), null, true) ?>"><i class="icon icon-download-alt"></i> <span> Downloads </span></a></li>
-						<li class="<?php echo ($activeMenu == 'contact-us') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "contact-us"), null, true) ?>"><i class="icon icon-envelope"></i> <span>Contact Us </span></a></li>
+						<li class="<?php echo ($activeMenu == 'file-downloads') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "file-downloads"), null, true) ?>"><i class="icon icon-download-alt"></i> <span> <?= $this->translate->_("Downloads"); ?> </span></a></li>
+						<li class="<?php echo ($activeMenu == 'contact-us') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "contact-us"), null, true) ?>"><i class="icon icon-envelope"></i> <span><?= $this->translate->_("Contact Us"); ?> </span></a></li>
 					<?php } ?>
 
 
 					<?php if (!isset($authNameSpace->dm_id)) { ?>
 						<li>
-							<a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName; ?> Enrollment</span></a>
+							<a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span><?= $this->translate->_("Request for"); ?> <?php echo $shortName; ?> <?= $this->translate->_("Enrollment"); ?></span></a>
 						</li>
 						<li>
-							<a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span>Participant Login</span></a>
+							<a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span><?= $this->translate->_("Participant Login"); ?></span></a>
 						</li>
 					<?php } else { ?>
 						<li>
-							<a class="" href="<?php echo $this->url(array("controller" => "auth", "action" => "logout"), null, true) ?>"><i class="icon icon-signout"></i> <span>Logout</span></a>
+							<a class="" href="<?php echo $this->url(array("controller" => "auth", "action" => "logout"), null, true) ?>"><i class="icon icon-signout"></i> <span><?= $this->translate->_("Logout"); ?></span></a>
 						</li>
 					<?php } ?>
 
@@ -201,14 +201,14 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 
 		<div id="dDiv" class="dialog">
 			<div style="text-align:center"><span onclick="closeLayoutModal();" style="float:right;clear:both;" class="closeModal"></span></div>
-			<iframe id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0'>some problem</iframe>
+			<iframe id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0'><?= $this->translate->_("some problem"); ?></iframe>
 		</div>
 
 		<footer class="main-footer">
 			<div class="pull-right hidden-xs">
 				<span>ver. <?php echo APP_VERSION; ?></span>
 			</div>
-			<span>This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC).</span>
+			<span><?= $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?></span>
 		</footer>
 
 		<div class="control-sidebar-bg"></div>

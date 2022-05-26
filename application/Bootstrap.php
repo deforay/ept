@@ -45,8 +45,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 
     protected function _initTranslate()
     {
-        // We use the Swedish locale as an example
-        $locale = new Zend_Locale('fr_FR');
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $locale = (!empty($conf->locale) ? $conf->locale : "en_US");
         Zend_Registry::set('Zend_Locale', $locale);
 
         // Create Session block and save the locale
@@ -63,11 +63,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             'adapter' => 'gettext',
             'content' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "languages/$langLocale/$langLocale.mo",
             'locale'  => $langLocale
-        ));        
+        ));
 
         Zend_Registry::set('translate', $translate);
         $this->bootstrap('view');
         $view = $this->getResource('view');
-        $view->translate = $translate;     
+        $view->translate = $translate;
     }
 }
