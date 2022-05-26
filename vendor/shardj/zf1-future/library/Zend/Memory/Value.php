@@ -86,8 +86,7 @@ class Zend_Memory_Value implements ArrayAccess {
      * @param integer $offset
      * @return boolean
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $offset >= 0  &&  $offset < strlen($this->_value);
     }
@@ -99,6 +98,7 @@ class Zend_Memory_Value implements ArrayAccess {
      * @param integer $offset
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->_value[$offset];
@@ -111,8 +111,7 @@ class Zend_Memory_Value implements ArrayAccess {
      * @param integer $offset
      * @param string $char
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $char)
+    public function offsetSet($offset, $char): void
     {
         $this->_value[$offset] = $char;
 
@@ -128,8 +127,7 @@ class Zend_Memory_Value implements ArrayAccess {
      *
      * @param integer $offset
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->_value[$offset]);
 

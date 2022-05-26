@@ -374,8 +374,7 @@ class Zend_Feed_Element implements ArrayAccess
      * @param  string $offset
      * @return boolean
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         if (strpos($offset, ':') !== false) {
             [$ns, $attr] = explode(':', $offset, 2);
@@ -392,6 +391,7 @@ class Zend_Feed_Element implements ArrayAccess
      * @param  string $offset
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (strpos($offset, ':') !== false) {

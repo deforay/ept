@@ -240,8 +240,7 @@ abstract class Zend_Feed_Reader_FeedAbstract implements Zend_Feed_Reader_FeedInt
      * Move the feed pointer forward
      *
      */
-    #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         ++$this->_entriesKey;
     }
@@ -250,8 +249,7 @@ abstract class Zend_Feed_Reader_FeedAbstract implements Zend_Feed_Reader_FeedInt
      * Reset the pointer in the feed object
      *
      */
-    #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         $this->_entriesKey = 0;
     }

@@ -245,7 +245,7 @@ class Zend_Db_Statement_Pdo extends Zend_Db_Statement implements IteratorAggrega
      * @return mixed Array, object, or scalar depending on fetch mode.
      * @throws Zend_Db_Statement_Exception
      */
-    public function fetch($style = null, $cursor = null, $offset = null)
+    public function fetch($style = null, $cursor = \PDO::FETCH_ORI_NEXT, $offset = 0)
     {
         if ($style === null) {
             $style = $this->_fetchMode;
@@ -263,8 +263,7 @@ class Zend_Db_Statement_Pdo extends Zend_Db_Statement implements IteratorAggrega
      *
      * @return IteratorIterator
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new IteratorIterator($this->_stmt);
     }

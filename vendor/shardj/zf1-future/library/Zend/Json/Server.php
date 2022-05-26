@@ -535,10 +535,6 @@ class Zend_Json_Server extends Zend_Server_Abstract
         $service       = $serviceMap->getService($method);
         $serviceParams = $service->getParams();
 
-        if (count($params) < count($serviceParams)) {
-            $params = $this->_getDefaultParams($params, $serviceParams);
-        }
-
         //Make sure named parameters are passed in correct order
         if ( is_string( key( $params ) ) ) {
 
@@ -557,7 +553,7 @@ class Zend_Json_Server extends Zend_Server_Abstract
 
             $orderedParams = [];
             foreach( $reflection->getParameters() as $refParam ) {
-                if( isset( $params[ $refParam->getName() ] ) ) {
+                if( array_key_exists($refParam->getName(), $params) ) {
                     $orderedParams[ $refParam->getName() ] = $params[ $refParam->getName() ];
                 } elseif( $refParam->isOptional() ) {
                     $orderedParams[ $refParam->getName() ] = $refParam->getDefaultValue();
@@ -568,7 +564,10 @@ class Zend_Json_Server extends Zend_Server_Abstract
                 }
             }
             $params = $orderedParams;
+        } elseif (count($params) < count($serviceParams)) {
+            $params = $this->_getDefaultParams($params, $serviceParams);
         }
+
 
         try {
             $result = $this->_dispatch($invocable, $params);

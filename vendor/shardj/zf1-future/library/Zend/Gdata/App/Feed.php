@@ -129,8 +129,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      *
      * @return integer Entry count.
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->_entry);
     }
@@ -140,8 +139,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      *
      * @return void
      */
-    #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         $this->_entryIndex = 0;
     }
@@ -173,8 +171,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      *
      * @return void The next row, or null if no more rows.
      */
-    #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         ++$this->_entryIndex;
     }
@@ -184,8 +181,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      *
      * @return boolean Whether the iteration is valid
      */
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         return 0 <= $this->_entryIndex && $this->_entryIndex < $this->count();
     }
@@ -234,8 +230,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      * @param Zend_Gdata_App_Entry $value The value to set
      * @return void
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($key, $value)
+    public function offsetSet($key, $value): void
     {
         $this->_entry[$key] = $value;
     }
@@ -246,6 +241,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      * @param int $key The index to get
      * @param Zend_Gdata_App_Entry $value The value to set
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
         if (array_key_exists($key, $this->_entry)) {
@@ -259,8 +255,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      * @param int $key The index to set
      * @param Zend_Gdata_App_Entry $value The value to set
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($key)
+    public function offsetUnset($key): void
     {
         if (array_key_exists($key, $this->_entry)) {
             unset($this->_entry[$key]);
@@ -273,8 +268,7 @@ class Zend_Gdata_App_Feed extends Zend_Gdata_App_FeedSourceParent
      * @param int $key The index to check for existence
      * @return boolean
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($key)
+    public function offsetExists($key): bool
     {
         return (array_key_exists($key, $this->_entry));
     }

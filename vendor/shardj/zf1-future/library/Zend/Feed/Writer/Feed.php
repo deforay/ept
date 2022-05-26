@@ -200,8 +200,7 @@ implements Iterator, Countable
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->_entries);
     }
@@ -233,8 +232,7 @@ implements Iterator, Countable
      *
      * @return void
      */
-    #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         ++$this->_entriesKey;
     }
@@ -244,8 +242,7 @@ implements Iterator, Countable
      *
      * @return void
      */
-    #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         $this->_entriesKey = 0;
     }
@@ -255,8 +252,7 @@ implements Iterator, Countable
      *
      * @return boolean
      */
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         return 0 <= $this->_entriesKey && $this->_entriesKey < $this->count();
     }

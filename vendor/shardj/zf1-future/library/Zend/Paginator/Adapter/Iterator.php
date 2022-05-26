@@ -95,8 +95,7 @@ class Zend_Paginator_Adapter_Iterator implements Zend_Paginator_Adapter_Interfac
      *
      * @return integer
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return $this->_count;
     }

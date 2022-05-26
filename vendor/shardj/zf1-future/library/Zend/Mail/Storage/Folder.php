@@ -75,7 +75,7 @@ class Zend_Mail_Storage_Folder implements RecursiveIterator
      *
      * @return bool current element has children
      */
-    public function hasChildren()
+    public function hasChildren(): bool
     {
         $current = $this->current();
         return $current && $current instanceof Zend_Mail_Storage_Folder && !$current->isLeaf();
@@ -86,7 +86,7 @@ class Zend_Mail_Storage_Folder implements RecursiveIterator
      *
      * @return Zend_Mail_Storage_Folder same as self::current()
      */
-    public function getChildren()
+    public function getChildren(): ?\RecursiveIterator
     {
         return $this->current();
     }
@@ -96,8 +96,7 @@ class Zend_Mail_Storage_Folder implements RecursiveIterator
      *
      * @return bool check if there's a current element
      */
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         return key($this->_folders) !== null;
     }
@@ -107,8 +106,7 @@ class Zend_Mail_Storage_Folder implements RecursiveIterator
      *
      * @return null
      */
-    #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         next($this->_folders);
     }
@@ -140,8 +138,7 @@ class Zend_Mail_Storage_Folder implements RecursiveIterator
      *
      * @return null
      */
-    #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         reset($this->_folders);
     }

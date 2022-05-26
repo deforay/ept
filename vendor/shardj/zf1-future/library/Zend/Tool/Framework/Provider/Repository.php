@@ -238,8 +238,7 @@ class Zend_Tool_Framework_Provider_Repository
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->_providers);
     }
@@ -249,8 +248,7 @@ class Zend_Tool_Framework_Provider_Repository
      *
      * @return ArrayIterator
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new ArrayIterator($this->getProviders());
     }
