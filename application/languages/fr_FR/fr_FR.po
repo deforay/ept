@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
-"POT-Creation-Date: 2022-05-25 18:21+0530\n"
-"PO-Revision-Date: 2022-05-26 12:15+0530\n"
+"POT-Creation-Date: 2022-05-26 12:32+0530\n"
+"PO-Revision-Date: 2022-05-26 12:32+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -10,22 +10,154 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.0.1\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-KeywordsList: translate;_;setLabel;setValue;setMessage;setLegend;"
 "_refresh;append;prepend\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: vendor\n"
 "X-Poedit-SearchPathExcluded-1: library\n"
+"X-Poedit-SearchPathExcluded-2: public\n"
 
-#: layouts/scripts/layout.phtml:21
+#: scheduled-jobs/generate-certificates.php:152
+#: scheduled-jobs/generate-certificates.php:158
+#: scheduled-jobs/generate-certificates.php:173
+#: scheduled-jobs/generate-certificates.php:187
+#: scheduled-jobs/generate-certificates.php:193
+#: scheduled-jobs/generate-certificates.php:211
+msgid "LABNAME"
+msgstr ""
+
+#: scheduled-jobs/generate-certificates.php:153
+#: scheduled-jobs/generate-certificates.php:159
+#: scheduled-jobs/generate-certificates.php:174
+#: scheduled-jobs/generate-certificates.php:188
+#: scheduled-jobs/generate-certificates.php:194
+#: scheduled-jobs/generate-certificates.php:212
+msgid "CITY"
+msgstr ""
+
+#: scheduled-jobs/generate-certificates.php:154
+#: scheduled-jobs/generate-certificates.php:160
+#: scheduled-jobs/generate-certificates.php:175
+#: scheduled-jobs/generate-certificates.php:189
+#: scheduled-jobs/generate-certificates.php:195
+#: scheduled-jobs/generate-certificates.php:213
+msgid "COUNTRY"
+msgstr ""
+
+#: scheduled-jobs/generate-certificates.php:176
+#: scheduled-jobs/generate-certificates.php:214
+msgid "ASSAYNAME"
+msgstr ""
+
+#: application/layouts/scripts/home.phtml:24
+#: application/layouts/scripts/layout.phtml:21
 msgid "Online Lab Proficiency Testing"
 msgstr "Tests de compétence en laboratoire en ligne"
 
-#: layouts/scripts/layout.phtml:114
+#: application/layouts/scripts/layout.phtml:83
+msgid "Toggle navigation"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:95
+#: application/layouts/scripts/layout.phtml:170
+msgid "Request for"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:95
+#: application/layouts/scripts/layout.phtml:170
+msgid "Enrollment"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:98
+#: application/layouts/scripts/layout.phtml:173
+msgid "Participant Login"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:111
+msgid "MAIN NAVIGATION"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:114
 msgid "Program Information"
 msgstr "Informations sur le programme"
 
-#: layouts/scripts/layout.phtml:123
+#: application/layouts/scripts/layout.phtml:123
 msgid "Dashboard"
 msgstr "Tableau de bord"
+
+#: application/layouts/scripts/layout.phtml:128
+msgid "PT Result Submission"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:132
+msgid "View PT Result"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:134
+msgid "Individual Report"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:135
+msgid "Summary Report"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:140
+msgid "Corrective Actions"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:145
+msgid "All Schemes"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:150
+msgid "Defaulted Schemes"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:155
+msgid "My Account"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:157
+#, fuzzy
+#| msgid "Program Information"
+msgid "My Login Information"
+msgstr "Informations sur le programme"
+
+#: application/layouts/scripts/layout.phtml:158
+msgid "PT Participant Info"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:159
+#, fuzzy
+#| msgid "Program Information"
+msgid "Scheme Information"
+msgstr "Informations sur le programme"
+
+#: application/layouts/scripts/layout.phtml:160
+msgid "Change Password"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:163
+msgid "Downloads"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:164
+msgid "Contact Us"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:177
+msgid "Logout"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:204
+msgid "some problem"
+msgstr ""
+
+#: application/layouts/scripts/layout.phtml:211
+msgid ""
+"This project is supported by the U.S. President's Emergency Plan for AIDS "
+"Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention "
+"(CDC)."
+msgstr ""
