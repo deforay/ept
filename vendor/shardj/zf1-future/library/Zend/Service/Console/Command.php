@@ -363,7 +363,7 @@ class Zend_Service_Console_Command
 	 * @command-name -help
 	 * @command-description Displays the current help information.
 	 */
-	public function helpCommand() {
+	public function helpCommand(...$args) {
 		$handler = $this->getHandler();
 		$newline = "\r\n";
 

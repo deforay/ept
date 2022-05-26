@@ -896,7 +896,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
      * Retrieve element attribute
      *
      * @param  string $name
-     * @return string
+     * @return string|null
      */
     public function getAttrib($name)
     {
@@ -1871,7 +1871,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
     /**
      * Add a decorator for rendering the element
      *
-     * @param  string|Zend_Form_Decorator_Interface $decorator
+     * @param  string|array|Zend_Form_Decorator_Interface $decorator
      * @param  array|Zend_Config $options Options with which to initialize decorator
      * @return Zend_Form_Element
      */

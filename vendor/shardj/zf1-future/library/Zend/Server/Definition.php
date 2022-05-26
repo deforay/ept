@@ -210,8 +210,7 @@ class Zend_Server_Definition implements Countable, Iterator
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->_methods);
     }
@@ -265,8 +264,7 @@ class Zend_Server_Definition implements Countable, Iterator
      *
      * @return bool
      */
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         return (bool) $this->current();
     }

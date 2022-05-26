@@ -55,6 +55,11 @@ class Zend_Db_Select
     const LIMIT_COUNT    = 'limitcount';
     const LIMIT_OFFSET   = 'limitoffset';
     const FOR_UPDATE     = 'forupdate';
+    const FOR_UPDATE_MODE = 'forupdatemode';
+
+    // FOR_UPDATE MODES
+    CONST FU_MODE_NOWAIT = 'nowait';
+    CONST FU_MODE_SKIP   = 'skiplocked';
 
     const INNER_JOIN     = 'inner join';
     const LEFT_JOIN      = 'left join';
@@ -74,6 +79,8 @@ class Zend_Db_Select
     const SQL_ORDER_BY   = 'ORDER BY';
     const SQL_HAVING     = 'HAVING';
     const SQL_FOR_UPDATE = 'FOR UPDATE';
+    const SQL_FU_NOWAIT  = 'NOWAIT';
+    const SQL_FU_SKIP    = 'SKIP LOCKED';
     const SQL_AND        = 'AND';
     const SQL_AS         = 'AS';
     const SQL_OR         = 'OR';
@@ -134,7 +141,8 @@ class Zend_Db_Select
         self::ORDER        => [],
         self::LIMIT_COUNT  => null,
         self::LIMIT_OFFSET => null,
-        self::FOR_UPDATE   => false
+        self::FOR_UPDATE   => false,
+        self::FOR_UPDATE_MODE   => null,
     ];
 
     /**
@@ -667,14 +675,19 @@ class Zend_Db_Select
     }
 
     /**
-     * Makes the query SELECT FOR UPDATE.
+     * Makes the query SELECT FOR UPDATE, optionally with NOWAIT or SKIP LOCKED options
      *
-     * @param bool $flag Whether or not the SELECT is FOR UPDATE (default true).
+     * @param mixed $flag Whether or not the SELECT is FOR UPDATE (default true), 
+                          pass the flag FU_MODE_NOWAIT or FU_MODE_SKIP to make 
+                          the FOR UPDATE either NOWAIT or SKIP LOCKED
      * @return Zend_Db_Select This Zend_Db_Select object.
      */
     public function forUpdate($flag = true)
     {
-        $this->_parts[self::FOR_UPDATE] = (bool) $flag;
+        $this->_parts[self::FOR_UPDATE] = (bool) $flag; //still use bool here for backwards compatibility
+        if ($flag === self::FU_MODE_NOWAIT || $flag === self::FU_MODE_SKIP) {
+            $this->_parts[self::FOR_UPDATE_MODE] = $flag;
+        }
         return $this;
     }
 
@@ -1316,6 +1329,12 @@ class Zend_Db_Select
     {
         if ($this->_parts[self::FOR_UPDATE]) {
             $sql .= ' ' . self::SQL_FOR_UPDATE;
+        }
+
+        if ($this->_parts[self::FOR_UPDATE_MODE] === self::FU_MODE_NOWAIT) {
+            $sql .= ' ' . self::SQL_FU_NOWAIT;
+        } elseif ($this->_parts[self::FOR_UPDATE_MODE] === self::FU_MODE_SKIP) {
+            $sql .= ' ' . self::SQL_FU_SKIP;
         }
 
         return $sql;

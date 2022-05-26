@@ -85,14 +85,12 @@ class Zend_Feed_Reader_Feed_Atom_Source extends Zend_Feed_Reader_Feed_Atom
     /**
      * @return void
      */
-    #[\ReturnTypeWillChange]
-    public function next() {}
+    public function next(): void {}
 
     /**
      * @return void
      */
-    #[\ReturnTypeWillChange]
-    public function rewind() {}
+    public function rewind(): void {}
 
     /**
      * @return void

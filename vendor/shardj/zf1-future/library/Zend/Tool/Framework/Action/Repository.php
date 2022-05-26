@@ -120,8 +120,7 @@ class Zend_Tool_Framework_Action_Repository
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->_actions);
     }
@@ -131,8 +130,7 @@ class Zend_Tool_Framework_Action_Repository
      *
      * @return ArrayIterator
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new ArrayIterator($this->_actions);
     }

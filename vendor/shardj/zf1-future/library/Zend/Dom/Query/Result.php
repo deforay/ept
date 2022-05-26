@@ -132,8 +132,7 @@ class Zend_Dom_Query_Result implements Iterator,Countable
      *
      * @return bool
      */
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         if (in_array($this->_position, range(0, $this->_nodeList->length - 1)) && $this->_nodeList->length > 0) {
             return true;
@@ -180,8 +179,7 @@ class Zend_Dom_Query_Result implements Iterator,Countable
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return $this->_nodeList->length;
     }

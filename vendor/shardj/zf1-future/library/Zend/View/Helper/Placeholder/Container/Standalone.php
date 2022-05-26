@@ -261,8 +261,7 @@ abstract class Zend_View_Helper_Placeholder_Container_Standalone extends Zend_Vi
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         $container = $this->getContainer();
         return count($container);
@@ -274,8 +273,7 @@ abstract class Zend_View_Helper_Placeholder_Container_Standalone extends Zend_Vi
      * @param  string|int $offset
      * @return bool
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->getContainer()->offsetExists($offset);
     }
@@ -286,6 +284,7 @@ abstract class Zend_View_Helper_Placeholder_Container_Standalone extends Zend_Vi
      * @param  string|int $offset
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->getContainer()->offsetGet($offset);
@@ -321,8 +320,7 @@ abstract class Zend_View_Helper_Placeholder_Container_Standalone extends Zend_Vi
      *
      * @return Iterator
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->getContainer()->getIterator();
     }

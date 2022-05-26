@@ -51,8 +51,7 @@ class Zend_Cloud_QueueService_MessageSet implements Countable, IteratorAggregate
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return $this->_messageCount;
     }
@@ -62,8 +61,7 @@ class Zend_Cloud_QueueService_MessageSet implements Countable, IteratorAggregate
      *
      * @return Traversable
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->_messages;
     }

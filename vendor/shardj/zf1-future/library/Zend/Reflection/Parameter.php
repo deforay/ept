@@ -38,7 +38,7 @@ class Zend_Reflection_Parameter extends ReflectionParameter
      * @param  string $reflectionClass Reflection class to use
      * @return Zend_Reflection_Class
      */
-    public function getDeclaringClass($reflectionClass = 'Zend_Reflection_Class')
+    public function getDeclaringClass($reflectionClass = 'Zend_Reflection_Class'): ?\ReflectionClass
     {
         $phpReflection  = parent::getDeclaringClass();
         $zendReflection = new $reflectionClass($phpReflection->getName());
@@ -56,7 +56,7 @@ class Zend_Reflection_Parameter extends ReflectionParameter
      * @param  string $reflectionClass Reflection class to use
      * @return Zend_Reflection_Class
      */
-    public function getClass($reflectionClass = 'Zend_Reflection_Class')
+    public function getClass($reflectionClass = 'Zend_Reflection_Class'): ?\ReflectionClass
     {
         if (PHP_VERSION_ID < 80000) {
             $phpReflection  = parent::getClass();
@@ -86,7 +86,7 @@ class Zend_Reflection_Parameter extends ReflectionParameter
      * @param  string $reflectionClass Reflection class to use
      * @return Zend_Reflection_Function|Zend_Reflection_Method
      */
-    public function getDeclaringFunction($reflectionClass = null)
+    public function getDeclaringFunction($reflectionClass = null): \ReflectionFunctionAbstract
     {
         $phpReflection = parent::getDeclaringFunction();
         if ($phpReflection instanceof ReflectionMethod) {
@@ -115,7 +115,7 @@ class Zend_Reflection_Parameter extends ReflectionParameter
      *
      * @return string
      */
-    public function getType()
+    public function getType(): ?\ReflectionType
     {
         try {
             if ($docblock = $this->getDeclaringFunction()->getDocblock()) {

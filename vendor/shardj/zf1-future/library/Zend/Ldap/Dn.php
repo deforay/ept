@@ -418,8 +418,7 @@ class Zend_Ldap_Dn implements ArrayAccess
      * @param  int $offset
      * @return boolean
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         $offset = (int)$offset;
         if ($offset < 0 || $offset >= count($this->_dn)) {
@@ -436,6 +435,7 @@ class Zend_Ldap_Dn implements ArrayAccess
      * @param  int $offset
      * @return array
      */
+     #[\ReturnTypeWillChange]
      public function offsetGet($offset)
      {
          return $this->get($offset, 1, null);
@@ -448,8 +448,7 @@ class Zend_Ldap_Dn implements ArrayAccess
       * @param int   $offset
       * @param array $value
       */
-     #[\ReturnTypeWillChange]
-     public function offsetSet($offset, $value)
+     public function offsetSet($offset, $value): void
      {
          $this->set($offset, $value);
      }
@@ -460,8 +459,7 @@ class Zend_Ldap_Dn implements ArrayAccess
       *
       * @param int $offset
       */
-     #[\ReturnTypeWillChange]
-     public function offsetUnset($offset)
+     public function offsetUnset($offset): void
      {
          $this->remove($offset, 1);
      }

@@ -100,8 +100,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          *
          * @return int
          */
-        #[\ReturnTypeWillChange]
-        public function count()
+        public function count(): int
         {
             return $this->count;
         }
@@ -174,8 +173,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          * @param  mixed $index
          * @return bool
          */
-        #[\ReturnTypeWillChange]
-        public function offsetExists($index)
+        public function offsetExists($index): bool
         {
             return array_key_exists($index, $this->data);
         }
@@ -187,6 +185,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          * @return mixed
          * @throws OutOfRangeException
          */
+        #[\ReturnTypeWillChange]
         public function offsetGet($index)
         {
             if (!$this->offsetExists($index)) {
@@ -202,8 +201,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          * @param  mixed $newval
          * @return void
          */
-        #[\ReturnTypeWillChange]
-        public function offsetSet($index, $newval)
+        public function offsetSet($index, $newval): void
         {
             $this->data[$index] = $newval;
             $this->stack = false;
@@ -217,8 +215,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          * @return void
          * @throws OutOfRangeException
          */
-        #[\ReturnTypeWillChange]
-        public function offsetUnset($index)
+        public function offsetUnset($index): void
         {
             if (!$this->offsetExists($index)) {
                 throw OutOfRangeException(sprintf('Invalid index ("%s") specified', $index));
@@ -284,9 +281,14 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          *
          * @return string
          */
-        public function serialize()
+        public function serialize(): ?string
         {
-            return serialize($this->data);
+            return serialize($this->__serialize());
+        }
+
+        public function __serialize(): array
+        {
+            return $this->data;
         }
 
         /**
@@ -322,9 +324,14 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          * @param  string
          * @return void
          */
-        public function unserialize($serialized)
+        public function unserialize($serialized): void
         {
-            $this->data  = unserialize($serialized);
+            $this->__unserialize(unserialize($serialized));
+        }
+
+        public function __unserialize(array $data): void
+        {
+            $this->data = $data;
             $this->stack = false;
         }
 
@@ -346,8 +353,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
          *
          * @return bool
          */
-        #[\ReturnTypeWillChange]
-        public function valid()
+        public function valid(): bool
         {
             $key = key($this->stack);
 
