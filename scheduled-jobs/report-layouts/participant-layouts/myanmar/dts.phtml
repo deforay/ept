@@ -203,6 +203,13 @@ if (sizeof($resultArray['shipment']) > 0) {
             $dswidth = 20;
             $width = 15;
         }
+        if (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') {
+            $shipmentAttributesScreeningTestDisplay = "display:none;";
+            $testThreeOptionalDisplay = "display:none;";
+            $testThreeHidden = true;
+            $testTwoHidden = true;
+            $width = 22.5;
+        }
 
         $ghanaNationalDtsAlgo = false;
         if ($dtsSchemeType == 'ghana') {
