@@ -280,7 +280,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 										<li>Please provide numerical results (such as: 0.00 to 7.00 log<sub>10</sub> copies/ml).</li>
 										<li>For negative or undetectable result (TND), please enter 0.00.</li>
 										<li>For result value that is &lt;LOD, please enter the value of assay LOD (such as 1.6 for &lt;40 copies/mL) and provide “&lt;40 copies/mL” under comment section</li>
-										<li>Enter the assay lower limit of quantification value for result  &lt;LLQ and enter 0.00 for Not Detected, negative or undetectable result</li>
+										<li>Enter the assay lower limit of quantification value for result &lt;LLQ and enter 0.00 for Not Detected, negative or undetectable result</li>
 									</ul>
 									<div class="vlResultSection" style="width:100%;padding-left:20%;"><label style="font-size:16px;">Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)<label></div>
 									<div class="vlResultSection" style="width:100%;padding-left:20%;"><input type="text" class="form-control checkNum" id="vlResultToLog" name="vlResultToLog" placeholder="Enter a result value to calculate the log value" style="width:80%;" /><span class="mandatory logValFormVl" style="font-size:16px;display:none;"></span></div>
@@ -336,25 +336,25 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 								</select>
 							</td>
 
-							<td colspan="2"><label>Received the PT Panel? </label> <span class="mandatory">*</span>
+							<td colspan="2"><label><?= $this->translate->_("Received the PT Panel?"); ?> </label> <span class="mandatory">*</span>
 								<select id="receivedPtPanel" name="receivedPtPanel" class="form-control" title="Please select if you received the PT Panel">
-									<option value="">--Select--</option>
-									<option value="yes">Yes</option>
-									<option value="no">No</option>
+									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+									<option value="no"><?= $this->translate->_("No"); ?></option>
 								</select>
 							</td>
 						</tr>
 						<tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-							<td colspan="4"><label>Your comments</label> <span class="mandatory">*</span> : <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
+							<td colspan="4"><label><?= $this->translate->_("Your comments"); ?></label> <span class="mandatory">*</span> : <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
 						</tr>
 						<tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-							<td colspan="4"><label>Do you need any support from the PT Provider ?</label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
+							<td colspan="4"><label><?= $this->translate->_("Do you need any support from the PT Provider?"); ?></label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
 						</tr>
 					</table>
 					<hr>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
-							<th style="width:20%;">Upload File</th>
+							<th style="width:20%;"><?= $this->translate->_("Upload File"); ?></th>
 							<td colspan="3">
 								<?php
 								$hideUploadFileArea = false;
@@ -366,7 +366,7 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 									$hideUploadFileArea = true;
 								?>
 									<span id="uploadeFileLink">
-										<a id="uploadeFileLink" href="/uploads/<?php echo $this->shipment['attributes']['uploaded_file'] ?>" download><?php echo basename($this->shipment['attributes']['uploaded_file']); ?></a>&nbsp;&nbsp;&nbsp;<a href="javascript:removeUploadedFile();" class="text-danger"><i class="icon icon-remove-sign"></i> Remove</a>
+										<a id="uploadeFileLink" href="/uploads/<?php echo $this->shipment['attributes']['uploaded_file'] ?>" download><?php echo basename($this->shipment['attributes']['uploaded_file']); ?></a>&nbsp;&nbsp;&nbsp;<a href="javascript:removeUploadedFile();" class="text-danger"><i class="icon icon-remove-sign"></i> <?= $this->translate->_("Remove"); ?></a>
 									</span>
 
 								<?php
@@ -379,64 +379,46 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 							</td>
 						</tr>
 						<tr>
-							<th style="width:20%;">Supervisor Review <span class="mandatory ptTestPerformed">*</span></th>
+							<th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span class="mandatory ptTestPerformed">*</span></th>
 							<td style="width:20%;">
 								<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
-									<option value="">--Select--</option>
-									<option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>>Yes</option>
-									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>No</option>
+									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>><?= $this->translate->_("Yes"); ?></option>
+									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
 							</td>
-							<th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>Supervisor Name <span class="mandatory">*</span></label></th>
+							<th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?> <span class="mandatory">*</span></label></th>
 							<td><input name="participantSupervisor" id="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> type="text" class="form-control" value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
-
 						</tr>
 
 						<tr>
-
-							<th>Comments </th>
+							<th><?= $this->translate->_("Comments"); ?> </th>
 							<td colspan="3">
 								<textarea name="userComments" id="userComments" class=" form-control" size="120"><?php echo $this->shipment['user_comment']; ?></textarea>
-
 							</td>
 						</tr>
-
 					</table>
 					<?php if ($this->isEditable) { ?>
 						<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 							<p>
-
 								<input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow();return false;" tabindex="7" value="Submit" />
 								&nbsp;&nbsp;&nbsp;
 								<input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" />
-
 							</p>
 						</div>
 					<?php } ?>
 				</div>
 				<?php
 				$genderHelper = $this->getHelper('DateFormat');
-				$dtFormat =  $genderHelper->getDateFormat();
-				?>
+				$dtFormat =  $genderHelper->getDateFormat(); ?>
 
-
-
-				<?php if (!$this->isEditable) {
-				?>
+				<?php if (!$this->isEditable) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-						<a href="javascript:void(0)" id="reset" tabindex="8" class="btn btn-info" onclick="javascript:goto_dashboard()">Back</a>
+						<a href="javascript:void(0)" id="reset" tabindex="8" class="btn btn-info" onclick="javascript:goto_dashboard()"><?= $this->translate->_("Back"); ?></a>
 					</div>
-				<?php
-				}
-				?>
-
-
+				<?php } ?>
 			</div>
 		</form>
-
-
-
-
 	</div>
 </section>
 <script>
