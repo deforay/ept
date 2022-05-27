@@ -546,7 +546,6 @@ try {
                 $reportTypeStatus = 'not-finalized';
             }
             $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
-            //$r = $evalService->getShipmentToEvaluate($evalRow['shipment_id'], true);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $db->select()->from(
@@ -654,7 +653,7 @@ try {
             } else {
                 $dataMsg = '';
             }
-            // $notifyType = ($evalRow['report_type'] = 'generateReport')?'individual_reports':'summary_reports';
+            $notifyType = ($evalRow['report_type'] = 'generateReport') ? 'individual_reports' : 'summary_reports';
             $commonService->insertPushNotification($title, $msgBody, $dataMsg, $pushContent['icon'], $evalRow['shipment_id'], 'new-reports', $notifyType);
 
             $notParticipatedMailContent = $commonService->getEmailTemplate('report');

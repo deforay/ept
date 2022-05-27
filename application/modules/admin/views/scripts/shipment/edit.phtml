@@ -133,7 +133,7 @@ $dtFormat =  $vHelper->getDateFormat();
 
 							<div class="col-lg-5">
 								<select id="screeningTest" name="screeningTest" class="isRequired form-control" title="Please select if this is a Screening Test">
-									<option value="">--Select--</option>
+									<option value=""><?php echo base64_decode("Nw=="); ?>--Select--</option>
 									<option value="yes" <?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'yes') ? "selected='selected'" : ""; ?>>Yes</option>
 									<option value="no" <?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'no') ? "selected='selected'" : ""; ?>>No</option>
 								</select>

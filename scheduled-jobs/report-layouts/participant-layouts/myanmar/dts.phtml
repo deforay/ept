@@ -18,8 +18,8 @@ foreach ($possibleDtsResults as $pr) {
     $dtsResults[$pr['id']] = ucfirst(strtolower($pr['response']));
 }
 
-
 if (sizeof($resultArray['shipment']) > 0) {
+
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
     }
@@ -133,6 +133,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
         $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
         $allowedAlgorithms = isset($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : array();
+        $dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
+
         $testThreeOptionalDisplay = "";
         if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
@@ -189,6 +191,30 @@ if (sizeof($resultArray['shipment']) > 0) {
             $noTest = 2;
         } else {
             $noTest = 3;
+        }
+
+        if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
+            $testThreeHidden = false;
+            $testTwoHidden = false;
+            $screeningTest = false;
+            $allowRepeatTests = "no";
+            $shipmentAttributesScreeningTestDisplay = "";
+            $testThreeOptionalDisplay = "";
+            $dswidth = 20;
+            $width = 15;
+        }
+
+        $ghanaNationalDtsAlgo = false;
+        if ($dtsSchemeType == 'ghana') {
+            $ghanaNationalDtsAlgo = true;
+        }
+        // if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && $ghanaNationalDtsAlgo) {
+        if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && $ghanaNationalDtsAlgo) {
+            $syphilisActive = true;
+        }
+        $repeatTest = false;
+        if ($dtsSchemeType == 'ghana' && $syphilisActive) {
+            $repeatTest = true;
         }
 
         $shipmentAttributesSampleTypeDisplay = "";
