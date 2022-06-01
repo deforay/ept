@@ -302,15 +302,21 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                     </table>
                     <?php
                     $possibleResults = array();
+                    $possibleSyphilisResults = array();
+                    $possibleFinalResults = array();
+                    $possibleSyphilisFinalResults = array();
                     foreach ($this->dtsPossibleResults as $pr) {
                         if ($pr['scheme_sub_group'] == 'DTS_TEST') {
                             $possibleResults[$pr['id']] = $pr['response'];
                         }
-                    }
-                    $possibleFinalResults = array();
-                    foreach ($this->dtsPossibleResults as $pr) {
+                        if ($pr['scheme_sub_group'] == 'DTS_SYP_TEST') {
+                            $possibleSyphilisResults[$pr['id']] = $pr['response'];
+                        }
                         if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
                             $possibleFinalResults[$pr['id']] = $pr['response'];
+                        }
+                        if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL') {
+                            $possibleSyphilisFinalResults[$pr['id']] = $pr['response'];
                         }
                     }
 
@@ -336,6 +342,9 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                             <?php } ?>
                             <tr align="CENTER" class="dark">
                                 <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                                <?php if ($syphilisActive) { ?>
+                                    <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                                <?php } ?>
                                 <th style="width: <?php echo $width; ?>%;" class="colwidth"><?= $this->translate->_("Test-1"); ?></th>
                                 <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Test-2"); ?></th>
                                 <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Test-3"); ?></th>
@@ -344,11 +353,14 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                     <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?></th>
                                     <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?></th>
                                 <?php } ?>
-                                <th class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></th>
+                                <th class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></th>
                             </tr>
                         </thead>
                         <tr align="CENTER" class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <th class="colwidth"> <?= $this->translate->_("Kit Name"); ?></th>
+                            <?php if ($syphilisActive) { ?>
+                                <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                            <?php } ?>
                             <td style="width: <?php echo $width; ?>%;" class="dark colwidth">
                                 <select name="test_kit_name_1" id="test_kit_name_1" class="testkit-change form-control" title="Please Choose Test Kit 1" onchange="selectTestKitName(this)">
                                     <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
@@ -431,7 +443,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                     <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_3" id="repeat_test_kit_other_name_3" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
                             <?php } ?>
-                            <td class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
+                            <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
                         </tr>
                         <?php
                         $lotNo1 = "";
@@ -463,6 +475,9 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                         ?>
                         <tr align="CENTER" class="dark vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <th><?= $this->translate->_("Lot No."); ?></th>
+                            <?php if ($syphilisActive) { ?>
+                                <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                            <?php } ?>
                             <td><input type="text" class="form-control" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" class="" title="Please enter Lot No. 1" /></td>
                             <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" class="" title="Please enter Lot No. 2" /></td>
                             <td class='testThree'><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" class="" title="Please enter Lot No. 3" /></td>
@@ -471,7 +486,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                 <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
                                 <td class='testThree'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
                             <?php } ?>
-                            <td class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
+                            <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
                         </tr>
                         <?php
                         $expDate1 = "";
@@ -502,6 +517,9 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                         } ?>
                         <tr align="CENTER" class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <th><?= $this->translate->_("Expiry Date"); ?></th>
+                            <?php if ($syphilisActive) { ?>
+                                <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                            <?php } ?>
                             <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> <?= $this->translate->_("Clear"); ?></i></td>
                             <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
                             <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
@@ -510,7 +528,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                 <td class='testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
                                 <td class='testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
                             <?php } ?>
-                            <td class="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
+                            <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
                         </tr>
                         <thead class="vlResultSection vl-results" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <?php
@@ -577,7 +595,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                     <?php if ($syphilisActive) { ?>
                                         <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;" class="syphilis-fields">
                                             <select name="syphilis_result[]" id="<?php echo "syphilis_result_" . $count; ?>" class="form-control">
-                                                <?php $this->dropdownSelection($possibleResults, $sample['syphilis_result'], true); ?>
+                                                <?php $this->dropdownSelection($possibleSyphilisResults, $sample['syphilis_result'], true); ?>
                                             </select>
                                         </div>
                                     <?php } ?>
@@ -616,7 +634,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                     <?php if ($syphilisActive) { ?>
                                         <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;" class="syphilis-fields">
                                             <select name="syphilis_final[]" id="<?php echo "syphilis_final_" . $count; ?>" class="form-control">
-                                                <?php $this->dropdownSelection($possibleFinalResults, $sample['syphilis_final'], true); ?>
+                                                <?php $this->dropdownSelection($possibleSyphilisFinalResults, $sample['syphilis_final'], true); ?>
                                             </select>
                                         </div>
                                     <?php } ?>

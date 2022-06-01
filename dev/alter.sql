@@ -3029,3 +3029,4 @@ ALTER TABLE `response_result_dts` ADD `syphilis_final` VARCHAR(256) NULL DEFAULT
 -- Thana 01-Jun-2022
 ALTER TABLE `reference_result_dts` ADD `syphilis_reference_result` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL AFTER `reference_result`;
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'dts', 'DTS_SYP_FINAL', 'POSITIVE', 'SP'), (NULL, 'dts', 'DTS_SYP_FINAL', 'NEGATIVE', 'SN'), (NULL, 'dts', 'DTS_SYP_FINAL', 'INDETERMINATE', 'SI');
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'dts', 'DTS_SYP_TEST', 'REACTIVE', 'SR'), (NULL, 'dts', 'DTS_SYP_TEST', 'NONREACTIVE', 'SN'), (NULL, 'dts', 'DTS_SYP_TEST', 'INVALID', 'SI');

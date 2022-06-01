@@ -1843,7 +1843,6 @@ class Application_Service_Shipments
                         'sample_id'                 => ($i + 1),
                         'sample_label'              => $params['sampleName'][$i],
                         'reference_result'          => $params['possibleResults'][$i],
-                        'syphilis_reference_result' => $params['possibleSyphilisResults'][$i],
                         'reference_hiv_ct_od'       => $params['hivCtOd'][$i],
                         'reference_ic_qs'           => $params['icQs'][$i],
                         'control'                   => $params['control'][$i],
@@ -1924,6 +1923,7 @@ class Application_Service_Shipments
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
                         'reference_result' => $params['possibleResults'][$i],
+                        'syphilis_reference_result' => $params['possibleSyphilisResults'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
                         'sample_score' => $params['score'][$i]

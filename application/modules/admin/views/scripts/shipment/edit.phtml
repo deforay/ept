@@ -163,7 +163,7 @@ $dtFormat =  $vHelper->getDateFormat();
 							<tr align="center">
 								<th style="width:25%;text-align: center;">Sample</th>
 								<th style="width:10%;text-align: center;">Final Result</th>
-								<th class="syphilis-input" style="width:10%;text-align: center;display:none;">Syphilis Final Result</th>
+								<th class="syphilis-input" style="width:10%;text-align: center;<?php echo (isset($shipmentAttribute['enableSyphilis']) && $shipmentAttribute['enableSyphilis'] == 'yes') ? "" : "display:none" ?>;">Syphilis Final Result</th>
 								<th style="width:10%;text-align: center;">Control ?</th>
 								<th style="width:10%;text-align: center;">Mandatory ?</th>
 								<th style="width:10%;text-align: center;">Score</th>
@@ -192,8 +192,8 @@ $dtFormat =  $vHelper->getDateFormat();
 												} ?>
 											</select>
 										</td>
-										<td class="syphilis-input" style="display:none;">
-											<select name="possibleSyphilisResults[]" class="isRequired form-control input-sm">
+										<td class="syphilis-input" style="<?php echo (isset($shipmentAttribute['enableSyphilis']) && $shipmentAttribute['enableSyphilis'] == 'yes') ? "" : "display:none" ?>;">
+											<select name="possibleSyphilisResults[]" class="form-control input-sm">
 												<option value="">--Select--</option>';
 												<?php foreach ($shipmentData['possibleResults'] as $pr) {
 													if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL') { ?>
@@ -649,17 +649,10 @@ $dtFormat =  $vHelper->getDateFormat();
 														</div>
 													</div>
 												</div>
-
-
 												<div class="modal-footer">
 													<button type="button" onclick="closeShipmentModal('sampleEia<?php echo $reference['sample_id']; ?>');return false;" class="btn btn-primary">OK</button>
 												</div>
 											</div>
-
-
-
-
-
 										</td>
 									</tr>
 
