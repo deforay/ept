@@ -229,7 +229,6 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('ref' => 'reference_result_dts'))
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->joinLeft(array('res' => 'response_result_dts'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array(
                 'test_kit_name_1',
@@ -259,7 +258,7 @@ class Application_Service_Schemes
                 'repeat_test_result_3',
                 'reported_result',
                 'syphilis_final',
-                'if_this_is_retest'
+                'is_this_retest'
             ))
             ->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
             ->where('sp.shipment_id = ? ', $sId)

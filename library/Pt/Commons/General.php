@@ -72,7 +72,7 @@ class Pt_Commons_General
         }
 
         header('Content-Type: ' . $mime_type);
-        header('Content-Disposition: attachment; filename="' . $name . '"');
+        header('Content-Disposition: inline; filename="' . $name . '"');
         header("Content-Transfer-Encoding: binary");
         header('Accept-Ranges: bytes');
 

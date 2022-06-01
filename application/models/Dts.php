@@ -53,6 +53,9 @@ class Application_Model_Dts
 
 			$attributes = json_decode($shipment['attributes'], true);
 			$shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
+			$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
+			$syphilisEnabled = ($dtsSchemeType == 'ghana' && isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") ? true : false;
+
 
 
 			//Response was submitted after the last response date.
@@ -317,13 +320,23 @@ class Application_Model_Dts
 					continue;
 				}
 
-				$finalResultCode = $result['result_code'];
+				$reportedResultCode = isset($result['result_code']) ? $result['result_code'] : null;
+				$reportedSyphilisResult = isset($result['syphilis_final']) ? $result['syphilis_final'] : null;
 
 
 				// Checking algorithm Pass/Fail only if it is NOT a control.
 				if (0 == $result['control']) {
-					$result1 = $result2 = $result3 = '';
+					$syphilisResult = $result1 = $result2 = $result3 = $isRetest = '';
 					$repeatResult1 = $repeatResult2 = $repeatResult3 = '';
+					if ($result['syphilis_result'] == 1) {
+						$syphilisResult = 'R';
+					} else if ($result['syphilis_result'] == 2) {
+						$syphilisResult = 'NR';
+					} else if ($result['syphilis_result'] == 3) {
+						$syphilisResult = 'I';
+					} else {
+						$syphilisResult = '-';
+					}
 					if ($result['test_result_1'] == 1) {
 						$result1 = 'R';
 					} else if ($result['test_result_1'] == 2) {
@@ -333,6 +346,13 @@ class Application_Model_Dts
 					} else {
 						$result1 = '-';
 					}
+
+					if (isset($result['is_this_retest']) && !empty($result['is_this_retest']) && $result['is_this_retest'] == 'yes') {
+						$isRetest = 'yes';
+					} else {
+						$isRetest = '-';
+					}
+
 					if ($result['repeat_test_result_1'] == 1) {
 						$repeatResult1 = 'R';
 					} else if ($result['repeat_test_result_1'] == 2) {
@@ -476,19 +496,19 @@ class Application_Model_Dts
 						// R-NR-R => I
 						// R-R-NR => I
 
-						//$rstring = $result1."-".$result2."-".$result3."-".$finalResultCode;
+						//$rstring = $result1."-".$result2."-".$result3."-".$reportedResultCode;
 
-						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $finalResultCode == 'N') {
+						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $reportedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $finalResultCode == 'P') {
+						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $finalResultCode == 'R') {
+						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'R') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $finalResultCode == 'N') {
+						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $finalResultCode == 'I') {
+						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'I') {
 							$algoResult = 'Pass';
-						} else if (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $finalResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $finalResultCode == 'I')) {
+						} else if (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -500,7 +520,7 @@ class Application_Model_Dts
 						}
 					} else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
 
-						if ($result1 == 'NR' && $finalResultCode == 'N') {
+						if ($result1 == 'NR' && $reportedResultCode == 'N') {
 							if ($result2 == '-' && $repeatResult1 == '-' && $repeatResult2 == '-') {
 								$algoResult = 'Pass';
 							} else {
@@ -512,17 +532,70 @@ class Application_Model_Dts
 								$correctiveActionList[] = 2;
 							}
 						} else if ($result1 == 'R') {
-							if ($result2 == 'R' && $finalResultCode == 'P' && $repeatResult1 == '-' && $repeatResult2 == '-') {
+							if ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-' && $repeatResult2 == '-') {
 								$algoResult = 'Pass';
 							} else if ($result2 == 'NR') {
 								// if Result 2 is NR then, we go for repeat tests
-								if ($repeatResult1 == 'NR' && $repeatResult2 == 'NR' && $finalResultCode == 'N') {
+								if ($repeatResult1 == 'NR' && $repeatResult2 == 'NR' && $reportedResultCode == 'N') {
 									$algoResult = 'Pass';
-								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $finalResultCode == 'P') {
+								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $reportedResultCode == 'P') {
 									$algoResult = 'Pass';
-								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $finalResultCode == 'I') {
+								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $reportedResultCode == 'I') {
 									$algoResult = 'Pass';
-								} else if ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $finalResultCode == 'I') {
+								} else if ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $reportedResultCode == 'I') {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array(
+									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+									'correctiveAction' => $correctiveActions[2]
+								);
+								$correctiveActionList[] = 2;
+							}
+						}
+					} else if ($dtsSchemeType == 'ghana') {
+
+						if ($syphilisEnabled == true) {
+							if ($syphilisResult == 'R' && $reportedSyphilisResult == 4) {
+								$sypAlgoResult = 'Pass';
+							} else if ($syphilisResult == 'NR' && $reportedSyphilisResult == 5) {
+								$sypAlgoResult = 'Pass';
+							} else {
+								$sypAlgoResult = 'Fail';
+							}
+						}
+
+						if ($result1 == 'NR' && $reportedResultCode == 'N') {
+							if (($result2 == '-' && $result3 == '-' && $isRetest == '-')) {
+								$algoResult = 'Pass';
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array(
+									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+									'correctiveAction' => $correctiveActions[2]
+								);
+								$correctiveActionList[] = 2;
+							}
+						} else if ($result1 == 'R') {
+							if ($result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P' && $isRetest == '-') {
+								$algoResult = 'Pass';
+							} else if ($result2 == 'NR') {
+								// if Result 2 is NR then, we go for repeat tests
+								if ($repeatResult1 == 'NR' && $repeatResult2 == 'NR' && $reportedResultCode == 'N') {
+									$algoResult = 'Pass';
+								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $reportedResultCode == 'P') {
+									$algoResult = 'Pass';
+								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $reportedResultCode == 'I') {
+									$algoResult = 'Pass';
+								} else if ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $reportedResultCode == 'I') {
 									$algoResult = 'Pass';
 								} else {
 									$algoResult = 'Fail';
@@ -597,6 +670,9 @@ class Application_Model_Dts
 					$scoreForSample = $result['sample_score'] - $scoreForAlgorithm;
 				}
 
+
+
+
 				// If final resut was not reported then the participant is failed 
 				if (!isset($result['reported_result']) || empty(trim($result['reported_result']))) {
 					$mandatoryResult = 'Fail';
@@ -608,11 +684,27 @@ class Application_Model_Dts
 					$correctiveActionList[] = 4;
 				} else {
 					if ($controlTesKitFail != 'Fail') {
+
+						// Keeping this as always true so that even for the
+						// non-syphilis samples scores can be calculated
+						$correctSyphilisResponse = true;
+						if ($syphilisEnabled == true) {
+							if ($reportedSyphilisResult == $result['syphilis_reference_result']) {
+								if ($sypAlgoResult != 'Fail') {
+									$correctSyphilisResponse = true;
+								} else {
+									$correctSyphilisResponse = false;
+								}
+							} else {
+								$correctSyphilisResponse = false;
+							}
+						}
+
 						if ($result['reference_result'] == $result['reported_result']) {
-							if ($algoResult != 'Fail') {
+							if ($correctSyphilisResponse && $algoResult != 'Fail') {
 								$totalScore += ($scoreForSample + $scoreForAlgorithm);
 								$correctResponse = true;
-							} else if ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail') {
+							} else if ($correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
 								$totalScore += $scoreForSample;
 								$correctResponse = false;
 							} else {

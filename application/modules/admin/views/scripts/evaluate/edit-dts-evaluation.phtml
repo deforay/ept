@@ -398,10 +398,10 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                 <?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?>
             </td>
             <!-- <td style="width: <?php echo $width; ?>%;" class="colwidth">
-                <select name="if_this_is_retest[]" id="<?php echo "if_this_is_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
+                <select name="is_this_retest[]" id="<?php echo "is_this_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
                     <option value="">--Select--</option>
-                    <option value="yes" <?php echo (isset($sample['if_this_is_retest']) && $sample['if_this_is_retest'] == "yes") ? "selected='selected'" : "" ?>>Yes</option>
-                    <option value="no" <?php echo (isset($sample['if_this_is_retest']) && $sample['if_this_is_retest'] == "no") ? "selected='selected'" : "" ?>>No</option>
+                    <option value="yes" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "yes") ? "selected='selected'" : "" ?>>Yes</option>
+                    <option value="no" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "no") ? "selected='selected'" : "" ?>>No</option>
                 </select>
             </td> -->
             <!--		<td style="vertical-align: middle;">

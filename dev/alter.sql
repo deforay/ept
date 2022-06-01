@@ -3022,6 +3022,6 @@ ALTER TABLE `participant` ADD `district` VARCHAR(256) NULL DEFAULT NULL AFTER `s
 
 -- Thana 19-Apr-2022
 ALTER TABLE `participant` ADD `anc` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `site_type`;
-ALTER TABLE `response_result_dts` ADD `if_this_is_retest` VARCHAR(50) NULL DEFAULT NULL AFTER `reported_result`;
+ALTER TABLE `response_result_dts` ADD `is_this_retest` VARCHAR(50) NULL DEFAULT NULL AFTER `reported_result`;
 ALTER TABLE `response_result_dts` ADD `syphilis_result` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_1`;
 ALTER TABLE `response_result_dts` ADD `syphilis_final` VARCHAR(256) NULL DEFAULT NULL AFTER `reported_result`;

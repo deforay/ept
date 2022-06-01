@@ -72,7 +72,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 'repeat_test_result_3'      => $params['repeat_test_result_3'][$key],
                 'reported_result'           => $params['reported_result'][$key],
                 'syphilis_final'            => $params['syphilis_final'][$key],
-                'if_this_is_retest'         => $params['if_this_is_retest'][$key],
+                'is_this_retest'         => $params['is_this_retest'][$key],
             );
             /* Zend_Debug::dump($data);
             die; */

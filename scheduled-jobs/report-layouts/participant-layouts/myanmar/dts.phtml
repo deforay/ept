@@ -130,7 +130,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             'Indeterminate' => 'Ind'
         );
 
-        $flag = UPLOAD_PATH . '/../images/red-flag.png';
+        
         $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
         $allowedAlgorithms = isset($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : array();
         $dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
@@ -153,7 +153,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $width = 16.7;
         }
 
-        $dwidth = 80;
+        $dwidth = 100;
         if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
             $testThreeHidden = false;
             $testTwoHidden = false;
@@ -293,9 +293,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
         $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
-        if (empty($sampleRehydrationDate) || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1))) {
-            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
-        }
+        //if (empty($sampleRehydrationDate) || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1))) {
+            //$labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
+        //}
         if (isset($sampleRehydrationDate) && $sampleRehydrationDate != "") {
             $labInfo .= '<br>' . $sampleRehydrationDate;
         }
@@ -323,16 +323,16 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</tr>';
         $labInfo .= '<tr><td>';
         $labInfo .= '<strong>Supervisor Review</strong>';
-        if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
-            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
-        }
+        // if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
+        //     $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
+        // }
         $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
         $labInfo .= '</td><td>';
         $labInfo .= '	<strong>Supervisor Name</strong>';
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
             $labInfo .= '<br>' . ($result['participant_supervisor']);
         } else {
-            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
+           // $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
         $labInfo .= '</td><td></td>';
         $labInfo .= '</tr>';
@@ -600,8 +600,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             // $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>
             $docRes = '<table border="1" style="font-size:12px;">
 						<tr style="background-color:#dbe4ee;">
-							<td style="text-align:center;font-weight:bold;width:' . $dwidth . '%;">Documentation Item</td>
-                            <td style="text-align:center;font-weight:bold;width:' . $dswidth . '%;">Score</td>
+							<td style="text-align:center;font-weight:bold;width:' . $dwidth . '%;">Documentation Items Considered For Scoring</td>
                         </tr>';
             if (isset($result['responseResult'][0]['supervisor_approval']) && trim($result['responseResult'][0]['supervisor_approval']) == "yes") {
                 $scoreDoc = $documentationScorePerItem;
@@ -613,7 +612,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr>
 							<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
-                            <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                         </tr>';
 
             if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
@@ -626,7 +624,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr>
 							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>
-                            <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                         </tr>';
 
             if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "" && $shipmentAttributesSampleTypeDisplay == "") {
@@ -639,7 +636,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
 							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>
-                            <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                         </tr>';
 
             if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
@@ -652,7 +648,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr>
                             <td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
-                            <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                         </tr>';
             if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
                 $scoreDoc = 0;
@@ -664,7 +659,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
 							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>
-                            <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                         </tr>';
 
             // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
@@ -679,7 +673,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                                 <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
-                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                             </tr>';
             }
 
@@ -694,7 +687,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                                 <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>
-                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                             </tr>';
 
                 $scoreDoc = 0;
@@ -702,7 +694,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                                 <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>
-                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                             </tr>';
 
                 if (!empty($attributes['room_temperature'])) {
@@ -715,7 +706,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                                 <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>
-                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                             </tr>';
 
                 if (!empty($attributes['stop_watch'])) {
@@ -728,7 +718,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                                 <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>
-                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                             </tr>';
             }
 

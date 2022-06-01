@@ -2246,10 +2246,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         if ($params['scheme_type'] == 'dts') {
             $dts = array();
+            $dtsSchemeType = (isset($shipment['shipment_attributes']["dtsSchemeType"]) && $shipment['shipment_attributes']["dtsSchemeType"] != '') ? $shipment['shipment_attributes']["dtsSchemeType"] : null;
             $testThreeOptional = false;
             if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
                 $testThreeOptional = true;
             }
+
+            if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
+                $testThreeOptional = false;
+            }
+
             $reportAccess = array();
             if ($isEditable && $dm['view_only_access'] != 'yes') {
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
@@ -2311,11 +2317,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'parallel');
             }
-            if ($testThreeOptional) {
-                if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) {
-                    array_push($algorithmUsedSelectOptions, 'myanmarNationalDtsAlgo');
-                }
+            
+            if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) {
+                array_push($algorithmUsedSelectOptions, 'myanmarNationalDtsAlgo');
             }
+            if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) {
+                array_push($algorithmUsedSelectOptions, 'malawiNationalDtsAlgo');
+            }
+            
             if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'ghanaNationalDtsAlgo');
             }
@@ -2340,7 +2349,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'algorithmUsedSelected'     => (isset($shipment['attributes']["algorithm"]) && $shipment['attributes']["algorithm"] != '') ? $shipment['attributes']["algorithm"] : '',
                     'sampleType'                => (isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != '') ? $shipment['shipment_attributes']["sampleType"] : '',
                     'screeningTest'             => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
-                    'dtsSchemeType'             => (isset($shipment['shipment_attributes']["dtsSchemeType"]) && $shipment['shipment_attributes']["dtsSchemeType"] != '') ? $shipment['shipment_attributes']["dtsSchemeType"] : '',
+                    'dtsSchemeType'             => $dtsSchemeType,
                     // 'conditionOfPTSamples'      => '',
                     // 'refridgerator'      => '',
                     // 'roomTemperature'      => '',
@@ -2350,7 +2359,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     // 'stopWatchSelect'      => '',
                     // 'sampleRehydrationDate' => ''
                 );
-                if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
+                if ($dtsSchemeType == 'malawi' || (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
                     $section2['conditionOfPTSamples'] = (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] != '') ? $shipment['attributes']["condition_pt_samples"] : '';
                     $section2['refridgerator'] = (isset($shipment['attributes']["refridgerator"]) && $shipment['attributes']["refridgerator"] != '') ? $shipment['attributes']["refridgerator"] : '';
                     $section2['roomTemperature'] = (isset($shipment['attributes']["room_temperature"]) && $shipment['attributes']["room_temperature"] != '') ? $shipment['attributes']["room_temperature"] : '';
