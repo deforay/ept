@@ -673,7 +673,7 @@ class Application_Model_Dts
 
 
 
-				// If final resut was not reported then the participant is failed 
+				// If final HIV result was not reported then the participant is failed 
 				if (!isset($result['reported_result']) || empty(trim($result['reported_result']))) {
 					$mandatoryResult = 'Fail';
 					$shipment['is_excluded'] = 'yes';

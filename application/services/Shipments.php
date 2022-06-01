@@ -1263,6 +1263,8 @@ class Application_Service_Shipments
 
         if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "") {
             $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
+        } else {
+            $shipmentAttributes['dtsSchemeType'] = 'standard';
         }
         $data = array(
             'shipment_code'         => $params['shipmentCode'],
@@ -2183,6 +2185,8 @@ class Application_Service_Shipments
         }
         if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "") {
             $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
+        } else {
+            $shipmentAttributes['dtsSchemeType'] = "standard";
         }
         /* Method Of Evaluation for vl form */
         if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {

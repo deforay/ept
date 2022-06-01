@@ -113,6 +113,7 @@ $dtFormat =  $vHelper->getDateFormat();
 					}
 
 					$allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
+					$dtsSchemeType = isset($this->config->evaluation->dts->dtsSchemeType) ? $this->config->evaluation->dts->dtsSchemeType : 'standard';
 
 				?>
 					<div class="form-group">

@@ -1,6 +1,7 @@
 <?php
 
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
+$dtsSchemeType = isset($this->config->evaluation->dts->dtsSchemeType) ? $this->config->evaluation->dts->dtsSchemeType : 'standard';
 
 $possibleTestResults = '<select name="possibleTestResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 foreach ($this->dtsPossibleResults as $pr) {
@@ -72,30 +73,30 @@ $dtFormat =  $vHelper->getDateFormat();
 	</div>
 </div>
 <?php if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
-<div class="form-group">
-	<label class="col-lg-3 control-label">Is this a Screening Test Panel? <span class="mandatory">*</span><br> <small>(This creates a panel with only ONE test)</small></label>
+	<div class="form-group">
+		<label class="col-lg-3 control-label">Is this a Screening Test Panel? <span class="mandatory">*</span><br> <small>(This creates a panel with only ONE test)</small></label>
 
-	<div class="col-lg-5">
-		<select id="screeningTest" name="screeningTest" class="isRequired form-control input-sm" title="Please select if this is a Screening Test">
-			<option value="">--Select--</option>
-			<option value="yes">Yes</option>
-			<option value="no">No</option>
-		</select>
+		<div class="col-lg-5">
+			<select id="screeningTest" name="screeningTest" class="isRequired form-control input-sm" title="Please select if this is a Screening Test">
+				<option value="">--Select--</option>
+				<option value="yes">Yes</option>
+				<option value="no">No</option>
+			</select>
+		</div>
 	</div>
-</div>
 <?php } ?>
 <?php if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
-<div class="form-group">
-	<label class="col-lg-3 control-label">Enable Syphilis Test for ANC Sites? <span class="mandatory">*</span><br> <small>(This creates a Syphilis panel for all ANC sites)</small></label>
+	<div class="form-group">
+		<label class="col-lg-3 control-label">Enable Syphilis Test for ANC Sites? <span class="mandatory">*</span><br> <small>(This creates a Syphilis panel for all ANC sites)</small></label>
 
-	<div class="col-lg-5">
-		<select id="enableSyphilis" name="enableSyphilis" class="isRequired form-control input-sm" title="Please select if this is a Screening Test">
-			<option value="">--Select--</option>
-			<option value="yes">Yes</option>
-			<option value="no">No</option>
-		</select>
+		<div class="col-lg-5">
+			<select id="enableSyphilis" name="enableSyphilis" class="isRequired form-control input-sm" title="Please select if this is a Screening Test">
+				<option value="">--Select--</option>
+				<option value="yes">Yes</option>
+				<option value="no">No</option>
+			</select>
+		</div>
 	</div>
-</div>
 <?php } ?>
 
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
