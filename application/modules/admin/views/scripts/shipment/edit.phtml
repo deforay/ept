@@ -64,10 +64,14 @@ $dtFormat =  $vHelper->getDateFormat();
 				if ($shipmentData['shipment']['scheme_type'] == 'dts') {
 					$possibleResultsOption = '<option value="">--Select--</option>';
 					$possibleResults = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
+					$possibleSyphilisResults = '<select name="possibleSyphilisResults[]" class="form-control input-sm"><option value="">--Select--</option>';
 					foreach ($shipmentData['possibleResults'] as $pr) {
 						if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
 							$possibleResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
 							$possibleResultsOption .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+						}
+						if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL') {
+							$possibleSyphilisResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
 						}
 					}
 
@@ -159,6 +163,7 @@ $dtFormat =  $vHelper->getDateFormat();
 							<tr align="center">
 								<th style="width:25%;text-align: center;">Sample</th>
 								<th style="width:10%;text-align: center;">Final Result</th>
+								<th class="syphilis-input" style="width:10%;text-align: center;display:none;">Syphilis Final Result</th>
 								<th style="width:10%;text-align: center;">Control ?</th>
 								<th style="width:10%;text-align: center;">Mandatory ?</th>
 								<th style="width:10%;text-align: center;">Score</th>
@@ -180,17 +185,22 @@ $dtFormat =  $vHelper->getDateFormat();
 										<td>
 											<select name="possibleResults[]" class="isRequired form-control input-sm">
 												<option value="">--Select--</option>';
-												<?php
-												foreach ($shipmentData['possibleResults'] as $pr) {
-													if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
-												?>
+												<?php foreach ($shipmentData['possibleResults'] as $pr) {
+													if ($pr['scheme_sub_group'] == 'DTS_FINAL') { ?>
 														<option value="<?php echo $pr['id']; ?>" <?php echo ($reference['reference_result'] == $pr['id']) ? "selected='selected'" : ""; ?>><?php echo $pr['response']; ?></option>
-												<?php
-													}
-												}
-												?>
+												<?php }
+												} ?>
 											</select>
-
+										</td>
+										<td class="syphilis-input" style="display:none;">
+											<select name="possibleSyphilisResults[]" class="isRequired form-control input-sm">
+												<option value="">--Select--</option>';
+												<?php foreach ($shipmentData['possibleResults'] as $pr) {
+													if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL') { ?>
+														<option value="<?php echo $pr['id']; ?>" <?php echo ($reference['syphilis_reference_result'] == $pr['id']) ? "selected='selected'" : ""; ?>><?php echo $pr['response']; ?></option>
+												<?php }
+												} ?>
+											</select>
 										</td>
 										<td>
 											<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
@@ -724,27 +734,37 @@ $dtFormat =  $vHelper->getDateFormat();
 							sampleCounter++;
 							//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
 							$(obj.parentNode.parentNode).after('<tr align="center"> \
-				<td style="text-align: center"> \
-					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
-				</td>  \
-				<td> \
-					<?php echo $possibleResults; ?> \
-				</td>\
-				<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
-						<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
-					</select> \
-				</td> \
-				<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
-						<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
-					</select> \
-				</td> \
-				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
-				<td> \
-					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia' + sampleCounter + '\', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a> \
-					<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
-					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
-				</td> \
-			</tr>');
+								<td style="text-align: center"> \
+									<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
+								</td>  \
+								<td> \
+									<?php echo $possibleResults; ?> \
+								</td>\
+								<td class="syphilis-input" style="display:none;"> \
+									<?php echo $possibleSyphilisResults; ?> \
+								</td>\
+								<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
+										<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+									</select> \
+								</td> \
+								<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+										<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+									</select> \
+								</td> \
+								<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
+								<td> \
+									<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia' + sampleCounter + '\', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a> \
+									<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
+									<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+								</td> \
+							</tr>');
+							if ($("#enableSyphilis").val() == "yes") {
+								$("#possibleSyphilisResults").addClass("isRequired")
+								$('.syphilis-input').show();
+							} else {
+								$("#possibleSyphilisResults").removeClass("isRequired")
+								$('.syphilis-input').hide();
+							}
 							addNewEiaBlock(sampleCounter);
 
 
@@ -759,6 +779,15 @@ $dtFormat =  $vHelper->getDateFormat();
 						$(document).ready(function() {
 							$(".datepicker").datepicker({
 								dateFormat: '<?php echo $dtFormat; ?>'
+							});
+							$("#enableSyphilis").change(function() {
+								if ($(this).val() == "yes") {
+									$('.syphilis-input').show();
+									$("#possibleSyphilisResults").addClass("isRequired")
+								} else {
+									$("#possibleSyphilisResults").removeClass("isRequired")
+									$('.syphilis-input').hide();
+								}
 							});
 						});
 

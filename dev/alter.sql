@@ -3025,3 +3025,7 @@ ALTER TABLE `participant` ADD `anc` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `sit
 ALTER TABLE `response_result_dts` ADD `is_this_retest` VARCHAR(50) NULL DEFAULT NULL AFTER `reported_result`;
 ALTER TABLE `response_result_dts` ADD `syphilis_result` VARCHAR(256) NULL DEFAULT NULL AFTER `test_result_1`;
 ALTER TABLE `response_result_dts` ADD `syphilis_final` VARCHAR(256) NULL DEFAULT NULL AFTER `reported_result`;
+
+-- Thana 01-Jun-2022
+ALTER TABLE `reference_result_dts` ADD `syphilis_reference_result` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL AFTER `reference_result`;
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'dts', 'DTS_SYP_FINAL', 'POSITIVE', 'SP'), (NULL, 'dts', 'DTS_SYP_FINAL', 'NEGATIVE', 'SN'), (NULL, 'dts', 'DTS_SYP_FINAL', 'INDETERMINATE', 'SI');

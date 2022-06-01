@@ -1279,9 +1279,7 @@ class Application_Service_Shipments
             'created_on_admin'      => new Zend_Db_Expr('now()'),
             'created_by_admin'      => $authNameSpace->primary_email
         );
-
         $lastId = $db->insert($data);
-
         if ($lastId > 0) {
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $auditDb = new Application_Model_DbTable_AuditLog();
@@ -1290,6 +1288,7 @@ class Application_Service_Shipments
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $size = count($params['sampleName']);
+
         if ($params['schemeId'] == 'eid') {
             for ($i = 0; $i < $size; $i++) {
                 $dbAdapter->insert(
@@ -1341,18 +1340,19 @@ class Application_Service_Shipments
             }
         } else if ($params['schemeId'] == 'dts') {
             for ($i = 0; $i < $size; $i++) {
-                $dbAdapter->insert(
-                    'reference_result_dts',
-                    array(
-                        'shipment_id' => $lastId,
-                        'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        'reference_result' => $params['possibleResults'][$i],
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => ($params['control'][$i] == 1 ? 0 : 1) // 0 for control, 1 for normal sample
-                    )
+                $refResulTDTSData = array(
+                    'shipment_id'               => $lastId,
+                    'sample_id'                 => ($i + 1),
+                    'sample_label'              => $params['sampleName'][$i],
+                    'reference_result'          => $params['possibleResults'][$i],
+                    'control'                   => $params['control'][$i],
+                    'mandatory'                 => $params['mandatory'][$i],
+                    'sample_score'              => ($params['control'][$i] == 1 ? 0 : 1) // 0 for control, 1 for normal sample
                 );
+                if (isset($params['possibleSyphilisResults'][$i]) && trim($params['possibleSyphilisResults'][$i]) != "") {
+                    $refResulTDTSData['syphilis_reference_result'] = $params['possibleSyphilisResults'][$i];
+                }
+                $dbAdapter->insert('reference_result_dts', $refResulTDTSData);
 
                 // <------ Insert reference_dts_eia table
                 if (isset($params['eia'][$i + 1]['eia'])) {
@@ -1839,15 +1839,16 @@ class Application_Service_Shipments
                 $dbAdapter->insert(
                     'reference_result_eid',
                     array(
-                        'shipment_id' => $params['shipmentId'],
-                        'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        'reference_result' => $params['possibleResults'][$i],
-                        'reference_hiv_ct_od' => $params['hivCtOd'][$i],
-                        'reference_ic_qs' => $params['icQs'][$i],
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => 1
+                        'shipment_id'               => $params['shipmentId'],
+                        'sample_id'                 => ($i + 1),
+                        'sample_label'              => $params['sampleName'][$i],
+                        'reference_result'          => $params['possibleResults'][$i],
+                        'syphilis_reference_result' => $params['possibleSyphilisResults'][$i],
+                        'reference_hiv_ct_od'       => $params['hivCtOd'][$i],
+                        'reference_ic_qs'           => $params['icQs'][$i],
+                        'control'                   => $params['control'][$i],
+                        'mandatory'                 => $params['mandatory'][$i],
+                        'sample_score'              => 1
                     )
                 );
             }
