@@ -1352,8 +1352,7 @@ class Application_Service_Shipments
                 if (isset($params['possibleSyphilisResults'][$i]) && trim($params['possibleSyphilisResults'][$i]) != "") {
                     $refResulTDTSData['syphilis_reference_result'] = $params['possibleSyphilisResults'][$i];
                 }
-                $dbAdapter->insert('reference_result_dts', $refResulTDTSData);
-
+                $lastRefId = $dbAdapter->insert('reference_result_dts', $refResulTDTSData);
                 // <------ Insert reference_dts_eia table
                 if (isset($params['eia'][$i + 1]['eia'])) {
                     $eiaSize = sizeof($params['eia'][$i + 1]['eia']);

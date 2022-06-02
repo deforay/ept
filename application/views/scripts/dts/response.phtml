@@ -247,13 +247,9 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                     <td>
                                         <select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                                            <?php
-                                            foreach ($this->modeOfReceipt as $receipt) {
-                                            ?>
+                                            <?php foreach ($this->modeOfReceipt as $receipt) { ?>
                                                 <option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
-                                            <?php
-                                            }
-                                            ?>
+                                            <?php } ?>
                                         </select>
                                     </td>
                                 <?php } ?>
@@ -352,7 +348,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                     <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?></th>
                                     <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?></th>
                                 <?php } ?>
-                                <th class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></th>
+                                <th class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th>
                             </tr>
                         </thead>
                         <tr align="CENTER" class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
@@ -442,7 +438,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                     <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_3" id="repeat_test_kit_other_name_3" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
                             <?php } ?>
-                            <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
+                            <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td>
                         </tr>
                         <?php
                         $lotNo1 = "";
@@ -485,7 +481,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                 <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
                                 <td class='testThree'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
                             <?php } ?>
-                            <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
+                            <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td>
                         </tr>
                         <?php
                         $expDate1 = "";
@@ -527,7 +523,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                 <td class='testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
                                 <td class='testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
                             <?php } ?>
-                            <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="<?php echo (isset($syphilisActive) && $syphilisActive) ? 3 : 2; ?>"></td>
+                            <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td>
                         </tr>
                         <thead class="vlResultSection vl-results" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <?php
@@ -560,7 +556,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                     <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Result-3"); ?></th>
                                 <?php } ?>
                                 <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Final Result"); ?></th>
-                                <?php if ($ghanaNationalDtsAlgo) { ?>
+                                <?php if ($repeatTest) { ?>
                                     <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Is this a Retest?"); ?></th>
                                 <?php } ?>
                             </tr>
@@ -638,7 +634,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                         </div>
                                     <?php } ?>
                                 </td>
-                                <?php if ($ghanaNationalDtsAlgo) { ?>
+                                <?php if ($repeatTest) { ?>
                                     <td style="width: <?php echo $width; ?>%;" class="colwidth">
                                         <select name="is_this_retest[]" id="<?php echo "is_this_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
                                             <option value="">--<?= $this->translate->_("Select"); ?>--</option>
@@ -656,8 +652,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                 <select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" onchange="collectPanelReceiptDate();">
                                     <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                                     <?php
-                                    foreach ($this->allNotTestedReason as $reason) {
-                                    ?>
+                                    foreach ($this->allNotTestedReason as $reason) { ?>
                                         <option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
                                     <?php } ?>
                                 </select>
