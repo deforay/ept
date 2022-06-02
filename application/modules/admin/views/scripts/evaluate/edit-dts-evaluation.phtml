@@ -109,7 +109,7 @@ if (($testTwoHidden)) {
                     <option value="malawiNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Malawi National Algorithm</option>
                 <?php }
                 if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
-                    <option value="ghanaNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'ghanaNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Ghana National Algorithm</option>
+                    <option value="ghanaNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'ghanaNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Ghana National Algorithm</option>
                 <?php } ?>
             </select>
         </td>
@@ -174,15 +174,22 @@ if (($testTwoHidden)) {
 
 <?php
 $possibleResults = array();
+$possibleSyphilisResults = array();
+$possibleFinalResults = array();
+$possibleSyphilisFinalResults = array();
 foreach ($this->evaluateData['possibleResults'] as $pr) {
     if ($pr['scheme_sub_group'] == 'DTS_TEST') {
         $possibleResults[$pr['id']] = $pr['response'];
     }
-}
-$possibleFinalResults = array();
-foreach ($this->evaluateData['possibleResults'] as $pr) {
+    if ($pr['scheme_sub_group'] == 'DTS_SYP_TEST') {
+        $possibleSyphilisResults[$pr['id']] = $pr['response'];
+    }
     if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
         $possibleFinalResults[$pr['id']] = $pr['response'];
+    }
+
+    if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL') {
+        $possibleSyphilisFinalResults[$pr['id']] = $pr['response'];
     }
 }
 ?>
@@ -225,6 +232,9 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     </tr>
     <tr align="CENTER" class="dark colwidth">
         <th>Lot No.</th>
+        <?php if ($syphilisActive) { ?>
+            <th class="colwidth"></th>
+        <?php } ?>
         <td><input type="text" size="40" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_1"]) ? $this->evaluateData['results'][0]["lot_no_1"] : ""); ?>" class="isRequired form-control" title="Please enter Lot No. 1" /></td>
         <td class='testTwo'><input type="text" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_2"]) ? $this->evaluateData['results'][0]["lot_no_2"] : ""); ?>" class="<?php echo (isset($testTwoHidden) && $testTwoHidden) ? "" : "isRequired"; ?> form-control" title="Please enter Lot No. 2" /></td>
         <td class='testThree'><input type="text" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_3"]) ? $this->evaluateData['results'][0]["lot_no_3"] : ""); ?>" class="<?php echo (isset($testThreeHidden) && $testThreeHidden) ? "" : "isRequired"; ?> form-control" title="Please enter Lot No. 3" /></td>
@@ -233,6 +243,9 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 
     <tr style="text-align:center" class="colwidth">
         <th>Expiry Date</th>
+        <?php if ($syphilisActive) { ?>
+            <th class="colwidth"></th>
+        <?php } ?>
         <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_1"]) && $this->evaluateData['results'][0]["exp_date_1"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_1"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_1"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
         <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_2"]) && $this->evaluateData['results'][0]["exp_date_2"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_2"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_2"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
         <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_3"]) && $this->evaluateData['results'][0]["exp_date_3"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_3"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_3"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
@@ -267,7 +280,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
             <?php } ?>
             <th style="text-align: center" class="colwidth">Reported Result</th>
             <th style="text-align: center" class="colwidth">Reference Result</th>
-            <?php if ($repeatTest) { ?>
+            <?php if ($ghanaNationalDtsAlgo) { ?>
                 <th class="colwidth"><?= $this->translate->_("Is this a Retest?"); ?></th>
             <?php } ?>
         </tr>
@@ -350,7 +363,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                     </div>
                 <?php } ?>
             </td>
-            <?php if ($repeatTest) { ?>
+            <?php if ($ghanaNationalDtsAlgo) { ?>
                 <td style="width: <?php echo $width; ?>%;" class="colwidth">
                     <select name="is_this_retest[]" id="<?php echo "is_this_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
@@ -445,7 +458,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
             <td style="vertical-align: middle;" class="colwidth">
                 <?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?>
             </td>
-            <?php if ($repeatTest) { ?>
+            <?php if ($ghanaNationalDtsAlgo) { ?>
                 <td style="width: <?php echo $width; ?>%;" class="colwidth">
                     <select name="is_this_retest[]" id="<?php echo "is_this_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
