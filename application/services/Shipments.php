@@ -119,7 +119,7 @@ class Application_Service_Shipments
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //die($sQuery);
+        // die($sQuery);
 
         $rResult = $db->fetchAll($sQuery);
 

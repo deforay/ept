@@ -78,7 +78,7 @@ $dtFormat =  $vHelper->getDateFormat();
 		</select>
 	</div>
 </div>
-<?php if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
+<?php if (isset($dtsSchemeType) && $dtsSchemeType == "myanmar") { ?>
 	<div class="form-group">
 		<label class="col-lg-3 control-label">Is this a Screening Test Panel? <span class="mandatory">*</span><br> <small>(This creates a panel with only ONE test)</small></label>
 
@@ -91,7 +91,7 @@ $dtFormat =  $vHelper->getDateFormat();
 		</div>
 	</div>
 <?php } ?>
-<?php if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
+<?php if (isset($dtsSchemeType) && $dtsSchemeType == "ghana") { ?>
 	<div class="form-group">
 		<label class="col-lg-3 control-label">Enable Syphilis Test for ANC Sites? <span class="mandatory">*</span><br> <small>(This creates a Syphilis panel for all ANC sites)</small></label>
 

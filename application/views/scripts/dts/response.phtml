@@ -43,6 +43,11 @@ if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
     $testTwoHidden = false;
     $screeningTest = false;
 }
+if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
+    $testTwoHidden = true;
+    $testThreeHidden = true;
+    $screeningTest = true;
+}
 $displaySampleConditionFields = false;
 if ($dtsSchemeType == 'malawi') {
     $displaySampleConditionFields = true;

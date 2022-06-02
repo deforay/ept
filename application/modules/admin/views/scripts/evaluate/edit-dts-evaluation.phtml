@@ -16,11 +16,7 @@ $shipmentAttributes = isset($this->evaluateData['shipment']['shipment_attributes
 if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
     $testThreeHidden = true;
 }
-if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
-    $testTwoHidden = true;
-    $testThreeHidden = true;
-    $screeningTest = true;
-}
+
 if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms) && sizeof($allowedAlgorithms) == 1) {
     $testThreeHidden = false;
     $testTwoHidden = false;
@@ -31,6 +27,11 @@ if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
     $testThreeHidden = false;
     $testTwoHidden = false;
     $screeningTest = false;
+}
+if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
+    $testTwoHidden = true;
+    $testThreeHidden = true;
+    $screeningTest = true;
 }
 $displaySampleConditionFields = false;
 if ($dtsSchemeType == 'malawi') {
