@@ -6,8 +6,10 @@ class Application_Model_Dts
 	{
 	}
 
-	public function evaluate($shipmentResult, $shipmentId)
+	public function evaluate($shipmentResult, $shipmentId, $reEvaluate = false)
 	{
+
+		ini_set('memory_limit', '-1');
 
 		$counter = 0;
 		$maxScore = 0;
@@ -20,6 +22,16 @@ class Application_Model_Dts
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 		$correctiveActions = $schemeService->getDtsCorrectiveActions();
 		$recommendedTestkits = $schemeService->getRecommededDtsTestkit();
+		$resultsForShipmentDataset = $schemeService->getDtsSamples($shipmentId);
+		$resultsForShipment = array();
+		foreach ($resultsForShipmentDataset as $r) {
+			$resultsForShipment[$r['participant_id']][] = $r;
+		}
+
+		$db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $shipmentId");
+		$db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and is_pt_test_not_performed = 'yes'");
+
+
 		foreach ($shipmentResult as $shipment) {
 			//Zend_Debug::dump($shipment);
 
@@ -32,7 +44,8 @@ class Application_Model_Dts
 				$createdOn = new DateTime('1970-01-01');
 			}
 
-			$results = $schemeService->getDtsSamples($shipmentId, $shipment['participant_id']);
+
+			$results = $resultsForShipment[$shipment['participant_id']];
 
 			$totalScore = 0;
 			$maxScore = 0;
@@ -55,7 +68,6 @@ class Application_Model_Dts
 			$shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
 			$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
 			$syphilisEnabled = ($dtsSchemeType == 'ghana' && isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") ? true : false;
-
 
 
 			//Response was submitted after the last response date.
@@ -328,14 +340,16 @@ class Application_Model_Dts
 				if (0 == $result['control']) {
 					$syphilisResult = $result1 = $result2 = $result3 = $isRetest = '';
 					$repeatResult1 = $repeatResult2 = $repeatResult3 = '';
-					if ($result['syphilis_result'] == 1) {
-						$syphilisResult = 'R';
-					} else if ($result['syphilis_result'] == 2) {
-						$syphilisResult = 'NR';
-					} else if ($result['syphilis_result'] == 3) {
-						$syphilisResult = 'I';
-					} else {
-						$syphilisResult = '-';
+					if ($syphilisEnabled == true) {
+						if ($result['syphilis_result'] == 25) {
+							$syphilisResult = 'R';
+						} else if ($result['syphilis_result'] == 26) {
+							$syphilisResult = 'NR';
+						} else if ($result['syphilis_result'] == 27) {
+							$syphilisResult = 'I';
+						} else {
+							$syphilisResult = '-';
+						}
 					}
 					if ($result['test_result_1'] == 1) {
 						$result1 = 'R';
@@ -353,15 +367,6 @@ class Application_Model_Dts
 						$isRetest = '-';
 					}
 
-					if ($result['repeat_test_result_1'] == 1) {
-						$repeatResult1 = 'R';
-					} else if ($result['repeat_test_result_1'] == 2) {
-						$repeatResult1 = 'NR';
-					} else if ($result['repeat_test_result_1'] == 3) {
-						$repeatResult1 = 'I';
-					} else {
-						$repeatResult1 = '-';
-					}
 					if ($result['test_result_2'] == 1) {
 						$result2 = 'R';
 					} else if ($result['test_result_2'] == 2) {
@@ -371,6 +376,17 @@ class Application_Model_Dts
 					} else {
 						$result2 = '-';
 					}
+
+					if ($result['repeat_test_result_1'] == 1) {
+						$repeatResult1 = 'R';
+					} else if ($result['repeat_test_result_1'] == 2) {
+						$repeatResult1 = 'NR';
+					} else if ($result['repeat_test_result_1'] == 3) {
+						$repeatResult1 = 'I';
+					} else {
+						$repeatResult1 = '-';
+					}
+
 					if ($result['repeat_test_result_2'] == 1) {
 						$repeatResult2 = 'R';
 					} else if ($result['repeat_test_result_2'] == 2) {
@@ -380,6 +396,7 @@ class Application_Model_Dts
 					} else {
 						$repeatResult2 = '-';
 					}
+					
 					if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
 						$result3 = 'X';
 						$repeatResult3 = 'X';
@@ -564,9 +581,9 @@ class Application_Model_Dts
 					} else if ($dtsSchemeType == 'ghana') {
 
 						if ($syphilisEnabled == true) {
-							if ($syphilisResult == 'R' && $reportedSyphilisResult == 4) {
+							if ($syphilisResult == 'R' && $reportedSyphilisResult == 28) {
 								$sypAlgoResult = 'Pass';
-							} else if ($syphilisResult == 'NR' && $reportedSyphilisResult == 5) {
+							} else if ($syphilisResult == 'NR' && $reportedSyphilisResult == 29) {
 								$sypAlgoResult = 'Pass';
 							} else {
 								$sypAlgoResult = 'Fail';
@@ -613,6 +630,7 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
+							//echo $algoResult;die;
 						}
 					} else {
 					}
