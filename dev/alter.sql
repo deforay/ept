@@ -3028,5 +3028,6 @@ ALTER TABLE `response_result_dts` ADD `syphilis_final` VARCHAR(256) NULL DEFAULT
 
 -- Thana 01-Jun-2022
 ALTER TABLE `reference_result_dts` ADD `syphilis_reference_result` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL AFTER `reference_result`;
-INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'dts', 'DTS_SYP_FINAL', 'POSITIVE', 'SP'), (NULL, 'dts', 'DTS_SYP_FINAL', 'NEGATIVE', 'SN'), (NULL, 'dts', 'DTS_SYP_FINAL', 'INDETERMINATE', 'SI');
-INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'dts', 'DTS_SYP_TEST', 'REACTIVE', 'SR'), (NULL, 'dts', 'DTS_SYP_TEST', 'NONREACTIVE', 'SN'), (NULL, 'dts', 'DTS_SYP_TEST', 'INVALID', 'SI');
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (24, 'dts', 'DTS_FINAL', 'INVALID', 'INV');
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (25, 'dts', 'DTS_SYP_TEST', 'REACTIVE', 'SR'), (26, 'dts', 'DTS_SYP_TEST', 'NONREACTIVE', 'SNR'), (27, 'dts', 'DTS_SYP_TEST', 'INVALID', 'SINV');
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (28, 'dts', 'DTS_SYP_FINAL', 'POSITIVE', 'SP'), (29, 'dts', 'DTS_SYP_FINAL', 'NEGATIVE', 'SN'), (30, 'dts', 'DTS_SYP_FINAL', 'INDETERMINATE', 'SIND');

@@ -223,7 +223,7 @@ class Application_Service_Schemes
         return $response;
     }
 
-    public function getDtsSamples($sId, $pId)
+    public function getDtsSamples($sId, $pId = null)
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -261,8 +261,11 @@ class Application_Service_Schemes
                 'is_this_retest'
             ))
             ->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
-            ->where('sp.shipment_id = ? ', $sId)
-            ->where('sp.participant_id = ? ', $pId);
+            ->where('sp.shipment_id = ? ', $sId);
+        if (!empty($pId)) {
+            $sql = $sql->where('sp.participant_id = ? ', $pId);
+        }
+
         return $db->fetchAll($sql);
     }
 

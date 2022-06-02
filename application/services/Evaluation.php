@@ -400,7 +400,7 @@ class Application_Service_Evaluation
 			$db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
 		} else if ($shipmentResult[0]['scheme_type'] == 'dts') {
 			$dtsModel = new Application_Model_Dts();
-			$shipmentResult = $dtsModel->evaluate($shipmentResult, $shipmentId);
+			$shipmentResult = $dtsModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 		} else if ($shipmentResult[0]['scheme_type'] == 'vl') {
 			$vlModel = new Application_Model_Vl();
 			$shipmentResult = $vlModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
@@ -518,7 +518,7 @@ class Application_Service_Evaluation
 		} else if ($scheme == 'dbs') {
 			$possibleResults = $schemeService->getPossibleResults('dbs');
 			$evalComments = $schemeService->getSchemeEvaluationComments('dbs');
-			$results = $schemeService->getDtsSamples($shipmentId, $participantId);
+			$results = $schemeService->getDbsSamples($shipmentId, $participantId);
 		} else if ($scheme == 'recency') {
 			$possibleResults = $schemeService->getPossibleResults('recency');
 			$evalComments = $schemeService->getSchemeEvaluationComments('recency');

@@ -46,8 +46,7 @@ public function IsgetDTSResponseEditable($evaluationStatus){
 		$db->beginTransaction();
 		try{
 
-			$dtsResponseDb = new Application_Model_DTSResponse();
-			$rec = $dtsResponseDb->getDTSResponse($shipId,$participantId);
+			$rec = $this->getDTSResponse($shipId,$participantId);
 			//echo "No of Rec = " . count($rec); echo "<br>";
 			$noOfSamples = count($rec);
 					
