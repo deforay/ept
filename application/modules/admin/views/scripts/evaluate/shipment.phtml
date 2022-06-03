@@ -22,26 +22,26 @@ $overrideStatus = "no";
 	//    Zend_Debug::dump($this->shipment);die;
 ?>
 	<div class="well" style="clear: both;">
-		<a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
+		<a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;"><?= $this->translate->_("Show/Hide Shipment List"); ?></a>
 		<div id="allShipmentList">
 
 			<legend>
-				<h4>All Shipments Under PT Survey <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4>
+				<h4><?= $this->translate->_("All Shipments Under PT Survey"); ?> <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4>
 			</legend>
 
 			<table class="table table-bordered table-striped table-hover">
 				<tr>
-					<th style="text-align: center;">Shipment Code</th>
-					<th style="text-align: center;">Scheme</th>
-					<th style="text-align: center;">No. of Samples</th>
-					<th style="text-align: center;">No. of Participants</th>
-					<th style="text-align: center;">No. of Responses</th>
-					<th style="text-align: center;">Response %</th>
-					<th style="text-align: center;">Number Passed</th>
-					<th style="text-align: center;">Shipment Status</th>
+					<th style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("No. of Samples"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("No. of Participants"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("No. of Responses"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("Response%"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("Number Passed"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("Shipment Status"); ?></th>
 					<!--				<th style="text-align: center;">Last Mailed On</th>
 				<th style="text-align: center;">Mail Count</th>-->
-					<th style="text-align: center;">Action</th>
+					<th style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
 				</tr>
 				<?php
 				if (count($this->shipmentsUnderDistro) > 0) {
@@ -65,13 +65,13 @@ $overrideStatus = "no";
 					<td style="text-align: center;">< ?php echo $shipment['last_not_participated_mail_count'] ?></td>-->
 							<td style="text-align: center;">
 								<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
-									<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
+									<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> <?= $this->translate->_("Evaluate"); ?></span></a>
 
 									<?php if ($nonResponse > 0) { ?>
-										<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> Not Responded Participants</span></a>
+										<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> <?= $this->translate->_("Mail"); ?> <?php echo $nonResponse ?> <?= $this->translate->_("Not Responded Participants"); ?></span></a>
 									<?php }
 								} else { ?>
-									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
+									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> <?= $this->translate->_("Evaluate"); ?></span></a>
 								<?php } ?>
 							</td>
 						</tr>
@@ -81,7 +81,7 @@ $overrideStatus = "no";
 					?>
 					<tr>
 						<td colspan="5" align="center" style="text-align:center">
-							No shipments for this PT Survey yet
+							<?= $this->translate->_("No shipments for this PT Survey yet"); ?>
 						</td>
 					</tr>
 				<?php
@@ -91,18 +91,18 @@ $overrideStatus = "no";
 		</div><!-- /.modal-dialog -->
 	</div>
 	<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-		<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently evaluating Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> <a href="<?php echo $this->url(array('re' => base64_encode('yes'))); ?>" onclick="$.blockUI()" class="btn btn-primary btn-xs btn-danger"><span><i class="icon-refresh"></i>&nbsp;&nbsp;Re-Evaluate</span></a></div>
+		<div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("You are currently evaluating Shipment"); ?> <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> <a href="<?php echo $this->url(array('re' => base64_encode('yes'))); ?>" onclick="$.blockUI()" class="btn btn-primary btn-xs btn-danger"><span><i class="icon-refresh"></i>&nbsp;&nbsp;<?= $this->translate->_("Re-Evaluate"); ?></span></a></div>
 		<div style="margin-top:10px;">
-			<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
+			<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;<?= $this->translate->_("Back"); ?></a>
 		</div>
 	</h4>
 	<table class="table table-bordered" style="margin:0 auto;">
 		<tr>
-			<th style="text-align: right">Scheme Type</th>
+			<th style="text-align: right"><?= $this->translate->_("Scheme Type"); ?></th>
 			<td><?php echo $this->shipment[0]['scheme_name']; ?></td>
-			<th style="text-align: right">PT Survey Code</th>
+			<th style="text-align: right"><?= $this->translate->_("PT Survey Code"); ?></th>
 			<td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
-			<th style="text-align: right">PT Survey/Shipment Date</th>
+			<th style="text-align: right"><?= $this->translate->_("PT Survey/Shipment Date"); ?></th>
 			<td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
 		</tr>
 	</table>
@@ -111,27 +111,27 @@ $overrideStatus = "no";
 		<table class="table table-bordered" style="width:95%;margin:10px auto;">
 			<tr>
 				<td style="width:25%;vertical-align: middle;">
-					Corrective Action File
+					<?= $this->translate->_("Corrective Action File"); ?>
 				</td>
 				<td style="width:25%;"><input type="file" class="form-control" name="correctiveActionFile" id="correctiveActionFile" title="Please chosse corrective actiion file."></td>
 				<td style="width:25%;vertical-align: middle;">
-					Comment for all Participants of this shipment
+					<?= $this->translate->_("Comment for all Participants of this shipment"); ?>
 				</td>
 				<td style="width:25%;"><textarea class="form-control" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea></td>
 				<td style="vertical-align: middle;">
 					<input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId" id="shipmentId">
-					<button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span>Update Comment</span></button>
+					<button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update Comment"); ?></span></button>
 				</td>
 			</tr>
 		</table>
 	</form>
 	<table class="table table-borderless" style="width:50%;float:left;" id="overrideTable">
 		<tr>
-			<td><label for="manuelOverride">Show only manually overridden results</label></td>
+			<td><label for="manuelOverride"><?= $this->translate->_("Show only manually overridden results"); ?></label></td>
 			<td><select name="manuelOverride" id="manuelOverride" class="form-control" title="Please choose manual override yes or no" onchange="manualOverride(this.value)">
-					<option value="">-- Select --</option>
-					<option <?php echo (isset($this->override) && $this->override == "no") ? " selected='selected' " : ""; ?> value="no">No</option>
-					<option <?php echo (isset($this->override) && $this->override == "yes") ? " selected='selected' " : ""; ?> value="yes">Yes</option>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<option <?php echo (isset($this->override) && $this->override == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
+					<option <?php echo (isset($this->override) && $this->override == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
 				</select></td>
 		</tr>
 	</table>
@@ -140,14 +140,14 @@ $overrideStatus = "no";
 		<thead>
 			<tr>
 				<th style="width:40px;"></th>
-				<th>Participant/Tester</th>
-				<th>Response Score</th>
+				<th><?= $this->translate->_("Participant/Tester"); ?></th>
+				<th><?= $this->translate->_("Response Score"); ?></th>
 				<?php if ($this->shipment[0]['scheme_type'] != 'covid19') { ?>
-					<th>Documentation Score</th>
+					<th><?= $this->translate->_("Documentation Score"); ?></th>
 				<?php } ?>
-				<th>Result</th>
-				<th>Comments (if any)</th>
-				<th>Action</th>
+				<th><?= $this->translate->_("Result"); ?></th>
+				<th><?= $this->translate->_("Comments (if any)"); ?></th>
+				<th><?= $this->translate->_("Action"); ?></th>
 			</tr>
 		</thead>
 		<tbody>

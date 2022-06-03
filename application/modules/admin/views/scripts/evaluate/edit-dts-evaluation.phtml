@@ -60,27 +60,27 @@ if (($testTwoHidden)) {
 
 <table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
     <tr>
-        <th>Shipment Code</th>
+        <th><?= $this->translate->_("Shipment Code"); ?></th>
         <td><?php echo $this->evaluateData['shipment']['shipment_code']; ?></td>
-        <th>Scheme Type</th>
+        <th><?= $this->translate->_("Scheme Type"); ?></th>
         <td><?php echo strtoupper($this->evaluateData['shipment']['scheme_name']); ?></td>
     </tr>
     <tr>
-        <th>Shipment Date</th>
+        <th><?= $this->translate->_("Shipment Date"); ?></th>
         <td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_date']); ?></td>
-        <th>Result Due Date</th>
+        <th><?= $this->translate->_("Result Due Date"); ?></th>
         <td><?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?></td>
     </tr>
     <tr>
-        <th>Shipment Received on</th>
+        <th><?= $this->translate->_("Shipment Received on"); ?></th>
         <td><input id="receivedOn" type="text" name="receivedOn" value="<?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_receipt_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
-        <th>Samples Tested on</th>
+        <th><?= $this->translate->_("Samples Tested on"); ?></th>
         <td><input id="testedOn" type="text" name="testedOn" value="<?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_test_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
     </tr>
     <tr>
         <th>
             <?php if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] != 'serum' && $shipmentAttributes['sampleType'] != 'plasma') { ?>
-                Sample Rehydration Date
+                <?= $this->translate->_("Sample Rehydration Date"); ?>
             <?php } ?>
         </th>
         <td>
@@ -118,57 +118,57 @@ if (($testTwoHidden)) {
     <?php if ((isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "yes")) { ?>
 
         <tr class="light malawiNationalDtsAlgo">
-            <td><label for="conditionOfPTSamples" class="label-control">Condition Of PT Samples</label></td>
+            <td><label for="conditionOfPTSamples" class="label-control">Condition Of PT Samples");?></label></td>
             <td>
                 <select class="form-control" name="conditionOfPTSamples" id="conditionOfPTSamples" title="Please select the condition of samples">
-                    <option value="">--Select--</option>
-                    <option value="good" <?php echo ($attributes['condition_pt_samples'] == 'good') ? "selected='selected'" : ""; ?>>Good</option>
-                    <option value="bad" <?php echo ($attributes['condition_pt_samples'] == 'bad') ? "selected='selected'" : ""; ?>>Bad</option>
-                    <option value="not-sure" <?php echo ($attributes['condition_pt_samples'] == 'not-sure') ? "selected='selected'" : ""; ?>>Not Sure</option>
+                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                    <option value="good" <?php echo ($attributes['condition_pt_samples'] == 'good') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Good"); ?></option>
+                    <option value="bad" <?php echo ($attributes['condition_pt_samples'] == 'bad') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Bad"); ?></option>
+                    <option value="not-sure" <?php echo ($attributes['condition_pt_samples'] == 'not-sure') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Not Sure"); ?></option>
                 </select>
             </td>
 
-            <td><label for="refridgerator" class="label-control">Refridgerator</label></td>
+            <td><label for="refridgerator" class="label-control">Refridgerator");?></label></td>
             <td>
                 <select class="form-control" name="refridgerator" id="refridgerator" title="Please select if a fridge is available">
-                    <option value="">--Select--</option>
-                    <option value="available" <?php echo ($attributes['refridgerator'] == 'available') ? "selected='selected'" : ""; ?>>Available</option>
-                    <option value="not-available" <?php echo ($attributes['refridgerator'] == 'not-available') ? "selected='selected'" : ""; ?>>Not Available</option>
+                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                    <option value="available" <?php echo ($attributes['refridgerator'] == 'available') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Available"); ?></option>
+                    <option value="not-available" <?php echo ($attributes['refridgerator'] == 'not-available') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Not Available"); ?></option>
                 </select>
             </td>
         </tr>
         <tr class="light malawiNationalDtsAlgo">
-            <td><label for="roomTemperature" class="label-control">Room Temperature</label></td>
+            <td><label for="roomTemperature" class="label-control"><?= $this->translate->_("Room Temperature"); ?></label></td>
             <td style=" display: flex; ">
                 <input class="form-control" type="text" style="width:100px;" value="<?php echo $attributes['room_temperature']; ?>" name="roomTemperature" id="roomTemperature" placeholder="Room Temperature" title="Please enter the room temperature">&nbsp;&nbsp;&nbsp;<span>&deg;C</span>
             </td>
 
-            <td><label for="stopWatch" class="label-control">Stop Watch</label></td>
+            <td><label for="stopWatch" class="label-control"><?= $this->translate->_("Stop Watch"); ?></label></td>
             <td>
                 <select class="form-control" name="stopWatch" id="stopWatch" title="Please select if a stop watch is available">
-                    <option value="">--Select--</option>
-                    <option value="available" <?php echo ($attributes['stop_watch'] == 'available') ? "selected='selected'" : ""; ?>>Available</option>
-                    <option value="not-available" <?php echo ($attributes['stop_watch'] == 'not-available') ? "selected='selected'" : ""; ?>>Not Available</option>
+                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                    <option value="available" <?php echo ($attributes['stop_watch'] == 'available') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Available"); ?></option>
+                    <option value="not-available" <?php echo ($attributes['stop_watch'] == 'not-available') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Not Available"); ?></option>
                 </select>
             </td>
         </tr>
     <?php } ?>
     <tr>
-        <th>Supervisor Review</th>
+        <th><?= $this->translate->_("Supervisor Review"); ?></th>
         <td>
             <select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control" title="Please select if Supervisor Approval was conducted or not">
-                <option value=""> -- Select -- </option>
-                <option value="yes" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') echo " selected "; ?>>YES</option>
-                <option value="no" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'no') echo " selected "; ?>>NO</option>
+                <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+                <option value="yes" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
+                <option value="no" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'no') echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
             </select>
         </td>
-        <th id="labSupervisor" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?>>Supervisor Name</th>
+        <th id="labSupervisor" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></th>
         <td>
             <input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?> class="form-control" value="<?php echo $this->evaluateData['shipment']['participant_supervisor']; ?>" />
         </td>
     </tr>
     <tr>
-        <th>User Comments</th>
+        <th><?= $this->translate->_("User Comments"); ?></th>
         <td colspan="3"><textarea class="form-control" name="userComments" id="userComments"><?php echo $this->evaluateData['shipment']['user_comment']; ?></textarea></td>
     </tr>
 </table>
@@ -203,14 +203,14 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
             <?php if ($syphilisActive) { ?>
                 <th class="colwidth"></th>
             <?php } ?>
-            <th style="text-align: center" class="colwidth">Test-1</th>
-            <th style="text-align: center" class='testTwo colwidth'>Test-2</th>
-            <th style="text-align: center" class='testThree colwidth'>Test-3</th>
+            <th style="text-align: center" class="colwidth"><?= $this->translate->_("Test-1"); ?></th>
+            <th style="text-align: center" class='testTwo colwidth'><?= $this->translate->_("Test-2"); ?></th>
+            <th style="text-align: center" class='testThree colwidth'><?= $this->translate->_("Test-3"); ?></th>
             <th class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th>
         </tr>
     </thead>
     <tr style="text-align:center" class="colwidth">
-        <th> Kit Name</th>
+        <th> <?= $this->translate->_("Kit Name"); ?></th>
         <?php if ($syphilisActive) { ?>
             <th class="colwidth"></th>
         <?php } ?>
@@ -232,7 +232,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td>
     </tr>
     <tr align="CENTER" class="dark colwidth">
-        <th>Lot No.</th>
+        <th><?= $this->translate->_("Lot No."); ?></th>
         <?php if ($syphilisActive) { ?>
             <th class="colwidth"></th>
         <?php } ?>
@@ -243,7 +243,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     </tr>
 
     <tr style="text-align:center" class="colwidth">
-        <th>Expiry Date</th>
+        <th><?= $this->translate->_("Expiry Date"); ?></th>
         <?php if ($syphilisActive) { ?>
             <th class="colwidth"></th>
         <?php } ?>
@@ -261,26 +261,26 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                     <th class="4-span colwidth" colspan="<?php echo ($noTest + 1); ?>"></th>
                 <?php } ?>
                 <th style="text-align: center;" class="3-span colwidth" colspan="<?php echo $noTest; ?>">
-                    Repeat-Tests
+                    <?= $this->translate->_("Repeat-Tests"); ?>
                 </th>
                 <th class="3-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th>
             </tr>
         <?php } ?>
         <tr align="CENTER" class="dark">
-            <th class="colwidth">PT Panel Identifier</th>
+            <th class="colwidth"><?= $this->translate->_("PT Panel Identifier"); ?></th>
             <?php if ($syphilisActive) { ?>
                 <th class="syphilis-fields colwidth"><?= $this->translate->_("Type of Test"); ?></th>
             <?php } ?>
-            <th style="text-align: center" class="colwidth">Result-1</th>
-            <th style="text-align: center" class='testTwo colwidth'>Result-2</th>
-            <th style="text-align: center" class='testThree colwidth'>Result-3</th>
+            <th style="text-align: center" class="colwidth"><?= $this->translate->_("Result-1"); ?></th>
+            <th style="text-align: center" class='testTwo colwidth'><?= $this->translate->_("Result-2"); ?></th>
+            <th style="text-align: center" class='testThree colwidth'><?= $this->translate->_("Result-3"); ?></th>
             <?php if ($allowRepeatTests == 'yes') { ?>
-                <th style="text-align: center;" class="colwidth">Result-1</th>
-                <th style="text-align: center;" class='testTwo colwidth'>Result-2</th>
-                <th style="text-align: center;" class='testThree colwidth'>Result-3</th>
+                <th style="text-align: center;" class="colwidth"><?= $this->translate->_("Result-1"); ?></th>
+                <th style="text-align: center;" class='testTwo colwidth'><?= $this->translate->_("Result-2"); ?></th>
+                <th style="text-align: center;" class='testThree colwidth'><?= $this->translate->_("Result-3"); ?></th>
             <?php } ?>
-            <th style="text-align: center" class="colwidth">Reported Result</th>
-            <th style="text-align: center" class="colwidth">Reference Result</th>
+            <th style="text-align: center" class="colwidth"><?= $this->translate->_("Reported Result"); ?></th>
+            <th style="text-align: center" class="colwidth"><?= $this->translate->_("Reference Result"); ?></th>
             <?php if ($ghanaNationalDtsAlgo) { ?>
                 <th class="colwidth"><?= $this->translate->_("Is this a Retest?"); ?></th>
             <?php } ?>
@@ -292,7 +292,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     if (count($this->evaluateData['controlResults']) > 0) { ?>
         <tr>
             <td colspan="7" style="text-align: center;">
-                <strong>Controls</strong>
+                <strong><?= $this->translate->_("Controls"); ?></strong>
             </td>
         </tr>
     <?php }
@@ -382,7 +382,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 
     <tr>
         <td colspan="8" style="text-align: center;">
-            <strong>Samples</strong>
+            <strong><?= $this->translate->_("Samples"); ?></strong>
         </td>
     </tr>
     <?php

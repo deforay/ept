@@ -41,24 +41,24 @@ unset($this->result['use_range']);
 
       </tr>
       <tr>
-        <th style="text-align: center;">Sample ID</th>
-        <th style="text-align: center;">VL Assay</th>
+        <th style="text-align: center;"><?= $this->translate->_("Sample ID"); ?></th>
+        <th style="text-align: center;"><?= $this->translate->_("VL Assay"); ?></th>
         <?php if ($methodOfEvaluation == 'standard') { ?>
-          <th style="text-align: center;">Mean</th>
+          <th style="text-align: center;"><?= $this->translate->_("Mean"); ?></th>
         <?php } else if ($methodOfEvaluation == 'iso17043') { ?>
-          <th style="text-align: center;">Median</th>
+          <th style="text-align: center;"><?= $this->translate->_("Median"); ?></th>
         <?php } ?>
         <?php if ($methodOfEvaluation == 'standard') { ?>
-          <th style="text-align: center;">SD</th>
+          <th style="text-align: center;"><?= $this->translate->_("SD"); ?></th>
         <?php } else if ($methodOfEvaluation == 'iso17043') { ?>
-          <th style="text-align: center;">Robust SD</th>
+          <th style="text-align: center;"><?= $this->translate->_("Robust SD"); ?></th>
         <?php } ?>
-        <th style="text-align: center;">Low Limit</th>
-        <th style="text-align: center;">High Limit</th>
-        <th style="text-align: center;">Low Limit</th>
-        <th style="text-align: center;">High Limit</th>
-        <th style="text-align: center;">Use Range</th>
-        <th style="text-align: center;">Action</th>
+        <th style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
+        <th style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
+        <th style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
+        <th style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
+        <th style="text-align: center;"><?= $this->translate->_("Use Range"); ?></th>
+        <th style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
 
       </tr>
     </thead>
@@ -82,7 +82,7 @@ unset($this->result['use_range']);
             <?php } ?>
             <td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>"><?php echo $row['assay_name']; ?></td>
             <td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
-              
+
 
               <?php if ($methodOfEvaluation == 'standard') {
                 echo round($row['mean'], 4);
@@ -104,12 +104,12 @@ unset($this->result['use_range']);
             </td>
             <td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
               <select name="useRange[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" id="<?php echo $row['vl_assay'] . $row['sample_id']; ?>" class="form-control" onchange="checkManualRes(this)">
-                <option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>>System Generated</option>
-                <option value="manual" <?php echo ($row['use_range'] == 'manual') ? " selected='selected' " : "" ?>>Manually Entered</option>
+                <option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>><?= $this->translate->_("System Generated"); ?></option>
+                <option value="manual" <?php echo ($row['use_range'] == 'manual') ? " selected='selected' " : "" ?>><?= $this->translate->_("Manually Entered"); ?></option>
               </select>
             </td>
             <td>
-              <a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="layoutModal('<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'add-manual-limits'), 'default', true); ?><?php echo '/id/' . base64_encode($row['shipment_id'] . '#' . $row['sample_id'] . '#' . $row['vl_assay']); ?>','700','440')"><span><i class="icon-edit"></i> Manual</span></a>
+              <a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="layoutModal('<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'add-manual-limits'), 'default', true); ?><?php echo '/id/' . base64_encode($row['shipment_id'] . '#' . $row['sample_id'] . '#' . $row['vl_assay']); ?>','700','440')"><span><i class="icon-edit"></i> <?= $this->translate->_("Manual"); ?></span></a>
             </td>
           </tr>
       <?php

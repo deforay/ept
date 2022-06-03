@@ -38,35 +38,35 @@ if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && ($th
 ?>
 <table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
 	<tr>
-		<th>Shipment Code</th>
+		<th><?= $this->translate->_("Shipment Code"); ?></th>
 		<td><?php echo $this->evaluateData['shipment']['shipment_code']; ?></td>
-		<th>Scheme Type</th>
+		<th><?= $this->translate->_("Scheme Type"); ?></th>
 		<td><?php echo strtoupper($this->evaluateData['shipment']['scheme_name']); ?></td>
 	</tr>
 	<tr>
-		<th>Shipment Date</th>
+		<th><?= $this->translate->_("Shipment Date"); ?></th>
 		<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_date']); ?></td>
-		<th>Result Due Date</th>
+		<th><?= $this->translate->_("Result Due Date"); ?></th>
 		<td><?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?></td>
 	</tr>
 	<tr>
-		<th>Shipment Received on</th>
+		<th><?= $this->translate->_("Shipment Received on"); ?></th>
 		<td><input id="receivedOn" type="text" name="receivedOn" value="<?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_receipt_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
-		<th>Samples Tested on</th>
+		<th><?= $this->translate->_("Samples Tested on"); ?></th>
 		<td><input id="testedOn" type="text" name="testedOn" value="<?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_test_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
 	</tr>
 	<tr>
 		<th>
-			Sample Rehydration Date
+			<?= $this->translate->_("Sample Rehydration Date"); ?>
 		</th>
 		<td>
 			<input id="rehydrationDate" type="text" name="rehydrationDate" value="<?php echo $this->dateFormat($attributes['sample_rehydration_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" />
 		</td>
 		<?php if ($maximumAllowed > 1) { ?>
-			<td><label for="numberOfParticipantTest"> Number of tests <span class='mandatory'>*</span></label></td>
+			<td><label for="numberOfParticipantTest"> <?= $this->translate->_("Number of tests"); ?> <span class='mandatory'>*</span></label></td>
 			<td>
 				<select class="form-control" name="numberOfParticipantTest" id="numberOfParticipantTest" title="Please select number of participant test" onchange="showHideTest(this.value);">
-					<option value="">--Select--</option>
+					<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 					<?php foreach (range(1, $maximumAllowed) as $no) {
 						$selected = (isset($this->evaluateData['shipment']['number_of_tests']) && $this->evaluateData['shipment']['number_of_tests'] == $no) ? "selected='selected'" : "";
 						echo '<option value="' . $no . '" ' . $selected . '>' . $no . '</option>';
@@ -77,7 +77,7 @@ if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && ($th
 		} ?>
 	</tr>
 	<tr>
-		<td><label for="specimenVolume">Specimen Volume <span class='mandatory'>*</span></label></td>
+		<td><label for="specimenVolume"><?= $this->translate->_("Specimen Volume"); ?> <span class='mandatory'>*</span></label></td>
 		<td>
 			<input type="text" id="specimenVolume" name="specimenVolume" style="float:left;" value="<?php echo $this->evaluateData['shipment']["specimen_volume"]; ?>" class="form-control isRequired" placeholder="Enter Specimen Volume" title="Please enter Specimen Volume" />
 		</td>
@@ -85,7 +85,7 @@ if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && ($th
 		<td></td>
 	</tr>
 	<tr>
-		<th>Supervisor Review</th>
+		<th><?= $this->translate->_("Supervisor Review"); ?></th>
 		<td>
 			<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control" title="Please select if Supervisor Approval was conducted or not">
 				<option value=""> -- Select -- </option>
@@ -93,13 +93,13 @@ if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && ($th
 				<option value="no" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'no') echo " selected "; ?>>NO</option>
 			</select>
 		</td>
-		<th id="labSupervisor" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?>>Supervisor Name</th>
+		<th id="labSupervisor" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></th>
 		<td>
 			<input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?> class="form-control" value="<?php echo $this->evaluateData['shipment']['participant_supervisor']; ?>" />
 		</td>
 	</tr>
 	<tr>
-		<th>User Comments</th>
+		<th><?= $this->translate->_("User Comments"); ?></th>
 		<td colspan="3"><textarea class="form-control" name="userComments" id="userComments"><?php echo $this->evaluateData['shipment']['user_comment']; ?></textarea></td>
 	</tr>
 </table>
@@ -124,14 +124,14 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 	<thead>
 		<tr align="CENTER" class="dark">
 			<th></th>
-			<th class='testOne' style="text-align: center">Test-1</th>
-			<th class='testTwo' style="text-align: center" class='testTwo'>Test-2</th>
-			<th class='testThree' style="text-align: center" class='testThree'>Test-3</th>
+			<th class='testOne' style="text-align: center"><?= $this->translate->_("Test-1"); ?></th>
+			<th class='testTwo' style="text-align: center" class='testTwo'><?= $this->translate->_("Test-2"); ?></th>
+			<th class='testThree' style="text-align: center" class='testThree'><?= $this->translate->_("Test-3"); ?></th>
 
 		</tr>
 	</thead>
 	<tr style="text-align:center">
-		<th style="width:10%;"> Platform Name</th>
+		<th style="width:10%;"> <?= $this->translate->_("Platform Name"); ?></th>
 		<td>
 			<select name="test_type_1" id="test_type_1" class="isRequired form-control" title="Please Choose Test Platform 1">
 				<?php $this->dropdownSelection($this->allTestTypes, $this->evaluateData['results'][0]["test_type_1"], true); ?>
@@ -191,48 +191,48 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 		$pcrExpDate3 = $this->dateFormat($this->evaluateData['results'][0]["pcr_reagent_exp_date_3"]);
 	} ?>
 	<tr align="CENTER" class="dark">
-		<th>Name of PCR reagent</th>
+		<th><?= $this->translate->_("Name of PCR reagent"); ?></th>
 		<td><input type="text" placeholder="Enter name of PCR reagent 1" class="form-control" name="name_of_pcr_reagent_1" id="name_of_pcr_reagent_1" value="<?php echo ($nameOfPcrReagent1); ?>" style="width: 100%;" title="Please enter name of PCR reagent. 1" /></td>
 		<td class='testTwo'><input type="text" placeholder="Enter name of PCR reagent 2" class="form-control" name="name_of_pcr_reagent_2" id="name_of_pcr_reagent_2" value="<?php echo ($nameOfPcrReagent2); ?>" style="width: 100%;" title="Please enter name of PCR reagent. 2" /></td>
 		<td class='testThree'><input type="text" placeholder="Enter name of PCR reagent 3" class="form-control" name="name_of_pcr_reagent_3" id="name_of_pcr_reagent_3" value="<?php echo ($nameOfPcrReagent3); ?>" style="width: 100%;" title="Please enter name of PCR reagent. 3" /></td>
 	</tr>
 
 	<tr align="CENTER" class="light">
-		<th>PCR reagent Lot number</th>
+		<th><?= $this->translate->_("PCR reagent Lot number"); ?></th>
 		<td><input type="text" placeholder="Enter PCR reagent Lot no 1" class="form-control" name="pcr_reagent_lot_no_1" id="pcr_reagent_lot_no_1" value="<?php echo ($pcrLotNo1); ?>" style="width: 100%;" title="Please enter PCR reagent Lot no. 1" /></td>
 		<td class='testTwo'><input type="text" placeholder="Enter PCR reagent Lot no  2" class="form-control" name="pcr_reagent_lot_no_2" id="pcr_reagent_lot_no_2" value="<?php echo ($pcrLotNo2); ?>" style="width: 100%;" title="Please enter PCR reagent Lot no. 2" /></td>
 		<td class='testThree'><input type="text" placeholder="Enter PCR reagent Lot no  3" class="form-control" name="pcr_reagent_lot_no_3" id="pcr_reagent_lot_no_3" value="<?php echo ($pcrLotNo3); ?>" style="width: 100%;" title="Please enter PCR reagent Lot no. 3" /></td>
 	</tr>
 
 	<tr align="CENTER" class="dark">
-		<th>PCR reagent expiry date</th>
+		<th><?= $this->translate->_("PCR reagent expiry date"); ?></th>
 		<td><input type="text" placeholder="Enter PCR reagent expiry date 1" class="expDatepicker form-control" name="pcr_reagent_exp_date_1" id="pcr_reagent_exp_date_1" value="<?php echo ($pcrExpDate1); ?>" style="width: 100%;" title="Please enter PCR reagent expiry date. 1" readonly="readonly" /><i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('pcr_reagent_exp_date_1')"> Clear</i></td>
 		<td class='testTwo'><input type="text" placeholder="Enter PCR reagent expiry date 2" class="expDatepicker form-control" name="pcr_reagent_exp_date_2" id="pcr_reagent_exp_date_2" value="<?php echo ($pcrExpDate2); ?>" style="width: 100%;" title="Please enter PCR reagent expiry date. 2" readonly="readonly" /><i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('pcr_reagent_exp_date_2')"> Clear</i></td>
 		<td class='testThree'><input type="text" placeholder="Enter PCR reagent expiry date 3" class="expDatepicker form-control" name="pcr_reagent_exp_date_3" id="pcr_reagent_exp_date_3" value="<?php echo ($pcrExpDate3); ?>" style="width: 100%;" title="Please enter PCR reagent expiry date. 3" readonly="readonly" /><i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('pcr_reagent_exp_date_3')"> Clear</i></td>
 	</tr>
 	<tr align="CENTER" class="dark">
-		<th>Lot No.</th>
+		<th><?= $this->translate->_("Lot No."); ?></th>
 		<td><input type="text" size="40" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_1"]) ? $this->evaluateData['results'][0]["lot_no_1"] : ""); ?>" class="isRequired form-control" title="Please enter Lot No. 1" /></td>
 		<td class='testTwo'><input type="text" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_2"]) ? $this->evaluateData['results'][0]["lot_no_2"] : ""); ?>" class="<?php echo $required2; ?>  form-control" title="Please enter Lot No. 2" /></td>
 		<td class='testThree'><input type="text" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo (isset($this->evaluateData['results'][0]["lot_no_3"]) ? $this->evaluateData['results'][0]["lot_no_3"] : ""); ?>" class="<?php echo $required3; ?>  form-control" title="Please enter Lot No. 3" /></td>
 	</tr>
 
 	<tr style="text-align:center">
-		<th>Expiry Date</th>
+		<th><?= $this->translate->_("Expiry Date"); ?></th>
 		<td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_1"]) && $this->evaluateData['results'][0]["exp_date_1"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_1"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_1"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
 		<td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_2"]) && $this->evaluateData['results'][0]["exp_date_2"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_2"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_2"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
 		<td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo ((isset($this->evaluateData['results'][0]["exp_date_3"]) && $this->evaluateData['results'][0]["exp_date_3"] != "0000-00-00" && $this->evaluateData['results'][0]["exp_date_3"] != "") ? $this->dateFormat($this->evaluateData['results'][0]["exp_date_3"]) : ""); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" /></td>
 	</tr>
 	<thead>
 		<tr align="CENTER" class="dark">
-			<th style="text-align: center;">Sample Number</th>
-			<th class='resultOne' style="text-align: center;width:14.2%;">Result-1</th>
-			<th class='testTwo' style="text-align: center;width:14.2%;" class='testTwo'>Result-2</th>
-			<th class='testThree' style="text-align: center;width:14.2%;" class='testThree'>Result-3</th>
-			<th style="text-align: center;width:14.2%;">Reported Result</th>
-			<th style="text-align: center;width:14.2%;">Reference Result</th>
-			<th style="text-align: center;width:14.2%;">Score</th>
-			<th style="text-align: center;width:14.2%;">Action</th>
+			<th style="text-align: center;"><?= $this->translate->_("Sample Number"); ?></th>
+			<th class='resultOne' style="text-align: center;width:14.2%;"><?= $this->translate->_("Result-1"); ?></th>
+			<th class='testTwo' style="text-align: center;width:14.2%;" class='testTwo'><?= $this->translate->_("Result-2"); ?></th>
+			<th class='testThree' style="text-align: center;width:14.2%;" class='testThree'><?= $this->translate->_("Result-3"); ?></th>
+			<th style="text-align: center;width:14.2%;"><?= $this->translate->_("Reported Result"); ?></th>
+			<th style="text-align: center;width:14.2%;"><?= $this->translate->_("Reference Result"); ?></th>
+			<th style="text-align: center;width:14.2%;"><?= $this->translate->_("Score"); ?></th>
+			<th style="text-align: center;width:14.2%;"><?= $this->translate->_("Action"); ?></th>
 		</tr>
 	</thead>
 
@@ -242,7 +242,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 	?>
 		<tr>
 			<td colspan="8" class="colspan-samples" style="text-align: center;">
-				<strong>Controls</strong>
+				<strong><?= $this->translate->_("Controls"); ?></strong>
 			</td>
 		</tr>
 	<?php
@@ -293,7 +293,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 
 	<tr>
 		<td colspan="8" class="colspan-samples" style="text-align: center;">
-			<strong>Samples</strong>
+			<strong><?= $this->translate->_("Samples"); ?></strong>
 		</td>
 	</tr>
 	<?php
@@ -344,13 +344,13 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 				?>
 			</td>
 			<td width="10%">
-				<a href="javascript:void(0);" id="geneTypeAnchor<?php echo $sample['sample_id']; ?>" class="btn btn-xs btn-primary" onclick="showdefModal('geneTypes<?php echo $sample['sample_id']; ?>', 900,600);"><i class="icon-beaker"></i> Add Gene Types </a>
+				<a href="javascript:void(0);" id="geneTypeAnchor<?php echo $sample['sample_id']; ?>" class="btn btn-xs btn-primary" onclick="showdefModal('geneTypes<?php echo $sample['sample_id']; ?>', 900,600);"><i class="icon-beaker"></i> <?= $this->translate->_("Add Gene Types"); ?> </a>
 				<ul id="showDetails<?php echo $sample['sample_id']; ?>" class="showlist"></ul>
 			</td>
 		</tr>
 	<?php } ?>
 	<tr style="text-align:center">
-		<td colspan="6" class="colspan" style="text-align: right;">Total</td>
+		<td colspan="6" class="colspan" style="text-align: right;"><?= $this->translate->_("Total"); ?></td>
 		<td style="vertical-align: middle;"><?php echo $total; ?></td>
 		<td></td>
 	</tr>

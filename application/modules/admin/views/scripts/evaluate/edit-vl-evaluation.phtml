@@ -9,27 +9,27 @@ $dtFormat =  $genderHelper->getDateFormat();
 ?>
 <table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
 	<tr>
-		<th>Shipment Code</th>
+		<th><?= $this->translate->_("Shipment Code"); ?></th>
 		<td><?php echo $this->evaluateData['shipment']['shipment_code']; ?></td>
-		<th>Scheme Type</th>
+		<th><?= $this->translate->_("Scheme Type"); ?></th>
 		<td><?php echo strtoupper($this->evaluateData['shipment']['scheme_name']); ?></td>
 	</tr>
 	<tr>
-		<th>Shipment Date</th>
+		<th><?= $this->translate->_("Shipment Date"); ?></th>
 		<td><?php echo $this->dateFormat($this->evaluateData['shipment']['shipment_date']); ?></td>
-		<th>Result Due Date</th>
+		<th><?= $this->translate->_("Result Due Date"); ?></th>
 		<td><?php echo $this->dateFormat($this->evaluateData['shipment']['lastdate_response']); ?></td>
 	</tr>
 	<tr>
-		<th>Result Reported on <span class="mandatory">*</span></th>
+		<th><?= $this->translate->_("Result Reported on"); ?> <span class="mandatory">*</span></th>
 		<td>
 			<input type="text" id="testReportedDate" name="testReportedDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->evaluateData['shipment']["shipment_test_report_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Result Reported Date" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testReportedDate')"> Clear</i>
 		</td>
-		<th><label>Mode of Result Receipt <span class="mandatory">*</span></label></th>
+		<th><label><?= $this->translate->_("Mode of Result Receipt"); ?> <span class="mandatory">*</span></label></th>
 		<td>
 			<select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control isRequired" title="Please choose the mode of receipt">
-				<option value="">-- Select --</option>
+				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 				<?php
 				foreach ($this->modeOfReceipt as $receipt) {
 				?>
@@ -41,36 +41,36 @@ $dtFormat =  $genderHelper->getDateFormat();
 		</td>
 	</tr>
 	<tr>
-		<th>Shipment Received on <span class="mandatory">*</span></th>
+		<th><?= $this->translate->_("Shipment Received on"); ?> <span class="mandatory">*</span></th>
 		<td>
 
 			<input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->evaluateData['shipment']["shipment_receipt_date"]); ?>" class="isRequired form-control datepicker" readonly="readonly" title="Please enter Test Panel Receipt Date" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('receiptDate')"> Clear</i>
 		</td>
-		<td><label>Sample Rehydration Date</label></td>
+		<td><label><?= $this->translate->_("Sample Rehydration Date"); ?></label></td>
 		<td>
 			<input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate" style="width:180px;float:left;" value="<?php echo  $this->dateFormat($attributes["sample_rehydration_date"]); ?>" class="datepicker form-control" readonly="readonly" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('sampleRehydrationDate')"> Clear</i>
 		</td>
 	</tr>
 	<tr>
-		<th><label>Panel/Samples Tested on <span class="mandatory">*</span></label></th>
+		<th><label><?= $this->translate->_("Panel/Samples Tested on"); ?> <span class="mandatory">*</span></label></th>
 		<td>
 			<input type="text" id="testDate" name="testDate" style="width:180px;float:left;" maxlength="11" value="<?php echo  $this->dateFormat($this->evaluateData['shipment']["shipment_test_date"]); ?>" class="isRequired datepicker form-control" readonly="readonly" title="Please enter the Panel Test Date" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> Clear</i>
 		</td>
 
-		<th><label>Specimen Volume used for testing</label></th>
+		<th><label><?= $this->translate->_("Specimen Volume used for testing"); ?></label></th>
 		<td>
 			<input type="text" name="specimenVolume" id="specimenVolume" class="form-control" value="<?php echo $attributes['specimen_volume']; ?>" />
 		</td>
 	</tr>
 
 	<tr>
-		<td><label>Viral Load Assay <span class="mandatory">*</span></label></td>
+		<td><label><?= $this->translate->_("Viral Load Assay"); ?> <span class="mandatory">*</span></label></td>
 		<td>
 			<select id="vlAssay" name="vlAssay" class="isRequired form-control" onchange="showHideOtherAssay(this.value)" title="Please select the Viral Load Assay">
-				<option value="">--Select--</option>
+				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 				<?php
 				foreach ($this->vlAssay as $id => $name) {
 				?>
@@ -80,58 +80,51 @@ $dtFormat =  $genderHelper->getDateFormat();
 				?>
 			</select>
 		</td>
-		<td class="hideOtherAssay"><label>Please specify Other Assay Name <span class="mandatory">*</span></label></td>
+		<td class="hideOtherAssay"><label><?= $this->translate->_("Please specify Other Assay Name"); ?> <span class="mandatory">*</span></label></td>
 		<td class="hideOtherAssay">
 			<input type="text" name="otherAssay" id="otherAssay" class="form-control" value="<?php echo (isset($attributes['other_assay']) && ($attributes['other_assay'] != "")) ? $attributes['other_assay'] : ""; ?>" title="Please specify Other Assay Name" />
 		</td>
 
 	</tr>
 	<tr>
-		<th>Assay Expiration Date</th>
+		<th><?= $this->translate->_("Assay Expiration Date"); ?></th>
 		<td>
 			<input type="text" name="assayExpirationDate" id="assayExpirationDate" style="width:180px;float:left;" class="isRequired expDatepicker form-control" readonly="readonly" value="<?php echo $this->dateFormat($attributes['assay_expiration_date']); ?>" title="Please enter Assay Expiration date" placeholder="Please enter Assay Expiration date" />
 			<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('assayExpirationDate')"> Clear</i>
 		</td>
-		<th><label>Assay Lot Number <span class="mandatory">*</span></label></th>
+		<th><label><?= $this->translate->_("Assay Lot Number"); ?> <span class="mandatory">*</span></label></th>
 		<td>
 			<input type="text" name="assayLotNumber" id="assayLotNumber" class="isRequired form-control" value="<?php echo $attributes['assay_lot_number']; ?>" title="Please enter Assay lot number" placeholder="Please enter Assay lot number" />
 		</td>
 	</tr>
 	<tr>
-		<th>Supervisor Review</th>
+		<th><?= $this->translate->_("Supervisor Review"); ?></th>
 		<td>
 			<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control" title="Please select if Supervisor Approval was conducted or not">
-				<option value=""> -- Select -- </option>
-				<option value="yes" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') echo " selected "; ?>>YES</option>
-				<option value="no" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'no') echo " selected "; ?>>NO</option>
+				<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+				<option value="yes" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
+				<option value="no" <?php if (strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'no') echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
 			</select>
 		</td>
-		<th id="labSupervisor" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?>>Supervisor Name</th>
+		<th id="labSupervisor" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></th>
 		<td>
 			<input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo (isset($this->evaluateData['shipment']['supervisor_approval']) && strtolower($this->evaluateData['shipment']['supervisor_approval']) == 'yes') ? "" : "style='display:none;'" ?> class="form-control" value="<?php echo $this->evaluateData['shipment']['participant_supervisor']; ?>" />
 		</td>
 	</tr>
 	<tr>
-		<th>User Comments</th>
+		<th><?= $this->translate->_("User Comments"); ?></th>
 		<td colspan="3"><textarea class="form-control" name="userComments" id="userComments"><?php echo $this->evaluateData['shipment']['user_comment']; ?></textarea></td>
 	</tr>
 	<tr>
-		<th>Uploaded File (if any)</th>
+		<th><?= $this->translate->_("Uploaded File (if any)"); ?></th>
 		<td>
-			<?php
-			if (
+			<?php if (
 				isset($attributes['uploaded_file']) &&
 				$attributes['uploaded_file'] != "" &&
 				file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . $attributes['uploaded_file'])
-			) {
-			?>
-
+			) { ?>
 				<a href="/uploads/<?php echo $attributes['uploaded_file'] ?>" download><?php echo basename($attributes['uploaded_file']); ?></a>
-
-
-			<?php
-			}
-			?>
+			<?php } ?>
 		</td>
 		<td></td>
 		<td></td>
@@ -143,18 +136,18 @@ if (isset($this->evaluateData['shipment']['is_pt_test_not_performed']) && $this-
 ?>
 	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
 		<caption style="text-align:left;">
-			<legend><i class="icon-check"></i> PT Testing not performed</legend>
+			<legend><i class="icon-check"></i> <?= $this->translate->_("PT Testing not performed"); ?></legend>
 		</caption>
 		<tr>
-			<th style="text-align:left;width:30%;">Reason</th>
+			<th style="text-align:left;width:30%;"><?= $this->translate->_("Reason"); ?></th>
 			<td style="text-align:left;width:70%;"><?php echo ucfirst($this->evaluateData['shipment']['vlNotTestedReason']); ?></td>
 		</tr>
 		<tr>
-			<th style="text-align:left;">Comments</th>
+			<th style="text-align:left;"><?= $this->translate->_("Comments"); ?></th>
 			<td style="text-align:left;"><?php echo ucfirst($this->evaluateData['shipment']['pt_test_not_performed_comments']); ?></td>
 		</tr>
 		<tr>
-			<th style="text-align:left;">Do you need any support from the PT Provider ?</th>
+			<th style="text-align:left;"><?= $this->translate->_("Do you need any support from the PT Provider?"); ?></th>
 			<td style="text-align:left;"><?php echo ucfirst($this->evaluateData['shipment']['pt_support_comments']); ?></td>
 		</tr>
 	</table>
@@ -168,14 +161,14 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 ?>
 		<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
 			<caption>
-				<legend>Controls</legend>
+				<legend><?= $this->translate->_("Controls"); ?></legend>
 			</caption>
 			<tr>
-				<th style="text-align: center;font-size:17px;width:200px;">Control</th>
-				<th style="text-align: center;font-size:17px;">Lower Limit</th>
-				<th style="text-align: center;font-size:17px;">Higer Limit</th>
-				<th style="text-align: center;font-size:17px;width:120px;">Response</th>
-				<th style="text-align: center;font-size:17px;">Acceptable ?</th>
+				<th style="text-align: center;font-size:17px;width:200px;"><?= $this->translate->_("Control"); ?></th>
+				<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit"); ?></th>
+				<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higer Limit"); ?></th>
+				<th style="text-align: center;font-size:17px;width:120px;"><?= $this->translate->_("Response"); ?></th>
+				<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Acceptable?"); ?></th>
 			</tr>
 
 			<?php
@@ -196,7 +189,7 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 						if (isset($this->vlRange[$attributes['vl_assay']])) {
 							echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
 						} else {
-							echo "Not enough responses for this VL Assay";
+							echo $this->translate->_("Not enough responses for this VL Assay");
 						}
 						?>
 					</td>
@@ -205,7 +198,7 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 						if (isset($this->vlRange[$attributes['vl_assay']])) {
 							echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
 						} else {
-							echo "Not enough responses for this VL Assay";
+							echo $this->translate->_("Not enough responses for this VL Assay");
 						}
 						?>
 					</td>
@@ -217,9 +210,9 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 						<?php
 						if (isset($this->vlRange[$attributes['vl_assay']])) {
 							if ($result['calculated_score'] == 'pass') {
-								echo "Acceptable";
+								echo $this->translate->_("Acceptable");
 							} else if ($result['calculated_score'] == 'fail') {
-								echo "Unacceptable";
+								echo $this->translate->_("Unacceptable");
 							} else {
 								echo "N.A.";
 							}
@@ -242,14 +235,14 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 
 	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
 		<caption>
-			<legend>Samples</legend>
+			<legend><?= $this->translate->_("Samples"); ?></legend>
 		</caption>
 		<tr>
-			<th style="text-align: center;font-size:17px;width:200px;">Sample</th>
-			<th style="text-align: center;font-size:17px;">Lower Limit</th>
-			<th style="text-align: center;font-size:17px;">Higher Limit</th>
-			<th style="text-align: center;font-size:17px;width:120px;">Response</th>
-			<th style="text-align: center;font-size:17px;">Acceptable?</th>
+			<th style="text-align: center;font-size:17px;width:200px;"><?= $this->translate->_("Sample"); ?></th>
+			<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit"); ?></th>
+			<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higher Limit"); ?></th>
+			<th style="text-align: center;font-size:17px;width:120px;"><?= $this->translate->_("Response"); ?></th>
+			<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Acceptable?"); ?></th>
 
 		</tr>
 
@@ -272,7 +265,7 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 					if (isset($this->vlRange[$attributes['vl_assay']])) {
 						echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
 					} else {
-						echo "Not enough responses for this VL Assay";
+						echo $this->translate->_("Not enough responses for this VL Assay");
 					}
 					?>
 				</td>
@@ -281,7 +274,7 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 					if (isset($this->vlRange[$attributes['vl_assay']])) {
 						echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
 					} else {
-						echo "Not enough responses for this VL Assay";
+						echo $this->translate->_("Not enough responses for this VL Assay");
 					}
 					?>
 				</td>
@@ -293,9 +286,9 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 					<?php
 					if (isset($this->vlRange[$attributes['vl_assay']])) {
 						if ($result['calculated_score'] == 'pass') {
-							echo "Acceptable";
+							echo $this->translate->_("Acceptable");
 						} else if ($result['calculated_score'] == 'fail') {
-							echo "Unacceptable";
+							echo $this->translate->_("Unacceptable");
 						} else {
 							echo "N.A.";
 						}
@@ -317,14 +310,14 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 	<table class="table table-bordered table-striped table-hover" style="width:100%;margin:0 auto;">
 
 		<tr>
-			<th style="text-align: center;font-size:17px;width:200px;">Sample</th>
-			<th style="text-align: center;font-size:17px;width:120px;">Response</th>
-			<th style="text-align: center;font-size:17px;">Lower Limit (Q1)</th>
-			<th style="text-align: center;font-size:17px;">Higher Limit (Q3)</th>
-			<th style="text-align: center;font-size:17px;">Median</th>
-			<th style="text-align: center;font-size:17px;">Robust SD</th>
-			<th style="text-align: center;font-size:17px;">z Score</th>
-			<th style="text-align: center;font-size:17px;">Acceptable?</th>
+			<th style="text-align: center;font-size:17px;width:200px;"><?= $this->translate->_("Sample"); ?></th>
+			<th style="text-align: center;font-size:17px;width:120px;"><?= $this->translate->_("Response"); ?></th>
+			<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit (Q1)"); ?></th>
+			<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higher Limit (Q3)"); ?></th>
+			<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Median"); ?></th>
+			<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Robust SD"); ?></th>
+			<th style="text-align: center;font-size:17px;"><?= $this->translate->_("z Score"); ?></th>
+			<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Acceptable?"); ?></th>
 		</tr>
 
 		<?php
@@ -350,7 +343,7 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 					if (isset($this->vlRange[$attributes['vl_assay']])) {
 						echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
 					} else {
-						echo "Not enough responses for this VL Assay";
+						echo $this->translate->_("Not enough responses for this VL Assay");
 					}
 					?>
 				</td>
@@ -359,7 +352,7 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 					if (isset($this->vlRange[$attributes['vl_assay']])) {
 						echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
 					} else {
-						echo "Not enough responses for this VL Assay";
+						echo $this->translate->_("Not enough responses for this VL Assay");
 					}
 					?>
 				</td>
@@ -404,31 +397,31 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 
 	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
 		<caption>
-			<legend>Results Interpretation and Recommended Actions</legend>
+			<legend><?= $this->translate->_("Results Interpretation and Recommended Actions"); ?></legend>
 		</caption>
 		<tr>
-			<th>z Score</th>
-			<th>Results Interpretation</th>
-			<th>Recommended Action</th>
+			<th><?= $this->translate->_("z Score"); ?></th>
+			<th><?= $this->translate->_("Results Interpretation"); ?></th>
+			<th><?= $this->translate->_("Recommended Action"); ?></th>
 		</tr>
 
 		<tr>
 			<td>z ≤ ±2.0</td>
-			<td>Acceptable</td>
-			<td>No action required</td>
+			<td><?= $this->translate->_("Acceptable"); ?></td>
+			<td><?= $this->translate->_("No action required"); ?></td>
 		</tr>
 
 		<tr>
 			<td>± 2.0 > z < ± 3.0</td>
-			<td>Warning</td>
-			<td>Closely monitor performance</td>
+			<td><?= $this->translate->_("Warning"); ?></td>
+			<td><?= $this->translate->_("Closely monitor performance"); ?></td>
 		</tr>
 
 
 		<tr>
 			<td>z ≥ ± 3.0</td>
-			<td>Unacceptable</td>
-			<td>Perform corrective action</td>
+			<td><?= $this->translate->_("Unacceptable"); ?></td>
+			<td><?= $this->translate->_("Perform corrective action"); ?></td>
 		</tr>
 
 	</table>

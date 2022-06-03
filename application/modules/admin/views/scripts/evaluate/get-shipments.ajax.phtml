@@ -1,94 +1,97 @@
 <?php
 //Zend_Debug::dump($this->shipments);die;
-if($this->shipments == false && count($this->shipments) <= 0){
+if ($this->shipments == false && count($this->shipments) <= 0) {
 	echo "<br/><br/><br/><h4 style='text-align:center;'>Unable fetch shipments. Please try again later or contact system admin for help</h4>";
-}else{
-	?>
-	
-    <div class="modal-dialog" style="width:100%;">
-        <div class="modal-header">
-          <h4 class="modal-title">Shipments Under PT Survey <?php echo $this->shipments[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipments[0]['distribution_date']); ?>)</h4>
-        </div>
-        <div class="modal-body">
-          <table class="table table-bordered table-striped table-hover">
-			<tr>
-				<th style="text-align: center;">Shipment Code</th>
-				<th style="text-align: center;">Scheme</th>
-				<th style="text-align: center;">No. of Samples</th>
-				<th style="text-align: center;">No. of Participants</th>
-				<th style="text-align: center;">No. of Responses</th>
-				<th style="text-align: center;">Response %</th>
-				<th style="text-align: center;">Number Passed</th>
-				<th style="text-align: center;">Shipment Status</th>
-				<th style="text-align: center;">Action</th>
-			</tr>
-			<?php
-			if(count($this->shipments) > 0){
-			foreach($this->shipments as $shipment){
-				$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
-                                $totalParticipant=$shipment['participant_count'];
-                                $passed=(isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0;
-                                $nonResponse=$totalParticipant-$reported;
-				?>
+} else {
+?>
+
+	<div class="modal-dialog" style="width:100%;">
+		<div class="modal-header">
+			<h4 class="modal-title"><?= $this->translate->_("Shipments Under PT Survey"); ?> <?php echo $this->shipments[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipments[0]['distribution_date']); ?>)</h4>
+		</div>
+		<div class="modal-body">
+			<table class="table table-bordered table-striped table-hover">
 				<tr>
-					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
-					<td style="text-align: center;"><?php echo ($shipment['scheme_name']) ?></td>
-					<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
-					<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
-					<td style="text-align: center;"><?php echo $reported ?></td>
-					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported/$shipment['participant_count'])*100,2) : 0; ?></td>					
-					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
-					<td style="text-align: center;"><?php echo ucfirst($shipment['shipment_status']) ?></td>
-					<td style="text-align: center;">
-						<?php if (isset($shipment["reported_count"]) && $shipment["reported_count"] > 0) {
-								if($shipment['scheme_type'] != 'vl') {
-							?>
-								<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
-								<?php
-								}else{
-									?>
-								<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Evaluate</span></a>
-								<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> VL Range</span></a>
-									<?php
-								}
-								
-								
-								if($nonResponse > 0){ ?>
-										<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> Not Responded Participants</span></a>
-								<?php }
-								} else { ?>
-									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Evaluate</span></a>
-						<?php } ?>
-					</td>
+					<th style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("No. of Samples"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("No. of Participants"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("No. of Responses"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("Response%"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("Number Passed"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("Shipment Status"); ?></th>
+					<th style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
 				</tr>
+				<?php
+				if (count($this->shipments) > 0) {
+					foreach ($this->shipments as $shipment) {
+						$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+						$totalParticipant = $shipment['participant_count'];
+						$passed = (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0;
+						$nonResponse = $totalParticipant - $reported;
+				?>
+						<tr>
+							<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
+							<td style="text-align: center;"><?php echo ($shipment['scheme_name']) ?></td>
+							<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
+							<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
+							<td style="text-align: center;"><?php echo $reported ?></td>
+							<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported / $shipment['participant_count']) * 100, 2) : 0; ?></td>
+							<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>
+							<td style="text-align: center;"><?php echo ucfirst($shipment['shipment_status']) ?></td>
+							<td style="text-align: center;">
+								<?php if (isset($shipment["reported_count"]) && $shipment["reported_count"] > 0) {
+									if ($shipment['scheme_type'] != 'vl') {
+								?>
+										<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> <?= $this->translate->_("Evaluate"); ?></span></a>
+									<?php
+									} else {
+									?>
+										<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> <?= $this->translate->_("Evaluate"); ?></span></a>
+										<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> <?= $this->translate->_("VL Range"); ?></span></a>
+									<?php
+									}
+
+
+									if ($nonResponse > 0) { ?>
+										<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> <?= $this->translate->_("Not Responded Participants"); ?></span></a>
+									<?php }
+								} else { ?>
+									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> <?= $this->translate->_("Evaluate"); ?></span></a>
+								<?php } ?>
+							</td>
+						</tr>
+					<?php
+					}
+				} else {
+					?>
+					<tr>
+						<td colspan="5" align="center" style="text-align:center">
+							<?= $this->translate->_("No shipments for this distribution yet"); ?>
+						</td>
+					</tr>
 				<?php
 				}
-			}else{
 				?>
-				<tr>
-					<td colspan="5" align="center" style="text-align:center">
-						No shipments for this distribution yet
-					</td>
-				</tr>
-				<?php
-			}
-			?>
-		  </table>
-        </div>
-    </div><!-- /.modal-dialog -->
-	<?php
+			</table>
+		</div>
+	</div><!-- /.modal-dialog -->
+<?php
 }
 ?>
 <div id="vlRangeDiv">
-	
+
 </div>
 <script>
-	function getVLReferenceScores(sid){
+	function getVLReferenceScores(sid) {
 		$.blockUI();
-			$.post("<?php echo $this->url(array('module'=>'admin','controller' =>'evaluate', 'action' => 'vl-range'), 'default', true); ?>", { sid: sid, format: "html" },
-			function (data) {
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'vl-range'), 'default', true); ?>", {
+				sid: sid,
+				format: "html"
+			},
+			function(data) {
 				$("#vlRangeDiv").html(data);
 				$.unblockUI();
-			});	
+			});
 	}
 </script>
