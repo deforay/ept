@@ -5,7 +5,7 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
     protected $_name = 'scheduled_jobs';
     protected $_primary = 'job_id';
 
-    public function saveScheduledJobsDetails($params)
+    public function scheduleCertificationGeneration($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -49,6 +49,23 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         if (isset($shipmentId) && sizeof($shipmentId) > 0 && isset($params['certificateName']) && $params['certificateName'] != "") {
             return $this->insert(array(
                 "job" => "generate-certificates.php -s " . implode(",", $shipmentId) . " -c " . $params['certificateName'],
+                "requested_on" => new Zend_Db_Expr('now()'),
+                "requested_by" => $authNameSpace->admin_id,
+            ));
+        } else {
+            return 0;
+        }
+    }
+    public function scheduleEvaluation($shipmentId)
+    {
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $db->update('shipment', array('status' => "queued"), "shipment_id = " . $shipmentId);
+
+        if (isset($shipmentId) && !empty($shipmentId)) {
+            return $this->insert(array(
+                "job" => "evaluate-shipments.php -s " . $shipmentId,
                 "requested_on" => new Zend_Db_Expr('now()'),
                 "requested_by" => $authNameSpace->admin_id,
             ));

@@ -29,6 +29,16 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 						$totalParticipant = $shipment['participant_count'];
 						$passed = (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0;
 						$nonResponse = $totalParticipant - $reported;
+						if($shipment["shipment_status"] == 'queued'){
+							$buttonText = $this->translate->_("Queued");
+							$buttonStatus = false;
+						}else if($shipment["shipment_status"] == 'processing'){
+							$buttonText = $this->translate->_("Processing");
+							$buttonStatus = false;
+						}else{
+							$buttonText = $this->translate->_("Evaluate");
+							$buttonStatus = true;
+						}
 				?>
 						<tr>
 							<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
@@ -43,21 +53,23 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 								<?php if (isset($shipment["reported_count"]) && $shipment["reported_count"] > 0) {
 									if ($shipment['scheme_type'] != 'vl') {
 								?>
-										<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> <?= $this->translate->_("Evaluate"); ?></span></a>
+										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?></span></a>
+										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:scheduleShipmentEvaluation('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-edit"></i> <?= $buttonText; ?></span></a>
 									<?php
 									} else {
 									?>
-										<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> <?= $this->translate->_("Evaluate"); ?></span></a>
-										<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> <?= $this->translate->_("VL Range"); ?></span></a>
+										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?></span></a>
+										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:scheduleShipmentEvaluation('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-edit"></i> <?= $buttonText; ?></span></a>
+										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> <?= $this->translate->_("VL Range"); ?></span></a>
 									<?php
 									}
 
 
 									if ($nonResponse > 0) { ?>
-										<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> <?= $this->translate->_("Not Responded Participants"); ?></span></a>
+										<a class="btn btn-warning btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> <?= $this->translate->_("Not Responded Participants"); ?></span></a>
 									<?php }
 								} else { ?>
-									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> <?= $this->translate->_("Evaluate"); ?></span></a>
+									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?></span></a>
 								<?php } ?>
 							</td>
 						</tr>
@@ -92,6 +104,18 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 			function(data) {
 				$("#vlRangeDiv").html(data);
 				$.unblockUI();
+			});
+	}
+
+	function scheduleShipmentEvaluation(sid) {
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'schedule-evaluation'), 'default', true); ?>", {
+				sid: sid,
+				format: "html"
+			},
+			function(data) {
+				$.unblockUI();
+				document.location.href = "/admin/evaluate";
 			});
 	}
 </script>
