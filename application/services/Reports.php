@@ -1884,7 +1884,7 @@ class Application_Service_Reports
                     $attributes = json_decode($aRow['attributes'], true);
                     $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
-                    if (isset($config->evaluation->dts->displaySampleConditionFields) || $config->evaluation->dts->displaySampleConditionFields == 'yes') {
+                    if (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == 'yes') {
                         $conditionOfPTSamples = (isset($attributes['condition_pt_samples']) && $attributes['condition_pt_samples'] != "") ? ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) : "";
                         $refridgerator = (isset($attributes['refridgerator']) && $attributes['refridgerator'] != "") ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
                         $roomTemperature = (isset($attributes['room_temperature']) && $attributes['room_temperature'] != "") ? $attributes['room_temperature'] : "";
@@ -1899,7 +1899,7 @@ class Application_Service_Reports
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReportDate, PHPExcel_Cell_DataType::TYPE_STRING);
 
-                if (isset($config->evaluation->dts->displaySampleConditionFields) || $config->evaluation->dts->displaySampleConditionFields == 'yes') {
+                if (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == 'yes') {
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($conditionOfPTSamples, PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($refridgerator, PHPExcel_Cell_DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($roomTemperature, PHPExcel_Cell_DataType::TYPE_STRING);
