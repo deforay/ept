@@ -49,6 +49,19 @@ class Admin_EvaluateController extends Zend_Controller_Action
         }
     }
 
+    public function scheduleEvaluationAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+        if ($this->hasParam('sid')) {
+            $shipmentId = base64_decode($this->_getParam('sid'));
+            $evalService = new Application_Service_Evaluation();
+            return $evalService->scheduleEvaluation($shipmentId);
+        }else{
+            return 0;
+        }
+    }
+
     public function shipmentAction()
     {
         if ($this->hasParam('sid')) {

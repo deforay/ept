@@ -11,8 +11,10 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
 
     $scheduledResult = $scheduledDb->fetchAll("status = 'pending'");
+
     if (isset($scheduledResult)) {
         foreach ($scheduledResult as $key => $sj) {
+            $db->update('scheduled_jobs', array('status' => "processing"), "job_id = " . $sj['job_id']);
             exec($phpPath . " " . realpath(APPLICATION_PATH . "/../scheduled-jobs") . DIRECTORY_SEPARATOR .  $sj['job']);
             $db->update('scheduled_jobs', array("completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"), "job_id = " . $sj['job_id']);
         }

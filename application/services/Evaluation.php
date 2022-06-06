@@ -166,9 +166,9 @@ class Application_Service_Evaluation
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'))
-			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
+			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id',array('distribution_code', 'distribution_date'))
 			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('map_id', 'responseDate' => 'shipment_test_report_date', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)"), 'last_not_participated_mailed_on', 'last_not_participated_mail_count', 'shipment_status' => 's.status'))
-			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
+			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
 			->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
 			->where("s.distribution_id = ?", $distributionId)
 			->group('s.shipment_id');
@@ -193,6 +193,9 @@ class Application_Service_Evaluation
 	public function getShipmentToEvaluate($shipmentId, $reEvaluate = false, $override = null)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+		$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
+				
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.shipment_attributes', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.distribution_id', 's.number_of_samples', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status', 's.corrective_action_file'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
 			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
@@ -399,8 +402,10 @@ class Application_Service_Evaluation
 			}
 			$db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
 		} else if ($shipmentResult[0]['scheme_type'] == 'dts') {
-			$dtsModel = new Application_Model_Dts();
-			$shipmentResult = $dtsModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
+			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
+				$dtsModel = new Application_Model_Dts();
+				$shipmentResult = $dtsModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
+			}
 		} else if ($shipmentResult[0]['scheme_type'] == 'vl') {
 			$vlModel = new Application_Model_Vl();
 			$shipmentResult = $vlModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
@@ -2286,4 +2291,10 @@ class Application_Service_Evaluation
 			return $db->update('evaluation_queue', $data, "id = " . $existData['id']);
 		}
 	}
+
+	public function scheduleEvaluation($shipmentId)
+    {
+        $scheduledDb = new Application_Model_DbTable_ScheduledJobs();
+        return $scheduledDb->scheduleEvaluation($shipmentId);
+    }	
 }

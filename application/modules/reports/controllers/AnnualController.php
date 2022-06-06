@@ -39,7 +39,7 @@ class Reports_AnnualController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
-            $response = $reportService->saveScheduledJobs($params);
+            $response = $reportService->scheduleCertificationGeneration($params);
             $this->view->result = $response;
         }
     }

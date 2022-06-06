@@ -262,7 +262,7 @@ if (count($this->shipment) > 0) {
 
                     if (aData[4] == "Fail") {
                         $(this).addClass('btn-danger');
-                    } else if (aData[6] == "") {
+                    } else if (aData[8] == "") {
                         $(this).addClass('btn-success');
                     } else {
                         $(this).addClass('btn-warning');
@@ -323,9 +323,9 @@ if (count($this->shipment) > 0) {
         function fnFormatDetails(oTable, nTr) {
             var aData = oTable.fnGetData(nTr);
             var sOut = "";
-            if (aData[6] != "" && aData[6] != null && aData[6] != undefined) {
+            if (aData[8] != "" && aData[8] != null && aData[8] != undefined) {
                 sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
-                sOut += '<tr><td>' + aData[6] + '</td></tr>';
+                sOut += '<tr><td>' + aData[8] + '</td></tr>';
                 sOut += '</table>';
             } else {
                 sOut = 'No comments to show';
