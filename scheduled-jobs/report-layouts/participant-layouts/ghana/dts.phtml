@@ -166,12 +166,17 @@ if (sizeof($resultArray['shipment']) > 0) {
         if ($dtsSchemeType == 'ghana') {
             $ghanaNationalDtsAlgo = true;
         }
+        $syphilisActive = false;
         if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && $ghanaNationalDtsAlgo) {
             $syphilisActive = true;
+        } else {
+            $width = 14.3;
         }
         $repeatTest = false;
-        if ($dtsSchemeType == 'ghana' && $syphilisActive) {
+        if ($dtsSchemeType == 'ghana' || $syphilisActive) {
             $repeatTest = true;
+        } else {
+            $width = 16.7;
         }
 
         $shipmentAttributesSampleTypeDisplay = "";
@@ -301,7 +306,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<th style="width:' . ($width * ($noTest + 3)) . '%" colspan="' . ($noTest + 3) . '" style="border:none;"></th>';
             } else {
-                $labRes .= '<th style="width:' . ($width * 3) . '%" colspan="3" style="border:none;"></th>';
+                if ($repeatTest) {
+                    $labRes .= '<th style="width:' . ($width * 3) . '%" colspan="3" style="border:none;"></th>';
+                } else {
+                    $labRes .= '<th style="width:' . ($width * 2) . '%" colspan="2" style="border:none;"></th>';
+                }
             }
             $labRes .= '</tr>';
             $labRes .= '<tr>
@@ -319,7 +328,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<td style="width:' . ($width * ($noTest + 3)) . '%" colspan="' . ($noTest + 3) . '"></td>';
             } else {
-                $labRes .= '<td style="width:' . ($width * 3) . '%" colspan="3"></td>';
+                if ($repeatTest) {
+                    $labRes .= '<td style="width:' . ($width * 3) . '%" colspan="3"></td>';
+                } else {
+                    $labRes .= '<td style="width:' . ($width * 2) . '%" colspan="2"></td>';
+                }
             }
             $labRes .= '</tr>';
             $labRes .= '<tr>
@@ -337,7 +350,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<td style="width:' . ($width * ($noTest + 3)) . '%" colspan="' . ($noTest + 3) . '"></td>';
             } else {
-                $labRes .= '<td style="width:' . ($width * 3) . '%" colspan="3"></td>';
+                if ($repeatTest) {
+                    $labRes .= '<td style="width:' . ($width * 3) . '%" colspan="3"></td>';
+                } else {
+                    $labRes .= '<td style="width:' . ($width * 2) . '%" colspan="2"></td>';
+                }
             }
             $labRes .= '</tr>';
             $labRes .= '<tr>
@@ -355,7 +372,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<td style="width:' . ($width * ($noTest + 3)) . '%" colspan="' . ($noTest + 3) . '"></td>';
             } else {
-                $labRes .= '<td style="width:' . ($width * 3) . '%" colspan="3"></td>';
+                if ($repeatTest) {
+                    $labRes .= '<td style="width:' . ($width * 3) . '%" colspan="3"></td>';
+                } else {
+                    $labRes .= '<td style="width:' . ($width * 2) . '%" colspan="2"></td>';
+                }
             }
             $labRes .= '</tr>';
 
@@ -476,7 +497,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $labRes .= '<br><div style="border-top: 1px solid gray;">' . (isset($response['syphilis_final']) && $response['syphilis_final'] != "" ? $dtsResultsMap[$dtsResults[$response['syphilis_final']]] : "") . '</div>';
                 }
                 $labRes .= '</td>';
-                if ($syphilisActive) {
+                if ($repeatTest) {
                     $labRes .= '<td style="text-align:center;">' . ucfirst($response['is_this_retest']) . '</td>';
                 }
                 $labRes .= '</tr>';
