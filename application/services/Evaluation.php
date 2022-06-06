@@ -1219,14 +1219,16 @@ class Application_Service_Evaluation
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 			} else if ($res['scheme_type'] == 'dts') {
 
-				$sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'calculated_score', 'test_kit_name_1', 'lot_no_1', 'exp_date_1', 'test_kit_name_2', 'lot_no_2', 'exp_date_2', 'test_kit_name_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3', 'repeat_test_result_1', 'repeat_test_result_2', 'repeat_test_result_3'))
+				$sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'calculated_score', 'test_kit_name_1', 'lot_no_1', 'exp_date_1', 'test_kit_name_2', 'lot_no_2', 'exp_date_2', 'test_kit_name_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3', 'repeat_test_result_1', 'repeat_test_result_2', 'repeat_test_result_3', 'syphilis_result', 'syphilis_final', 'is_this_retest'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
 					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'responseDate' => 'sp.shipment_test_report_date', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
 					->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory', 'refdts.sample_score', 'refdts.control'))
+					->join(array('refsdts' => 'reference_result_dts'), 'refsdts.shipment_id=sp.shipment_id and refsdts.sample_id=resdts.sample_id', array('refsdts.syphilis_reference_result', 'refsdts.sample_label', 'refsdts.mandatory', 'refsdts.sample_score', 'refsdts.control'))
 					->joinLeft(array('dtstk1' => 'r_testkitname_dts'), 'dtstk1.TestKitName_ID=resdts.test_kit_name_1', array('testkit1' => 'dtstk1.TestKit_Name'))
 					->joinLeft(array('dtstk2' => 'r_testkitname_dts'), 'dtstk2.TestKitName_ID=resdts.test_kit_name_2', array('testkit2' => 'dtstk2.TestKit_Name'))
 					->joinLeft(array('dtstk3' => 'r_testkitname_dts'), 'dtstk3.TestKitName_ID=resdts.test_kit_name_3', array('testkit3' => 'dtstk3.TestKit_Name'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
+					->join(array('refspr' => 'r_possibleresult'), 'refspr.id=refsdts.syphilis_reference_result', array('referenceSyphilisResult' => 'refspr.response'))
 					->where("resdts.shipment_map_id = ?", $res['map_id']);
 
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
