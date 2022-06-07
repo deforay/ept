@@ -1,310 +1,271 @@
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <section class="content-header">
     <h1>
-        Participant/Laboratory Information
+        <?= $this->translate->_("Participant/Laboratory Information"); ?>
     </h1>
 </section>
 <section class="content">
-<div class="box">
-    
-<div class="box-body">
-<form name="participantEdit" id="participantEdit"  method="post"   action="<?php echo $this->url(array("controller" => "participant", "action" => "add", "module" => "default"), null, true) ?>">
-    <div id="view-content">
-        
+    <div class="box">
+        <div class="box-body">
+            <form name="participantEdit" id="participantEdit" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "add", "module" => "default"), null, true) ?>">
+                <div id="view-content">
+                    <input type="hidden" id="PartSysID" name="participantId" value="<?php echo $this->rsParticipant['participant_id']; ?>" />
+                    <input type="hidden" id="UsrSysID" name="dataManager" value="<?php echo $this->rsParticipant['data_manager']; ?>" />
+                    <br>
+                    <table class="table table-striped table-bordered">
+                        <tr>
+                            <th colspan="4" style="text-align: left;padding:20px;">
+                                <input type="checkbox" name="individualParticipant" checked="checked" onclick="checkIndividualParticipant(this)"> <span><?= $this->translate->_("Individual Participant"); ?></span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th><?= $this->translate->_("Participant System ID"); ?> <span class="mandatory">*</span></th>
+                            <td>
+                                <input type="text" id="pid" name="pid" class="form-control isRequired" title="Please enter the Participant's ID here" placeholder="Please enter the Participant's Unique ID here" onblur="checkDuplicate('participant', 'unique_identifier', this, null, 'This Participant ID already exists for another Participant. Please try something else.')" />
+                            </td>
+                            <th id="firstNameLable"><?= $this->translate->_("Participant First Name"); ?> <span class="mandatory">*</span></th>
+                            <td><input type="text" id="pfname" name="pfname" size="25" maxlength="45" class="form-control isRequired" title="Please enter the Participant's Lab/First Name here" placeholder="Please enter the Participant's First Name here" /></td>
 
-        <input type="hidden" id ="PartSysID" name="participantId" value="<?php echo $this->rsParticipant['participant_id']; ?>" />
-        <input type="hidden" id ="UsrSysID" name="dataManager" value="<?php echo $this->rsParticipant['data_manager']; ?>" />
+                        </tr>
+                        <tr>
 
+                            <th id="lastNameLable"><?= $this->translate->_("Participant Last Name (optional)"); ?></th>
+                            <td style="width:285px;" id="lastNameLableTd"><input type="text" id="plname" name="plname" size="25" maxlength="45" title="Please enter the Participant's Last Name here" placeholder="Please enter the Participant's Last Name here" class="form-control" /></td>
+                            <th><label><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label></th>
+                            <td><input type="text" id="instituteName" name="instituteName" size="25" maxlength="45" class="form-control isRequired" title="Please enter the Institute Name here" placeholder="Please enter the Institute Name here" /></td>
+                        </tr>
+                        <tr>
 
+                            <th><label><?= $this->translate->_("Department Name"); ?> <span class="mandatory">*</span></label></th>
+                            <td colspan=3><input type="text" id="departmentName" name="departmentName" size="25" maxlength="45" class="form-control isRequired" title="Please enter the Department Name here" placeholder="Please enter the Department Name here" style="width:285px;" /></td>
+                        </tr>
+                        <tr>
+                            <th><label><?= $this->translate->_("Physical Address"); ?></label></th>
+                            <td colspan=3><textarea id="address" name="address" size="50" class="form-control" title="Please enter the address here" placeholder="Please enter the address here"></textarea></td>
+                        </tr>
+                        <tr>
+                            <th><label><?= $this->translate->_("City"); ?> <span class="mandatory">*</span></label></th>
+                            <td><input type="text" id="city" name="city" size="25" maxlength="45" class="form-control isRequired" title="Please enter the city here" placeholder="Please enter the city here" value="<?php echo $this->rsParticipant['city']; ?>" /></td>
 
-        <br>
+                            <th><label><?= $this->translate->_("State (if applicable)"); ?></label></th>
 
-        <table class="table table-striped table-bordered">
-            <tr>
-                
-                <th colspan="4" style="text-align: left;padding:20px;">
-                    <input type="checkbox" name="individualParticipant" checked="checked" onclick="checkIndividualParticipant(this)"> <span style="">Individual Participant</span>
-                </th>
-                
-            </tr>
-            <tr>
-                <th>Participant System ID <span class="mandatory">*</span></th>
-                <td>
-                    <input type="text" id="pid" name="pid" class="form-control isRequired" title="Please enter the Participant's ID here" placeholder="Please enter the Participant's Unique ID here"
-                           onblur="checkDuplicate('participant', 'unique_identifier', this, null, 'This Participant ID already exists for another Participant. Please try something else.')" />
-                </td>
-                <th id="firstNameLable">Participant First Name <span class="mandatory">*</span></th>
-                <td><input type="text" id="pfname" name="pfname" size="25" maxlength="45"  class="form-control isRequired"  title="Please enter the Participant's Lab/First Name here" placeholder="Please enter the Participant's First Name here" /></td>
+                            </td>
+                            <td><input type="text" id="state" name="state" size="25" maxlength="45" class="form-control" title="Please enter the state here" placeholder="Please enter the state here" /></td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label><?= $this->translate->_("Country"); ?> <span class="mandatory">*</span></label>
+                            </th>
+                            <td><select name="country" id="country" class="isRequired form-control" title="Please choose the country here" style="width:285px;">
+                                    <option value="">--<?= $this->translate->_("Select Country"); ?>--</option>
+                                    <?php foreach ($this->countriesList as $cou) { ?>
+                                        <option value="<?php echo $cou['id']; ?>"><?php echo $cou['iso_name']; ?></option>
+                                    <?php } ?>
+                                </select></td>
+                            <th><?= $this->translate->_("Region"); ?> <span class="mandatory">*</span></th>
+                            <td>
+                                <input type="text" id="region" size="25" maxlength="45" name="region" class="form-control isRequired" title="Please enter region here" placeholder="Please enter region here" />
+                            </td>
 
-            </tr>
-            <tr>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label><?= $this->translate->_("Longitude"); ?> </label>
+                            </th>
 
-                <th id="lastNameLable">Participant Last Name (optional)</th>
-                <td style="width:285px;" id="lastNameLableTd"><input type="text" id="plname" name="plname" size="25" maxlength="45" title="Please enter the Participant's Last Name here" placeholder="Please enter the Participant's Last Name here" class="form-control" /></td>
-                <th><label>Institute Name <span class="mandatory">*</span></label></th>
-                <td><input type="text" id="instituteName" name="instituteName" size="25" maxlength="45"
-                           class="form-control isRequired" title="Please enter the Institute Name here"
-                           placeholder="Please enter the Institute Name here" /></td>
-            </tr>
-            <tr>
+                            <td><input type="text" id="long" name="long" size="25" maxlength="45" class="form-control" title="Please enter the longitude here" placeholder="Please enter the longitude here" /></td>
+                            <th>
+                                <label><?= $this->translate->_("Latitude"); ?> </label>
+                            </th>
 
-                <th><label>Department Name <span class="mandatory">*</span></label></th>
-                <td colspan=3><input type="text" id="departmentName" name="departmentName" size="25" maxlength="45"
-                                     class="form-control isRequired" title="Please enter the Department Name here"
-                                     placeholder="Please enter the Department Name here" style="width:285px;"/></td>
-            </tr>
-            <tr>
-                <th><label>Physical Address</label></th>
-                <td colspan=3><textarea id="address" name="address" size="50" 
-                                        class="form-control" title="Please enter the address here"
-                                        placeholder="Please enter the address here"></textarea></td>
-            </tr>
-            <tr>
-                <th><label>City <span class="mandatory">*</span></label></th>
-                <td><input type="text" id="city" name="city" size="25" maxlength="45"
-                           class="form-control isRequired" title="Please enter the city here"
-                           placeholder="Please enter the city here"
-                           value="<?php echo $this->rsParticipant['city']; ?>"/></td>
+                            <td><input type="text" id="lat" name="lat" size="25" maxlength="45" class="form-control" title="Please enter the latitude here" placeholder="Please enter the latitude here" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label><?= $this->translate->_("Funding Source"); ?> </label>
+                            </th>
 
-                <th><label>State (if applicable)</label></th>
+                            <td><input type="text" id="fundingSource" name="fundingSource" size="25" maxlength="45" class="form-control" title="Please enter the funding source here" placeholder="Please enter the funding source here" /></td>
+                            <th>
+                                <label><?= $this->translate->_("Testing Volume"); ?> </label>
+                            </th>
 
-            </td><td><input type="text" id="state" name="state" size="25" maxlength="45"
-                            class="form-control" title="Please enter the state here"
-                            placeholder="Please enter the state here" /></td>
-    </tr>
-    <tr> <th>
-            <label>Country <span class="mandatory">*</span></label></th>
-        <td><select name="country" id="country"  class="isRequired form-control" title="Please choose the country here" style="width:285px;">
-                <option value="">--Select Country--</option>
-                <?php foreach ($this->countriesList as $cou) {
-                    ?>
-                    <option value="<?php echo $cou['id']; ?>"><?php echo $cou['iso_name']; ?></option>
-                    <?php
-                }
-                ?>
-            </select></td>
-        <th>Region <span class="mandatory">*</span></th>
-        <td>
-            <input type="text" id="region" size="25" maxlength="45" name="region" class="form-control isRequired" title="Please enter region here" placeholder="Please enter region here"/>
-        </td>
-        
-    </tr>
-    <tr> <th>
-            <label>Longitude </label></th>
+                            <td><input type="text" id="testingVolume" name="testingVolume" size="25" maxlength="45" class="form-control" title="Please enter testing volume here" placeholder="Please enter the testing volume here" />
+                            </td>
+                        </tr>
 
-        <td><input type="text" id="long" name="long" size="25" maxlength="45"
-                   class="form-control" title="Please enter the longitude here"
-                   placeholder="Please enter the longitude here" /></td>
-        <th>
-            <label>Latitude </label></th>
+                        <tr>
+                            <th><label><?= $this->translate->_("Enrolled Programs"); ?> </label></th>
+                            <td>
+                                <select name="enrolledProgram" id="enrolledProgram" multiple="multiple" style="width:285px;">
+                                    <?php foreach ($this->enrolledPrograms as $enrolledPrograms) { ?>
+                                        <option value="<?php echo $enrolledPrograms['r_epid']; ?>"><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+                            <th>
+                                <label><?= $this->translate->_("Site Type"); ?> </label>
+                            </th>
 
-        <td><input type="text" id="lat" name="lat" size="25" maxlength="45"
-                   class="form-control" title="Please enter the latitude here"
-                   placeholder="Please enter the latitude here" />
-        </td>
-    </tr>
-    <tr> <th>
-            <label>Funding Source </label></th>
+                            <td>
+                                <select name="siteType" id="siteType" style="width:285px;" class="form-control">
+                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <?php foreach ($this->siteType as $siteType) { ?>
+                                        <option value="<?php echo $siteType['r_stid']; ?>"><?php echo $siteType['site_type']; ?></option>
+                                    <?php } ?>
+                                </select>
 
-        <td><input type="text" id="fundingSource" name="fundingSource" size="25" maxlength="45" 
-                   class="form-control" title="Please enter the funding source here"
-                   placeholder="Please enter the funding source here"/></td>
-        <th>
-            <label>Testing Volume </label></th>
+                            </td>
+                        </tr>
 
-        <td><input type="text" id="testingVolume" name="testingVolume" size="25" maxlength="45" 
-                   class="form-control" title="Please enter testing volume here"
-                   placeholder="Please enter the testing volume here"/>
-        </td>
-    </tr>
+                        <tr>
+                            <th><?= $this->translate->_("Participant/Lab Contact Name"); ?></th>
+                            <td><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="Please enter the contact name here" /></td>
+                            <th><?= $this->translate->_("Participant e-mail Address"); ?> <span class="mandatory">*</span></th>
+                            <td><input type="text" id="pemail" name="pemail" size="25" maxlength="45" value="<?php echo $this->rsParticipant['email']; ?>" title="Please enter the Participant's Email here" placeholder="Please enter the Participant's Email here" class="form-control isRequired isEmail" /></td>
+                        </tr>
 
-    <tr>
-        <th><label>Enrolled Programs </label></th>
-        <td>
-            <select name="enrolledProgram" id="enrolledProgram" multiple="multiple" style="width:285px;">
-                <?php foreach ($this->enrolledPrograms as $enrolledPrograms) {
-                    ?>
-                    <option value="<?php echo $enrolledPrograms['r_epid']; ?>"><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
-                    <?php
-                }
-                ?>
-            </select>
-        </td>
-        <th>
-            <label>Site Type </label></th>
+                        <tr>
+                            <th><?= $this->translate->_("Participant Phone Number"); ?></th>
+                            <td><input type="text" id="pphone1" name="pphone1" size="25" maxlength="45" value="<?php echo $this->rsParticipant['phone']; ?>" title="Please enter the Participant's Phone here" placeholder="Please enter the Participant's Phone here" class=" form-control isNumeric" /></td>
+                            <th><?= $this->translate->_("Participant Cell/Mobile Number"); ?></th>
+                            <td><input type="text" id="pphone2" name="pphone2" size="25" maxlength="45" value="<?php echo $this->rsParticipant['mobile']; ?>" class="form-control" title="Please enter the Participant's Mobile Number here" placeholder="Please enter the Participant's Mobile Number here" class=" form-control isNumeric" /></td>
+                        </tr>
+                        <tr>
+                            <th><?= $this->translate->_("Shipping Address (include city and country)"); ?> </th>
+                            <td><textarea id="shippingAddress" name="shippingAddress" size="50" class="form-control" title="Please enter the address here" placeholder="Please enter the Shipping Address here"></textarea></td>
+                            <th>
+                                <label><?= $this->translate->_("Zip Code (if applicable)"); ?></label>
+                            </th>
+                            <td><input type="text" id="zip" name="zip" size="25" maxlength="45" class="form-control" title="Please enter the zip here" placeholder="Please enter the zip here" /></td>
+                        </tr>
+                        <tr>
+                            <th><?= $this->translate->_("Network"); ?> <span class="mandatory">*</span></th>
+                            <td>
+                                <select name="network" id="network" class="isRequired form-control" title="Please select Network">
+                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <?php foreach ($this->networks as $nw) { ?>
+                                        <option value="<?php echo $nw['network_id']; ?>"><?php echo $nw['network_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
 
-        <td>
-            <select name="siteType" id="siteType" style="width:285px;" class="form-control">
-                <option value="">--Select--</option>
-                <?php foreach ($this->siteType as $siteType) {
-                    ?>
-                    <option value="<?php echo $siteType['r_stid']; ?>"><?php echo $siteType['site_type']; ?></option>
-                    <?php
-                }
-                ?>
-            </select>
-
-        </td>
-    </tr>
-
-    <tr>
-        <th>Participant/Lab Contact Name</th>
-        <td><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="Please enter the contact name here"/></td>
-        <th>Participant e-mail Address <span class="mandatory">*</span></th>
-        <td><input type="text" id="pemail" name="pemail" size="25" maxlength="45" value="<?php echo $this->rsParticipant['email']; ?>" title="Please enter the Participant's Email here" placeholder="Please enter the Participant's Email here" class="form-control isRequired isEmail"/></td>
-    </tr>
-   
-    <tr>
-        <th>Participant Phone Number</th>
-        <td><input type="text" id="pphone1" name="pphone1" size="25" maxlength="45" value="<?php echo $this->rsParticipant['phone']; ?>" title="Please enter the Participant's Phone here" placeholder="Please enter the Participant's Phone here" class=" form-control isNumeric" /></td>
-        <th>Participant Cell/Mobile Number</th>
-        <td><input type="text" id="pphone2" name="pphone2" size="25" maxlength="45" value="<?php echo $this->rsParticipant['mobile']; ?>" class="form-control" title="Please enter the Participant's Mobile Number here" placeholder="Please enter the Participant's Mobile Number here" class=" form-control isNumeric"/></td>
-    </tr>
-    <tr>
-        <th>Shipping Address (include city and country) </th>
-        <td><textarea id="shippingAddress" name="shippingAddress" size="50" 
-                                class="form-control" title="Please enter the address here"
-                                placeholder="Please enter the Shipping Address here"></textarea></td>        
-        <th>
-            <label>Zip Code (if applicable)</label></th>
-        <td><input type="text" id="zip" name="zip" size="25" maxlength="45" class="form-control" title="Please enter the zip here" placeholder="Please enter the zip here" /></td>
-    </tr>
- <tr>
-
-        <th>Network <span class="mandatory">*</span></th>
-        <td>
-            <select name="network" id="network"  class="isRequired form-control" title="Please select Network">
-                <option value="">--Select--</option>
-                <?php foreach ($this->networks as $nw) {
-                    ?>
-                    <option value="<?php echo $nw['network_id']; ?>"><?php echo $nw['network_name']; ?></option>
-                <?php }
-                ?>
-            </select>
-        </td>
-
-        <th>Participant Affiliation <span class="mandatory">*</span></th>
-        <td>
-            <select name="partAff" id="partAff"  class="isRequired form-control" title="Please choose the affiliation here" style="width: 285px">
-                <option value="">--Select--</option>
-                <?php foreach ($this->affiliates as $aff) {
-                    ?>
-                    <option value="<?php echo $aff['affiliate']; ?>"><?php echo $aff['affiliate']; ?></option>
-                <?php }
-                ?>
-            </select>
-        </td>        
-    </tr>
-    <tr>
-        <th>Schemes <span class="mandatory">*</span></th>
-        <td>
-            <select id="scheme" name="scheme[]" multiple="multiple" style="width:285px;">
-                <?php
-                foreach ($this->schemes as $scheme) {
-                    ?>
-                    <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
-                    <?php
-                }
-                ?>
-            </select>
-        </td>
-        <td></td>
-        <td></td>
-    </tr>
-
-</table>
-<br>
-<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-    <?php if($this->isEditable){ ?>
-    <p>
-        <input name="submitbtn" class="btn btn-primary" type="submit"  onclick="validateNow();
-                return false;" tabindex="7" value="Submit"  /> 
-        &nbsp;&nbsp;&nbsp;
-        <input name="reset" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_testers()" /> 
-
-    </p>
-    <?php } ?>
-    <?php if(!$this->isEditable){
-    ?>
-    <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-        <a href="javascript:void(0)" id="reset" tabindex="8" class="btn btn-info" onclick="javascript:goto_testers()" >Back</a>
+                            <th><?= $this->translate->_("Participant Affiliation"); ?> <span class="mandatory">*</span></th>
+                            <td>
+                                <select name="partAff" id="partAff" class="isRequired form-control" title="Please choose the affiliation here" style="width: 285px">
+                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <?php foreach ($this->affiliates as $aff) { ?>
+                                        <option value="<?php echo $aff['affiliate']; ?>"><?php echo $aff['affiliate']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?= $this->translate->_("Schemes"); ?> <span class="mandatory">*</span></th>
+                            <td>
+                                <select id="scheme" name="scheme[]" multiple="multiple" style="width:285px;">
+                                    <?php foreach ($this->schemes as $scheme) { ?>
+                                        <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+                        <?php if ($this->isEditable) { ?>
+                            <p>
+                                <input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow(); return false;" tabindex="7" value="Submit" />
+                                &nbsp;&nbsp;&nbsp;
+                                <input name="reset" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_testers()" />
+                            </p>
+                        <?php }
+                        if (!$this->isEditable) { ?>
+                            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+                                <a href="javascript:void(0)" id="reset" tabindex="8" class="btn btn-info" onclick="javascript:goto_testers()"><?= $this->translate->_("Back"); ?></a>
+                            </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-    <?php
-    }
-    ?>
-</div>	
-</div>
-</form>
-</div>    
-</div>
 </section>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script>
+    $(document).ready(function() {
+        $("#scheme").select2({
+            placeholder: "Select one or more schemes",
+            allowClear: true
+        });
 
-            $(document).ready(function() {
-                $("#scheme").select2({
-                    placeholder: "Select one or more schemes",
-                    allowClear: true
-                });
-                
-                $("#enrolledProgram").select2({
-                    placeholder: "Select one or more Enrolled Programs",
-                    allowClear: true
-                });
-                <?php if(!$this->isEditable){
-                ?>
-                    $("#participantEdit").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
-                    <?php
-                }
-                ?>
-            })
+        $("#enrolledProgram").select2({
+            placeholder: "Select one or more Enrolled Programs",
+            allowClear: true
+        });
+        <?php if (!$this->isEditable) {
+        ?>
+            $("#participantEdit").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
+        <?php
+        }
+        ?>
+    })
 
-            function goto_testers() {
-                window.history.back();
-            }
+    function goto_testers() {
+        window.history.back();
+    }
 
-            var duplicated = false;
+    var duplicated = false;
 
-            function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-                $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html"},
-                function(data) {
-                    if (data > 0) {
-                        alert(msg, "err");
-                        duplicated = true;
-                        obj.focus();
-                    }
-                    else {
-                        duplicated = false;
-                    }
-                });
-            }
-            function validateNow() {
-                //checkDuplicate('participant', 'unique_identifier', $("#participantId"), null, 'This Participant ID already exists for another Participant. Please try something else.')
-                flag = deforayValidator.init({
-                    formId: 'participantEdit'
-                });
-                if (flag && !duplicated) {
-                    $.blockUI();
-                    document.getElementById('participantEdit').submit();
-                }
-            }
-
-            function checkIndividualParticipant(obj) {
-                if (obj.checked) {
-                   tag = 'Participant First Name <span class="mandatory">*</span>';
-                    $("#lastNameLable").show();
-                    $("#lastNameLableTd").show();
-                    $("#pfname").attr("title","Please enter the Participant's First Name here");
-                    $("#pfname").attr("placeholder","Please enter the Participant's First Name here");
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+                tableName: tableName,
+                fieldName: fieldName,
+                value: obj.value,
+                fnct: fnct,
+                format: "html"
+            },
+            function(data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    obj.focus();
                 } else {
-                    tag = 'Lab Name <span class="mandatory">*</span>';
-                    $("#lastNameLable").hide();
-                    $("#lastNameLableTd").hide();
-                    $("#plname").val('');
-                    $("#pfname").attr("title","Please enter the Lab Name here");
-                    $("#pfname").attr("placeholder","Please enter the Lab Name here");
-                    
+                    duplicated = false;
                 }
-                $("#firstNameLable").html(tag);
-            }
+            });
+    }
+
+    function validateNow() {
+        //checkDuplicate('participant', 'unique_identifier', $("#participantId"), null, 'This Participant ID already exists for another Participant. Please try something else.')
+        flag = deforayValidator.init({
+            formId: 'participantEdit'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('participantEdit').submit();
+        }
+    }
+
+    function checkIndividualParticipant(obj) {
+        if (obj.checked) {
+            tag = 'Participant First Name <span class="mandatory">*</span>';
+            $("#lastNameLable").show();
+            $("#lastNameLableTd").show();
+            $("#pfname").attr("title", "Please enter the Participant's First Name here");
+            $("#pfname").attr("placeholder", "Please enter the Participant's First Name here");
+        } else {
+            tag = 'Lab Name <span class="mandatory">*</span>';
+            $("#lastNameLable").hide();
+            $("#lastNameLableTd").hide();
+            $("#plname").val('');
+            $("#pfname").attr("title", "Please enter the Lab Name here");
+            $("#pfname").attr("placeholder", "Please enter the Lab Name here");
+
+        }
+        $("#firstNameLable").html(tag);
+    }
 </script>
